@@ -11,9 +11,9 @@ using namespace testing::ext;
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-const string PLUGIN_NAME = "demo";
-const string CONIFG_NAME = "sample";
-const string TEST_PREFIX_RES_PATH = "/data/test/resource/resschedfwk/parseconfig/";
+    const string PLUGIN_NAME = "demo";
+    const string CONFIG_NAME = "sample";
+    const string TEST_PREFIX_RES_PATH = "/data/test/resource/resschedfwk/parseconfig/";
 }
 
 void ConfigReaderTest::SetUpTestCase() {}
