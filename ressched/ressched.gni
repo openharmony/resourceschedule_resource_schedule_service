@@ -1,0 +1,11 @@
+# Copyright (c) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
+
+resourceschedule_path = "//foundation/resourceschedule"
+
+ressched_services = "${resourceschedule_path}/resource_schedule_service/ressched/services"
+
+ressched_common = "${resourceschedule_path}/resource_schedule_service/ressched/common"
+
+ressched_interfaces = "${resourceschedule_path}/resource_schedule_service/ressched/interfaces"
+
+ressched_plugins = "${resourceschedule_path}/resource_schedule_service/ressched/plugins"

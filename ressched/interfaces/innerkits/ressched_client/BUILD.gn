@@ -1,0 +1,49 @@
+# Copyright (c) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
+
+import("//build/ohos.gni")
+import("//build/test.gni")
+import("//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
+
+config("client_private_config") {
+  include_dirs = [
+    "//utils/native/base/include",
+    "//utils/system/safwk/native/include",
+    "${ressched_common}/include",
+  ]
+}
+
+config("client_public_config") {
+  include_dirs = [
+    "include",
+  ]
+}
+
+ohos_shared_library("ressched_client") {
+  configs = [
+    ":client_private_config",
+    "${ressched_services}:ressched_config",
+  ]
+
+  public_configs = [
+    ":client_public_config",
+  ]
+
+  sources = [
+    "src/res_sched_client.cpp",
+  ]
+
+  deps = [
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//utils/native/base:utils",
+    "${ressched_services}:resschedsvc",
+  ]
+
+  external_deps = [
+    "ipc:ipc_core",
+    "samgr_standard:samgr_proxy",
+    "appexecfwk_standard:libeventhandler",
+  ]
+
+  subsystem_name = "resourceschedule"
+  part_name = "ressched"
+}

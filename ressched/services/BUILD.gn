@@ -1,0 +1,47 @@
+# Copyright (c) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
+
+import("//build/test.gni")
+import("//build/ohos.gni")
+import("//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
+
+config("ressched_config") {
+  include_dirs = [
+    "resschedservice/include",
+    "${ressched_common}/include",
+    "resschedmgr/resschedfwk/include",
+    "resschedmgr/pluginbase/include",
+    "//utils/system/safwk/native/include",
+    "//utils/native/base/include",
+    "//third_party/libxml2/include",
+  ]
+}
+
+ohos_shared_library("resschedsvc") {
+  configs = [
+    ":ressched_config",
+    "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
+  ]
+
+  sources = [
+    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedservice/src/res_sched_service_ability.cpp",
+    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
+    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/resschedfwk/src/plugin_mgr.cpp",
+    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/resschedfwk/src/config_reader.cpp",
+    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/resschedfwk/src/plugin_switch.cpp",
+  ]
+
+  deps = [
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//utils/native/base:utils",
+    "//third_party/libxml2:xml2",
+  ]
+
+  external_deps = [
+    "appexecfwk_standard:libeventhandler",
+    "ipc:ipc_core",
+    "safwk:system_ability_fwk",
+  ]
+
+  subsystem_name = "resourceschedule"
+  part_name = "ressched"
+}

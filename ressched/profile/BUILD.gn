@@ -1,0 +1,17 @@
+# Copyright (c) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
+
+import("//build/ohos.gni")
+
+ohos_prebuilt_etc("ressched_plugin_config") {
+  source = "res_sched_config.xml"
+  subsystem_name = "resourceschedule"
+  part_name = "ressched"
+  module_install_dir = "etc/ressched"
+}
+
+ohos_prebuilt_etc("ressched_plugin_switch") {
+  source = "res_sched_plugin_switch.xml"
+  subsystem_name = "resourceschedule"
+  part_name = "ressched"
+  module_install_dir = "etc/ressched"
+}

@@ -1,0 +1,11 @@
+# Copyright (c) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
+
+import("//build/ohos/sa_profile/sa_profile.gni")
+
+ohos_sa_profile("ressched_sa_profile") {
+  sources = [
+    "1901.xml",
+  ]
+
+  part_name = "ressched"
+}
