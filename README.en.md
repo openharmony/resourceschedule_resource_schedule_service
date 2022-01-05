@@ -1,36 +1,67 @@
-# resourceschedule_resource_schedule_service
+# Resource Schedule Service
 
-#### Description
-{**When you're done, you can delete the content in this README and update the file with details for others getting started with your repository**}
+-   [Introduction](#section11660541593)
+-   [Directory Structure](#section161941989596)
+-   [How to write a plugin](#section1312121216216)
+    -   [Available APIs](#section114564657874)
+    -   [Usage Guidelines](#section129654513264)
+        -   [Restrictions on Using Transient Tasks](#section1551164914237)
 
-#### Software Architecture
-Software architecture description
+-   [Repositories Involved](#section1371113476307)
 
-#### Installation
+## Introduction<a name="section11660541593"></a>
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+In the resourceschedule subsystem, it provides the awareness and distribution of system events. If you need to perceive system events, you can choose to join the resource schedule service in the form of a plugin.
 
-#### Instructions
+## Directory Structure<a name="section161941989596"></a>
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+```
 
-#### Contribution
+── ressched
+    ├── common    # Common header file
+    ├── interfaces
+    │   └── innerkits    # Interface APIs
+    │       └── ressched_client    # Report data in process
+    ├── plugins    # Plugin code
+    ├── profile    # Plugin switch xml and plugin private xml
+    ├── sa_profile   # System ability xml
+    └── services 
+        ├── resschedmgr
+        │   ├── pluginbase   # Plugin struct definition
+        │   └── resschedfwk   # Resource schedule framework
+        └── resschedservice   # Resource schedule service
 
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
+```
+## How to write a plugin<a name="section1312121216216"></a>
 
+### Available APIs<a name="section114564657874"></a>
 
-#### Gitee Feature
+API                                                      |     Description                         
+---------------------------------------------------------|-----------------------------------------
+function OnPluginInit(std::string& libName): bool; | plugin init 
+function OnPluginDisable(): void;        | plugin disable 
+function OnDispatchResource(const std::shared_ptr<ResData>& data):void; | dispatch resource event 
 
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+### Usage Guidelines<a name="section129654513264"></a>
+
+When the plugin is initialized, specify the events that need to be registered for monitoring. When these events occur, the framework will be distributed to each plugin in turn,
+
+At this point, the plugin needs to be processed quickly (if time-consuming tasks need to be processed by another thread), and the processing is completed, return.
+
+#### Restrictions on Using Transient Tasks<a name="section1551164914237"></a>
+
+1. The plugin can be implemented with c++/c.
+
+2. The event processing of the plugin must be completed quickly. If it exceeds 1ms, a certain warning will be issued. If it exceeds 10ms, the framework thinks the plugin is abnormal and reports an error.
+
+## Repositories Involved<a name="section1371113476307"></a>
+
+Resource Schedule subsystem
+
+**resource\_schedule\_service**
+
+safwk
+
+appexecfwk_standard
+
+ipc
