@@ -3,8 +3,8 @@
  * Description: mock plugin manager unnittest
  */
 
-#ifndef FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDEMOCK_H
-#define FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDEMOCK_H
+#ifndef FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_MOCK_H
+#define FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_MOCK_H
 
 #include <memory>
 #include <thread>
@@ -48,7 +48,7 @@ public:
         }
 
         if (pluginSwitch_ == nullptr) {
-            pluginSwitch_ = make_unique<PluginSwitch>();
+            pluginSwitch_ = std::make_unique<PluginSwitch>();
             bool loadRet = pluginSwitch_->LoadFromConfigFile(PLUGIN_SWITCH_FILE_NAME);
             if (!loadRet) {
                 initStatus = LOAD_CONFIG_FAIL;
@@ -56,7 +56,7 @@ public:
         }
 
         if (configReader_ == nullptr) {
-            configReader_ = make_unique<ConfigReader>();
+            configReader_ = std::make_unique<ConfigReader>();
             bool loadRet = configReader_->LoadFromCustConfigFile(CONFIG_FILE_NAME);
             if (!loadRet) {
                 initStatus = LOAD_CUST_CONFIG_FAIL;
@@ -66,7 +66,7 @@ public:
         LoadPlugin();
 
         if (dispatcherHandler_ == nullptr) {
-            dispatcherHandler_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
+            dispatcherHandler_ = std::make_shared<AppExecFwk::EventHandler>(AppExecFwk::EventRunner::Create(MOCK_RUNNER_NAME));
         }
         initStatus = INIT_SUCCESS;
     }
@@ -85,9 +85,9 @@ public:
             return;
         }
 
-        auto beginTime = Clock::now();
+        auto beginTime = std::chrono::high_resolution_clock::now();
         fun(resData);
-        auto endTime = Clock::now();
+        auto endTime = std::chrono::high_resolution_clock::now();
 
         if (endTime > beginTime + std::chrono::milliseconds(DISPATCH_TIME_OUT)) {
             // dispatch resource use too long time, unload it

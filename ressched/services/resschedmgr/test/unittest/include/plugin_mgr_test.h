@@ -20,7 +20,7 @@ public:
     void SetUp();
     void TearDown();
 protected:
-    std::shared_ptr<ConfigReader> pluginMgr_;
+        std::shared_ptr<MockPluginMgr> pluginMgr_;
 
 };
 }// namespace ResourceSchedule
