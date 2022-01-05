@@ -8,7 +8,7 @@ group("unittest") {
     deps = [":resschedfwk_test"]
 }
 
-config("ut_resschedfwk_test") {
+config("ut_resschedfwk_config") {
   include_dirs = ["include"]
 }
 
@@ -27,20 +27,15 @@ private_deps = [
     "//utils/native/base:utils",
 ]
 
-
-
-
-
-
 ohos_unittest("resschedfwk_test") {
     output_extension = "bin"
-    module_out_path = moudule_output_path
+    module_out_path = module_output_path
     resource_config_file = "//foundation/resourceschedule/resource_schedule_service/ressched/test/resource/resschedfwk/harmony_test.xml"
     sources = [
-        "src/res_sched_mgr_test.cpp",
-        "src/plugin_mgr_test.cpp",
-        "srcconfig_reader_test.cpp",
-        "src/plugin_switch_test.cpp",
+        "src/config_reader_test.cpp",
+        #"src/plugin_mgr_test.cpp",
+        #"src/plugin_switch_test.cpp",
+        #"src/res_sched_mgr_test.cpp",
     ]
     configs = [
         ":ut_resschedfwk_config",
@@ -50,7 +45,7 @@ ohos_unittest("resschedfwk_test") {
 
 
   deps = private_deps
-  
+
   external_deps = private_external_deps
 
 }
