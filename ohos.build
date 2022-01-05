@@ -23,10 +23,6 @@
                     "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"
                 }
             ]
-            # "test_list": [
-             #    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/test/unittest:unittest",
-             #    "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client/test/unittest:unittest"
-            # ]
         }
     }
 }
