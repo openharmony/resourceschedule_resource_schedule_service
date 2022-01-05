@@ -1,39 +1,64 @@
-# resourceschedule_resource_schedule_service
+# 资源调度服务
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+-   [简介](#section11660541593)
+-   [目录](#section161941989596)
+-   [如何编写一个插件](#section1312121216216)
+    -   [接口说明](#section114564657874)
+    -   [使用说明](#section129654513264)
 
-#### 软件架构
-软件架构说明
+-   [相关仓](#section1371113476307)
 
+## 简介<a name="section11660541593"></a>
 
-#### 安装教程
+在资源调度子系统中，提供系统事件的感知以及分发，如果需要感知系统事件，可以选择以插件形式加入资源调度服务中。
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+## 目录<a name="section161941989596"></a>
 
-#### 使用说明
+```
+── ressched
+    ├── common    # 公共头文件
+    ├── interfaces
+    │   └── innerkits    # 对外接口目录
+    │       └── ressched_client    # 外部同步事件通知接口
+    ├── plugins    # 插件代码实现
+    ├── profile    # 插件开关以及私有配置
+    ├── sa_profile   # 系统元能力配置
+    └── services 
+        ├── resschedmgr
+        │   ├── pluginbase   # 插件结构定义
+        │   └── resschedfwk   # 资源调度服务框架实现
+        └── resschedservice   # 资源调度服务层
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+```
+## 如何编写一个插件<a name="section1312121216216"></a>
 
-#### 参与贡献
+### 接口说明<a name="section114564657874"></a>
+      
+接口名                                                    |     接口描述                            
+---------------------------------------------------------|-----------------------------------------
+function OnPluginInit(std::string& libName): bool; | 插件初始化 
+function OnPluginDisable(): void;        | 插件退出 
+function OnDispatchResource(const std::shared_ptr<ResData>& data):void; | 获取分发的事件 
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+### 使用说明<a name="section129654513264"></a>
 
+插件初始化的时候，指定需要注册监听的事件。在这些事件发生的时候，框架会依次分发给各个插件，
+此时插件需要快速进行处理（需要有耗时任务则需另起线程处理），处理完成后返回。
 
-#### 特技
+#### 插件事件处理约束<a name="section1551164914237"></a>
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+1、插件可以用c++/c实现。
+
+2、插件的事件处理，必须快速完成，超过1ms会做一定的警告，超过10ms，框架认为插件异常而报错。
+
+## 相关仓<a name="section1371113476307"></a>
+
+资源调度子系统
+
+**resource\_schedule\_service**
+
+safwk
+
+appexecfwk_standard
+
+ipc
