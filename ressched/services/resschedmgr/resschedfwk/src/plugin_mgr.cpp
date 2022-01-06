@@ -158,9 +158,11 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         RESSCHED_LOGW("PluginMgr::DispatchResource resType no lib register!");
         return;
     }
-
+    RESSCHED_LOGD("PluginMgr::DispatchResource resType = %{public}d,"
+                  " value = %{public}lld, payload = %{public}s", resType, value, payload.c_str());
+    // TODO: 直接打印list
     for (const auto& libName : iter->second) {
-        RESSCHED_LOGE("PluginMgr::DispatchResource libName %{public}s ", libName.c_str());
+        // RESSCHED_LOGE("PluginMgr::DispatchResource libName %{public}s ", libName.c_str());
         dispatcherHandler_->PostTask([libName = libName, resData, this] { deliverResourceToPlugin(libName, resData); });
     }
 }
