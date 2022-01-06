@@ -40,7 +40,8 @@ ohos_shared_library("ressched_client") {
 
   external_deps = [
     "ipc:ipc_core",
-    "samgr_standard:samgr_proxy",
+    # "samgr_standard:samgr_proxy",
+    "samgr_L2:samgr_proxy",
     "appexecfwk_standard:libeventhandler",
   ]
 
