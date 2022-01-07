@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <pluginlist>
     <plugin libpath="libdemoplugin_cplusplus.z.so" switch="1" />
-    <plugin libpath="libdemoplugin_c.z.so" switch="1" />
 </pluginlist>
