@@ -160,10 +160,10 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     }
     std::string libNameAll = "[";
     for (const auto& libName : iter->second) {
-        libNameAll.append(libName)
-        libNameAll.append(",")
+        libNameAll.append(libName);
+        libNameAll.append(",");
     }
-    libNameAll.append("]")
+    libNameAll.append("]");
     RESSCHED_LOGI("PluginMgr::DispatchResource resType = %{public}d,"
                   " value = %{public}lld, payload = %{public}s  list is %{public}s ", resData->resType, resData->value, resData->payload.c_str(), libNameAll.c_str());
     // TODO: 直接打印list
@@ -227,13 +227,13 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
 
     if (endTime > beginTime + std::chrono::milliseconds(DISPATCH_TIME_OUT)) {
         // dispatch resource use too long time, unload it
-        RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin too long !");
+        RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin ERROR : %{public}s plugin cost time over 10 ms!", pluginLib.c_str());
         if (itMap->second.onPluginDisableFunc_ != nullptr) {
             itMap->second.onPluginDisableFunc_();
         }
         pluginLibMap_.erase(itMap);
     } else if (endTime > beginTime + std::chrono::milliseconds(DISPATCH_WARNING_TIME)) {
-        RESSCHED_LOGW("PluginMgr::deliverResourceToPlugin to,e warning !");
+        RESSCHED_LOGW("PluginMgr::deliverResourceToPlugin WAINNING : %{public}s plugin cost time over 1 ms!", pluginLib.c_str());
     }
 }
 
