@@ -165,8 +165,8 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     }
     libNameAll.append("]");
     RESSCHED_LOGI("PluginMgr::DispatchResource resType = %{public}d,"
-                  " value = %{public}lld, payload = %{public}s  list is %{public}s ", resData->resType, resData->value, resData->payload.c_str(), libNameAll.c_str());
-    // TODO: 直接打印list
+                  " value = %{public}lld, payload = %{public}s  list is %{public}s ",
+                  resData->resType, resData->value, resData->payload.c_str(), libNameAll.c_str());
     for (const auto& libName : iter->second) {
         dispatcherHandler_->PostTask([libName = libName, resData, this] { deliverResourceToPlugin(libName, resData); });
     }
