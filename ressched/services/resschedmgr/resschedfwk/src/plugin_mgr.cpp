@@ -159,7 +159,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         return;
     }
     RESSCHED_LOGD("PluginMgr::DispatchResource resType = %{public}d,"
-                  " value = %{public}lld, payload = %{public}s", resType, value, payload.c_str());
+                  " value = %{public}lld, payload = %{public}s", resData->resType, resData->value, resData->payload.c_str());
     // TODO: 直接打印list
     for (const auto& libName : iter->second) {
         // RESSCHED_LOGE("PluginMgr::DispatchResource libName %{public}s ", libName.c_str());
