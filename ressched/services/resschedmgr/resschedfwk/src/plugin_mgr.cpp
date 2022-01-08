@@ -228,13 +228,15 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
     int costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
     if (costTime > DISPATCH_TIME_OUT) {
         // dispatch resource use too long time, unload it
-        RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin ERROR : %{public}s plugin cost time(%{public}d) over 10 ms! disable it.", pluginLib.c_str(), costTime);
+        RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin ERROR :"
+                      "%{public}s plugin cost time(%{public}d) over 10 ms! disable it.", pluginLib.c_str(), costTime);
         if (itMap->second.onPluginDisableFunc_ != nullptr) {
             itMap->second.onPluginDisableFunc_();
         }
         pluginLibMap_.erase(itMap);
     } else if (costTime > DISPATCH_WARNING_TIME) {
-        RESSCHED_LOGW("PluginMgr::deliverResourceToPlugin WAINNING : %{public}s plugin cost time(%{public}d) over 1 ms!", pluginLib.c_str());
+        RESSCHED_LOGW("PluginMgr::deliverResourceToPlugin WAINNING :"
+                      "%{public}s plugin cost time(%{public}d) over 1 ms!", pluginLib.c_str(), costTime);
     }
 }
 
