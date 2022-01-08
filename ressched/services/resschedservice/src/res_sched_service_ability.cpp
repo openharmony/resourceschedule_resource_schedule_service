@@ -25,7 +25,8 @@ void ResSchedServiceAbility::OnStop()
 {
     //ResSchedMgr::GetInstance().Stop();
     //RESSCHED_LOGI("ResSchedServiceAbility::OnStop!");
-    a = 2;
+    int b = 2;
+    b++;
 }
 
 } // namespace ResourceSchedule
