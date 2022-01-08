@@ -4,8 +4,8 @@
  */
 
 #include "res_sched_service_ability.h"
-#include "res_sched_log.h"
-#include "res_sched_mgr.h"
+//#include "res_sched_log.h"
+//#include "res_sched_mgr.h"
 #include "system_ability_definition.h"
 
 namespace OHOS {
@@ -16,13 +16,16 @@ REGISTER_SYSTEM_ABILITY_BY_ID(ResSchedServiceAbility, RES_SCHED_SYS_ABILITY_ID, 
 void ResSchedServiceAbility::OnStart()
 {
     //ResSchedMgr::GetInstance().Init();
-    RESSCHED_LOGI("ResSchedServiceAbility ::OnStart.");
+    //RESSCHED_LOGI("ResSchedServiceAbility ::OnStart.");
+    int a = 0;
+    a++;
 }
 
 void ResSchedServiceAbility::OnStop()
 {
-    ResSchedMgr::GetInstance().Stop();
-    RESSCHED_LOGI("ResSchedServiceAbility::OnStop!");
+    //ResSchedMgr::GetInstance().Stop();
+    //RESSCHED_LOGI("ResSchedServiceAbility::OnStop!");
+    a = 2;
 }
 
 } // namespace ResourceSchedule
