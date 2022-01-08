@@ -15,8 +15,8 @@ REGISTER_SYSTEM_ABILITY_BY_ID(ResSchedServiceAbility, RES_SCHED_SYS_ABILITY_ID, 
 
 void ResSchedServiceAbility::OnStart()
 {
-    ResSchedMgr::GetInstance().Init();
-    RESSCHED_LOGI("cmd ::OnStart.");
+    //ResSchedMgr::GetInstance().Init();
+    RESSCHED_LOGI("ResSchedServiceAbility ::OnStart.");
 }
 
 void ResSchedServiceAbility::OnStop()
