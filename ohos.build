@@ -5,19 +5,8 @@
             "variants": ["phone", "wearable"],
             "module_list": [
                 "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc",
-                "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"
-            ],
-            "inner_kits": [
-                {
-                    "header": {
-                        "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client/include",
-                        "header_files": [
-                            "res_type.h",
-                            "res_sched_client.h"
-                        ]
-                    },
-                    "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"
-                }
+                "//foundation/resourceschedule/resource_schedule_service/ressched/sa_profile:ressched_sa_profile",
+                "//foundation/resourceschedule/resource_schedule_service/ressched/etc/init:etc"
             ]
         }
     }
