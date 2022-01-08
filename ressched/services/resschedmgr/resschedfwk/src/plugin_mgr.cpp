@@ -165,7 +165,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         libNameAll.append(",");
     }
     libNameAll.append("]");
-    RESSCHED_LOGI("PluginMgr::DispatchResource resType = %{public}d,"
+    RESSCHED_LOGD("PluginMgr::DispatchResource resType = %{public}d,"
                   " value = %{public}lld, payload = %{public}s  pluginlist is %{public}s ",
                   resData->resType, resData->value, resData->payload.c_str(), libNameAll.c_str());
     for (const auto& libName : iter->second) {
