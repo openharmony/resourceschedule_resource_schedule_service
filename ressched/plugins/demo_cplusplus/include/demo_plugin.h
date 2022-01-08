@@ -13,7 +13,8 @@ namespace OHOS {
 namespace ResourceSchedule {
 class DemoPlugin : public Plugin {
     DECLARE_SINGLE_INSTANCE(DemoPlugin)
-
+private:
+    int eventProcessTime;
 public:
     void Init() override;
 

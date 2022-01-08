@@ -123,7 +123,7 @@ void PluginMgr::LoadPlugin()
             std::lock_guard<std::mutex> autoLock(pluginMutex_);
             pluginLibMap_.emplace(info.libPath, libInfo);
         }
-        RESSCHED_LOGE("PluginMgr::LoadPlugin init %{public}s success!", info.libPath.c_str());
+        RESSCHED_LOGI("PluginMgr::LoadPlugin init %{public}s success!", info.libPath.c_str());
     }
 }
 
@@ -166,7 +166,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     }
     libNameAll.append("]");
     RESSCHED_LOGI("PluginMgr::DispatchResource resType = %{public}d,"
-                  " value = %{public}lld, payload = %{public}s  list is %{public}s ",
+                  " value = %{public}lld, payload = %{public}s  pluginlist is %{public}s ",
                   resData->resType, resData->value, resData->payload.c_str(), libNameAll.c_str());
     for (const auto& libName : iter->second) {
         dispatcherHandler_->PostTask([libName = libName, resData, this] { deliverResourceToPlugin(libName, resData); });
@@ -225,16 +225,16 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
     auto beginTime = Clock::now();
     fun(resData);
     auto endTime = Clock::now();
-
-    if (endTime > beginTime + std::chrono::milliseconds(DISPATCH_TIME_OUT)) {
+    int costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
+    if (costTime > DISPATCH_TIME_OUT) {
         // dispatch resource use too long time, unload it
-        RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin ERROR : %{public}s plugin cost time over 10 ms!", pluginLib.c_str());
+        RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin ERROR : %{public}s plugin cost time(%{public}d) over 10 ms! disable it.", pluginLib.c_str(), costTime);
         if (itMap->second.onPluginDisableFunc_ != nullptr) {
             itMap->second.onPluginDisableFunc_();
         }
         pluginLibMap_.erase(itMap);
-    } else if (endTime > beginTime + std::chrono::milliseconds(DISPATCH_WARNING_TIME)) {
-        RESSCHED_LOGW("PluginMgr::deliverResourceToPlugin WAINNING : %{public}s plugin cost time over 1 ms!", pluginLib.c_str());
+    } else if (costTime > DISPATCH_WARNING_TIME) {
+        RESSCHED_LOGW("PluginMgr::deliverResourceToPlugin WAINNING : %{public}s plugin cost time(%{public}d) over 1 ms!", pluginLib.c_str());
     }
 }
 

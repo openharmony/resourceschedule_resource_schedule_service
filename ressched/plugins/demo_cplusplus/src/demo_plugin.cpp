@@ -21,6 +21,7 @@ IMPLEMENT_SINGLE_INSTANCE(DemoPlugin)
 void DemoPlugin::Init()
 {
     PluginMgr::GetInstance().SubscribeResource(LIB_NAME, RES_TYPE_SCREEN_STATUS);
+    eventProcessTime = 2000;
     RESSCHED_LOGI("DemoPlugin::SubscribeResource and init success!");
 }
 
@@ -33,7 +34,8 @@ void DemoPlugin::Disable()
 void DemoPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
     RESSCHED_LOGD("DemoPlugin::DispatchResource status type %{public}u .", data->resType);
-    usleep(2000);
+    usleep(eventProcessTime);
+    eventProcessTime += 1000;
     PluginConfig config = PluginMgr::GetInstance().GetConfig("demo", "sample");
     for (Item& item : config.itemList) {
         for (SubItem sub : item.subItemList) {
