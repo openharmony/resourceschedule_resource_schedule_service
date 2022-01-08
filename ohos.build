@@ -8,7 +8,9 @@
                 "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
                 "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/demo_cplusplus:demoplugin_cplusplus",
                 "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_config",
-                "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_switch"
+                "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_switch",
+                 "//foundation/resourceschedule/resource_schedule_service/ressched/sa_profile:ressched_sa_profile",
+                  "//foundation/resourceschedule/resource_schedule_service/ressched/etc/init:etc"
             ],
             "inner_kits": [
                 {
