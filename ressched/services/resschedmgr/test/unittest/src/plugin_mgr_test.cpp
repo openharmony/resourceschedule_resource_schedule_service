@@ -50,19 +50,19 @@ void PluginMgrTest::TearDown()
     pluginMgr_ = nullptr;
 }
 
-/**
- * @tc.name: Init plugin mgr 001
- * @tc.desc: Verify if can Init the plugin correctly
- * @tc.type: FUNC
- * @tc.require: I4PY59
- * @tc.author:xukuan
+/*
+ * Feature: PluginMgr
+ * Function: Init
+ * SubFunction: NA
+ * FunctionPoints: PluginMgr Init
+ * EnvConditions: code is start PluginMgr
+ * CaseDescription: Verify that on remote request is normal and abnormal
  */
-HWTEST_F(PluginMgrTest, PluginMgr_Init_001, TestSize.Level1)
+HWTEST_F(PluginMgrTest, PluginMgrTest_001, TestSize.Level1)
 {
-
-     pluginMrt_->Init();
-     EXPECT_TRUE(!pluginMrt_->initStatus == pluginMgr_->INIT_SUCCESS);
-     EXPECT_TRUE(!pluginMrt_->pluginLibMap_.size() == 1);
+    pluginMgr_->Init();
+    EXPECT_TRUE(!pluginMgr_->initStatus == pluginMgr_->INIT_SUCCESS);
+    EXPECT_TRUE(!pluginMgr_->pluginLibMap_.size() == 1);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
