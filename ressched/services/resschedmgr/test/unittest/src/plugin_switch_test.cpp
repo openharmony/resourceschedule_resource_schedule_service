@@ -54,7 +54,7 @@ namespace OHOS {
  * @tc.name: Init plugin Switch 001
  * @tc.desc: Verify if can Init the plugin correctly
  * @tc.type: FUNC
- * @tc.require: AR000001
+ * @tc.require: I4PY59
  * @tc.author:xukuan
  */
 HWTEST_F(PluginSwitchTest, Init001, TestSize.Level1)
@@ -62,6 +62,5 @@ HWTEST_F(PluginSwitchTest, Init001, TestSize.Level1)
     bool ret = pluginSwitch_->LoadFromConfigFile(TEST_PREFIX_SWITCH_PATH + "fileNotExist");
     EXPECT_TRUE(!ret);
 }
-
-}
-}
+} // namespace ResourceSchedule
+} // namespace OHOS

@@ -50,7 +50,7 @@ void ConfigReaderTest::TearDown()
  * @tc.name: Load Config File 001
  * @tc.desc: Verify if can load not exist file.
  * @tc.type: FUNC
- * @tc.require: AR000001
+ * @tc.require: I4PY59
  * @tc.author:xukuan
  */
 HWTEST_F(ConfigReaderTest, LoadConfigFile001, TestSize.Level1)
@@ -62,7 +62,5 @@ HWTEST_F(ConfigReaderTest, LoadConfigFile001, TestSize.Level1)
      bool ret = configReader_->LoadFromCustConfigFile("fileNotExist");
      EXPECT_TRUE(!ret);
 }
-
-}
-
-}
+} // namespace ResourceSchedule
+} // namespace OHOS

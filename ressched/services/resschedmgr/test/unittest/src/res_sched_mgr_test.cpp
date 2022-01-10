@@ -46,7 +46,7 @@ void ResSchedMgrTest::TearDown()
  * @tc.name: Init plugin mgr 001
  * @tc.desc: Verify if can Init the plugin correctly
  * @tc.type: FUNC
- * @tc.require: AR000001
+ * @tc.require: I4PY59
  * @tc.author:xukuan
  */
 HWTEST_F(ResSchedMgrTest, Init001, TestSize.Level1)
@@ -56,5 +56,5 @@ HWTEST_F(ResSchedMgrTest, Init001, TestSize.Level1)
      ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SCREEN_STATUS, 0, "11")
      EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ != nullptr);
 }
-}
-}
+} // namespace ResourceSchedule
+} // namespace OHOS

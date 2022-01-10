@@ -54,17 +54,15 @@ void PluginMgrTest::TearDown()
  * @tc.name: Init plugin mgr 001
  * @tc.desc: Verify if can Init the plugin correctly
  * @tc.type: FUNC
- * @tc.require: AR000001
+ * @tc.require: I4PY59
  * @tc.author:xukuan
  */
-HWTEST_F(PluginMgrTest, Init001, TestSize.Level1)
+HWTEST_F(PluginMgrTest, PluginMgr_Init_001, TestSize.Level1)
 {
 
      pluginMrt_->Init();
      EXPECT_TRUE(!pluginMrt_->initStatus == pluginMgr_->INIT_SUCCESS);
      EXPECT_TRUE(!pluginMrt_->pluginLibMap_.size() == 1);
 }
-
-}
-
-}
+} // namespace ResourceSchedule
+} // namespace OHOS
