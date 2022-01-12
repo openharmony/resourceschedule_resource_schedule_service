@@ -1,59 +1,64 @@
-# 资源调度服务
+# Resource Schedule Service
 
--   [简介](#section11660541593)
--   [目录](#section161941989596)
--   [如何编写一个插件](#section1312121216216)
-    -   [接口说明](#section114564657874)
-    -   [使用说明](#section129654513264)
+-   [Introduction](#section11660541593)
+-   [Directory Structure](#section161941989596)
+-   [How to write a plugin](#section1312121216216)
+    -   [Available APIs](#section114564657874)
+    -   [Usage Guidelines](#section129654513264)
+        -   [Restrictions on Using Transient Tasks](#section1551164914237)
 
--   [相关仓](#section1371113476307)
+-   [Repositories Involved](#section1371113476307)
 
-## 简介<a name="section11660541593"></a>
+## Introduction<a name="section11660541593"></a>
 
-在资源调度子系统中，提供系统事件的感知以及分发，如果需要感知系统事件，可以选择以插件形式加入资源调度服务中。
+In the resourceschedule subsystem, it provides the awareness and distribution of system events, such as application start, exit, screen on and off, etc.
+If you need to obtain system events and perform related resource schedule, you can choose to join the resource schedule service in the form of a plugin.
 
-## 目录<a name="section161941989596"></a>
+## Directory Structure<a name="section161941989596"></a>
 
 ```
+
 ── ressched
-    ├── common    # 公共头文件
+    ├── common                     # Common header file
     ├── interfaces
-    │   └── innerkits    # 对外接口目录
-    │       └── ressched_client    # 外部同步事件通知接口
-    ├── plugins    # 插件代码实现
-    ├── profile    # 插件开关以及私有配置
-    ├── sa_profile   # 系统元能力配置
+    │   └── innerkits              # Interface APIs
+    │       └── ressched_client    # Report data in process
+    ├── plugins                    # Plugin code
+    ├── profile                    # Plugin switch xml and plugin private xml
+    ├── sa_profile                 # System ability xml
     └── services 
         ├── resschedmgr
-        │   ├── pluginbase   # 插件结构定义
-        │   └── resschedfwk   # 资源调度服务框架实现
-        └── resschedservice   # 资源调度服务层
+        │   ├── pluginbase         # Plugin struct definition
+        │   └── resschedfwk        # Resource schedule framework
+        └── resschedservice        # Resource schedule service
 
 ```
-## 如何编写一个插件<a name="section1312121216216"></a>
+## How to write a plugin<a name="section1312121216216"></a>
 
-### 接口说明<a name="section114564657874"></a>
-      
-接口名                                                    |     接口描述                            
----------------------------------------------------------|-----------------------------------------
-function OnPluginInit(std::string& libName): bool; | 插件初始化 
-function OnPluginDisable(): void;        | 插件退出 
-function OnDispatchResource(const std::shared_ptr<ResData>& data):void; | 获取分发的事件 
+### Available APIs<a name="section114564657874"></a>
 
-### 使用说明<a name="section129654513264"></a>
+| API                                                                           | Description                      |
+|-------------------------------------------------------------------------------|----------------------------------|
+| function OnPluginInit(std::string& libName): bool;                            | plugin init                      |
+| function OnPluginDisable(): void;                                             | plugin disable                   |
+| function OnDispatchResource(const std::shared_ptr<ResData>& data):void;       | dispatch resource event          |
 
-插件初始化的时候，指定需要注册监听的事件。在这些事件发生的时候，框架会依次分发给各个插件，
-此时插件需要快速进行处理（需要有耗时任务则需另起线程处理），处理完成后返回。
+### Usage Guidelines<a name="section129654513264"></a>
 
-#### 插件事件处理约束<a name="section1551164914237"></a>
+When the plugin is initialized, specify the events that need to be registered for monitoring. When these events occur, the framework will be distributed to each plugin in turn,
 
-1、插件可以用c++/c实现。
+At this point, the plugin needs to quickly process message reception for resource schedule (if time-consuming tasks need to be processed by another thread), and the processing is completed, return.
 
-2、插件的事件处理，必须快速完成，超过1ms会做一定的警告，超过10ms，框架认为插件异常而报错。
+#### Restrictions on Using Transient Tasks<a name="section1551164914237"></a>
 
-## 相关仓<a name="section1371113476307"></a>
+1. The plugin can be implemented with C/C++.
 
-资源调度子系统
+2. The event processing of the plugin must be completed quickly. If it exceeds 1ms, warning will be printed.
+If it exceeds 10ms, the framework thinks the plugin is abnormal and reports an error.
+
+## Repositories Involved<a name="section1371113476307"></a>
+
+Resource Schedule subsystem
 
 **resource\_schedule\_service**
 
