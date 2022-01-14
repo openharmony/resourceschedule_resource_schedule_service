@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,8 @@
 <configuration ver="2.0">
     <target name="resschedfwk_test">
     <preparer>
-        <option name="push" value="parseconfig/. -> /data/test/resource/resschedfwk/parseconfig" str="res"/>
-        <option name="push" value="parseswitch/. -> /data/test/resource/resschedfwk/parseswitch" str="res"/>
+        <option name="push" value="parseconfig/. -> /data/test/resource/resschedfwk/parseconfig" src="res"/>
+        <option name="push" value="parseswitch/. -> /data/test/resource/resschedfwk/parseswitch" src="res"/>
     </preparer>
+    </target>
 </configuration>
