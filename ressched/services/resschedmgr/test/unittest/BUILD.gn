@@ -31,7 +31,6 @@ private_external_deps = [
 ]
 
 private_deps = [
-    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/test/unittest/unittest_plugin:unittest_plugin",
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
     "${ressched_services}:resschedsvc",
     "//third_party/googletest:gtest_main",
@@ -44,9 +43,9 @@ ohos_unittest("resschedfwk_test") {
     resource_config_file = "//foundation/resourceschedule/resource_schedule_service/ressched/test/resource/resschedfwk/ohos_test.xml"
     sources = [
         "src/config_reader_test.cpp",
-        #"src/plugin_mgr_test.cpp",
-        #"src/plugin_switch_test.cpp",
-        #"src/res_sched_mgr_test.cpp",
+        "src/plugin_mgr_test.cpp",
+        "src/plugin_switch_test.cpp",
+        "src/res_sched_mgr_test.cpp",
     ]
     configs = [
         ":ut_resschedfwk_config",

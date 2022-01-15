@@ -56,5 +56,5 @@ ohos_shared_library("ressched_client") {
   ]
 
   subsystem_name = "resourceschedule"
-  part_name = "ressched"
+  part_name = "resource_schedule_service"
 }

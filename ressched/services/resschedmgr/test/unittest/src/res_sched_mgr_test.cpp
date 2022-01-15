@@ -21,7 +21,7 @@ using namespace testing::ext;
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    const string LIB_NAME = "libunittestplugin_cplusplus.z.so";
+    const string LIB_NAME = "libunittest_plugin.z.so";
 }
 
 void ResSchedMgrTest::SetUpTestCase() {}
@@ -40,10 +40,11 @@ void ResSchedMgrTest::TearDown()
     /**
      * @tc.teardown: clear pluginMgr_
      */
+    ResSchedMgr::GetInstance().Stop();
 }
 
 /**
- * @tc.name: Init plugin mgr 001
+ * @tc.name: Init ressched mgr 001
  * @tc.desc: Verify if can Init the plugin correctly
  * @tc.type: FUNC
  * @tc.require: I4PY59
@@ -51,10 +52,23 @@ void ResSchedMgrTest::TearDown()
  */
 HWTEST_F(ResSchedMgrTest, Init001, TestSize.Level1)
 {
-
      ResSchedMgr::GetInstance().Init();
-     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SCREEN_STATUS, 0, "11")
      EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ != nullptr);
 }
+
+/**
+ * @tc.name: Init ressched mgr 002
+ * @tc.desc: Verify if can Init the plugin correctly
+ * @tc.type: FUNC
+ * @tc.require: I4PY59
+ * @tc.author:xukuan
+ */
+HWTEST_F(ResSchedMgrTest, Init002, TestSize.Level1)
+{
+
+    ResSchedMgr::GetInstance().Stop();
+    EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ == nullptr);
+}
+
 } // namespace ResourceSchedule
 } // namespace OHOS

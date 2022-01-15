@@ -18,5 +18,5 @@ ohos_sa_profile("ressched_sa_profile") {
     "1901.xml",
   ]
 
-  part_name = "ressched"
+  part_name = "resource_schedule_service"
 }

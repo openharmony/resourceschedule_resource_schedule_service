@@ -1,7 +1,7 @@
 {
     "subsystem": "resourceschedule",
     "parts": {
-        "ressched": {
+        "resource_schedule_service": {
             "variants": ["phone", "wearable"],
             "module_list": [
                 "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc",

@@ -27,7 +27,7 @@ using namespace testing::ext;
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    const string LIB_NAME = "libunittestplugin_cplusplus.z.so";
+    const string LIB_NAME = "libunittest_plugin.z.so";
 }
 
 void PluginMgrTest::SetUpTestCase() {}
@@ -50,19 +50,68 @@ void PluginMgrTest::TearDown()
     pluginMgr_ = nullptr;
 }
 
-/*
- * Feature: PluginMgr
- * Function: Init
- * SubFunction: NA
- * FunctionPoints: PluginMgr Init
- * EnvConditions: code is start PluginMgr
- * CaseDescription: Verify that on remote request is normal and abnormal
+/**
+ * @tc.name: Plugin mgr test Init 001
+ * @tc.desc: Verify if can init success.
+ * @tc.type: FUNC
+ * @tc.require: I4PY59
+ * @tc.author:xukuan
  */
-HWTEST_F(PluginMgrTest, PluginMgrTest_001, TestSize.Level1)
+
+HWTEST_F(PluginMgrTest, Init001, TestSize.Level1)
 {
     pluginMgr_->Init();
-    EXPECT_TRUE(!pluginMgr_->initStatus == pluginMgr_->INIT_SUCCESS);
-    EXPECT_TRUE(!pluginMgr_->pluginLibMap_.size() == 1);
+    EXPECT_TRUE(pluginMgr_->initStatus == pluginMgr_->INIT_SUCCESS);
+    EXPECT_TRUE(pluginMgr_->pluginLibMap_.size() == 0);
+}
+
+/**
+ * @tc.name: Plugin mgr test Stop 001
+ * @tc.desc: Verify if can stop success.
+ * @tc.type: FUNC
+ * @tc.require: I4PY59
+ * @tc.author:xukuan
+ */
+
+HWTEST_F(PluginMgrTest, Stop001, TestSize.Level1)
+{
+    pluginMgr_->Stop();
+    EXPECT_TRUE(pluginMgr_->pluginLibMap_.size() == 0);
+    EXPECT_TRUE(pluginMgr_->resTypeLibMap_.size() == 0);
+    EXPECT_TRUE(pluginMgr_->configReader_ == nullptr);
+    EXPECT_TRUE(pluginMgr_->dispatcherHandler_ == nullptr);
+}
+
+/**
+ * @tc.name: Plugin mgr test SubscribeResource 001
+ * @tc.desc: Verify if can stop success.
+ * @tc.type: FUNC
+ * @tc.require: I4PY59
+ * @tc.author:xukuan
+ */
+
+HWTEST_F(PluginMgrTest, SubscribeResource001, TestSize.Level1)
+{
+    pluginMgr_->Init();
+    pluginMgr_->SubscribeResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
+    auto iter = pluginMgr_->resTypeLibMap_.find(ResType::RES_TYPE_SCREEN_STATUS);
+    string libName = iter->second.back();
+    EXPECT_TRUE(libName.compare(LIB_NAME) == 0);
+}
+
+/**
+ * @tc.name: Plugin mgr test UnSubscribeResource 001
+ * @tc.desc: Verify if can stop success.
+ * @tc.type: FUNC
+ * @tc.require: I4PY59
+ * @tc.author:xukuan
+ */
+
+HWTEST_F(PluginMgrTest, UnSubscribeResource001, TestSize.Level1)
+{
+    pluginMgr_->UnSubscribeResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
+    auto iter = pluginMgr_->resTypeLibMap_.find(ResType::RES_TYPE_SCREEN_STATUS);
+    EXPECT_TRUE(iter == pluginMgr_->resTypeLibMap_.end());
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

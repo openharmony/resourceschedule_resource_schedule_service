@@ -31,6 +31,7 @@ public:
     void TearDown();
 protected:
     std::shared_ptr<ConfigReader> configReader_;
+    bool ParseConfigFile(const std::string& fileName);
 
 };
 }// namespace ResourceSchedule
