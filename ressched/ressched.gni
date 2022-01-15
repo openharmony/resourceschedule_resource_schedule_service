@@ -13,10 +13,14 @@
 
 resourceschedule_path = "//foundation/resourceschedule"
 
-ressched_services = "${resourceschedule_path}/resource_schedule_service/ressched/services"
+ressched_services =
+    "${resourceschedule_path}/resource_schedule_service/ressched/services"
 
-ressched_common = "${resourceschedule_path}/resource_schedule_service/ressched/common"
+ressched_common =
+    "${resourceschedule_path}/resource_schedule_service/ressched/common"
 
-ressched_interfaces = "${resourceschedule_path}/resource_schedule_service/ressched/interfaces"
+ressched_interfaces =
+    "${resourceschedule_path}/resource_schedule_service/ressched/interfaces"
 
-ressched_plugins = "${resourceschedule_path}/resource_schedule_service/ressched/plugins"
+ressched_plugins =
+    "${resourceschedule_path}/resource_schedule_service/ressched/plugins"
