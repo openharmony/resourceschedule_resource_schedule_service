@@ -17,8 +17,8 @@
       "small",
       "standard"
     ],
-    "rom": "1024KB",
-    "ram": "1024KB",
+    "rom": "",
+    "ram": "",
     "deps": {
       "components": [
         "libeventhandler",
