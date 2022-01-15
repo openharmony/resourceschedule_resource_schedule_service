@@ -1,0 +1,58 @@
+{
+  "name": "@ohos/resource_schedule_service",
+  "description": "resource schedule service",
+  "version": "3.1",
+  "license": "Apache License 2.0",
+  "publishAs": "code-segment",
+  "segment": {
+    "destPath": "https://gitee.com/openharmony/resourceschedule_resource_schedule_service"
+  },
+  "scripts": {},
+  "component": {
+    "name": "resource_schedule_service",
+    "subsystem": "resourceschedule",
+    "features": [],
+    "adapted_system_type": [
+      "mini",
+      "small",
+      "standard"
+    ],
+    "rom": "",
+    "ram": "",
+    "deps": {
+      "components": [
+        "libeventhandler",
+        "ipc_core",
+        "samgr_proxy",
+        "system_ability_fwk"
+      ],
+      "third_party": [
+        "xml2"
+      ]
+    },
+    "build": {
+      "sub_component": [
+        "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_config",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_switch",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/sa_profile:ressched_sa_profile"
+      ],
+      "inner_kits": [
+        {
+          "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client/include",
+            "header_files": [
+              "res_type.h",
+              "res_sched_client.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"
+        }
+      ],
+      "test": [
+        "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/test/unittest:unittest"
+      ]
+    }
+  }
+}

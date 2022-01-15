@@ -22,7 +22,7 @@
 #define private public
 #include "plugin_mgr.h"
 #include "res_type.h"
-#include "res_sched_mgr"
+#include "res_sched_mgr.h"
 #undef private
 
 namespace OHOS {
@@ -34,7 +34,7 @@ namespace OHOS {
             void SetUp();
             void TearDown();
         protected:
-            std::shared_ptr<ResData> ReportData(uinit32_t resType);
+            std::shared_ptr<ResData> ReportData(uint32_t resType);
         };
     }// namespace ResourceSchedule
 }// namespace OHOS

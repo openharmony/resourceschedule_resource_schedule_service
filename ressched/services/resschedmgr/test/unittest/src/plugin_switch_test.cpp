@@ -13,53 +13,86 @@
  * limitations under the License.
  */
 
-#define private public
-#include <dlfcn.h>
 #include "plugin_switch_test.h"
-#include "res_type.h"
-#include "plugin_switch.h"
-#undef private
-#include "mock.h"
 
 using namespace std;
 using namespace testing::ext;
 
 namespace OHOS {
-    namespace ResourceSchedule {
-        namespace {
-            const string LIB_NAME = "libunittestplugin_cplusplus.z.so";
-        }
+namespace ResourceSchedule {
+const std::string TEST_PREFIX_SWITCH_PATH = "/data/test/resource/resschedfwk/parseswitch/";
 
-        void PluginSwitchTest::SetUpTestCase() {}
+void PluginSwitchTest::SetUpTestCase() {}
 
-        void PluginSwitchTest::TearDownTestCase() {}
+void PluginSwitchTest::TearDownTestCase() {}
 
-        void PluginSwitchTest::SetUp()
-        {
-            /**
-             * @tc.setup: initialize the member variable pluginSwitch_
-             */
-            pluginSwitch_ = make_shared<PluginSwitch>();
-        }
+void PluginSwitchTest::SetUp()
+{
+    /**
+     * @tc.setup: initialize the member variable pluginSwitch_
+     */
+    pluginSwitch_ = make_shared<PluginSwitch>();
+}
 
-        void PluginSwitchTest::TearDown()
-        {
-            /**
-             * @tc.teardown: clear pluginSwitch_
-             */
-            pluginSwitch_ = nullptr;
-        }
+void PluginSwitchTest::TearDown()
+{
+    /**
+     * @tc.teardown: clear pluginSwitch_
+     */
+    pluginSwitch_ = nullptr;
+}
 
 /**
- * @tc.name: Init plugin Switch 001
+ * @tc.name: Init plugin Switch LoadConfig001
  * @tc.desc: Verify if can Init the plugin correctly
  * @tc.type: FUNC
  * @tc.require: I4PY59
  * @tc.author:xukuan
  */
-HWTEST_F(PluginSwitchTest, Init001, TestSize.Level1)
+HWTEST_F(PluginSwitchTest, LoadConfig001, TestSize.Level1)
 {
+    pluginSwitch_ = make_unique<PluginSwitch>();
     bool ret = pluginSwitch_->LoadFromConfigFile(TEST_PREFIX_SWITCH_PATH + "fileNotExist");
+    EXPECT_TRUE(!ret);
+}
+
+/**
+ * @tc.name: Init plugin Switch LoadConfig002
+ * @tc.desc: Verify if can load file while xml does not have pluginlist node
+ * @tc.type: FUNC
+ * @tc.require: I4PY59
+ * @tc.author:xukuan
+ */
+HWTEST_F(PluginSwitchTest, LoadConfig002, TestSize.Level1)
+{
+    pluginSwitch_ = make_unique<PluginSwitch>();
+    bool ret = pluginSwitch_->LoadFromConfigFile(TEST_PREFIX_SWITCH_PATH + "not_exist_plugin.xml");
+    EXPECT_TRUE(!ret);
+}
+
+/**
+ * @tc.name: Init plugin Switch LoadConfig003
+ * @tc.desc: Verify if can load file invalid format config file
+ * @tc.type: FUNC
+ * @tc.require: I4PY59
+ * @tc.author:xukuan
+ */
+HWTEST_F(PluginSwitchTest, LoadConfig003, TestSize.Level1)
+{
+    bool ret = pluginSwitch_->LoadFromConfigFile(TEST_PREFIX_SWITCH_PATH + "invalid_format.xml");
+    EXPECT_TRUE(!ret);
+}
+
+/**
+ * @tc.name: Init plugin Switch LoadConfig004
+ * @tc.desc: Verify if can load wrong root element config
+ * @tc.type: FUNC
+ * @tc.require: I4PY59
+ * @tc.author:xukuan
+ */
+HWTEST_F(PluginSwitchTest, LoadConfig004, TestSize.Level1)
+{
+    bool ret = pluginSwitch_->LoadFromConfigFile(TEST_PREFIX_SWITCH_PATH + "root_element_wrong.xml");
     EXPECT_TRUE(!ret);
 }
 } // namespace ResourceSchedule

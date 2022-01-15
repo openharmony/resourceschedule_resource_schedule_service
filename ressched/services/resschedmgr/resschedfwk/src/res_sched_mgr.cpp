@@ -21,7 +21,7 @@ namespace ResourceSchedule {
 using namespace AppExecFwk;
 
 namespace {
-    const std::string RMS_THREAD_NAME = "rmsMain";
+    const std::string RSS_THREAD_NAME = "rssMain";
 }
 
 IMPLEMENT_SINGLE_INSTANCE(ResSchedMgr);
@@ -31,7 +31,7 @@ void ResSchedMgr::Init()
     PluginMgr::GetInstance().Init();
 
     if (mainHandler_ == nullptr) {
-        mainHandler_ = std::make_shared<EventHandler>(EventRunner::Create(RMS_THREAD_NAME));
+        mainHandler_ = std::make_shared<EventHandler>(EventRunner::Create(RSS_THREAD_NAME));
     }
 }
 

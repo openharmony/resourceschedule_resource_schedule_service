@@ -32,7 +32,7 @@ public:
     MockPluginMgr() = default;
     const std::string TEST_PREFIX_RES_SWITCH_PATH = "/data/test/resource/resschedfwk/parseswitch/res_sched_plugin_switch.xml";
     const std::string TEST_PREFIX_RES_PATH = "/data/test/resource/resschedfwk/parseconfig/res_sched_config.xml";
-    const std::string MOCK_RUNNER_NAME = "mockRmsDispatcher";
+    const std::string MOCK_RUNNER_NAME = "mockRssDispatcher";
     const int DISPATCH_WARNING_TIME = 1; // ms
     const int DISPATCH_TIME_OUT = 10; // ms
     enum : int {
@@ -42,14 +42,7 @@ public:
         INIT_SUCCESS
     };
     int initStatus;
-    enum : int {
-        MAP_NULL,
-        FUN_NULL,
-        TIMEOUT_1MS,
-        TIMEOUT_10MS,
-        SUCCESS
-    };
-    int deliverStatus;
+
     void Init()
     {
         if (pluginSwitch_ != nullptr) {
@@ -59,7 +52,7 @@ public:
 
         if (pluginSwitch_ == nullptr) {
             pluginSwitch_ = std::make_unique<PluginSwitch>();
-            bool loadRet = pluginSwitch_->LoadFromConfigFile(PLUGIN_SWITCH_FILE_NAME);
+            bool loadRet = pluginSwitch_->LoadFromConfigFile(TEST_PREFIX_RES_SWITCH_PATH);
             if (!loadRet) {
                 initStatus = LOAD_CONFIG_FAIL;
             }
@@ -67,51 +60,17 @@ public:
 
         if (configReader_ == nullptr) {
             configReader_ = std::make_unique<ConfigReader>();
-            bool loadRet = configReader_->LoadFromCustConfigFile(CONFIG_FILE_NAME);
+            bool loadRet = configReader_->LoadFromCustConfigFile(TEST_PREFIX_RES_PATH);
             if (!loadRet) {
                 initStatus = LOAD_CUST_CONFIG_FAIL;
             }
         }
-
-        LoadPlugin();
 
         if (dispatcherHandler_ == nullptr) {
             dispatcherHandler_ = std::make_shared<AppExecFwk::EventHandler>(AppExecFwk::EventRunner::Create(MOCK_RUNNER_NAME));
         }
         initStatus = INIT_SUCCESS;
     }
-
-    void deliverResourceToPlugin(const std::string& pluginLib, const std::shared_ptr<ResData>& resData)
-    {
-        std::lock_guard<std::mutex> autoLock(pluginMutex_);
-        auto itMap = pluginLibMap_.find(pluginLib);
-        if (itMap == pluginLibMap_.end()) {
-            deliverStatus = MAP_NULL;
-            return;
-        }
-        OnDispatchResourceFunc fun = itMap->second.onDispatchResourceFunc_;
-        if (fun == nullptr) {
-            deliverStatus = FUN_NULL;
-            return;
-        }
-
-        auto beginTime = std::chrono::high_resolution_clock::now();
-        fun(resData);
-        auto endTime = std::chrono::high_resolution_clock::now();
-
-        if (endTime > beginTime + std::chrono::milliseconds(DISPATCH_TIME_OUT)) {
-            // dispatch resource use too long time, unload it
-            deliverStatus = TIMEOUT_10MS;
-            if (itMap->second.onPluginDisableFunc_ != nullptr) {
-                itMap->second.onPluginDisableFunc_();
-            }
-            pluginLibMap_.erase(itMap);
-        } else if (endTime > beginTime + std::chrono::milliseconds(DISPATCH_WARNING_TIME)) {
-            deliverStatus = TIMEOUT_1MS;
-        }
-        deliverStatus = SUCCESS;
-    }
-
 };
 
 } // namespace ResourceSchedule

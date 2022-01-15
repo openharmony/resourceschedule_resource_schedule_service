@@ -13,5 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  -->
+<!-- resource schedule config root node -->
 <ressched>
+    <!-- plugin name -->
+    <plugin name="demo">
+        <!-- config name -->
+        <config name="sample">
+            <!-- key -->
+            <item key="value">
+                <!-- tag -->
+                <tag>value1</tag>
+                <my>me</my>
+            </item>
+        </config>
+    </plugin>
 </ressched>

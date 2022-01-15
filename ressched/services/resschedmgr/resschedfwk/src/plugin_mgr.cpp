@@ -36,7 +36,7 @@ using TimePoint = std::chrono::time_point<Clock>;
 namespace {
     const int DISPATCH_WARNING_TIME = 1; // ms
     const int DISPATCH_TIME_OUT = 10; // ms
-    const std::string RUNNER_NAME = "rmsDispatcher";
+    const std::string RUNNER_NAME = "rssDispatcher";
     const std::string PLUGIN_SWITCH_FILE_NAME = "/system/etc/ressched/res_sched_plugin_switch.xml";
     const std::string CONFIG_FILE_NAME = "/system/etc/ressched/res_sched_config.xml";
 }
@@ -233,7 +233,12 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
     }
 
     auto beginTime = Clock::now();
-    fun(resData);
+    try {
+        fun(resData);
+    }
+    catch(...) {
+        RESSCHED_LOGE("PluginMgr::%{public}s throw a exception!", pluginLib.c_str());
+    }
     auto endTime = Clock::now();
     int costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
     if (costTime > DISPATCH_TIME_OUT) {

@@ -46,6 +46,12 @@ void ConfigReaderTest::TearDown()
     configReader_ = nullptr;
 }
 
+bool ConfigReaderTest::ParseConfigFile(const string& fileName)
+{
+    bool ret = configReader_->LoadFromCustConfigFile(TEST_PREFIX_RES_PATH + fileName);
+    return ret;
+}
+
 /**
  * @tc.name: Load Config File 001
  * @tc.desc: Verify if can load not exist file.
@@ -61,6 +67,58 @@ HWTEST_F(ConfigReaderTest, LoadConfigFile001, TestSize.Level1)
      */
      bool ret = configReader_->LoadFromCustConfigFile("fileNotExist");
      EXPECT_TRUE(!ret);
+}
+
+/**
+ * @tc.name: Load Config File 002
+ * @tc.desc: Verify if can load invalid format config file.
+ * @tc.type: FUNC
+ * @tc.require: I4PY59
+ * @tc.author:xukuan
+ */
+HWTEST_F(ConfigReaderTest, LoadConfigFile002, TestSize.Level1)
+{
+    bool ret = ParseConfigFile("invalid_format.xml");
+    EXPECT_TRUE(!ret);
+}
+
+/**
+ * @tc.name: Load Config File 003
+ * @tc.desc: Verify if can load wrong root element config file.
+ * @tc.type: FUNC
+ * @tc.require: I4PY59
+ * @tc.author:xukuan
+ */
+HWTEST_F(ConfigReaderTest, LoadConfigFile003, TestSize.Level1)
+{
+    bool ret = ParseConfigFile("root_element_wrong.xml");
+    EXPECT_TRUE(!ret);
+}
+
+/**
+ * @tc.name: Load Config File 004
+ * @tc.desc: Verify if can load wrong plugin tag config file.
+ * @tc.type: FUNC
+ * @tc.require: I4PY59
+ * @tc.author:xukuan
+ */
+HWTEST_F(ConfigReaderTest, LoadConfigFile004, TestSize.Level1)
+{
+    bool ret = ParseConfigFile("plugin_tag_wrong.xml");
+    EXPECT_TRUE(!ret);
+}
+
+/**
+ * @tc.name: Load Config File 005
+ * @tc.desc: Verify if can load config file with comment.
+ * @tc.type: FUNC
+ * @tc.require: I4PY59
+ * @tc.author:xukuan
+ */
+HWTEST_F(ConfigReaderTest, LoadConfigFile005, TestSize.Level1)
+{
+    bool ret = ParseConfigFile("res_sched_config_comments.xml");
+    EXPECT_TRUE(ret);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

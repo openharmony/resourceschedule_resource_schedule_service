@@ -12,51 +12,49 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
+import(
+    "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
 
 group("unittest") {
-    testonly = true
-    deps = [":resschedfwk_test"]
+  testonly = true
+  deps = [ ":resschedfwk_test" ]
 }
 
 config("ut_resschedfwk_config") {
-  include_dirs = ["include"]
+  include_dirs = [ "include" ]
 }
 
 module_output_path = "ressched/resschedfwk"
 
 private_external_deps = [
-    "appexecfwk_standard:libeventhandler",
-    "ipc:ipc_core",
+  "appexecfwk_standard:libeventhandler",
+  "ipc:ipc_core",
 ]
 
 private_deps = [
-    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/test/unittest/unittest_plugin:unittest_plugin",
-    "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
-    "${ressched_services}:resschedsvc",
-    "//third_party/googletest:gtest_main",
-    "//utils/native/base:utils",
+  "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
+  "${ressched_services}:resschedsvc",
+  "//third_party/googletest:gtest_main",
+  "//utils/native/base:utils",
 ]
 
 ohos_unittest("resschedfwk_test") {
-    output_extension = "bin"
-    module_out_path = module_output_path
-    resource_config_file = "//foundation/resourceschedule/resource_schedule_service/ressched/test/resource/resschedfwk/ohos_test.xml"
-    sources = [
-        "src/config_reader_test.cpp",
-        #"src/plugin_mgr_test.cpp",
-        #"src/plugin_switch_test.cpp",
-        #"src/res_sched_mgr_test.cpp",
-    ]
-    configs = [
-        ":ut_resschedfwk_config",
-        "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
-        "${ressched_services}:ressched_config",
-    ]
-
+  output_extension = "bin"
+  module_out_path = module_output_path
+  resource_config_file = "//foundation/resourceschedule/resource_schedule_service/ressched/test/resource/resschedfwk/ohos_test.xml"
+  sources = [
+    "src/config_reader_test.cpp",
+    "src/plugin_mgr_test.cpp",
+    "src/plugin_switch_test.cpp",
+    "src/res_sched_mgr_test.cpp",
+  ]
+  configs = [
+    ":ut_resschedfwk_config",
+    "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
+    "${ressched_services}:ressched_config",
+  ]
 
   deps = private_deps
 
   external_deps = private_external_deps
-
 }
