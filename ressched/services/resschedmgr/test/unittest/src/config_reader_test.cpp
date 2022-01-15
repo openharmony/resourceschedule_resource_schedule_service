@@ -120,6 +120,5 @@ HWTEST_F(ConfigReaderTest, LoadConfigFile005, TestSize.Level1)
     bool ret = ParseConfigFile("res_sched_config_comments.xml");
     EXPECT_TRUE(ret);
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS

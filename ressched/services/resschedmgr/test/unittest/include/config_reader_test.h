@@ -34,7 +34,7 @@ protected:
     bool ParseConfigFile(const std::string& fileName);
 
 };
-}// namespace ResourceSchedule
-}// namespace OHOS
+} // namespace ResourceSchedule
+} // namespace OHOS
 
 #endif //FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_CONFIG_READER_TEST_H

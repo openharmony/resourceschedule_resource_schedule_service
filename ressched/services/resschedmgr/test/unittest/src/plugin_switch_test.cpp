@@ -95,6 +95,5 @@ HWTEST_F(PluginSwitchTest, LoadConfig004, TestSize.Level1)
     bool ret = pluginSwitch_->LoadFromConfigFile(TEST_PREFIX_SWITCH_PATH + "root_element_wrong.xml");
     EXPECT_TRUE(!ret);
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS
