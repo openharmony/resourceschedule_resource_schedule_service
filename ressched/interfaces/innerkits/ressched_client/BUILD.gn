@@ -13,7 +13,8 @@
 
 import("//build/ohos.gni")
 import("//build/test.gni")
-import("//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
+import(
+    "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
 
 config("client_private_config") {
   include_dirs = [
@@ -24,9 +25,7 @@ config("client_private_config") {
 }
 
 config("client_public_config") {
-  include_dirs = [
-    "include",
-  ]
+  include_dirs = [ "include" ]
 }
 
 ohos_shared_library("ressched_client") {
@@ -35,24 +34,20 @@ ohos_shared_library("ressched_client") {
     "${ressched_services}:ressched_config",
   ]
 
-  public_configs = [
-    ":client_public_config",
-  ]
+  public_configs = [ ":client_public_config" ]
 
-  sources = [
-    "src/res_sched_client.cpp",
-  ]
+  sources = [ "src/res_sched_client.cpp" ]
 
   deps = [
+    "${ressched_services}:resschedsvc",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
     "//utils/native/base:utils",
-    "${ressched_services}:resschedsvc",
   ]
 
   external_deps = [
+    "appexecfwk_standard:libeventhandler",
     "ipc:ipc_core",
     "samgr_standard:samgr_proxy",
-    "appexecfwk_standard:libeventhandler",
   ]
 
   subsystem_name = "resourceschedule"
