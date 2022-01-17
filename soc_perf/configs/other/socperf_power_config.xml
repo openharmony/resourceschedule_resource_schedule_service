@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding="utf-8"?>
+<Configs>
+    <cmd id="20000" name="low_power1">
+        <duration>5000</duration>
+        <lit_cpu_max_freq>1517000</lit_cpu_max_freq>
+        <mid_cpu_max_freq>1652000</mid_cpu_max_freq>
+        <big_cpu_max_freq>2400000</big_cpu_max_freq>
+    </cmd>
+    <cmd id="20001" name="low_power2">
+        <duration>0</duration>
+        <lit_cpu_max_freq>1604000</lit_cpu_max_freq>
+        <mid_cpu_max_freq>1767000</mid_cpu_max_freq>
+        <big_cpu_max_freq>2516000</big_cpu_max_freq>
+    </cmd>
+</Configs>

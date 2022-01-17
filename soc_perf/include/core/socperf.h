@@ -1,0 +1,81 @@
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#ifndef SOC_PERF_H
+#define SOC_PERF_H
+
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <unistd.h>
+#include "libxml/parser.h"
+#include "libxml/tree.h"
+#include "socperf_service.h"
+#include "socperf_common.h"
+#include "socperf_handler.h"
+
+namespace OHOS {
+namespace SOCPERF {
+class SocPerf {
+public:
+    bool Init();
+    void PerfRequest(int cmdId, const std::string& msg);
+    void PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg);
+    void PowerRequest(int cmdId, const std::string& msg);
+    void PowerRequestEx(int cmdId, bool onOffTag, const std::string& msg);
+    void PowerLimitBoost(bool onOffTag, const std::string& msg);
+    void ThermalRequest(int cmdId, const std::string& msg);
+    void ThermalRequestEx(int cmdId, bool onOffTag, const std::string& msg);
+    void ThermalLimitBoost(bool onOffTag, const std::string& msg);
+
+public:
+    SocPerf();
+    ~SocPerf();
+
+private:
+    std::unordered_map<int, std::shared_ptr<Action>> perfActionInfo;
+    std::unordered_map<int, std::shared_ptr<Action>> powerActionInfo;
+    std::unordered_map<int, std::shared_ptr<Action>> thermalActionInfo;
+    std::vector<std::shared_ptr<SocPerfHandler>> handlers;
+    bool enabled = false;
+
+    std::unordered_map<int, std::shared_ptr<ResNode>> resNodeInfo;
+    std::unordered_map<int, std::shared_ptr<GovResNode>> govResNodeInfo;
+    std::unordered_map<std::string, int> resStrToIdInfo;
+
+private:
+    bool LoadConfigXmlFile(std::string configFile);
+    bool CreateHandlers();
+    void InitHandlerThreads();
+    bool LoadResource(xmlNode* rootNode, std::string configFile);
+    bool LoadGovResource(xmlNode* rootNode, std::string configFile);
+    bool LoadCmd(xmlNode* rootNode, std::string configFile);
+    bool CheckResourceTag(char* id, char* name, char* pair, char* mode, std::string configFile);
+    bool CheckResourceTag(char* def, char* path, std::string configFile);
+    bool LoadResourceAvailable(std::shared_ptr<ResNode> resNode, char* node);
+    bool CheckPairResIdValid();
+    bool CheckResDefValid();
+    bool CheckGovResourceTag(char* id, char* name, std::string configFile);
+    bool LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResNode, char* level, char* node);
+    bool CheckGovResDefValid();
+    bool CheckCmdTag(char* id, char* name, std::string configFile);
+    bool CheckActionResIdAndValueValid(std::string configFile);
+    void DoFreqAction(std::shared_ptr<Action> action, int onOff, int actionType);
+    void PrintCachedInfo();
+};
+} // namespace SOCPERF
+} // namespace OHOS
+
+#endif // SOC_PERF_H

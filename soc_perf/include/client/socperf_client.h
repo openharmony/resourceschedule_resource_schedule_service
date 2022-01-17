@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#ifndef SOC_PERF_CLIENT_H
+#define SOC_PERF_CLIENT_H
+
+#include "socperf_service.h"
+#include "unistd.h"
+
+namespace OHOS {
+namespace SOCPERF {
+class SocPerfClient {
+public:
+    void PerfRequest(int cmdId, const std::string& msg);
+    void PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg);
+    void PowerRequest(int cmdId, const std::string& msg);
+    void PowerRequestEx(int cmdId, bool onOffTag, const std::string& msg);
+    void PowerLimitBoost(bool onOffTag, const std::string& msg);
+    void ThermalRequest(int cmdId, const std::string& msg);
+    void ThermalRequestEx(int cmdId, bool onOffTag, const std::string& msg);
+    void ThermalLimitBoost(bool onOffTag, const std::string& msg);
+    static SocPerfClient& GetInstance();
+    void ResetClient();
+
+private:
+    SocPerfClient() {}
+    ~SocPerfClient() {};
+
+private:
+    bool CheckClientValid();
+    std::string AddPidAndTidInfo(const std::string& msg);
+
+private:
+    class SocPerfDeathRecipient : public IRemoteObject::DeathRecipient {
+    public:
+        SocPerfDeathRecipient(SocPerfClient &socPerfClient);
+
+        ~SocPerfDeathRecipient();
+
+        virtual void OnRemoteDied(const wptr<IRemoteObject> &object) override;
+
+    private:
+        SocPerfClient &socPerfClient_;
+    };
+
+private:
+    sptr<ISocPerfService> client;
+    sptr<SocPerfDeathRecipient> recipient_;
+};
+} // namespace SOCPERF
+} // namespace OHOS
+
+#endif // SOC_PERF_CLIENT_H
