@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+/*
  * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +11,29 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- -->
-<pluginlist>
-    <plugin libpath="libsocperf_plugin.z.so" switch="1" />
-</pluginlist>
+ */
+
+#ifndef SOC_PERF_PLUGIN_H
+#define SOC_PERF_PLUGIN_H
+
+#include "single_instance.h"
+#include "plugin.h"
+
+namespace OHOS {
+namespace ResourceSchedule {
+class SocPerfPlugin : public Plugin {
+    DECLARE_SINGLE_INSTANCE(SocPerfPlugin)
+
+public:
+    void Init() override;
+
+    void Disable() override;
+
+    void DispatchResource(const std::shared_ptr<ResData>& resData) override;
+
+    const int PERF_REQUEST_CMD_ID_SCREEN_STATUS = 10000;
+};
+} // namespace ResourceSchedule
+} // namespace OHOS
+
+#endif // SOC_PERF_PLUGIN_H

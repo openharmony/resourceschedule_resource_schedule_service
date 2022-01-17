@@ -1,0 +1,157 @@
+# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//build/ohos/sa_profile/sa_profile.gni")
+
+##################################################
+ohos_sa_profile("socperf_sa_profile") {
+  sources = [ "sa_profile/1902.xml" ]
+  part_name = "soc_perf"
+}
+
+##################################################
+
+##################################################
+ohos_prebuilt_etc("socperf_resource_config") {
+  if (device_name == "rk3568") {
+    source = "configs/rk3568/socperf_resource_config.xml"
+  } else {
+    source = "configs/other/socperf_resource_config.xml"
+  }
+  module_install_dir = "etc/socperf"
+  part_name = "soc_perf"
+  subsystem_name = "resourceschedule"
+}
+ohos_prebuilt_etc("socperf_boost_config") {
+  if (device_name == "rk3568") {
+    source = "configs/rk3568/socperf_boost_config.xml"
+  } else {
+    source = "configs/other/socperf_boost_config.xml"
+  }
+  module_install_dir = "etc/socperf"
+  part_name = "soc_perf"
+  subsystem_name = "resourceschedule"
+}
+ohos_prebuilt_etc("socperf_power_config") {
+  if (device_name == "rk3568") {
+    source = "configs/rk3568/socperf_power_config.xml"
+  } else {
+    source = "configs/other/socperf_power_config.xml"
+  }
+  module_install_dir = "etc/socperf"
+  part_name = "soc_perf"
+  subsystem_name = "resourceschedule"
+}
+ohos_prebuilt_etc("socperf_thermal_config") {
+  if (device_name == "rk3568") {
+    source = "configs/rk3568/socperf_thermal_config.xml"
+  } else {
+    source = "configs/other/socperf_thermal_config.xml"
+  }
+  module_install_dir = "etc/socperf"
+  part_name = "soc_perf"
+  subsystem_name = "resourceschedule"
+}
+
+##################################################
+
+##################################################
+ohos_prebuilt_etc("socperf_service_init") {
+  source = "init/socperf_service.cfg"
+  relative_install_dir = "init"
+  part_name = "soc_perf"
+  subsystem_name = "resourceschedule"
+}
+
+##################################################
+
+##################################################
+ohos_shared_library("socperf_server") {
+  sources = [
+    "src/core/socperf.cpp",
+    "src/core/socperf_handler.cpp",
+    "src/server/socperf_server.cpp",
+    "src/server/socperf_stub.cpp",
+  ]
+  include_dirs = [
+    "include",
+    "include/server",
+    "include/core",
+  ]
+  deps = [
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
+    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//third_party/libxml2:xml2",
+    "//utils/native/base:utils",
+  ]
+  part_name = "soc_perf"
+  subsystem_name = "resourceschedule"
+}
+
+##################################################
+
+##################################################
+config("socperf_client_public_config") {
+  include_dirs = [
+    "include",
+    "include/client",
+  ]
+}
+
+ohos_shared_library("socperf_client") {
+  sources = [
+    "src/client/socperf_client.cpp",
+    "src/client/socperf_proxy.cpp",
+  ]
+  include_dirs = [
+    "include",
+    "include/client",
+  ]
+  public_configs = [ ":socperf_client_public_config" ]
+  deps = [
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
+    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//utils/native/base:utils",
+  ]
+  part_name = "soc_perf"
+  subsystem_name = "resourceschedule"
+}
+
+##################################################
+
+##################################################
+ohos_executable("socperf_test") {
+  sources = [ "test/socperf_test.cpp" ]
+  include_dirs = [
+    "include",
+    "include/client",
+  ]
+  deps = [
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
+    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_client",
+    "//utils/native/base:utils",
+  ]
+  install_enable = true
+  part_name = "soc_perf"
+  subsystem_name = "resourceschedule"
+}
+##################################################

@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding="utf-8"?>
+<Configs>
+    <cmd id="30000" name="high_temp1">
+        <duration>1000</duration>
+        <lit_cpu_min_freq>408000</lit_cpu_min_freq>
+        <lit_cpu_max_freq>816000</lit_cpu_max_freq>
+    </cmd>
+    <cmd id="30001" name="high_temp2">
+        <duration>500</duration>
+        <lit_cpu_min_freq>408000</lit_cpu_min_freq>
+        <lit_cpu_max_freq>600000</lit_cpu_max_freq>
+    </cmd>
+    <cmd id="30002" name="high_temp3">
+        <duration>0</duration>
+        <lit_cpu_max_freq>600000</lit_cpu_max_freq>
+    </cmd>
+</Configs>

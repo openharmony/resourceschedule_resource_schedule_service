@@ -1,0 +1,60 @@
+{
+  "name": "@ohos/resource_schedule_service",
+  "description": "resource schedule service",
+  "version": "3.1",
+  "license": "Apache License 2.0",
+  "publishAs": "code-segment",
+  "segment": {
+    "destPath": "https://gitee.com/openharmony/resourceschedule_resource_schedule_service"
+  },
+  "scripts": {},
+  "component": {
+    "name": "soc_perf",
+    "subsystem": "resourceschedule",
+    "features": [],
+    "adapted_system_type": [
+      "mini",
+      "small",
+      "standard"
+    ],
+    "rom": "",
+    "ram": "",
+    "deps": {
+      "components": [
+        "libeventhandler",
+        "ipc_core",
+        "samgr_proxy",
+        "system_ability_fwk"
+      ],
+      "third_party": [
+        "xml2"
+      ]
+    },
+    "build": {
+      "sub_component": [
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_client",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_server",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_sa_profile",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_service_init",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_resource_config",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_boost_config",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_power_config",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_thermal_config",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_test"
+      ],
+      "inner_kits": [
+        {
+          "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/soc_perf/include/client",
+            "header_files": [
+              "socperf_client.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_client"
+        }
+      ],
+      "test": [
+      ]
+    }
+  }
+}

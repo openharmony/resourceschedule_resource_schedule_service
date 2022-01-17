@@ -34,6 +34,7 @@
       "sub_component": [
         "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc",
         "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/socperf_plugin:socperf_plugin",
         "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_config",
         "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_switch",
         "//foundation/resourceschedule/resource_schedule_service/ressched/sa_profile:ressched_sa_profile"
