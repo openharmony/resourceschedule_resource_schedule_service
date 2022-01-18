@@ -150,7 +150,7 @@ ohos_executable("socperf_test") {
     "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_client",
     "//utils/native/base:utils",
   ]
-  install_enable = true
+  install_enable = false
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
 }

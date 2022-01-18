@@ -16,7 +16,7 @@
 #ifndef SOC_PERF_PROXY_H
 #define SOC_PERF_PROXY_H
 
-#include "socperf_service.h"
+#include "i_socperf_service.h"
 
 namespace OHOS {
 namespace SOCPERF {
