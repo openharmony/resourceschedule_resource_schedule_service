@@ -16,7 +16,7 @@
 #ifndef SOC_PERF_ABILITY_H
 #define SOC_PERF_ABILITY_H
 
-#include "socperf_service.h"
+#include "i_socperf_service.h"
 #include "socperf_stub.h"
 #include "socperf.h"
 

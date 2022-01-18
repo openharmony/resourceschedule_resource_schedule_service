@@ -5,20 +5,22 @@
   "license": "Apache License 2.0",
   "publishAs": "code-segment",
   "segment": {
-    "destPath": "https://gitee.com/openharmony/resourceschedule_resource_schedule_service"
+    "destPath": "foundation/resourceschedule/resource_schedule_service/soc_perf"
   },
+  "dirs": {},
   "scripts": {},
   "component": {
     "name": "soc_perf",
     "subsystem": "resourceschedule",
+    "syscap": [],
     "features": [],
     "adapted_system_type": [
       "mini",
       "small",
       "standard"
     ],
-    "rom": "",
-    "ram": "",
+    "rom": "2048KB",
+    "ram": "10240KB",
     "deps": {
       "components": [
         "libeventhandler",

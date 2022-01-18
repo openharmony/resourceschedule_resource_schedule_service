@@ -22,7 +22,7 @@
 #include <unistd.h>
 #include "libxml/parser.h"
 #include "libxml/tree.h"
-#include "socperf_service.h"
+#include "i_socperf_service.h"
 #include "socperf_common.h"
 #include "socperf_handler.h"
 

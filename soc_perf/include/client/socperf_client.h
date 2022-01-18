@@ -16,7 +16,7 @@
 #ifndef SOC_PERF_CLIENT_H
 #define SOC_PERF_CLIENT_H
 
-#include "socperf_service.h"
+#include "i_socperf_service.h"
 #include "unistd.h"
 
 namespace OHOS {
