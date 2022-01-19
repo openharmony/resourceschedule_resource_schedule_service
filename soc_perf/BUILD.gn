@@ -26,8 +26,10 @@ ohos_sa_profile("socperf_sa_profile") {
 ohos_prebuilt_etc("socperf_resource_config") {
   if (device_name == "rk3568") {
     source = "configs/rk3568/socperf_resource_config.xml"
+    install_enable = true
   } else {
     source = "configs/other/socperf_resource_config.xml"
+    install_enable = false
   }
   module_install_dir = "etc/socperf"
   part_name = "soc_perf"
@@ -36,8 +38,10 @@ ohos_prebuilt_etc("socperf_resource_config") {
 ohos_prebuilt_etc("socperf_boost_config") {
   if (device_name == "rk3568") {
     source = "configs/rk3568/socperf_boost_config.xml"
+    install_enable = true
   } else {
     source = "configs/other/socperf_boost_config.xml"
+    install_enable = false
   }
   module_install_dir = "etc/socperf"
   part_name = "soc_perf"
@@ -46,8 +50,10 @@ ohos_prebuilt_etc("socperf_boost_config") {
 ohos_prebuilt_etc("socperf_power_config") {
   if (device_name == "rk3568") {
     source = "configs/rk3568/socperf_power_config.xml"
+    install_enable = true
   } else {
     source = "configs/other/socperf_power_config.xml"
+    install_enable = false
   }
   module_install_dir = "etc/socperf"
   part_name = "soc_perf"
@@ -56,12 +62,22 @@ ohos_prebuilt_etc("socperf_power_config") {
 ohos_prebuilt_etc("socperf_thermal_config") {
   if (device_name == "rk3568") {
     source = "configs/rk3568/socperf_thermal_config.xml"
+    install_enable = true
   } else {
     source = "configs/other/socperf_thermal_config.xml"
+    install_enable = false
   }
   module_install_dir = "etc/socperf"
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
+}
+group("socperf_config") {
+  deps = [
+    ":socperf_boost_config",
+    ":socperf_power_config",
+    ":socperf_resource_config",
+    ":socperf_thermal_config",
+  ]
 }
 
 ##################################################
