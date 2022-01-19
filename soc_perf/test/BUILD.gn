@@ -10,3 +10,42 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import("//build/test.gni")
+
+module_output_path = "soc_perf/socperftest"
+
+config("module_private_config") {
+  visibility = [ ":*" ]
+
+  include_dirs = [
+    "//foundation/resourceschedule/resource_schedule_service/soc_perf/include/client",
+    "//foundation/resourceschedule/resource_schedule_service/soc_perf/include/core",
+    "//foundation/resourceschedule/resource_schedule_service/soc_perf/include",
+  ]
+}
+
+ohos_unittest("SocPerfSubTest") {
+  module_out_path = module_output_path
+
+  sources = [ "socperf_sub_test.cpp" ]
+
+  configs = [ ":module_private_config" ]
+
+  deps = [
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
+    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_client",
+    "//third_party/googletest:gtest_main",
+    "//third_party/libxml2:xml2",
+    "//utils/native/base:utils",
+  ]
+}
+
+group("unittest") {
+  testonly = true
+  deps = [ ":SocPerfSubTest" ]
+}
