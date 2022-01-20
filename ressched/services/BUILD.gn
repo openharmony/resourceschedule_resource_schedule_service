@@ -53,6 +53,7 @@ ohos_shared_library("resschedsvc") {
     "appexecfwk_standard:libeventhandler",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",
+    "samgr_standard:samgr_proxy",
   ]
 
   subsystem_name = "resourceschedule"
