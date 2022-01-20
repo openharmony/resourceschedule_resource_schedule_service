@@ -38,10 +38,7 @@
         "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_server",
         "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_sa_profile",
         "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_service_init",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_resource_config",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_boost_config",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_power_config",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_thermal_config",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_config",
         "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_test"
       ],
       "inner_kits": [
