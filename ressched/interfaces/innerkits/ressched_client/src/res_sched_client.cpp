@@ -12,11 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "res_sched_client.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
-#include "ires_sched_service.h"
 #include "res_sched_log.h"
 #include "res_sched_errors.h"
 #include "res_sched_mgr.h"
@@ -24,13 +22,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
-#define CHECK_REMOTE_OBJECT_AND_RETURN(object, value)     \
-    if (!object) {                                        \
-        if (Connect() != ERR_OK) {                        \
-            return value;                                 \
-        }                                                 \
-    }                                                     \
 
 ResSchedClient& ResSchedClient::GetInstance()
 {
@@ -40,20 +31,23 @@ ResSchedClient& ResSchedClient::GetInstance()
 
 void ResSchedClient::ReportDataInProcess(uint32_t resType, int64_t value, const std::string& payload)
 {
+    RESSCHED_LOGI("ResSchedClient::ReportDataInProcess resType = %{public}d, value = %{public}lld,"
+                  " payload = %{public}s", resType, value, payload.c_str());
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 
 void ResSchedClient::ReportData(uint32_t resType, int64_t value, const std::string& payload)
 {
-    CHECK_REMOTE_OBJECT_AND_RETURN(remoteObject_, );
-    sptr<IResSchedService> rss = iface_cast<IResSchedService>(remoteObject_);
-    rss->ReportData(resType, value, payload);
+    if (TryConnect() != ERR_OK) {
+        return;
+    }
+    rss_->ReportData(resType, value, payload);
 }
 
-ErrCode ResSchedClient::Connect()
+ErrCode ResSchedClient::TryConnect()
 {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (remoteObject_ != nullptr) {
+    if (rss_ != nullptr) {
         return ERR_OK;
     }
 
@@ -68,8 +62,36 @@ ErrCode ResSchedClient::Connect()
         RESSCHED_LOGE("ResSchedClient::Fail to connect resource schedule service.");
         return GET_RES_SCHED_SERVICE_FAILED;
     }
+
+    rss_ = iface_cast<IResSchedService>(remoteObject_);
+    if (rss_ == nullptr) {
+        return GET_RES_SCHED_SERVICE_FAILED;
+    }
+    recipient_ = new ResSchedDeathRecipient(*this);
+    if (recipient_ == nullptr) {
+        return GET_RES_SCHED_SERVICE_FAILED;
+    }
+    rss_->AsObject()->AddDeathRecipient(recipient_);
     RESSCHED_LOGD("ResSchedClient::Connect resource schedule service success.");
     return ERR_OK;
+}
+
+void ResSchedClient::StopRemoteObject()
+{
+    if ((rss_ != nullptr) && (rss_->AsObject() != nullptr)) {
+        rss_->AsObject()->RemoveDeathRecipient(recipient_);
+    }
+    rss_ = nullptr;
+}
+
+ResSchedClient::ResSchedDeathRecipient::ResSchedDeathRecipient(ResSchedClient &resSchedClient)
+        : resSchedClient_(resSchedClient) {};
+
+ResSchedClient::ResSchedDeathRecipient::~ResSchedDeathRecipient() {};
+
+void ResSchedClient::ResSchedDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
+{
+    resSchedClient_.StopRemoteObject();
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
