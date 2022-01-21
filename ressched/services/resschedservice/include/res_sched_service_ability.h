@@ -17,6 +17,7 @@
 #define FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_SERVICE_ABILITY_H
 
 #include "system_ability.h"
+#include "res_sched_service.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -32,6 +33,8 @@ private:
     void OnStart() override;
 
     void OnStop() override;
+
+    sptr<ResSchedService> service_;
 
     DISALLOW_COPY_AND_MOVE(ResSchedServiceAbility);
 };

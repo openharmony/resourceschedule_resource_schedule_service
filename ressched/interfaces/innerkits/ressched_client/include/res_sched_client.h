@@ -34,6 +34,8 @@ public:
      */
     static ResSchedClient& GetInstance();
 
+    void ReportData(uint32_t resType, int64_t value, const std::string& payload);
+
     /**
      * Report source data to resource schedule service in the same process.
      *
@@ -49,9 +51,11 @@ protected:
     virtual ~ResSchedClient() = default;
 
 private:
+    ErrCode Connect();
+    std::mutex mutex_;
+    sptr<IRemoteObject> remoteObject_;
     DISALLOW_COPY_AND_MOVE(ResSchedClient);
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 

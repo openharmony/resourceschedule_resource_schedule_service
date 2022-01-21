@@ -16,6 +16,7 @@
 #include "res_sched_service_ability.h"
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
+#include "res_sched_service.h"
 #include "system_ability_definition.h"
 
 namespace OHOS {
@@ -26,6 +27,12 @@ REGISTER_SYSTEM_ABILITY_BY_ID(ResSchedServiceAbility, RES_SCHED_SYS_ABILITY_ID, 
 void ResSchedServiceAbility::OnStart()
 {
     ResSchedMgr::GetInstance().Init();
+    if (service_ == nullptr) {
+        service_ = new ResSchedService();
+    }
+    if (!Publish(service_)) {
+        RESSCHED_LOGE("ResSchedServiceAbility:: Register service failed.");
+    }
     RESSCHED_LOGI("ResSchedServiceAbility ::OnStart.");
 }
 
