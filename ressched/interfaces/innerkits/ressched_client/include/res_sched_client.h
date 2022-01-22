@@ -17,6 +17,7 @@
 #define FOUNDATION_RESOURCESCHEDULE_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_CLIENT_H
 
 #include "iremote_object.h"
+#include "ires_sched_service.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -34,6 +35,10 @@ public:
      */
     static ResSchedClient& GetInstance();
 
+    void ReportData(uint32_t resType, int64_t value, const std::string& payload);
+
+    void StopRemoteObject();
+
     /**
      * Report source data to resource schedule service in the same process.
      *
@@ -49,9 +54,24 @@ protected:
     virtual ~ResSchedClient() = default;
 
 private:
+    class ResSchedDeathRecipient : public IRemoteObject::DeathRecipient {
+    public:
+        ResSchedDeathRecipient(ResSchedClient &resSchedClient);
+
+        ~ResSchedDeathRecipient();
+
+        virtual void OnRemoteDied(const wptr<IRemoteObject> &object) override;
+
+    private:
+        ResSchedClient &resSchedClient_;
+    };
+    ErrCode TryConnect();
+    std::mutex mutex_;
+    sptr<ResSchedDeathRecipient> recipient_;
+    sptr<IRemoteObject> remoteObject_;
+    sptr<IResSchedService> rss_;
     DISALLOW_COPY_AND_MOVE(ResSchedClient);
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 

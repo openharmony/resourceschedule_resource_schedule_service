@@ -12,10 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "res_sched_client.h"
 #include "if_system_ability_manager.h"
+#include "iservice_registry.h"
 #include "res_sched_log.h"
+#include "res_sched_errors.h"
 #include "res_sched_mgr.h"
 #include "system_ability_definition.h"
 
@@ -30,8 +31,67 @@ ResSchedClient& ResSchedClient::GetInstance()
 
 void ResSchedClient::ReportDataInProcess(uint32_t resType, int64_t value, const std::string& payload)
 {
+    RESSCHED_LOGI("ResSchedClient::ReportDataInProcess recieve resType = %{public}d, value = %{public}lld.",
+        resType, value);
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 
+void ResSchedClient::ReportData(uint32_t resType, int64_t value, const std::string& payload)
+{
+    if (TryConnect() != ERR_OK) {
+        return;
+    }
+    rss_->ReportData(resType, value, payload);
+}
+
+ErrCode ResSchedClient::TryConnect()
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (rss_ != nullptr) {
+        return ERR_OK;
+    }
+
+    sptr<ISystemAbilityManager> systemManager = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (systemManager == nullptr) {
+        RESSCHED_LOGE("ResSchedClient::Fail to get registry.");
+        return GET_RES_SCHED_SERVICE_FAILED;
+    }
+
+    remoteObject_ = systemManager->GetSystemAbility(RES_SCHED_SYS_ABILITY_ID);
+    if (remoteObject_ == nullptr) {
+        RESSCHED_LOGE("ResSchedClient::Fail to connect resource schedule service.");
+        return GET_RES_SCHED_SERVICE_FAILED;
+    }
+
+    rss_ = iface_cast<IResSchedService>(remoteObject_);
+    if (rss_ == nullptr) {
+        return GET_RES_SCHED_SERVICE_FAILED;
+    }
+    recipient_ = new ResSchedDeathRecipient(*this);
+    if (recipient_ == nullptr) {
+        return GET_RES_SCHED_SERVICE_FAILED;
+    }
+    rss_->AsObject()->AddDeathRecipient(recipient_);
+    RESSCHED_LOGD("ResSchedClient::Connect resource schedule service success.");
+    return ERR_OK;
+}
+
+void ResSchedClient::StopRemoteObject()
+{
+    if ((rss_ != nullptr) && (rss_->AsObject() != nullptr)) {
+        rss_->AsObject()->RemoveDeathRecipient(recipient_);
+    }
+    rss_ = nullptr;
+}
+
+ResSchedClient::ResSchedDeathRecipient::ResSchedDeathRecipient(ResSchedClient &resSchedClient)
+    : resSchedClient_(resSchedClient) {};
+
+ResSchedClient::ResSchedDeathRecipient::~ResSchedDeathRecipient() {};
+
+void ResSchedClient::ResSchedDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
+{
+    resSchedClient_.StopRemoteObject();
+}
 } // namespace ResourceSchedule
-} // namespace OHOS
+} // namespace OHOS+

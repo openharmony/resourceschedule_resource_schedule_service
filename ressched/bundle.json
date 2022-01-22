@@ -39,15 +39,19 @@
         "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/socperf_plugin:socperf_plugin",
         "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_config",
         "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_switch",
-        "//foundation/resourceschedule/resource_schedule_service/ressched/sa_profile:ressched_sa_profile"
+        "//foundation/resourceschedule/resource_schedule_service/ressched/sa_profile:ressched_sa_profile",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/etc/init:resource_schedule_service.cfg"
       ],
       "inner_kits": [
         {
           "header": {
             "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client/include",
             "header_files": [
-              "res_type.h",
-              "res_sched_client.h"
+              "ires_sched_service.h",
+              "res_sched_client.h",
+              "res_sched_errors.h",
+              "res_sched_service_proxy.h",
+              "res_type.h"
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"

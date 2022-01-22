@@ -16,11 +16,11 @@ import("//build/ohos.gni")
 #################################################################################
 
 group("etc") {
-  deps = [ ":resourceschedule.cfg" ]
+  deps = [ ":resource_schedule_service.cfg" ]
 }
 
-ohos_prebuilt_etc("resourceschedule.cfg") {
-  source = "resourceschedule.cfg"
+ohos_prebuilt_etc("resource_schedule_service.cfg") {
+  source = "resource_schedule_service.cfg"
   relative_install_dir = "init"
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

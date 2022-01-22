@@ -36,7 +36,10 @@ ohos_shared_library("ressched_client") {
 
   public_configs = [ ":client_public_config" ]
 
-  sources = [ "src/res_sched_client.cpp" ]
+  sources = [
+    "src/res_sched_client.cpp",
+    "src/res_sched_service_proxy.cpp",
+  ]
 
   deps = [
     "${ressched_services}:resschedsvc",
