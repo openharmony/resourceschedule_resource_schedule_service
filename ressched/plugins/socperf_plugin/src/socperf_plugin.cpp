@@ -18,7 +18,6 @@
 #include "res_sched_log.h"
 #include "plugin_mgr.h"
 #include "config_info.h"
-#include "socperf_client.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -31,6 +30,11 @@ IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 void SocPerfPlugin::Init()
 {
     PluginMgr::GetInstance().SubscribeResource(LIB_NAME, RES_TYPE_SCREEN_STATUS);
+    auto runner = AppExecFwk::EventRunner::Create("socperf_plugin_handler");
+    if (runner == nullptr) {
+        RESSCHED_LOGE("Failed to Create EventRunner");
+    }
+    handler = std::make_shared<SocPerfPluginHandler>(runner);
     RESSCHED_LOGI("SocPerfPlugin::Init success");
 }
 
@@ -43,11 +47,8 @@ void SocPerfPlugin::Disable()
 void SocPerfPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
     RESSCHED_LOGD("SocPerfPlugin::DispatchResource status type %{public}u", data->resType);
-
-    if (data->resType == RES_TYPE_SCREEN_STATUS) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_SCREEN_STATUS, "");
-        return;
-    }
+    auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_SOC_PERF_PLUGIN_DISPATCH, data);
+    handler->SendEvent(event);
 }
 
 extern "C" bool OnPluginInit(std::string& libName)

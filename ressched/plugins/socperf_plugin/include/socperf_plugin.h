@@ -18,6 +18,7 @@
 
 #include "single_instance.h"
 #include "plugin.h"
+#include "socperf_plugin_handler.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -31,7 +32,8 @@ public:
 
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
 
-    const int PERF_REQUEST_CMD_ID_SCREEN_STATUS = 10000;
+private:
+    std::shared_ptr<SocPerfPluginHandler> handler;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
