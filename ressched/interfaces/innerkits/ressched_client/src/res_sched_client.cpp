@@ -31,8 +31,8 @@ ResSchedClient& ResSchedClient::GetInstance()
 
 void ResSchedClient::ReportDataInProcess(uint32_t resType, int64_t value, const std::string& payload)
 {
-    RESSCHED_LOGI("ResSchedClient::ReportDataInProcess recieve resType = %{public}d, value = %{public}lld,"
-                  " payload = %{public}s", resType, value, payload.c_str());
+    RESSCHED_LOGI("ResSchedClient::ReportDataInProcess recieve resType = %{public}d, value = %{public}lld.",
+        resType, value);
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 
