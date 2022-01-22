@@ -34,7 +34,7 @@ void ResSchedServiceProxy::ReportData(uint32_t resType, int64_t value, const std
         RESSCHED_LOGE("Send request error: %{public}d", error);
         return;
     }
-    RESSCHED_LOGI("ResSchedServiceProxy::ReportData success.");
+    RESSCHED_LOGD("ResSchedServiceProxy::ReportData success.");
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

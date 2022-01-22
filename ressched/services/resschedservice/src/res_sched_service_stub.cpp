@@ -70,7 +70,7 @@ int ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
     auto uid = IPCSkeleton::GetCallingUid();
-    RESSCHED_LOGI("ResSchedServiceStub::OnRemoteRequest, code = %{public}d, flags = %{public}d,"
+    RESSCHED_LOGD("ResSchedServiceStub::OnRemoteRequest, code = %{public}d, flags = %{public}d,"
         " uid = %{public}d", code, option.GetFlags(), uid);
     if (!CheckPermission(uid)) {
         RESSCHED_LOGE("ResSchedServiceStub::OnRemoteRequest failed, illegal calling uid %{public}d。", uid);
