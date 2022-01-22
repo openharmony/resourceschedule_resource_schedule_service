@@ -24,7 +24,7 @@ namespace ResourceSchedule {
 #define READ_PARCEL(parcel, type, out, errReturn, className)                    \
     do {                                                                        \
         if (!(parcel).Read##type(out)) {                                        \
-            RESSCHED_LOGE(""#className"::%{public}s read"#out" failed", __func__);\
+            RESSCHED_LOGE(""#className"::%{public}s read"#out" failed", __func__); \
             return errReturn;                                                   \
         }                                                                       \
     } while (0)                                                                 \
@@ -32,10 +32,10 @@ namespace ResourceSchedule {
 #define WRITE_PARCEL(parcel, type, in, errReturn, className)                    \
     do {                                                                        \
         if (!(parcel).Write##type(in)) {                                        \
-            RESSCHED_LOGE(""#className"::%{public}s write"#in" failed", __func__);\
+            RESSCHED_LOGE(""#className"::%{public}s write"#in" failed", __func__); \
             return errReturn;                                                   \
         }                                                                       \
-    } while (0)                                                                 \
+    } while (0)
 
 }; // namespace ResourceSchedule
 }; // namespace OHOS

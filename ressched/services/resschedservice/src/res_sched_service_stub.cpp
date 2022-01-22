@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 namespace {
     constexpr int SYSTEM_UID = 1000;
     constexpr int ROOT_UID = 0;
@@ -67,10 +66,12 @@ int32_t ResSchedServiceStub::ReportDataInner(MessageParcel& data, [[maybe_unused
     return ERR_OK;
 }
 
-int ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
+    MessageParcel &reply, MessageOption &option)
 {
     auto uid = IPCSkeleton::GetCallingUid();
-    RESSCHED_LOGI("ResSchedServiceStub::OnRemoteRequest, code = %{public}d, flags = %{public}d, uid = %{public}d",code, option.GetFlags(), uid);
+    RESSCHED_LOGI("ResSchedServiceStub::OnRemoteRequest, code = %{public}d, flags = %{public}d,"
+        " uid = %{public}d", code, option.GetFlags(), uid);
     if (!CheckPermission(uid)) {
         RESSCHED_LOGE("ResSchedServiceStub::OnRemoteRequest failed, illegal calling uid %{public}d。", uid);
         return ERR_RES_SCHED_PERMISSION_DENIED;
@@ -93,6 +94,5 @@ void ResSchedServiceStub::Init()
                 [this](auto& data, auto& reply) {return ReportDataInner(data, reply); } },
     };
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS

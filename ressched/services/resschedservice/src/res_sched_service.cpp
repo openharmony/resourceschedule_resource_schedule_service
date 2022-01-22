@@ -20,13 +20,11 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 void ResSchedService::ReportData(uint32_t resType, int64_t value, const std::string& payload)
 {
     RESSCHED_LOGI("ResSchedService::ReportData resType = %{public}d, value = %{public}lld,"
                   " payload = %{public}s", resType, value, payload.c_str());
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 class ResSchedServiceStub : public IRemoteStub<IResSchedService> {
 public:
     ResSchedServiceStub();
@@ -38,7 +37,6 @@ private:
     using RequestFuncType = std::function<int32_t (MessageParcel& data, MessageParcel& reply)>;
     std::map<uint32_t, RequestFuncType> funcMap_;
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 

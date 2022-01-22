@@ -20,18 +20,16 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+class ResSchedService : public ResSchedServiceStub {
+public:
+    ResSchedService() {}
+    ~ResSchedService() override = default;
 
-    class ResSchedService : public ResSchedServiceStub {
-    public:
-        ResSchedService() {}
-        ~ResSchedService() override = default;
-
-        void ReportData(uint32_t resType, int64_t value, const std::string& payload) override;
+    void ReportData(uint32_t resType, int64_t value, const std::string& payload) override;
 
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedService);
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 

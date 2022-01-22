@@ -85,7 +85,7 @@ void ResSchedClient::StopRemoteObject()
 }
 
 ResSchedClient::ResSchedDeathRecipient::ResSchedDeathRecipient(ResSchedClient &resSchedClient)
-        : resSchedClient_(resSchedClient) {};
+    : resSchedClient_(resSchedClient) {};
 
 ResSchedClient::ResSchedDeathRecipient::~ResSchedDeathRecipient() {};
 
@@ -94,4 +94,4 @@ void ResSchedClient::ResSchedDeathRecipient::OnRemoteDied(const wptr<IRemoteObje
     resSchedClient_.StopRemoteObject();
 }
 } // namespace ResourceSchedule
-} // namespace OHOS
+} // namespace OHOS+

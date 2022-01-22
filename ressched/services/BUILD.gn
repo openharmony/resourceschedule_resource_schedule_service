@@ -40,8 +40,8 @@ ohos_shared_library("resschedsvc") {
     "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/resschedfwk/src/plugin_mgr.cpp",
     "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/resschedfwk/src/plugin_switch.cpp",
     "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
-    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedservice/src/res_sched_service_ability.cpp",
     "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedservice/src/res_sched_service.cpp",
+    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedservice/src/res_sched_service_ability.cpp",
     "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedservice/src/res_sched_service_stub.cpp",
   ]
 
