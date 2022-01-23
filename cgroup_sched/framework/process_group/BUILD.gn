@@ -1,0 +1,74 @@
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+
+config("libprocess_group_config") {
+  include_dirs = [ "./include" ]
+}
+
+ohos_shared_library("libprocess_group") {
+  sources = [
+    "./src/cgroup_action.cpp",
+    "./src/cgroup_controller.cpp",
+    "./src/cgroup_map.cpp",
+    "./src/process_group_util.cpp",
+    "./src/sched_policy.cpp",
+  ]
+  include_dirs = [ "./include" ]
+  deps = [
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//third_party/jsoncpp:jsoncpp",
+    "//utils/native/base:utils",
+  ]
+  public_configs = [ ":libprocess_group_config" ]
+  part_name = "resource_schedule_service"
+  subsystem_name = "resourceschedule"
+}
+
+ohos_executable("test_2022") {
+  module_install_dir = "bin/process_group"
+  include_dirs = [
+    "./include",
+    "../process_group/include",
+  ]
+
+  sources = [
+    "./src/cgroup_action.cpp",
+    "./src/cgroup_controller.cpp",
+    "./src/cgroup_map.cpp",
+    "./src/process_group_util.cpp",
+    "./src/sched_policy.cpp",
+    "./tools/test/src/main.cpp",
+  ]
+
+  cflags = []
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+
+  deps = [
+    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//third_party/jsoncpp:jsoncpp",
+    "//utils/native/base:utils",
+  ]
+
+  external_deps = [
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+  ]
+
+  install_enable = true
+  part_name = "resource_schedule_service"
+  subsystem_name = "resourceschedule"
+}

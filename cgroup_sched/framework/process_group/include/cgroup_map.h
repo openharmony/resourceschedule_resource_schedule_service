@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#ifndef OHOS_RESOURCE_SCHEDULE_SERVICE_CGROUP_SCHED_FRAMEWORKS_PROCESS_GROUP_INCLUDE_CGROUP_MAP_H
+#define OHOS_RESOURCE_SCHEDULE_SERVICE_CGROUP_SCHED_FRAMEWORKS_PROCESS_GROUP_INCLUDE_CGROUP_MAP_H
+
+#include <string>
+#include <map>
+#include <memory>
+#include "sched_policy.h"
+#include "json/value.h"
+#include "cgroup_controller.h"
+
+namespace OHOS {
+namespace ResourceSchedule {
+namespace CgroupSetting {
+
+class CgroupMap {
+public:
+    static CgroupMap& GetInstance();
+    CgroupMap(const CgroupMap&) = delete;
+    CgroupMap& operator=(const CgroupMap&) = delete;
+    ~CgroupMap() = default;
+    
+    bool SetThreadSchedPolicy(int tid, SchedPolicy policy, bool isSetThreadGroup);
+    bool loadConfigFromJsonObj(const Json::Value& jsonObj);
+
+    bool findFristEnableCgroupController(CgroupController** p);
+    int GetSchedPolicy(int tid, SchedPolicy* policy);
+
+private:
+    std::map<std::string, CgroupController> controllers_;
+
+    CgroupMap() = default;
+    bool checkCgroupConfig();
+    void AddCgroupController(const std::string& name, CgroupController& controller);
+    static bool CheckCgroupJsonConfig(const Json::Value& cgroupObj);
+};
+
+} // namespace CgroupSetting
+} // namespace ResourceSchedule
+} // namespace OHOS
+#endif

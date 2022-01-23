@@ -24,6 +24,22 @@ namespace ResType {
 enum : uint32_t {
     // screen status, value 0 means screen off, value 1 means screen on, else are invalid.
     RES_TYPE_SCREEN_STATUS,
+    // app state change event; value means app state; payload:uid,bundleName
+    RES_TYPE_APP_STATE_CHANGE,
+    // ability state change event; value means ability state; payload:pid,uid,bundleName
+    RES_TYPE_ABILITY_STATE_CHANGE,
+    // extension state change event; value means extension state; payload:pid,uid,bundleName
+    RES_TYPE_EXTENSION_STATE_CHANGE,
+    // process state event; value 0:created, 1:died; payload:pid,uid,bundleName
+    RES_TYPE_PROCESS_STATE_CHANGE,
+    // window focused event; value 0:focused, 1:unfocused; payload:pid,uid,bundleName,windowId,windowType,displayId
+    RES_TYPE_WINDOW_FOCUS,
+    // transient task event; value 0:start, 1:finish; payload:pid,uid,bundleName
+    RES_TYPE_TRANSIENT_TASK,
+    // continuous task event; value 0:start, 1:finish; payload:pid,uid,abilityName
+    RES_TYPE_CONTINUOUS_TASK,
+    // cgroup change event; value means nothing; payload:pid,uid,name,oldGroup,newGroup
+    RES_TYPE_CGROUP_ADJUSTER,
 };
 }
 } // namespace ResourceSchedule

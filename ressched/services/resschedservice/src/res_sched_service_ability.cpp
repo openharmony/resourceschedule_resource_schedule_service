@@ -18,6 +18,7 @@
 #include "res_sched_mgr.h"
 #include "res_sched_service.h"
 #include "system_ability_definition.h"
+#include "cgroup_sched.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -33,12 +34,14 @@ void ResSchedServiceAbility::OnStart()
     if (!Publish(service_)) {
         RESSCHED_LOGE("ResSchedServiceAbility:: Register service failed.");
     }
+    CgroupSchedInit();
     RESSCHED_LOGI("ResSchedServiceAbility ::OnStart.");
 }
 
 void ResSchedServiceAbility::OnStop()
 {
     ResSchedMgr::GetInstance().Stop();
+    CgroupSchedDeinit();
     RESSCHED_LOGI("ResSchedServiceAbility::OnStop!");
 }
 
