@@ -17,7 +17,7 @@
 
 namespace OHOS {
 namespace SOCPERF {
-REGISTER_SYSTEM_ABILITY_BY_ID(SocPerfServer, RESSCHEDD_SA_ID, true);
+REGISTER_SYSTEM_ABILITY_BY_ID(SocPerfServer, SOC_PERF_SERVICE_SA_ID, true);
 
 void SocPerfServer::OnStart()
 {

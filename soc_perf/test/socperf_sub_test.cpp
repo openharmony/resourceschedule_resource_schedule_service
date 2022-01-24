@@ -192,7 +192,7 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_GetService_001, Function | MediumTest | 
     sptr<ISystemAbilityManager> samgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     EXPECT_NE(samgr, nullptr);
 
-    sptr<IRemoteObject> object = samgr->GetSystemAbility(RESSCHEDD_SA_ID);
+    sptr<IRemoteObject> object = samgr->GetSystemAbility(SOC_PERF_SERVICE_SA_ID);
     EXPECT_NE(object, nullptr);
 }
 
