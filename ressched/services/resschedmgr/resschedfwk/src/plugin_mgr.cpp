@@ -257,7 +257,6 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
         fun(resData);
     __catch__;
         RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin Oops!!! %{public}s throw a Exception!", pluginLib.c_str());
-        StackProtect();
     __finally__;
         auto endTime = Clock::now();
         int costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
