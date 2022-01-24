@@ -39,21 +39,12 @@ namespace {
     const std::string PLUGIN_SWITCH_FILE_NAME = "/system/etc/ressched/res_sched_plugin_switch.xml";
     const std::string CONFIG_FILE_NAME = "/system/etc/ressched/res_sched_config.xml";
     static jmp_buf env;
-    const int SIG_ALL[] = {SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGBUS, SIGFPE, SIGKILL, SIGUSR1, SIGSEGV,
-                           SIGUSR2, SIGPIPE, SIGALRM, SIGTERM, SIGSTKFLT, SIGCHLD, SIGCONT, SIGSTOP, SIGTSTP, SIGTTIN,
-                           SIGTTOU, SIGURG, SIGXCPU, SIGXFSZ, SIGVTALRM, SIGPROF, SIGWINCH, SIGIO, SIGPWR, SIGSYS,
-                           SIGSTKFLT, SIGWINCH, SIGPWR};
+    const int SIG_ALL[] = {SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGBUS, SIGFPE, SIGKILL, SIGPIPE, SIGTERM};
 }
 
 extern "C" void Back(int sig)
 {
-    for (uint32_t i = 0; i < sizeof(SIG_ALL) / sizeof(int); i++) {
-        if (sig == SIG_ALL[i]) {
-            siglongjmp(env, 1);
-            break;
-        }
-    }
-    exit(-1);
+    siglongjmp(env, 1);
 }
 
 extern "C" void StackProtect()
