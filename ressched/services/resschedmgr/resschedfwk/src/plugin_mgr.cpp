@@ -49,11 +49,11 @@ namespace {
 extern "C" void Back(int sig){
     for (uint32_t i = 0; i < sizeof(SIG_ALL) / sizeof(int); i++) {
         if (sig == SIG_ALL[i]) {
-            longjmp(env, 1);
+            siglongjmp(env, 1);
             break;
         }
     }
-    // exit(-1);
+    exit(-1);
 }
 
 extern "C" void StackProtect() {

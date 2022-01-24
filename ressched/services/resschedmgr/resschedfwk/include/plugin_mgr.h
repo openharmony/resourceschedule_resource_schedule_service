@@ -32,7 +32,7 @@
 #include <csetjmp>
 #include <signal.h>
 
-#define __try__ do { if (!setjmp(env)) {
+#define __try__ do { if (!sigsetjmp(env, 1)) {
 
 #define __catch__ } else { \
 
