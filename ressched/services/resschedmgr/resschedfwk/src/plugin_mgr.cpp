@@ -14,24 +14,21 @@
  */
 
 #include <algorithm>
+#include <csignal.h>
 #include <csetjmp>
 #include <dlfcn.h>
 #include <iostream>
-#include <signal.h>
 #include "datetime_ex.h"
 #include "event_runner.h"
-#include "plugin_mgr.h"
 #include "res_sched_log.h"
+#include "plugin_mgr.h"
 
 using namespace std;
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 using namespace AppExecFwk;
-
 using OnPluginInitFunc = bool (*)(std::string);
-
 using Clock = std::chrono::high_resolution_clock;
 using TimePoint = std::chrono::time_point<Clock>;
 
@@ -293,7 +290,6 @@ void PluginMgr::UnLoadPlugin()
         }
         libInfo.onPluginDisableFunc_();
     }
-
     // close all plugin handle
     pluginLibMap_.clear();
 }
@@ -322,6 +318,5 @@ void PluginMgr::CloseHandle(const DlHandle& handle)
         RESSCHED_LOGW("PluginMgr::CloseHandle handle close failed!");
     }
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS
