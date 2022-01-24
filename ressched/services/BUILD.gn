@@ -14,6 +14,8 @@
 import("//build/ohos.gni")
 import("//build/test.gni")
 import(
+    "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
+import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
 
 config("ressched_config") {
@@ -26,6 +28,7 @@ config("ressched_config") {
     "//utils/system/safwk/native/include",
     "//utils/native/base/include",
     "//third_party/libxml2/include",
+    "${cgroup_sched_interfaces}/innerkits/include",
   ]
 }
 
@@ -46,6 +49,7 @@ ohos_shared_library("resschedsvc") {
   ]
 
   deps = [
+    "${cgroup_sched_framework}:cgroup_sched",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
     "//third_party/libxml2:xml2",
     "//utils/native/base:utils",

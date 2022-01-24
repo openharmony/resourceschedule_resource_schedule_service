@@ -93,5 +93,11 @@ void ResSchedClient::ResSchedDeathRecipient::OnRemoteDied(const wptr<IRemoteObje
 {
     resSchedClient_.StopRemoteObject();
 }
+
+extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const std::string& payload)
+{
+    ResSchedClient::GetInstance().ReportDataInProcess(resType, value, payload);
+}
+
 } // namespace ResourceSchedule
 } // namespace OHOS+
