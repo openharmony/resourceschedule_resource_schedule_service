@@ -29,6 +29,14 @@
 #include "res_data.h"
 #include "single_instance.h"
 #include "config_info.h"
+#include <csetjmp>
+#include <signal.h>
+
+#define __try__ do { if (!setjmp(env)) {
+
+#define __catch__ } else { \
+
+#define __finally__ } } while (0);
 
 namespace OHOS {
 namespace ResourceSchedule {

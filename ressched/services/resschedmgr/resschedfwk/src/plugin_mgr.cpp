@@ -39,6 +39,27 @@ namespace {
     const std::string RUNNER_NAME = "rssDispatcher";
     const std::string PLUGIN_SWITCH_FILE_NAME = "/system/etc/ressched/res_sched_plugin_switch.xml";
     const std::string CONFIG_FILE_NAME = "/system/etc/ressched/res_sched_config.xml";
+    static jmp_buf env;
+    const int SIG_ALL[] = {SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGBUS, SIGFPE, SIGKILL, SIGUSR1, SIGSEGV,
+                       SIGUSR2, SIGPIPE, SIGALRM, SIGTERM, SIGSTKFLT, SIGCHLD, SIGCONT, SIGSTOP, SIGTSTP, SIGTTIN,
+                       SIGTTOU, SIGURG, SIGXCPU, SIGXFSZ, SIGVTALRM, SIGPROF, SIGWINCH, SIGIO, SIGPWR, SIGSYS,
+                       SIGSTKFLT, SIGWINCH, SIGPWR};
+}
+
+extern "C" void Back(int sig){
+    for (uint32_t i = 0; i < sizeof(SIG_ALL) / sizeof(int); i++) {
+        if (sig == SIG_ALL[i]) {
+            longjmp(env, 1);
+            break;
+        }
+    }
+    // exit(-1);
+}
+
+extern "C" void StackProtect() {
+    for (uint32_t i = 0; i < sizeof(SIG_ALL) / sizeof(int); i++) {
+        signal(SIG_ALL[i], &Back);
+    }
 }
 
 IMPLEMENT_SINGLE_INSTANCE(PluginMgr);
@@ -73,7 +94,7 @@ void PluginMgr::Init()
     }
 
     LoadPlugin();
-
+    StackProtect();
     if (dispatcherHandler_ == nullptr) {
         dispatcherHandler_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
     }
@@ -232,28 +253,28 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
     }
 
     auto beginTime = Clock::now();
-    try {
+    __try__;
         fun(resData);
-    }
-    catch(...) {
-        RESSCHED_LOGE("PluginMgr::%{public}s throw a exception!", pluginLib.c_str());
-    }
-    auto endTime = Clock::now();
-    int costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
-    if (costTime > DISPATCH_TIME_OUT) {
-        // dispatch resource use too long time, unload it
-        RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin ERROR :"
-                      "%{public}s plugin cost time(%{public}dms) over 10 ms! disable it.",
-                      pluginLib.c_str(), costTime);
-        if (itMap->second.onPluginDisableFunc_ != nullptr) {
-            itMap->second.onPluginDisableFunc_();
+    __catch__;
+        RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin Oops!!! %{public}s throw a Exception!", pluginLib.c_str());
+        StackProtect();
+    __finally__;
+        auto endTime = Clock::now();
+        int costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
+        if (costTime > DISPATCH_TIME_OUT) {
+            // dispatch resource use too long time, unload it
+            RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin ERROR :"
+                          "%{public}s plugin cost time(%{public}dms) over 10 ms! disable it.",
+                          pluginLib.c_str(), costTime);
+            if (itMap->second.onPluginDisableFunc_ != nullptr) {
+                itMap->second.onPluginDisableFunc_();
+            }
+            pluginLibMap_.erase(itMap);
+        } else if (costTime > DISPATCH_WARNING_TIME) {
+            RESSCHED_LOGW("PluginMgr::deliverResourceToPlugin WAINNING :"
+                          "%{public}s plugin cost time(%{public}dms) over 1 ms!",
+                          pluginLib.c_str(), costTime);
         }
-        pluginLibMap_.erase(itMap);
-    } else if (costTime > DISPATCH_WARNING_TIME) {
-        RESSCHED_LOGW("PluginMgr::deliverResourceToPlugin WAINNING :"
-                      "%{public}s plugin cost time(%{public}dms) over 1 ms!",
-                      pluginLib.c_str(), costTime);
-    }
 }
 
 void PluginMgr::UnLoadPlugin()
