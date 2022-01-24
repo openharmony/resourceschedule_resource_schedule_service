@@ -29,18 +29,9 @@
 #include "res_data.h"
 #include "single_instance.h"
 #include "config_info.h"
-#include <csetjmp>
-#include <signal.h>
-
-#define __try__ do { if (!sigsetjmp(env, 1)) {
-
-#define __catch__ } else { \
-
-#define __finally__ } } while (0);
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 using OnDispatchResourceFunc = void (*)(const std::shared_ptr<ResData>&);
 using OnPluginDisableFunc = void (*)();
 
@@ -116,7 +107,6 @@ private:
     // handler use for dispatch resource data
     std::shared_ptr<OHOS::AppExecFwk::EventHandler> dispatcherHandler_;
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 
