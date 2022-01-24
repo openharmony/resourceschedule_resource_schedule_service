@@ -14,7 +14,7 @@
  */
 
 #include <algorithm>
-#include <csignal.h>
+#include <csignal>
 #include <csetjmp>
 #include <dlfcn.h>
 #include <iostream>
