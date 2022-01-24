@@ -35,9 +35,9 @@ bool SocPerfClient::CheckClientValid()
         return false;
     }
 
-    sptr<IRemoteObject> object = samgr->GetSystemAbility(RESSCHEDD_SA_ID);
+    sptr<IRemoteObject> object = samgr->GetSystemAbility(SOC_PERF_SERVICE_SA_ID);
     if (object == nullptr) {
-        SOC_PERF_LOGE("Failed to get SystemAbility[1902] .");
+        SOC_PERF_LOGE("Failed to get SystemAbility[1906] .");
         return false;
     }
 

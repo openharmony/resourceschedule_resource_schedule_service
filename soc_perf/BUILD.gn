@@ -16,7 +16,7 @@ import("//build/ohos/sa_profile/sa_profile.gni")
 
 ##################################################
 ohos_sa_profile("socperf_sa_profile") {
-  sources = [ "sa_profile/1902.xml" ]
+  sources = [ "sa_profile/1906.xml" ]
   part_name = "soc_perf"
 }
 
