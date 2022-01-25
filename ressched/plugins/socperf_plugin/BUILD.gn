@@ -44,7 +44,7 @@ ohos_shared_library("socperf_plugin") {
     "//utils/native/base:utils",
   ]
 
-  external_deps = [ "appexecfwk_standard:libeventhandler" ]
+  external_deps = [ "eventhandler:libeventhandler" ]
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
