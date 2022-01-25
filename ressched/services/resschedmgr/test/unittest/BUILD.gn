@@ -27,7 +27,7 @@ config("ut_resschedfwk_config") {
 module_output_path = "ressched/resschedfwk"
 
 private_external_deps = [
-  "appexecfwk_standard:libeventhandler",
+  "eventhandler:libeventhandler",
   "ipc:ipc_core",
 ]
 
