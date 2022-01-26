@@ -30,9 +30,9 @@ using OHOS::Rosen::WindowType;
 class WindowStateObserver : public IFocusChangedListener {
 public:
     void OnFocused(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-        WindowType windowType, int32_t displayId) override;
+        WindowType windowType, Rosen::DisplayId displayId) override;
     void OnUnfocused(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-        WindowType windowType, int32_t displayId) override;
+        WindowType windowType, Rosen::DisplayId displayId) override;
 };
 
 } // namespace ResourceSchedule
