@@ -26,14 +26,12 @@ std::shared_ptr<ProcessRecord> Application::AddProcessRecord(std::shared_ptr<Pro
     return pr;
 }
 
-std::shared_ptr<ProcessRecord> Application::RemoveProcessRecord(pid_t pid)
+void Application::RemoveProcessRecord(pid_t pid)
 {
     auto iter = pidsMap_.find(pid);
-    if (iter == pidsMap_.end()) {
-        return nullptr;
+    if (iter != pidsMap_.end()) {
+        pidsMap_.erase(iter);
     }
-    pidsMap_.erase(iter);
-    return iter->second;
 }
 
 std::shared_ptr<ProcessRecord> Application::GetProcessRecord(pid_t pid)
