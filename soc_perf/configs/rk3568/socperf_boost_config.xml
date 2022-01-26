@@ -1,17 +1,16 @@
 <?xml version='1.0' encoding="utf-8"?>
 <Configs>
-    <cmd id="10000" name="performance1">
-        <duration>3000</duration>
+    <cmd id="10000" name="app_cold_start1">
+        <duration>1500</duration>
+        <lit_cpu_min_freq>1992000</lit_cpu_min_freq>
+    </cmd>
+    <cmd id="10002" name="app_warm_start1">
+        <duration>400</duration>
+        <lit_cpu_min_freq>1800000</lit_cpu_min_freq>
+    </cmd>
+    <cmd id="10004" name="window_switch1">
+        <duration>400</duration>
         <lit_cpu_min_freq>1608000</lit_cpu_min_freq>
-        <lit_cpu_max_freq>1800000</lit_cpu_max_freq>
     </cmd>
-    <cmd id="10001" name="performance2">
-        <duration>2500</duration>
-        <lit_cpu_min_freq>1800000</lit_cpu_min_freq>
-        <lit_cpu_max_freq>1992000</lit_cpu_max_freq>
-    </cmd>
-    <cmd id="10002" name="performance3">
-        <duration>0</duration>
-        <lit_cpu_min_freq>1800000</lit_cpu_min_freq>
-    </cmd>
+
 </Configs>
