@@ -62,7 +62,6 @@ PluginMgr::~PluginMgr()
 }
 
 void PluginMgr::Init()
-
 {
     RESSCHED_LOGI("PluginMgr::Init enter!");
     if (pluginSwitch_ != nullptr) {
