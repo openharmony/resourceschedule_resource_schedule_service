@@ -129,7 +129,7 @@ void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, std::string bun
         CGS_LOGE("%{public}s : application %{public}s not exist!", __func__, bundleName.c_str());
         return;
     }
-    std::shared_ptr<ProcessRecord> processRecord = app->RemoveProcessRecord(pid);
+    app->RemoveProcessRecord(pid);
 }
 
 void CgroupEventHandler::HandleTransientTaskStart(uid_t uid, pid_t pid, std::string packageName)
