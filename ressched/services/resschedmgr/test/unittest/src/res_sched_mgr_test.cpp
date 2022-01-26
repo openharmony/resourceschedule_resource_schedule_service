@@ -47,7 +47,7 @@ void ResSchedMgrTest::TearDown()
  * @tc.name: Init ressched mgr 001
  * @tc.desc: Verify if can Init the plugin correctly
  * @tc.type: FUNC
- * @tc.require: I4PY59
+ * @tc.require: SR000GGUUN AR000GH00L
  * @tc.author:xukuan
  */
 HWTEST_F(ResSchedMgrTest, Init001, TestSize.Level1)
@@ -60,7 +60,7 @@ HWTEST_F(ResSchedMgrTest, Init001, TestSize.Level1)
  * @tc.name: Init ressched mgr 002
  * @tc.desc: Verify if can Init the plugin correctly
  * @tc.type: FUNC
- * @tc.require: I4PY59
+ * @tc.require: SR000GGUUN AR000GH00L
  * @tc.author:xukuan
  */
 HWTEST_F(ResSchedMgrTest, Init002, TestSize.Level1)
