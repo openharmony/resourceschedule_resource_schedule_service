@@ -62,6 +62,7 @@ PluginMgr::~PluginMgr()
 }
 
 void PluginMgr::Init()
+
 {
     RESSCHED_LOGI("PluginMgr::Init enter!");
     if (pluginSwitch_ != nullptr) {
@@ -85,8 +86,8 @@ void PluginMgr::Init()
         }
     }
 
-    LoadPlugin();
     StackProtect();
+    LoadPlugin();
     if (dispatcherHandler_ == nullptr) {
         dispatcherHandler_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
     }
@@ -125,11 +126,14 @@ void PluginMgr::LoadPlugin()
             dlclose(pluginHandle);
             continue;
         }
-
-        if (!onPluginInitFunc(info.libPath)) {
-            RESSCHED_LOGE("PluginMgr::LoadPlugin plugin init failed!");
-            dlclose(pluginHandle);
-            continue;
+        if (!sigsetjmp(env, 1)) {
+            if (!onPluginInitFunc(info.libPath)) {
+                RESSCHED_LOGE("PluginMgr::LoadPlugin %{public}s init failed!", info.libPath.c_str());
+                dlclose(pluginHandle);
+                continue;
+            }
+        } else {
+            RESSCHED_LOGE("PluginMgr::LoadPlugin %{public}s  init exception!", info.libPath.c_str());
         }
 
         // OnDispatchResource is not necessary for plugin
@@ -147,7 +151,7 @@ void PluginMgr::LoadPlugin()
             std::lock_guard<std::mutex> autoLock(pluginMutex_);
             pluginLibMap_.emplace(info.libPath, libInfo);
         }
-        RESSCHED_LOGI("PluginMgr::LoadPlugin init %{public}s success!", info.libPath.c_str());
+        RESSCHED_LOGE("PluginMgr::LoadPlugin init %{public}s success!", info.libPath.c_str());
     }
 }
 
@@ -261,7 +265,11 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
                       "%{public}s plugin cost time(%{public}dms) over 10 ms! disable it.",
                       pluginLib.c_str(), costTime);
         if (itMap->second.onPluginDisableFunc_ != nullptr) {
-            itMap->second.onPluginDisableFunc_();
+            if (!sigsetjmp(env, 1)) {
+                itMap->second.onPluginDisableFunc_();
+            } else {
+                RESSCHED_LOGE("PluginMgr::LoadPlugin %{public}s disable exception!", pluginLib.c_str());
+            }
         }
         pluginLibMap_.erase(itMap);
     } else if (costTime > DISPATCH_WARNING_TIME) {
@@ -279,7 +287,11 @@ void PluginMgr::UnLoadPlugin()
         if (libInfo.onPluginDisableFunc_ == nullptr) {
             continue;
         }
-        libInfo.onPluginDisableFunc_();
+        if (!sigsetjmp(env, 1)) {
+            libInfo.onPluginDisableFunc_();
+        } else {
+            RESSCHED_LOGE("PluginMgr::LoadPlugin %{public}s disable exception!", libPath.c_str());
+        }
     }
     // close all plugin handle
     pluginLibMap_.clear();
