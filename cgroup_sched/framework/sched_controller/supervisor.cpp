@@ -96,6 +96,14 @@ std::shared_ptr<ProcessRecord> Supervisor::FindProcessRecord(pid_t pid)
     return pr;
 }
 
+void Supervisor::RemoveApplication(int32_t uid)
+{
+    auto iter = uidsMap_.find(uid);
+    if (iter != uidsMap_.end()) {
+        uidsMap_.erase(iter);
+    }
+}
+
 void Supervisor::SearchAbilityToken(std::shared_ptr<Application> &application, std::shared_ptr<ProcessRecord> &procRecord, sptr<IRemoteObject> token)
 {
     std::shared_ptr<ProcessRecord> pr = nullptr;
