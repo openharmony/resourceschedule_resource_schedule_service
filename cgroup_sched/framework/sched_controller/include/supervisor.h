@@ -116,6 +116,7 @@ public:
     std::shared_ptr<Application> GetAppRecord(int32_t uid);
     std::shared_ptr<Application> GetAppRecordNonNull(int32_t uid, std::string bundleName);
     std::shared_ptr<ProcessRecord> FindProcessRecord(pid_t pid);
+    void RemoveApplication(int32_t uid);
     void SearchAbilityToken(std::shared_ptr<Application> &app, std::shared_ptr<ProcessRecord> &procRecord, sptr<IRemoteObject> token);
 
 private:
