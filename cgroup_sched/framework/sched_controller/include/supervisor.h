@@ -79,7 +79,7 @@ public:
     ~Application() = default;
 
     std::shared_ptr<ProcessRecord> AddProcessRecord(std::shared_ptr<ProcessRecord> pr);
-    std::shared_ptr<ProcessRecord> RemoveProcessRecord(pid_t pid);
+    void RemoveProcessRecord(pid_t pid);
     std::shared_ptr<ProcessRecord> GetProcessRecord(pid_t pid);
     std::shared_ptr<ProcessRecord> GetProcessRecordNonNull(pid_t pid, std::string name);
     std::shared_ptr<ProcessRecord> FindProcessRecord(sptr<IRemoteObject> token_);
@@ -116,6 +116,7 @@ public:
     std::shared_ptr<Application> GetAppRecord(int32_t uid);
     std::shared_ptr<Application> GetAppRecordNonNull(int32_t uid, std::string bundleName);
     std::shared_ptr<ProcessRecord> FindProcessRecord(pid_t pid);
+    void RemoveApplication(int32_t uid);
     void SearchAbilityToken(std::shared_ptr<Application> &app, std::shared_ptr<ProcessRecord> &procRecord, sptr<IRemoteObject> token);
 
 private:
