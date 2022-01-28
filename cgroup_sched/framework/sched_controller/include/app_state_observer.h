@@ -32,6 +32,7 @@ public:
     void OnExtensionStateChanged(const AbilityStateData &abilityStateData) override;
     void OnProcessCreated(const ProcessData &processData) override;
     void OnProcessDied(const ProcessData &processData) override;
+    void OnApplicationStateChanged(const AppStateData &appStateData) override;
 
 private:
     inline bool ValidateAppStateData(const AppStateData &appStateData) const

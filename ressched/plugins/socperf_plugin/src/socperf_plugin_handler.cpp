@@ -18,21 +18,36 @@
 namespace OHOS {
 namespace ResourceSchedule {
 using namespace ResType;
+using namespace SOCPERF;
 
 SocPerfPluginHandler::SocPerfPluginHandler(
     const std::shared_ptr<AppExecFwk::EventRunner>& runner) : AppExecFwk::EventHandler(runner)
 {
+    functionMap = {
+        { RES_TYPE_APP_STATE_CHANGE,
+            [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
+        { RES_TYPE_WINDOW_FOCUS,
+            [this](const std::shared_ptr<ResData>& data) { HandleWindowFocus(data); } },
+    };
 }
 
 SocPerfPluginHandler::~SocPerfPluginHandler()
 {
+    functionMap.clear();
 }
 
 void SocPerfPluginHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
 {
     switch (event->GetInnerEventId()) {
         case INNER_EVENT_ID_SOC_PERF_PLUGIN_DISPATCH: {
-            DispatchResource(event->GetSharedObject<ResData>());
+            auto data = event->GetSharedObject<ResData>();
+            auto funcIter = functionMap.find(data->resType);
+            if (funcIter != functionMap.end()) {
+                auto function = funcIter->second;
+                if (function != nullptr) {
+                    function(data);
+                }
+            }
             break;
         }
         default: {
@@ -41,12 +56,25 @@ void SocPerfPluginHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &e
     }
 }
 
-void SocPerfPluginHandler::DispatchResource(const std::shared_ptr<ResData>& data)
+void SocPerfPluginHandler::HandleAppStateChange(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("SocPerfPluginHandler::DispatchResource status type %{public}u", data->resType);
-    if (data->resType == RES_TYPE_SCREEN_STATUS) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_SCREEN_STATUS, "");
-        return;
+    if (data->value == static_cast<int32_t>(AppExecFwk::ApplicationState::APP_STATE_CREATE)) {
+        RESSCHED_LOGI("SocPerfPluginHandler: socperf->APP_COLD_START");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_COLD_START_FIRST, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_COLD_START_SECOND, "");
+    } else if (data->value == static_cast<int32_t>(AppExecFwk::ApplicationState::APP_STATE_FOREGROUND)) {
+        RESSCHED_LOGI("SocPerfPluginHandler: socperf->APP_WARM_START");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_WARM_START_FIRST, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_WARM_START_SECOND, "");
+    }
+}
+
+void SocPerfPluginHandler::HandleWindowFocus(const std::shared_ptr<ResData>& data)
+{
+    if (data->value == WINDOW_FOCUSED) {
+        RESSCHED_LOGI("SocPerfPluginHandler: socperf->WINDOW_SWITCH");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH_FIRST, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH_SECOND, "");
     }
 }
 } // namespace ResourceSchedule

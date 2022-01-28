@@ -124,5 +124,17 @@ void RmsApplicationStateObserver::OnProcessDied(const ProcessData &processData)
             processData.bundleName; // bundle name
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_PROCESS_STATE_CHANGE, 1, payload);
 }
+
+void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &appStateData)
+{
+    if (!ValidateAppStateData(appStateData)) {
+        CGS_LOGE("%{public}s : validate app state data failed!", __func__);
+        return;
+    }
+
+    std::string payload = std::to_string(appStateData.uid) + "," + // uid
+            appStateData.bundleName; // bundle name
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

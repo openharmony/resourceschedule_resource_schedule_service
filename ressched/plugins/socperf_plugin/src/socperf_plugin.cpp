@@ -29,7 +29,11 @@ IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
 void SocPerfPlugin::Init()
 {
-    PluginMgr::GetInstance().SubscribeResource(LIB_NAME, RES_TYPE_SCREEN_STATUS);
+    resTypes.insert(RES_TYPE_APP_STATE_CHANGE);
+    resTypes.insert(RES_TYPE_WINDOW_FOCUS);
+    for (auto resType : resTypes) {
+        PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
+    }
     auto runner = AppExecFwk::EventRunner::Create("socperf_plugin_handler");
     if (runner == nullptr) {
         RESSCHED_LOGE("Failed to Create EventRunner");
@@ -40,13 +44,17 @@ void SocPerfPlugin::Init()
 
 void SocPerfPlugin::Disable()
 {
-    PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, RES_TYPE_SCREEN_STATUS);
+    for (auto resType : resTypes) {
+        PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
+    }
+    resTypes.clear();
     RESSCHED_LOGI("SocPerfPlugin::Disable success");
 }
 
 void SocPerfPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGD("SocPerfPlugin::DispatchResource status type %{public}u", data->resType);
+    RESSCHED_LOGI("SocPerfPlugin::DispatchResource resType=%{public}u, value=%{public}lld",
+        data->resType, data->value);
     auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_SOC_PERF_PLUGIN_DISPATCH, data);
     handler->SendEvent(event);
 }
