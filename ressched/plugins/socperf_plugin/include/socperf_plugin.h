@@ -16,8 +16,9 @@
 #ifndef SOC_PERF_PLUGIN_H
 #define SOC_PERF_PLUGIN_H
 
-#include "single_instance.h"
+#include <set>
 #include "plugin.h"
+#include "single_instance.h"
 #include "socperf_plugin_handler.h"
 
 namespace OHOS {
@@ -34,6 +35,7 @@ public:
 
 private:
     std::shared_ptr<SocPerfPluginHandler> handler;
+    std::set<uint32_t> resTypes;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

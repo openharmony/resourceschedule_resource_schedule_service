@@ -21,10 +21,13 @@
 #include "res_data.h"
 #include "res_sched_log.h"
 #include "socperf_client.h"
+#include "socperf_common.h"
 #include "res_type.h"
+#include "app_mgr_constants.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
+using namespace SOCPERF;
 class SocPerfPluginHandler : public AppExecFwk::EventHandler {
 public:
     explicit SocPerfPluginHandler(const std::shared_ptr<AppExecFwk::EventRunner>& runner);
@@ -32,12 +35,20 @@ public:
     virtual void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
 
 private:
-    void DispatchResource(const std::shared_ptr<ResData>& data);
+    void HandleAppStateChange(const std::shared_ptr<ResData>& data);
+    void HandleWindowFocus(const std::shared_ptr<ResData>& data);
+    std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
 };
 
 namespace {
-    const int INNER_EVENT_ID_SOC_PERF_PLUGIN_DISPATCH = 0;
-    const int PERF_REQUEST_CMD_ID_SCREEN_STATUS = 10000;
+    const int INNER_EVENT_ID_SOC_PERF_PLUGIN_DISPATCH   = 0;
+    const int PERF_REQUEST_CMD_ID_APP_COLD_START_FIRST  = 10000;
+    const int PERF_REQUEST_CMD_ID_APP_COLD_START_SECOND = 10001;
+    const int PERF_REQUEST_CMD_ID_APP_WARM_START_FIRST  = 10002;
+    const int PERF_REQUEST_CMD_ID_APP_WARM_START_SECOND = 10003;
+    const int PERF_REQUEST_CMD_ID_WINDOW_SWITCH_FIRST   = 10004;
+    const int PERF_REQUEST_CMD_ID_WINDOW_SWITCH_SECOND  = 10005;
+    const int WINDOW_FOCUSED                            = 0;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
