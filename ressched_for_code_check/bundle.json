@@ -1,0 +1,70 @@
+{
+  "name": "@ohos/resource_schedule_service",
+  "description": "resource schedule service",
+  "version": "3.1",
+  "license": "Apache License 2.0",
+  "publishAs": "code-segment",
+  "segment": {
+    "destPath": "foundation/resourceschedule/resource_schedule_service/ressched"
+  },
+  "dirs": {},
+  "scripts": {},
+  "component": {
+    "name": "resource_schedule_service",
+    "subsystem": "resourceschedule",
+    "syscap": [],
+    "features": [],
+    "adapted_system_type": [
+      "mini",
+      "small",
+      "standard"
+    ],
+    "rom": "2048KB",
+    "ram": "10240KB",
+    "deps": {
+      "components": [
+        "libeventhandler",
+        "ipc_core",
+        "samgr_proxy",
+        "system_ability_fwk"
+      ],
+      "third_party": [
+        "xml2"
+      ]
+    },
+    "build": {
+      "sub_component": [
+        "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/socperf_plugin:socperf_plugin",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_config",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_switch",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/sa_profile:ressched_sa_profile",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/etc/init:resource_schedule_service.cfg",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/sa_profile:ressched_sa_profile",
+        "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework:cgroup_sched",
+        "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/profiles:process_group_config",
+        "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group:libprocess_group"
+      ],
+      "inner_kits": [
+        {
+          "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client/include",
+            "header_files": [
+              "ires_sched_service.h",
+              "res_sched_client.h",
+              "res_sched_errors.h",
+              "res_sched_service_proxy.h",
+              "res_type.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"
+        }
+      ],
+      "test": [
+        "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/test/unittest:unittest",
+        "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/test/unittest:unittest"
+      ]
+    }
+  }
+}
