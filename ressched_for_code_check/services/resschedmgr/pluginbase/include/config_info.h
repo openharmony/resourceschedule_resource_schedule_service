@@ -39,7 +39,6 @@ struct PluginConfig {
 };
 
 using PluginConfigMap = std::map<std::string, PluginConfig>;
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 

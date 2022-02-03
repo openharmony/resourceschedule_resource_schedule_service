@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 ResSchedClient& ResSchedClient::GetInstance()
 {
     static ResSchedClient instance;
@@ -98,6 +97,5 @@ extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const std::
 {
     ResSchedClient::GetInstance().ReportDataInProcess(resType, value, payload);
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS+

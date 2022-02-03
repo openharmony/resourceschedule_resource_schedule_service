@@ -25,17 +25,17 @@
 #undef private
 
 namespace OHOS {
-    namespace ResourceSchedule {
-        class PluginSwitchTest : public testing::Test {
-        public:
-            static void SetUpTestCase();
-            static void TearDownTestCase();
-            void SetUp();
-            void TearDown();
-        protected:
-            std::shared_ptr<PluginSwitch> pluginSwitch_;
-        };
-    }// namespace ResourceSchedule
-}// namespace OHOS
+namespace ResourceSchedule {
+class PluginSwitchTest : public testing::Test {
+public:
+    static void SetUpTestCase();
+    static void TearDownTestCase();
+    void SetUp();
+    void TearDown();
+protected:
+    std::shared_ptr<PluginSwitch> pluginSwitch_;
+};
+} // namespace ResourceSchedule
+} // namespace OHOS
 
-#endif //FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_PLUGIN_SWITCH_TEST_H
+#endif // FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_PLUGIN_SWITCH_TEST_H

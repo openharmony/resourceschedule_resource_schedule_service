@@ -26,17 +26,17 @@
 #undef private
 
 namespace OHOS {
-    namespace ResourceSchedule {
-        class ResSchedMgrTest : public testing::Test {
-        public:
-            static void SetUpTestCase();
-            static void TearDownTestCase();
-            void SetUp();
-            void TearDown();
-        protected:
-            std::shared_ptr<ResData> ReportData(uint32_t resType);
-        };
-    }// namespace ResourceSchedule
-}// namespace OHOS
+namespace ResourceSchedule {
+class ResSchedMgrTest : public testing::Test {
+public:
+    static void SetUpTestCase();
+    static void TearDownTestCase();
+    void SetUp();
+    void TearDown();
+protected:
+    std::shared_ptr<ResData> ReportData(uint32_t resType);
+};
+} // namespace ResourceSchedule
+} // namespace OHOS
 
-#endif //FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_RES_SCHED_MGR_TEST_H
+#endif // FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_RES_SCHED_MGR_TEST_H

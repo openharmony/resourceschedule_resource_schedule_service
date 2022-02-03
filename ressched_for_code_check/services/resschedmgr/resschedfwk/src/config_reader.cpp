@@ -14,7 +14,6 @@
  */
 
 #include "config_reader.h"
-#include <map>
 #include "res_sched_log.h"
 
 using namespace std;
@@ -175,11 +174,11 @@ PluginConfig ConfigReader::GetConfig(const std::string& pluginName, const std::s
     PluginConfigMap configMap = allPluginConfigs_[pluginName];
     auto itConfig = configMap.find(configName);
     if (itConfig == configMap.end()) {
-        RESSCHED_LOGE("ConfigReader::GetConfig pluginName:%{public}s config:%{public}s null!", pluginName.c_str(), configName.c_str());
+        RESSCHED_LOGE("ConfigReader::GetConfig pluginName:%{public}s config:%{public}s null!",
+            pluginName.c_str(), configName.c_str());
         return config;
     }
     return configMap[configName];
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS

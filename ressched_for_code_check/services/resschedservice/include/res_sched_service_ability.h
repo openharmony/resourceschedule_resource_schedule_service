@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 class ResSchedServiceAbility : public SystemAbility {
     DECLARE_SYSTEM_ABILITY(ResSchedServiceAbility);
 
@@ -41,5 +40,4 @@ private:
 
 } // namespace ResourceSchedule
 } // namespace OHOS
-
 #endif // FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_SERVICE_ABILITY_H
