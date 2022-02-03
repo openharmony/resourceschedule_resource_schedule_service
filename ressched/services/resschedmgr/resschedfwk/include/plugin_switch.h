@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 struct PluginInfo {
     std::string libPath;
     bool switchOn = false;
@@ -54,7 +53,6 @@ private:
 
     std::list<PluginInfo> pluginInfoList_;
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 

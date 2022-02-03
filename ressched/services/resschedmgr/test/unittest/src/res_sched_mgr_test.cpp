@@ -52,8 +52,8 @@ void ResSchedMgrTest::TearDown()
  */
 HWTEST_F(ResSchedMgrTest, Init001, TestSize.Level1)
 {
-     ResSchedMgr::GetInstance().Init();
-     EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ != nullptr);
+    ResSchedMgr::GetInstance().Init();
+    EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ != nullptr);
 }
 
 /**
@@ -65,10 +65,8 @@ HWTEST_F(ResSchedMgrTest, Init001, TestSize.Level1)
  */
 HWTEST_F(ResSchedMgrTest, Init002, TestSize.Level1)
 {
-
     ResSchedMgr::GetInstance().Stop();
     EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ == nullptr);
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS

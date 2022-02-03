@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 REGISTER_SYSTEM_ABILITY_BY_ID(ResSchedServiceAbility, RES_SCHED_SYS_ABILITY_ID, true);
 
 void ResSchedServiceAbility::OnStart()
@@ -44,6 +43,5 @@ void ResSchedServiceAbility::OnStop()
     CgroupSchedDeinit();
     RESSCHED_LOGI("ResSchedServiceAbility::OnStop!");
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS
