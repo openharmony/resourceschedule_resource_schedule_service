@@ -19,7 +19,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 namespace {
     const std::string RES_SCHED_CLIENT_SO = "/system/lib/libressched_client.z.so";
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "ResSchedUtils"};
@@ -56,6 +55,5 @@ void ResSchedUtils::ReportDataInProcess(uint32_t resType, int64_t value, const s
     }
     reportFunc_(resType, value, payload);
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS

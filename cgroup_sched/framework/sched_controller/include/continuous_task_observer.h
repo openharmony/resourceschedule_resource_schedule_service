@@ -18,7 +18,7 @@
 
 #include "../../../dummy_adaption/background_task_mgr/continuous_task_dummy.h"
 
-namespace OHOS {    
+namespace OHOS {
 namespace ResourceSchedule {
 using OHOS::BackgroundTaskMgr::ContinuousTaskEventSubscriber;
 using OHOS::BackgroundTaskMgr::ContinuousTaskConstant;
@@ -47,10 +47,11 @@ private:
 
     inline std::string PackPayload(const std::shared_ptr<ContinuousTaskEventData>& eventData) const
     {
-        return std::to_string(eventData->GetCreatorPid()) + "," + std::to_string(eventData->GetCreatorUid()) + "," + eventData->GetAbilityName();
+        return std::to_string(eventData->GetCreatorPid()) + "," +
+               std::to_string(eventData->GetCreatorUid()) + "," +
+               eventData->GetAbilityName();
     }
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 #endif // CONTINUOUS_TASK_OBSERVER_H

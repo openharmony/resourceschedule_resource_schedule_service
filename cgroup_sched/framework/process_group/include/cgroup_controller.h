@@ -17,14 +17,13 @@
 #ifndef OHOS_RESOURCE_SCHEDULE_SERVICE_CGROUP_SCHED_FRAMEWORKS_PROCESS_GROUP_INCLUDE_CGROUP_CONTROLLER_H
 #define OHOS_RESOURCE_SCHEDULE_SERVICE_CGROUP_SCHED_FRAMEWORKS_PROCESS_GROUP_INCLUDE_CGROUP_CONTROLLER_H
 
-#include "sched_policy.h"
 #include <string>
 #include <vector>
+#include "sched_policy.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
-
 class CgroupController {
 public:
     CgroupController(const std::string& name, const std::string& path);
@@ -35,8 +34,15 @@ public:
     CgroupController(CgroupController&& controller);
     CgroupController& operator=(CgroupController&& controller);
 
-    std::string GetName() { return path_; }
-    std::string GetPath() { return name_; }
+    const inline std::string GetName() const
+    {
+        return path_;
+    }
+
+    const inline std::string GetPath() const
+    {
+        return name_;
+    }
     bool IsEnabled();
     bool SetThreadSchedPolicy(int tid, SchedPolicy policy, bool isSetThreadGroup);
     bool AddSchedPolicy(SchedPolicy policy, const std::string& subgroup);
@@ -52,7 +58,6 @@ private:
     bool AddThreadGroupSchedPolicy(SchedPolicy policy, const std::string& subgroup);
     static bool AddTidToCgroup(int tid, int fd);
 };
-
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

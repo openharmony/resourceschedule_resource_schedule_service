@@ -21,7 +21,6 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
-
 std::string FormatString(const char* fmt, va_list vararg);
 
 std::string StringPrintf(const char* fmt, ...);
@@ -33,7 +32,6 @@ bool WriteStringToFile(int fd, const std::string& content);
 bool WriteStringToFile(const std::string& content, const std::string& fileName);
 
 bool ReadFileToStringForVFS(const std::string& fileName, std::string& content);
-
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

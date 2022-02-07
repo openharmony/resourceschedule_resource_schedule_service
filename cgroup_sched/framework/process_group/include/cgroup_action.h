@@ -21,8 +21,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
-
-class CgroupAction{
+class CgroupAction {
 public:
     static CgroupAction& GetInstance();
 
@@ -39,7 +38,6 @@ private:
     bool IsEnabled();
     static bool ParseConfigFileToJsonObj(Json::Value& jsonObjRoot);
 };
-
 } // namepsace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -23,7 +23,6 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
-
 #define LOG_TAG_PGCGS "pg-cgs"
 #define LOG_TAG_DOMAIN_ID_PGCGS 0xD001700
 
@@ -38,9 +37,7 @@ static constexpr OHOS::HiviewDFX::HiLogLabel PGCGS_LOG_LABEL = {
 #define PGCGS_LOGW(...) (void)OHOS::HiviewDFX::HiLog::Warn(PGCGS_LOG_LABEL, __VA_ARGS__)
 #define PGCGS_LOGI(...) (void)OHOS::HiviewDFX::HiLog::Info(PGCGS_LOG_LABEL, __VA_ARGS__)
 #define PGCGS_LOGD(...) (void)OHOS::HiviewDFX::HiLog::Debug(PGCGS_LOG_LABEL, __VA_ARGS__)
-
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
-
-#endif //CGROUP_SCHED_LOG_H
+#endif // CGROUP_SCHED_LOG_H

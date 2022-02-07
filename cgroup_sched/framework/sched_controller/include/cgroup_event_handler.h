@@ -23,15 +23,14 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
-using OHOS::AppExecFwk::EventHandler;
-using OHOS::AppExecFwk::EventRunner;
-using OHOS::Rosen::WindowType;
-
 namespace {
     const int INNER_EVENT_ID_REG_STATE_OBSERVERS = 0;
     const int DELAYED_REGISTER_DURATION = 5000;
 }
+
+using OHOS::AppExecFwk::EventHandler;
+using OHOS::AppExecFwk::EventRunner;
+using OHOS::Rosen::WindowType;
 
 class CgroupEventHandler : public EventHandler {
 public:
@@ -40,8 +39,10 @@ public:
     virtual void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
     void SetSupervisor(std::shared_ptr<Supervisor> supervisor);
     void HandleForegroundApplicationChanged(uid_t uid, std::string bundleName, int32_t state);
-    void HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName, std::string abilityName, sptr<IRemoteObject> token, int32_t abilityState);
-    void HandleExtensionStateChanged(uid_t uid, pid_t pid, std::string bundleName, std::string abilityName, sptr<IRemoteObject> token, int32_t extensionState);
+    void HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName, std::string abilityName,
+        sptr<IRemoteObject> token, int32_t abilityState);
+    void HandleExtensionStateChanged(uid_t uid, pid_t pid, std::string bundleName, std::string abilityName,
+        sptr<IRemoteObject> token, int32_t extensionState);
     void HandleProcessCreated(uid_t uid, pid_t pid, std::string bundleName);
     void HandleProcessDied(uid_t uid, pid_t pid, std::string bundleName);
     void HandleTransientTaskStart(uid_t uid, pid_t pid, std::string packageName);
@@ -49,8 +50,10 @@ public:
     void HandleContinuousTaskStart(uid_t uid, pid_t pid, std::string abilityName);
     void HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::string abilityName);
     void HandleWindowFocusChange(int32_t windowId, int32_t displayId, WindowType windowType, sptr<IRemoteObject> token);
-    void HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken, WindowType windowType, int32_t displayId);
-    void HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken, WindowType windowType, int32_t displayId);
+    void HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
+        WindowType windowType, int32_t displayId);
+    void HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
+        WindowType windowType, int32_t displayId);
 private:
     std::shared_ptr<Supervisor> supervisor_;
 };

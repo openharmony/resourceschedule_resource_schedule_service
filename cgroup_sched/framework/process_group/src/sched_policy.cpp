@@ -24,8 +24,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
-
-int SetThreadSchedPolicy(int tid, int policy) 
+int SetThreadSchedPolicy(int tid, int policy)
 {
     if (policy < SP_DEFAULT || policy > SP_MAX || tid < 0) {
         return -1;
@@ -37,9 +36,10 @@ int SetThreadSchedPolicy(int tid, int policy)
     return CgroupAction::GetInstance().SetThreadSchedPolicy(tid, schedPolicy) ? 0 : -1;
 }
 
-int SetThreadGroupSchedPolicy(int pid, int policy) {
+int SetThreadGroupSchedPolicy(int pid, int policy)
+{
     if (policy < SP_DEFAULT || policy > SP_MAX || pid < 0) {
-        return -1; 
+        return -1;
     }
     if (pid == 0) {
         pid = getpid();
@@ -48,8 +48,9 @@ int SetThreadGroupSchedPolicy(int pid, int policy) {
     return  CgroupAction::GetInstance().SetThreadGroupSchedPolicy(pid, schedPolicy) ? 0 : -1;
 }
 
-int GetThreadSchedPolicy(int tid, SchedPolicy* policy) {
-    if( tid < 0) {
+int GetThreadSchedPolicy(int tid, SchedPolicy* policy)
+{
+    if (tid < 0) {
         return -1;
     }
     if (tid == 0) {
@@ -93,7 +94,6 @@ const char* GetSchedPolicyFullName(SchedPolicy policy)
         return "error";
     }
 }
-
 } // namepsace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

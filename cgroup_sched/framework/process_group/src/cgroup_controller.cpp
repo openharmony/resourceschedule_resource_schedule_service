@@ -14,7 +14,7 @@
  */
 #include "cgroup_controller.h"
 
-#include <errno.h>
+#include <cerrno>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
@@ -25,7 +25,6 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
-
 CgroupController::CgroupController(const std::string& name, const std::string& path)
     : name_(name), path_(path), policyToTaskFd_(SP_CNT, -1), policyToProcFd_(SP_CNT, -1) {}
 
@@ -52,7 +51,7 @@ CgroupController::CgroupController(CgroupController&& controller)
 CgroupController& CgroupController::operator=(CgroupController&& controller)
 {
     name_ = std::move(controller.name_);
-    path_ = std::move(controller.path_), 
+    path_ = std::move(controller.path_);
     policyToTaskFd_ = std::move(controller.policyToTaskFd_);
     policyToProcFd_ = std::move(controller.policyToProcFd_);
     return *this;
@@ -106,7 +105,7 @@ bool CgroupController::GetTaskGroup(int tid, std::string& subgroup)
         PGCGS_LOGE("GetTaskGroup: fail to read  = %{public}s", filePath.c_str());
         return -1;
     }
-    std::string cgTag = StringPrintf(":%s:", name_.c_str()); 
+    std::string cgTag = StringPrintf(":%s:", name_.c_str());
     size_t startPos = content.find(cgTag);
     if (startPos == std::string::npos) {
         return false;
@@ -138,7 +137,8 @@ bool CgroupController::AddThreadSchedPolicy(SchedPolicy policy, const std::strin
     return true;
 }
 
-bool CgroupController::AddThreadGroupSchedPolicy(SchedPolicy policy, const std::string& subgroup) {
+bool CgroupController::AddThreadGroupSchedPolicy(SchedPolicy policy, const std::string& subgroup)
+{
     std::string filePath;
     if (subgroup.empty()) {
         filePath = StringPrintf("%s/cgroup.procs", path_.c_str());
@@ -147,13 +147,13 @@ bool CgroupController::AddThreadGroupSchedPolicy(SchedPolicy policy, const std::
     }
     int fd = TEMP_FAILURE_RETRY(open(filePath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
-        PGCGS_LOGE("AddThreadGroupSchedPolicy open file failed; file = %{public}s'; fd = %{public}d ", filePath.c_str(), fd);
+        PGCGS_LOGE("AddThreadGroupSchedPolicy open file failed; file = %{public}s'; fd = %{public}d ",
+            filePath.c_str(), fd);
         return false;
     }
     policyToProcFd_[policy] = fd;
     return true;
 }
-
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

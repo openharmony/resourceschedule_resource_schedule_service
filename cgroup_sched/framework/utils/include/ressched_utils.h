@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 using ReportDataFunc = void (*)(uint32_t resType, int64_t value, const std::string& payload);
 
 class ResSchedUtils {
@@ -49,7 +48,6 @@ private:
 
     ReportDataFunc reportFunc_ = nullptr;
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // RES_SCHED_UTILS_H 
+#endif // RES_SCHED_UTILS_H
