@@ -55,6 +55,5 @@ void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const std::string&
         PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
     });
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS

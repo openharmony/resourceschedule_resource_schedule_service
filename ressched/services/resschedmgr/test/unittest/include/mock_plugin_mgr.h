@@ -16,21 +16,22 @@
 #ifndef FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_MOCK_H
 #define FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_MOCK_H
 
+#include <algorithm>
+#include <dlfcn.h>
+#include <iostream>
 #include <memory>
 #include <thread>
-#include "plugin_mgr.h"
-#include "event_runner.h"
-#include <iostream>
-#include <dlfcn.h>
 #include "datetime_ex.h"
-#include <algorithm>
+#include "event_runner.h"
+#include "plugin_mgr.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 class MockPluginMgr : public PluginMgr {
 public:
     MockPluginMgr() = default;
-    const std::string TEST_PREFIX_RES_SWITCH_PATH = "/data/test/resource/resschedfwk/parseswitch/res_sched_plugin_switch.xml";
+    const std::string TEST_PREFIX_RES_SWITCH_PATH =
+        "/data/test/resource/resschedfwk/parseswitch/res_sched_plugin_switch.xml";
     const std::string TEST_PREFIX_RES_PATH = "/data/test/resource/resschedfwk/parseconfig/res_sched_config.xml";
     const std::string MOCK_RUNNER_NAME = "mockRssDispatcher";
     const int DISPATCH_WARNING_TIME = 1; // ms
@@ -67,12 +68,13 @@ public:
         }
 
         if (dispatcherHandler_ == nullptr) {
-            dispatcherHandler_ = std::make_shared<AppExecFwk::EventHandler>(AppExecFwk::EventRunner::Create(MOCK_RUNNER_NAME));
+            dispatcherHandler_ = std::make_shared<AppExecFwk::EventHandler>
+                (AppExecFwk::EventRunner::Create(MOCK_RUNNER_NAME));
         }
         initStatus = INIT_SUCCESS;
     }
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif //FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDEMOCK_H
+
+#endif // FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDEMOCK_H

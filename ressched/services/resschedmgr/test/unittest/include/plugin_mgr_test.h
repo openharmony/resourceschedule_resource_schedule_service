@@ -19,7 +19,7 @@
 
 #include "gtest/gtest.h"
 #include "plugin_mgr.h"
-#include "mock.h"
+#include "mock_plugin_mgr.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -30,10 +30,9 @@ public:
     void SetUp();
     void TearDown();
 protected:
-        std::shared_ptr<MockPluginMgr> pluginMgr_;
-
+    std::shared_ptr<MockPluginMgr> pluginMgr_;
 };
-}// namespace ResourceSchedule
-}// namespace OHOS
+} // namespace ResourceSchedule
+} // namespace OHOS
 
-#endif //FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_PLUGIN_MGR_TEST_H
+#endif // FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_PLUGIN_MGR_TEST_H

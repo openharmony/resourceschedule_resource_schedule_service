@@ -65,8 +65,8 @@ HWTEST_F(ConfigReaderTest, LoadConfigFile001, TestSize.Level1)
      * @tc.steps: step1. load not exist config file
      * @tc.expected: step1. return false when load not exist file
      */
-     bool ret = configReader_->LoadFromCustConfigFile("fileNotExist");
-     EXPECT_TRUE(!ret);
+    bool ret = configReader_->LoadFromCustConfigFile("fileNotExist");
+    EXPECT_TRUE(!ret);
 }
 
 /**

@@ -14,7 +14,6 @@
  */
 
 #include "plugin_switch.h"
-#include <map>
 #include "res_sched_log.h"
 
 using namespace std;
@@ -60,30 +59,29 @@ bool PluginSwitch::LoadFromConfigFile(const string& configFile)
         }
 
         xmlChar *attrValue = nullptr;
-        if (xmlStrcmp(currNodePtr->name, reinterpret_cast<const xmlChar*>(XML_TAG_PLUGIN)) == 0) {
-            PluginInfo info;
-            attrValue = xmlGetProp(currNodePtr, reinterpret_cast<const xmlChar*>(XML_ATTR_LIB_PATH));
-            if (attrValue == nullptr) {
-                RESSCHED_LOGW("PluginSwitch::LoadFromConfigFile libPath null!");
-                continue;
-            }
-            info.libPath = reinterpret_cast<const char*>(attrValue);
-            xmlFree(attrValue);
-
-            attrValue = xmlGetProp(currNodePtr, reinterpret_cast<const xmlChar*>(XML_ATTR_SWITCH));
-            if (attrValue != nullptr) {
-                std::string value = reinterpret_cast<const char*>(attrValue);
-                if (value == "1") {
-                    info.switchOn = true;
-                }
-                xmlFree(attrValue);
-            }
-            pluginInfoList.emplace_back(info);
-        } else {
+        if (xmlStrcmp(currNodePtr->name, reinterpret_cast<const xmlChar*>(XML_TAG_PLUGIN)) != 0) {
             RESSCHED_LOGW("PluginSwitch::LoadFromConfigFile plugin (%{public}s) config wrong!", currNodePtr->name);
             xmlFreeDoc(xmlDocPtr);
             return false;
         }
+        PluginInfo info;
+        attrValue = xmlGetProp(currNodePtr, reinterpret_cast<const xmlChar*>(XML_ATTR_LIB_PATH));
+        if (attrValue == nullptr) {
+            RESSCHED_LOGW("PluginSwitch::LoadFromConfigFile libPath null!");
+            continue;
+        }
+        info.libPath = reinterpret_cast<const char*>(attrValue);
+        xmlFree(attrValue);
+
+        attrValue = xmlGetProp(currNodePtr, reinterpret_cast<const xmlChar*>(XML_ATTR_SWITCH));
+        if (attrValue != nullptr) {
+            std::string value = reinterpret_cast<const char*>(attrValue);
+            if (value == "1") {
+                info.switchOn = true;
+            }
+            xmlFree(attrValue);
+        }
+        pluginInfoList.emplace_back(info);
     }
     xmlFreeDoc(xmlDocPtr);
     pluginInfoList_ = std::move(pluginInfoList);
@@ -94,6 +92,5 @@ std::list<PluginInfo> PluginSwitch::GetPluginSwitch()
 {
     return pluginInfoList_;
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS

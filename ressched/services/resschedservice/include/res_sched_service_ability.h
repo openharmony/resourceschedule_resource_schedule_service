@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 class ResSchedServiceAbility : public SystemAbility {
     DECLARE_SYSTEM_ABILITY(ResSchedServiceAbility);
 
@@ -38,7 +37,6 @@ private:
 
     DISALLOW_COPY_AND_MOVE(ResSchedServiceAbility);
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 

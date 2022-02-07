@@ -15,11 +15,11 @@
 
 #define private public
 #include <dlfcn.h>
-#include "plugin_mgr_test.h"
-#include "res_type.h"
 #include "plugin_mgr.h"
+#include "res_type.h"
+#include "plugin_mgr_test.h"
 #undef private
-#include "mock.h"
+#include "mock_plugin_mgr.h"
 
 using namespace std;
 using namespace testing::ext;

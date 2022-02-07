@@ -32,7 +32,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 using OnDispatchResourceFunc = void (*)(const std::shared_ptr<ResData>&);
 using OnPluginDisableFunc = void (*)();
 
@@ -108,7 +107,6 @@ private:
     // handler use for dispatch resource data
     std::shared_ptr<OHOS::AppExecFwk::EventHandler> dispatcherHandler_;
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 
