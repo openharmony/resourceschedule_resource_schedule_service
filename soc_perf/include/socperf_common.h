@@ -326,6 +326,9 @@ static inline int Min(int num1, int num2, int num3)
 static inline bool IsNumber(std::string str)
 {
     for (int i = 0; i < (int)str.size(); i++) {
+        if (i == 0 && str.at(i) == '-') {
+            continue;
+        }
         if (str.at(i) < '0' || str.at(i) > '9') {
             return false;
         }
