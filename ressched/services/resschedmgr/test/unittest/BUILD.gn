@@ -24,7 +24,7 @@ config("ut_resschedfwk_config") {
   include_dirs = [ "include" ]
 }
 
-module_output_path = "ressched/resschedfwk"
+module_output_path = "resource_schedule_service/resschedfwk"
 
 private_external_deps = [
   "eventhandler:libeventhandler",
