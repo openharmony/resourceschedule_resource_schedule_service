@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 class RmsApplicationStateObserver;
 class TransientTaskObserver;
 class ContinuousTaskObserver;
@@ -47,11 +46,13 @@ public:
     void AdjustAllProcessGroup(Application &app, AdjustSource source);
     int GetProcessGroup(pid_t pid);
 
-    const inline std::shared_ptr<CgroupEventHandler> GetCgroupEventHandler() const {
+    const inline std::shared_ptr<CgroupEventHandler> GetCgroupEventHandler() const
+    {
         return cgHandler_;
     }
 
-    const inline std::shared_ptr<Supervisor> GetSupervisor() const {
+    const inline std::shared_ptr<Supervisor> GetSupervisor() const
+    {
         return supervisor_;
     }
 
@@ -80,7 +81,6 @@ private:
     inline void SubscribeContinuousTask();
     inline void SubscribeWindowState();
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // SCHED_CONTROLLER_H 
+#endif // SCHED_CONTROLLER_H

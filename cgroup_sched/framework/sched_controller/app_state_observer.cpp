@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 namespace {
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "RmsAppStateObserver"};
 }
@@ -38,7 +37,8 @@ void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateD
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander != nullptr) {
         cgHander->PostTask([cgHander, appStateData] {
-            cgHander->HandleForegroundApplicationChanged(appStateData.uid, appStateData.bundleName, appStateData.state);
+            cgHander->HandleForegroundApplicationChanged(appStateData.uid, appStateData.bundleName,
+                appStateData.state);
         });
     }
 
@@ -56,15 +56,17 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander != nullptr) {
         cgHander->PostTask([cgHander, abilityStateData] {
-            cgHander->HandleAbilityStateChanged(abilityStateData.uid, abilityStateData.pid, abilityStateData.bundleName,
-                abilityStateData.abilityName, abilityStateData.token, abilityStateData.abilityState);
+            cgHander->HandleAbilityStateChanged(abilityStateData.uid, abilityStateData.pid,
+                abilityStateData.bundleName, abilityStateData.abilityName,
+                abilityStateData.token, abilityStateData.abilityState);
         });
     }
 
     std::string payload = std::to_string(abilityStateData.pid) + "," + // pid
             std::to_string(abilityStateData.uid) + "," + // uid
             abilityStateData.bundleName; // bundle name
-    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_ABILITY_STATE_CHANGE, abilityStateData.abilityState, payload);
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
+        abilityStateData.abilityState, payload);
 }
 
 void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData &abilityStateData)
@@ -76,15 +78,17 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander != nullptr) {
         cgHander->PostTask([cgHander, abilityStateData] {
-            cgHander->HandleExtensionStateChanged(abilityStateData.uid, abilityStateData.pid, abilityStateData.bundleName,
-                    abilityStateData.abilityName, abilityStateData.token, abilityStateData.abilityState);
+            cgHander->HandleExtensionStateChanged(abilityStateData.uid, abilityStateData.pid,
+                abilityStateData.bundleName, abilityStateData.abilityName,
+                abilityStateData.token, abilityStateData.abilityState);
         });
     }
 
     std::string payload = std::to_string(abilityStateData.pid) + "," + // pid
             std::to_string(abilityStateData.uid) + "," + // uid
             abilityStateData.bundleName; // bundle name
-    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_EXTENSION_STATE_CHANGE, abilityStateData.abilityState, payload);
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_EXTENSION_STATE_CHANGE,
+        abilityStateData.abilityState, payload);
 }
 
 void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processData)

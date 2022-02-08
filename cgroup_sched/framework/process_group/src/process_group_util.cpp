@@ -23,7 +23,6 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
-
 std::string FormatString(const char* fmt, va_list vararg)
 {
     static std::vector<char> buffer(512);
@@ -74,7 +73,8 @@ bool ReadFileToString(const std::string& fileName, std::string& content)
 }
 
 
-bool ReadFileToStringForVFS(const std::string& fileName, std::string& content) {
+bool ReadFileToStringForVFS(const std::string& fileName, std::string& content)
+{
     std::ifstream fin(fileName.c_str(), std::ios::in);
     if (!fin) {
         return false;
@@ -90,7 +90,7 @@ bool WriteStringToFile(int fd, const std::string& content)
     size_t remaining = content.size();
     while (remaining > 0) {
         ssize_t n = write(fd, p, remaining);
-        if(n == -1) {
+        if (n == -1) {
             return false;
         }
         p += n;
@@ -113,7 +113,6 @@ bool WriteStringToFile(const std::string& content, const std::string& filePath)
     close(fd);
     return result;
 }
-
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

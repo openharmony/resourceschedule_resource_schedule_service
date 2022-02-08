@@ -33,13 +33,12 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
-using OHOS::ResourceSchedule::CgroupSetting::SchedPolicy;
-
 namespace {
     const std::string CG_HANDLER_THREAD = "CgroupEventHandler";
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "SchedController"};
 }
+
+using OHOS::ResourceSchedule::CgroupSetting::SchedPolicy;
 
 OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
 {

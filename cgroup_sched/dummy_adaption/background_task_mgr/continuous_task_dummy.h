@@ -81,11 +81,16 @@ public:
 
 class BackgroundTaskMgrHelper_ {
 public:
-    static bool RequestSubscribe(const ContinuousTaskEventSubscriber &subscriber) {return true;};
-    static bool RequestUnsubscribe(const ContinuousTaskEventSubscriber &subscriber) {return true;};
+    static bool RequestSubscribe(const ContinuousTaskEventSubscriber &subscriber)
+    {
+        return true;
+    }
+
+    static bool RequestUnsubscribe(const ContinuousTaskEventSubscriber &subscriber)
+    {
+        return true;
+    }
 };
-
 }
 }
-
 #endif // CONTINUOUS_TASK_DUMMY_H

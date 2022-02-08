@@ -24,13 +24,12 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 namespace {
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "CgroupEventHandler"};
 }
 
 CgroupEventHandler::CgroupEventHandler(const std::shared_ptr<EventRunner> &runner)
-        : EventHandler(runner)
+    : EventHandler(runner)
 {}
 
 CgroupEventHandler::~CgroupEventHandler()
@@ -74,14 +73,14 @@ void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, std::stri
 }
 
 void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName,
-        std::string abilityName, sptr<IRemoteObject> token, int32_t abilityState)
+    std::string abilityName, sptr<IRemoteObject> token, int32_t abilityState)
 {
     if (supervisor_ == nullptr) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}p, %{public}d",
-            __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), token.GetRefPtr(), abilityState);
+        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), token.GetRefPtr(), abilityState);
     ChronoScope cs("HandleAbilityStateChanged");
     if (abilityState == VALUE_INT(AbilityState::ABILITY_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
@@ -94,18 +93,19 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
     auto procRecord = app->GetProcessRecordNonNull(pid, abilityName);
     procRecord->abilityState_ = abilityState;
     procRecord->token_ = token;
-    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), AdjustSource::ADJS_ABILITY_STATE);
+    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_ABILITY_STATE);
 }
 
 void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::string bundleName,
-        std::string abilityName, sptr<IRemoteObject> token, int32_t extensionState)
+    std::string abilityName, sptr<IRemoteObject> token, int32_t extensionState)
 {
     if (supervisor_ == nullptr) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}p, %{public}d",
-            __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), token.GetRefPtr(), extensionState);
+        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), token.GetRefPtr(), extensionState);
     ChronoScope cs("HandleExtensionStateChanged");
     if (extensionState == VALUE_INT(ExtensionState::EXTENSION_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
@@ -118,7 +118,8 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
     auto procRecord = app->GetProcessRecordNonNull(pid, abilityName);
     procRecord->extensionState_ = extensionState;
     procRecord->token_ = token;
-    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), AdjustSource::ADJS_EXTENSION_STATE);
+    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_EXTENSION_STATE);
 }
 
 void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, std::string bundleName)
@@ -132,7 +133,8 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, std::string 
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid, bundleName);
     std::shared_ptr<ProcessRecord> procRecord = std::make_shared<ProcessRecord>(uid, pid, bundleName);
     app->AddProcessRecord(procRecord);
-    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), AdjustSource::ADJS_PROCESS_CREATE);
+    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_PROCESS_CREATE);
 }
 
 void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, std::string bundleName)
@@ -194,7 +196,8 @@ void CgroupEventHandler::HandleContinuousTaskStart(uid_t uid, pid_t pid, std::st
         return;
     }
     procRecord->runningContinuousTask_ = true;
-    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), AdjustSource::ADJS_CONTINUOUS_BEGIN);
+    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_CONTINUOUS_BEGIN);
 }
 
 void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::string abilityName)
@@ -211,16 +214,19 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::s
         return;
     }
     procRecord->runningContinuousTask_ = false;
-    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), AdjustSource::ADJS_CONTINUOUS_END);
+    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_CONTINUOUS_END);
 }
 
-void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken, WindowType windowType, int32_t displayId)
+void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
+    WindowType windowType, int32_t displayId)
 {
     if (supervisor_ == nullptr) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}p, %{public}d, %{public}d", __func__, windowId, abilityToken.GetRefPtr(), windowType, displayId);
+    CGS_LOGD("%{public}s : %{public}d, %{public}p, %{public}d, %{public}d", __func__, windowId,
+        abilityToken.GetRefPtr(), windowType, displayId);
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
     {
@@ -230,8 +236,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
             return;
         }
         auto pidsMap = app->GetPidsMap();
-        for (auto iter = pidsMap.begin(); iter != pidsMap.end(); iter++)
-        {
+        for (auto iter = pidsMap.begin(); iter != pidsMap.end(); iter++) {
             auto pr = iter->second;
             if (pr != procRecord) {
                 pr->focused_ = false;
@@ -248,17 +253,19 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
             app->GetName() + "," + // bundle name
             std::to_string(windowId) + "," + // window id
             std::to_string(VALUE_INT(windowType)) + "," + // window type
-            std::to_string(displayId);// display id
+            std::to_string(displayId); // display id
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
 }
 
-void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken, WindowType windowType, int32_t displayId)
+void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
+    WindowType windowType, int32_t displayId)
 {
     if (supervisor_ == nullptr) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}p, %{public}d, %{public}d", __func__, windowId, abilityToken.GetRefPtr(), windowType, displayId);
+    CGS_LOGD("%{public}s : %{public}d, %{public}p, %{public}d, %{public}d", __func__, windowId,
+        abilityToken.GetRefPtr(), windowType, displayId);
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
     {
@@ -280,7 +287,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
             app->GetName() + "," + // bundle name
             std::to_string(windowId) + "," + // window id
             std::to_string(VALUE_INT(windowType)) + "," + // window type
-            std::to_string(displayId);// display id
+            std::to_string(displayId); // display id
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 1, payload);
 }
 } // namespace ResourceSchedule

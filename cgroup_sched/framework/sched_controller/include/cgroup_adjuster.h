@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 enum class AdjustSource {
     ADJS_BEGIN = 0,
     ADJS_FG_APP_CHANGE = ADJS_BEGIN,

@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 using OHOS::AppExecFwk::ApplicationState;
 using OHOS::AppExecFwk::AbilityState;
 using OHOS::AppExecFwk::ExtensionState;
@@ -117,7 +116,8 @@ public:
     std::shared_ptr<Application> GetAppRecordNonNull(int32_t uid, std::string bundleName);
     std::shared_ptr<ProcessRecord> FindProcessRecord(pid_t pid);
     void RemoveApplication(int32_t uid);
-    void SearchAbilityToken(std::shared_ptr<Application> &app, std::shared_ptr<ProcessRecord> &procRecord, sptr<IRemoteObject> token);
+    void SearchAbilityToken(std::shared_ptr<Application> &app, std::shared_ptr<ProcessRecord> &procRecord,
+        sptr<IRemoteObject> token);
 
 private:
     std::map<int32_t, std::shared_ptr<Application>> uidsMap_;

@@ -17,7 +17,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 std::shared_ptr<ProcessRecord> Application::AddProcessRecord(std::shared_ptr<ProcessRecord> pr)
 {
     if (pr != nullptr) {
@@ -54,8 +53,7 @@ std::shared_ptr<ProcessRecord> Application::GetProcessRecordNonNull(pid_t pid, s
 
 std::shared_ptr<ProcessRecord> Application::FindProcessRecord(sptr<IRemoteObject> token_)
 {
-    for (auto iter = pidsMap_.begin(); iter != pidsMap_.end(); iter++)
-    {
+    for (auto iter = pidsMap_.begin(); iter != pidsMap_.end(); iter++) {
         auto pr = iter->second;
         if (pr->token_ == token_) {
             return pr;
@@ -85,8 +83,7 @@ std::shared_ptr<Application> Supervisor::GetAppRecordNonNull(int32_t uid, std::s
 std::shared_ptr<ProcessRecord> Supervisor::FindProcessRecord(pid_t pid)
 {
     std::shared_ptr<ProcessRecord> pr = nullptr;
-    for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++)
-    {
+    for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++) {
         auto app = iter->second;
         pr = app->GetProcessRecord(pid);
         if (pr != nullptr) {
@@ -104,11 +101,11 @@ void Supervisor::RemoveApplication(int32_t uid)
     }
 }
 
-void Supervisor::SearchAbilityToken(std::shared_ptr<Application> &application, std::shared_ptr<ProcessRecord> &procRecord, sptr<IRemoteObject> token)
+void Supervisor::SearchAbilityToken(std::shared_ptr<Application> &application,
+    std::shared_ptr<ProcessRecord> &procRecord, sptr<IRemoteObject> token)
 {
     std::shared_ptr<ProcessRecord> pr = nullptr;
-    for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++)
-    {
+    for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++) {
         auto app = iter->second;
         pr = app->FindProcessRecord(token);
         if (pr != nullptr) {
@@ -118,6 +115,5 @@ void Supervisor::SearchAbilityToken(std::shared_ptr<Application> &application, s
         }
     }
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -20,11 +20,9 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 extern "C" void CgroupSchedInit();
 extern "C" void CgroupSchedDeinit();
 extern "C" int GetProcessGroup(pid_t pid);
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 

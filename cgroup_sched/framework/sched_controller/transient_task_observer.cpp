@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 namespace {
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "TransientTaskObserver"};
 }
@@ -59,6 +58,5 @@ void TransientTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientTa
 
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_TRANSIENT_TASK, 1, PackPayload(info));
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS

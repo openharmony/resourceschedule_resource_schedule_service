@@ -54,9 +54,7 @@ private:
         return processData.uid > 0 && processData.pid >= 0
             && processData.bundleName.size() > 0;
     }
-
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // APP_STATE_OBSERVER_H 
+#endif // APP_STATE_OBSERVER_H

@@ -34,7 +34,7 @@ CgroupAction& CgroupAction::GetInstance()
     return instance;
 }
 
-bool CgroupAction::SetThreadSchedPolicy(int tid, SchedPolicy policy) 
+bool CgroupAction::SetThreadSchedPolicy(int tid, SchedPolicy policy)
 {
     if (!IsEnabled()) {
         return false;
@@ -42,8 +42,8 @@ bool CgroupAction::SetThreadSchedPolicy(int tid, SchedPolicy policy)
     return CgroupMap::GetInstance().SetThreadSchedPolicy(tid, policy, false);
 }
 
-bool CgroupAction::SetThreadGroupSchedPolicy(int tid, SchedPolicy policy) 
-{  
+bool CgroupAction::SetThreadGroupSchedPolicy(int tid, SchedPolicy policy)
+{
     if (!IsEnabled()) {
         return false;
     }
@@ -60,13 +60,14 @@ bool CgroupAction::loadConfigFile()
     return CgroupMap::GetInstance().loadConfigFromJsonObj(jsonObjRoot);
 }
 
-bool CgroupAction::IsEnabled() 
+bool CgroupAction::IsEnabled()
 {
     static bool enable = loadConfigFile();
     return enable;
 }
 
-int CgroupAction::GetSchedPolicy(int tid, SchedPolicy* policy) {
+int CgroupAction::GetSchedPolicy(int tid, SchedPolicy* policy)
+{
     if (!IsEnabled()) {
         return -1;
     }
@@ -110,7 +111,6 @@ bool CgroupAction::ParseConfigFileToJsonObj(Json::Value& jsonObjRoot)
     }
     return true;
 }
-
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

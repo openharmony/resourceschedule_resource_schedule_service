@@ -26,7 +26,6 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
-
 class CgroupMap {
 public:
     static CgroupMap& GetInstance();
@@ -48,7 +47,6 @@ private:
     void AddCgroupController(const std::string& name, CgroupController& controller);
     static bool CheckCgroupJsonConfig(const Json::Value& cgroupObj);
 };
-
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

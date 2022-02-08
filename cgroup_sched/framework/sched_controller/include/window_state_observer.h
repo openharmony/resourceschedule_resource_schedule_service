@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 using OHOS::Rosen::IFocusChangedListener;
 using OHOS::Rosen::WindowType;
 
@@ -34,7 +33,6 @@ public:
     void OnUnfocused(uint32_t windowId, sptr<IRemoteObject> abilityToken,
         WindowType windowType, Rosen::DisplayId displayId) override;
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 #endif // WINDOW_STATE_OBSERVER_H

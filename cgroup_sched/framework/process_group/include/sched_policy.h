@@ -19,7 +19,6 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
-
 /**
  * Schedule policy define, keep in sync with
  * (1) cgroup_controller.cpp: bool QuerySchedPolicyFullName(const std::string& name, SchedPolicy& policy);
@@ -65,7 +64,7 @@ int SetThreadSchedPolicy(int pid, int policy);
  * On platforms which support gettid(), zero tid means current thread.
  * Return value: 0 for success, or -1 for error and set errno.
  *
- * @param tid thread id. 
+ * @param tid thread id.
  * @param policy a policy pointer.
  * @return Return value: 0 for success, or -errno for error.
  */
@@ -90,7 +89,6 @@ const char* GetSchedPolicyShortenedName(SchedPolicy policy);
  * @return Return a displayable string corresponding to policy.
  */
 const char* GetSchedPolicyFullName(SchedPolicy policy);
-
 } // namepsace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

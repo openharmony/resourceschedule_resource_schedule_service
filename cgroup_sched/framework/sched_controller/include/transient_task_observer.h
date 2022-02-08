@@ -48,7 +48,6 @@ private:
         return std::to_string(info->GetPid()) + "," + std::to_string(info->GetUid()) + "," + info->GetPackageName();
     }
 };
-
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // TRANSIENT_TASK_OBSERVER_H 
+#endif // TRANSIENT_TASK_OBSERVER_H

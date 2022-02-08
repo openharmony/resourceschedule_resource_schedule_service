@@ -19,14 +19,12 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
-
 namespace {
-    constexpr const char* const JSON_KEY_CGROUPS = "Cgroups";
-    constexpr const char* const JSON_KEY_CONTROLLER = "controller";
-    constexpr const char* const JSON_KEY_PATH = "path";
-    constexpr const char* const JSON_KEY_SCHED_POLICY = "sched_policy";
+    constexpr const char * const JSON_KEY_CGROUPS = "Cgroups";
+    constexpr const char * const JSON_KEY_CONTROLLER = "controller";
+    constexpr const char * const JSON_KEY_PATH = "path";
+    constexpr const char * const JSON_KEY_SCHED_POLICY = "sched_policy";
 }
-
 
 CgroupMap& CgroupMap::GetInstance()
 {
@@ -36,8 +34,8 @@ CgroupMap& CgroupMap::GetInstance()
 
 bool CgroupMap::SetThreadSchedPolicy(int tid, SchedPolicy policy, bool isThreadGroup)
 {
-    for(auto it = controllers_.begin(); it != controllers_.end(); ++it) {
-        CgroupController& controller = it -> second; 
+    for (auto it = controllers_.begin(); it != controllers_.end(); ++it) {
+        CgroupController& controller = it -> second;
         if (controller.IsEnabled()) {
             if (!controller.SetThreadSchedPolicy(tid, policy, isThreadGroup)) {
                 PGCGS_LOGD("SetThreadSchedPolicy failed, controller = %{public}s, policy = %{public}d.",
@@ -64,7 +62,7 @@ bool CgroupMap::loadConfigFromJsonObj(const Json::Value& jsonObj)
     int count = 0;
     for (Json::Value::ArrayIndex i = 0; i < jsonArrObj.size(); ++i) {
         const Json::Value& cgroupObj = jsonArrObj[i];
-        // check cgroup schedule policy json config format 
+        // check cgroup schedule policy json config format
         if (!CheckCgroupJsonConfig(cgroupObj)) {
             PGCGS_LOGE("cgroup json config format error, ingore it.");
             continue;
@@ -77,7 +75,7 @@ bool CgroupMap::loadConfigFromJsonObj(const Json::Value& jsonObj)
 
         for (int i = 0; i < SP_CNT; i++) {
             SchedPolicy policy = SchedPolicy(i);
-            const char * keyString = GetSchedPolicyFullName(policy);
+            const char* keyString = GetSchedPolicyFullName(policy);
             std::string relPath = schedPolicyJsonObj[keyString].asString();
             controller.AddSchedPolicy(policy, relPath);
         }
@@ -91,7 +89,7 @@ bool CgroupMap::loadConfigFromJsonObj(const Json::Value& jsonObj)
     return true;
 }
 
-bool CgroupMap::CheckCgroupJsonConfig(const Json::Value& cgroupObj) 
+bool CgroupMap::CheckCgroupJsonConfig(const Json::Value& cgroupObj)
 {
     if (cgroupObj[JSON_KEY_CONTROLLER].isNull() || !cgroupObj[JSON_KEY_CONTROLLER].isString()
         || cgroupObj[JSON_KEY_PATH].isNull() || !cgroupObj[JSON_KEY_PATH].isString()
@@ -123,7 +121,6 @@ bool CgroupMap::findFristEnableCgroupController(CgroupController** p)
     }
     return false;
 }
-
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

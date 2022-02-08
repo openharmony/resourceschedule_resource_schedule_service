@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 namespace {
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "ContinuousTaskObserver"};
 }
@@ -47,7 +46,8 @@ void ContinuousTaskObserver::OnContinuousTaskStart(const std::shared_ptr<Continu
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander != nullptr) {
         cgHander->PostTask([cgHander, eventData] {
-            cgHander->HandleContinuousTaskStart(eventData->GetCreatorUid(), eventData->GetCreatorPid(), eventData->GetAbilityName());
+            cgHander->HandleContinuousTaskStart(eventData->GetCreatorUid(), eventData->GetCreatorPid(),
+                eventData->GetAbilityName());
         });
     }
 
@@ -63,7 +63,8 @@ void ContinuousTaskObserver::OnContinuousTaskCancel(const std::shared_ptr<Contin
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander != nullptr) {
         cgHander->PostTask([cgHander, eventData] {
-            cgHander->HandleContinuousTaskCancel(eventData->GetCreatorUid(), eventData->GetCreatorPid(), eventData->GetAbilityName());
+            cgHander->HandleContinuousTaskCancel(eventData->GetCreatorUid(), eventData->GetCreatorPid(),
+                eventData->GetAbilityName());
         });
     }
 

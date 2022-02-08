@@ -22,8 +22,8 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
-void WindowStateObserver::OnFocused(uint32_t windowId, sptr<IRemoteObject> abilityToken, WindowType windowType, Rosen::DisplayId displayId)
+void WindowStateObserver::OnFocused(uint32_t windowId, sptr<IRemoteObject> abilityToken,
+    WindowType windowType, Rosen::DisplayId displayId)
 {
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander != nullptr) {
@@ -33,7 +33,8 @@ void WindowStateObserver::OnFocused(uint32_t windowId, sptr<IRemoteObject> abili
     }
 }
 
-void WindowStateObserver::OnUnfocused(uint32_t windowId, sptr<IRemoteObject> abilityToken, WindowType windowType, Rosen::DisplayId displayId)
+void WindowStateObserver::OnUnfocused(uint32_t windowId, sptr<IRemoteObject> abilityToken,
+    WindowType windowType, Rosen::DisplayId displayId)
 {
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander != nullptr) {
@@ -42,6 +43,5 @@ void WindowStateObserver::OnUnfocused(uint32_t windowId, sptr<IRemoteObject> abi
         });
     }
 }
-
 } // namespace OHOS
 } // namespace ResourceSchedule
