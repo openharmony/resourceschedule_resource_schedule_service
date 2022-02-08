@@ -40,7 +40,7 @@ public:
 
     void Init();
     void Deinit();
-    void RegisterStateObservers();
+    bool RegisterStateObservers();
     void UnregisterStateObservers();
     void AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source);
     void AdjustAllProcessGroup(Application &app, AdjustSource source);
@@ -76,8 +76,8 @@ private:
     inline void InitCgroupHandler();
     inline void InitCgroupAdjuster();
     inline void InitSupervisor();
-    inline void SubscribeAppState();
-    inline void SubscribeTransientTask();
+    bool SubscribeAppState();
+    inline bool SubscribeTransientTask();
     inline void SubscribeContinuousTask();
     inline void SubscribeWindowState();
 };

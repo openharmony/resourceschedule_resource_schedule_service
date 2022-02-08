@@ -42,7 +42,18 @@ void CgroupEventHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer& eve
     switch (event->GetInnerEventId()) {
         case INNER_EVENT_ID_REG_STATE_OBSERVERS: {
             ChronoScope cs("Delayed RegisterStateObservers.");
-            SchedController::GetInstance().RegisterStateObservers();
+            int retry = event->GetParam();
+            if (SchedController::GetInstance().RegisterStateObservers()) {
+                CGS_LOGW("%{public}s register state observer success.", __func__);
+                break;
+            }
+            if (retry < MAX_RETRY_TIMES) {
+                CGS_LOGW("%{public}s retry register state observers, retry:%{public}d.", __func__, retry);
+                auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_REG_STATE_OBSERVERS, retry + 1);
+                this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
+            } else {
+                CGS_LOGE("%{public}s register state observer failed eventually, reach max retry times!", __func__);
+            }
             break;
         }
         default:
@@ -91,8 +102,8 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
     }
     auto app = supervisor_->GetAppRecordNonNull(uid, bundleName);
     auto procRecord = app->GetProcessRecordNonNull(pid, abilityName);
-    procRecord->abilityState_ = abilityState;
-    procRecord->token_ = token;
+    auto abiInfo = procRecord->GetAbilityInfoNonNull(token);
+    abiInfo->state_ = abilityState;
     SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_ABILITY_STATE);
 }
@@ -116,8 +127,8 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
     }
     auto app = supervisor_->GetAppRecordNonNull(uid, bundleName);
     auto procRecord = app->GetProcessRecordNonNull(pid, abilityName);
-    procRecord->extensionState_ = extensionState;
-    procRecord->token_ = token;
+    auto abiInfo = procRecord->GetAbilityInfoNonNull(token);
+    abiInfo->estate_ = extensionState;
     SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_EXTENSION_STATE);
 }
@@ -235,16 +246,17 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
         if (app == nullptr || procRecord == nullptr) {
             return;
         }
-        auto pidsMap = app->GetPidsMap();
-        for (auto iter = pidsMap.begin(); iter != pidsMap.end(); iter++) {
-            auto pr = iter->second;
-            if (pr != procRecord) {
-                pr->focused_ = false;
-            }
-        }
-        procRecord->focused_ = true;
+        CGS_LOGD("%{public}s : token %{public}p belongs to %{public}s %{public}d",
+            __func__, abilityToken.GetRefPtr(), app->GetName().c_str(), procRecord->GetPid());
         procRecord->windowType_ = VALUE_INT(windowType);
         app->focusedProcess_ = procRecord;
+        auto lastFocusApp = supervisor_->focusedApp_;
+        if (lastFocusApp && lastFocusApp != app) {
+            lastFocusApp->focusedProcess_ = nullptr;
+            SchedController::GetInstance().AdjustAllProcessGroup(*(lastFocusApp.get()),
+                AdjustSource::ADJS_FOCUSED_WINDOW);
+        }
+        supervisor_->focusedApp_ = app;
         SchedController::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FOCUSED_WINDOW);
     }
 
@@ -274,7 +286,8 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
         if (app == nullptr || procRecord == nullptr) {
             return;
         }
-        procRecord->focused_ = false;
+        CGS_LOGD("%{public}s : token %{public}p belongs to %{public}s %{public}d",
+            __func__, abilityToken.GetRefPtr(), app->GetName().c_str(), procRecord->GetPid());
         procRecord->windowType_ = VALUE_INT(windowType);
         if (app->focusedProcess_ == procRecord) {
             app->focusedProcess_ = nullptr;

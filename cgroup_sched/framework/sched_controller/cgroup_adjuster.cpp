@@ -21,7 +21,6 @@
 #include "cgroup_sched_common.h"
 #include "cgroup_sched_log.h"
 #include "sched_controller.h"
-#include "sched_policy.h"
 #include "ressched_utils.h"
 #include "res_type.h"
 #include "wm_common.h"
@@ -76,28 +75,24 @@ inline void CgroupAdjuster::AdjustSelfProcessGroup()
 void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
 {
     int32_t appState = app.state_;
-    int32_t abilityState = pr.abilityState_;
     SchedPolicy group = SchedPolicy::SP_DEFAULT;
     auto focusProcess = app.focusedProcess_;
 
     {
         ChronoScope cs("ComputeProcessGroup");
-
-        if (source == AdjustSource::ADJS_FG_APP_CHANGE
-            && appState == VALUE_INT(ApplicationState::APP_STATE_BACKGROUND)) {
-            group = SchedPolicy::SP_BACKGROUND; // like unfocused
-        } else if (source == AdjustSource::ADJS_FG_APP_CHANGE
-            && appState == VALUE_INT(ApplicationState::APP_STATE_FOREGROUND)) {
+        if (source == AdjustSource::ADJS_PROCESS_CREATE) {
+            group = SchedPolicy::SP_DEFAULT;
+        } else if (app.focusedProcess_ != nullptr) {
             group = SchedPolicy::SP_TOP_APP;
-        } else if (focusProcess != nullptr || pr.focused_ ||
-            abilityState == VALUE_INT(AbilityState::ABILITY_STATE_FOREGROUND) ||
-            appState == VALUE_INT(ApplicationState::APP_STATE_FOREGROUND)) {
-            group = SchedPolicy::SP_TOP_APP; // focused process --> top-app
             if (pr.windowType_ == VALUE_INT(WindowType::WINDOW_TYPE_FLOAT)) {
                 group = SchedPolicy::SP_FOREGROUND; // float window process --> fg
             }
-        } else if (abilityState == VALUE_INT(AbilityState::ABILITY_STATE_BACKGROUND)) {
-            group = SchedPolicy::SP_BACKGROUND; // background process -> bg
+        } else if (appState == VALUE_INT(ApplicationState::APP_STATE_FOREGROUND)) {
+            group = SchedPolicy::SP_FOREGROUND; // foreground app state --> fg
+        } else if (appState == VALUE_INT(ApplicationState::APP_STATE_BACKGROUND)) {
+            group = SchedPolicy::SP_BACKGROUND; // background app state -> bg
+        } else {
+            group = GetCgroupForAbilityState(pr); // others: decide by ability state and extension state
         }
 
         if (group == SchedPolicy::SP_BACKGROUND && pr.runningContinuousTask_) {
@@ -106,6 +101,36 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
 
         pr.setSchedGroup_ = group;
     } // end ChronoScope
+}
+
+SchedPolicy CgroupAdjuster::GetCgroupForAbilityState(ProcessRecord &pr)
+{
+    auto abilities = pr.GetAbilities();
+    bool isFg = true;
+    bool isBg = true;
+    if (abilities.size() == 0) {
+        return SchedPolicy::SP_DEFAULT;
+    }
+    for (auto abi : abilities) {
+        if (abi->state_ != VALUE_INT(AbilityState::ABILITY_STATE_FOREGROUND)
+            && abi->estate_ != VALUE_INT(ExtensionState::EXTENSION_STATE_CONNECTED)) {
+            isFg = false;
+        }
+        if (abi->state_ != VALUE_INT(AbilityState::ABILITY_STATE_BACKGROUND)
+            || abi->estate_ == VALUE_INT(ExtensionState::EXTENSION_STATE_CONNECTED)) {
+            isBg = false;
+        }
+    }
+    if (isFg) {
+        // sp_foreground : all abilitites are FOREGROUND or has a extension connected
+        return SchedPolicy::SP_FOREGROUND;
+    } else if (isBg) {
+        // sp_background : all abilities are BACKGROUND
+        return SchedPolicy::SP_BACKGROUND;
+    } else {
+        // sp_default : has no connected extensions and has different state of abilities
+        return SchedPolicy::SP_DEFAULT;
+    }
 }
 
 void CgroupAdjuster::ApplyProcessGroup(ProcessRecord &pr)

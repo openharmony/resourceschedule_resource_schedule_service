@@ -32,12 +32,27 @@ using OHOS::AppExecFwk::AbilityState;
 using OHOS::AppExecFwk::ExtensionState;
 using OHOS::ResourceSchedule::CgroupSetting::SchedPolicy;
 
+class AbilityInfo {
+public:
+    AbilityInfo(sptr<IRemoteObject> token) : token_(token) {};
+    ~AbilityInfo() = default;
+
+    int32_t state_ = -1;
+    int32_t estate_ = -1;
+    sptr<IRemoteObject> token_ = nullptr;
+};
+
 class ProcessRecord {
 public:
-    ProcessRecord();
     ProcessRecord(uid_t uid, pid_t pid) : uid_(uid), pid_(pid) {};
     ProcessRecord(uid_t uid, pid_t pid, std::string name) : uid_(uid), pid_(pid), name_(name) {};
-    ~ProcessRecord() = default;
+    ~ProcessRecord()
+    {
+        abilities_.clear();
+    };
+
+    std::shared_ptr<AbilityInfo> GetAbilityInfoNonNull(sptr<IRemoteObject> token);
+    bool HasAbility(sptr<IRemoteObject> token) const;
 
     inline pid_t GetPid() const
     {
@@ -54,26 +69,28 @@ public:
         return name_;
     }
 
+    inline std::vector<std::shared_ptr<AbilityInfo>> GetAbilities() const
+    {
+        return abilities_;
+    }
+
     SchedPolicy lastSchedGroup_ = SchedPolicy::SP_DEFAULT;
     SchedPolicy curSchedGroup_ = SchedPolicy::SP_DEFAULT;
     SchedPolicy setSchedGroup_ = SchedPolicy::SP_DEFAULT;
     bool runningTransientTask_ = false;
     bool runningContinuousTask_ = false;
-    bool focused_ = false;
-    int32_t abilityState_ = static_cast<int32_t>(AbilityState::ABILITY_STATE_TERMINATED);
-    int32_t extensionState_ = static_cast<int32_t>(ExtensionState::EXTENSION_STATE_TERMINATED);
     int32_t windowType_;
-    sptr<IRemoteObject> token_ = nullptr;
 
+    std::shared_ptr<AbilityInfo> focusedAbility_ = nullptr;
 private:
     uid_t uid_;
     pid_t pid_;
     std::string name_;
+    std::vector<std::shared_ptr<AbilityInfo>> abilities_;
 };
 
 class Application {
 public:
-    Application();
     Application(uid_t uid, std::string name) : uid_(uid), name_(name) {};
     ~Application() = default;
 
@@ -119,6 +136,7 @@ public:
     void SearchAbilityToken(std::shared_ptr<Application> &app, std::shared_ptr<ProcessRecord> &procRecord,
         sptr<IRemoteObject> token);
 
+    std::shared_ptr<Application> focusedApp_ = nullptr;
 private:
     std::map<int32_t, std::shared_ptr<Application>> uidsMap_;
 };

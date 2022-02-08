@@ -38,6 +38,7 @@ namespace {
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "SchedController"};
 }
 
+using OHOS::BackgroundTaskMgr::BackgroundTaskMgrHelper;
 using OHOS::ResourceSchedule::CgroupSetting::SchedPolicy;
 
 OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
@@ -64,7 +65,7 @@ void SchedController::Init()
     // Init cgroup adjuster thread
     InitCgroupAdjuster();
 
-    auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_REG_STATE_OBSERVERS);
+    auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_REG_STATE_OBSERVERS, 0);
     cgHandler_->SendEvent(event, DELAYED_REGISTER_DURATION);
 }
 
@@ -79,15 +80,21 @@ void SchedController::Deinit()
     }
 }
 
-void SchedController::RegisterStateObservers()
+bool SchedController::RegisterStateObservers()
 {
     // register callback observers for app state
-    SubscribeAppState();
+    if (!SubscribeAppState()) {
+        return false;
+    }
     // register callback observers for background task
-    SubscribeTransientTask();
+    if (!SubscribeTransientTask()) {
+        UnregisterStateObservers();
+        return false;
+    }
     SubscribeContinuousTask();
     // register callback observers for window state
     SubscribeWindowState();
+    return true;
 }
 
 void SchedController::UnregisterStateObservers()
@@ -104,20 +111,21 @@ void SchedController::UnregisterStateObservers()
     appStateObserver_ = nullptr;
 
     if (transientTaskObserver_ != nullptr) {
-        OHOS::BackgroundTaskMgr::BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*transientTaskObserver_);
+        int32_t ret = BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*transientTaskObserver_);
+        CGS_LOGI("UnsubscribeBackgroundTask ret:%{public}d.", ret);
+        transientTaskObserver_ = nullptr;
     }
-    transientTaskObserver_ = nullptr;
 
     if (continuousTaskObserver_ != nullptr) {
         OHOS::BackgroundTaskMgr::BackgroundTaskMgrHelper_::RequestUnsubscribe(*continuousTaskObserver_);
+        continuousTaskObserver_ = nullptr;
     }
-    continuousTaskObserver_ = nullptr;
 
     if (windowStateObserver_ != nullptr) {
         // unregister windowStateObserver_
         OHOS::Rosen::WindowManager::GetInstance().UnregisterFocusChangedListener(windowStateObserver_);
+        windowStateObserver_ = nullptr;
     }
-    windowStateObserver_ = nullptr;
 }
 
 void SchedController::AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
@@ -165,31 +173,35 @@ inline void SchedController::InitSupervisor()
     supervisor_ = std::make_shared<Supervisor>();
 }
 
-inline void SchedController::SubscribeAppState()
+bool SchedController::SubscribeAppState()
 {
     sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
     if (appManager == nullptr) {
         CGS_LOGE("%{public}s app manager nullptr!", __func__);
-        return;
+        return false;
     }
     appStateObserver_ = std::make_shared<RmsApplicationStateObserver>();
     int32_t err = appManager->RegisterApplicationStateObserver(appStateObserver_.get());
-    if (err == 0) {
-        CGS_LOGI("RegisterApplicationStateObserver success.");
-    } else {
+    if (err != 0) {
         CGS_LOGE("RegisterApplicationStateObserver failed. err:%{public}d", err);
+        appStateObserver_ = nullptr;
+        return false;
     }
+    CGS_LOGI("RegisterApplicationStateObserver success.");
+    return true;
 }
 
-inline void SchedController::SubscribeTransientTask()
+inline bool SchedController::SubscribeTransientTask()
 {
     transientTaskObserver_ = std::make_shared<TransientTaskObserver>();
-    bool ret = OHOS::BackgroundTaskMgr::BackgroundTaskMgrHelper::SubscribeBackgroundTask(*transientTaskObserver_);
-    if (ret) {
-        CGS_LOGI("Register TransientTaskObserver success.");
-    } else {
-        CGS_LOGE("Register TransientTaskObserver failed.");
+    int ret = BackgroundTaskMgrHelper::SubscribeBackgroundTask(*transientTaskObserver_);
+    if (ret != 0) {
+        transientTaskObserver_ = nullptr;
+        CGS_LOGE("Register TransientTaskObserver failed, err:%{public}d.", ret);
+        return false;
     }
+    CGS_LOGI("Register TransientTaskObserver success.");
+    return true;
 }
 
 inline void SchedController::SubscribeContinuousTask()
