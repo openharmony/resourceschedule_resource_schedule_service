@@ -26,6 +26,8 @@ namespace ResourceSchedule {
 namespace {
     const int INNER_EVENT_ID_REG_STATE_OBSERVERS = 0;
     const int DELAYED_REGISTER_DURATION = 5000;
+    const int DELAYED_RETRY_REGISTER_DURATION = 1000;
+    const int MAX_RETRY_TIMES = 5;
 }
 
 using OHOS::AppExecFwk::EventHandler;

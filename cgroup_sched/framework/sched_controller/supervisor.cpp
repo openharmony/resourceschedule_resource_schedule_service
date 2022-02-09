@@ -14,9 +14,31 @@
  */
 
 #include "supervisor.h"
+#include "cgroup_sched_common.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
+std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfoNonNull(sptr<IRemoteObject> token)
+{
+    for (auto a : abilities_) {
+        if (a->token_ == token) {
+            return a;
+        }
+    }
+    std::shared_ptr<AbilityInfo> abi = std::make_shared<AbilityInfo>(token);
+    abilities_.push_back(abi);
+    return abi;
+}
+
+bool ProcessRecord::HasAbility(sptr<IRemoteObject> token) const
+{
+    for (auto abi : abilities_) {
+        if (abi->token_ == token)
+            return true;
+    }
+    return false;
+}
+
 std::shared_ptr<ProcessRecord> Application::AddProcessRecord(std::shared_ptr<ProcessRecord> pr)
 {
     if (pr != nullptr) {
@@ -51,11 +73,11 @@ std::shared_ptr<ProcessRecord> Application::GetProcessRecordNonNull(pid_t pid, s
     return pidsMap_[pid];
 }
 
-std::shared_ptr<ProcessRecord> Application::FindProcessRecord(sptr<IRemoteObject> token_)
+std::shared_ptr<ProcessRecord> Application::FindProcessRecord(sptr<IRemoteObject> token)
 {
     for (auto iter = pidsMap_.begin(); iter != pidsMap_.end(); iter++) {
         auto pr = iter->second;
-        if (pr->token_ == token_) {
+        if (pr->HasAbility(token)) {
             return pr;
         }
     }

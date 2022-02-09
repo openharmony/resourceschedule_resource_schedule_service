@@ -17,7 +17,7 @@
 #define CGROUP_ADJUSTER_H
 
 #include <sys/types.h>
-
+#include "sched_policy.h"
 #include "supervisor.h"
 
 namespace OHOS {
@@ -48,6 +48,7 @@ public:
 private:
     void ComputeProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source);
     void ApplyProcessGroup(ProcessRecord &pr);
+    SchedPolicy GetCgroupForAbilityState(ProcessRecord &pr);
     inline void AdjustSelfProcessGroup();
 };
 } // namespace ResourceSchedule
