@@ -41,6 +41,7 @@ public:
     virtual void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
     void SetSupervisor(std::shared_ptr<Supervisor> supervisor);
     void HandleForegroundApplicationChanged(uid_t uid, std::string bundleName, int32_t state);
+    void HandleApplicationStateChanged(uid_t uid, std::string bundleName, int32_t state);
     void HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName, std::string abilityName,
         sptr<IRemoteObject> token, int32_t abilityState);
     void HandleExtensionStateChanged(uid_t uid, pid_t pid, std::string bundleName, std::string abilityName,

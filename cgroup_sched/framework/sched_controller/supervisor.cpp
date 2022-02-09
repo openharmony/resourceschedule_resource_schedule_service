@@ -30,6 +30,16 @@ std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfoNonNull(sptr<IRemoteOb
     return abi;
 }
 
+void ProcessRecord::RemoveAbilityByToken(sptr<IRemoteObject> token)
+{
+    for (auto iter = abilities_.begin(); iter != abilities_.end(); ++iter) {
+        if ((*iter)->token_ == token) {
+            abilities_.erase(iter);
+            break;
+        }
+    }
+}
+
 bool ProcessRecord::HasAbility(sptr<IRemoteObject> token) const
 {
     for (auto abi : abilities_) {
@@ -51,6 +61,9 @@ void Application::RemoveProcessRecord(pid_t pid)
 {
     auto iter = pidsMap_.find(pid);
     if (iter != pidsMap_.end()) {
+        if (focusedProcess_ == iter->second) {
+            focusedProcess_ = nullptr;
+        }
         pidsMap_.erase(iter);
     }
 }

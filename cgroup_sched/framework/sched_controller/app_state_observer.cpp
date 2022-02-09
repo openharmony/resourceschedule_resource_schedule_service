@@ -136,6 +136,14 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
         return;
     }
 
+    auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHander != nullptr) {
+        cgHander->PostTask([cgHander, appStateData] {
+            cgHander->HandleApplicationStateChanged(appStateData.uid, appStateData.bundleName,
+                appStateData.state);
+        });
+    }
+
     std::string payload = std::to_string(appStateData.uid) + "," + // uid
             appStateData.bundleName; // bundle name
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);

@@ -88,7 +88,7 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
                 group = SchedPolicy::SP_FOREGROUND; // float window process --> fg
             }
         } else if (appState == VALUE_INT(ApplicationState::APP_STATE_FOREGROUND)) {
-            group = SchedPolicy::SP_FOREGROUND; // foreground app state --> fg
+            group = GetCgroupForAbilityState(pr); // foreground app state from ability
         } else if (appState == VALUE_INT(ApplicationState::APP_STATE_BACKGROUND)) {
             group = SchedPolicy::SP_BACKGROUND; // background app state -> bg
         } else {
@@ -106,31 +106,42 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
 SchedPolicy CgroupAdjuster::GetCgroupForAbilityState(ProcessRecord &pr)
 {
     auto abilities = pr.GetAbilities();
-    bool isFg = true;
-    bool isBg = true;
-    if (abilities.size() == 0) {
+    int total = abilities.size();
+    int countMixAbi = 0; // has both ability & extension state
+    int countActiveAbi = 0; // fg ability, connected extension, visible ability etc.
+    int countInactiveAbi = 0; // others
+    if (total == 0) {
         return SchedPolicy::SP_DEFAULT;
     }
+
+    // visible ability set to fg directly
     for (auto abi : abilities) {
-        if (abi->state_ != VALUE_INT(AbilityState::ABILITY_STATE_FOREGROUND)
-            && abi->estate_ != VALUE_INT(ExtensionState::EXTENSION_STATE_CONNECTED)) {
-            isFg = false;
-        }
-        if (abi->state_ != VALUE_INT(AbilityState::ABILITY_STATE_BACKGROUND)
+        if (abi->state_ >= 0 && abi->estate_ >= 0) {
+            if (abi->estate_ == VALUE_INT(ExtensionState::EXTENSION_STATE_CONNECTED)) {
+                countActiveAbi++;
+            } else {
+                countMixAbi++;
+            }
+        } else if (abi->state_ == VALUE_INT(AbilityState::ABILITY_STATE_FOREGROUND)
             || abi->estate_ == VALUE_INT(ExtensionState::EXTENSION_STATE_CONNECTED)) {
-            isBg = false;
+            countActiveAbi++;
+        } else {
+            countInactiveAbi++;
         }
     }
-    if (isFg) {
+    if (countMixAbi == total) {
+        // api7 cause mix ability/extension state
+        return SchedPolicy::SP_DEFAULT;
+    }
+    if (countInactiveAbi == 0) {
         // sp_foreground : all abilitites are FOREGROUND or has a extension connected
         return SchedPolicy::SP_FOREGROUND;
-    } else if (isBg) {
+    }
+    if (countActiveAbi == 0) {
         // sp_background : all abilities are BACKGROUND
         return SchedPolicy::SP_BACKGROUND;
-    } else {
-        // sp_default : has no connected extensions and has different state of abilities
-        return SchedPolicy::SP_DEFAULT;
     }
+    return SchedPolicy::SP_DEFAULT;
 }
 
 void CgroupAdjuster::ApplyProcessGroup(ProcessRecord &pr)
