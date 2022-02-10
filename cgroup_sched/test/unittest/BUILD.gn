@@ -13,7 +13,8 @@
 
 import("//build/test.gni")
 
-process_group_module_output_path = "process_group/cgroup_setting_test"
+process_group_module_output_path =
+    "resource_schedule_service/process_group_test"
 
 config("process_group_module_private_config") {
   visibility = [ ":*" ]
