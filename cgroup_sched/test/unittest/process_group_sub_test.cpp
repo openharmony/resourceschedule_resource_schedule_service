@@ -56,7 +56,7 @@ void ProcessGroupSubTest::TearDown(void)
  * @tc.name: ProcessGroupSubTest_SchedPolicyType_001
  * @tc.desc: Get SchedPolicy Type
  * @tc.type: FUNC
- * @tc.require: SR000GGT7N AR000GH37M
+ * @tc.require: SR000GGT7N AR000GH37H
  * @tc.desc:
  */
 HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_001, Function | MediumTest | Level0)
@@ -68,7 +68,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_001, Function 
  * @tc.number: ProcessGroupSubTest_SchedPolicyType_002
  * @tc.name: Get SchedPolicy Type
  * @tc.type: FUNC
- * @tc.require: SR000GGT7N AR000GH37M
+ * @tc.require: SR000GGT7N AR000GH37I
  * @tc.desc:
  */
 HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_002, Function | MediumTest | Level0)
@@ -80,7 +80,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_002, Function 
  * @tc.number: ProcessGroupSubTest_SchedPolicyType_003
  * @tc.name: Get SchedPolicy Full Name
  * @tc.type: FUNC
- * @tc.require: SR000GGT7N AR000GH37M
+ * @tc.require: SR000GGT7N AR000GH37J
  * @tc.desc:
  */
 HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_003, Function | MediumTest | Level0)
@@ -93,7 +93,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_003, Function 
  * @tc.number: ProcessGroupSubTest_SchedPolicyType_004
  * @tc.name: Get SchedPolicy Full Name
  * @tc.type: FUNC
- * @tc.require: SR000GGT7N AR000GH37M
+ * @tc.require: SR000GGT7N AR000GH37K
  * @tc.desc:
  */
 HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_004, Function | MediumTest | Level0)
@@ -106,7 +106,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_004, Function 
  * @tc.number: ProcessGroupSubTest_SchedPolicyType_005
  * @tc.name: Get SchedPolicy Full Name
  * @tc.type: FUNC
- * @tc.require: SR000GGT7N AR000GH37M
+ * @tc.require: SR000GGT7N AR000GH37L
  * @tc.desc:
  */
 HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_005, Function | MediumTest | Level0)
@@ -119,7 +119,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_005, Function 
  * @tc.number: ProcessGroupSubTest_SchedPolicyType_006
  * @tc.name: Get SchedPolicy Full Name
  * @tc.type: FUNC
- * @tc.require: SR000GGT7N AR000GH37M
+ * @tc.require: SR000GGT7N AR000GH37M AR000GH37L AR000GH37N AR000GH37Q
  * @tc.desc:
  */
 HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_006, Function | MediumTest | Level0)
@@ -132,7 +132,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_006, Function 
  * @tc.number: ProcessGroupSubTest_SchedPolicyType_007
  * @tc.name: Get SchedPolicy Full Name
  * @tc.type: FUNC
- * @tc.require: SR000GGT7N AR000GH37M
+ * @tc.require: SR000GGT7N AR000GH37N AR000GH37J AR000GH37K AR000GH37R
  * @tc.desc:
  */
 HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_007, Function | MediumTest | Level0)
@@ -145,7 +145,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_007, Function 
  * @tc.number: ProcessGroupSubTest_SchedPolicyType_008
  * @tc.name: Get SchedPolicy Shortened Name
  * @tc.type: FUNC
- * @tc.require: SR000GGT7N AR000GH37M
+ * @tc.require: SR000GGT7N AR000GH37O AR000GH37I AR000GH37M AR000GH37S
  * @tc.desc:
  */
 HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_008, Function | MediumTest | Level0)
@@ -158,7 +158,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_008, Function 
  * @tc.number: ProcessGroupSubTest_SchedPolicyType_009
  * @tc.name: Get SchedPolicy Shortened Name
  * @tc.type: FUNC
- * @tc.require: SR000GGT7N AR000GH37M
+ * @tc.require: SR000GGT7N AR000GH37P AR000GH37H AR000GH37N AR000GH37T
  * @tc.desc:
  */
 HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_009, Function | MediumTest | Level0)
@@ -171,7 +171,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_009, Function 
  * @tc.number: ProcessGroupSubTest_SchedPolicyType_010
  * @tc.name: Get SchedPolicy Shortened Name
  * @tc.type: FUNC
- * @tc.require: SR000GGT7N AR000GH37M
+ * @tc.require: SR000GGT7N AR000GH37Q AR000GH37R AR000GH37S AR000GH37T
  * @tc.desc:
  */
 HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_010, Function | MediumTest | Level0)
