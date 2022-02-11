@@ -22,14 +22,6 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    constexpr int SYSTEM_UID = 1000;
-    constexpr int ROOT_UID = 0;
-
-    bool CheckPermission(int uid)
-    {
-        return uid == SYSTEM_UID || uid == ROOT_UID;
-    }
-
     bool IsValidToken(MessageParcel& data)
     {
         std::u16string descriptor = ResSchedServiceStub::GetDescriptor();
@@ -72,10 +64,6 @@ int ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     auto uid = IPCSkeleton::GetCallingUid();
     RESSCHED_LOGD("ResSchedServiceStub::OnRemoteRequest, code = %{public}d, flags = %{public}d,"
         " uid = %{public}d", code, option.GetFlags(), uid);
-    if (!CheckPermission(uid)) {
-        RESSCHED_LOGE("ResSchedServiceStub::OnRemoteRequest failed, illegal calling uid %{public}d.", uid);
-        return ERR_RES_SCHED_PERMISSION_DENIED;
-    }
 
     auto itFunc = funcMap_.find(code);
     if (itFunc != funcMap_.end()) {

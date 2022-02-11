@@ -12,5 +12,8 @@
         <duration>400</duration>
         <lit_cpu_min_freq>1608000</lit_cpu_min_freq>
     </cmd>
-
+    <cmd id="10006" name="click_normal">
+        <duration>250</duration>
+        <lit_cpu_min_freq>1608000</lit_cpu_min_freq>
+    </cmd>
 </Configs>

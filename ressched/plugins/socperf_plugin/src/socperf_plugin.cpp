@@ -31,6 +31,7 @@ void SocPerfPlugin::Init()
 {
     resTypes.insert(RES_TYPE_APP_STATE_CHANGE);
     resTypes.insert(RES_TYPE_WINDOW_FOCUS);
+    resTypes.insert(RES_TYPE_CLICK_RECOGNIZE);
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
