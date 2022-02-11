@@ -40,6 +40,8 @@ enum : uint32_t {
     RES_TYPE_CONTINUOUS_TASK,
     // cgroup change event; value means nothing; payload:pid,uid,name,oldGroup,newGroup
     RES_TYPE_CGROUP_ADJUSTER,
+    // ace gestures click_recognizer; value means nothing
+    RES_TYPE_CLICK_RECOGNIZE,
 };
 }
 } // namespace ResourceSchedule
