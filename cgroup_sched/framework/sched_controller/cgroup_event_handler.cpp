@@ -74,13 +74,26 @@ void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, std::stri
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
     ChronoScope cs("HandleForegroundApplicationChanged");
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid, bundleName);
+    app->state_ = state;
+    SchedController::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FG_APP_CHANGE);
+}
+
+void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, std::string bundleName, int32_t state)
+{
+    if (supervisor_ == nullptr) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+    CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
+    ChronoScope cs("HandleApplicationStateChanged");
+    // remove terminated application
     if (state == VALUE_INT(ApplicationState::APP_STATE_TERMINATED)) {
         supervisor_->RemoveApplication(uid);
         return;
     }
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid, bundleName);
     app->state_ = state;
-    SchedController::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FG_APP_CHANGE);
 }
 
 void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName,
@@ -96,7 +109,10 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
     if (abilityState == VALUE_INT(AbilityState::ABILITY_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
         if (app != nullptr) {
-            app->RemoveProcessRecord(pid);
+            auto procRecord = app->GetProcessRecord(pid);
+            if (procRecord != nullptr) {
+                procRecord->RemoveAbilityByToken(token);
+            }
         }
         return;
     }
@@ -121,7 +137,10 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
     if (extensionState == VALUE_INT(ExtensionState::EXTENSION_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
         if (app != nullptr) {
-            app->RemoveProcessRecord(pid);
+            auto procRecord = app->GetProcessRecord(pid);
+            if (procRecord != nullptr) {
+                procRecord->RemoveAbilityByToken(token);
+            }
         }
         return;
     }
@@ -161,6 +180,10 @@ void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, std::string bun
         return;
     }
     app->RemoveProcessRecord(pid);
+    // if all processes died, remove current app
+    if (app->GetPidsMap().size() == 0) {
+        supervisor_->RemoveApplication(uid);
+    }
 }
 
 void CgroupEventHandler::HandleTransientTaskStart(uid_t uid, pid_t pid, std::string packageName)

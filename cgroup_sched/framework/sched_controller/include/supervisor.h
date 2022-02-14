@@ -52,6 +52,7 @@ public:
     };
 
     std::shared_ptr<AbilityInfo> GetAbilityInfoNonNull(sptr<IRemoteObject> token);
+    void RemoveAbilityByToken(sptr<IRemoteObject> token);
     bool HasAbility(sptr<IRemoteObject> token) const;
 
     inline pid_t GetPid() const
