@@ -97,5 +97,10 @@ extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const std::
 {
     ResSchedClient::GetInstance().ReportDataInProcess(resType, value, payload);
 }
+
+extern "C" void ReportData(uint32_t resType, int64_t value, const std::string& payload)
+{
+    ResSchedClient::GetInstance().ReportData(resType, value, payload);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS+
