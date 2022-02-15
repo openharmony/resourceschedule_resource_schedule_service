@@ -23,6 +23,8 @@
     "ram": "10240KB",
     "deps": {
       "components": [
+        "ability_base",
+        "ability_runtime",
         "libeventhandler",
         "ipc_core",
         "samgr_proxy",
