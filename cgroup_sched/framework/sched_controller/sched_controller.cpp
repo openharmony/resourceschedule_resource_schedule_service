@@ -198,7 +198,7 @@ inline bool SchedController::SubscribeTransientTask()
     if (ret != 0) {
         transientTaskObserver_ = nullptr;
         CGS_LOGE("Register TransientTaskObserver failed, err:%{public}d.", ret);
-        return false;
+        return true;
     }
     CGS_LOGI("Register TransientTaskObserver success.");
     return true;
