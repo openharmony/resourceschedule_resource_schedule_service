@@ -15,4 +15,5 @@
  -->
 <pluginlist>
     <plugin libpath="libsocperf_plugin.z.so" switch="1" />
+    <plugin libpath="libframe_aware_plugin.z.so" switch="1" />
 </pluginlist>
