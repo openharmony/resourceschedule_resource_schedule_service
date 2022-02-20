@@ -17,6 +17,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <fstream>
+#include "json/writer.h"
 #include "process_group_log.h"
 #include "process_group_util.h"
 
@@ -111,6 +112,15 @@ bool WriteStringToFile(const std::string& content, const std::string& filePath)
     }
     bool result =  WriteStringToFile(fd, content);
     close(fd);
+    return result;
+}
+
+std::string JsonToString(const Json::Value &json)
+{
+    std::string result;
+    Json::StreamWriterBuilder builder;
+    builder["indentation"] = ""; // Optional if you want whitespace-less output
+    result = Json::writeString(builder, json);
     return result;
 }
 } // namespace CgroupSetting

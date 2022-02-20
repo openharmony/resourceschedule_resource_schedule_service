@@ -15,6 +15,7 @@
 
 #include "cgroup_map.h"
 #include "process_group_log.h"
+#include "process_group_util.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -56,7 +57,7 @@ bool CgroupMap::loadConfigFromJsonObj(const Json::Value& jsonObj)
     const Json::Value& jsonArrObj = jsonObj[JSON_KEY_CGROUPS];
     // check json format
     if (jsonArrObj.isNull() || !jsonArrObj.isArray()) {
-        PGCGS_LOGI("Cgroups json config format error, disabled cgroup-setting.");
+        PGCGS_LOGI("Cgroups json config format error, CgroupMap: disabled!.");
         return false;
     }
     int count = 0;
@@ -64,7 +65,8 @@ bool CgroupMap::loadConfigFromJsonObj(const Json::Value& jsonObj)
         const Json::Value& cgroupObj = jsonArrObj[i];
         // check cgroup schedule policy json config format
         if (!CheckCgroupJsonConfig(cgroupObj)) {
-            PGCGS_LOGE("cgroup json config format error, ingore it.");
+            const std::string cgroupObjStr = JsonToString(cgroupObj);
+            PGCGS_LOGE("cgroup json config format error, ingore it: %{public}s", cgroupObjStr.c_str());
             continue;
         }
 
@@ -83,9 +85,10 @@ bool CgroupMap::loadConfigFromJsonObj(const Json::Value& jsonObj)
         count++;
     }
     if (count == 0) {
+        PGCGS_LOGI("The number of valid cgroup config is 0, CgroupMap: disabled!");
         return false;
     }
-    PGCGS_LOGI("loadConfigFile ok, CgroupMap is enabled!");
+    PGCGS_LOGI("CgroupMap: enabled!");
     return true;
 }
 
@@ -94,7 +97,6 @@ bool CgroupMap::CheckCgroupJsonConfig(const Json::Value& cgroupObj)
     if (cgroupObj[JSON_KEY_CONTROLLER].isNull() || !cgroupObj[JSON_KEY_CONTROLLER].isString()
         || cgroupObj[JSON_KEY_PATH].isNull() || !cgroupObj[JSON_KEY_PATH].isString()
         || cgroupObj[JSON_KEY_SCHED_POLICY].isNull() || !cgroupObj[JSON_KEY_SCHED_POLICY].isObject()) {
-        PGCGS_LOGE("controller json config format error; content = %{public}s", cgroupObj.asString().c_str());
         return false;
     }
     for (int i = SP_DEFAULT; i < SP_CNT; i++) {
