@@ -103,8 +103,8 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}p, %{public}d",
-        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), token.GetRefPtr(), abilityState);
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d",
+        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), abilityState);
     ChronoScope cs("HandleAbilityStateChanged");
     if (abilityState == VALUE_INT(AbilityState::ABILITY_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
@@ -131,8 +131,8 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}p, %{public}d",
-        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), token.GetRefPtr(), extensionState);
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d",
+        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), extensionState);
     ChronoScope cs("HandleExtensionStateChanged");
     if (extensionState == VALUE_INT(ExtensionState::EXTENSION_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
@@ -259,8 +259,12 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}p, %{public}d, %{public}d", __func__, windowId,
-        abilityToken.GetRefPtr(), windowType, displayId);
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d", __func__, windowId,
+        windowType, displayId);
+    if (abilityToken == nullptr) {
+        CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
+        return;
+    }
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
     {
@@ -269,8 +273,8 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
         if (app == nullptr || procRecord == nullptr) {
             return;
         }
-        CGS_LOGD("%{public}s : token %{public}p belongs to %{public}s %{public}d",
-            __func__, abilityToken.GetRefPtr(), app->GetName().c_str(), procRecord->GetPid());
+        CGS_LOGD("%{public}s : focused ability belongs to %{public}s %{public}d",
+            __func__, app->GetName().c_str(), procRecord->GetPid());
         procRecord->windowType_ = VALUE_INT(windowType);
         app->focusedProcess_ = procRecord;
         auto lastFocusApp = supervisor_->focusedApp_;
@@ -299,8 +303,12 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}p, %{public}d, %{public}d", __func__, windowId,
-        abilityToken.GetRefPtr(), windowType, displayId);
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d", __func__, windowId,
+        windowType, displayId);
+    if (abilityToken == nullptr) {
+        CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
+        return;
+    }
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
     {
@@ -309,8 +317,8 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
         if (app == nullptr || procRecord == nullptr) {
             return;
         }
-        CGS_LOGD("%{public}s : token %{public}p belongs to %{public}s %{public}d",
-            __func__, abilityToken.GetRefPtr(), app->GetName().c_str(), procRecord->GetPid());
+        CGS_LOGD("%{public}s : unfocused ability belongs to %{public}s %{public}d",
+            __func__, app->GetName().c_str(), procRecord->GetPid());
         procRecord->windowType_ = VALUE_INT(windowType);
         if (app->focusedProcess_ == procRecord) {
             app->focusedProcess_ = nullptr;

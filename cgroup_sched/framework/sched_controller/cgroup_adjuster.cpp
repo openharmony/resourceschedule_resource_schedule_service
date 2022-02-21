@@ -106,10 +106,10 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
 SchedPolicy CgroupAdjuster::GetCgroupForAbilityState(ProcessRecord &pr)
 {
     auto abilities = pr.GetAbilities();
-    int total = abilities.size();
-    int countMixAbi = 0; // has both ability & extension state
-    int countActiveAbi = 0; // fg ability, connected extension, visible ability etc.
-    int countInactiveAbi = 0; // others
+    uint32_t total = abilities.size();
+    uint32_t countMixAbi = 0; // has both ability & extension state
+    uint32_t countActiveAbi = 0; // fg ability, connected extension, visible ability etc.
+    uint32_t countInactiveAbi = 0; // others
     if (total == 0) {
         return SchedPolicy::SP_DEFAULT;
     }
