@@ -80,7 +80,7 @@ public:
     SchedPolicy setSchedGroup_ = SchedPolicy::SP_DEFAULT;
     bool runningTransientTask_ = false;
     bool runningContinuousTask_ = false;
-    int32_t windowType_;
+    int32_t windowType_ = -1;
 
     std::shared_ptr<AbilityInfo> focusedAbility_ = nullptr;
 private:
