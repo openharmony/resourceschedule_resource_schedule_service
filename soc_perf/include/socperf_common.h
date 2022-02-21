@@ -349,13 +349,13 @@ static inline std::vector<std::string> Split(std::string str, std::string patter
     int position;
     std::vector<std::string> result;
     str += pattern;
-    int length = str.size();
+    int length = (int)str.size();
     for (int i = 0; i < length; i++) {
         position = (int)str.find(pattern, i);
         if (position < length) {
             std::string tmp = str.substr(i, position - i);
             result.push_back(tmp);
-            i = position + pattern.size() - 1;
+            i = position + (int)pattern.size() - 1;
         }
     }
     return result;
