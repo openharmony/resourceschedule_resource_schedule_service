@@ -20,6 +20,8 @@
 #include "plugin_mgr.h"
 #include "config_info.h"
 
+#define INVALID_VAL -1
+
 namespace OHOS {
 namespace ResourceSchedule {
 using namespace ResType;
@@ -36,9 +38,8 @@ void FrameAwarePlugin::Init()
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
-    RESSCHED_LOGI("ueaServerFrameAwarePlugin::Init begin");
     RME::FrameMsgIntf::GetInstance().Init();
-    RESSCHED_LOGI("ueaServerFrameAwarePlugin::Init success");
+    RESSCHED_LOGI("FrameAwarePlugin::Init success");
 }
 
 void FrameAwarePlugin::Disable()
@@ -53,14 +54,14 @@ void FrameAwarePlugin::Disable()
 
 void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("ueaServerFrameAwarePlugin::[DispatchResource] status type %{public}u, value=%{public}lld", data->resType, data->value);
+    RESSCHED_LOGI("FrameAwarePlugin::[DispatchResource] type %{public}u, value=%{public}lld", data->resType, data->value);
     std::vector<std::string> payload = ParsePayload(data->payload);
-    int pid = -1;
+    int pid = INVALID_VAL;
     switch (data->resType) {
         case RES_TYPE_APP_STATE_CHANGE:
             {
                 int uid = std::stoi(payload[0]);
-                RESSCHED_LOGI("ueaServerFrameAwarePlugin::[DispatchResource]:send app state info success! uid:%{public}d.", uid);
+                RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:app state! uid:%{public}d.", uid);
             }
             break;
         case RES_TYPE_PROCESS_STATE_CHANGE: 
@@ -68,18 +69,18 @@ void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
                 pid = std::stoi(payload[0]);
                 int tid = -1;
                 RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, tid, static_cast<RME::ThreadState>(data->value));
-                RESSCHED_LOGI("ueaServerFrameAwarePlugin::[DispatchResource]:send process info success! resType: %{public}u.", data->resType);
+                RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:process info! resType: %{public}u.", data->resType);
             }
             break;
         case RES_TYPE_WINDOW_FOCUS:
             {
                 pid = std::stoi(payload[0]);
                 RME::FrameMsgIntf::GetInstance().ReportWindowFocus(pid, data->value);
-                RESSCHED_LOGI("ueaServerFrameAwarePlugin::[DispatchResource]:send window focus success! resType: %{public}u.", data->resType);
+                RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:window focus! resType: %{public}u.", data->resType);
             }
             break;
         default:
-            RESSCHED_LOGI("ueaServerFrameAwarePlugin::[DispatchResource]:get unknow resource msg, resType: %{public}u.", data->resType);
+            RESSCHED_LOGI("FrameAwarePlugin::[DispatchResource]:get unknow resource msg, resType: %{public}u.", data->resType);
             break;
     }
 }
@@ -101,38 +102,30 @@ std::vector<std::string> FrameAwarePlugin::ParsePayload(const std::string payloa
         payloadP = payloadP.substr(pos + 1, size);
         pos = payloadP.find(",");
     }
-/*    for (auto s : payload) {
-        if (s == ",") {
-            res.push_back(tmpStr);
-            tmpStr = "";
-        } else {
-            tmpStr = tmpStr + s;
-        }
-    }*/
     return res;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
 {
     if (libName != LIB_NAME) {
-        RESSCHED_LOGE("ueaServerFrameAwarePlugin::OnPluginInit lib name is not match");
+        RESSCHED_LOGE("FrameAwarePlugin::OnPluginInit lib name is not match");
         return false;
     }
     FrameAwarePlugin::GetInstance().Init();
-    RESSCHED_LOGI("ueaServerFrameAwarePlugin::OnPluginInit success.");
+    RESSCHED_LOGI("FrameAwarePlugin::OnPluginInit success.");
     return true;
 }
 
 extern "C" void OnPluginDisable()
 {
     FrameAwarePlugin::GetInstance().Disable();
-    RESSCHED_LOGI("ueaServerFrameAwarePlugin::OnPluginDisable success.");
+    RESSCHED_LOGI("FrameAwarePlugin::OnPluginDisable success.");
 }
 
 extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& data)
 {
     FrameAwarePlugin::GetInstance().DispatchResource(data);
-    RESSCHED_LOGI("ueaServerFrameAwarePlugin::OnDispatchResource success.");
+    RESSCHED_LOGI("FrameAwarePlugin::OnDispatchResource success.");
 }
 }
 }
