@@ -200,6 +200,7 @@ bool SocPerf::LoadConfigXmlFile(std::string configFile)
     xmlNode* rootNode = xmlDocGetRootElement(file);
     if (rootNode == nullptr) {
         SOC_PERF_LOGE("Failed to get xml file's RootNode");
+        xmlFreeDoc(file);
         return false;
     }
     if (!xmlStrcmp(rootNode->name, reinterpret_cast<const xmlChar*>("Configs"))) {
@@ -208,21 +209,25 @@ bool SocPerf::LoadConfigXmlFile(std::string configFile)
             for (; child; child = child->next) {
                 if (!xmlStrcmp(child->name, reinterpret_cast<const xmlChar*>("Resource"))) {
                     if (!LoadResource(child, configFile)) {
+                        xmlFreeDoc(file);
                         return false;
                     }
                 } else if (!xmlStrcmp(child->name, reinterpret_cast<const xmlChar*>("GovResource"))) {
                     if (!LoadGovResource(child, configFile)) {
+                        xmlFreeDoc(file);
                         return false;
                     }
                 }
             }
         } else {
             if (!LoadCmd(rootNode, configFile)) {
+                xmlFreeDoc(file);
                 return false;
             }
         }
     } else {
         SOC_PERF_LOGE("Wrong format for xml file");
+        xmlFreeDoc(file);
         return false;
     }
     xmlFreeDoc(file);
