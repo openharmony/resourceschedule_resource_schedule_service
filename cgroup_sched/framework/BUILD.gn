@@ -18,12 +18,11 @@ import(
 ohos_shared_library("cgroup_sched") {
   sources = [
     "sched_controller/app_state_observer.cpp",
+    "sched_controller/background_task_observer.cpp",
     "sched_controller/cgroup_adjuster.cpp",
     "sched_controller/cgroup_event_handler.cpp",
-    "sched_controller/continuous_task_observer.cpp",
     "sched_controller/sched_controller.cpp",
     "sched_controller/supervisor.cpp",
-    "sched_controller/transient_task_observer.cpp",
     "sched_controller/window_state_observer.cpp",
     "utils/ressched_utils.cpp",
   ]
@@ -33,25 +32,17 @@ ohos_shared_library("cgroup_sched") {
     "./sched_controller/include",
     "./utils/include",
   ]
-  deps = [
-    "./process_group:libprocess_group",
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//foundation/appexecfwk/standard/common:libappexecfwk_common",
-    "//foundation/resourceschedule/background_task_mgr/frameworks:bgtaskmgr_fwk",
-    "//foundation/resourceschedule/background_task_mgr/interfaces/innerkits:bgtaskmgr_innerkits",
-    "//foundation/windowmanager/wmserver:libwms",
-    "//utils/native/base:utils",
-  ]
+  deps = [ "./process_group:libprocess_group" ]
   external_deps = [
     "ability_base:want",
     "ability_runtime:app_manager",
     "ability_runtime:wantagent_innerkits",
-    "bundle_framework:appexecfwk_base",
-    "bundle_framework:appexecfwk_core",
+    "background_task_mgr:bgtaskmgr_innerkits",
     "eventhandler:libeventhandler",
+    "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
+    "utils_base:utils",
     "window_manager:libwm",
   ]
 

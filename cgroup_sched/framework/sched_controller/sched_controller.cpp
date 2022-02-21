@@ -23,12 +23,11 @@
 #include "background_task_mgr_helper.h"
 #include "cgroup_adjuster.h"
 #include "cgroup_event_handler.h"
-#include "continuous_task_observer.h"
 #include "cgroup_sched_common.h"
 #include "cgroup_sched_log.h"
 #include "ressched_utils.h"
 #include "supervisor.h"
-#include "transient_task_observer.h"
+#include "background_task_observer.h"
 #include "window_state_observer.h"
 
 namespace OHOS {
@@ -87,11 +86,10 @@ bool SchedController::RegisterStateObservers()
         return false;
     }
     // register callback observers for background task
-    if (!SubscribeTransientTask()) {
+    if (!SubscribeBackgroundTask()) {
         UnregisterStateObservers();
         return false;
     }
-    SubscribeContinuousTask();
     // register callback observers for window state
     SubscribeWindowState();
     return true;
@@ -110,15 +108,10 @@ void SchedController::UnregisterStateObservers()
     }
     appStateObserver_ = nullptr;
 
-    if (transientTaskObserver_ != nullptr) {
-        int32_t ret = BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*transientTaskObserver_);
+    if (backgroundTaskObserver_ != nullptr) {
+        int32_t ret = BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*backgroundTaskObserver_);
         CGS_LOGI("UnsubscribeBackgroundTask ret:%{public}d.", ret);
-        transientTaskObserver_ = nullptr;
-    }
-
-    if (continuousTaskObserver_ != nullptr) {
-        OHOS::BackgroundTaskMgr::BackgroundTaskMgrHelper_::RequestUnsubscribe(*continuousTaskObserver_);
-        continuousTaskObserver_ = nullptr;
+        backgroundTaskObserver_ = nullptr;
     }
 
     if (windowStateObserver_ != nullptr) {
@@ -191,23 +184,17 @@ bool SchedController::SubscribeAppState()
     return true;
 }
 
-inline bool SchedController::SubscribeTransientTask()
+inline bool SchedController::SubscribeBackgroundTask()
 {
-    transientTaskObserver_ = std::make_shared<TransientTaskObserver>();
-    int ret = BackgroundTaskMgrHelper::SubscribeBackgroundTask(*transientTaskObserver_);
+    backgroundTaskObserver_ = std::make_shared<BackgroundTaskObserver>();
+    int ret = BackgroundTaskMgrHelper::SubscribeBackgroundTask(*backgroundTaskObserver_);
     if (ret != 0) {
-        transientTaskObserver_ = nullptr;
-        CGS_LOGE("Register TransientTaskObserver failed, err:%{public}d.", ret);
+        backgroundTaskObserver_ = nullptr;
+        CGS_LOGE("Register BackgroundTaskObserver failed, err:%{public}d.", ret);
         return true;
     }
-    CGS_LOGI("Register TransientTaskObserver success.");
+    CGS_LOGI("Register BackgroundTaskObserver success.");
     return true;
-}
-
-inline void SchedController::SubscribeContinuousTask()
-{
-    continuousTaskObserver_ = std::make_shared<ContinuousTaskObserver>();
-    OHOS::BackgroundTaskMgr::BackgroundTaskMgrHelper_::RequestSubscribe(*continuousTaskObserver_);
 }
 
 inline void SchedController::SubscribeWindowState()

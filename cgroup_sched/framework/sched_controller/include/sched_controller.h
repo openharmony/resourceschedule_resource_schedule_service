@@ -25,8 +25,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 class RmsApplicationStateObserver;
-class TransientTaskObserver;
-class ContinuousTaskObserver;
+class BackgroundTaskObserver;
 class Supervisor;
 class Application;
 class ProcessRecord;
@@ -69,16 +68,14 @@ private:
     std::shared_ptr<CgroupAdjuster> cgAdjuster_;
     std::shared_ptr<Supervisor> supervisor_;
     std::shared_ptr<RmsApplicationStateObserver> appStateObserver_;
-    std::shared_ptr<TransientTaskObserver> transientTaskObserver_;
-    std::shared_ptr<ContinuousTaskObserver> continuousTaskObserver_;
+    std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_;
     sptr<WindowStateObserver> windowStateObserver_;
 
     inline void InitCgroupHandler();
     inline void InitCgroupAdjuster();
     inline void InitSupervisor();
     bool SubscribeAppState();
-    inline bool SubscribeTransientTask();
-    inline void SubscribeContinuousTask();
+    inline bool SubscribeBackgroundTask();
     inline void SubscribeWindowState();
 };
 } // namespace ResourceSchedule
