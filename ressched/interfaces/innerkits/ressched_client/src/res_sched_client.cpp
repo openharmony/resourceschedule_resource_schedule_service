@@ -69,7 +69,7 @@ ErrCode ResSchedClient::TryConnect()
     try {
         recipient_ = new ResSchedDeathRecipient(*this);
     } catch(const std::bad_alloc &e) {
-        RESSCHED_LOGE("ResSchedClient::new ResSchedDeathRecipient fail.");
+        RESSCHED_LOGE("ResSchedClient::New ResSchedDeathRecipient fail.");
     }
     if (recipient_ == nullptr) {
         return GET_RES_SCHED_SERVICE_FAILED;

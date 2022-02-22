@@ -39,8 +39,8 @@ void ResSchedMgr::Stop()
 {
     PluginMgr::GetInstance().Stop();
 
+    std::lock_guard<std::mutex> autoLock(mainHandlerMutex_);
     if (mainHandler_ != nullptr) {
-        std::lock_guard<std::mutex> autoLock(mainHandlerMutex_);
         mainHandler_->RemoveAllEvents();
         mainHandler_ = nullptr;
     }

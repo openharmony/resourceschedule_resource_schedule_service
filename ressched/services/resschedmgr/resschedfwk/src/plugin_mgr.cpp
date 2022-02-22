@@ -74,7 +74,7 @@ void PluginMgr::Init()
         pluginSwitch_ = make_unique<PluginSwitch>();
         char tmpPath[PATH_MAX + 1] = {0};
         if (PLUGIN_SWITCH_FILE_NAME.size() == 0 || PLUGIN_SWITCH_FILE_NAME.size() > PATH_MAX ||
-        realpath(PLUGIN_SWITCH_FILE_NAME.c_str(), tmpPath) == nullptr) {
+            realpath(PLUGIN_SWITCH_FILE_NAME.c_str(), tmpPath) == nullptr) {
             RESSCHED_LOGE("PluginMgr::load switch config file wrong !");
             return ;
         }
@@ -89,7 +89,7 @@ void PluginMgr::Init()
         configReader_ = make_unique<ConfigReader>();
         char tmpPath[PATH_MAX + 1] = {0};
         if (PLUGIN_SWITCH_FILE_NAME.size() == 0 || PLUGIN_SWITCH_FILE_NAME.size() > PATH_MAX ||
-        realpath(CONFIG_FILE_NAME.c_str(), tmpPath) == nullptr) {
+            realpath(CONFIG_FILE_NAME.c_str(), tmpPath) == nullptr) {
             RESSCHED_LOGE("PluginMgr::load config file wrong !");
             return ;
         }
@@ -209,12 +209,10 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     libNameAll.append("]");
     RESSCHED_LOGI("PluginMgr::DispatchResource resType = %{public}d, value = %{public}lld pluginlist is %{public}s.",
         resData->resType, resData->value, libNameAll.c_str());
-    {
-        std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
-        for (const auto& libPath : iter->second) {
-            dispatcherHandler_->PostTask(
-                [libPath = libPath, resData, this] { deliverResourceToPlugin(libPath, resData); });
-        }
+    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
+    for (const auto& libPath : iter->second) {
+        dispatcherHandler_->PostTask(
+            [libPath = libPath, resData, this] { deliverResourceToPlugin(libPath, resData); });
     }
 }
 
