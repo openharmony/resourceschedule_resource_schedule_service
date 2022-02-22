@@ -98,7 +98,7 @@ private:
     std::unique_ptr<PluginSwitch> pluginSwitch_;
 
     std::mutex pluginMutex_;
-    std::mutex DispatcherHandlerMutex_;
+    std::mutex dispatcherHandlerMutex_;
     std::map<std::string, PluginLib> pluginLibMap_;
 
     // mutex for resTypeMap_
