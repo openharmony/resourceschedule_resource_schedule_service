@@ -19,6 +19,7 @@
 #include <sys/stat.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+#include "process_group_macro.h"
 #include "process_group_log.h"
 #include "process_group_util.h"
 
@@ -128,9 +129,14 @@ bool CgroupController::AddThreadSchedPolicy(SchedPolicy policy, const std::strin
     } else {
         filePath = StringPrintf("%s/%s/tasks", path_.c_str(), subgroup.c_str());
     }
-    int fd = TEMP_FAILURE_RETRY(open(filePath.c_str(), O_WRONLY | O_CLOEXEC));
+    std::string realPath;
+    if (!GetRealPath(filePath, realPath)) {
+        return false;
+    }
+    int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
-        PGCGS_LOGE("AddThreadSchedPolicy open file failed; file = %{public}s, fd = %{public}d ", filePath.c_str(), fd);
+        PGCGS_LOGE("AddThreadSchedPolicy open file failed; file = %{public}s, fd = %{public}d ",
+            realPath.c_str(), fd);
         return false;
     }
     policyToTaskFd_[policy] = fd;
@@ -145,10 +151,14 @@ bool CgroupController::AddThreadGroupSchedPolicy(SchedPolicy policy, const std::
     } else {
         filePath = StringPrintf("%s/%s/cgroup.procs", path_.c_str(), subgroup.c_str());
     }
-    int fd = TEMP_FAILURE_RETRY(open(filePath.c_str(), O_WRONLY | O_CLOEXEC));
+    std::string realPath;
+    if (!GetRealPath(filePath, realPath)) {
+        return false;
+    }
+    int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
         PGCGS_LOGE("AddThreadGroupSchedPolicy open file failed; file = %{public}s'; fd = %{public}d ",
-            filePath.c_str(), fd);
+            realPath.c_str(), fd);
         return false;
     }
     policyToProcFd_[policy] = fd;
