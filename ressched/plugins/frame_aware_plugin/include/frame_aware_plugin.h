@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 class FrameAwarePlugin : public Plugin {
     DECLARE_SINGLE_INSTANCE(FrameAwarePlugin)
 
@@ -33,7 +32,6 @@ public:
     void Init() override;
     void Disable() override;
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
-
 private:
     std::set<uint32_t> resTypes;
     std::vector<std::string> ParsePayload(const std::string payload);

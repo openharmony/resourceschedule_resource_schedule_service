@@ -67,7 +67,8 @@ void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
             {
                 pid = std::stoi(payload[0]);
                 int tid = INIT_VAL;
-                RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, tid, static_cast<RME::ThreadState>(data->value));
+                RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
+                RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, tid, state);
                 RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:process info! resType: %{public}u.", data->resType);
             }
             break;
