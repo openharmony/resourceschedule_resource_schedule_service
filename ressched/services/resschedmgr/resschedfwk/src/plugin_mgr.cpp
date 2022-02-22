@@ -89,7 +89,7 @@ void PluginMgr::Init()
         configReader_ = make_unique<ConfigReader>();
         char tmpPath[PATH_MAX + 1] = {0};
         if (PLUGIN_SWITCH_FILE_NAME.size() == 0 || PLUGIN_SWITCH_FILE_NAME.size() > PATH_MAX ||
-        realpath(CONFIG_FILE_NAME.c_str(), tmpPath) == nullptr ){
+        realpath(CONFIG_FILE_NAME.c_str(), tmpPath) == nullptr) {
             RESSCHED_LOGE("PluginMgr::load config file wrong !");
             return ;
         }
