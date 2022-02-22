@@ -208,7 +208,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     }
     libNameAll.append("]");
     RESSCHED_LOGI("PluginMgr::DispatchResource resType = %{public}d, value = %{public}lld pluginlist is %{public}s.",
-        resData->resType, resData->value, libPathAll.c_str());
+        resData->resType, resData->value, libNameAll.c_str());
     {
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         for (const auto& libPath : iter->second) {
