@@ -66,7 +66,11 @@ ErrCode ResSchedClient::TryConnect()
     if (rss_ == nullptr) {
         return GET_RES_SCHED_SERVICE_FAILED;
     }
-    recipient_ = new ResSchedDeathRecipient(*this);
+    try {
+        recipient_ = new ResSchedDeathRecipient(*this);
+    } catch(const std::bad_alloc &e) {
+        RESSCHED_LOGE("ResSchedClient::new ResSchedDeathRecipient fail.");
+    }
     if (recipient_ == nullptr) {
         return GET_RES_SCHED_SERVICE_FAILED;
     }

@@ -28,7 +28,11 @@ void ResSchedServiceAbility::OnStart()
 {
     ResSchedMgr::GetInstance().Init();
     if (service_ == nullptr) {
-        service_ = new ResSchedService();
+        try {
+            service_ = new ResSchedService();
+        } catch(const std::bad_alloc &e) {
+            RESSCHED_LOGE("ResSchedServiceAbility:: new ResSchedService failed.");
+        }
     }
     if (!Publish(service_)) {
         RESSCHED_LOGE("ResSchedServiceAbility:: Register service failed.");

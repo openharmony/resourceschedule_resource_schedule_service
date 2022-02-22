@@ -49,6 +49,7 @@ public:
 private:
     // main handler, use for report data
     std::shared_ptr<AppExecFwk::EventHandler> mainHandler_;
+    std::mutex MainHandlerMutex_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

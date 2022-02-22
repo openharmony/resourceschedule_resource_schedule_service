@@ -40,6 +40,7 @@ void ResSchedMgr::Stop()
     PluginMgr::GetInstance().Stop();
 
     if (mainHandler_ != nullptr) {
+        std::lock_guard<std::mutex> autoLock(MainHandlerMutex_);
         mainHandler_->RemoveAllEvents();
         mainHandler_ = nullptr;
     }
@@ -51,6 +52,7 @@ void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const std::string&
         return;
     }
     // dispatch resource async
+    std::lock_guard<std::mutex> autoLock(MainHandlerMutex_);
     mainHandler_->PostTask([resType, value, payload] {
         PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
     });
