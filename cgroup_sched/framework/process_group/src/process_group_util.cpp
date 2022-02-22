@@ -13,30 +13,35 @@
  * limitations under the License.
  */
 
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <fstream>
-#include "json/writer.h"
-#include "process_group_log.h"
 #include "process_group_util.h"
+
+#include <fstream>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <linux/limits.h>
+#include "json/writer.h"
+#include "securec.h"
+#include "process_group_log.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
 std::string FormatString(const char* fmt, va_list vararg)
 {
-    static std::vector<char> buffer(512);
-    // Attempt to just print to the current buffer
-    int len = vsnprintf(&buffer[0], buffer.size(), fmt, vararg);
-    if (len < 0 || static_cast<size_t>(len) >= buffer.size()) {
-        // Buffer was not large enough, calculate the required size and resize the buffer
-        len = vsnprintf(nullptr, 0, fmt, vararg);
-        buffer.resize(len + 1);
-        // Print again
-        vsnprintf(&buffer[0], buffer.size(), fmt, vararg);
+    std::string strResult;
+    if (fmt != nullptr) {
+        va_list tmpArgs;
+        va_copy(tmpArgs, vararg);
+        size_t nLength = vsnprintf(nullptr, 0, fmt, tmpArgs); // compute buffer size
+        va_end(tmpArgs);
+        std::vector<char> vBuffer(nLength + 1, '\0');
+        int nWritten = vsnprintf_s(&vBuffer[0], nLength + 1, nLength, fmt, vararg);
+        if (nWritten > 0) {
+            strResult = &vBuffer[0];
+        }
     }
-    return std::string(buffer.data(), len);
+    return strResult;
 }
 
 std::string StringPrintf(const char* fmt, ...)
@@ -48,9 +53,24 @@ std::string StringPrintf(const char* fmt, ...)
     return result;
 }
 
-bool ReadFileToString(const std::string& fileName, std::string& content)
+bool GetRealPath(const std::string& path, std::string& realPath)
 {
-    int fd = open(fileName.c_str(), O_RDONLY | O_CLOEXEC);
+    char resolvedPath[PATH_MAX] = { 0 };
+    if (path.size() > PATH_MAX || realpath(path.c_str(), resolvedPath) == nullptr) {
+        PGCGS_LOGE("Error: _fullpath %{public}s failed", path.c_str());
+        return false;
+    }
+    realPath = std::string(resolvedPath);
+    return true;
+}
+
+bool ReadFileToString(const std::string& filePath, std::string& content)
+{
+    std::string realPath;
+    if (!GetRealPath(filePath, realPath)) {
+        return false;
+    }
+    int fd = open(realPath.c_str(), O_RDONLY | O_CLOEXEC);
     if (fd < 0) {
         return false;
     }
@@ -59,7 +79,7 @@ bool ReadFileToString(const std::string& fileName, std::string& content)
         content.resize(sb.st_size);
     }
     ssize_t n;
-    size_t remaining = sb.st_size;
+    ssize_t remaining = sb.st_size;
     char* p = const_cast<char*>(content.data());
     while (remaining > 0) {
         n = read(fd, p, remaining);
@@ -74,9 +94,13 @@ bool ReadFileToString(const std::string& fileName, std::string& content)
 }
 
 
-bool ReadFileToStringForVFS(const std::string& fileName, std::string& content)
+bool ReadFileToStringForVFS(const std::string& filePath, std::string& content)
 {
-    std::ifstream fin(fileName.c_str(), std::ios::in);
+    std::string realPath;
+    if (!GetRealPath(filePath, realPath)) {
+        return false;
+    }
+    std::ifstream fin(realPath.c_str(), std::ios::in);
     if (!fin) {
         return false;
     }
@@ -102,12 +126,16 @@ bool WriteStringToFile(int fd, const std::string& content)
 
 bool WriteStringToFile(const std::string& content, const std::string& filePath)
 {
-    if (access(filePath.c_str(), W_OK)) {
+    std::string realPath;
+    if (!GetRealPath(filePath, realPath)) {
         return false;
     }
-    int fd = open(filePath.c_str(), O_WRONLY | O_CLOEXEC);
+    if (access(realPath.c_str(), W_OK)) {
+        return false;
+    }
+    int fd = open(realPath.c_str(), O_WRONLY | O_CLOEXEC);
     if (fd < 0) {
-        PGCGS_LOGE("WriteStringToFile fail. file: %{public}s, fd = %{public}d", filePath.c_str(), fd);
+        PGCGS_LOGE("WriteStringToFile fail. file: %{public}s, fd = %{public}d", realPath.c_str(), fd);
         return false;
     }
     bool result =  WriteStringToFile(fd, content);
