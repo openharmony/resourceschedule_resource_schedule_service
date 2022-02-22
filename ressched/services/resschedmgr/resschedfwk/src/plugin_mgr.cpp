@@ -313,7 +313,7 @@ void PluginMgr::UnLoadPlugin()
     // close all plugin handle
     pluginLibMap_.clear();
 }
-``
+
 void PluginMgr::OnDestroy()
 {
     UnLoadPlugin();
