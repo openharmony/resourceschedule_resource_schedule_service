@@ -20,13 +20,12 @@
 #include "plugin_mgr.h"
 #include "config_info.h"
 
-#define INVALID_VAL -1
-
 namespace OHOS {
 namespace ResourceSchedule {
 using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libframe_aware_plugin.z.so";
+    const int INIT_VAL = -1;
 }
 IMPLEMENT_SINGLE_INSTANCE(FrameAwarePlugin)
 
@@ -54,20 +53,20 @@ void FrameAwarePlugin::Disable()
 
 void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("FrameAwarePlugin::[DispatchResource] type %{public}u, value=%{public}lld", data->resType, data->value);
+    RESSCHED_LOGI("FrameAwarePlugin:DispatchResource type:%{public}u, value:%{public}lld", data->resType, data->value);
     std::vector<std::string> payload = ParsePayload(data->payload);
-    int pid = INVALID_VAL;
+    int pid = INIT_VAL;
     switch (data->resType) {
         case RES_TYPE_APP_STATE_CHANGE:
             {
                 int uid = std::stoi(payload[0]);
-                RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:app state! uid:%{public}d.", uid);
+                RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:app state! uid:%{public}d", uid);
             }
             break;
-        case RES_TYPE_PROCESS_STATE_CHANGE: 
+        case RES_TYPE_PROCESS_STATE_CHANGE:
             {
                 pid = std::stoi(payload[0]);
-                int tid = -1;
+                int tid = INIT_VAL;
                 RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, tid, static_cast<RME::ThreadState>(data->value));
                 RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:process info! resType: %{public}u.", data->resType);
             }
@@ -80,7 +79,7 @@ void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
             }
             break;
         default:
-            RESSCHED_LOGI("FrameAwarePlugin::[DispatchResource]:get unknow resource msg, resType: %{public}u.", data->resType);
+            RESSCHED_LOGI("FrameAwarePlugin::[DispatchResource]:unknow msg, resType: %{public}u.", data->resType);
             break;
     }
 }
@@ -88,7 +87,7 @@ void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 std::vector<std::string> FrameAwarePlugin::ParsePayload(const std::string payload)
 {
     std::vector<std::string> res;
-    if ("" == payload) {
+    if (payload == "") {
         return res;
     }
 

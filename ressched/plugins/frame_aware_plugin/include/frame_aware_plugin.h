@@ -31,15 +31,12 @@ class FrameAwarePlugin : public Plugin {
 
 public:
     void Init() override;
-
     void Disable() override;
-
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
 
 private:
     std::set<uint32_t> resTypes;
     std::vector<std::string> ParsePayload(const std::string payload);
-
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
