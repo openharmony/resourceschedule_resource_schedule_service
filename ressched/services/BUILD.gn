@@ -19,7 +19,6 @@ import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
 
 config("ressched_config") {
-  cflags_cc = [ "-fexceptions" ]
   include_dirs = [
     "resschedservice/include",
     "${ressched_common}/include",
