@@ -67,7 +67,7 @@ private:
     std::shared_ptr<CgroupEventHandler> cgHandler_;
     std::shared_ptr<CgroupAdjuster> cgAdjuster_;
     std::shared_ptr<Supervisor> supervisor_;
-    std::shared_ptr<RmsApplicationStateObserver> appStateObserver_;
+    sptr<RmsApplicationStateObserver> appStateObserver_;
     std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_;
     sptr<WindowStateObserver> windowStateObserver_;
 

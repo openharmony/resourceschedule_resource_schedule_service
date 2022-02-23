@@ -99,7 +99,7 @@ void SchedController::UnregisterStateObservers()
 {
     sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
     if (appManager != nullptr && appStateObserver_ != nullptr) {
-        int32_t err = appManager->UnregisterApplicationStateObserver(appStateObserver_.get());
+        int32_t err = appManager->UnregisterApplicationStateObserver(appStateObserver_);
         if (err == 0) {
             CGS_LOGI("UnregisterApplicationStateObserver success.");
         } else {
@@ -173,8 +173,8 @@ bool SchedController::SubscribeAppState()
         CGS_LOGE("%{public}s app manager nullptr!", __func__);
         return false;
     }
-    appStateObserver_ = std::make_shared<RmsApplicationStateObserver>();
-    int32_t err = appManager->RegisterApplicationStateObserver(appStateObserver_.get());
+    appStateObserver_ = new RmsApplicationStateObserver();
+    int32_t err = appManager->RegisterApplicationStateObserver(appStateObserver_);
     if (err != 0) {
         CGS_LOGE("RegisterApplicationStateObserver failed. err:%{public}d", err);
         appStateObserver_ = nullptr;
