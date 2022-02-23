@@ -39,13 +39,14 @@ bool ConfigReader::IsInvalidNode(const xmlNode& currNode)
 void ConfigReader::ParseProperties(const xmlNode& currNode, map<string, string>& properties)
 {
     auto attrs = currNode.properties;
+    xmlChar *value;
     for (; attrs != nullptr; attrs = attrs->next) {
         auto name = attrs->name;
         if (name == nullptr) {
             RESSCHED_LOGW("ConfigReader::ParseProperties name null!");
             continue;
         }
-        auto value = xmlGetProp(&currNode, name);
+        value = xmlGetProp(&currNode, name);
         if (value == nullptr) {
             RESSCHED_LOGW("ConfigReader::ParseProperties name(%{public}s) value null!", name);
             continue;
@@ -58,6 +59,7 @@ void ConfigReader::ParseProperties(const xmlNode& currNode, map<string, string>&
 void ConfigReader::ParseSubItem(const xmlNode& parentNode, Item& item)
 {
     auto currNodePtr = parentNode.xmlChildrenNode;
+    xmlChar *value;
     for (; currNodePtr != nullptr; currNodePtr = currNodePtr->next) {
         if (IsInvalidNode(*currNodePtr)) {
             RESSCHED_LOGW("ConfigReader::ParseSubItem skip invalid node!");
@@ -66,7 +68,7 @@ void ConfigReader::ParseSubItem(const xmlNode& parentNode, Item& item)
         SubItem subItem;
         ParseProperties(*currNodePtr, subItem.properties);
         subItem.name = reinterpret_cast<const char*>(currNodePtr->name);
-        auto value = xmlNodeGetContent(currNodePtr);
+        value = xmlNodeGetContent(currNodePtr);
         if (value != nullptr) {
             string itemValue(reinterpret_cast<const char*>(value));
             subItem.value = std::move(itemValue);

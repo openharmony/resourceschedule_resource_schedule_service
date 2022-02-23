@@ -72,7 +72,14 @@ void PluginMgr::Init()
 
     if (pluginSwitch_ == nullptr) {
         pluginSwitch_ = make_unique<PluginSwitch>();
-        bool loadRet = pluginSwitch_->LoadFromConfigFile(PLUGIN_SWITCH_FILE_NAME);
+        char tmpPath[PATH_MAX + 1] = {0};
+        if (PLUGIN_SWITCH_FILE_NAME.size() == 0 || PLUGIN_SWITCH_FILE_NAME.size() > PATH_MAX ||
+            realpath(PLUGIN_SWITCH_FILE_NAME.c_str(), tmpPath) == nullptr) {
+            RESSCHED_LOGE("PluginMgr::load switch config file wrong !");
+            return ;
+        }
+        std::string realPath(tmpPath);
+        bool loadRet = pluginSwitch_->LoadFromConfigFile(realPath);
         if (!loadRet) {
             RESSCHED_LOGW("PluginMgr::Init load switch config file failed!");
         }
@@ -80,7 +87,14 @@ void PluginMgr::Init()
 
     if (configReader_ == nullptr) {
         configReader_ = make_unique<ConfigReader>();
-        bool loadRet = configReader_->LoadFromCustConfigFile(CONFIG_FILE_NAME);
+        char tmpPath[PATH_MAX + 1] = {0};
+        if (PLUGIN_SWITCH_FILE_NAME.size() == 0 || PLUGIN_SWITCH_FILE_NAME.size() > PATH_MAX ||
+            realpath(CONFIG_FILE_NAME.c_str(), tmpPath) == nullptr) {
+            RESSCHED_LOGE("PluginMgr::load config file wrong !");
+            return ;
+        }
+        std::string realPath(tmpPath);
+        bool loadRet = configReader_->LoadFromCustConfigFile(realPath);
         if (!loadRet) {
             RESSCHED_LOGW("PluginMgr::Init load config file failed!");
         }
@@ -195,9 +209,12 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     libNameAll.append("]");
     RESSCHED_LOGI("PluginMgr::DispatchResource resType = %{public}d, value = %{public}lld pluginlist is %{public}s.",
         resData->resType, resData->value, libNameAll.c_str());
-    for (const auto& libName : iter->second) {
-        dispatcherHandler_->PostTask(
-            [libName = libName, resData, this] { deliverResourceToPlugin(libName, resData); });
+    {
+        std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
+        for (const auto& libPath : iter->second) {
+            dispatcherHandler_->PostTask(
+                [libPath = libPath, resData, this] { deliverResourceToPlugin(libPath, resData); });
+        }
     }
 }
 
@@ -304,6 +321,7 @@ void PluginMgr::OnDestroy()
     ClearResource();
 
     if (dispatcherHandler_ != nullptr) {
+        std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         dispatcherHandler_->RemoveAllEvents();
         dispatcherHandler_ = nullptr;
     }
