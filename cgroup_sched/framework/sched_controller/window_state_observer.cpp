@@ -43,5 +43,19 @@ void WindowStateObserver::OnUnfocused(uint32_t windowId, sptr<IRemoteObject> abi
         });
     }
 }
+
+void WindowVisibilityObserver::OnWindowVisibilityChanged(
+    const std::vector<sptr<WindowVisibilityInfo>>& windowVisibilityInfo)
+{
+    auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHander == nullptr) {
+        return;
+    }
+    for (auto& info : windowVisibilityInfo) {
+        cgHander->PostTask([cgHander, info] {
+            cgHander->HandleWindowVisibilityChanged(info->windowId_, info->isVisible_, info->pid_, info->uid_);
+        });
+    }
+}
 } // namespace OHOS
 } // namespace ResourceSchedule

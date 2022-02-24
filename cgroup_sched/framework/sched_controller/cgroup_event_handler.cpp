@@ -97,14 +97,14 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, std::string bu
 }
 
 void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName,
-    std::string abilityName, sptr<IRemoteObject> token, int32_t abilityState)
+    std::string abilityName, sptr<IRemoteObject> token, int32_t abilityState, int32_t abilityType)
 {
     if (supervisor_ == nullptr) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d",
-        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), abilityState);
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d",
+        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), abilityState, abilityType);
     ChronoScope cs("HandleAbilityStateChanged");
     if (abilityState == VALUE_INT(AbilityState::ABILITY_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
@@ -120,19 +120,20 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
     auto procRecord = app->GetProcessRecordNonNull(pid, abilityName);
     auto abiInfo = procRecord->GetAbilityInfoNonNull(token);
     abiInfo->state_ = abilityState;
+    abiInfo->type_ = abilityType;
     SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_ABILITY_STATE);
 }
 
 void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::string bundleName,
-    std::string abilityName, sptr<IRemoteObject> token, int32_t extensionState)
+    std::string abilityName, sptr<IRemoteObject> token, int32_t extensionState, int32_t abilityType)
 {
     if (supervisor_ == nullptr) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d",
-        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), extensionState);
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d",
+        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), extensionState, abilityType);
     ChronoScope cs("HandleExtensionStateChanged");
     if (extensionState == VALUE_INT(ExtensionState::EXTENSION_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
@@ -148,6 +149,7 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
     auto procRecord = app->GetProcessRecordNonNull(pid, abilityName);
     auto abiInfo = procRecord->GetAbilityInfoNonNull(token);
     abiInfo->estate_ = extensionState;
+    abiInfo->type_ = abilityType;
     SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_EXTENSION_STATE);
 }
@@ -253,17 +255,16 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::s
 }
 
 void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-    WindowType windowType, int32_t displayId)
+    WindowType windowType, uint64_t displayId)
 {
     if (supervisor_ == nullptr) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d", __func__, windowId,
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}llu", __func__, windowId,
         windowType, displayId);
     if (abilityToken == nullptr) {
         CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
-        return;
     }
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
@@ -271,11 +272,24 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
         ChronoScope cs("HandleFocusedWindow");
         supervisor_->SearchAbilityToken(app, procRecord, abilityToken);
         if (app == nullptr || procRecord == nullptr) {
-            return;
+            supervisor_->SearchWindowId(app, procRecord, windowId);
+            if (app == nullptr || procRecord == nullptr) {
+                return;
+            }
         }
-        CGS_LOGD("%{public}s : focused ability belongs to %{public}s %{public}d",
+        CGS_LOGD("%{public}s : focused window belongs to %{public}s %{public}d",
             __func__, app->GetName().c_str(), procRecord->GetPid());
-        procRecord->windowType_ = VALUE_INT(windowType);
+
+        auto win = procRecord->GetWindowInfoNonNull(windowId);
+        auto abi = procRecord->GetAbilityInfo(abilityToken);
+        win->windowType_ = VALUE_INT(windowType);
+        win->isFocused_ = true;
+        win->displayId_ = displayId;
+        win->ability_ = abi;
+        if (abi != nullptr) {
+            abi->window_ = win;
+        }
+
         app->focusedProcess_ = procRecord;
         auto lastFocusApp = supervisor_->focusedApp_;
         if (lastFocusApp && lastFocusApp != app) {
@@ -297,17 +311,16 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
 }
 
 void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-    WindowType windowType, int32_t displayId)
+    WindowType windowType, uint64_t displayId)
 {
     if (supervisor_ == nullptr) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d", __func__, windowId,
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}llu", __func__, windowId,
         windowType, displayId);
     if (abilityToken == nullptr) {
         CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
-        return;
     }
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
@@ -315,11 +328,24 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
         ChronoScope cs("HandleUnfocusedWindow");
         supervisor_->SearchAbilityToken(app, procRecord, abilityToken);
         if (app == nullptr || procRecord == nullptr) {
-            return;
+            supervisor_->SearchWindowId(app, procRecord, windowId);
+            if (app == nullptr || procRecord == nullptr) {
+                return;
+            }
         }
-        CGS_LOGD("%{public}s : unfocused ability belongs to %{public}s %{public}d",
+        CGS_LOGD("%{public}s : unfocused window belongs to %{public}s %{public}d",
             __func__, app->GetName().c_str(), procRecord->GetPid());
-        procRecord->windowType_ = VALUE_INT(windowType);
+
+        auto win = procRecord->GetWindowInfoNonNull(windowId);
+        auto abi = procRecord->GetAbilityInfo(abilityToken);
+        win->windowType_ = VALUE_INT(windowType);
+        win->isFocused_ = false;
+        win->displayId_ = displayId;
+        win->ability_ = abi;
+        if (abi != nullptr) {
+            abi->window_ = nullptr;
+        }
+
         if (app->focusedProcess_ == procRecord) {
             app->focusedProcess_ = nullptr;
         }
@@ -333,6 +359,30 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
             std::to_string(VALUE_INT(windowType)) + "," + // window type
             std::to_string(displayId); // display id
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 1, payload);
+}
+
+void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t windowId, bool isVisible, int32_t pid, int32_t uid)
+{
+    if (supervisor_ == nullptr) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
+        isVisible, pid, uid);
+
+    auto app = supervisor_->GetAppRecord(uid);
+    if (app == nullptr) {
+        return;
+    }
+    auto procRecord = app->GetProcessRecord(pid);
+    if (procRecord == nullptr) {
+        return;
+    }
+    auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
+    windowInfo->isVisible_ = isVisible;
+
+    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_WINDOW_VISIBILITY_CHANGED);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

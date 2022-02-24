@@ -70,6 +70,7 @@ private:
     sptr<RmsApplicationStateObserver> appStateObserver_;
     std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_;
     sptr<WindowStateObserver> windowStateObserver_;
+    sptr<WindowVisibilityObserver> windowVisibilityObserver_;
 
     inline void InitCgroupHandler();
     inline void InitCgroupAdjuster();

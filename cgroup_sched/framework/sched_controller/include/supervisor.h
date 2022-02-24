@@ -32,14 +32,30 @@ using OHOS::AppExecFwk::AbilityState;
 using OHOS::AppExecFwk::ExtensionState;
 using OHOS::ResourceSchedule::CgroupSetting::SchedPolicy;
 
+class AbilityInfo;
+class WindowInfo {
+public:
+    WindowInfo(int32_t windowId) : windowId_(windowId) {};
+    ~WindowInfo() {};
+
+    uint32_t windowId_;
+    bool isVisible_ = false;
+    bool isFocused_ = false;
+    int32_t windowType_ = 0;
+    uint64_t displayId_ = -1ULL;
+    std::shared_ptr<AbilityInfo> ability_ = nullptr;
+};
+
 class AbilityInfo {
 public:
     AbilityInfo(sptr<IRemoteObject> token) : token_(token) {};
     ~AbilityInfo() = default;
 
-    int32_t state_ = -1;
-    int32_t estate_ = -1;
+    int32_t state_ = -1; // normal ability state
+    int32_t estate_ = -1; // extension state
+    int32_t type_ = -1; // ability type
     sptr<IRemoteObject> token_ = nullptr;
+    std::shared_ptr<WindowInfo> window_ = nullptr;
 };
 
 class ProcessRecord {
@@ -49,11 +65,16 @@ public:
     ~ProcessRecord()
     {
         abilities_.clear();
+        windows_.clear();
     };
 
     std::shared_ptr<AbilityInfo> GetAbilityInfoNonNull(sptr<IRemoteObject> token);
+    std::shared_ptr<AbilityInfo> GetAbilityInfo(sptr<IRemoteObject> token);
+    std::shared_ptr<WindowInfo> GetWindowInfoNonNull(uint32_t windowId);
     void RemoveAbilityByToken(sptr<IRemoteObject> token);
     bool HasAbility(sptr<IRemoteObject> token) const;
+    bool HasServiceExtension() const;
+    bool IsVisible() const;
 
     inline pid_t GetPid() const
     {
@@ -70,24 +91,18 @@ public:
         return name_;
     }
 
-    inline std::vector<std::shared_ptr<AbilityInfo>> GetAbilities() const
-    {
-        return abilities_;
-    }
-
     SchedPolicy lastSchedGroup_ = SchedPolicy::SP_DEFAULT;
     SchedPolicy curSchedGroup_ = SchedPolicy::SP_DEFAULT;
     SchedPolicy setSchedGroup_ = SchedPolicy::SP_DEFAULT;
     bool runningTransientTask_ = false;
     bool runningContinuousTask_ = false;
-    int32_t windowType_ = -1;
 
-    std::shared_ptr<AbilityInfo> focusedAbility_ = nullptr;
+    std::vector<std::shared_ptr<AbilityInfo>> abilities_;
+    std::vector<std::shared_ptr<WindowInfo>> windows_;
 private:
     uid_t uid_;
     pid_t pid_;
     std::string name_;
-    std::vector<std::shared_ptr<AbilityInfo>> abilities_;
 };
 
 class Application {
@@ -99,7 +114,8 @@ public:
     void RemoveProcessRecord(pid_t pid);
     std::shared_ptr<ProcessRecord> GetProcessRecord(pid_t pid);
     std::shared_ptr<ProcessRecord> GetProcessRecordNonNull(pid_t pid, std::string name);
-    std::shared_ptr<ProcessRecord> FindProcessRecord(sptr<IRemoteObject> token_);
+    std::shared_ptr<ProcessRecord> FindProcessRecord(sptr<IRemoteObject> token);
+    std::shared_ptr<ProcessRecord> FindProcessRecord(uint32_t windowId);
 
     inline uid_t GetUid() const
     {
@@ -136,6 +152,8 @@ public:
     void RemoveApplication(int32_t uid);
     void SearchAbilityToken(std::shared_ptr<Application> &app, std::shared_ptr<ProcessRecord> &procRecord,
         sptr<IRemoteObject> token);
+    void SearchWindowId(std::shared_ptr<Application> &application, std::shared_ptr<ProcessRecord> &procRecord,
+        uint32_t windowId);
 
     std::shared_ptr<Application> focusedApp_ = nullptr;
 private:

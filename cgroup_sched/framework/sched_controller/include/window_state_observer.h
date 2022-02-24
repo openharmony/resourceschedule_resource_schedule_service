@@ -24,7 +24,9 @@
 namespace OHOS {
 namespace ResourceSchedule {
 using OHOS::Rosen::IFocusChangedListener;
+using OHOS::Rosen::IVisibilityChangedListener;
 using OHOS::Rosen::WindowType;
+using OHOS::Rosen::WindowVisibilityInfo;
 
 class WindowStateObserver : public IFocusChangedListener {
 public:
@@ -32,6 +34,11 @@ public:
         WindowType windowType, Rosen::DisplayId displayId) override;
     void OnUnfocused(uint32_t windowId, sptr<IRemoteObject> abilityToken,
         WindowType windowType, Rosen::DisplayId displayId) override;
+};
+
+class WindowVisibilityObserver : public IVisibilityChangedListener {
+public:
+    void OnWindowVisibilityChanged(const std::vector<sptr<WindowVisibilityInfo>>& windowVisibilityInfo) override;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
