@@ -15,9 +15,16 @@
  -->
 <configuration ver="2.0">
     <target name="resschedfwk_test">
-    <preparer>
-        <option name="push" value="parseconfig/. -> /data/test/resource/resschedfwk/parseconfig" src="res"/>
-        <option name="push" value="parseswitch/. -> /data/test/resource/resschedfwk/parseswitch" src="res"/>
-    </preparer>
+        <preparer>
+            <option name="push" value="parseconfig/invalid_format.xml -> /data/test/resource/resschedfwk/parseconfig" src="res"/>
+            <option name="push" value="parseconfig/not_exist_plugin.xml -> /data/test/resource/resschedfwk/parseconfig" src="res"/>
+            <option name="push" value="parseconfig/plugin_tag_wrong.xml -> /data/test/resource/resschedfwk/parseconfig" src="res"/>
+            <option name="push" value="parseconfig/res_sched_config.xml -> /data/test/resource/resschedfwk/parseconfig" src="res"/>
+            <option name="push" value="parseconfig/res_sched_config_comments.xml -> /data/test/resource/resschedfwk/parseconfig" src="res"/>
+            <option name="push" value="parseconfig/root_element_wrong.xml -> /data/test/resource/resschedfwk/parseconfig" src="res"/>
+            <option name="push" value="parseswitch/invalid_format.xml -> /data/test/resource/resschedfwk/parseswitch" src="res"/>
+            <option name="push" value="parseswitch/res_sched_plugin_switch.xml -> /data/test/resource/resschedfwk/parseswitch" src="res"/>
+            <option name="push" value="parseswitch/res_sched_plugin_switch.xml -> /data/test/resource/resschedfwk/parseswitch" src="res"/>
+        </preparer>
     </target>
 </configuration>
