@@ -24,7 +24,7 @@ void ResSchedServiceProxy::ReportData(uint32_t resType, int64_t value, const std
     int error;
     MessageParcel data;
     MessageParcel reply;
-    MessageOption option;
+    MessageOption option = { MessageOption::TF_ASYNC };
     WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), , ResSchedServiceProxy);
     WRITE_PARCEL(data, Uint32, resType, , ResSchedServiceProxy);
     WRITE_PARCEL(data, Int64, value, , ResSchedServiceProxy);
