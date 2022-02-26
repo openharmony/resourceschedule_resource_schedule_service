@@ -21,7 +21,7 @@ void SocPerfProxy::PerfRequest(int cmdId, const std::string& msg)
 {
     MessageParcel data;
     MessageParcel reply;
-    MessageOption option;
+    MessageOption option = { MessageOption::TF_ASYNC };
     data.WriteInt32(cmdId);
     data.WriteString(msg);
     Remote()->SendRequest(TRANS_IPC_ID_PERF_REQUEST, data, reply, option);
@@ -31,7 +31,7 @@ void SocPerfProxy::PerfRequestEx(int cmdId, bool onOffTag, const std::string& ms
 {
     MessageParcel data;
     MessageParcel reply;
-    MessageOption option;
+    MessageOption option = { MessageOption::TF_ASYNC };
     data.WriteInt32(cmdId);
     data.WriteBool(onOffTag);
     data.WriteString(msg);
@@ -42,7 +42,7 @@ void SocPerfProxy::PowerRequest(int cmdId, const std::string& msg)
 {
     MessageParcel data;
     MessageParcel reply;
-    MessageOption option;
+    MessageOption option = { MessageOption::TF_ASYNC };
     data.WriteInt32(cmdId);
     data.WriteString(msg);
     Remote()->SendRequest(TRANS_IPC_ID_POWER_REQUEST, data, reply, option);
@@ -52,7 +52,7 @@ void SocPerfProxy::PowerRequestEx(int cmdId, bool onOffTag, const std::string& m
 {
     MessageParcel data;
     MessageParcel reply;
-    MessageOption option;
+    MessageOption option = { MessageOption::TF_ASYNC };
     data.WriteInt32(cmdId);
     data.WriteBool(onOffTag);
     data.WriteString(msg);
@@ -63,7 +63,7 @@ void SocPerfProxy::PowerLimitBoost(bool onOffTag, const std::string& msg)
 {
     MessageParcel data;
     MessageParcel reply;
-    MessageOption option;
+    MessageOption option = { MessageOption::TF_ASYNC };
     data.WriteBool(onOffTag);
     data.WriteString(msg);
     Remote()->SendRequest(TRANS_IPC_ID_POWER_LIMIT_BOOST_FREQ, data, reply, option);
@@ -73,7 +73,7 @@ void SocPerfProxy::ThermalRequest(int cmdId, const std::string& msg)
 {
     MessageParcel data;
     MessageParcel reply;
-    MessageOption option;
+    MessageOption option = { MessageOption::TF_ASYNC };
     data.WriteInt32(cmdId);
     data.WriteString(msg);
     Remote()->SendRequest(TRANS_IPC_ID_THERMAL_REQUEST, data, reply, option);
@@ -83,7 +83,7 @@ void SocPerfProxy::ThermalRequestEx(int cmdId, bool onOffTag, const std::string&
 {
     MessageParcel data;
     MessageParcel reply;
-    MessageOption option;
+    MessageOption option = { MessageOption::TF_ASYNC };
     data.WriteInt32(cmdId);
     data.WriteBool(onOffTag);
     data.WriteString(msg);
@@ -94,7 +94,7 @@ void SocPerfProxy::ThermalLimitBoost(bool onOffTag, const std::string& msg)
 {
     MessageParcel data;
     MessageParcel reply;
-    MessageOption option;
+    MessageOption option = { MessageOption::TF_ASYNC };
     data.WriteBool(onOffTag);
     data.WriteString(msg);
     Remote()->SendRequest(TRANS_IPC_ID_THERMAL_LIMIT_BOOST_FREQ, data, reply, option);
