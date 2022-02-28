@@ -20,6 +20,10 @@ namespace SOCPERF {
 int SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
+    auto remoteDescriptor = data.ReadInterfaceToken();
+    if (GetDescriptor() != remoteDescriptor) {
+        return ERR_INVALID_STATE;
+    }
     switch (code) {
         case TRANS_IPC_ID_PERF_REQUEST: {
             int cmdId = data.ReadInt32();
