@@ -14,10 +14,13 @@
  */
 
 #include "supervisor.h"
+#include "ability_info.h"
 #include "cgroup_sched_common.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
+using OHOS::AppExecFwk::AbilityType;
+
 std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfoNonNull(sptr<IRemoteObject> token)
 {
     for (auto a : abilities_) {
@@ -28,6 +31,28 @@ std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfoNonNull(sptr<IRemoteOb
     std::shared_ptr<AbilityInfo> abi = std::make_shared<AbilityInfo>(token);
     abilities_.push_back(abi);
     return abi;
+}
+
+std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfo(sptr<IRemoteObject> token)
+{
+    for (auto a : abilities_) {
+        if (a->token_ == token) {
+            return a;
+        }
+    }
+    return nullptr;
+}
+
+std::shared_ptr<WindowInfo> ProcessRecord::GetWindowInfoNonNull(uint32_t windowId)
+{
+    for (auto w : windows_) {
+        if (w->windowId_ == windowId) {
+            return w;
+        }
+    }
+    std::shared_ptr<WindowInfo> win = std::make_shared<WindowInfo>(windowId);
+    windows_.push_back(win);
+    return win;
 }
 
 void ProcessRecord::RemoveAbilityByToken(sptr<IRemoteObject> token)
@@ -45,6 +70,27 @@ bool ProcessRecord::HasAbility(sptr<IRemoteObject> token) const
     for (auto abi : abilities_) {
         if (abi->token_ == token)
             return true;
+    }
+    return false;
+}
+
+bool ProcessRecord::HasServiceExtension() const
+{
+    for (auto abi : abilities_) {
+        if (abi->type_ == VALUE_INT(AbilityType::SERVICE)
+            || abi->type_ == VALUE_INT(AbilityType::EXTENSION)) {
+            return SchedPolicy::SP_SYSTEM;
+        }
+    }
+    return false;
+}
+
+bool ProcessRecord::IsVisible() const
+{
+    for (auto w : windows_) {
+        if (w->isVisible_) {
+            return true;
+        }
     }
     return false;
 }
@@ -97,6 +143,19 @@ std::shared_ptr<ProcessRecord> Application::FindProcessRecord(sptr<IRemoteObject
     return nullptr;
 }
 
+std::shared_ptr<ProcessRecord> Application::FindProcessRecord(uint32_t windowId)
+{
+    for (auto iter = pidsMap_.begin(); iter != pidsMap_.end(); iter++) {
+        auto pr = iter->second;
+        for (auto& w : pr->windows_) {
+            if (w->windowId_ == windowId) {
+                return pr;
+            }
+        }
+    }
+    return nullptr;
+}
+
 std::shared_ptr<Application> Supervisor::GetAppRecord(int32_t uid)
 {
     if (uidsMap_.find(uid) == uidsMap_.end()) {
@@ -143,6 +202,21 @@ void Supervisor::SearchAbilityToken(std::shared_ptr<Application> &application,
     for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++) {
         auto app = iter->second;
         pr = app->FindProcessRecord(token);
+        if (pr != nullptr) {
+            application = app;
+            procRecord = pr;
+            break;
+        }
+    }
+}
+
+void Supervisor::SearchWindowId(std::shared_ptr<Application> &application,
+    std::shared_ptr<ProcessRecord> &procRecord, uint32_t windowId)
+{
+    std::shared_ptr<ProcessRecord> pr = nullptr;
+    for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++) {
+        auto app = iter->second;
+        pr = app->FindProcessRecord(windowId);
         if (pr != nullptr) {
             application = app;
             procRecord = pr;

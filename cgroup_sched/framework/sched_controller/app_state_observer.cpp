@@ -58,7 +58,8 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         cgHander->PostTask([cgHander, abilityStateData] {
             cgHander->HandleAbilityStateChanged(abilityStateData.uid, abilityStateData.pid,
                 abilityStateData.bundleName, abilityStateData.abilityName,
-                abilityStateData.token, abilityStateData.abilityState);
+                abilityStateData.token, abilityStateData.abilityState,
+                abilityStateData.abilityType);
         });
     }
 
@@ -80,7 +81,8 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
         cgHander->PostTask([cgHander, abilityStateData] {
             cgHander->HandleExtensionStateChanged(abilityStateData.uid, abilityStateData.pid,
                 abilityStateData.bundleName, abilityStateData.abilityName,
-                abilityStateData.token, abilityStateData.abilityState);
+                abilityStateData.token, abilityStateData.abilityState,
+                abilityStateData.abilityType);
         });
     }
 

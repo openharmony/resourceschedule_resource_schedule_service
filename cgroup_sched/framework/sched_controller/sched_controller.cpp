@@ -119,6 +119,11 @@ void SchedController::UnregisterStateObservers()
         OHOS::Rosen::WindowManager::GetInstance().UnregisterFocusChangedListener(windowStateObserver_);
         windowStateObserver_ = nullptr;
     }
+
+    if (windowVisibilityObserver_ != nullptr) {
+        OHOS::Rosen::WindowManager::GetInstance().UnregisterVisibilityChangedListener(windowVisibilityObserver_);
+        windowVisibilityObserver_ = nullptr;
+    }
 }
 
 void SchedController::AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
@@ -201,6 +206,8 @@ inline void SchedController::SubscribeWindowState()
 {
     windowStateObserver_ = new WindowStateObserver();
     OHOS::Rosen::WindowManager::GetInstance().RegisterFocusChangedListener(windowStateObserver_);
+    windowVisibilityObserver_ = new WindowVisibilityObserver();
+    OHOS::Rosen::WindowManager::GetInstance().RegisterVisibilityChangedListener(windowVisibilityObserver_);
 }
 
 extern "C" void CgroupSchedInit()

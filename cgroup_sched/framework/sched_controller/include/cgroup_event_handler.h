@@ -43,9 +43,9 @@ public:
     void HandleForegroundApplicationChanged(uid_t uid, std::string bundleName, int32_t state);
     void HandleApplicationStateChanged(uid_t uid, std::string bundleName, int32_t state);
     void HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName, std::string abilityName,
-        sptr<IRemoteObject> token, int32_t abilityState);
+        sptr<IRemoteObject> token, int32_t abilityState, int32_t abilityType);
     void HandleExtensionStateChanged(uid_t uid, pid_t pid, std::string bundleName, std::string abilityName,
-        sptr<IRemoteObject> token, int32_t extensionState);
+        sptr<IRemoteObject> token, int32_t extensionState, int32_t abilityType);
     void HandleProcessCreated(uid_t uid, pid_t pid, std::string bundleName);
     void HandleProcessDied(uid_t uid, pid_t pid, std::string bundleName);
     void HandleTransientTaskStart(uid_t uid, pid_t pid, std::string packageName);
@@ -54,9 +54,10 @@ public:
     void HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::string abilityName);
     void HandleWindowFocusChange(int32_t windowId, int32_t displayId, WindowType windowType, sptr<IRemoteObject> token);
     void HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-        WindowType windowType, int32_t displayId);
+        WindowType windowType, uint64_t displayId);
     void HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-        WindowType windowType, int32_t displayId);
+        WindowType windowType, uint64_t displayId);
+    void HandleWindowVisibilityChanged(uint32_t windowId, bool isVisible, int32_t pid, int32_t uid);
 private:
     std::shared_ptr<Supervisor> supervisor_;
 };

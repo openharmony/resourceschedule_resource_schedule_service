@@ -34,6 +34,7 @@ enum class AdjustSource {
     ADJS_CONTINUOUS_END,
     ADJS_FOCUSED_WINDOW,
     ADJS_UNFOCUSED_WINDOW,
+    ADJS_WINDOW_VISIBILITY_CHANGED,
     ADJS_END
 };
 
@@ -48,7 +49,6 @@ public:
 private:
     void ComputeProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source);
     void ApplyProcessGroup(ProcessRecord &pr);
-    SchedPolicy GetCgroupForAbilityState(ProcessRecord &pr);
     inline void AdjustSelfProcessGroup();
 };
 } // namespace ResourceSchedule
