@@ -28,17 +28,22 @@ ResSchedClient& ResSchedClient::GetInstance()
     return instance;
 }
 
-void ResSchedClient::ReportDataInProcess(uint32_t resType, int64_t value, const std::string& payload)
+void ResSchedClient::ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
 {
     RESSCHED_LOGI("ResSchedClient::ReportDataInProcess recieve resType = %{public}d, value = %{public}lld.",
         resType, value);
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 
-void ResSchedClient::ReportData(uint32_t resType, int64_t value, const std::string& payload)
+void ResSchedClient::ReportData(uint32_t resType, int64_t value,
+                                const std::unordered_map<std::string, std::string>& mapPayload)
 {
     if (TryConnect() != ERR_OK) {
         return;
+    }
+    Json::Value payload;
+    for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
+        payload[it->first] = it->second;
     }
     rss_->ReportData(resType, value, payload);
 }
@@ -97,14 +102,15 @@ void ResSchedClient::ResSchedDeathRecipient::OnRemoteDied(const wptr<IRemoteObje
     resSchedClient_.StopRemoteObject();
 }
 
-extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const std::string& payload)
+extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
 {
     ResSchedClient::GetInstance().ReportDataInProcess(resType, value, payload);
 }
 
-extern "C" void ReportData(uint32_t resType, int64_t value, const std::string& payload)
+extern "C" void ReportData(uint32_t resType, int64_t value,
+                           const std::unordered_map<std::string, std::string>& mapPayload)
 {
-    ResSchedClient::GetInstance().ReportData(resType, value, payload);
+    ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS+

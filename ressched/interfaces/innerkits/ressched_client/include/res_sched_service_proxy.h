@@ -27,7 +27,7 @@ public:
     explicit ResSchedServiceProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IResSchedService>(impl) {}
     virtual ~ResSchedServiceProxy() {}
 
-    void ReportData(uint32_t resType, int64_t value, const std::string& payload) override;
+    void ReportData(uint32_t resType, int64_t value, const Json::Value& payload) override;
 
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedServiceProxy);

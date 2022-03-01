@@ -42,6 +42,7 @@ ohos_shared_library("socperf_plugin") {
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_client",
     "//utils/native/base:utils",
+    "//third_party/jsoncpp:jsoncpp",
   ]
 
   external_deps = [
