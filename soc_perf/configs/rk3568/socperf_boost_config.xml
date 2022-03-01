@@ -30,4 +30,8 @@
         <duration>250</duration>
         <lit_cpu_min_freq>1608000</lit_cpu_min_freq>
     </cmd>
+    <cmd id="10007" name="push_page">
+        <duration>300</duration>
+        <lit_cpu_min_freq>1608000</lit_cpu_min_freq>
+    </cmd>
 </Configs>

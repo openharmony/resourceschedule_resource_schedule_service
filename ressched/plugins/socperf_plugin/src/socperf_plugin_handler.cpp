@@ -30,6 +30,8 @@ SocPerfPluginHandler::SocPerfPluginHandler(
             [this](const std::shared_ptr<ResData>& data) { HandleWindowFocus(data); } },
         { RES_TYPE_CLICK_RECOGNIZE,
             [this](const std::shared_ptr<ResData>& data) { HandleEventClick(data); } },
+        { RES_TYPE_PUSH_PAGE,
+            [this](const std::shared_ptr<ResData>& data) { HandlePushPage(data); } },
     };
 }
 
@@ -84,6 +86,12 @@ void SocPerfPluginHandler::HandleEventClick(const std::shared_ptr<ResData>& data
 {
     RESSCHED_LOGI("SocPerfPluginHandler: socperf->CLICK_NORMAL");
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
+}
+
+void SocPerfPluginHandler::HandlePushPage(const std::shared_ptr<ResData>& data)
+{
+    RESSCHED_LOGI("SocPerfPluginHandler: socperf->PUSH_PAGE");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_PUSH_PAGE, "");
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

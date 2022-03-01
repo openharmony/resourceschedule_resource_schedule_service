@@ -38,6 +38,7 @@ private:
     void HandleAppStateChange(const std::shared_ptr<ResData>& data);
     void HandleWindowFocus(const std::shared_ptr<ResData>& data);
     void HandleEventClick(const std::shared_ptr<ResData>& data);
+    void HandlePushPage(const std::shared_ptr<ResData>& data);
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
 };
 
@@ -50,6 +51,7 @@ namespace {
     const int PERF_REQUEST_CMD_ID_WINDOW_SWITCH_FIRST   = 10004;
     const int PERF_REQUEST_CMD_ID_WINDOW_SWITCH_SECOND  = 10005;
     const int PERF_REQUEST_CMD_ID_EVENT_CLICK           = 10006;
+    const int PERF_REQUEST_CMD_ID_PUSH_PAGE             = 10007;
     const int WINDOW_FOCUSED                            = 0;
 }
 } // namespace ResourceSchedule
