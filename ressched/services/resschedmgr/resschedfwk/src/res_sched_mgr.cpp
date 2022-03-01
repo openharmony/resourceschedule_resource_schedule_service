@@ -46,7 +46,7 @@ void ResSchedMgr::Stop()
     }
 }
 
-void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const std::string& payload)
+void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const Json::Value& payload)
 {
     if (mainHandler_ == nullptr) {
         return;

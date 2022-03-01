@@ -20,6 +20,7 @@
 #include <string>
 #include "event_handler.h"
 #include "single_instance.h"
+#include "json/json.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -44,7 +45,7 @@ public:
      * @param value bit64 content.
      * @param payload Extra content.
      */
-    void ReportData(uint32_t resType, int64_t value = 0, const std::string& payload = "");
+    void ReportData(uint32_t resType, int64_t value = 0, const Json::Value& payload = nullptr);
 
 private:
     // main handler, use for report data

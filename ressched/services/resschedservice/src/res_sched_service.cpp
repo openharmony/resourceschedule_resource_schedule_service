@@ -20,7 +20,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-void ResSchedService::ReportData(uint32_t resType, int64_t value, const std::string& payload)
+void ResSchedService::ReportData(uint32_t resType, int64_t value, const Json::Value& payload)
 {
     RESSCHED_LOGI("ResSchedService::ReportData frome ipc recieve data resType = %{public}d, value = %{public}lld.",
         resType, value);
