@@ -52,9 +52,9 @@ ohos_shared_library("resschedsvc") {
   deps = [
     "${cgroup_sched_framework}:cgroup_sched",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//third_party/jsoncpp:jsoncpp",
     "//third_party/libxml2:xml2",
     "//utils/native/base:utils",
-    "//third_party/jsoncpp:jsoncpp",
   ]
 
   external_deps = [
