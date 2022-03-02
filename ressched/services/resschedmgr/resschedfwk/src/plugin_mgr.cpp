@@ -213,7 +213,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         for (const auto& libPath : iter->second) {
             dispatcherHandler_->PostTask(
-                [libPath = libPath, resData, this] { deliverResourceToPlugin(libPath, resData); });
+                [libPath, resData, this] { deliverResourceToPlugin(libPath, resData); });
         }
     }
 }
