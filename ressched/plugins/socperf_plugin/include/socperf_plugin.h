@@ -35,7 +35,9 @@ public:
 
 private:
     std::shared_ptr<SocPerfPluginHandler> handler;
+    std::shared_ptr<AppExecFwk::EventRunner> runner;
     std::set<uint32_t> resTypes;
+    std::mutex socperfPluginMutex_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
