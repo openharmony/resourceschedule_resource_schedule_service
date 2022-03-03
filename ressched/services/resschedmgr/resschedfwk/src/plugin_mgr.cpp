@@ -88,7 +88,7 @@ void PluginMgr::Init()
     if (configReader_ == nullptr) {
         configReader_ = make_unique<ConfigReader>();
         char tmpPath[PATH_MAX + 1] = {0};
-        if (PLUGIN_SWITCH_FILE_NAME.size() == 0 || PLUGIN_SWITCH_FILE_NAME.size() > PATH_MAX ||
+        if (CONFIG_FILE_NAME.size() == 0 || CONFIG_FILE_NAME.size() > PATH_MAX ||
             realpath(CONFIG_FILE_NAME.c_str(), tmpPath) == nullptr) {
             RESSCHED_LOGE("PluginMgr::load config file wrong !");
             return ;
@@ -213,7 +213,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         for (const auto& libPath : iter->second) {
             dispatcherHandler_->PostTask(
-                [libPath = libPath, resData, this] { deliverResourceToPlugin(libPath, resData); });
+                [libPath, resData, this] { deliverResourceToPlugin(libPath, resData); });
         }
     }
 }
