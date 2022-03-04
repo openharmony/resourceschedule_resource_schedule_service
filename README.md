@@ -84,7 +84,7 @@ If it exceeds 10ms, the framework thinks the plugin is abnormal and reports an e
 |----------|-------|
 | Currently focused oreground application and processes with same uid  | top_app  |
 | Foreground visible processes, include unfocused window process in split mode, float window process, foundation process  | foreground  |
-| system level daemon processes. Assgin system schedule policy to them when started,   | system  |
+| system level daemon processes. Assign system schedule policy to them when started,   | system  |
 | Background application and processes with same uid | background |
 | kernel processes, most native processes and others have not mensioned | root |
 
