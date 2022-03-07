@@ -22,24 +22,26 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-void WindowStateObserver::OnFocused(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-    WindowType windowType, Rosen::DisplayId displayId)
+void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo)
 {
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr) {
-        cgHander->PostTask([cgHander, windowId, abilityToken, windowType, displayId] {
-            cgHander->HandleFocusedWindow(windowId, abilityToken, windowType, displayId);
+    if (cgHander != nullptr && focusChangeInfo != nullptr) {
+        cgHander->PostTask([cgHander, focusChangeInfo] {
+            cgHander->HandleFocusedWindow(focusChangeInfo->windowId_, focusChangeInfo->abilityToken_,
+                focusChangeInfo->windowType_, focusChangeInfo->displayId_,
+                focusChangeInfo->pid_, focusChangeInfo->uid_);
         });
     }
 }
 
-void WindowStateObserver::OnUnfocused(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-    WindowType windowType, Rosen::DisplayId displayId)
+void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeInfo)
 {
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr) {
-        cgHander->PostTask([cgHander, windowId, abilityToken, windowType, displayId] {
-            cgHander->HandleUnfocusedWindow(windowId, abilityToken, windowType, displayId);
+    if (cgHander != nullptr && focusChangeInfo != nullptr) {
+        cgHander->PostTask([cgHander, focusChangeInfo] {
+            cgHander->HandleUnfocusedWindow(focusChangeInfo->windowId_, focusChangeInfo->abilityToken_,
+                focusChangeInfo->windowType_, focusChangeInfo->displayId_,
+                focusChangeInfo->pid_, focusChangeInfo->uid_);
         });
     }
 }
@@ -52,6 +54,9 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
         return;
     }
     for (auto& info : windowVisibilityInfo) {
+        if (info == nullptr) {
+            continue;
+        }
         cgHander->PostTask([cgHander, info] {
             cgHander->HandleWindowVisibilityChanged(info->windowId_, info->isVisible_, info->pid_, info->uid_);
         });
