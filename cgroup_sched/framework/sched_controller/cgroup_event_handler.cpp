@@ -255,7 +255,7 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::s
 }
 
 void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-    WindowType windowType, uint64_t displayId)
+    WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
     if (supervisor_ == nullptr) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -312,7 +312,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
 }
 
 void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-    WindowType windowType, uint64_t displayId)
+    WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
     if (supervisor_ == nullptr) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);

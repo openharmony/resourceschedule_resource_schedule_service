@@ -54,9 +54,9 @@ public:
     void HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::string abilityName);
     void HandleWindowFocusChange(int32_t windowId, int32_t displayId, WindowType windowType, sptr<IRemoteObject> token);
     void HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-        WindowType windowType, uint64_t displayId);
+        WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
     void HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-        WindowType windowType, uint64_t displayId);
+        WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
     void HandleWindowVisibilityChanged(uint32_t windowId, bool isVisible, int32_t pid, int32_t uid);
 private:
     std::shared_ptr<Supervisor> supervisor_;

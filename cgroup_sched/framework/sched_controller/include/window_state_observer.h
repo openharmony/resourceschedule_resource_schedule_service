@@ -26,14 +26,13 @@ namespace ResourceSchedule {
 using OHOS::Rosen::IFocusChangedListener;
 using OHOS::Rosen::IVisibilityChangedListener;
 using OHOS::Rosen::WindowType;
+using OHOS::Rosen::FocusChangeInfo;
 using OHOS::Rosen::WindowVisibilityInfo;
 
 class WindowStateObserver : public IFocusChangedListener {
 public:
-    void OnFocused(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-        WindowType windowType, Rosen::DisplayId displayId) override;
-    void OnUnfocused(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-        WindowType windowType, Rosen::DisplayId displayId) override;
+    void OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo) override;
+    void OnUnfocused(const sptr<FocusChangeInfo>& focusChangeInfo) override;
 };
 
 class WindowVisibilityObserver : public IVisibilityChangedListener {
