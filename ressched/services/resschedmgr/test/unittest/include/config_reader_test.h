@@ -30,7 +30,7 @@ public:
     void SetUp();
     void TearDown();
 protected:
-    std::shared_ptr<ConfigReader> configReader_;
+    std::shared_ptr<ConfigReader> configReader_ = nullptr;
     bool ParseConfigFile(const std::string& fileName);
 };
 } // namespace ResourceSchedule

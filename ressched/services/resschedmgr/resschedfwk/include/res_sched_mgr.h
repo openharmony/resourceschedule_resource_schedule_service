@@ -49,7 +49,7 @@ public:
 
 private:
     // main handler, use for report data
-    std::shared_ptr<AppExecFwk::EventHandler> mainHandler_;
+    std::shared_ptr<AppExecFwk::EventHandler> mainHandler_ = nullptr;
     std::mutex mainHandlerMutex_;
 };
 } // namespace ResourceSchedule

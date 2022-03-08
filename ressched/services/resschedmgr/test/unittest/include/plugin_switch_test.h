@@ -33,7 +33,7 @@ public:
     void SetUp();
     void TearDown();
 protected:
-    std::shared_ptr<PluginSwitch> pluginSwitch_;
+    std::shared_ptr<PluginSwitch> pluginSwitch_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
