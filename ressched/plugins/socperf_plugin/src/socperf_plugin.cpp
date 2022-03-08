@@ -38,7 +38,7 @@ void SocPerfPlugin::Init()
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
     runner = AppExecFwk::EventRunner::Create("socperf_plugin_handler");
-    if (runner == nullptr) {
+    if (!runner) {
         RESSCHED_LOGE("Failed to Create EventRunner");
         return;
     }
@@ -53,11 +53,11 @@ void SocPerfPlugin::Disable()
     }
     resTypes.clear();
     std::lock_guard<std::mutex> autoLock(socperfPluginMutex_);
-    if (handler != nullptr) {
+    if (handler) {
         handler->RemoveAllEvents();
         handler = nullptr;
     }
-    if (runner != nullptr) {
+    if (runner) {
         runner->Stop();
         runner = nullptr;
     }
@@ -70,7 +70,7 @@ void SocPerfPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
         data->resType, data->value);
     auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_SOC_PERF_PLUGIN_DISPATCH, data);
     std::lock_guard<std::mutex> autoLock(socperfPluginMutex_);
-    if (handler != nullptr) {
+    if (handler) {
         handler->SendEvent(event);
     }
 }

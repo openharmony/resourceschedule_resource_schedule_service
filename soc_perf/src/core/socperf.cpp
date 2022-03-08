@@ -193,12 +193,12 @@ bool SocPerf::LoadConfigXmlFile(std::string configFile)
 {
     xmlKeepBlanksDefault(0);
     xmlDoc* file = xmlReadFile(configFile.c_str(), nullptr, 0);
-    if (file == nullptr) {
+    if (!file) {
         SOC_PERF_LOGE("Failed to open xml file");
         return false;
     }
     xmlNode* rootNode = xmlDocGetRootElement(file);
-    if (rootNode == nullptr) {
+    if (!rootNode) {
         SOC_PERF_LOGE("Failed to get xml file's RootNode");
         xmlFreeDoc(file);
         return false;
@@ -241,7 +241,7 @@ bool SocPerf::CreateHandlers()
     std::string threadName = "socperf_handler";
     for (int i = 0; i < (int)handlers.size(); i++) {
         auto runner = AppExecFwk::EventRunner::Create(threadName);
-        if (runner == nullptr) {
+        if (!runner) {
             SOC_PERF_LOGE("Failed to Create EventRunner");
             return false;
         }
@@ -280,7 +280,7 @@ bool SocPerf::LoadResource(xmlNode* child, std::string configFile)
             }
             xmlNode* greatGrandson = grandson->children;
             std::shared_ptr<ResNode> resNode = std::make_shared<ResNode>(
-                atoi(id), name, (mode != nullptr) ? atoi(mode) : 0, (pair != nullptr) ? atoi(pair) : INVALID_VALUE);
+                atoi(id), name, mode ? atoi(mode) : 0, pair ? atoi(pair) : INVALID_VALUE);
             char *def = nullptr;
             char *path  = nullptr;
             char *node  = nullptr;
@@ -298,7 +298,7 @@ bool SocPerf::LoadResource(xmlNode* child, std::string configFile)
             }
             resNode->def = atoi(def);
             resNode->path = path;
-            if (node != nullptr && !LoadResourceAvailable(resNode, node)) {
+            if (node && !LoadResourceAvailable(resNode, node)) {
                 SOC_PERF_LOGE("Invalid resource node for %{public}s", configFile.c_str());
                 return false;
             }
@@ -330,14 +330,14 @@ bool SocPerf::LoadGovResource(xmlNode* child, std::string configFile)
             for (; greatGrandson; greatGrandson = greatGrandson->next) {
                 if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("default"))) {
                     char* def = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
-                    if (def == nullptr || !IsNumber(def)) {
+                    if (!def || !IsNumber(def)) {
                         SOC_PERF_LOGE("Invalid governor resource default for %{public}s", configFile.c_str());
                         return false;
                     }
                     govResNode->def = atoi(def);
                 } else if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("path"))) {
                     char* path = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
-                    if (path == nullptr) {
+                    if (!path) {
                         SOC_PERF_LOGE("Invalid governor resource path for %{public}s", configFile.c_str());
                         return false;
                     }
@@ -346,7 +346,7 @@ bool SocPerf::LoadGovResource(xmlNode* child, std::string configFile)
                     char* level = reinterpret_cast<char*>(
                         xmlGetProp(greatGrandson, reinterpret_cast<const xmlChar*>("level")));
                     char* node = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
-                    if (level == nullptr || !IsNumber(level) || node == nullptr
+                    if (!level || !IsNumber(level) || !node
                         || !LoadGovResourceAvailable(govResNode, level, node)) {
                         SOC_PERF_LOGE("Invalid governor resource node for %{public}s", configFile.c_str());
                         return false;
@@ -381,7 +381,7 @@ bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
             for (; grandson; grandson = grandson->next) {
                 if (!xmlStrcmp(grandson->name, reinterpret_cast<const xmlChar*>("duration"))) {
                     char* duration = reinterpret_cast<char*>(xmlNodeGetContent(grandson));
-                    if (duration == nullptr || !IsNumber(duration)) {
+                    if (!duration || !IsNumber(duration)) {
                         SOC_PERF_LOGE("Invalid cmd duration for %{public}s", configFile.c_str());
                         return false;
                     }
@@ -389,8 +389,8 @@ bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
                 } else {
                     char* resStr = reinterpret_cast<char*>(const_cast<xmlChar*>(grandson->name));
                     char* resValue = reinterpret_cast<char*>(xmlNodeGetContent(grandson));
-                    if (resStr == nullptr || resStrToIdInfo.find(resStr) == resStrToIdInfo.end()
-                        || resValue == nullptr || !IsNumber(resValue)) {
+                    if (!resStr || resStrToIdInfo.find(resStr) == resStrToIdInfo.end()
+                        || !resValue || !IsNumber(resValue)) {
                         SOC_PERF_LOGE("Invalid cmd resource(%{public}s) for %{public}s, cannot find resId",
                             resStr, configFile.c_str());
                         return false;
@@ -419,19 +419,19 @@ bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
 
 bool SocPerf::CheckResourceTag(char* id, char* name, char* pair, char* mode, std::string configFile)
 {
-    if (id == nullptr || !IsNumber(id) || !IsValidResId(atoi(id))) {
+    if (!id || !IsNumber(id) || !IsValidResId(atoi(id))) {
         SOC_PERF_LOGE("Invalid resource id for %{public}s", configFile.c_str());
         return false;
     }
-    if (name == nullptr) {
+    if (!name) {
         SOC_PERF_LOGE("Invalid resource name for %{public}s", configFile.c_str());
         return false;
     }
-    if (pair != nullptr && (!IsNumber(pair) || !IsValidResId(atoi(pair)))) {
+    if (pair && (!IsNumber(pair) || !IsValidResId(atoi(pair)))) {
         SOC_PERF_LOGE("Invalid resource pair for %{public}s", configFile.c_str());
         return false;
     }
-    if (mode != nullptr && !IsNumber(mode)) {
+    if (mode && !IsNumber(mode)) {
         SOC_PERF_LOGE("Invalid resource mode for %{public}s", configFile.c_str());
         return false;
     }
@@ -440,11 +440,11 @@ bool SocPerf::CheckResourceTag(char* id, char* name, char* pair, char* mode, std
 
 bool SocPerf::CheckResourceTag(char* def, char* path, std::string configFile)
 {
-    if (def == nullptr || !IsNumber(def)) {
+    if (!def || !IsNumber(def)) {
         SOC_PERF_LOGE("Invalid resource default for %{public}s", configFile.c_str());
         return false;
     }
-    if (path == nullptr) {
+    if (!path) {
         SOC_PERF_LOGE("Invalid resource path for %{public}s", configFile.c_str());
         return false;
     }
@@ -495,11 +495,11 @@ bool SocPerf::CheckResDefValid()
 
 bool SocPerf::CheckGovResourceTag(char* id, char* name, std::string configFile)
 {
-    if (id == nullptr || !IsNumber(id) || !IsValidResId(atoi(id))) {
+    if (!id || !IsNumber(id) || !IsValidResId(atoi(id))) {
         SOC_PERF_LOGE("Invalid governor resource id for %{public}s", configFile.c_str());
         return false;
     }
-    if (name == nullptr) {
+    if (!name) {
         SOC_PERF_LOGE("Invalid governor resource name for %{public}s", configFile.c_str());
         return false;
     }
@@ -535,11 +535,11 @@ bool SocPerf::CheckGovResDefValid()
 
 bool SocPerf::CheckCmdTag(char* id, char* name, std::string configFile)
 {
-    if (id == nullptr || !IsNumber(id)) {
+    if (!id || !IsNumber(id)) {
         SOC_PERF_LOGE("Invalid cmd id for %{public}s", configFile.c_str());
         return false;
     }
-    if (name == nullptr) {
+    if (!name) {
         SOC_PERF_LOGE("Invalid cmd name for %{public}s", configFile.c_str());
         return false;
     }
