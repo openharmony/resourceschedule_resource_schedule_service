@@ -32,12 +32,15 @@ void SocPerfPlugin::Init()
     resTypes.insert(RES_TYPE_APP_STATE_CHANGE);
     resTypes.insert(RES_TYPE_WINDOW_FOCUS);
     resTypes.insert(RES_TYPE_CLICK_RECOGNIZE);
+    resTypes.insert(RES_TYPE_PUSH_PAGE);
+    resTypes.insert(RTS_TYPE_SLIDE_RECOGNIZE);
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
-    auto runner = AppExecFwk::EventRunner::Create("socperf_plugin_handler");
+    runner = AppExecFwk::EventRunner::Create("socperf_plugin_handler");
     if (runner == nullptr) {
         RESSCHED_LOGE("Failed to Create EventRunner");
+        return;
     }
     handler = std::make_shared<SocPerfPluginHandler>(runner);
     RESSCHED_LOGI("SocPerfPlugin::Init success");
@@ -49,6 +52,15 @@ void SocPerfPlugin::Disable()
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
     resTypes.clear();
+    std::lock_guard<std::mutex> autoLock(socperfPluginMutex_);
+    if (handler != nullptr) {
+        handler->RemoveAllEvents();
+        handler = nullptr;
+    }
+    if (runner != nullptr) {
+        runner->Stop();
+        runner = nullptr;
+    }
     RESSCHED_LOGI("SocPerfPlugin::Disable success");
 }
 
@@ -57,7 +69,10 @@ void SocPerfPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
     RESSCHED_LOGI("SocPerfPlugin::DispatchResource resType=%{public}u, value=%{public}lld",
         data->resType, data->value);
     auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_SOC_PERF_PLUGIN_DISPATCH, data);
-    handler->SendEvent(event);
+    std::lock_guard<std::mutex> autoLock(socperfPluginMutex_);
+    if (handler != nullptr) {
+        handler->SendEvent(event);
+    }
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
