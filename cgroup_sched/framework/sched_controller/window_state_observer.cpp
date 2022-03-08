@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,7 +25,7 @@ namespace ResourceSchedule {
 void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo)
 {
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr && focusChangeInfo != nullptr) {
+    if (cgHander && focusChangeInfo) {
         cgHander->PostTask([cgHander, focusChangeInfo] {
             cgHander->HandleFocusedWindow(focusChangeInfo->windowId_, focusChangeInfo->abilityToken_,
                 focusChangeInfo->windowType_, focusChangeInfo->displayId_,
@@ -37,7 +37,7 @@ void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo
 void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeInfo)
 {
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr && focusChangeInfo != nullptr) {
+    if (cgHander && focusChangeInfo) {
         cgHander->PostTask([cgHander, focusChangeInfo] {
             cgHander->HandleUnfocusedWindow(focusChangeInfo->windowId_, focusChangeInfo->abilityToken_,
                 focusChangeInfo->windowType_, focusChangeInfo->displayId_,
@@ -50,11 +50,11 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
     const std::vector<sptr<WindowVisibilityInfo>>& windowVisibilityInfo)
 {
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander == nullptr) {
+    if (!cgHander) {
         return;
     }
     for (auto& info : windowVisibilityInfo) {
-        if (info == nullptr) {
+        if (!info) {
             continue;
         }
         cgHander->PostTask([cgHander, info] {

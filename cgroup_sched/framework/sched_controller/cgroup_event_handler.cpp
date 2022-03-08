@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -68,7 +68,7 @@ void CgroupEventHandler::SetSupervisor(std::shared_ptr<Supervisor> supervisor)
 
 void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, std::string bundleName, int32_t state)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
@@ -81,7 +81,7 @@ void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, std::stri
 
 void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, std::string bundleName, int32_t state)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
@@ -99,7 +99,7 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, std::string bu
 void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName,
     std::string abilityName, sptr<IRemoteObject> token, int32_t abilityState, int32_t abilityType)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
@@ -108,9 +108,9 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
     ChronoScope cs("HandleAbilityStateChanged");
     if (abilityState == VALUE_INT(AbilityState::ABILITY_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
-        if (app != nullptr) {
+        if (app) {
             auto procRecord = app->GetProcessRecord(pid);
-            if (procRecord != nullptr) {
+            if (procRecord) {
                 procRecord->RemoveAbilityByToken(token);
             }
         }
@@ -128,7 +128,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
 void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::string bundleName,
     std::string abilityName, sptr<IRemoteObject> token, int32_t extensionState, int32_t abilityType)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
@@ -137,9 +137,9 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
     ChronoScope cs("HandleExtensionStateChanged");
     if (extensionState == VALUE_INT(ExtensionState::EXTENSION_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
-        if (app != nullptr) {
+        if (app) {
             auto procRecord = app->GetProcessRecord(pid);
-            if (procRecord != nullptr) {
+            if (procRecord) {
                 procRecord->RemoveAbilityByToken(token);
             }
         }
@@ -156,7 +156,7 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
 
 void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, std::string bundleName)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
@@ -171,13 +171,13 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, std::string 
 
 void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, std::string bundleName)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, bundleName.c_str());
     std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
-    if (app == nullptr) {
+    if (!app) {
         CGS_LOGE("%{public}s : application %{public}s not exist!", __func__, bundleName.c_str());
         return;
     }
@@ -190,14 +190,14 @@ void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, std::string bun
 
 void CgroupEventHandler::HandleTransientTaskStart(uid_t uid, pid_t pid, std::string packageName)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, packageName.c_str());
     auto app = supervisor_->GetAppRecordNonNull(uid, packageName);
     auto procRecord = app->GetProcessRecord(pid);
-    if (procRecord == nullptr) {
+    if (!procRecord) {
         return;
     }
     procRecord->runningTransientTask_ = true;
@@ -205,14 +205,14 @@ void CgroupEventHandler::HandleTransientTaskStart(uid_t uid, pid_t pid, std::str
 
 void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, std::string packageName)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, packageName.c_str());
     auto app = supervisor_->GetAppRecordNonNull(uid, packageName);
     auto procRecord = app->GetProcessRecord(pid);
-    if (procRecord == nullptr) {
+    if (!procRecord) {
         return;
     }
     procRecord->runningTransientTask_ = false;
@@ -220,7 +220,7 @@ void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, std::strin
 
 void CgroupEventHandler::HandleContinuousTaskStart(uid_t uid, pid_t pid, std::string abilityName)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
@@ -228,7 +228,7 @@ void CgroupEventHandler::HandleContinuousTaskStart(uid_t uid, pid_t pid, std::st
     ChronoScope cs("HandleContinuousTaskStart");
     auto app = supervisor_->GetAppRecordNonNull(uid, abilityName);
     auto procRecord = app->GetProcessRecord(pid);
-    if (procRecord == nullptr) {
+    if (!procRecord) {
         return;
     }
     procRecord->runningContinuousTask_ = true;
@@ -238,7 +238,7 @@ void CgroupEventHandler::HandleContinuousTaskStart(uid_t uid, pid_t pid, std::st
 
 void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::string abilityName)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
@@ -246,7 +246,7 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::s
     ChronoScope cs("HandleContinuousTaskCancel");
     auto app = supervisor_->GetAppRecordNonNull(uid, abilityName);
     auto procRecord = app->GetProcessRecord(pid);
-    if (procRecord == nullptr) {
+    if (!procRecord) {
         return;
     }
     procRecord->runningContinuousTask_ = false;
@@ -257,13 +257,13 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::s
 void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}llu", __func__, windowId,
         windowType, displayId);
-    if (abilityToken == nullptr) {
+    if (!abilityToken) {
         CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
     }
     std::shared_ptr<Application> app = nullptr;
@@ -271,9 +271,9 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
     {
         ChronoScope cs("HandleFocusedWindow");
         supervisor_->SearchAbilityToken(app, procRecord, abilityToken);
-        if (app == nullptr || procRecord == nullptr) {
+        if (!app || !procRecord) {
             supervisor_->SearchWindowId(app, procRecord, windowId);
-            if (app == nullptr || procRecord == nullptr) {
+            if (!app || !procRecord) {
                 return;
             }
         }
@@ -286,7 +286,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
         win->isFocused_ = true;
         win->displayId_ = displayId;
         win->ability_ = abi;
-        if (abi != nullptr) {
+        if (abi) {
             abi->window_ = win;
         }
 
@@ -314,13 +314,13 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
 void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}llu", __func__, windowId,
         windowType, displayId);
-    if (abilityToken == nullptr) {
+    if (!abilityToken) {
         CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
     }
     std::shared_ptr<Application> app = nullptr;
@@ -328,9 +328,9 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
     {
         ChronoScope cs("HandleUnfocusedWindow");
         supervisor_->SearchAbilityToken(app, procRecord, abilityToken);
-        if (app == nullptr || procRecord == nullptr) {
+        if (!app || !procRecord) {
             supervisor_->SearchWindowId(app, procRecord, windowId);
-            if (app == nullptr || procRecord == nullptr) {
+            if (!app || !procRecord) {
                 return;
             }
         }
@@ -343,7 +343,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
         win->isFocused_ = false;
         win->displayId_ = displayId;
         win->ability_ = abi;
-        if (abi != nullptr) {
+        if (abi) {
             abi->window_ = nullptr;
         }
 
@@ -364,7 +364,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
 
 void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t windowId, bool isVisible, int32_t pid, int32_t uid)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
@@ -372,11 +372,11 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t windowId, bool i
         isVisible, pid, uid);
 
     auto app = supervisor_->GetAppRecord(uid);
-    if (app == nullptr) {
+    if (!app) {
         return;
     }
     auto procRecord = app->GetProcessRecord(pid);
-    if (procRecord == nullptr) {
+    if (!procRecord) {
         return;
     }
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);

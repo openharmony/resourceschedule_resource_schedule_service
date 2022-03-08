@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -49,7 +49,7 @@ public:
         MilliSecondsType time_span = std::chrono::duration_cast<MilliSecondsType>(t2 - t1);
         HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "ChronoScope"};
         CGS_LOGI("[%{public}s] cost %{public}lf milliseconds.", outmsg_.c_str(), time_span.count());
-        if (out_ != nullptr) {
+        if (out_) {
             *out_ = time_span.count();
         }
     }

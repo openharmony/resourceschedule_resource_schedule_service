@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,7 +35,7 @@ void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateD
         return;
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr) {
+    if (cgHander) {
         cgHander->PostTask([cgHander, appStateData] {
             cgHander->HandleForegroundApplicationChanged(appStateData.uid, appStateData.bundleName,
                 appStateData.state);
@@ -55,7 +55,7 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         return;
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr) {
+    if (cgHander) {
         cgHander->PostTask([cgHander, abilityStateData] {
             cgHander->HandleAbilityStateChanged(abilityStateData.uid, abilityStateData.pid,
                 abilityStateData.bundleName, abilityStateData.abilityName,
@@ -79,7 +79,7 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
         return;
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr) {
+    if (cgHander) {
         cgHander->PostTask([cgHander, abilityStateData] {
             cgHander->HandleExtensionStateChanged(abilityStateData.uid, abilityStateData.pid,
                 abilityStateData.bundleName, abilityStateData.abilityName,
@@ -103,7 +103,7 @@ void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processDat
         return;
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr) {
+    if (cgHander) {
         cgHander->PostTask([cgHander, processData] {
             cgHander->HandleProcessCreated(processData.uid, processData.pid, processData.bundleName);
         });
@@ -123,7 +123,7 @@ void RmsApplicationStateObserver::OnProcessDied(const ProcessData &processData)
         return;
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr) {
+    if (cgHander) {
         cgHander->PostTask([cgHander, processData] {
             cgHander->HandleProcessDied(processData.uid, processData.pid, processData.bundleName);
         });
@@ -144,7 +144,7 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     }
 
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr) {
+    if (cgHander) {
         cgHander->PostTask([cgHander, appStateData] {
             cgHander->HandleApplicationStateChanged(appStateData.uid, appStateData.bundleName,
                 appStateData.state);
