@@ -42,6 +42,10 @@ enum : uint32_t {
     RES_TYPE_CGROUP_ADJUSTER,
     // ace gestures click_recognizer; value means nothing
     RES_TYPE_CLICK_RECOGNIZE,
+    // ace pipeline_context.cpp::PushPage(); value means nothing
+    RES_TYPE_PUSH_PAGE,
+    // ace slide event recognize; value 1: slide on; 0: slide off
+    RTS_TYPE_SLIDE_RECOGNIZE,
 };
 }
 } // namespace ResourceSchedule

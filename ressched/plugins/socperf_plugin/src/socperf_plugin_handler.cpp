@@ -30,6 +30,10 @@ SocPerfPluginHandler::SocPerfPluginHandler(
             [this](const std::shared_ptr<ResData>& data) { HandleWindowFocus(data); } },
         { RES_TYPE_CLICK_RECOGNIZE,
             [this](const std::shared_ptr<ResData>& data) { HandleEventClick(data); } },
+        { RES_TYPE_PUSH_PAGE,
+            [this](const std::shared_ptr<ResData>& data) { HandlePushPage(data); } },
+        { RTS_TYPE_SLIDE_RECOGNIZE,
+            [this](const std::shared_ptr<ResData>& data) { HandleEventSlide(data); } },
     };
 }
 
@@ -84,6 +88,19 @@ void SocPerfPluginHandler::HandleEventClick(const std::shared_ptr<ResData>& data
 {
     RESSCHED_LOGI("SocPerfPluginHandler: socperf->CLICK_NORMAL");
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
+}
+
+void SocPerfPluginHandler::HandlePushPage(const std::shared_ptr<ResData>& data)
+{
+    RESSCHED_LOGI("SocPerfPluginHandler: socperf->PUSH_PAGE");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_PUSH_PAGE, "");
+}
+
+void SocPerfPluginHandler::HandleEventSlide(const std::shared_ptr<ResData>& data)
+{
+    RESSCHED_LOGI("SocPerfPluginHandler: socperf->SLIDE_NORMAL: %{public}lld", data->value);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(
+        PERF_REQUEST_CMD_ID_EVENT_SLIDE, data->value == EVENT_ON, "");
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
