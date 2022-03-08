@@ -29,7 +29,7 @@ constexpr auto XML_ATTR_SWITCH = "switch";
 
 bool PluginSwitch::IsInvalidNode(const xmlNode& currNode)
 {
-    if (currNode.name == nullptr || currNode.type == XML_COMMENT_NODE) {
+    if (!currNode.name || currNode.type == XML_COMMENT_NODE) {
         return true;
     }
     return false;
@@ -39,12 +39,12 @@ bool PluginSwitch::LoadFromConfigFile(const string& configFile)
 {
     // skip the empty string, else you will get empty node
     xmlDocPtr xmlDocPtr = xmlReadFile(configFile.c_str(), nullptr, XML_PARSE_NOBLANKS);
-    if (xmlDocPtr == nullptr) {
+    if (!xmlDocPtr) {
         RESSCHED_LOGE("PluginSwitch::LoadFromConfigFile xmlReadFile error!");
         return false;
     }
     xmlNodePtr rootNodePtr = xmlDocGetRootElement(xmlDocPtr);
-    if (rootNodePtr == nullptr || rootNodePtr->name == nullptr ||
+    if (!rootNodePtr || !rootNodePtr->name ||
         xmlStrcmp(rootNodePtr->name, reinterpret_cast<const xmlChar*>(XML_TAG_PLUGIN_LIST)) != 0) {
         RESSCHED_LOGE("PluginSwitch::LoadFromConfigFile root element tag wrong!");
         xmlFreeDoc(xmlDocPtr);
@@ -53,7 +53,7 @@ bool PluginSwitch::LoadFromConfigFile(const string& configFile)
 
     std::list<PluginInfo> pluginInfoList;
     xmlNodePtr currNodePtr = rootNodePtr->xmlChildrenNode;
-    for (; currNodePtr != nullptr; currNodePtr = currNodePtr->next) {
+    for (; currNodePtr; currNodePtr = currNodePtr->next) {
         if (IsInvalidNode(*currNodePtr)) {
             continue;
         }
@@ -66,7 +66,7 @@ bool PluginSwitch::LoadFromConfigFile(const string& configFile)
         }
         PluginInfo info;
         attrValue = xmlGetProp(currNodePtr, reinterpret_cast<const xmlChar*>(XML_ATTR_LIB_PATH));
-        if (attrValue == nullptr) {
+        if (!attrValue) {
             RESSCHED_LOGW("PluginSwitch::LoadFromConfigFile libPath null!");
             continue;
         }
@@ -74,7 +74,7 @@ bool PluginSwitch::LoadFromConfigFile(const string& configFile)
         xmlFree(attrValue);
 
         attrValue = xmlGetProp(currNodePtr, reinterpret_cast<const xmlChar*>(XML_ATTR_SWITCH));
-        if (attrValue != nullptr) {
+        if (attrValue) {
             std::string value = reinterpret_cast<const char*>(attrValue);
             if (value == "1") {
                 info.switchOn = true;

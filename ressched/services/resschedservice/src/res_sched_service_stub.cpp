@@ -68,7 +68,7 @@ int ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     auto itFunc = funcMap_.find(code);
     if (itFunc != funcMap_.end()) {
         auto requestFunc = itFunc->second;
-        if (requestFunc != nullptr) {
+        if (requestFunc) {
             return requestFunc(data, reply);
         }
     }

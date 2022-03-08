@@ -51,24 +51,24 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
 ErrCode ResSchedClient::TryConnect()
 {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (rss_ != nullptr) {
+    if (rss_) {
         return ERR_OK;
     }
 
     sptr<ISystemAbilityManager> systemManager = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (systemManager == nullptr) {
+    if (!systemManager) {
         RESSCHED_LOGE("ResSchedClient::Fail to get registry.");
         return GET_RES_SCHED_SERVICE_FAILED;
     }
 
     remoteObject_ = systemManager->GetSystemAbility(RES_SCHED_SYS_ABILITY_ID);
-    if (remoteObject_ == nullptr) {
+    if (!remoteObject_) {
         RESSCHED_LOGE("ResSchedClient::Fail to connect resource schedule service.");
         return GET_RES_SCHED_SERVICE_FAILED;
     }
 
     rss_ = iface_cast<IResSchedService>(remoteObject_);
-    if (rss_ == nullptr) {
+    if (!rss_) {
         return GET_RES_SCHED_SERVICE_FAILED;
     }
     try {
@@ -76,7 +76,7 @@ ErrCode ResSchedClient::TryConnect()
     } catch(const std::bad_alloc &e) {
         RESSCHED_LOGE("ResSchedClient::New ResSchedDeathRecipient fail.");
     }
-    if (recipient_ == nullptr) {
+    if (!recipient_) {
         return GET_RES_SCHED_SERVICE_FAILED;
     }
     rss_->AsObject()->AddDeathRecipient(recipient_);
@@ -86,7 +86,7 @@ ErrCode ResSchedClient::TryConnect()
 
 void ResSchedClient::StopRemoteObject()
 {
-    if ((rss_ != nullptr) && (rss_->AsObject() != nullptr)) {
+    if (rss_ && rss_->AsObject()) {
         rss_->AsObject()->RemoveDeathRecipient(recipient_);
     }
     rss_ = nullptr;

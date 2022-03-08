@@ -27,7 +27,7 @@ REGISTER_SYSTEM_ABILITY_BY_ID(ResSchedServiceAbility, RES_SCHED_SYS_ABILITY_ID, 
 void ResSchedServiceAbility::OnStart()
 {
     ResSchedMgr::GetInstance().Init();
-    if (service_ == nullptr) {
+    if (!service_) {
         try {
             service_ = new ResSchedService();
         } catch(const std::bad_alloc &e) {
