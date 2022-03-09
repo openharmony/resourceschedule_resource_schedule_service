@@ -39,11 +39,17 @@ public:
 
     void Init();
     void Deinit();
-    bool RegisterStateObservers();
+    bool SubscribeAppState();
+    void UnsubscribeAppState();
+    bool SubscribeBackgroundTask();
+    void UnsubscribeBackgroundTask();
+    void SubscribeWindowState();
+    void UnsubscribeWindowState();
     void UnregisterStateObservers();
     void AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source);
     void AdjustAllProcessGroup(Application &app, AdjustSource source);
     int GetProcessGroup(pid_t pid);
+    void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status);
 
     const inline std::shared_ptr<CgroupEventHandler> GetCgroupEventHandler() const
     {
@@ -75,9 +81,6 @@ private:
     inline void InitCgroupHandler();
     inline void InitCgroupAdjuster();
     inline void InitSupervisor();
-    bool SubscribeAppState();
-    inline bool SubscribeBackgroundTask();
-    inline void SubscribeWindowState();
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

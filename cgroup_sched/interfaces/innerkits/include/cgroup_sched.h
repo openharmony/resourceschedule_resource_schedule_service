@@ -23,6 +23,7 @@ namespace ResourceSchedule {
 extern "C" void CgroupSchedInit();
 extern "C" void CgroupSchedDeinit();
 extern "C" int GetProcessGroup(pid_t pid);
+extern "C" void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status);
 } // namespace ResourceSchedule
 } // namespace OHOS
 

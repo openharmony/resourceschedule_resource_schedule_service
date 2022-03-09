@@ -48,7 +48,7 @@ public:
     
 private:
     void ComputeProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source);
-    void ApplyProcessGroup(ProcessRecord &pr);
+    void ApplyProcessGroup(Application &app, ProcessRecord &pr);
     inline void AdjustSelfProcessGroup();
 };
 } // namespace ResourceSchedule

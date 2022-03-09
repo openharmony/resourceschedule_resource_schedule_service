@@ -24,10 +24,10 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    const int INNER_EVENT_ID_REG_STATE_OBSERVERS = 0;
-    const int DELAYED_REGISTER_DURATION = 5000;
-    const int DELAYED_RETRY_REGISTER_DURATION = 2000;
-    const int MAX_RETRY_TIMES = 50;
+    const uint32_t EVENT_ID_REG_APP_STATE_OBSERVER = 1;
+    const uint32_t EVENT_ID_REG_BGTASK_OBSERVER = 2;
+    const uint32_t DELAYED_RETRY_REGISTER_DURATION = 100;
+    const uint32_t MAX_RETRY_TIMES = 100;
 }
 
 using OHOS::AppExecFwk::EventHandler;
@@ -40,6 +40,8 @@ public:
     ~CgroupEventHandler();
     virtual void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
     void SetSupervisor(std::shared_ptr<Supervisor> supervisor);
+    void HandleAbilityAdded(int32_t saId, const std::string& deviceId);
+    void HandleAbilityRemoved(int32_t saId, const std::string& deviceId);
     void HandleForegroundApplicationChanged(uid_t uid, std::string bundleName, int32_t state);
     void HandleApplicationStateChanged(uid_t uid, std::string bundleName, int32_t state);
     void HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName, std::string abilityName,
