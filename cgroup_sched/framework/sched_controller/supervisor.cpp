@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -97,7 +97,7 @@ bool ProcessRecord::IsVisible() const
 
 std::shared_ptr<ProcessRecord> Application::AddProcessRecord(std::shared_ptr<ProcessRecord> pr)
 {
-    if (pr != nullptr) {
+    if (pr) {
         pidsMap_[pr->GetPid()] = pr;
     }
     return pr;
@@ -180,7 +180,7 @@ std::shared_ptr<ProcessRecord> Supervisor::FindProcessRecord(pid_t pid)
     for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++) {
         auto app = iter->second;
         pr = app->GetProcessRecord(pid);
-        if (pr != nullptr) {
+        if (pr) {
             break;
         }
     }
@@ -202,7 +202,7 @@ void Supervisor::SearchAbilityToken(std::shared_ptr<Application> &application,
     for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++) {
         auto app = iter->second;
         pr = app->FindProcessRecord(token);
-        if (pr != nullptr) {
+        if (pr) {
             application = app;
             procRecord = pr;
             break;
@@ -217,7 +217,7 @@ void Supervisor::SearchWindowId(std::shared_ptr<Application> &application,
     for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++) {
         auto app = iter->second;
         pr = app->FindProcessRecord(windowId);
-        if (pr != nullptr) {
+        if (pr) {
             application = app;
             procRecord = pr;
             break;

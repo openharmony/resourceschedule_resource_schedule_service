@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,7 +44,7 @@ void BackgroundTaskObserver::OnTransientTaskStart(const std::shared_ptr<Transien
     }
     /* class TransientTaskAppInfo {std::string& GetPackageName(); int32_t GetUid(); int32_t GetPid();} */
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr) {
+    if (cgHander) {
         cgHander->PostTask([cgHander, info] {
             cgHander->HandleTransientTaskStart(info->GetUid(), info->GetPid(), info->GetPackageName());
         });
@@ -64,7 +64,7 @@ void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientT
         return;
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr) {
+    if (cgHander) {
         cgHander->PostTask([cgHander, info] {
             cgHander->HandleTransientTaskEnd(info->GetUid(), info->GetPid(), info->GetPackageName());
         });
@@ -85,7 +85,7 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
         return;
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr) {
+    if (cgHander) {
         cgHander->PostTask([cgHander, continuousTaskCallbackInfo] {
             cgHander->HandleContinuousTaskStart(continuousTaskCallbackInfo->GetCreatorUid(),
                 continuousTaskCallbackInfo->GetCreatorPid(),
@@ -108,7 +108,7 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
         return;
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander != nullptr) {
+    if (cgHander) {
         cgHander->PostTask([cgHander, continuousTaskCallbackInfo] {
             cgHander->HandleContinuousTaskCancel(continuousTaskCallbackInfo->GetCreatorUid(),
                 continuousTaskCallbackInfo->GetCreatorPid(),

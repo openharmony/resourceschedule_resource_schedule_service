@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -70,11 +70,11 @@ void SchedController::Init()
 
 void SchedController::Deinit()
 {
-    if (cgHandler_ != nullptr) {
+    if (cgHandler_) {
         cgHandler_->RemoveAllEvents();
         cgHandler_ = nullptr;
     }
-    if (supervisor_ != nullptr) {
+    if (supervisor_) {
         supervisor_ = nullptr;
     }
 }
@@ -98,7 +98,7 @@ bool SchedController::RegisterStateObservers()
 void SchedController::UnregisterStateObservers()
 {
     sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
-    if (appManager != nullptr && appStateObserver_ != nullptr) {
+    if (appManager && appStateObserver_) {
         int32_t err = appManager->UnregisterApplicationStateObserver(appStateObserver_);
         if (err == 0) {
             CGS_LOGI("UnregisterApplicationStateObserver success.");
@@ -108,19 +108,19 @@ void SchedController::UnregisterStateObservers()
     }
     appStateObserver_ = nullptr;
 
-    if (backgroundTaskObserver_ != nullptr) {
+    if (backgroundTaskObserver_) {
         int32_t ret = BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*backgroundTaskObserver_);
         CGS_LOGI("UnsubscribeBackgroundTask ret:%{public}d.", ret);
         backgroundTaskObserver_ = nullptr;
     }
 
-    if (windowStateObserver_ != nullptr) {
+    if (windowStateObserver_) {
         // unregister windowStateObserver_
         OHOS::Rosen::WindowManager::GetInstance().UnregisterFocusChangedListener(windowStateObserver_);
         windowStateObserver_ = nullptr;
     }
 
-    if (windowVisibilityObserver_ != nullptr) {
+    if (windowVisibilityObserver_) {
         OHOS::Rosen::WindowManager::GetInstance().UnregisterVisibilityChangedListener(windowVisibilityObserver_);
         windowVisibilityObserver_ = nullptr;
     }
@@ -128,7 +128,7 @@ void SchedController::UnregisterStateObservers()
 
 void SchedController::AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
 {
-    if (cgAdjuster_ == nullptr) {
+    if (!cgAdjuster_) {
         CGS_LOGE("SchedController is disabled due to null cgAdjuster_");
         return;
     }
@@ -137,7 +137,7 @@ void SchedController::AdjustProcessGroup(Application &app, ProcessRecord &pr, Ad
 
 void SchedController::AdjustAllProcessGroup(Application &app, AdjustSource source)
 {
-    if (cgAdjuster_ == nullptr) {
+    if (!cgAdjuster_) {
         CGS_LOGE("SchedController is disabled due to null cgAdjuster_");
         return;
     }
@@ -146,12 +146,12 @@ void SchedController::AdjustAllProcessGroup(Application &app, AdjustSource sourc
 
 int SchedController::GetProcessGroup(pid_t pid)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("SchedController::GetProcessCgroup, supervisor nullptr.");
         return VALUE_INT(SchedPolicy::SP_DEFAULT);
     }
     std::shared_ptr<ProcessRecord> pr = supervisor_->FindProcessRecord(pid);
-    return pr == nullptr ? VALUE_INT(SchedPolicy::SP_DEFAULT) : VALUE_INT(pr->curSchedGroup_);
+    return pr ? VALUE_INT(pr->curSchedGroup_) : VALUE_INT(SchedPolicy::SP_DEFAULT);
 }
 
 inline void SchedController::InitCgroupHandler()
@@ -174,7 +174,7 @@ inline void SchedController::InitSupervisor()
 bool SchedController::SubscribeAppState()
 {
     sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
-    if (appManager == nullptr) {
+    if (!appManager) {
         CGS_LOGE("%{public}s app manager nullptr!", __func__);
         return false;
     }
