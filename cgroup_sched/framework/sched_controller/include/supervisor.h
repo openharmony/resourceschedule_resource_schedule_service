@@ -61,7 +61,6 @@ public:
 class ProcessRecord {
 public:
     ProcessRecord(uid_t uid, pid_t pid) : uid_(uid), pid_(pid) {};
-    ProcessRecord(uid_t uid, pid_t pid, std::string name) : uid_(uid), pid_(pid), name_(name) {};
     ~ProcessRecord()
     {
         abilities_.clear();
@@ -86,11 +85,6 @@ public:
         return uid_;
     }
 
-    inline std::string GetName() const
-    {
-        return name_;
-    }
-
     SchedPolicy lastSchedGroup_ = SchedPolicy::SP_DEFAULT;
     SchedPolicy curSchedGroup_ = SchedPolicy::SP_DEFAULT;
     SchedPolicy setSchedGroup_ = SchedPolicy::SP_DEFAULT;
@@ -102,18 +96,17 @@ public:
 private:
     uid_t uid_;
     pid_t pid_;
-    std::string name_;
 };
 
 class Application {
 public:
-    Application(uid_t uid, std::string name) : uid_(uid), name_(name) {};
+    Application(uid_t uid) : uid_(uid) {};
     ~Application() = default;
 
     std::shared_ptr<ProcessRecord> AddProcessRecord(std::shared_ptr<ProcessRecord> pr);
     void RemoveProcessRecord(pid_t pid);
     std::shared_ptr<ProcessRecord> GetProcessRecord(pid_t pid);
-    std::shared_ptr<ProcessRecord> GetProcessRecordNonNull(pid_t pid, std::string name);
+    std::shared_ptr<ProcessRecord> GetProcessRecordNonNull(pid_t pid);
     std::shared_ptr<ProcessRecord> FindProcessRecord(sptr<IRemoteObject> token);
     std::shared_ptr<ProcessRecord> FindProcessRecord(uint32_t windowId);
 
@@ -122,16 +115,12 @@ public:
         return uid_;
     }
 
-    inline std::string GetName() const
-    {
-        return name_;
-    }
-
     inline std::map<pid_t, std::shared_ptr<ProcessRecord>> GetPidsMap() const
     {
         return pidsMap_;
     }
 
+    std::string name_;
     std::shared_ptr<ProcessRecord> focusedProcess_ = nullptr;
     SchedPolicy lastSchedGroup_ = SchedPolicy::SP_DEFAULT;
     SchedPolicy curSchedGroup_ = SchedPolicy::SP_DEFAULT;
@@ -140,14 +129,13 @@ public:
 
 private:
     uid_t uid_;
-    std::string name_;
     std::map<pid_t, std::shared_ptr<ProcessRecord>> pidsMap_;
 };
 
 class Supervisor {
 public:
     std::shared_ptr<Application> GetAppRecord(int32_t uid);
-    std::shared_ptr<Application> GetAppRecordNonNull(int32_t uid, std::string bundleName);
+    std::shared_ptr<Application> GetAppRecordNonNull(int32_t uid);
     std::shared_ptr<ProcessRecord> FindProcessRecord(pid_t pid);
     void RemoveApplication(int32_t uid);
     void SearchAbilityToken(std::shared_ptr<Application> &app, std::shared_ptr<ProcessRecord> &procRecord,

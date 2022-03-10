@@ -33,6 +33,10 @@ private:
 
     void OnStop() override;
 
+    void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
+
+    void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
+
     sptr<ResSchedService> service_;
 
     DISALLOW_COPY_AND_MOVE(ResSchedServiceAbility);

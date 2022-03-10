@@ -122,10 +122,10 @@ std::shared_ptr<ProcessRecord> Application::GetProcessRecord(pid_t pid)
     return pidsMap_[pid];
 }
 
-std::shared_ptr<ProcessRecord> Application::GetProcessRecordNonNull(pid_t pid, std::string name)
+std::shared_ptr<ProcessRecord> Application::GetProcessRecordNonNull(pid_t pid)
 {
     if (pidsMap_.find(pid) == pidsMap_.end()) {
-        auto pr = std::make_shared<ProcessRecord>(this->GetUid(), pid, name);
+        auto pr = std::make_shared<ProcessRecord>(this->GetUid(), pid);
         this->AddProcessRecord(pr);
         return pr;
     }
@@ -164,10 +164,10 @@ std::shared_ptr<Application> Supervisor::GetAppRecord(int32_t uid)
     return uidsMap_[uid];
 }
 
-std::shared_ptr<Application> Supervisor::GetAppRecordNonNull(int32_t uid, std::string bundleName)
+std::shared_ptr<Application> Supervisor::GetAppRecordNonNull(int32_t uid)
 {
     if (uidsMap_.find(uid) == uidsMap_.end()) {
-        auto app = std::make_shared<Application>(uid, bundleName);
+        auto app = std::make_shared<Application>(uid);
         uidsMap_[uid] = app;
         return app;
     }

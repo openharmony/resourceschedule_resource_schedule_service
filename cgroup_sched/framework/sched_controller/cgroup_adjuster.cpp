@@ -50,7 +50,7 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
 {
     CGS_LOGI("%{public}s for %{public}d, source : %{public}d", __func__, pr.GetPid(), source);
     ComputeProcessGroup(app, pr, source);
-    ApplyProcessGroup(pr);
+    ApplyProcessGroup(app, pr);
 }
 
 void CgroupAdjuster::AdjustAllProcessGroup(Application &app, AdjustSource source)
@@ -102,7 +102,7 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
     } // end ChronoScope
 }
 
-void CgroupAdjuster::ApplyProcessGroup(ProcessRecord &pr)
+void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
 {
     ChronoScope cs("ApplyProcessGroup");
     if (pr.curSchedGroup_ != pr.setSchedGroup_) {
@@ -122,7 +122,7 @@ void CgroupAdjuster::ApplyProcessGroup(ProcessRecord &pr)
         Json::Value payload;
         payload["pid"] = pr.GetPid();
         payload["uid"] = pr.GetUid();
-        payload["name"] = pr.GetName();
+        payload["name"] = app.name_;
         payload["oldGroup"] = VALUE_INT(pr.lastSchedGroup_);
         payload["newGroup"] = VALUE_INT(pr.curSchedGroup_);
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CGROUP_ADJUSTER, 0, payload);
