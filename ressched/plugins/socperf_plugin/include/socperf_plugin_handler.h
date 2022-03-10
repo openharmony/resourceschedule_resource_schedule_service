@@ -54,6 +54,7 @@ namespace {
     const int PERF_REQUEST_CMD_ID_EVENT_CLICK           = 10006;
     const int PERF_REQUEST_CMD_ID_PUSH_PAGE             = 10007;
     const int PERF_REQUEST_CMD_ID_EVENT_SLIDE           = 10008;
+    const int PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER      = 10009;
     const int EVENT_ON                                  = 1;
     const int EVENT_OFF                                 = 0;
     const int WINDOW_FOCUSED                            = 0;
