@@ -38,14 +38,30 @@ void ResSchedServiceAbility::OnStart()
         RESSCHED_LOGE("ResSchedServiceAbility:: Register service failed.");
     }
     CgroupSchedInit();
+    AddSystemAbilityListener(APP_MGR_SERVICE_ID);
+    AddSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID);
+    AddSystemAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID);
     RESSCHED_LOGI("ResSchedServiceAbility ::OnStart.");
 }
 
 void ResSchedServiceAbility::OnStop()
 {
+    RemoveSystemAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID);
+    RemoveSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID);
+    RemoveSystemAbilityListener(APP_MGR_SERVICE_ID);
     ResSchedMgr::GetInstance().Stop();
     CgroupSchedDeinit();
     RESSCHED_LOGI("ResSchedServiceAbility::OnStop!");
+}
+
+void ResSchedServiceAbility::OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
+{
+    ReportAbilityStatus(systemAbilityId, deviceId, 1);
+}
+
+void ResSchedServiceAbility::OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
+{
+    ReportAbilityStatus(systemAbilityId, deviceId, 0);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,7 +30,7 @@ namespace CgroupSetting {
 std::string FormatString(const char* fmt, va_list vararg)
 {
     std::string strResult;
-    if (fmt != nullptr) {
+    if (fmt) {
         va_list tmpArgs;
         va_copy(tmpArgs, vararg);
         size_t nLength = vsnprintf(nullptr, 0, fmt, tmpArgs); // compute buffer size
@@ -56,7 +56,7 @@ std::string StringPrintf(const char* fmt, ...)
 bool GetRealPath(const std::string& path, std::string& realPath)
 {
     char resolvedPath[PATH_MAX] = { 0 };
-    if (path.size() > PATH_MAX || realpath(path.c_str(), resolvedPath) == nullptr) {
+    if (path.size() > PATH_MAX || !realpath(path.c_str(), resolvedPath)) {
         PGCGS_LOGE("Error: _fullpath %{public}s failed", path.c_str());
         return false;
     }

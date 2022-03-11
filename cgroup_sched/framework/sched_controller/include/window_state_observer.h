@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,14 +26,13 @@ namespace ResourceSchedule {
 using OHOS::Rosen::IFocusChangedListener;
 using OHOS::Rosen::IVisibilityChangedListener;
 using OHOS::Rosen::WindowType;
+using OHOS::Rosen::FocusChangeInfo;
 using OHOS::Rosen::WindowVisibilityInfo;
 
 class WindowStateObserver : public IFocusChangedListener {
 public:
-    void OnFocused(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-        WindowType windowType, Rosen::DisplayId displayId) override;
-    void OnUnfocused(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-        WindowType windowType, Rosen::DisplayId displayId) override;
+    void OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo) override;
+    void OnUnfocused(const sptr<FocusChangeInfo>& focusChangeInfo) override;
 };
 
 class WindowVisibilityObserver : public IVisibilityChangedListener {

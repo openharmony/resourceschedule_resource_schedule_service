@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +23,7 @@ namespace ResourceSchedule {
 extern "C" void CgroupSchedInit();
 extern "C" void CgroupSchedDeinit();
 extern "C" int GetProcessGroup(pid_t pid);
+extern "C" void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status);
 } // namespace ResourceSchedule
 } // namespace OHOS
 
