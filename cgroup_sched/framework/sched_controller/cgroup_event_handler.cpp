@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +21,7 @@
 #include "cgroup_sched_log.h"
 #include "ressched_utils.h"
 #include "res_type.h"
+#include "system_ability_definition.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -39,23 +40,27 @@ CgroupEventHandler::~CgroupEventHandler()
 
 void CgroupEventHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event)
 {
+    CGS_LOGD("%{public}s : eventId:%{public}d param:%{public}llu",
+        __func__, event->GetInnerEventId(), event->GetParam());
     switch (event->GetInnerEventId()) {
-        case INNER_EVENT_ID_REG_STATE_OBSERVERS: {
-            ChronoScope cs("Delayed RegisterStateObservers.");
-            int retry = event->GetParam();
-            if (SchedController::GetInstance().RegisterStateObservers()) {
-                CGS_LOGW("%{public}s register state observer success.", __func__);
+        case EVENT_ID_REG_APP_STATE_OBSERVER: {
+                int64_t retry = event->GetParam();
+                if (!SchedController::GetInstance().SubscribeAppState() &&
+                    retry < MAX_RETRY_TIMES) {
+                    auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_APP_STATE_OBSERVER, retry + 1);
+                    this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
+                }
                 break;
             }
-            if (retry < MAX_RETRY_TIMES) {
-                CGS_LOGW("%{public}s retry register state observers, retry:%{public}d.", __func__, retry);
-                auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_REG_STATE_OBSERVERS, retry + 1);
-                this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
-            } else {
-                CGS_LOGE("%{public}s register state observer failed eventually, reach max retry times!", __func__);
+        case EVENT_ID_REG_BGTASK_OBSERVER: {
+                int64_t retry = event->GetParam();
+                if (!SchedController::GetInstance().SubscribeBackgroundTask() &&
+                    retry < MAX_RETRY_TIMES) {
+                    auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_BGTASK_OBSERVER, retry + 1);
+                    this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
+                }
+                break;
             }
-            break;
-        }
         default:
             break;
     }
@@ -66,22 +71,67 @@ void CgroupEventHandler::SetSupervisor(std::shared_ptr<Supervisor> supervisor)
     supervisor_ = supervisor;
 }
 
+void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& deviceId)
+{
+    switch (saId) {
+        case APP_MGR_SERVICE_ID:
+            this->RemoveEvent(EVENT_ID_REG_APP_STATE_OBSERVER);
+            if (!SchedController::GetInstance().SubscribeAppState()) {
+                auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_APP_STATE_OBSERVER, 0);
+                this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
+            }
+            break;
+        case WINDOW_MANAGER_SERVICE_ID:
+            SchedController::GetInstance().SubscribeWindowState();
+            break;
+        case BACKGROUND_TASK_MANAGER_SERVICE_ID:
+            this->RemoveEvent(EVENT_ID_REG_BGTASK_OBSERVER);
+            if (!SchedController::GetInstance().SubscribeBackgroundTask()) {
+                auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_BGTASK_OBSERVER, 0);
+                this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void CgroupEventHandler::HandleAbilityRemoved(int32_t saId, const std::string& deviceId)
+{
+    switch (saId) {
+        case APP_MGR_SERVICE_ID:
+            this->RemoveEvent(EVENT_ID_REG_APP_STATE_OBSERVER);
+            SchedController::GetInstance().UnsubscribeAppState();
+            break;
+        case WINDOW_MANAGER_SERVICE_ID:
+            SchedController::GetInstance().UnsubscribeWindowState();
+            break;
+        case BACKGROUND_TASK_MANAGER_SERVICE_ID:
+            this->RemoveEvent(EVENT_ID_REG_BGTASK_OBSERVER);
+            SchedController::GetInstance().UnsubscribeBackgroundTask();
+            break;
+        default:
+            break;
+    }
+}
+
 void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, std::string bundleName, int32_t state)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
     ChronoScope cs("HandleForegroundApplicationChanged");
-    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid, bundleName);
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
+    app->name_ = bundleName;
     app->state_ = state;
     SchedController::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FG_APP_CHANGE);
 }
 
 void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, std::string bundleName, int32_t state)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
@@ -92,14 +142,15 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, std::string bu
         supervisor_->RemoveApplication(uid);
         return;
     }
-    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid, bundleName);
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
+    app->name_ = bundleName;
     app->state_ = state;
 }
 
 void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName,
     std::string abilityName, sptr<IRemoteObject> token, int32_t abilityState, int32_t abilityType)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
@@ -108,16 +159,19 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
     ChronoScope cs("HandleAbilityStateChanged");
     if (abilityState == VALUE_INT(AbilityState::ABILITY_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
-        if (app != nullptr) {
+        if (app) {
             auto procRecord = app->GetProcessRecord(pid);
-            if (procRecord != nullptr) {
+            if (procRecord) {
                 procRecord->RemoveAbilityByToken(token);
+                SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+                    AdjustSource::ADJS_ABILITY_STATE);
             }
         }
         return;
     }
-    auto app = supervisor_->GetAppRecordNonNull(uid, bundleName);
-    auto procRecord = app->GetProcessRecordNonNull(pid, abilityName);
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    app->name_ = bundleName;
+    auto procRecord = app->GetProcessRecordNonNull(pid);
     auto abiInfo = procRecord->GetAbilityInfoNonNull(token);
     abiInfo->state_ = abilityState;
     abiInfo->type_ = abilityType;
@@ -128,7 +182,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
 void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::string bundleName,
     std::string abilityName, sptr<IRemoteObject> token, int32_t extensionState, int32_t abilityType)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
@@ -137,16 +191,19 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
     ChronoScope cs("HandleExtensionStateChanged");
     if (extensionState == VALUE_INT(ExtensionState::EXTENSION_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
-        if (app != nullptr) {
+        if (app) {
             auto procRecord = app->GetProcessRecord(pid);
-            if (procRecord != nullptr) {
+            if (procRecord) {
                 procRecord->RemoveAbilityByToken(token);
+                SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+                    AdjustSource::ADJS_EXTENSION_STATE);
             }
         }
         return;
     }
-    auto app = supervisor_->GetAppRecordNonNull(uid, bundleName);
-    auto procRecord = app->GetProcessRecordNonNull(pid, abilityName);
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    app->name_ = bundleName;
+    auto procRecord = app->GetProcessRecordNonNull(pid);
     auto abiInfo = procRecord->GetAbilityInfoNonNull(token);
     abiInfo->estate_ = extensionState;
     abiInfo->type_ = abilityType;
@@ -156,14 +213,15 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
 
 void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, std::string bundleName)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, bundleName.c_str());
     ChronoScope cs("HandleProcessCreated");
-    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid, bundleName);
-    std::shared_ptr<ProcessRecord> procRecord = std::make_shared<ProcessRecord>(uid, pid, bundleName);
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
+    app->name_ = bundleName;
+    std::shared_ptr<ProcessRecord> procRecord = std::make_shared<ProcessRecord>(uid, pid);
     app->AddProcessRecord(procRecord);
     SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_CREATE);
@@ -171,13 +229,13 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, std::string 
 
 void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, std::string bundleName)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, bundleName.c_str());
     std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
-    if (app == nullptr) {
+    if (!app) {
         CGS_LOGE("%{public}s : application %{public}s not exist!", __func__, bundleName.c_str());
         return;
     }
@@ -190,14 +248,15 @@ void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, std::string bun
 
 void CgroupEventHandler::HandleTransientTaskStart(uid_t uid, pid_t pid, std::string packageName)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, packageName.c_str());
-    auto app = supervisor_->GetAppRecordNonNull(uid, packageName);
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    app->name_ = packageName;
     auto procRecord = app->GetProcessRecord(pid);
-    if (procRecord == nullptr) {
+    if (!procRecord) {
         return;
     }
     procRecord->runningTransientTask_ = true;
@@ -205,14 +264,15 @@ void CgroupEventHandler::HandleTransientTaskStart(uid_t uid, pid_t pid, std::str
 
 void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, std::string packageName)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, packageName.c_str());
-    auto app = supervisor_->GetAppRecordNonNull(uid, packageName);
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    app->name_ = packageName;
     auto procRecord = app->GetProcessRecord(pid);
-    if (procRecord == nullptr) {
+    if (!procRecord) {
         return;
     }
     procRecord->runningTransientTask_ = false;
@@ -220,17 +280,14 @@ void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, std::strin
 
 void CgroupEventHandler::HandleContinuousTaskStart(uid_t uid, pid_t pid, std::string abilityName)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, abilityName.c_str());
     ChronoScope cs("HandleContinuousTaskStart");
-    auto app = supervisor_->GetAppRecordNonNull(uid, abilityName);
-    auto procRecord = app->GetProcessRecord(pid);
-    if (procRecord == nullptr) {
-        return;
-    }
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    auto procRecord = app->GetProcessRecordNonNull(pid);
     procRecord->runningContinuousTask_ = true;
     SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_CONTINUOUS_BEGIN);
@@ -238,15 +295,15 @@ void CgroupEventHandler::HandleContinuousTaskStart(uid_t uid, pid_t pid, std::st
 
 void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::string abilityName)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, abilityName.c_str());
     ChronoScope cs("HandleContinuousTaskCancel");
-    auto app = supervisor_->GetAppRecordNonNull(uid, abilityName);
+    auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecord(pid);
-    if (procRecord == nullptr) {
+    if (!procRecord) {
         return;
     }
     procRecord->runningContinuousTask_ = false;
@@ -255,38 +312,37 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::s
 }
 
 void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-    WindowType windowType, uint64_t displayId)
+    WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        std::string payload = std::to_string(pid) + "," + // pid
+            std::to_string(uid) + "," + // uid
+            "None," + // bundle name
+            std::to_string(windowId) + "," + // window id
+            std::to_string(VALUE_INT(windowType)) + "," + // window type
+            std::to_string(displayId); // display id
+        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}llu", __func__, windowId,
-        windowType, displayId);
-    if (abilityToken == nullptr) {
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}llu, %{public}d, %{public}d",
+        __func__, windowId, windowType, displayId, pid, uid);
+    if (!abilityToken) {
         CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
     }
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
     {
         ChronoScope cs("HandleFocusedWindow");
-        supervisor_->SearchAbilityToken(app, procRecord, abilityToken);
-        if (app == nullptr || procRecord == nullptr) {
-            supervisor_->SearchWindowId(app, procRecord, windowId);
-            if (app == nullptr || procRecord == nullptr) {
-                return;
-            }
-        }
-        CGS_LOGD("%{public}s : focused window belongs to %{public}s %{public}d",
-            __func__, app->GetName().c_str(), procRecord->GetPid());
-
+        app = supervisor_->GetAppRecordNonNull(uid);
+        procRecord = app->GetProcessRecordNonNull(pid);
         auto win = procRecord->GetWindowInfoNonNull(windowId);
         auto abi = procRecord->GetAbilityInfo(abilityToken);
         win->windowType_ = VALUE_INT(windowType);
         win->isFocused_ = true;
         win->displayId_ = displayId;
         win->ability_ = abi;
-        if (abi != nullptr) {
+        if (abi) {
             abi->window_ = win;
         }
 
@@ -301,9 +357,9 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
         SchedController::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FOCUSED_WINDOW);
     }
 
-    std::string payload = std::to_string(procRecord->GetPid()) + "," + // pid
-            std::to_string(procRecord->GetUid()) + "," + // uid
-            app->GetName() + "," + // bundle name
+    std::string payload = std::to_string(pid) + "," + // pid
+            std::to_string(uid) + "," + // uid
+            app->name_ + "," + // bundle name
             std::to_string(windowId) + "," + // window id
             std::to_string(VALUE_INT(windowType)) + "," + // window type
             std::to_string(displayId); // display id
@@ -311,38 +367,58 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
 }
 
 void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-    WindowType windowType, uint64_t displayId)
+    WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        std::string payload = std::to_string(pid) + "," + // pid
+            std::to_string(uid) + "," + // uid
+            "None," + // bundle name
+            std::to_string(windowId) + "," + // window id
+            std::to_string(VALUE_INT(windowType)) + "," + // window type
+            std::to_string(displayId); // display id
+        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
+
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}llu", __func__, windowId,
         windowType, displayId);
-    if (abilityToken == nullptr) {
+    if (!abilityToken) {
         CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
     }
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
     {
         ChronoScope cs("HandleUnfocusedWindow");
-        supervisor_->SearchAbilityToken(app, procRecord, abilityToken);
-        if (app == nullptr || procRecord == nullptr) {
-            supervisor_->SearchWindowId(app, procRecord, windowId);
-            if (app == nullptr || procRecord == nullptr) {
-                return;
-            }
+        app = supervisor_->GetAppRecord(uid);
+        if (!app) {
+            std::string payload = std::to_string(pid) + "," + // pid
+            std::to_string(uid) + "," + // uid
+            "None," + // bundle name
+            std::to_string(windowId) + "," + // window id
+            std::to_string(VALUE_INT(windowType)) + "," + // window type
+            std::to_string(displayId); // display id
+            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
+            return;
         }
-        CGS_LOGD("%{public}s : unfocused window belongs to %{public}s %{public}d",
-            __func__, app->GetName().c_str(), procRecord->GetPid());
-
+        procRecord = app->GetProcessRecord(pid);
+        if (!procRecord) {
+            std::string payload = std::to_string(pid) + "," + // pid
+            std::to_string(uid) + "," + // uid
+            "None," + // bundle name
+            std::to_string(windowId) + "," + // window id
+            std::to_string(VALUE_INT(windowType)) + "," + // window type
+            std::to_string(displayId); // display id
+            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
+            return;
+        }
         auto win = procRecord->GetWindowInfoNonNull(windowId);
         auto abi = procRecord->GetAbilityInfo(abilityToken);
         win->windowType_ = VALUE_INT(windowType);
         win->isFocused_ = false;
         win->displayId_ = displayId;
         win->ability_ = abi;
-        if (abi != nullptr) {
+        if (abi) {
             abi->window_ = nullptr;
         }
 
@@ -352,9 +428,9 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
         SchedController::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_UNFOCUSED_WINDOW);
     }
 
-    std::string payload = std::to_string(procRecord->GetPid()) + "," + // pid
-            std::to_string(procRecord->GetUid()) + "," + // uid
-            app->GetName() + "," + // bundle name
+    std::string payload = std::to_string(pid) + "," + // pid
+            std::to_string(uid) + "," + // uid
+            app->name_ + "," + // bundle name
             std::to_string(windowId) + "," + // window id
             std::to_string(VALUE_INT(windowType)) + "," + // window type
             std::to_string(displayId); // display id
@@ -363,19 +439,25 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
 
 void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t windowId, bool isVisible, int32_t pid, int32_t uid)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
         isVisible, pid, uid);
 
-    auto app = supervisor_->GetAppRecord(uid);
-    if (app == nullptr) {
-        return;
+    std::shared_ptr<Application> app = nullptr;
+    std::shared_ptr<ProcessRecord> procRecord = nullptr;
+    if (isVisible) {
+        app = supervisor_->GetAppRecordNonNull(uid);
+        procRecord = app->GetProcessRecordNonNull(pid);
+    } else {
+        app = supervisor_->GetAppRecord(uid);
+        if (app) {
+            procRecord = app->GetProcessRecord(pid);
+        }
     }
-    auto procRecord = app->GetProcessRecord(pid);
-    if (procRecord == nullptr) {
+    if (!procRecord) {
         return;
     }
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);

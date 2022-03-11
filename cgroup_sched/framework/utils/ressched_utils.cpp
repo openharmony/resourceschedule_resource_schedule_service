@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,13 +33,13 @@ ResSchedUtils& ResSchedUtils::GetInstance()
 void ResSchedUtils::LoadUtils()
 {
     auto handle = dlopen(RES_SCHED_CLIENT_SO.c_str(), RTLD_NOW);
-    if (handle == nullptr) {
+    if (!handle) {
         CGS_LOGE("%{public}s load %{public}s failed!", __func__, RES_SCHED_CLIENT_SO.c_str());
         return;
     }
 
     auto func = reinterpret_cast<ReportDataFunc>(dlsym(handle, "ReportDataInProcess"));
-    if (func == nullptr) {
+    if (!func) {
         CGS_LOGE("%{public}s load function:ReportDataInProcess failed!", __func__);
         dlclose(handle);
         return;
@@ -49,7 +49,7 @@ void ResSchedUtils::LoadUtils()
 
 void ResSchedUtils::ReportDataInProcess(uint32_t resType, int64_t value, const std::string& payload)
 {
-    if (reportFunc_ == nullptr) {
+    if (!reportFunc_) {
         CGS_LOGE("%{public}s failed, function nullptr.", __func__);
         return;
     }

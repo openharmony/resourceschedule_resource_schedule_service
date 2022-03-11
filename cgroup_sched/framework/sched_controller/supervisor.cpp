@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -97,7 +97,7 @@ bool ProcessRecord::IsVisible() const
 
 std::shared_ptr<ProcessRecord> Application::AddProcessRecord(std::shared_ptr<ProcessRecord> pr)
 {
-    if (pr != nullptr) {
+    if (pr) {
         pidsMap_[pr->GetPid()] = pr;
     }
     return pr;
@@ -122,10 +122,10 @@ std::shared_ptr<ProcessRecord> Application::GetProcessRecord(pid_t pid)
     return pidsMap_[pid];
 }
 
-std::shared_ptr<ProcessRecord> Application::GetProcessRecordNonNull(pid_t pid, std::string name)
+std::shared_ptr<ProcessRecord> Application::GetProcessRecordNonNull(pid_t pid)
 {
     if (pidsMap_.find(pid) == pidsMap_.end()) {
-        auto pr = std::make_shared<ProcessRecord>(this->GetUid(), pid, name);
+        auto pr = std::make_shared<ProcessRecord>(this->GetUid(), pid);
         this->AddProcessRecord(pr);
         return pr;
     }
@@ -164,10 +164,10 @@ std::shared_ptr<Application> Supervisor::GetAppRecord(int32_t uid)
     return uidsMap_[uid];
 }
 
-std::shared_ptr<Application> Supervisor::GetAppRecordNonNull(int32_t uid, std::string bundleName)
+std::shared_ptr<Application> Supervisor::GetAppRecordNonNull(int32_t uid)
 {
     if (uidsMap_.find(uid) == uidsMap_.end()) {
-        auto app = std::make_shared<Application>(uid, bundleName);
+        auto app = std::make_shared<Application>(uid);
         uidsMap_[uid] = app;
         return app;
     }
@@ -180,7 +180,7 @@ std::shared_ptr<ProcessRecord> Supervisor::FindProcessRecord(pid_t pid)
     for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++) {
         auto app = iter->second;
         pr = app->GetProcessRecord(pid);
-        if (pr != nullptr) {
+        if (pr) {
             break;
         }
     }
@@ -202,7 +202,7 @@ void Supervisor::SearchAbilityToken(std::shared_ptr<Application> &application,
     for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++) {
         auto app = iter->second;
         pr = app->FindProcessRecord(token);
-        if (pr != nullptr) {
+        if (pr) {
             application = app;
             procRecord = pr;
             break;
@@ -217,7 +217,7 @@ void Supervisor::SearchWindowId(std::shared_ptr<Application> &application,
     for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++) {
         auto app = iter->second;
         pr = app->FindProcessRecord(windowId);
-        if (pr != nullptr) {
+        if (pr) {
             application = app;
             procRecord = pr;
             break;

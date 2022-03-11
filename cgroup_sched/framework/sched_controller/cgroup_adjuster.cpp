@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -39,7 +39,7 @@ using OHOS::Rosen::WindowType;
 void CgroupAdjuster::InitAdjuster()
 {
     auto handler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (handler != nullptr) {
+    if (handler) {
         handler->PostTask([this] {
             this->AdjustSelfProcessGroup();
         });
@@ -50,7 +50,7 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
 {
     CGS_LOGI("%{public}s for %{public}d, source : %{public}d", __func__, pr.GetPid(), source);
     ComputeProcessGroup(app, pr, source);
-    ApplyProcessGroup(pr);
+    ApplyProcessGroup(app, pr);
 }
 
 void CgroupAdjuster::AdjustAllProcessGroup(Application &app, AdjustSource source)
@@ -80,7 +80,7 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
         ChronoScope cs("ComputeProcessGroup");
         if (source == AdjustSource::ADJS_PROCESS_CREATE) {
             group = SchedPolicy::SP_DEFAULT;
-        } else if (app.focusedProcess_ != nullptr) {
+        } else if (app.focusedProcess_) {
             group = SchedPolicy::SP_TOP_APP;
         } else {
             if (pr.abilities_.size() == 0) {
@@ -102,7 +102,7 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
     } // end ChronoScope
 }
 
-void CgroupAdjuster::ApplyProcessGroup(ProcessRecord &pr)
+void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
 {
     ChronoScope cs("ApplyProcessGroup");
     if (pr.curSchedGroup_ != pr.setSchedGroup_) {
@@ -121,7 +121,7 @@ void CgroupAdjuster::ApplyProcessGroup(ProcessRecord &pr)
 
         std::string payload = std::to_string(pr.GetPid()) + "," +
                 std::to_string(pr.GetUid()) + "," +
-                pr.GetName() + "," +
+                app.name_ + "," +
                 std::to_string(VALUE_INT(pr.lastSchedGroup_)) + "," +
                 std::to_string(VALUE_INT(pr.curSchedGroup_));
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CGROUP_ADJUSTER, 0, payload);

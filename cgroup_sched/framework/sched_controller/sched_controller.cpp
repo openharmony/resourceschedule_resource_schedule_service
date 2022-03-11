@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,72 +63,30 @@ void SchedController::Init()
     InitCgroupHandler();
     // Init cgroup adjuster thread
     InitCgroupAdjuster();
-
-    auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_REG_STATE_OBSERVERS, 0);
-    cgHandler_->SendEvent(event, DELAYED_REGISTER_DURATION);
 }
 
 void SchedController::Deinit()
 {
-    if (cgHandler_ != nullptr) {
+    if (cgHandler_) {
         cgHandler_->RemoveAllEvents();
         cgHandler_ = nullptr;
     }
-    if (supervisor_ != nullptr) {
+    if (supervisor_) {
         supervisor_ = nullptr;
     }
-}
-
-bool SchedController::RegisterStateObservers()
-{
-    // register callback observers for app state
-    if (!SubscribeAppState()) {
-        return false;
-    }
-    // register callback observers for background task
-    if (!SubscribeBackgroundTask()) {
-        UnregisterStateObservers();
-        return false;
-    }
-    // register callback observers for window state
-    SubscribeWindowState();
-    return true;
+    cgAdjuster_ = nullptr;
 }
 
 void SchedController::UnregisterStateObservers()
 {
-    sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
-    if (appManager != nullptr && appStateObserver_ != nullptr) {
-        int32_t err = appManager->UnregisterApplicationStateObserver(appStateObserver_);
-        if (err == 0) {
-            CGS_LOGI("UnregisterApplicationStateObserver success.");
-        } else {
-            CGS_LOGE("UnregisterApplicationStateObserver failed. err:%{public}d", err);
-        }
-    }
-    appStateObserver_ = nullptr;
-
-    if (backgroundTaskObserver_ != nullptr) {
-        int32_t ret = BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*backgroundTaskObserver_);
-        CGS_LOGI("UnsubscribeBackgroundTask ret:%{public}d.", ret);
-        backgroundTaskObserver_ = nullptr;
-    }
-
-    if (windowStateObserver_ != nullptr) {
-        // unregister windowStateObserver_
-        OHOS::Rosen::WindowManager::GetInstance().UnregisterFocusChangedListener(windowStateObserver_);
-        windowStateObserver_ = nullptr;
-    }
-
-    if (windowVisibilityObserver_ != nullptr) {
-        OHOS::Rosen::WindowManager::GetInstance().UnregisterVisibilityChangedListener(windowVisibilityObserver_);
-        windowVisibilityObserver_ = nullptr;
-    }
+    UnsubscribeAppState();
+    UnsubscribeBackgroundTask();
+    UnsubscribeWindowState();
 }
 
 void SchedController::AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
 {
-    if (cgAdjuster_ == nullptr) {
+    if (!cgAdjuster_) {
         CGS_LOGE("SchedController is disabled due to null cgAdjuster_");
         return;
     }
@@ -137,7 +95,7 @@ void SchedController::AdjustProcessGroup(Application &app, ProcessRecord &pr, Ad
 
 void SchedController::AdjustAllProcessGroup(Application &app, AdjustSource source)
 {
-    if (cgAdjuster_ == nullptr) {
+    if (!cgAdjuster_) {
         CGS_LOGE("SchedController is disabled due to null cgAdjuster_");
         return;
     }
@@ -146,12 +104,29 @@ void SchedController::AdjustAllProcessGroup(Application &app, AdjustSource sourc
 
 int SchedController::GetProcessGroup(pid_t pid)
 {
-    if (supervisor_ == nullptr) {
+    if (!supervisor_) {
         CGS_LOGE("SchedController::GetProcessCgroup, supervisor nullptr.");
         return VALUE_INT(SchedPolicy::SP_DEFAULT);
     }
     std::shared_ptr<ProcessRecord> pr = supervisor_->FindProcessRecord(pid);
-    return pr == nullptr ? VALUE_INT(SchedPolicy::SP_DEFAULT) : VALUE_INT(pr->curSchedGroup_);
+    return pr ? VALUE_INT(pr->curSchedGroup_) : VALUE_INT(SchedPolicy::SP_DEFAULT);
+}
+
+void SchedController::ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status)
+{
+    CGS_LOGD("%{public}s sdId:%{public}d, device:%{public}s, status:%{public}d",
+        __func__, saId, deviceId.c_str(), status);
+    auto handler = this->cgHandler_;
+    if (!handler) {
+        return;
+    }
+    handler->PostTask([handler, saId, deviceId, status] {
+        if (status > 0) {
+            handler->HandleAbilityAdded(saId, deviceId);
+        } else {
+            handler->HandleAbilityRemoved(saId, deviceId);
+        }
+    });
 }
 
 inline void SchedController::InitCgroupHandler()
@@ -173,8 +148,11 @@ inline void SchedController::InitSupervisor()
 
 bool SchedController::SubscribeAppState()
 {
+    if (appStateObserver_) {
+        return true;
+    }
     sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
-    if (appManager == nullptr) {
+    if (!appManager) {
         CGS_LOGE("%{public}s app manager nullptr!", __func__);
         return false;
     }
@@ -189,25 +167,78 @@ bool SchedController::SubscribeAppState()
     return true;
 }
 
-inline bool SchedController::SubscribeBackgroundTask()
+void SchedController::UnsubscribeAppState()
 {
+    if (!appStateObserver_) {
+        return;
+    }
+
+    sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
+    if (appManager) {
+        int32_t err = appManager->UnregisterApplicationStateObserver(appStateObserver_);
+        if (err == 0) {
+            CGS_LOGI("UnregisterApplicationStateObserver success.");
+        } else {
+            CGS_LOGE("UnregisterApplicationStateObserver failed. err:%{public}d", err);
+        }
+    }
+    appStateObserver_ = nullptr;
+}
+
+bool SchedController::SubscribeBackgroundTask()
+{
+    if (backgroundTaskObserver_) {
+        return true;
+    }
     backgroundTaskObserver_ = std::make_shared<BackgroundTaskObserver>();
     int ret = BackgroundTaskMgrHelper::SubscribeBackgroundTask(*backgroundTaskObserver_);
     if (ret != 0) {
         backgroundTaskObserver_ = nullptr;
         CGS_LOGE("Register BackgroundTaskObserver failed, err:%{public}d.", ret);
-        return true;
+        return false;
     }
     CGS_LOGI("Register BackgroundTaskObserver success.");
     return true;
 }
 
-inline void SchedController::SubscribeWindowState()
+void SchedController::UnsubscribeBackgroundTask()
 {
-    windowStateObserver_ = new WindowStateObserver();
-    OHOS::Rosen::WindowManager::GetInstance().RegisterFocusChangedListener(windowStateObserver_);
-    windowVisibilityObserver_ = new WindowVisibilityObserver();
-    OHOS::Rosen::WindowManager::GetInstance().RegisterVisibilityChangedListener(windowVisibilityObserver_);
+    if (!backgroundTaskObserver_) {
+        return;
+    }
+    int32_t ret = BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*backgroundTaskObserver_);
+    if (ret == 0) {
+        CGS_LOGI("UnsubscribeBackgroundTask success.");
+    } else {
+        CGS_LOGE("UnsubscribeBackgroundTask failed. ret:%{public}d", ret);
+    }
+    backgroundTaskObserver_ = nullptr;
+}
+
+void SchedController::SubscribeWindowState()
+{
+    if (!windowStateObserver_) {
+        windowStateObserver_ = new WindowStateObserver();
+        OHOS::Rosen::WindowManager::GetInstance().RegisterFocusChangedListener(windowStateObserver_);
+    }
+    if (!windowVisibilityObserver_) {
+        windowVisibilityObserver_ = new WindowVisibilityObserver();
+        OHOS::Rosen::WindowManager::GetInstance().RegisterVisibilityChangedListener(windowVisibilityObserver_);
+    }
+}
+
+void SchedController::UnsubscribeWindowState()
+{
+    if (windowStateObserver_) {
+        // unregister windowStateObserver_
+        OHOS::Rosen::WindowManager::GetInstance().UnregisterFocusChangedListener(windowStateObserver_);
+        windowStateObserver_ = nullptr;
+    }
+
+    if (windowVisibilityObserver_) {
+        OHOS::Rosen::WindowManager::GetInstance().UnregisterVisibilityChangedListener(windowVisibilityObserver_);
+        windowVisibilityObserver_ = nullptr;
+    }
 }
 
 extern "C" void CgroupSchedInit()
@@ -224,6 +255,11 @@ extern "C" void CgroupSchedDeinit()
 extern "C" int GetProcessGroup(pid_t pid)
 {
     return SchedController::GetInstance().GetProcessGroup(pid);
+}
+
+extern "C" void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status)
+{
+    SchedController::GetInstance().ReportAbilityStatus(saId, deviceId, status);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

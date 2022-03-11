@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,10 +24,10 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    const int INNER_EVENT_ID_REG_STATE_OBSERVERS = 0;
-    const int DELAYED_REGISTER_DURATION = 5000;
-    const int DELAYED_RETRY_REGISTER_DURATION = 2000;
-    const int MAX_RETRY_TIMES = 50;
+    const uint32_t EVENT_ID_REG_APP_STATE_OBSERVER = 1;
+    const uint32_t EVENT_ID_REG_BGTASK_OBSERVER = 2;
+    const uint32_t DELAYED_RETRY_REGISTER_DURATION = 100;
+    const uint32_t MAX_RETRY_TIMES = 100;
 }
 
 using OHOS::AppExecFwk::EventHandler;
@@ -40,6 +40,8 @@ public:
     ~CgroupEventHandler();
     virtual void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
     void SetSupervisor(std::shared_ptr<Supervisor> supervisor);
+    void HandleAbilityAdded(int32_t saId, const std::string& deviceId);
+    void HandleAbilityRemoved(int32_t saId, const std::string& deviceId);
     void HandleForegroundApplicationChanged(uid_t uid, std::string bundleName, int32_t state);
     void HandleApplicationStateChanged(uid_t uid, std::string bundleName, int32_t state);
     void HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName, std::string abilityName,
@@ -54,9 +56,9 @@ public:
     void HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::string abilityName);
     void HandleWindowFocusChange(int32_t windowId, int32_t displayId, WindowType windowType, sptr<IRemoteObject> token);
     void HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-        WindowType windowType, uint64_t displayId);
+        WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
     void HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
-        WindowType windowType, uint64_t displayId);
+        WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
     void HandleWindowVisibilityChanged(uint32_t windowId, bool isVisible, int32_t pid, int32_t uid);
 private:
     std::shared_ptr<Supervisor> supervisor_;
