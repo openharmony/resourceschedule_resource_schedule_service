@@ -17,6 +17,7 @@
 #define FOUNDATION_RESOURCESCHEDULE_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_IRES_SCHED_SERVICE_H
 
 #include "iremote_broker.h"
+#include "json/json.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -28,7 +29,7 @@ public:
 
     DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ResourceSchedule.ResSchedService");
 
-    virtual void ReportData(uint32_t resType, int64_t value, const std::string& payload) = 0;
+    virtual void ReportData(uint32_t resType, int64_t value, const Json::Value& payload) = 0;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

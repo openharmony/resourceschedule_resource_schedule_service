@@ -16,6 +16,7 @@
 
 #include <dlfcn.h>
 #include "cgroup_sched_log.h"
+#include "json/value.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -47,7 +48,7 @@ void ResSchedUtils::LoadUtils()
     reportFunc_ = func;
 }
 
-void ResSchedUtils::ReportDataInProcess(uint32_t resType, int64_t value, const std::string& payload)
+void ResSchedUtils::ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
 {
     if (!reportFunc_) {
         CGS_LOGE("%{public}s failed, function nullptr.", __func__);

@@ -46,12 +46,12 @@ public:
 
     void Init()
     {
-        if (pluginSwitch_ != nullptr) {
+        if (pluginSwitch_) {
             initStatus = SWITCH_NULL;
             return;
         }
 
-        if (pluginSwitch_ == nullptr) {
+        if (!pluginSwitch_) {
             pluginSwitch_ = std::make_unique<PluginSwitch>();
             bool loadRet = pluginSwitch_->LoadFromConfigFile(TEST_PREFIX_RES_SWITCH_PATH);
             if (!loadRet) {
@@ -59,7 +59,7 @@ public:
             }
         }
 
-        if (configReader_ == nullptr) {
+        if (!configReader_) {
             configReader_ = std::make_unique<ConfigReader>();
             bool loadRet = configReader_->LoadFromCustConfigFile(TEST_PREFIX_RES_PATH);
             if (!loadRet) {
@@ -67,7 +67,7 @@ public:
             }
         }
 
-        if (dispatcherHandler_ == nullptr) {
+        if (!dispatcherHandler_) {
             dispatcherHandler_ = std::make_shared<AppExecFwk::EventHandler>
                 (AppExecFwk::EventRunner::Create(MOCK_RUNNER_NAME));
         }

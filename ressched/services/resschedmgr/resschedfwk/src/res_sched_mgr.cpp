@@ -30,7 +30,7 @@ void ResSchedMgr::Init()
 {
     PluginMgr::GetInstance().Init();
 
-    if (mainHandler_ == nullptr) {
+    if (!mainHandler_) {
         mainHandler_ = std::make_shared<EventHandler>(EventRunner::Create(RSS_THREAD_NAME));
     }
 }
@@ -40,15 +40,15 @@ void ResSchedMgr::Stop()
     PluginMgr::GetInstance().Stop();
 
     std::lock_guard<std::mutex> autoLock(mainHandlerMutex_);
-    if (mainHandler_ != nullptr) {
+    if (mainHandler_) {
         mainHandler_->RemoveAllEvents();
         mainHandler_ = nullptr;
     }
 }
 
-void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const std::string& payload)
+void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const Json::Value& payload)
 {
-    if (mainHandler_ == nullptr) {
+    if (!mainHandler_) {
         return;
     }
     // dispatch resource async

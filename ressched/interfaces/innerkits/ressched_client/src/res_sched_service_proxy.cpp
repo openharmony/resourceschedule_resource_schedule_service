@@ -19,7 +19,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-void ResSchedServiceProxy::ReportData(uint32_t resType, int64_t value, const std::string& payload)
+void ResSchedServiceProxy::ReportData(uint32_t resType, int64_t value, const Json::Value& payload)
 {
     int error;
     MessageParcel data;
@@ -28,7 +28,7 @@ void ResSchedServiceProxy::ReportData(uint32_t resType, int64_t value, const std
     WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), , ResSchedServiceProxy);
     WRITE_PARCEL(data, Uint32, resType, , ResSchedServiceProxy);
     WRITE_PARCEL(data, Int64, value, , ResSchedServiceProxy);
-    WRITE_PARCEL(data, String, payload, , ResSchedServiceProxy);
+    WRITE_PARCEL(data, String, payload.toStyledString(), , ResSchedServiceProxy);
     error = Remote()->SendRequest(IResSchedService::REPORT_DATA, data, reply, option);
     if (error != NO_ERROR) {
         RESSCHED_LOGE("Send request error: %{public}d", error);

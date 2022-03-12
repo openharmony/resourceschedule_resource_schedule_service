@@ -54,7 +54,7 @@ int32_t ResSchedServiceStub::ReportDataInner(MessageParcel& data, [[maybe_unused
     std::string payload;
     READ_PARCEL(data, String, payload, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
 
-    ReportData(type, value, payload);
+    ReportData(type, value, StringToJson(payload));
     return ERR_OK;
 }
 
@@ -62,17 +62,31 @@ int ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
     auto uid = IPCSkeleton::GetCallingUid();
-    RESSCHED_LOGD("ResSchedServiceStub::OnRemoteRequest, code = %{public}d, flags = %{public}d,"
+    RESSCHED_LOGD("ResSchedServiceStub::OnRemoteRequest, code = %{public}u, flags = %{public}d,"
         " uid = %{public}d", code, option.GetFlags(), uid);
 
     auto itFunc = funcMap_.find(code);
     if (itFunc != funcMap_.end()) {
         auto requestFunc = itFunc->second;
-        if (requestFunc != nullptr) {
+        if (requestFunc) {
             return requestFunc(data, reply);
         }
     }
     return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
+}
+
+Json::Value ResSchedServiceStub::StringToJson(const std::string& payload)
+{
+    bool res;
+    Json::CharReaderBuilder readerBuilder;
+    JSONCPP_STRING errs;
+    std::unique_ptr<Json::CharReader> const jsonReader(readerBuilder.newCharReader());
+    Json::Value root;
+    res = jsonReader->parse(payload.c_str(), payload.c_str()+payload.length(), &root, &errs);
+    if (!res || !errs.empty()) {
+        RESSCHED_LOGE("ResSchedServiceStub::payload = %{public}s Incorrect JSON format ", payload.c_str());
+    }
+    return root;
 }
 
 void ResSchedServiceStub::Init()

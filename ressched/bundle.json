@@ -31,7 +31,8 @@
         "system_ability_fwk"
       ],
       "third_party": [
-        "xml2"
+        "xml2",
+        "json"
       ]
     },
     "build": {

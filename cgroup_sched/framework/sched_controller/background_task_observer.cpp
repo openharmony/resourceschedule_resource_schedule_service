@@ -50,7 +50,11 @@ void BackgroundTaskObserver::OnTransientTaskStart(const std::shared_ptr<Transien
         });
     }
 
-    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_TRANSIENT_TASK, 0, PackPayload(info));
+    Json::Value payload;
+    payload["pid"] = info->GetPid();
+    payload["uid"] = info->GetUid();
+    payload["bundleName"] = info->GetPackageName();
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_TRANSIENT_TASK, 0, payload);
 }
 
 void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientTaskAppInfo>& info)
@@ -66,7 +70,11 @@ void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientT
         });
     }
 
-    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_TRANSIENT_TASK, 1, PackPayload(info));
+    Json::Value payload;
+    payload["pid"] = info->GetPid();
+    payload["uid"] = info->GetUid();
+    payload["bundleName"] = info->GetPackageName();
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_TRANSIENT_TASK, 1, payload);
 }
 
 void BackgroundTaskObserver::OnContinuousTaskStart(
@@ -85,8 +93,11 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
         });
     }
 
-    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CONTINUOUS_TASK, 0,
-        PackPayload(continuousTaskCallbackInfo));
+    Json::Value payload;
+    payload["pid"] = continuousTaskCallbackInfo->GetCreatorPid();
+    payload["uid"] = continuousTaskCallbackInfo->GetCreatorUid();
+    payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CONTINUOUS_TASK, 0, payload);
 }
 
 void BackgroundTaskObserver::OnContinuousTaskStop(
@@ -105,8 +116,11 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
         });
     }
 
-    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CONTINUOUS_TASK, 0,
-        PackPayload(continuousTaskCallbackInfo));
+    Json::Value payload;
+    payload["pid"] = continuousTaskCallbackInfo->GetCreatorPid();
+    payload["uid"] = continuousTaskCallbackInfo->GetCreatorUid();
+    payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CONTINUOUS_TASK, 0, payload);
 }
 
 void BackgroundTaskObserver::OnRemoteDied(const wptr<IRemoteObject> &object)
