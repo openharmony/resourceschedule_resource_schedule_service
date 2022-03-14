@@ -30,7 +30,7 @@ public:
     void SetUp();
     void TearDown();
 protected:
-    std::shared_ptr<MockPluginMgr> pluginMgr_;
+    std::shared_ptr<MockPluginMgr> pluginMgr_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

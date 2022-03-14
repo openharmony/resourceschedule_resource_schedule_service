@@ -17,6 +17,7 @@
 #define FOUNDATION_RESOURCESCHEDULE_SERVICES_RESSCHEDMGR_PLUGINBASE_INCLUDE_RES_DATA_H
 
 #include <string>
+#include "json/json.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -24,11 +25,11 @@ struct ResData {
     ResData() = default;
     ~ResData() = default;
 
-    ResData(uint32_t type, int64_t value, const std::string& payload) : resType(type), value(value), payload(payload) {}
+    ResData(uint32_t type, int64_t value, const Json::Value& payload) : resType(type), value(value), payload(payload) {}
 
     uint32_t resType = 0;
     int64_t value = 0;
-    std::string payload;
+    Json::Value payload;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

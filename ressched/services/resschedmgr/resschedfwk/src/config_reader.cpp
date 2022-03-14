@@ -30,7 +30,7 @@ constexpr auto XML_ATTR_NAME = "name";
 
 bool ConfigReader::IsInvalidNode(const xmlNode& currNode)
 {
-    if (currNode.name == nullptr || currNode.type == XML_COMMENT_NODE) {
+    if (!currNode.name || currNode.type == XML_COMMENT_NODE) {
         return true;
     }
     return false;
@@ -40,14 +40,14 @@ void ConfigReader::ParseProperties(const xmlNode& currNode, map<string, string>&
 {
     auto attrs = currNode.properties;
     xmlChar *value;
-    for (; attrs != nullptr; attrs = attrs->next) {
+    for (; attrs; attrs = attrs->next) {
         auto name = attrs->name;
-        if (name == nullptr) {
+        if (!name) {
             RESSCHED_LOGW("ConfigReader::ParseProperties name null!");
             continue;
         }
         value = xmlGetProp(&currNode, name);
-        if (value == nullptr) {
+        if (!value) {
             RESSCHED_LOGW("ConfigReader::ParseProperties name(%{public}s) value null!", name);
             continue;
         }
@@ -60,7 +60,7 @@ void ConfigReader::ParseSubItem(const xmlNode& parentNode, Item& item)
 {
     auto currNodePtr = parentNode.xmlChildrenNode;
     xmlChar *value;
-    for (; currNodePtr != nullptr; currNodePtr = currNodePtr->next) {
+    for (; currNodePtr; currNodePtr = currNodePtr->next) {
         if (IsInvalidNode(*currNodePtr)) {
             RESSCHED_LOGW("ConfigReader::ParseSubItem skip invalid node!");
             continue;
@@ -69,7 +69,7 @@ void ConfigReader::ParseSubItem(const xmlNode& parentNode, Item& item)
         ParseProperties(*currNodePtr, subItem.properties);
         subItem.name = reinterpret_cast<const char*>(currNodePtr->name);
         value = xmlNodeGetContent(currNodePtr);
-        if (value != nullptr) {
+        if (value) {
             string itemValue(reinterpret_cast<const char*>(value));
             subItem.value = std::move(itemValue);
             xmlFree(value);
@@ -81,7 +81,7 @@ void ConfigReader::ParseSubItem(const xmlNode& parentNode, Item& item)
 void ConfigReader::ParseItem(const xmlNode& parentNode, PluginConfig& pluginConfig)
 {
     auto currNodePtr = parentNode.xmlChildrenNode;
-    for (; currNodePtr != nullptr; currNodePtr = currNodePtr->next) {
+    for (; currNodePtr; currNodePtr = currNodePtr->next) {
         if (IsInvalidNode(*currNodePtr) ||
             xmlStrcmp(currNodePtr->name, reinterpret_cast<const xmlChar*>(XML_TAG_ITEM)) != 0) {
             continue;
@@ -96,13 +96,13 @@ void ConfigReader::ParseItem(const xmlNode& parentNode, PluginConfig& pluginConf
 void ConfigReader::ParseConfig(const xmlNode& parentNode, PluginConfigMap& pluginConfigMap)
 {
     auto currNodePtr = parentNode.xmlChildrenNode;
-    for (; currNodePtr != nullptr; currNodePtr = currNodePtr->next) {
+    for (; currNodePtr; currNodePtr = currNodePtr->next) {
         if (IsInvalidNode(*currNodePtr) ||
             xmlStrcmp(currNodePtr->name, reinterpret_cast<const xmlChar*>(XML_TAG_CONFIG)) != 0) {
             continue;
         }
         auto propName = xmlGetProp(currNodePtr, reinterpret_cast<const xmlChar*>(XML_ATTR_NAME));
-        if (propName == nullptr) {
+        if (!propName) {
             RESSCHED_LOGW("ConfigReader::ParseConfig propName null!");
             continue;
         }
@@ -117,7 +117,7 @@ void ConfigReader::ParseConfig(const xmlNode& parentNode, PluginConfigMap& plugi
 bool ConfigReader::ParsePluginConfig(const xmlNode& currNode, map<string, PluginConfigMap>& pluginConfigs)
 {
     auto propName = xmlGetProp(&currNode, reinterpret_cast<const xmlChar*>(XML_ATTR_NAME));
-    if (propName == nullptr) {
+    if (!propName) {
         RESSCHED_LOGW("ConfigReader::ParsePluginConfig propName null!");
         return false;
     }
@@ -131,12 +131,12 @@ bool ConfigReader::LoadFromCustConfigFile(const string& configFile)
 {
     // skip the empty string, else you will get empty node
     xmlDocPtr xmlDocPtr = xmlReadFile(configFile.c_str(), nullptr, XML_PARSE_NOBLANKS);
-    if (xmlDocPtr == nullptr) {
+    if (!xmlDocPtr) {
         RESSCHED_LOGE("ConfigReader::LoadFromCustConfigFile xmlReadFile error!");
         return false;
     }
     xmlNodePtr rootNodePtr = xmlDocGetRootElement(xmlDocPtr);
-    if (rootNodePtr == nullptr || rootNodePtr->name == nullptr ||
+    if (!rootNodePtr || !rootNodePtr->name ||
         xmlStrcmp(rootNodePtr->name, reinterpret_cast<const xmlChar*>(XML_TAG_RES_SCHED)) != 0) {
         RESSCHED_LOGE("ConfigReader::LoadFromCustConfigFile root element tag wrong!");
         xmlFreeDoc(xmlDocPtr);
@@ -144,7 +144,7 @@ bool ConfigReader::LoadFromCustConfigFile(const string& configFile)
     }
     map<string, PluginConfigMap> allPluginConfigs;
     xmlNodePtr currNodePtr = rootNodePtr->xmlChildrenNode;
-    for (; currNodePtr != nullptr; currNodePtr = currNodePtr->next) {
+    for (; currNodePtr; currNodePtr = currNodePtr->next) {
         if (IsInvalidNode(*currNodePtr)) {
             continue;
         }

@@ -32,7 +32,10 @@ ohos_shared_library("cgroup_sched") {
     "./sched_controller/include",
     "./utils/include",
   ]
-  deps = [ "./process_group:libprocess_group" ]
+  deps = [
+    "./process_group:libprocess_group",
+    "//third_party/jsoncpp:jsoncpp",
+  ]
   external_deps = [
     "ability_base:want",
     "ability_runtime:app_manager",

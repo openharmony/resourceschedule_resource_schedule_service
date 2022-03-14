@@ -50,7 +50,7 @@ void SocPerfPluginHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &e
             auto funcIter = functionMap.find(data->resType);
             if (funcIter != functionMap.end()) {
                 auto function = funcIter->second;
-                if (function != nullptr) {
+                if (function) {
                     function(data);
                 }
             }

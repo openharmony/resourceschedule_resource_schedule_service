@@ -21,6 +21,7 @@ config("client_private_config") {
     "//utils/native/base/include",
     "//utils/system/safwk/native/include",
     "${ressched_common}/include",
+    "//third_party/jsoncpp/include",
   ]
 }
 
@@ -44,6 +45,7 @@ ohos_shared_library("ressched_client") {
   deps = [
     "${ressched_services}:resschedsvc",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
   ]
 

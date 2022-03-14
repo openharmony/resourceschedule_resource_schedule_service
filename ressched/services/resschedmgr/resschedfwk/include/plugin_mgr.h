@@ -36,7 +36,7 @@ using OnDispatchResourceFunc = void (*)(const std::shared_ptr<ResData>&);
 using OnPluginDisableFunc = void (*)();
 
 struct PluginLib {
-    std::shared_ptr<void> handle;
+    std::shared_ptr<void> handle = nullptr;
     OnDispatchResourceFunc onDispatchResourceFunc_;
     OnPluginDisableFunc onPluginDisableFunc_;
 };
@@ -94,8 +94,8 @@ private:
 
     static void CloseHandle(const DlHandle& handle);
 
-    std::unique_ptr<ConfigReader> configReader_;
-    std::unique_ptr<PluginSwitch> pluginSwitch_;
+    std::unique_ptr<ConfigReader> configReader_ = nullptr;
+    std::unique_ptr<PluginSwitch> pluginSwitch_ = nullptr;
 
     std::mutex pluginMutex_;
     std::mutex dispatcherHandlerMutex_;
@@ -106,7 +106,7 @@ private:
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
 
     // handler use for dispatch resource data
-    std::shared_ptr<OHOS::AppExecFwk::EventHandler> dispatcherHandler_;
+    std::shared_ptr<OHOS::AppExecFwk::EventHandler> dispatcherHandler_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
