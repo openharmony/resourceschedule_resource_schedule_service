@@ -377,7 +377,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
             std::to_string(windowId) + "," + // window id
             std::to_string(VALUE_INT(windowType)) + "," + // window type
             std::to_string(displayId); // display id
-        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
+        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 1, payload);
 
         return;
     }
@@ -398,7 +398,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
             std::to_string(windowId) + "," + // window id
             std::to_string(VALUE_INT(windowType)) + "," + // window type
             std::to_string(displayId); // display id
-            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
+            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 1, payload);
             return;
         }
         procRecord = app->GetProcessRecord(pid);
@@ -409,7 +409,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
             std::to_string(windowId) + "," + // window id
             std::to_string(VALUE_INT(windowType)) + "," + // window type
             std::to_string(displayId); // display id
-            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
+            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 1, payload);
             return;
         }
         auto win = procRecord->GetWindowInfoNonNull(windowId);
