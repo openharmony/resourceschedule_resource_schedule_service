@@ -25,30 +25,30 @@ SocPerfClient& SocPerfClient::GetInstance()
 
 bool SocPerfClient::CheckClientValid()
 {
-    if (client != nullptr) {
+    if (client) {
         return true;
     }
 
     sptr<ISystemAbilityManager> samgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (samgr == nullptr) {
+    if (!samgr) {
         SOC_PERF_LOGE("Failed to get SystemAbilityManager.");
         return false;
     }
 
     sptr<IRemoteObject> object = samgr->GetSystemAbility(SOC_PERF_SERVICE_SA_ID);
-    if (object == nullptr) {
+    if (!object) {
         SOC_PERF_LOGE("Failed to get SystemAbility[1906] .");
         return false;
     }
 
     client = iface_cast<ISocPerfService>(object);
-    if (client == nullptr || (client->AsObject() == nullptr)) {
+    if (!client || !client->AsObject()) {
         SOC_PERF_LOGE("Failed to get SocPerfClient.");
         return false;
     }
 
     recipient_ = new SocPerfDeathRecipient(*this);
-    if (recipient_ == nullptr) {
+    if (!recipient_) {
         return false;
     }
     client->AsObject()->AddDeathRecipient(recipient_);
@@ -58,7 +58,7 @@ bool SocPerfClient::CheckClientValid()
 
 void SocPerfClient::ResetClient()
 {
-    if ((client != nullptr) && (client->AsObject() != nullptr)) {
+    if (client && client->AsObject()) {
         client->AsObject()->RemoveDeathRecipient(recipient_);
     }
     client = nullptr;

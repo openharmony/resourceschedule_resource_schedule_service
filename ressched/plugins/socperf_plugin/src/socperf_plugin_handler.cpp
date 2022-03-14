@@ -99,8 +99,12 @@ void SocPerfPluginHandler::HandlePushPage(const std::shared_ptr<ResData>& data)
 void SocPerfPluginHandler::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
     RESSCHED_LOGI("SocPerfPluginHandler: socperf->SLIDE_NORMAL: %{public}lld", data->value);
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(
-        PERF_REQUEST_CMD_ID_EVENT_SLIDE, data->value == EVENT_ON, "");
+    if (data->value == EVENT_ON) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, true, "");
+    } else if (data->value == EVENT_OFF) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER, "");
+    }
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
