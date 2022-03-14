@@ -314,14 +314,15 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::s
 void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
+    Json::Value payload;
+    payload["pid"] = pid;
+    payload["uid"] = uid;
+    payload["windowId"] = windowId;
+    payload["windowType"] = VALUE_INT(windowType);
+    payload["displayId"] = displayId;
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        std::string payload = std::to_string(pid) + "," + // pid
-            std::to_string(uid) + "," + // uid
-            "None," + // bundle name
-            std::to_string(windowId) + "," + // window id
-            std::to_string(VALUE_INT(windowType)) + "," + // window type
-            std::to_string(displayId); // display id
+        payload["bundleName"] = "";
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
         return;
     }
@@ -356,29 +357,24 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
         supervisor_->focusedApp_ = app;
         SchedController::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FOCUSED_WINDOW);
     }
-
-    std::string payload = std::to_string(pid) + "," + // pid
-            std::to_string(uid) + "," + // uid
-            app->name_ + "," + // bundle name
-            std::to_string(windowId) + "," + // window id
-            std::to_string(VALUE_INT(windowType)) + "," + // window type
-            std::to_string(displayId); // display id
+    payload["bundleName"] = app->name_;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
 }
 
 void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
+    Json::Value payload;
+    payload["pid"] = pid;
+    payload["uid"] = uid;
+    payload["windowId"] = windowId;
+    payload["windowType"] = VALUE_INT(windowType);
+    payload["displayId"] = displayId;
+
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        std::string payload = std::to_string(pid) + "," + // pid
-            std::to_string(uid) + "," + // uid
-            "None," + // bundle name
-            std::to_string(windowId) + "," + // window id
-            std::to_string(VALUE_INT(windowType)) + "," + // window type
-            std::to_string(displayId); // display id
+        payload["bundleName"] = "";
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 1, payload);
-
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}llu", __func__, windowId,
@@ -392,23 +388,13 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
         ChronoScope cs("HandleUnfocusedWindow");
         app = supervisor_->GetAppRecord(uid);
         if (!app) {
-            std::string payload = std::to_string(pid) + "," + // pid
-            std::to_string(uid) + "," + // uid
-            "None," + // bundle name
-            std::to_string(windowId) + "," + // window id
-            std::to_string(VALUE_INT(windowType)) + "," + // window type
-            std::to_string(displayId); // display id
+            payload["bundleName"] = "";
             ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 1, payload);
             return;
         }
         procRecord = app->GetProcessRecord(pid);
         if (!procRecord) {
-            std::string payload = std::to_string(pid) + "," + // pid
-            std::to_string(uid) + "," + // uid
-            "None," + // bundle name
-            std::to_string(windowId) + "," + // window id
-            std::to_string(VALUE_INT(windowType)) + "," + // window type
-            std::to_string(displayId); // display id
+            payload["bundleName"] = "";
             ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 1, payload);
             return;
         }
@@ -427,13 +413,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteOb
         }
         SchedController::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_UNFOCUSED_WINDOW);
     }
-
-    std::string payload = std::to_string(pid) + "," + // pid
-            std::to_string(uid) + "," + // uid
-            app->name_ + "," + // bundle name
-            std::to_string(windowId) + "," + // window id
-            std::to_string(VALUE_INT(windowType)) + "," + // window type
-            std::to_string(displayId); // display id
+    payload["bundleName"] = app->name_;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 1, payload);
 }
 

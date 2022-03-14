@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_RESOURCESCHEDULE_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_CLIENT_H
 #define FOUNDATION_RESOURCESCHEDULE_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_CLIENT_H
 
+#include <unordered_map>
 #include "iremote_object.h"
 #include "ires_sched_service.h"
 
@@ -35,7 +36,7 @@ public:
      */
     static ResSchedClient& GetInstance();
 
-    void ReportData(uint32_t resType, int64_t value, const std::string& payload);
+    void ReportData(uint32_t resType, int64_t value, const std::unordered_map<std::string, std::string>& mapPayload);
 
     void StopRemoteObject();
 
@@ -47,7 +48,7 @@ public:
      * @param payload is empty is valid. The interface only used for In-Process call.
      * ATTENTION: payload is empty is valid. The interface only used for In-Process call.
      */
-    void ReportDataInProcess(uint32_t resType, int64_t value, const std::string& payload);
+    void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload);
 
 protected:
     ResSchedClient() = default;

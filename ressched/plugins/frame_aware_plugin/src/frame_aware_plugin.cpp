@@ -54,18 +54,18 @@ void FrameAwarePlugin::Disable()
 void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
     RESSCHED_LOGI("FrameAwarePlugin:DispatchResource type:%{public}u, value:%{public}lld", data->resType, data->value);
-    std::vector<std::string> payload = ParsePayload(data->payload);
+    Json::Value payload = data->payload;
     int pid = INIT_VAL;
     switch (data->resType) {
         case RES_TYPE_APP_STATE_CHANGE:
             {
-                int uid = std::stoi(payload[0]);
+                int uid = payload["uid"].asInt();
                 RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:app state! uid:%{public}d", uid);
             }
             break;
         case RES_TYPE_PROCESS_STATE_CHANGE:
             {
-                pid = std::stoi(payload[0]);
+                pid = payload["pid"].asInt();
                 int tid = INIT_VAL;
                 RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
                 RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, tid, state);
@@ -74,7 +74,7 @@ void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
             break;
         case RES_TYPE_WINDOW_FOCUS:
             {
-                pid = std::stoi(payload[0]);
+                pid = payload["pid"].asInt();
                 RME::FrameMsgIntf::GetInstance().ReportWindowFocus(pid, data->value);
                 RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:window focus! resType: %{public}u.", data->resType);
             }
@@ -83,26 +83,6 @@ void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
             RESSCHED_LOGI("FrameAwarePlugin::[DispatchResource]:unknow msg, resType: %{public}u.", data->resType);
             break;
     }
-}
-
-std::vector<std::string> FrameAwarePlugin::ParsePayload(const std::string payload)
-{
-    std::vector<std::string> res;
-    if (payload == "") {
-        return res;
-    }
-
-    std::string payloadP = payload + ",";
-    size_t pos = payloadP.find(",");
-    size_t size = payloadP.size();
-
-    while (pos != std::string::npos) {
-        std::string tmpStr = payloadP.substr(0, pos);
-        res.push_back(tmpStr);
-        payloadP = payloadP.substr(pos + 1, size);
-        pos = payloadP.find(",");
-    }
-    return res;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)

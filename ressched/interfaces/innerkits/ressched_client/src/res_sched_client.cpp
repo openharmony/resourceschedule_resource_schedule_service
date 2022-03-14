@@ -28,17 +28,22 @@ ResSchedClient& ResSchedClient::GetInstance()
     return instance;
 }
 
-void ResSchedClient::ReportDataInProcess(uint32_t resType, int64_t value, const std::string& payload)
+void ResSchedClient::ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
 {
-    RESSCHED_LOGI("ResSchedClient::ReportDataInProcess recieve resType = %{public}d, value = %{public}lld.",
+    RESSCHED_LOGI("ResSchedClient::ReportDataInProcess receive resType = %{public}u, value = %{public}lld.",
         resType, value);
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 
-void ResSchedClient::ReportData(uint32_t resType, int64_t value, const std::string& payload)
+void ResSchedClient::ReportData(uint32_t resType, int64_t value,
+                                const std::unordered_map<std::string, std::string>& mapPayload)
 {
     if (TryConnect() != ERR_OK) {
         return;
+    }
+    Json::Value payload;
+    for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
+        payload[it->first] = it->second;
     }
     rss_->ReportData(resType, value, payload);
 }
@@ -46,24 +51,24 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value, const std::stri
 ErrCode ResSchedClient::TryConnect()
 {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (rss_ != nullptr) {
+    if (rss_) {
         return ERR_OK;
     }
 
     sptr<ISystemAbilityManager> systemManager = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (systemManager == nullptr) {
+    if (!systemManager) {
         RESSCHED_LOGE("ResSchedClient::Fail to get registry.");
         return GET_RES_SCHED_SERVICE_FAILED;
     }
 
     remoteObject_ = systemManager->GetSystemAbility(RES_SCHED_SYS_ABILITY_ID);
-    if (remoteObject_ == nullptr) {
+    if (!remoteObject_) {
         RESSCHED_LOGE("ResSchedClient::Fail to connect resource schedule service.");
         return GET_RES_SCHED_SERVICE_FAILED;
     }
 
     rss_ = iface_cast<IResSchedService>(remoteObject_);
-    if (rss_ == nullptr) {
+    if (!rss_) {
         return GET_RES_SCHED_SERVICE_FAILED;
     }
     try {
@@ -71,7 +76,7 @@ ErrCode ResSchedClient::TryConnect()
     } catch(const std::bad_alloc &e) {
         RESSCHED_LOGE("ResSchedClient::New ResSchedDeathRecipient fail.");
     }
-    if (recipient_ == nullptr) {
+    if (!recipient_) {
         return GET_RES_SCHED_SERVICE_FAILED;
     }
     rss_->AsObject()->AddDeathRecipient(recipient_);
@@ -81,7 +86,7 @@ ErrCode ResSchedClient::TryConnect()
 
 void ResSchedClient::StopRemoteObject()
 {
-    if ((rss_ != nullptr) && (rss_->AsObject() != nullptr)) {
+    if (rss_ && rss_->AsObject()) {
         rss_->AsObject()->RemoveDeathRecipient(recipient_);
     }
     rss_ = nullptr;
@@ -97,14 +102,15 @@ void ResSchedClient::ResSchedDeathRecipient::OnRemoteDied(const wptr<IRemoteObje
     resSchedClient_.StopRemoteObject();
 }
 
-extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const std::string& payload)
+extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
 {
     ResSchedClient::GetInstance().ReportDataInProcess(resType, value, payload);
 }
 
-extern "C" void ReportData(uint32_t resType, int64_t value, const std::string& payload)
+extern "C" void ReportData(uint32_t resType, int64_t value,
+                           const std::unordered_map<std::string, std::string>& mapPayload)
 {
-    ResSchedClient::GetInstance().ReportData(resType, value, payload);
+    ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS+

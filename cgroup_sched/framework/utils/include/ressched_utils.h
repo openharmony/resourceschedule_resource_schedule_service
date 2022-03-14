@@ -18,15 +18,16 @@
 
 #include <iostream>
 #include "sys/types.h"
+#include "json/json.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-using ReportDataFunc = void (*)(uint32_t resType, int64_t value, const std::string& payload);
+using ReportDataFunc = void (*)(uint32_t resType, int64_t value, const Json::Value& payload);
 
 class ResSchedUtils {
 public:
     static ResSchedUtils& GetInstance();
-    void ReportDataInProcess(uint32_t resType, int64_t value, const std::string& payload);
+    void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload);
 
 private:
     ResSchedUtils()

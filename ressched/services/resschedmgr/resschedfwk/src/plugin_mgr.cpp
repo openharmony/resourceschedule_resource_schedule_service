@@ -65,16 +65,16 @@ PluginMgr::~PluginMgr()
 void PluginMgr::Init()
 {
     RESSCHED_LOGI("PluginMgr::Init enter!");
-    if (pluginSwitch_ != nullptr) {
+    if (pluginSwitch_) {
         RESSCHED_LOGW("PluginMgr::Init has Initialized!");
         return;
     }
 
-    if (pluginSwitch_ == nullptr) {
+    if (!pluginSwitch_) {
         pluginSwitch_ = make_unique<PluginSwitch>();
         char tmpPath[PATH_MAX + 1] = {0};
         if (PLUGIN_SWITCH_FILE_NAME.size() == 0 || PLUGIN_SWITCH_FILE_NAME.size() > PATH_MAX ||
-            realpath(PLUGIN_SWITCH_FILE_NAME.c_str(), tmpPath) == nullptr) {
+            !realpath(PLUGIN_SWITCH_FILE_NAME.c_str(), tmpPath)) {
             RESSCHED_LOGE("PluginMgr::load switch config file wrong !");
             return ;
         }
@@ -85,11 +85,11 @@ void PluginMgr::Init()
         }
     }
 
-    if (configReader_ == nullptr) {
+    if (!configReader_) {
         configReader_ = make_unique<ConfigReader>();
         char tmpPath[PATH_MAX + 1] = {0};
-        if (PLUGIN_SWITCH_FILE_NAME.size() == 0 || PLUGIN_SWITCH_FILE_NAME.size() > PATH_MAX ||
-            realpath(CONFIG_FILE_NAME.c_str(), tmpPath) == nullptr) {
+        if (CONFIG_FILE_NAME.size() == 0 || CONFIG_FILE_NAME.size() > PATH_MAX ||
+            !realpath(CONFIG_FILE_NAME.c_str(), tmpPath)) {
             RESSCHED_LOGE("PluginMgr::load config file wrong !");
             return ;
         }
@@ -102,7 +102,7 @@ void PluginMgr::Init()
 
     StackProtect();
     LoadPlugin();
-    if (dispatcherHandler_ == nullptr) {
+    if (!dispatcherHandler_) {
         dispatcherHandler_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
     }
     RESSCHED_LOGI("PluginMgr::Init success!");
@@ -110,7 +110,7 @@ void PluginMgr::Init()
 
 void PluginMgr::LoadPlugin()
 {
-    if (pluginSwitch_ == nullptr) {
+    if (!pluginSwitch_) {
         RESSCHED_LOGW("PluginMgr::LoadPlugin configReader null!");
         return;
     }
@@ -122,20 +122,20 @@ void PluginMgr::LoadPlugin()
         }
 
         auto pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
-        if (pluginHandle == nullptr) {
+        if (!pluginHandle) {
             RESSCHED_LOGE("PluginMgr::LoadPlugin not find plugin lib !");
             continue;
         }
 
         auto onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(pluginHandle, "OnPluginInit"));
-        if (onPluginInitFunc == nullptr) {
+        if (!onPluginInitFunc) {
             RESSCHED_LOGE("PluginMgr::LoadPlugin dlsym OnPluginInit failed!");
             dlclose(pluginHandle);
             continue;
         }
 
         auto onPluginDisableFunc = reinterpret_cast<OnPluginDisableFunc>(dlsym(pluginHandle, "OnPluginDisable"));
-        if (onPluginDisableFunc == nullptr) {
+        if (!onPluginDisableFunc) {
             RESSCHED_LOGE("PluginMgr::LoadPlugin dlsym OnPluginDisable failed!");
             dlclose(pluginHandle);
             continue;
@@ -172,7 +172,7 @@ void PluginMgr::LoadPlugin()
 PluginConfig PluginMgr::GetConfig(const std::string& pluginName, const std::string& configName)
 {
     PluginConfig config;
-    if (configReader_ == nullptr) {
+    if (!configReader_) {
         return config;
     }
     return configReader_->GetConfig(pluginName, configName);
@@ -185,12 +185,12 @@ void PluginMgr::Stop()
 
 void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 {
-    if (resData == nullptr) {
+    if (!resData) {
         RESSCHED_LOGE("PluginMgr::DispatchResource failed, null res data.");
         return;
     }
 
-    if (dispatcherHandler_ == nullptr) {
+    if (!dispatcherHandler_) {
         RESSCHED_LOGE("PluginMgr::DispatchResource failed, dispatcher is stopped.");
         return;
     }
@@ -213,7 +213,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         for (const auto& libPath : iter->second) {
             dispatcherHandler_->PostTask(
-                [libPath = libPath, resData, this] { deliverResourceToPlugin(libPath, resData); });
+                [libPath, resData, this] { deliverResourceToPlugin(libPath, resData); });
         }
     }
 }
@@ -262,7 +262,7 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
         return;
     }
     OnDispatchResourceFunc fun = itMap->second.onDispatchResourceFunc_;
-    if (fun == nullptr) {
+    if (!fun) {
         RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin no DispatchResourceFun !");
         return;
     }
@@ -281,7 +281,7 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
         RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin ERROR :"
                       "%{public}s plugin cost time(%{public}dms) over 10 ms! disable it.",
                       pluginLib.c_str(), costTime);
-        if (itMap->second.onPluginDisableFunc_ != nullptr) {
+        if (itMap->second.onPluginDisableFunc_) {
             if (!sigsetjmp(env, 1)) {
                 itMap->second.onPluginDisableFunc_();
             } else {
@@ -301,7 +301,7 @@ void PluginMgr::UnLoadPlugin()
     std::lock_guard<std::mutex> autoLock(pluginMutex_);
     // unload all plugin
     for (const auto& [libPath, libInfo] : pluginLibMap_) {
-        if (libInfo.onPluginDisableFunc_ == nullptr) {
+        if (!libInfo.onPluginDisableFunc_) {
             continue;
         }
         if (!sigsetjmp(env, 1)) {
@@ -320,7 +320,7 @@ void PluginMgr::OnDestroy()
     configReader_ = nullptr;
     ClearResource();
 
-    if (dispatcherHandler_ != nullptr) {
+    if (dispatcherHandler_) {
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         dispatcherHandler_->RemoveAllEvents();
         dispatcherHandler_ = nullptr;
@@ -329,7 +329,7 @@ void PluginMgr::OnDestroy()
 
 void PluginMgr::CloseHandle(const DlHandle& handle)
 {
-    if (handle == nullptr) {
+    if (!handle) {
         RESSCHED_LOGW("PluginMgr::CloseHandle nullptr handle!");
         return;
     }

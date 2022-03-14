@@ -67,7 +67,7 @@ bool CgroupMap::loadConfigFromJsonObj(const Json::Value& jsonObj)
         // check cgroup schedule policy json config format
         if (!CheckCgroupJsonConfig(cgroupObj)) {
             const std::string cgroupObjStr = JsonToString(cgroupObj);
-            PGCGS_LOGE("cgroup json config format error, ingore it: %{public}s", cgroupObjStr.c_str());
+            PGCGS_LOGE("cgroup json config format error, ignore it: %{public}s", cgroupObjStr.c_str());
             continue;
         }
 

@@ -25,7 +25,7 @@ public:
     ResSchedService() {}
     ~ResSchedService() override = default;
 
-    void ReportData(uint32_t resType, int64_t value, const std::string& payload) override;
+    void ReportData(uint32_t resType, int64_t value, const Json::Value& payload) override;
 
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedService);

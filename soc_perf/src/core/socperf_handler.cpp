@@ -289,11 +289,11 @@ void SocPerfHandler::UpdateCurrentValue(int resId, int currValue)
 void SocPerfHandler::WriteNode(std::string filePath, std::string value)
 {
     char path[PATH_MAX + 1] = {0};
-    if (filePath.size() == 0 || filePath.size() > PATH_MAX || realpath(filePath.c_str(), path) == nullptr) {
+    if (filePath.size() == 0 || filePath.size() > PATH_MAX || !realpath(filePath.c_str(), path)) {
         return;
     }
     FILE* fd = fopen(path, "w");
-    if (fd == nullptr) {
+    if (!fd) {
         return;
     }
     fprintf(fd, "%s", value.c_str());
