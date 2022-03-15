@@ -107,7 +107,7 @@ static void GetSchedPolicyFullNameTest(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-    if (argc < ARGUMENT_NUMBER_TWO) {
+    if (argc > ARGUMENT_NUMBER_TWO) {
         char* operation = argv[1];
         if (!strcmp(operation, "SetThreadSchedPolicyTest")) {
             SetThreadSchedPolicyTest(argc, argv);
