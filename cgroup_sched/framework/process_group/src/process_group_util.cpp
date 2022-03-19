@@ -78,19 +78,23 @@ bool ReadFileToString(const std::string& filePath, std::string& content)
     if (fstat(fd, &sb) != -1 && sb.st_size > 0) {
         content.resize(sb.st_size);
     }
+
     ssize_t n;
     ssize_t remaining = sb.st_size;
+    bool readStatus = true;
     char* p = const_cast<char*>(content.data());
+
     while (remaining > 0) {
         n = read(fd, p, remaining);
         if (n < 0) {
-            return false;
+            readStatus = false;
+            break;
         }
         p += n;
         remaining -= n;
     }
     close(fd);
-    return true;
+    return readStatus;
 }
 
 
