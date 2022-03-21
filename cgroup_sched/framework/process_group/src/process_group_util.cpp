@@ -27,18 +27,18 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
+namespace {
+    static constexpr int FMT_STR_BUFF_LEN = 256;
+}
+
 std::string FormatString(const char* fmt, va_list vararg)
 {
     std::string strResult;
     if (fmt) {
-        va_list tmpArgs;
-        va_copy(tmpArgs, vararg);
-        size_t nLength = vsnprintf(nullptr, 0, fmt, tmpArgs); // compute buffer size
-        va_end(tmpArgs);
-        std::vector<char> vBuffer(nLength + 1, '\0');
-        int nWritten = vsnprintf_s(&vBuffer[0], nLength + 1, nLength, fmt, vararg);
+        char buffer[FMT_STR_BUFF_LEN] = { 0 };
+        int nWritten = vsnprintf_s(buffer, FMT_STR_BUFF_LEN, FMT_STR_BUFF_LEN - 1, fmt, vararg);
         if (nWritten > 0) {
-            strResult = &vBuffer[0];
+            strResult.append(buffer, 0, nWritten);
         }
     }
     return strResult;
