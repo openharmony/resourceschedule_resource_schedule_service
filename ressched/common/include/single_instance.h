@@ -40,7 +40,7 @@ className& className::GetInstance()          \
     static auto instance = new className();  \
     return *instance;                        \
 }
-}; // namespace ResourceSchedule
-}; // namespace OHOS
+} // namespace ResourceSchedule
+} // namespace OHOS
 
 #endif // FOUNDATION_RESOURCESCHEDULE_COMMON_INCLUDE_SINGLE_INSTANCE_H

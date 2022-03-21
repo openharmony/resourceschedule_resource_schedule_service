@@ -115,4 +115,4 @@ extern "C" void ReportData(uint32_t resType, int64_t value,
     ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
 }
 } // namespace ResourceSchedule
-} // namespace OHOS+
+} // namespace OHOS

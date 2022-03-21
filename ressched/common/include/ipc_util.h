@@ -37,7 +37,7 @@ namespace ResourceSchedule {
         }                                                                       \
     } while (0)
 
-}; // namespace ResourceSchedule
-}; // namespace OHOS
+} // namespace ResourceSchedule
+} // namespace OHOS
 
 #endif // FOUNDATION_RESOURCESCHEDULE_COMMON_INCLUDE_IPC_UTIL_H
