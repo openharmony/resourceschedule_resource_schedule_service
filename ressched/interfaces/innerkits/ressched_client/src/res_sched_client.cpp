@@ -38,6 +38,8 @@ void ResSchedClient::ReportDataInProcess(uint32_t resType, int64_t value, const 
 void ResSchedClient::ReportData(uint32_t resType, int64_t value,
                                 const std::unordered_map<std::string, std::string>& mapPayload)
 {
+    RESSCHED_LOGD("ResSchedClient::ReportData receive resType = %{public}u, value = %{public}lld.",
+                  resType, value);
     if (TryConnect() != ERR_OK) {
         return;
     }
