@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SCHED_CONTROLLER_H
-#define SCHED_CONTROLLER_H
+#ifndef CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_SCHED_CONTROLLER_H_
+#define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_SCHED_CONTROLLER_H_
 
 #include <sys/types.h>
 #include <string>
@@ -84,4 +84,4 @@ private:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // SCHED_CONTROLLER_H
+#endif // CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_SCHED_CONTROLLER_H_

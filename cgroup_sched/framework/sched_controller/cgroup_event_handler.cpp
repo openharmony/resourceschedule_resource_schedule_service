@@ -27,6 +27,10 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "CgroupEventHandler"};
+    constexpr uint32_t EVENT_ID_REG_APP_STATE_OBSERVER = 1;
+    constexpr uint32_t EVENT_ID_REG_BGTASK_OBSERVER = 2;
+    constexpr uint32_t DELAYED_RETRY_REGISTER_DURATION = 100;
+    constexpr uint32_t MAX_RETRY_TIMES = 100;
 }
 
 CgroupEventHandler::CgroupEventHandler(const std::shared_ptr<EventRunner> &runner)

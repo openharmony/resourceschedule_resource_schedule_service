@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef OHOS_RESOURCE_SCHEDULE_SERVICE_CGROUP_SCHED_FRAMEWORKS_PROCESS_GROUP_INCLUDE_CGROUP_ACTION_H
-#define OHOS_RESOURCE_SCHEDULE_SERVICE_CGROUP_SCHED_FRAMEWORKS_PROCESS_GROUP_INCLUDE_CGROUP_ACTION_H
+#ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_ACTION_H_
+#define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_ACTION_H_
 
 #include "cgroup_map.h"
 
@@ -38,8 +38,7 @@ private:
     bool IsEnabled();
     static bool ParseConfigFileToJsonObj(Json::Value& jsonObjRoot);
 };
-} // namepsace CgroupSetting
+} // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif
-
+#endif // CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_ACTION_H_

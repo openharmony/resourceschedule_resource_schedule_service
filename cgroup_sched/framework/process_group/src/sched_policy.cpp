@@ -94,6 +94,6 @@ const char* GetSchedPolicyFullName(SchedPolicy policy)
         return "error";
     }
 }
-} // namepsace CgroupSetting
+} // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

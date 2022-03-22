@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef RES_SCHED_UTILS_H
-#define RES_SCHED_UTILS_H
+#ifndef CGROUP_SCHED_FRAMEWORK_UTILS_INCLUDE_RESSCHED_UTILS_H_
+#define CGROUP_SCHED_FRAMEWORK_UTILS_INCLUDE_RESSCHED_UTILS_H_
 
 #include <iostream>
 #include "sys/types.h"
@@ -51,4 +51,4 @@ private:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // RES_SCHED_UTILS_H
+#endif // CGROUP_SCHED_FRAMEWORK_UTILS_INCLUDE_RESSCHED_UTILS_H_

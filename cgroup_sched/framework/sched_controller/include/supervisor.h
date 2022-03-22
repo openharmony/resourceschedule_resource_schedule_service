@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SUPERVISOR_H
-#define SUPERVISOR_H
+#ifndef CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_SUPERVISOR_H_
+#define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_SUPERVISOR_H_
 
 #include <iostream>
 #include <map>
@@ -35,7 +35,7 @@ using OHOS::ResourceSchedule::CgroupSetting::SchedPolicy;
 class AbilityInfo;
 class WindowInfo {
 public:
-    WindowInfo(int32_t windowId) : windowId_(windowId) {};
+    explicit WindowInfo(int32_t windowId) : windowId_(windowId) {}
     ~WindowInfo() {};
 
     uint32_t windowId_;
@@ -48,7 +48,7 @@ public:
 
 class AbilityInfo {
 public:
-    AbilityInfo(sptr<IRemoteObject> token) : token_(token) {};
+    AbilityInfo(sptr<IRemoteObject> token) : token_(token) {}
     ~AbilityInfo() = default;
 
     int32_t state_ = -1; // normal ability state
@@ -60,7 +60,7 @@ public:
 
 class ProcessRecord {
 public:
-    ProcessRecord(uid_t uid, pid_t pid) : uid_(uid), pid_(pid) {};
+    ProcessRecord(uid_t uid, pid_t pid) : uid_(uid), pid_(pid) {}
     ~ProcessRecord()
     {
         abilities_.clear();
@@ -93,6 +93,7 @@ public:
 
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
     std::vector<std::shared_ptr<WindowInfo>> windows_;
+
 private:
     uid_t uid_;
     pid_t pid_;
@@ -100,7 +101,7 @@ private:
 
 class Application {
 public:
-    Application(uid_t uid) : uid_(uid) {};
+    Application(uid_t uid) : uid_(uid) {}
     ~Application() = default;
 
     std::shared_ptr<ProcessRecord> AddProcessRecord(std::shared_ptr<ProcessRecord> pr);
@@ -144,9 +145,10 @@ public:
         uint32_t windowId);
 
     std::shared_ptr<Application> focusedApp_ = nullptr;
+
 private:
     std::map<int32_t, std::shared_ptr<Application>> uidsMap_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // SUPERVISOR_H
+#endif // CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_SUPERVISOR_H_

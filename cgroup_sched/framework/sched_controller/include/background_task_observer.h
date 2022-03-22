@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef BACKGROUND_TASK_OBSERVER_H
-#define BACKGROUND_TASK_OBSERVER_H
+#ifndef CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_BACKGROUND_TASK_OBSERVER_H_
+#define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_BACKGROUND_TASK_OBSERVER_H_
 
 #include <sys/types.h>
 #include "continuous_task_callback_info.h"
@@ -29,8 +29,8 @@ using OHOS::BackgroundTaskMgr::TransientTaskAppInfo;
 
 class BackgroundTaskObserver : public BackgroundTaskSubscriber {
 public:
-    BackgroundTaskObserver() {};
-    ~BackgroundTaskObserver() {};
+    BackgroundTaskObserver() {}
+    ~BackgroundTaskObserver() {}
 
     void OnConnected() override;
     void OnDisconnected() override;
@@ -67,4 +67,4 @@ private:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // BACKGROUND_TASK_OBSERVER_H
+#endif // CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_BACKGROUND_TASK_OBSERVER_H_

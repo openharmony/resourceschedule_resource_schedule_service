@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef OHOS_RESOURCE_SCHEDULE_SERVICE_CGROUP_SCHED_FRAMEWORKS_PROCESS_GROUP_INCLUDE_SCHED_POLICY_H
-#define OHOS_RESOURCE_SCHEDULE_SERVICE_CGROUP_SCHED_FRAMEWORKS_PROCESS_GROUP_INCLUDE_SCHED_POLICY_H
+#ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_SCHED_POLICY_H_
+#define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_SCHED_POLICY_H_
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -89,8 +89,8 @@ const char* GetSchedPolicyShortenedName(SchedPolicy policy);
  * @return Return a displayable string corresponding to policy.
  */
 const char* GetSchedPolicyFullName(SchedPolicy policy);
-} // namepsace CgroupSetting
+} // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
 
-#endif
+#endif // CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_SCHED_POLICY_H_

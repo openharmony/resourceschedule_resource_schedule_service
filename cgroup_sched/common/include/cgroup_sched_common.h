@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef CGROUP_SCHED_COMMON_H
-#define CGROUP_SCHED_COMMON_H
+#ifndef CGROUP_SCHED_COMMON_INCLUDE_CGROUP_SCHED_COMMON_H_
+#define CGROUP_SCHED_COMMON_INCLUDE_CGROUP_SCHED_COMMON_H_
 
 #include <chrono>
 #include <ctime>
@@ -32,7 +32,7 @@ using MilliSecondsType = std::chrono::duration<double, std::milli>;
 
 class ChronoScope {
 public:
-    ChronoScope(const std::string outmsg) : outmsg_(outmsg)
+    explicit ChronoScope(const std::string outmsg) : outmsg_(outmsg)
     {
         out_ = nullptr;
         t1 = Clock::now();
@@ -53,6 +53,7 @@ public:
             *out_ = time_span.count();
         }
     }
+
 private:
     ChronoScope(const ChronoScope&) = delete;
     ChronoScope& operator=(const ChronoScope &) = delete;
@@ -65,4 +66,4 @@ private:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // CGROUP_SCHED_COMMON_H
+#endif // CGROUP_SCHED_COMMON_INCLUDE_CGROUP_SCHED_COMMON_H_
