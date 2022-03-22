@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_HANDLER_H
-#define SOC_PERF_HANDLER_H
+#ifndef SOC_PERF_INCLUDE_CORE_SOCPERF_HANDLER_H
+#define SOC_PERF_INCLUDE_CORE_SOCPERF_HANDLER_H
 
 #include <unistd.h>
 #include <unordered_map>
@@ -30,8 +30,8 @@ namespace SOCPERF {
 class SocPerfHandler : public AppExecFwk::EventHandler {
 public:
     explicit SocPerfHandler(const std::shared_ptr<AppExecFwk::EventRunner>& runner);
-    virtual ~SocPerfHandler() override;
-    virtual void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
+    ~SocPerfHandler() override;
+    void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
 
 private:
     std::unordered_map<int, std::shared_ptr<ResNode>> resNodeInfo;

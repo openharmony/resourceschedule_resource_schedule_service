@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_CLIENT_H
-#define SOC_PERF_CLIENT_H
+#ifndef SOC_PERF_INCLUDE_CLIENT_SOCPERF_CLIENT_H
+#define SOC_PERF_INCLUDE_CLIENT_SOCPERF_CLIENT_H
 
 #include "i_socperf_service.h"
 #include "unistd.h"
@@ -36,7 +36,7 @@ public:
 
 private:
     SocPerfClient() {}
-    ~SocPerfClient() {};
+    ~SocPerfClient() {}
 
 private:
     bool CheckClientValid();
@@ -45,11 +45,11 @@ private:
 private:
     class SocPerfDeathRecipient : public IRemoteObject::DeathRecipient {
     public:
-        SocPerfDeathRecipient(SocPerfClient &socPerfClient);
+        explicit SocPerfDeathRecipient(SocPerfClient &socPerfClient);
 
         ~SocPerfDeathRecipient();
 
-        virtual void OnRemoteDied(const wptr<IRemoteObject> &object) override;
+        void OnRemoteDied(const wptr<IRemoteObject> &object) override;
 
     private:
         SocPerfClient &socPerfClient_;
@@ -62,4 +62,4 @@ private:
 } // namespace SOCPERF
 } // namespace OHOS
 
-#endif // SOC_PERF_CLIENT_H
+#endif // SOC_PERF_INCLUDE_CLIENT_SOCPERF_CLIENT_H

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_PLUGIN_H
-#define SOC_PERF_PLUGIN_H
+#ifndef RESSCHED_PLUGINS_SOCPERF_PLUGIN_INCLUDE_SOCPERF_PLUGIN_H
+#define RESSCHED_PLUGINS_SOCPERF_PLUGIN_INCLUDE_SOCPERF_PLUGIN_H
 
 #include <set>
 #include "plugin.h"
@@ -42,4 +42,4 @@ private:
 } // namespace ResourceSchedule
 } // namespace OHOS
 
-#endif // SOC_PERF_PLUGIN_H
+#endif // RESSCHED_PLUGINS_SOCPERF_PLUGIN_INCLUDE_SOCPERF_PLUGIN_H

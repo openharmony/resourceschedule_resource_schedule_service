@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_PLUGIN_HANDLER_H
-#define SOC_PERF_PLUGIN_HANDLER_H
+#ifndef RESSCHED_PLUGINS_SOCPERF_PLUGIN_INCLUDE_SOCPERF_PLUGIN_HANDLER_H
+#define RESSCHED_PLUGINS_SOCPERF_PLUGIN_INCLUDE_SOCPERF_PLUGIN_HANDLER_H
 
 #include "event_handler.h"
 #include "event_runner.h"
@@ -31,8 +31,8 @@ using namespace SOCPERF;
 class SocPerfPluginHandler : public AppExecFwk::EventHandler {
 public:
     explicit SocPerfPluginHandler(const std::shared_ptr<AppExecFwk::EventRunner>& runner);
-    virtual ~SocPerfPluginHandler() override;
-    virtual void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
+    ~SocPerfPluginHandler() override;
+    void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
 
 private:
     void HandleAppStateChange(const std::shared_ptr<ResData>& data);
@@ -62,4 +62,4 @@ namespace {
 } // namespace ResourceSchedule
 } // namespace OHOS
 
-#endif // SOC_PERF_PLUGIN_HANDLER_H
+#endif // RESSCHED_PLUGINS_SOCPERF_PLUGIN_INCLUDE_SOCPERF_PLUGIN_HANDLER_H

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_COMMON_H
-#define SOC_PERF_COMMON_H
+#ifndef SOC_PERF_INCLUDE_SOCPERF_COMMON_H
+#define SOC_PERF_INCLUDE_SOCPERF_COMMON_H
 
 #include <string>
 #include <vector>
@@ -247,7 +247,7 @@ public:
     int current;
 
 public:
-    ResStatus(int val)
+    explicit ResStatus(int val)
     {
         resActionList = std::vector<std::list<std::shared_ptr<ResAction>>>(ACTION_TYPE_MAX);
         candidates = std::vector<int>(ACTION_TYPE_MAX);
@@ -363,4 +363,4 @@ static inline std::vector<std::string> Split(std::string str, std::string patter
 } // namespace SOCPERF
 } // namespace OHOS
 
-#endif // SOC_PERF_COMMON_H
+#endif // SOC_PERF_INCLUDE_SOCPERF_COMMON_H

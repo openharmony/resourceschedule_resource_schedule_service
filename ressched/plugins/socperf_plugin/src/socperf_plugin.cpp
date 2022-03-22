@@ -97,5 +97,5 @@ extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& data)
     SocPerfPlugin::GetInstance().DispatchResource(data);
     RESSCHED_LOGI("SocPerfPlugin::OnDispatchResource success.");
 }
-}
-}
+} // namespace ResourceSchedule
+} // namespace OHOS

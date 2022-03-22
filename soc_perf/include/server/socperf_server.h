@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_ABILITY_H
-#define SOC_PERF_ABILITY_H
+#ifndef SOC_PERF_INCLUDE_SERVER_SOCPERF_SERVER_H
+#define SOC_PERF_INCLUDE_SERVER_SOCPERF_SERVER_H
 
 #include "i_socperf_service.h"
 #include "socperf_stub.h"
@@ -50,4 +50,4 @@ private:
 } // namespace SOCPERF
 } // namespace OHOS
 
-#endif // SOC_PERF_ABILITY_H
+#endif // SOC_PERF_INCLUDE_SERVER_SOCPERF_SERVER_H

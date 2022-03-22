@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_ISERVICE_H
-#define SOC_PERF_ISERVICE_H
+#ifndef SOC_PERF_INCLUDE_I_SOCPERF_SERVICE_H
+#define SOC_PERF_INCLUDE_I_SOCPERF_SERVICE_H
 
 #include <string>
 #include "iremote_broker.h"
@@ -58,4 +58,4 @@ public:
 } // namespace SOCPERF
 } // namespace OHOS
 
-#endif // SOC_PERF_ISERVICE_H
+#endif // SOC_PERF_INCLUDE_I_SOCPERF_SERVICE_H
