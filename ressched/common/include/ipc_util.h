@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef FOUNDATION_RESOURCESCHEDULE_COMMON_INCLUDE_IPC_UTIL_H
-#define FOUNDATION_RESOURCESCHEDULE_COMMON_INCLUDE_IPC_UTIL_H
+#ifndef RESSCHED_COMMON_INCLUDE_IPC_UTIL_H
+#define RESSCHED_COMMON_INCLUDE_IPC_UTIL_H
 
 #include "res_sched_log.h"
 
@@ -37,7 +37,7 @@ namespace ResourceSchedule {
         }                                                                       \
     } while (0)
 
-}; // namespace ResourceSchedule
-}; // namespace OHOS
+} // namespace ResourceSchedule
+} // namespace OHOS
 
-#endif // FOUNDATION_RESOURCESCHEDULE_COMMON_INCLUDE_IPC_UTIL_H
+#endif // RESSCHED_COMMON_INCLUDE_IPC_UTIL_H

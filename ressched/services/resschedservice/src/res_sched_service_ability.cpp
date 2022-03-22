@@ -65,3 +65,4 @@ void ResSchedServiceAbility::OnRemoveSystemAbility(int32_t systemAbilityId, cons
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
+

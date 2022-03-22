@@ -28,3 +28,4 @@ void ResSchedService::ReportData(uint32_t resType, int64_t value, const Json::Va
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
+

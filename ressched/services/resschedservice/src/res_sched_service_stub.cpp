@@ -82,7 +82,7 @@ Json::Value ResSchedServiceStub::StringToJson(const std::string& payload)
     JSONCPP_STRING errs;
     std::unique_ptr<Json::CharReader> const jsonReader(readerBuilder.newCharReader());
     Json::Value root;
-    res = jsonReader->parse(payload.c_str(), payload.c_str()+payload.length(), &root, &errs);
+    res = jsonReader->parse(payload.c_str(), payload.c_str() + payload.length(), &root, &errs);
     if (!res || !errs.empty()) {
         RESSCHED_LOGE("ResSchedServiceStub::payload = %{public}s Incorrect JSON format ", payload.c_str());
     }
@@ -92,8 +92,8 @@ Json::Value ResSchedServiceStub::StringToJson(const std::string& payload)
 void ResSchedServiceStub::Init()
 {
     funcMap_ = {
-            { REPORT_DATA,
-                [this](auto& data, auto& reply) {return ReportDataInner(data, reply); } },
+        { REPORT_DATA,
+            [this](auto& data, auto& reply) {return ReportDataInner(data, reply); } },
     };
 }
 } // namespace ResourceSchedule

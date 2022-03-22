@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "plugin_mgr.h"
 #include <algorithm>
 #include <csignal>
 #include <csetjmp>
@@ -21,7 +22,6 @@
 #include "datetime_ex.h"
 #include "event_runner.h"
 #include "res_sched_log.h"
-#include "plugin_mgr.h"
 
 using namespace std;
 
@@ -76,7 +76,7 @@ void PluginMgr::Init()
         if (PLUGIN_SWITCH_FILE_NAME.size() == 0 || PLUGIN_SWITCH_FILE_NAME.size() > PATH_MAX ||
             !realpath(PLUGIN_SWITCH_FILE_NAME.c_str(), tmpPath)) {
             RESSCHED_LOGE("PluginMgr::load switch config file wrong !");
-            return ;
+            return;
         }
         std::string realPath(tmpPath);
         bool loadRet = pluginSwitch_->LoadFromConfigFile(realPath);
@@ -91,7 +91,7 @@ void PluginMgr::Init()
         if (CONFIG_FILE_NAME.size() == 0 || CONFIG_FILE_NAME.size() > PATH_MAX ||
             !realpath(CONFIG_FILE_NAME.c_str(), tmpPath)) {
             RESSCHED_LOGE("PluginMgr::load config file wrong !");
-            return ;
+            return;
         }
         std::string realPath(tmpPath);
         bool loadRet = configReader_->LoadFromCustConfigFile(realPath);
