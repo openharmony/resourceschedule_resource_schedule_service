@@ -62,5 +62,5 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
         });
     }
 }
-} // namespace OHOS
 } // namespace ResourceSchedule
+} // namespace OHOS

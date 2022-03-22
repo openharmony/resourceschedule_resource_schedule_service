@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef APP_STATE_OBSERVER_H
-#define APP_STATE_OBSERVER_H
+#ifndef CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_APP_STATE_OBSERVER_H_
+#define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_APP_STATE_OBSERVER_H_
 
 #include "application_state_observer_stub.h"
 
@@ -57,4 +57,4 @@ private:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // APP_STATE_OBSERVER_H
+#endif // CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_APP_STATE_OBSERVER_H_

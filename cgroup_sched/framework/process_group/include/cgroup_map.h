@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef OHOS_RESOURCE_SCHEDULE_SERVICE_CGROUP_SCHED_FRAMEWORKS_PROCESS_GROUP_INCLUDE_CGROUP_MAP_H
-#define OHOS_RESOURCE_SCHEDULE_SERVICE_CGROUP_SCHED_FRAMEWORKS_PROCESS_GROUP_INCLUDE_CGROUP_MAP_H
+#ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_MAP_H_
+#define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_MAP_H_
 
 #include <string>
 #include <map>
@@ -32,12 +32,11 @@ public:
     CgroupMap(const CgroupMap&) = delete;
     CgroupMap& operator=(const CgroupMap&) = delete;
     ~CgroupMap() = default;
-    
+
     bool SetThreadSchedPolicy(int tid, SchedPolicy policy, bool isSetThreadGroup);
     bool loadConfigFromJsonObj(const Json::Value& jsonObj);
 
     bool findFristEnableCgroupController(CgroupController** p);
-    int GetSchedPolicy(int tid, SchedPolicy* policy);
 
 private:
     std::map<std::string, CgroupController> controllers_;
@@ -50,4 +49,4 @@ private:
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif
+#endif // CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_MAP_H_

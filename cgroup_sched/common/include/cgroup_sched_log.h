@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef CGROUP_SCHED_LOG_H
-#define CGROUP_SCHED_LOG_H
+#ifndef CGROUP_SCHED_COMMON_INCLUDE_CGROUP_SCHED_LOG_H_
+#define CGROUP_SCHED_COMMON_INCLUDE_CGROUP_SCHED_LOG_H_
 
 #include <string>
 #include <vector>
@@ -32,4 +32,4 @@ namespace ResourceSchedule {
 } // namespace ResourceSchedule
 } // namespace OHOS
 
-#endif // CGROUP_SCHED_LOG_H
+#endif // CGROUP_SCHED_COMMON_INCLUDE_CGROUP_SCHED_LOG_H_

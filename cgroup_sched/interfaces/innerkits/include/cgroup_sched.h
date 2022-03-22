@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef CGROUP_SCHED_H
-#define CGROUP_SCHED_H
+#ifndef CGROUP_SCHED_INTERFACES_INNERKITS_INCLUDE_CGROUP_SCHED_H_
+#define CGROUP_SCHED_INTERFACES_INNERKITS_INCLUDE_CGROUP_SCHED_H_
 
 #include "sys/types.h"
 
@@ -27,4 +27,4 @@ extern "C" void ReportAbilityStatus(int32_t saId, const std::string& deviceId, u
 } // namespace ResourceSchedule
 } // namespace OHOS
 
-#endif // CGROUP_SCHED_H
+#endif // CGROUP_SCHED_INTERFACES_INNERKITS_INCLUDE_CGROUP_SCHED_H_

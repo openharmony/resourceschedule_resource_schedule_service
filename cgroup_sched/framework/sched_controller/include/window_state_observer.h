@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef WINDOW_STATE_OBSERVER_H
-#define WINDOW_STATE_OBSERVER_H
+#ifndef CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_WINDOW_STATE_OBSERVER_H_
+#define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_WINDOW_STATE_OBSERVER_H_
 
 #include <sys/types.h>
 #include "iremote_object.h"
@@ -41,4 +41,4 @@ public:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // WINDOW_STATE_OBSERVER_H
+#endif // CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_WINDOW_STATE_OBSERVER_H_

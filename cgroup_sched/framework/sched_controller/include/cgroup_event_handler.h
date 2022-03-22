@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef CGROUP_EVENT_HANDLER_H
-#define CGROUP_EVENT_HANDLER_H
+#ifndef CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_CGROUP_EVENT_HANDLER_H_
+#define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_CGROUP_EVENT_HANDLER_H_
 
 #include <sys/types.h>
 #include "event_handler.h"
@@ -23,22 +23,15 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-namespace {
-    const uint32_t EVENT_ID_REG_APP_STATE_OBSERVER = 1;
-    const uint32_t EVENT_ID_REG_BGTASK_OBSERVER = 2;
-    const uint32_t DELAYED_RETRY_REGISTER_DURATION = 100;
-    const uint32_t MAX_RETRY_TIMES = 100;
-}
-
 using OHOS::AppExecFwk::EventHandler;
 using OHOS::AppExecFwk::EventRunner;
 using OHOS::Rosen::WindowType;
 
 class CgroupEventHandler : public EventHandler {
 public:
-    CgroupEventHandler(const std::shared_ptr<EventRunner> &runner);
+    explicit CgroupEventHandler(const std::shared_ptr<EventRunner> &runner);
     ~CgroupEventHandler();
-    virtual void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
+    void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
     void SetSupervisor(std::shared_ptr<Supervisor> supervisor);
     void HandleAbilityAdded(int32_t saId, const std::string& deviceId);
     void HandleAbilityRemoved(int32_t saId, const std::string& deviceId);
@@ -60,10 +53,11 @@ public:
     void HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
         WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
     void HandleWindowVisibilityChanged(uint32_t windowId, bool isVisible, int32_t pid, int32_t uid);
+
 private:
     std::shared_ptr<Supervisor> supervisor_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
 
-#endif // CGROUP_EVENT_HANDLER_H
+#endif // CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_CGROUP_EVENT_HANDLER_H_

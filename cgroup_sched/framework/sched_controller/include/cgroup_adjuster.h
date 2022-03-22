@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef CGROUP_ADJUSTER_H
-#define CGROUP_ADJUSTER_H
+#ifndef CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_CGROUP_ADJUSTER_H_
+#define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_CGROUP_ADJUSTER_H_
 
 #include <sys/types.h>
 #include "sched_policy.h"
@@ -45,7 +45,7 @@ public:
     void InitAdjuster();
     void AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source);
     void AdjustAllProcessGroup(Application &app, AdjustSource source);
-    
+
 private:
     void ComputeProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source);
     void ApplyProcessGroup(Application &app, ProcessRecord &pr);
@@ -53,4 +53,4 @@ private:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // CGROUP_ADJUSTER_H
+#endif // CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_CGROUP_ADJUSTER_H_

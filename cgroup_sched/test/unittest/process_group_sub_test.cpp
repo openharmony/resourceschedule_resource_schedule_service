@@ -179,6 +179,6 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_010, Function 
     const char* policyName = GetSchedPolicyShortenedName(SP_BACKGROUND);
     EXPECT_TRUE(!strcmp(policyName, "bg"));
 }
-} // CgroupSetting
-} // ResourceSchedule
-} // OHOS
+} // namespace CgroupSetting
+} // namespace ResourceSchedule
+} // namespace OHOS
