@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef FOUNDATION_RESOURCESCHEDULE_COMMON_INCLUDE_SINGLE_INSTANCE_H
-#define FOUNDATION_RESOURCESCHEDULE_COMMON_INCLUDE_SINGLE_INSTANCE_H
+#ifndef RESSCHED_COMMON_INCLUDE_SINGLE_INSTANCE_H
+#define RESSCHED_COMMON_INCLUDE_SINGLE_INSTANCE_H
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -43,4 +43,4 @@ className& className::GetInstance()          \
 } // namespace ResourceSchedule
 } // namespace OHOS
 
-#endif // FOUNDATION_RESOURCESCHEDULE_COMMON_INCLUDE_SINGLE_INSTANCE_H
+#endif // RESSCHED_COMMON_INCLUDE_SINGLE_INSTANCE_H
