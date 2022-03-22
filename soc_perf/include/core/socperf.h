@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_H
-#define SOC_PERF_H
+#ifndef SOC_PERF_INCLUDE_CORE_SOCPERF_H
+#define SOC_PERF_INCLUDE_CORE_SOCPERF_H
 
 #include <string>
 #include <vector>
@@ -78,4 +78,4 @@ private:
 } // namespace SOCPERF
 } // namespace OHOS
 
-#endif // SOC_PERF_H
+#endif // SOC_PERF_INCLUDE_CORE_SOCPERF_H

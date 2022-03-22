@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_PROXY_H
-#define SOC_PERF_PROXY_H
+#ifndef SOC_PERF_INCLUDE_CLIENT_SOCPERF_PROXY_H
+#define SOC_PERF_INCLUDE_CLIENT_SOCPERF_PROXY_H
 
 #include "i_socperf_service.h"
 
@@ -42,4 +42,4 @@ private:
 } // namespace SOCPERF
 } // namespace OHOS
 
-#endif // SOC_PERF_PROXY_H
+#endif // SOC_PERF_INCLUDE_CLIENT_SOCPERF_PROXY_H

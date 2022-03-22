@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_STUB_H
-#define SOC_PERF_STUB_H
+#ifndef SOC_PERF_INCLUDE_SERVER_SOCPERF_STUB_H
+#define SOC_PERF_INCLUDE_SERVER_SOCPERF_STUB_H
 
 #include "i_socperf_service.h"
 
@@ -22,7 +22,7 @@ namespace OHOS {
 namespace SOCPERF {
 class SocPerfStub : public IRemoteStub<ISocPerfService> {
 public:
-    virtual int OnRemoteRequest(uint32_t code, MessageParcel &data,
+    int OnRemoteRequest(uint32_t code, MessageParcel &data,
         MessageParcel &reply, MessageOption &option) override;
 
 public:
@@ -32,4 +32,4 @@ public:
 } // namespace SOCPERF
 } // namespace OHOS
 
-#endif // SOC_PERF_STUB_H
+#endif // SOC_PERF_INCLUDE_SERVER_SOCPERF_STUB_H

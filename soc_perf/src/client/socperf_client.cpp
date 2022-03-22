@@ -65,9 +65,9 @@ void SocPerfClient::ResetClient()
 }
 
 SocPerfClient::SocPerfDeathRecipient::SocPerfDeathRecipient(SocPerfClient &socPerfClient)
-    : socPerfClient_(socPerfClient) {};
+    : socPerfClient_(socPerfClient) {}
 
-SocPerfClient::SocPerfDeathRecipient::~SocPerfDeathRecipient() {};
+SocPerfClient::SocPerfDeathRecipient::~SocPerfDeathRecipient() {}
 
 void SocPerfClient::SocPerfDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
 {
