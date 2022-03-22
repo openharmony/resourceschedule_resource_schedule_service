@@ -57,7 +57,7 @@ protected:
 private:
     class ResSchedDeathRecipient : public IRemoteObject::DeathRecipient {
     public:
-        ResSchedDeathRecipient(ResSchedClient &resSchedClient);
+        explicit ResSchedDeathRecipient(ResSchedClient &resSchedClient);
 
         ~ResSchedDeathRecipient();
 

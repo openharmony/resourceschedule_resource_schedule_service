@@ -47,7 +47,7 @@ enum : uint32_t {
     // ace slide event recognize; value 1: slide on; 0: slide off
     RTS_TYPE_SLIDE_RECOGNIZE,
 };
-}
+} // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
 
