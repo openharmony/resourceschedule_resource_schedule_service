@@ -61,7 +61,7 @@ private:
 
         ~ResSchedDeathRecipient();
 
-        virtual void OnRemoteDied(const wptr<IRemoteObject> &object) override;
+        void OnRemoteDied(const wptr<IRemoteObject> &object) override;
 
     private:
         ResSchedClient &resSchedClient_;
