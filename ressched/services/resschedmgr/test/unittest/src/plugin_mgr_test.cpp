@@ -61,7 +61,7 @@ HWTEST_F(PluginMgrTest, Init001, TestSize.Level1)
 {
     pluginMgr_->Init();
     EXPECT_TRUE(pluginMgr_->initStatus == pluginMgr_->INIT_SUCCESS);
-    EXPECT_TRUE(pluginMgr_->pluginLibMap_.size() == 0);
+    EXPECT_EQ(pluginMgr_->pluginLibMap_.size(), 0);
 }
 
 /**
@@ -74,8 +74,8 @@ HWTEST_F(PluginMgrTest, Init001, TestSize.Level1)
 HWTEST_F(PluginMgrTest, Stop001, TestSize.Level1)
 {
     pluginMgr_->Stop();
-    EXPECT_TRUE(pluginMgr_->pluginLibMap_.size() == 0);
-    EXPECT_TRUE(pluginMgr_->resTypeLibMap_.size() == 0);
+    EXPECT_EQ(pluginMgr_->pluginLibMap_.size(), 0);
+    EXPECT_EQ(pluginMgr_->resTypeLibMap_.size(), 0);
     EXPECT_TRUE(pluginMgr_->configReader_ == nullptr);
     EXPECT_TRUE(pluginMgr_->dispatcherHandler_ == nullptr);
 }
@@ -93,7 +93,7 @@ HWTEST_F(PluginMgrTest, SubscribeResource001, TestSize.Level1)
     pluginMgr_->SubscribeResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
     auto iter = pluginMgr_->resTypeLibMap_.find(ResType::RES_TYPE_SCREEN_STATUS);
     string libName = iter->second.back();
-    EXPECT_TRUE(libName.compare(LIB_NAME) == 0);
+    EXPECT_EQ(libName.compare(LIB_NAME), 0);
 }
 
 /**

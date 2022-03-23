@@ -20,7 +20,7 @@ using namespace testing::ext;
 
 namespace OHOS {
 namespace ResourceSchedule {
-const std::string TEST_PREFIX_SWITCH_PATH = "/data/test/resource/resschedfwk/parseswitch/";
+const string TEST_PREFIX_SWITCH_PATH = "/data/test/resource/resschedfwk/parseswitch/";
 
 void PluginSwitchTest::SetUpTestCase() {}
 

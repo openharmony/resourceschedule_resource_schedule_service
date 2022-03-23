@@ -26,7 +26,7 @@ class ResSchedServiceStub : public IRemoteStub<IResSchedService> {
 public:
     ResSchedServiceStub();
     ~ResSchedServiceStub();
-    virtual int OnRemoteRequest(
+    int OnRemoteRequest(
         uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
 
 private:
