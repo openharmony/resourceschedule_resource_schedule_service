@@ -152,7 +152,7 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, std::string bu
 }
 
 void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName,
-    std::string abilityName, sptr<IRemoteObject> token, int32_t abilityState, int32_t abilityType)
+    std::string abilityName, uint64_t token, int32_t abilityState, int32_t abilityType)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -184,7 +184,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
 }
 
 void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::string bundleName,
-    std::string abilityName, sptr<IRemoteObject> token, int32_t extensionState, int32_t abilityType)
+    std::string abilityName, uint64_t token, int32_t extensionState, int32_t abilityType)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -315,7 +315,7 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::s
         AdjustSource::ADJS_CONTINUOUS_END);
 }
 
-void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
+void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uint64_t abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
     Json::Value payload;
@@ -366,7 +366,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, sptr<IRemoteObje
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
 }
 
-void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, sptr<IRemoteObject> abilityToken,
+void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uint64_t abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
     Json::Value payload;
