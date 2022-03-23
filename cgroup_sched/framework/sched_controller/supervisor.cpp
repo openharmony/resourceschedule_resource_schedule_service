@@ -78,8 +78,9 @@ bool ProcessRecord::HasServiceExtension() const
 {
     for (auto abi : abilities_) {
         if (abi->type_ == VALUE_INT(AbilityType::SERVICE)
-            || abi->type_ == VALUE_INT(AbilityType::EXTENSION)) {
-            return SchedPolicy::SP_SYSTEM;
+            || abi->type_ == VALUE_INT(AbilityType::EXTENSION)
+            || abi->type_ == VALUE_INT(AbilityType::DATA)) {
+            return true;
         }
     }
     return false;

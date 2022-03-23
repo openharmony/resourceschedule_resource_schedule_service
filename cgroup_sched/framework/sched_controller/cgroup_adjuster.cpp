@@ -88,7 +88,7 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
             } else if (pr.IsVisible()) {
                 group = SchedPolicy::SP_FOREGROUND;
             } else if (pr.HasServiceExtension()) {
-                group = SchedPolicy::SP_SYSTEM;
+                group = SchedPolicy::SP_DEFAULT;
             } else {
                 group = SchedPolicy::SP_BACKGROUND;
             }
