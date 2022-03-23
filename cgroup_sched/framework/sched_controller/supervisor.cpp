@@ -21,7 +21,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 using OHOS::AppExecFwk::AbilityType;
 
-std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfoNonNull(sptr<IRemoteObject> token)
+std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfoNonNull(uint64_t token)
 {
     for (auto a : abilities_) {
         if (a->token_ == token) {
@@ -33,7 +33,7 @@ std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfoNonNull(sptr<IRemoteOb
     return abi;
 }
 
-std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfo(sptr<IRemoteObject> token)
+std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfo(uint64_t token)
 {
     for (auto a : abilities_) {
         if (a->token_ == token) {
@@ -55,7 +55,7 @@ std::shared_ptr<WindowInfo> ProcessRecord::GetWindowInfoNonNull(uint32_t windowI
     return win;
 }
 
-void ProcessRecord::RemoveAbilityByToken(sptr<IRemoteObject> token)
+void ProcessRecord::RemoveAbilityByToken(uint64_t token)
 {
     for (auto iter = abilities_.begin(); iter != abilities_.end(); ++iter) {
         if ((*iter)->token_ == token) {
@@ -65,7 +65,7 @@ void ProcessRecord::RemoveAbilityByToken(sptr<IRemoteObject> token)
     }
 }
 
-bool ProcessRecord::HasAbility(sptr<IRemoteObject> token) const
+bool ProcessRecord::HasAbility(uint64_t token) const
 {
     for (auto abi : abilities_) {
         if (abi->token_ == token)
@@ -132,7 +132,7 @@ std::shared_ptr<ProcessRecord> Application::GetProcessRecordNonNull(pid_t pid)
     return pidsMap_[pid];
 }
 
-std::shared_ptr<ProcessRecord> Application::FindProcessRecord(sptr<IRemoteObject> token)
+std::shared_ptr<ProcessRecord> Application::FindProcessRecord(uint64_t token)
 {
     for (auto iter = pidsMap_.begin(); iter != pidsMap_.end(); iter++) {
         auto pr = iter->second;
@@ -196,7 +196,7 @@ void Supervisor::RemoveApplication(int32_t uid)
 }
 
 void Supervisor::SearchAbilityToken(std::shared_ptr<Application> &application,
-    std::shared_ptr<ProcessRecord> &procRecord, sptr<IRemoteObject> token)
+    std::shared_ptr<ProcessRecord> &procRecord, uint64_t token)
 {
     std::shared_ptr<ProcessRecord> pr = nullptr;
     for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++) {
