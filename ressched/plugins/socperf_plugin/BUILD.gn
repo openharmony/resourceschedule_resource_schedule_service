@@ -29,10 +29,7 @@ ohos_shared_library("socperf_plugin") {
     "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
   ]
 
-  sources = [
-    "src/socperf_plugin.cpp",
-    "src/socperf_plugin_handler.cpp",
-  ]
+  sources = [ "src/socperf_plugin.cpp" ]
 
   deps = [
     "${ressched_services}:resschedsvc",
