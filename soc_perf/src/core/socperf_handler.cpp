@@ -274,13 +274,11 @@ void SocPerfHandler::UpdateCurrentValue(int resId, int currValue)
     if (resStatusInfo[resId]->current != currValue) {
         resStatusInfo[resId]->current = currValue;
         if (IsGovResId(resId)) {
-            SOC_PERF_LOGI("govResId->%{public}d, choose->%{public}d", resId, resStatusInfo[resId]->current);
             std::vector<std::string> targetStrs = govResNodeInfo[resId]->levelToStr[resStatusInfo[resId]->current];
             for (int i = 0; i < (int)govResNodeInfo[resId]->paths.size(); i++) {
                 WriteNode(govResNodeInfo[resId]->paths[i], targetStrs[i]);
             }
         } else {
-            SOC_PERF_LOGI("resId->%{public}d, choose->%{public}d", resId, resStatusInfo[resId]->current);
             WriteNode(resNodeInfo[resId]->path, std::to_string(resStatusInfo[resId]->current));
         }
     }

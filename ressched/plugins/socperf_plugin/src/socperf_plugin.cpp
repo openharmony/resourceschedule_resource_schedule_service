@@ -24,43 +24,56 @@ namespace ResourceSchedule {
 using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libsocperf_plugin.z.so";
+    const int PERF_REQUEST_CMD_ID_APP_COLD_START_FIRST  = 10000;
+    const int PERF_REQUEST_CMD_ID_APP_COLD_START_SECOND = 10001;
+    const int PERF_REQUEST_CMD_ID_APP_WARM_START_FIRST  = 10002;
+    const int PERF_REQUEST_CMD_ID_APP_WARM_START_SECOND = 10003;
+    const int PERF_REQUEST_CMD_ID_WINDOW_SWITCH_FIRST   = 10004;
+    const int PERF_REQUEST_CMD_ID_WINDOW_SWITCH_SECOND  = 10005;
+    const int PERF_REQUEST_CMD_ID_EVENT_CLICK           = 10006;
+    const int PERF_REQUEST_CMD_ID_PUSH_PAGE             = 10007;
+    const int PERF_REQUEST_CMD_ID_EVENT_SLIDE           = 10008;
+    const int PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER      = 10009;
+    const int EVENT_ON                                  = 1;
+    const int EVENT_OFF                                 = 0;
+    const int WINDOW_FOCUSED                            = 0;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
 void SocPerfPlugin::Init()
 {
-    resTypes.insert(RES_TYPE_APP_STATE_CHANGE);
-    resTypes.insert(RES_TYPE_WINDOW_FOCUS);
-    resTypes.insert(RES_TYPE_CLICK_RECOGNIZE);
-    resTypes.insert(RES_TYPE_PUSH_PAGE);
-    resTypes.insert(RTS_TYPE_SLIDE_RECOGNIZE);
+    functionMap = {
+        { RES_TYPE_APP_STATE_CHANGE,
+            [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
+        { RES_TYPE_WINDOW_FOCUS,
+            [this](const std::shared_ptr<ResData>& data) { HandleWindowFocus(data); } },
+        { RES_TYPE_CLICK_RECOGNIZE,
+            [this](const std::shared_ptr<ResData>& data) { HandleEventClick(data); } },
+        { RES_TYPE_PUSH_PAGE,
+            [this](const std::shared_ptr<ResData>& data) { HandlePushPage(data); } },
+        { RTS_TYPE_SLIDE_RECOGNIZE,
+            [this](const std::shared_ptr<ResData>& data) { HandleEventSlide(data); } },
+    };
+    resTypes = {
+        RES_TYPE_APP_STATE_CHANGE,
+        RES_TYPE_WINDOW_FOCUS,
+        RES_TYPE_CLICK_RECOGNIZE,
+        RES_TYPE_PUSH_PAGE,
+        RTS_TYPE_SLIDE_RECOGNIZE,
+    };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
-    runner = AppExecFwk::EventRunner::Create("socperf_plugin_handler");
-    if (!runner) {
-        RESSCHED_LOGE("Failed to Create EventRunner");
-        return;
-    }
-    handler = std::make_shared<SocPerfPluginHandler>(runner);
     RESSCHED_LOGI("SocPerfPlugin::Init success");
 }
 
 void SocPerfPlugin::Disable()
 {
+    functionMap.clear();
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
     resTypes.clear();
-    std::lock_guard<std::mutex> autoLock(socperfPluginMutex_);
-    if (handler) {
-        handler->RemoveAllEvents();
-        handler = nullptr;
-    }
-    if (runner) {
-        runner->Stop();
-        runner = nullptr;
-    }
     RESSCHED_LOGI("SocPerfPlugin::Disable success");
 }
 
@@ -68,10 +81,57 @@ void SocPerfPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
     RESSCHED_LOGI("SocPerfPlugin::DispatchResource resType=%{public}u, value=%{public}lld",
         data->resType, data->value);
-    auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_SOC_PERF_PLUGIN_DISPATCH, data);
-    std::lock_guard<std::mutex> autoLock(socperfPluginMutex_);
-    if (handler) {
-        handler->SendEvent(event);
+    auto funcIter = functionMap.find(data->resType);
+    if (funcIter != functionMap.end()) {
+        auto function = funcIter->second;
+        if (function) {
+            function(data);
+        }
+    }
+}
+
+void SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
+{
+    if (data->value == static_cast<int32_t>(AppExecFwk::ApplicationState::APP_STATE_CREATE)) {
+        RESSCHED_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_COLD_START_FIRST, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_COLD_START_SECOND, "");
+    } else if (data->value == static_cast<int32_t>(AppExecFwk::ApplicationState::APP_STATE_FOREGROUND)) {
+        RESSCHED_LOGI("SocPerfPlugin: socperf->APP_WARM_START");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_WARM_START_FIRST, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_WARM_START_SECOND, "");
+    }
+}
+
+void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
+{
+    if (data->value == WINDOW_FOCUSED) {
+        RESSCHED_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH_FIRST, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH_SECOND, "");
+    }
+}
+
+void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
+{
+    RESSCHED_LOGI("SocPerfPlugin: socperf->CLICK_NORMAL");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
+}
+
+void SocPerfPlugin::HandlePushPage(const std::shared_ptr<ResData>& data)
+{
+    RESSCHED_LOGI("SocPerfPlugin: socperf->PUSH_PAGE");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_PUSH_PAGE, "");
+}
+
+void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
+{
+    RESSCHED_LOGI("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", data->value);
+    if (data->value == EVENT_ON) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, true, "");
+    } else if (data->value == EVENT_OFF) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER, "");
     }
 }
 
