@@ -17,9 +17,11 @@
 #define SOC_PERF_PLUGIN_H
 
 #include <set>
+#include <unordered_map>
 #include "plugin.h"
 #include "single_instance.h"
-#include "socperf_plugin_handler.h"
+#include "app_mgr_constants.h"
+#include "socperf_client.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -34,10 +36,13 @@ public:
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
 
 private:
-    std::shared_ptr<SocPerfPluginHandler> handler;
-    std::shared_ptr<AppExecFwk::EventRunner> runner;
     std::set<uint32_t> resTypes;
-    std::mutex socperfPluginMutex_;
+    std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
+    void HandleAppStateChange(const std::shared_ptr<ResData>& data);
+    void HandleWindowFocus(const std::shared_ptr<ResData>& data);
+    void HandleEventClick(const std::shared_ptr<ResData>& data);
+    void HandlePushPage(const std::shared_ptr<ResData>& data);
+    void HandleEventSlide(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
