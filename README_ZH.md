@@ -13,8 +13,6 @@
     - [配置约束](#配置约束)
   - [相关仓<a name="section1371113476307"></a>](#相关仓)
 
--   [相关仓](#section1371113476307)
-
 ## 简介<a name="section11660541593"></a>
 
 在资源调度子系统中，提供系统事件的感知以及分发，例如应用启动、退出、亮灭屏等。如果需要获取系统事件，并且进行相关资源调度，那么可以选择以插件形式加入资源调度服务中。
@@ -118,13 +116,7 @@
 |sp_xx|不同分组调度策略标识|
 
 ## 相关仓<a name="section1371113476307"></a>
-
-资源调度子系统
-
-**resource\_schedule\_service**
-
-safwk
-
-appexecfwk_standard
-
-ipc
+- [aafwk_standard](https://gitee.com/openharmony/aafwk_standard)
+- [windowmanager](https://gitee.com/openharmony/windowmanager)
+- [communication_ipc](https://gitee.com/openharmony/communication_ipc)
+- [hiviewdfx_hilog](https://gitee.com/openharmony/hiviewdfx_hilog)
