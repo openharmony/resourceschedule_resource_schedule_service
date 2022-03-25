@@ -13,8 +13,6 @@
     - [Restrictions](#restrictions)
   - [Repositories Involved<a name="section1371113476307"></a>](#repositories-involved)
 
--   [Repositories Involved](#section1371113476307)
-
 ## Introduction<a name="section11660541593"></a>
 
 In the resourceschedule subsystem, it provides the awareness and distribution of system events, such as application start, exit, screen on and off, etc.
@@ -123,12 +121,7 @@ Introduction to each config item：
 
 ## Repositories Involved<a name="section1371113476307"></a>
 
-Resource Schedule subsystem
-
-**resource\_schedule\_service**
-
-safwk
-
-appexecfwk_standard
-
-ipc
+- [aafwk_standard](https://gitee.com/openharmony/aafwk_standard)
+- [windowmanager](https://gitee.com/openharmony/windowmanager)
+- [communication_ipc](https://gitee.com/openharmony/communication_ipc)
+- [hiviewdfx_hilog](https://gitee.com/openharmony/hiviewdfx_hilog)
