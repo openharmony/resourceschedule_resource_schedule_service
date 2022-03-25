@@ -44,7 +44,6 @@ namespace {
 
 extern "C" void Back(int sig)
 {
-    RESSCHED_LOGE("PluginMgr::Exception happen!!!  sig is %{public}d !", sig);
     siglongjmp(env, 1);
 }
 
@@ -272,7 +271,7 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
     if (!sigsetjmp(env, 1)) {
         fun(resData);
     } else {
-        RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin Oops!!! %{public}s throw a Exception!", pluginLib.c_str());
+        return;
     }
     auto endTime = Clock::now();
     int costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
