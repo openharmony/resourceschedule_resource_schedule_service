@@ -39,7 +39,7 @@ namespace {
     const std::string PLUGIN_SWITCH_FILE_NAME = "/system/etc/ressched/res_sched_plugin_switch.xml";
     const std::string CONFIG_FILE_NAME = "/system/etc/ressched/res_sched_config.xml";
     static jmp_buf env;
-    const int SIG_ALL[] = {SIGHUP, SIGINT, SIGQUIT, SIGABRT, SIGBUS, SIGTERM};
+    const int SIG_ALL[] = {SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGBUS, SIGTERM};
 }
 
 extern "C" void Back(int sig)
