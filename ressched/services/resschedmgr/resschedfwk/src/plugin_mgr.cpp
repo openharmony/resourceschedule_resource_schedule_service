@@ -39,12 +39,11 @@ namespace {
     const std::string PLUGIN_SWITCH_FILE_NAME = "/system/etc/ressched/res_sched_plugin_switch.xml";
     const std::string CONFIG_FILE_NAME = "/system/etc/ressched/res_sched_config.xml";
     static jmp_buf env;
-    const int SIG_ALL[] = {SIGHUP, SIGINT, SIGQUIT, SIGABRT, SIGBUS, SIGTERM};
+    const int SIG_ALL[] = {SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGBUS, SIGTERM};
 }
 
 extern "C" void Back(int sig)
 {
-    RESSCHED_LOGE("PluginMgr::Exception happen!!!  sig is %{public}d !", sig);
     siglongjmp(env, 1);
 }
 
@@ -272,7 +271,7 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
     if (!sigsetjmp(env, 1)) {
         fun(resData);
     } else {
-        RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin Oops!!! %{public}s throw a Exception!", pluginLib.c_str());
+        return;
     }
     auto endTime = Clock::now();
     int costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
