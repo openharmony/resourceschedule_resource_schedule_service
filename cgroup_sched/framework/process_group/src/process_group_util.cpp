@@ -109,6 +109,7 @@ bool ReadFileToStringForVFS(const std::string& filePath, std::string& content)
         return false;
     }
     fin >> content;
+    fin.close();
     return true;
 }
 

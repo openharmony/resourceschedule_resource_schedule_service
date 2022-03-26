@@ -50,8 +50,8 @@ OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
 
 SchedController& SchedController::GetInstance()
 {
-    static auto instance = new SchedController();
-    return *instance;
+    static SchedController instance;
+    return instance;
 }
 
 void SchedController::Init()
@@ -156,7 +156,11 @@ bool SchedController::SubscribeAppState()
         CGS_LOGE("%{public}s app manager nullptr!", __func__);
         return false;
     }
-    appStateObserver_ = new RmsApplicationStateObserver();
+    appStateObserver_ = new (std::nothrow)RmsApplicationStateObserver();
+    if (!appStateObserver_) {
+        CGS_LOGE("%{public}s allocate app state observer failed!", __func__);
+        return false;
+    }
     int32_t err = appManager->RegisterApplicationStateObserver(appStateObserver_);
     if (err != 0) {
         CGS_LOGE("RegisterApplicationStateObserver failed. err:%{public}d", err);
@@ -218,12 +222,16 @@ void SchedController::UnsubscribeBackgroundTask()
 void SchedController::SubscribeWindowState()
 {
     if (!windowStateObserver_) {
-        windowStateObserver_ = new WindowStateObserver();
-        OHOS::Rosen::WindowManager::GetInstance().RegisterFocusChangedListener(windowStateObserver_);
+        windowStateObserver_ = new (std::nothrow)WindowStateObserver();
+        if (windowStateObserver_) {
+            OHOS::Rosen::WindowManager::GetInstance().RegisterFocusChangedListener(windowStateObserver_);
+        }
     }
     if (!windowVisibilityObserver_) {
-        windowVisibilityObserver_ = new WindowVisibilityObserver();
-        OHOS::Rosen::WindowManager::GetInstance().RegisterVisibilityChangedListener(windowVisibilityObserver_);
+        windowVisibilityObserver_ = new (std::nothrow)WindowVisibilityObserver();
+        if (windowVisibilityObserver_) {
+            OHOS::Rosen::WindowManager::GetInstance().RegisterVisibilityChangedListener(windowVisibilityObserver_);
+        }
     }
 }
 

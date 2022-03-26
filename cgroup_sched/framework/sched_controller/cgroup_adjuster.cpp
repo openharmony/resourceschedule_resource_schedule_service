@@ -58,7 +58,9 @@ void CgroupAdjuster::AdjustAllProcessGroup(Application &app, AdjustSource source
     auto pidsMap = app.GetPidsMap();
     for (auto iter = pidsMap.begin(); iter != pidsMap.end(); iter++) {
         auto pr = iter->second;
-        AdjustProcessGroup(app, *(pr.get()), source);
+        if (pr.get()) {
+            AdjustProcessGroup(app, *(pr.get()), source);
+        }
     }
 }
 

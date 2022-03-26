@@ -41,7 +41,7 @@ static bool CovertSchedPolicyStringToEnumType(char* policyStr, SchedPolicy* poli
 static void SetThreadSchedPolicyTest(int argc, char *argv[])
 {
     if (argc == ARGUMENT_NUMBER_THREE) {
-        int tid = std::atoi(argv[1]);
+        int tid = std::stoi(argv[1]);
         char* policyStr = argv[2];
         SchedPolicy policy;
         if (!CovertSchedPolicyStringToEnumType(policyStr, &policy)) {
@@ -56,7 +56,7 @@ static void SetThreadSchedPolicyTest(int argc, char *argv[])
 static void SetThreadGroupSchedPolicyTest(int argc, char *argv[])
 {
     if (argc == ARGUMENT_NUMBER_THREE) {
-        int pid = std::atoi(argv[1]);
+        int pid = std::stoi(argv[1]);
         char* policyStr = argv[2];
         SchedPolicy policy;
         if (!CovertSchedPolicyStringToEnumType(policyStr, &policy)) {
@@ -71,7 +71,7 @@ static void SetThreadGroupSchedPolicyTest(int argc, char *argv[])
 static void GetThreadSchedPolicyTest(int argc, char *argv[])
 {
     if (argc == ARGUMENT_NUMBER_TWO) {
-        int tid = std::atoi(argv[1]);
+        int tid = std::stoi(argv[1]);
         SchedPolicy policy;
         if (GetThreadSchedPolicy(tid, &policy) == 0) {
             std::cout << "Get the SolicyPolicy of thread tid = " << tid << " is " <<  policy << "\n";
@@ -82,7 +82,7 @@ static void GetThreadSchedPolicyTest(int argc, char *argv[])
 static void GetSchedPolicyShortenedNameTest(int argc, char *argv[])
 {
     if (argc == ARGUMENT_NUMBER_TWO) {
-        int policyNum = std::atoi(argv[1]);
+        int policyNum = std::stoi(argv[1]);
         if (policyNum < SP_DEFAULT || policyNum > SP_MAX) {
             return;
         }
@@ -95,7 +95,7 @@ static void GetSchedPolicyShortenedNameTest(int argc, char *argv[])
 static void GetSchedPolicyFullNameTest(int argc, char *argv[])
 {
     if (argc == ARGUMENT_NUMBER_TWO) {
-        int policyNum = std::atoi(argv[1]);
+        int policyNum = std::stoi(argv[1]);
         if (policyNum < SP_DEFAULT || policyNum > SP_MAX) {
             return;
         }
