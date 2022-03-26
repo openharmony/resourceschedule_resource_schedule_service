@@ -27,8 +27,8 @@ namespace {
 
 ResSchedUtils& ResSchedUtils::GetInstance()
 {
-    static auto instance = new ResSchedUtils();
-    return *instance;
+    static ResSchedUtils instance;
+    return instance;
 }
 
 void ResSchedUtils::LoadUtils()
