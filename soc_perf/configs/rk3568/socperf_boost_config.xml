@@ -36,10 +36,10 @@
     </cmd>
     <cmd id="10008" name="list_fling">
         <duration>5000</duration>
-        <lit_cpu_min_freq>1608000</lit_cpu_min_freq>
+        <lit_cpu_min_freq>1992000</lit_cpu_min_freq>
     </cmd>
     <cmd id="10009" name="slide_normal">
-        <duration>280</duration>
-        <lit_cpu_min_freq>1608000</lit_cpu_min_freq>
+        <duration>5000</duration>
+        <lit_cpu_min_freq>1992000</lit_cpu_min_freq>
     </cmd>
 </Configs>
