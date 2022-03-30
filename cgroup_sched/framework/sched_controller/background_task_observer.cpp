@@ -45,8 +45,12 @@ void BackgroundTaskObserver::OnTransientTaskStart(const std::shared_ptr<Transien
     /* class TransientTaskAppInfo {std::string& GetPackageName(); int32_t GetUid(); int32_t GetPid();} */
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander) {
-        cgHander->PostTask([cgHander, info] {
-            cgHander->HandleTransientTaskStart(info->GetUid(), info->GetPid(), info->GetPackageName());
+        auto uid = info->GetUid();
+        auto pid = info->GetPid();
+        auto pkgName = info->GetPackageName();
+
+        cgHander->PostTask([cgHander, uid, pid, pkgName] {
+            cgHander->HandleTransientTaskStart(uid, pid, pkgName);
         });
     }
 
@@ -65,8 +69,12 @@ void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientT
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander) {
-        cgHander->PostTask([cgHander, info] {
-            cgHander->HandleTransientTaskEnd(info->GetUid(), info->GetPid(), info->GetPackageName());
+        auto uid = info->GetUid();
+        auto pid = info->GetPid();
+        auto pkgName = info->GetPackageName();
+
+        cgHander->PostTask([cgHander, uid, pid, pkgName] {
+            cgHander->HandleTransientTaskEnd(uid, pid, pkgName);
         });
     }
 
@@ -86,10 +94,12 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander) {
-        cgHander->PostTask([cgHander, continuousTaskCallbackInfo] {
-            cgHander->HandleContinuousTaskStart(continuousTaskCallbackInfo->GetCreatorUid(),
-                continuousTaskCallbackInfo->GetCreatorPid(),
-                continuousTaskCallbackInfo->GetAbilityName());
+        auto uid = continuousTaskCallbackInfo->GetCreatorUid();
+        auto pid = continuousTaskCallbackInfo->GetCreatorPid();
+        auto abilityName = continuousTaskCallbackInfo->GetAbilityName();
+
+        cgHander->PostTask([cgHander, uid, pid, abilityName] {
+            cgHander->HandleContinuousTaskStart(uid, pid, abilityName);
         });
     }
 
@@ -109,10 +119,12 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander) {
-        cgHander->PostTask([cgHander, continuousTaskCallbackInfo] {
-            cgHander->HandleContinuousTaskCancel(continuousTaskCallbackInfo->GetCreatorUid(),
-                continuousTaskCallbackInfo->GetCreatorPid(),
-                continuousTaskCallbackInfo->GetAbilityName());
+        auto uid = continuousTaskCallbackInfo->GetCreatorUid();
+        auto pid = continuousTaskCallbackInfo->GetCreatorPid();
+        auto abilityName = continuousTaskCallbackInfo->GetAbilityName();
+
+        cgHander->PostTask([cgHander, uid, pid, abilityName] {
+            cgHander->HandleContinuousTaskCancel(uid, pid, abilityName);
         });
     }
 
