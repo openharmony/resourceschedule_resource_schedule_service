@@ -36,9 +36,12 @@ void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateD
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander) {
-        cgHander->PostTask([cgHander, appStateData] {
-            cgHander->HandleForegroundApplicationChanged(appStateData.uid, appStateData.bundleName,
-                appStateData.state);
+        auto uid = appStateData.uid;
+        auto bundleName = appStateData.bundleName;
+        auto state = appStateData.state;
+
+        cgHander->PostTask([cgHander, uid, bundleName, state] {
+            cgHander->HandleForegroundApplicationChanged(uid, bundleName, state);
         });
     }
 
@@ -56,11 +59,17 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander) {
-        cgHander->PostTask([cgHander, abilityStateData] {
-            cgHander->HandleAbilityStateChanged(abilityStateData.uid, abilityStateData.pid,
-                abilityStateData.bundleName, abilityStateData.abilityName,
-                reinterpret_cast<uint64_t>(abilityStateData.token.GetRefPtr()), abilityStateData.abilityState,
-                abilityStateData.abilityType);
+        auto uid = abilityStateData.uid;
+        auto pid = abilityStateData.pid;
+        auto bundleName = abilityStateData.bundleName;
+        auto abilityName = abilityStateData.abilityName;
+        auto token = reinterpret_cast<uint64_t>(abilityStateData.token.GetRefPtr());
+        auto abilityState = abilityStateData.abilityState;
+        auto abilityType = abilityStateData.abilityType;
+
+        cgHander->PostTask([cgHander, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
+            cgHander->HandleAbilityStateChanged(uid, pid, bundleName, abilityName,
+                token, abilityState, abilityType);
         });
     }
 
@@ -80,11 +89,17 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander) {
-        cgHander->PostTask([cgHander, abilityStateData] {
-            cgHander->HandleExtensionStateChanged(abilityStateData.uid, abilityStateData.pid,
-                abilityStateData.bundleName, abilityStateData.abilityName,
-                reinterpret_cast<uint64_t>(abilityStateData.token.GetRefPtr()), abilityStateData.abilityState,
-                abilityStateData.abilityType);
+        auto uid = abilityStateData.uid;
+        auto pid = abilityStateData.pid;
+        auto bundleName = abilityStateData.bundleName;
+        auto abilityName = abilityStateData.abilityName;
+        auto token = reinterpret_cast<uint64_t>(abilityStateData.token.GetRefPtr());
+        auto abilityState = abilityStateData.abilityState;
+        auto abilityType = abilityStateData.abilityType;
+
+        cgHander->PostTask([cgHander, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
+            cgHander->HandleExtensionStateChanged(uid, pid, bundleName, abilityName,
+                token, abilityState, abilityType);
         });
     }
 
@@ -104,8 +119,12 @@ void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processDat
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander) {
-        cgHander->PostTask([cgHander, processData] {
-            cgHander->HandleProcessCreated(processData.uid, processData.pid, processData.bundleName);
+        auto uid = processData.uid;
+        auto pid = processData.pid;
+        auto bundleName = processData.bundleName;
+
+        cgHander->PostTask([cgHander, uid, pid, bundleName] {
+            cgHander->HandleProcessCreated(uid, pid, bundleName);
         });
     }
 
@@ -124,8 +143,12 @@ void RmsApplicationStateObserver::OnProcessDied(const ProcessData &processData)
     }
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander) {
-        cgHander->PostTask([cgHander, processData] {
-            cgHander->HandleProcessDied(processData.uid, processData.pid, processData.bundleName);
+        auto uid = processData.uid;
+        auto pid = processData.pid;
+        auto bundleName = processData.bundleName;
+
+        cgHander->PostTask([cgHander, uid, pid, bundleName] {
+            cgHander->HandleProcessDied(uid, pid, bundleName);
         });
     }
 
@@ -145,9 +168,12 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
 
     auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHander) {
-        cgHander->PostTask([cgHander, appStateData] {
-            cgHander->HandleApplicationStateChanged(appStateData.uid, appStateData.bundleName,
-                appStateData.state);
+        auto uid = appStateData.uid;
+        auto bundleName = appStateData.bundleName;
+        auto state = appStateData.state;
+
+        cgHander->PostTask([cgHander, uid, bundleName, state] {
+            cgHander->HandleApplicationStateChanged(uid, bundleName, state);
         });
     }
 
