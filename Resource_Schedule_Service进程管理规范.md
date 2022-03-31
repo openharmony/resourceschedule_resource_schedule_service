@@ -173,7 +173,7 @@ payload: {
 
 “uid”: 1000,
 
-“bundleName”: “com.huawei.launcher”
+“bundleName”: “xxxxx”
 
 }
 
