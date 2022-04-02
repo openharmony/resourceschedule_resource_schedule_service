@@ -80,7 +80,7 @@ void SocPerfPlugin::Disable()
 void SocPerfPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
     RESSCHED_LOGI("SocPerfPlugin::DispatchResource resType=%{public}u, value=%{public}lld",
-        data->resType, data->value);
+        data->resType, (long long)data->value);
     auto funcIter = functionMap.find(data->resType);
     if (funcIter != functionMap.end()) {
         auto function = funcIter->second;
@@ -126,7 +126,7 @@ void SocPerfPlugin::HandlePushPage(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", data->value);
+    RESSCHED_LOGI("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
     if (data->value == EVENT_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, true, "");
     } else if (data->value == EVENT_OFF) {

@@ -45,7 +45,7 @@ CgroupEventHandler::~CgroupEventHandler()
 void CgroupEventHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event)
 {
     CGS_LOGD("%{public}s : eventId:%{public}d param:%{public}llu",
-        __func__, event->GetInnerEventId(), event->GetParam());
+        __func__, event->GetInnerEventId(), (unsigned long long)event->GetParam());
     switch (event->GetInnerEventId()) {
         case EVENT_ID_REG_APP_STATE_OBSERVER: {
                 int64_t retry = event->GetParam();
@@ -332,7 +332,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uint64_t ability
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}llu, %{public}d, %{public}d",
-        __func__, windowId, windowType, displayId, pid, uid);
+        __func__, windowId, windowType, (unsigned long long)displayId, pid, uid);
     if (!abilityToken) {
         CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
     }
@@ -383,7 +383,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uint64_t abili
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}llu, %{public}d, %{public}d",
-        __func__, windowId, windowType, displayId, pid, uid);
+        __func__, windowId, windowType, (unsigned long long)displayId, pid, uid);
     if (!abilityToken) {
         CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
     }
