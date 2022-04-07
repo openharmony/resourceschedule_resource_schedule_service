@@ -14,15 +14,11 @@
 import("//build/ohos.gni")
 import("//build/ohos/sa_profile/sa_profile.gni")
 
-##################################################
 ohos_sa_profile("socperf_sa_profile") {
   sources = [ "sa_profile/1906.xml" ]
   part_name = "soc_perf"
 }
 
-##################################################
-
-##################################################
 ohos_prebuilt_etc("socperf_resource_config") {
   if (device_name == "rk3568") {
     source = "configs/rk3568/socperf_resource_config.xml"
@@ -80,19 +76,6 @@ group("socperf_config") {
   ]
 }
 
-##################################################
-
-##################################################
-ohos_prebuilt_etc("socperf_service_init") {
-  source = "init/socperf_service.cfg"
-  relative_install_dir = "init"
-  part_name = "soc_perf"
-  subsystem_name = "resourceschedule"
-}
-
-##################################################
-
-##################################################
 ohos_shared_library("socperf_server") {
   sources = [
     "src/core/socperf.cpp",
@@ -118,9 +101,6 @@ ohos_shared_library("socperf_server") {
   subsystem_name = "resourceschedule"
 }
 
-##################################################
-
-##################################################
 config("socperf_client_public_config") {
   include_dirs = [
     "include",
@@ -149,9 +129,6 @@ ohos_shared_library("socperf_client") {
   subsystem_name = "resourceschedule"
 }
 
-##################################################
-
-##################################################
 ohos_executable("socperf_test") {
   sources = [ "test/socperf_test.cpp" ]
   include_dirs = [
@@ -170,4 +147,3 @@ ohos_executable("socperf_test") {
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
 }
-##################################################

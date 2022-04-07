@@ -14,7 +14,7 @@
  * limitations under the License.
  -->
 <info>
-    <process>socperf_service</process>
+    <process>resource_schedule_service</process>
     <systemability>
         <name>1906</name>
         <libpath>libsocperf_server.z.so</libpath>
