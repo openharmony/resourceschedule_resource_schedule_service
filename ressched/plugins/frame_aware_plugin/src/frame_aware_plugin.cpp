@@ -53,7 +53,8 @@ void FrameAwarePlugin::Disable()
 
 void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("FrameAwarePlugin:DispatchResource type:%{public}u, value:%{public}lld", data->resType, data->value);
+    RESSCHED_LOGI("FrameAwarePlugin:DispatchResource type:%{public}u, value:%{public}lld",
+                  data->resType, (long long)data->value);
     Json::Value payload = data->payload;
     int pid = INIT_VAL;
     switch (data->resType) {
