@@ -114,8 +114,7 @@ int SchedController::GetProcessGroup(pid_t pid)
 
 void SchedController::ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status)
 {
-    CGS_LOGD("%{public}s sdId:%{public}d, device:%{public}s, status:%{public}d",
-        __func__, saId, deviceId.c_str(), status);
+    CGS_LOGD("%{public}s sdId:%{public}d, status:%{public}d", __func__, saId, status);
     auto handler = this->cgHandler_;
     if (!handler) {
         return;
