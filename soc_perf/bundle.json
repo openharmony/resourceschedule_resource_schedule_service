@@ -37,7 +37,6 @@
         "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_client",
         "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_server",
         "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_sa_profile",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_service_init",
         "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_config",
         "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_test"
       ],
