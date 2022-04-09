@@ -21,7 +21,11 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
+#ifdef __aarch64__
+    const std::string RES_SCHED_CLIENT_SO = "/system/lib64/libressched_client.z.so";
+#else
     const std::string RES_SCHED_CLIENT_SO = "/system/lib/libressched_client.z.so";
+#endif
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "ResSchedUtils"};
 }
 
