@@ -11,6 +11,9 @@
     - [基础分组策略](#基础分组策略)
     - [策略配置](#策略配置)
     - [配置约束](#配置约束)
+  - [统一调频](#统一调频)
+    - [调频接口说明](#调频接口说明)
+    - [调频配置说明](#调频配置说明)
   - [相关仓<a name="section1371113476307"></a>](#相关仓)
 
 ## 简介<a name="section11660541593"></a>
@@ -36,18 +39,29 @@
 |   │   └── innerkits
 |   └── profiles
 └── ressched
-    ├── common                     # 公共头文件
-    ├── interfaces
-    │   └── innerkits              # 对外接口目录
-    │       └── ressched_client    # 外部同步事件通知接口
-    ├── plugins                    # 插件代码实现
-    ├── profile                    # 插件开关以及私有配置
-    ├── sa_profile                 # 系统元能力配置
-    └── services 
-        ├── resschedmgr
-        │   ├── pluginbase         # 插件结构定义
-        │   └── resschedfwk        # 资源调度服务框架实现
-        └── resschedservice        # 资源调度服务层
+|   ├── common                     # 公共头文件
+|   ├── interfaces
+|   │   └── innerkits              # 对外接口目录
+|   │       └── ressched_client    # 外部同步事件通知接口
+|   ├── plugins                    # 插件代码实现
+|   ├── profile                    # 插件开关以及私有配置
+|   ├── sa_profile                 # 系统元能力配置
+|   └── services
+|       ├── resschedmgr
+|       │   ├── pluginbase         # 插件结构定义
+|       │   └── resschedfwk        # 资源调度服务框架实现
+|       └── resschedservice        # 资源调度服务层
+└── soc_perf
+    ├── configs                     # 调频配置文件
+    ├── include
+    |       ├── client              # SocPerf客户端头文件
+    |       ├── server              # SocPerf服务端头文件
+    |       └── server              # SocPerf核心逻辑代码头文件
+    ├── src
+    |    ├── client                 # SocPerf客户端代码，给调用者使用的接口
+    |    ├── server                 # SocPerf服务器代码，用于接受客户端发送的调频请求
+    |    └── server                 # SocPerf核心业务逻辑代码，仲裁并生效最终的调频结果
+    └── sa_profile                  # 系统元能力配置
 
 ```
 ## 如何编写一个插件<a name="section1312121216216"></a>
@@ -114,6 +128,42 @@
 |path|cgroup分组对应的路径|
 |sched_policy|不同分组调度策略对应到的具体分组|
 |sp_xx|不同分组调度策略标识|
+
+## 统一调频
+
+### 调频接口说明
+
+当前可支持的调频接口说明
+
+| 接口  | 说明  |
+|----------|-------|
+| PerfRequest(int cmdId, const std::string& msg) | 用于性能提频使用 |
+| PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg) | 用于性能提频使用且支持ON/OFF事件 |
+| PowerRequest(int cmdId, const std::string& msg) | 用于功耗限频使用 |
+| PowerRequestEx(int cmdId, bool onOffTag, const std::string& msg) | 用于功耗限频使用且支持ON/OFF事件 |
+| PowerLimitBoost(bool onOffTag, const std::string& msg) | 用于限制boost无法突破功耗限频 |
+| ThermalRequest(int cmdId, const std::string& msg) | 用于热限频使用  |
+| ThermalRequestEx(int cmdId, bool onOffTag, const std::string& msg) | 用于热限频使用且支持ON  |
+| ThermalLimitBoost(bool onOffTag, const std::string& msg) | 用于限制boost无法突破热限频 |
+
+如表格所示，所有的调频接口都以cmdID为核心，将调频场景和调频参数互相关联，实现提频或者限频的功能。
+带onOffTag参数的接口表示该接口支持ON/OFF的开关调频模式，一般用于生效时间不固定的长期调频事件，需要调用者手动开启或者关闭。
+msg参数为拓展字符串信息，可承载例如调用客户端pid/tid等信息。
+
+### 调频配置说明
+
+当前configs目录下的配置文件
+
+| 配置文件  | 说明  |
+|----------|-------|
+| socperf_resource_config.xml | 定义产品可支持的资源配置，例如CPU/GPU/DDR/NPU等 |
+| socperf_boost_config.xml | 用于性能提频的配置文件 |
+| socperf_resource_config.xml | 用于功耗限频的配置文件 |
+| socperf_thermal_config.xml | 用于热限频的配置文件 |
+
+各个xml配置文件都需要按产品定制，不同产品的配置不相同
+对于指定的某产品，所有可支持配置的资源都定义在socperf_resource_config.xml内，支持单路径/多路径配置，任何资源都有唯一的resID
+socperf_boost_config.xml、socperf_resource_config.xml、socperf_thermal_config.xml使用的cmdID不能重复
 
 ## 相关仓<a name="section1371113476307"></a>
 - [aafwk_standard](https://gitee.com/openharmony/aafwk_standard)

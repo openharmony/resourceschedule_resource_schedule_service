@@ -11,6 +11,9 @@
     - [Basic Policy](#basic-policy)
     - [Policy Configuration](#policy-configuration)
     - [Restrictions](#restrictions)
+  - [SocPerf](#socperf)
+    - [Interfaces](#interfaces)
+    - [Configs](#configs)
   - [Repositories Involved<a name="section1371113476307"></a>](#repositories-involved)
 
 ## Introduction<a name="section11660541593"></a>
@@ -37,18 +40,29 @@ In resource schedule subsystem, the module of cgroup schedule decides the group 
 |   │   └── innerkits
 |   └── profiles
 └── ressched
-    ├── common                     # Common header file
-    ├── interfaces
-    │   └── innerkits              # Interface APIs
-    │       └── ressched_client    # Report data in process
-    ├── plugins                    # Plugin code
-    ├── profile                    # Plugin switch xml and plugin private xml
-    ├── sa_profile                 # System ability xml
-    └── services 
-        ├── resschedmgr
-        │   ├── pluginbase         # Plugin struct definition
-        │   └── resschedfwk        # Resource schedule framework
-        └── resschedservice        # Resource schedule service
+|   ├── common                     # Common header file
+|   ├── interfaces
+|   │   └── innerkits              # Interface APIs
+|   │       └── ressched_client    # Report data in process
+|   ├── plugins                    # Plugin code
+|   ├── profile                    # Plugin switch xml and plugin private xml
+|   ├── sa_profile                 # System ability xml
+|   └── services
+|       ├── resschedmgr
+|       │   ├── pluginbase         # Plugin struct definition
+|       │   └── resschedfwk        # Resource schedule framework
+|       └── resschedservice        # Resource schedule service
+└── soc_perf
+    ├── configs                     # socperf config file
+    ├── include
+    |       ├── client              # socperf client header files
+    |       ├── server              # socperf server header files
+    |       └── server              # socperf core code header files
+    ├── src
+    |    ├── client                 # socperf Client interfaces
+    |    ├── server                 # socperf Server codes
+    |    └── server                 # core code, arbitrate and take effects
+    └── sa_profile                  # System ability xml
 
 ```
 ## How to write a plugin<a name="section1312121216216"></a>
@@ -118,6 +132,43 @@ Introduction to each config item：
 |path|Absolute path of current cgroup|
 |sched_policy|Binding between each schedule policy and cgroup|
 |sp_xx|Different kinds of schedule policy|
+
+## SocPerf
+
+### Interfaces
+
+Supported SocPerf interfaces description
+
+| Interface  | Description  |
+|----------|-------|
+| PerfRequest(int cmdId, const std::string& msg) | Used for Performace boost freq |
+| PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg) | Used for Performace boost freq and support ON/OFF |
+| PowerRequest(int cmdId, const std::string& msg) | Used for Power limit freq |
+| PowerRequestEx(int cmdId, bool onOffTag, const std::string& msg) | Used for Power limit freq and support ON/OFF |
+| PowerLimitBoost(bool onOffTag, const std::string& msg) | Used for Power limit freq which cannot be boosted |
+| ThermalRequest(int cmdId, const std::string& msg) | Used for Thermal limit freq  |
+| ThermalRequestEx(int cmdId, bool onOffTag, const std::string& msg) | Used for Thermal limit freq and support ON/OFF  |
+| ThermalLimitBoost(bool onOffTag, const std::string& msg) | Used for Thermal limit freq which cannot be boosted |
+
+All interfaces are based on the key parameter cmdID, cmdID connects scenes and configs, which is used to boost freq or limit freq.
+Interface with parameter onOffTag means it support ON/OFF event. Normally, these interfaces are used for long-term event,
+which needs user to turn on or turn off manually.
+Parameter msg is used for extra information, like client's pid and tid.
+
+### Configs
+
+Config files description
+
+| File  | Description  |
+|----------|-------|
+| socperf_resource_config.xml | Define resource which can be modify，such as CPU/GPU/DDR/NPU |
+| socperf_boost_config.xml | Config file used for Performace boost |
+| socperf_resource_config.xml | Config file used for Power limit |
+| socperf_thermal_config.xml | Config file used for Thermal limit |
+
+All xml files are different for particular products.
+For specific product, all resources which could be modify are defined in socperf_resource_config.xml. Each resource has its own resID.
+The cmdID in the socperf_boost_config.xml/socperf_resource_config.xml/socperf_thermal_config.xml must be different.
 
 ## Repositories Involved<a name="section1371113476307"></a>
 
