@@ -14,14 +14,26 @@
 import("//build/ohos.gni")
 
 ohos_prebuilt_etc("ressched_plugin_config") {
-  source = "res_sched_config.xml"
+  if (device_name == "rk3568") {
+    source = "rk3568/res_sched_config.xml"
+    install_enable = true
+  } else {
+    source = "others/res_sched_config.xml"
+    install_enable = false
+  }
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
   module_install_dir = "etc/ressched"
 }
 
 ohos_prebuilt_etc("ressched_plugin_switch") {
-  source = "res_sched_plugin_switch.xml"
+  if (device_name == "rk3568") {
+    source = "rk3568/res_sched_plugin_switch.xml"
+    install_enable = true
+  } else {
+    source = "others/res_sched_plugin_switch.xml"
+    install_enable = false
+  }
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
   module_install_dir = "etc/ressched"
