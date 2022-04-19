@@ -65,6 +65,5 @@ extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const Json:
         resType, (long long)value);
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS
