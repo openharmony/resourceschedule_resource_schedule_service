@@ -14,6 +14,7 @@
  */
 
 #include "res_sched_mgr.h"
+#include "res_sched_log.h"
 #include "plugin_mgr.h"
 
 namespace OHOS {
@@ -56,6 +57,13 @@ void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const Json::Value&
     mainHandler_->PostTask([resType, value, payload] {
         PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
     });
+}
+
+extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
+{
+    RESSCHED_LOGI("ResSchedMgr::ReportDataInProcess receive resType = %{public}u, value = %{public}lld.",
+        resType, (long long)value);
+    ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

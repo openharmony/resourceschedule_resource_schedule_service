@@ -22,9 +22,9 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
 #ifdef __aarch64__
-    const std::string RES_SCHED_CLIENT_SO = "/system/lib64/libressched_client.z.so";
+    const std::string RES_SCHED_SERVICE_SO = "/system/lib64/libresschedsvc.z.so";
 #else
-    const std::string RES_SCHED_CLIENT_SO = "/system/lib/libressched_client.z.so";
+    const std::string RES_SCHED_SERVICE_SO = "/system/lib/libresschedsvc.z.so";
 #endif
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "ResSchedUtils"};
 }
@@ -37,9 +37,9 @@ ResSchedUtils& ResSchedUtils::GetInstance()
 
 void ResSchedUtils::LoadUtils()
 {
-    auto handle = dlopen(RES_SCHED_CLIENT_SO.c_str(), RTLD_NOW);
+    auto handle = dlopen(RES_SCHED_SERVICE_SO.c_str(), RTLD_NOW);
     if (!handle) {
-        CGS_LOGE("%{public}s load %{public}s failed!", __func__, RES_SCHED_CLIENT_SO.c_str());
+        CGS_LOGE("%{public}s load %{public}s failed!", __func__, RES_SCHED_SERVICE_SO.c_str());
         return;
     }
 

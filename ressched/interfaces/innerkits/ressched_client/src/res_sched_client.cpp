@@ -17,7 +17,6 @@
 #include "iservice_registry.h"
 #include "res_sched_log.h"
 #include "res_sched_errors.h"
-#include "res_sched_mgr.h"
 #include "system_ability_definition.h"
 
 namespace OHOS {
@@ -26,13 +25,6 @@ ResSchedClient& ResSchedClient::GetInstance()
 {
     static ResSchedClient instance;
     return instance;
-}
-
-void ResSchedClient::ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
-{
-    RESSCHED_LOGI("ResSchedClient::ReportDataInProcess receive resType = %{public}u, value = %{public}lld.",
-        resType, (long long)value);
-    ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 
 void ResSchedClient::ReportData(uint32_t resType, int64_t value,
@@ -102,11 +94,6 @@ ResSchedClient::ResSchedDeathRecipient::~ResSchedDeathRecipient() {}
 void ResSchedClient::ResSchedDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
 {
     resSchedClient_.StopRemoteObject();
-}
-
-extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
-{
-    ResSchedClient::GetInstance().ReportDataInProcess(resType, value, payload);
 }
 
 extern "C" void ReportData(uint32_t resType, int64_t value,
