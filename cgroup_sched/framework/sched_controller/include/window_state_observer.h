@@ -25,9 +25,12 @@ namespace OHOS {
 namespace ResourceSchedule {
 using OHOS::Rosen::IFocusChangedListener;
 using OHOS::Rosen::IVisibilityChangedListener;
+using OHOS::Rosen::IWindowUpdateListener;
 using OHOS::Rosen::WindowType;
 using OHOS::Rosen::FocusChangeInfo;
 using OHOS::Rosen::WindowVisibilityInfo;
+using OHOS::Rosen::AccessibilityWindowInfo;
+using OHOS::Rosen::WindowUpdateType;
 
 class WindowStateObserver : public IFocusChangedListener {
 public:
@@ -38,6 +41,11 @@ public:
 class WindowVisibilityObserver : public IVisibilityChangedListener {
 public:
     void OnWindowVisibilityChanged(const std::vector<sptr<WindowVisibilityInfo>>& windowVisibilityInfo) override;
+};
+
+class WindowUpdateStateObserver : public IWindowUpdateListener {
+public:
+    void OnWindowUpdate(const sptr<AccessibilityWindowInfo>& windowInfo, WindowUpdateType type) override;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

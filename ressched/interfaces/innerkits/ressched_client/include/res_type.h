@@ -45,7 +45,11 @@ enum : uint32_t {
     // ace pipeline_context.cpp::PushPage(); value means nothing
     RES_TYPE_PUSH_PAGE,
     // ace slide event recognize; value 1: slide on; 0: slide off
-    RTS_TYPE_SLIDE_RECOGNIZE,
+    RES_TYPE_SLIDE_RECOGNIZE,
+    // window visibility change, value 1: isVisible, 0: not isVisible, payload:pid,uid,windowId
+    RES_TYPE_WINDOW_VISIBILITY_CHANGE,
+    // window update state change; value means WindowUpdateType; payload:currentWindowType
+    RES_TYPE_WINDOW_UPDATE_STATE_CHANGE
 };
 } // namespace ResType
 } // namespace ResourceSchedule
