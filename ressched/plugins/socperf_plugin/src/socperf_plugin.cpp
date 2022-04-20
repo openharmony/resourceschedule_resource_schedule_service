@@ -51,7 +51,7 @@ void SocPerfPlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleEventClick(data); } },
         { RES_TYPE_PUSH_PAGE,
             [this](const std::shared_ptr<ResData>& data) { HandlePushPage(data); } },
-        { RTS_TYPE_SLIDE_RECOGNIZE,
+        { RES_TYPE_SLIDE_RECOGNIZE,
             [this](const std::shared_ptr<ResData>& data) { HandleEventSlide(data); } },
     };
     resTypes = {
@@ -59,7 +59,7 @@ void SocPerfPlugin::Init()
         RES_TYPE_WINDOW_FOCUS,
         RES_TYPE_CLICK_RECOGNIZE,
         RES_TYPE_PUSH_PAGE,
-        RTS_TYPE_SLIDE_RECOGNIZE,
+        RES_TYPE_SLIDE_RECOGNIZE,
     };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);

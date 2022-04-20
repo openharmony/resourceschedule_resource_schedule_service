@@ -232,6 +232,12 @@ void SchedController::SubscribeWindowState()
             OHOS::Rosen::WindowManager::GetInstance().RegisterVisibilityChangedListener(windowVisibilityObserver_);
         }
     }
+    if (!windowUpdateStateObserver_) {
+        windowUpdateStateObserver_ = new (std::nothrow)WindowUpdateStateObserver();
+        if (windowUpdateStateObserver_) {
+            OHOS::Rosen::WindowManager::GetInstance().RegisterWindowUpdateListener(windowUpdateStateObserver_);
+        }
+    }
 }
 
 void SchedController::UnsubscribeWindowState()
@@ -245,6 +251,11 @@ void SchedController::UnsubscribeWindowState()
     if (windowVisibilityObserver_) {
         OHOS::Rosen::WindowManager::GetInstance().UnregisterVisibilityChangedListener(windowVisibilityObserver_);
         windowVisibilityObserver_ = nullptr;
+    }
+
+    if (windowUpdateStateObserver_) {
+        OHOS::Rosen::WindowManager::GetInstance().UnregisterWindowUpdateListener(windowUpdateStateObserver_);
+        windowUpdateStateObserver_ = nullptr;
     }
 }
 

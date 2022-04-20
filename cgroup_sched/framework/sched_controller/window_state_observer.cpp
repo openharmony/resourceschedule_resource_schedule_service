@@ -19,6 +19,7 @@
 #include "cgroup_event_handler.h"
 #include "res_type.h"
 #include "sched_controller.h"
+#include "ressched_utils.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -74,7 +75,22 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
         cgHander->PostTask([cgHander, windowId, isVisible, pid, uid] {
             cgHander->HandleWindowVisibilityChanged(windowId, isVisible, pid, uid);
         });
+        Json::Value payload;
+        payload["pid"] = pid;
+        payload["uid"] = uid;
+        payload["windowId"] = windowId;
+        ResSchedUtils::GetInstance().ReportDataInProcess(
+            ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE, isVisible ? 1 : 0, payload);
     }
+}
+
+void WindowUpdateStateObserver::OnWindowUpdate(
+    const sptr<AccessibilityWindowInfo>& windowInfo, WindowUpdateType type)
+{
+    Json::Value payload;
+    payload["currentWindowType"] = (int32_t)windowInfo->currentWindowInfo_->type_;
+    ResSchedUtils::GetInstance().ReportDataInProcess(
+        ResType::RES_TYPE_WINDOW_UPDATE_STATE_CHANGE, (int64_t)type, payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

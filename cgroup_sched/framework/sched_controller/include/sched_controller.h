@@ -77,6 +77,7 @@ private:
     std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_;
     sptr<WindowStateObserver> windowStateObserver_;
     sptr<WindowVisibilityObserver> windowVisibilityObserver_;
+    sptr<WindowUpdateStateObserver> windowUpdateStateObserver_;
 
     inline void InitCgroupHandler();
     inline void InitCgroupAdjuster();
