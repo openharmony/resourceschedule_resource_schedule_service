@@ -34,14 +34,14 @@ void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateD
         CGS_LOGE("%{public}s : validate app state data failed!", __func__);
         return;
     }
-    auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander) {
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler) {
         auto uid = appStateData.uid;
         auto bundleName = appStateData.bundleName;
         auto state = appStateData.state;
 
-        cgHander->PostTask([cgHander, uid, bundleName, state] {
-            cgHander->HandleForegroundApplicationChanged(uid, bundleName, state);
+        cgHandler->PostTask([cgHandler, uid, bundleName, state] {
+            cgHandler->HandleForegroundApplicationChanged(uid, bundleName, state);
         });
     }
 
@@ -57,8 +57,8 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         CGS_LOGE("%{public}s : validate ability state data failed!", __func__);
         return;
     }
-    auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander) {
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler) {
         auto uid = abilityStateData.uid;
         auto pid = abilityStateData.pid;
         auto bundleName = abilityStateData.bundleName;
@@ -67,8 +67,8 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         auto abilityState = abilityStateData.abilityState;
         auto abilityType = abilityStateData.abilityType;
 
-        cgHander->PostTask([cgHander, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
-            cgHander->HandleAbilityStateChanged(uid, pid, bundleName, abilityName,
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
+            cgHandler->HandleAbilityStateChanged(uid, pid, bundleName, abilityName,
                 token, abilityState, abilityType);
         });
     }
@@ -87,8 +87,8 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
         CGS_LOGE("%{public}s : validate extension state data failed!", __func__);
         return;
     }
-    auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander) {
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler) {
         auto uid = abilityStateData.uid;
         auto pid = abilityStateData.pid;
         auto bundleName = abilityStateData.bundleName;
@@ -97,8 +97,8 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
         auto abilityState = abilityStateData.abilityState;
         auto abilityType = abilityStateData.abilityType;
 
-        cgHander->PostTask([cgHander, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
-            cgHander->HandleExtensionStateChanged(uid, pid, bundleName, abilityName,
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
+            cgHandler->HandleExtensionStateChanged(uid, pid, bundleName, abilityName,
                 token, abilityState, abilityType);
         });
     }
@@ -117,14 +117,14 @@ void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processDat
         CGS_LOGE("%{public}s : validate process data failed!", __func__);
         return;
     }
-    auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander) {
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler) {
         auto uid = processData.uid;
         auto pid = processData.pid;
         auto bundleName = processData.bundleName;
 
-        cgHander->PostTask([cgHander, uid, pid, bundleName] {
-            cgHander->HandleProcessCreated(uid, pid, bundleName);
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName] {
+            cgHandler->HandleProcessCreated(uid, pid, bundleName);
         });
     }
 
@@ -141,14 +141,14 @@ void RmsApplicationStateObserver::OnProcessDied(const ProcessData &processData)
         CGS_LOGE("%{public}s : validate process data failed!", __func__);
         return;
     }
-    auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander) {
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler) {
         auto uid = processData.uid;
         auto pid = processData.pid;
         auto bundleName = processData.bundleName;
 
-        cgHander->PostTask([cgHander, uid, pid, bundleName] {
-            cgHander->HandleProcessDied(uid, pid, bundleName);
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName] {
+            cgHandler->HandleProcessDied(uid, pid, bundleName);
         });
     }
 
@@ -166,14 +166,14 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
         return;
     }
 
-    auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander) {
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler) {
         auto uid = appStateData.uid;
         auto bundleName = appStateData.bundleName;
         auto state = appStateData.state;
 
-        cgHander->PostTask([cgHander, uid, bundleName, state] {
-            cgHander->HandleApplicationStateChanged(uid, bundleName, state);
+        cgHandler->PostTask([cgHandler, uid, bundleName, state] {
+            cgHandler->HandleApplicationStateChanged(uid, bundleName, state);
         });
     }
 
