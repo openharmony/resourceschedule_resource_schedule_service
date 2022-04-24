@@ -25,8 +25,8 @@ namespace OHOS {
 namespace ResourceSchedule {
 void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo)
 {
-    auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander && focusChangeInfo) {
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler && focusChangeInfo) {
         auto windowId = focusChangeInfo->windowId_;
         auto token = reinterpret_cast<uint64_t>(focusChangeInfo->abilityToken_.GetRefPtr());
         auto windowType = focusChangeInfo->windowType_;
@@ -34,16 +34,16 @@ void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo
         auto pid = focusChangeInfo->pid_;
         auto uid = focusChangeInfo->uid_;
 
-        cgHander->PostTask([cgHander, windowId, token, windowType, displayId, pid, uid] {
-            cgHander->HandleFocusedWindow(windowId, token, windowType, displayId, pid, uid);
+        cgHandler->PostTask([cgHandler, windowId, token, windowType, displayId, pid, uid] {
+            cgHandler->HandleFocusedWindow(windowId, token, windowType, displayId, pid, uid);
         });
     }
 }
 
 void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeInfo)
 {
-    auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHander && focusChangeInfo) {
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler && focusChangeInfo) {
         auto windowId = focusChangeInfo->windowId_;
         auto token = reinterpret_cast<uint64_t>(focusChangeInfo->abilityToken_.GetRefPtr());
         auto windowType = focusChangeInfo->windowType_;
@@ -51,8 +51,8 @@ void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeIn
         auto pid = focusChangeInfo->pid_;
         auto uid = focusChangeInfo->uid_;
 
-        cgHander->PostTask([cgHander, windowId, token, windowType, displayId, pid, uid] {
-            cgHander->HandleUnfocusedWindow(windowId, token, windowType, displayId, pid, uid);
+        cgHandler->PostTask([cgHandler, windowId, token, windowType, displayId, pid, uid] {
+            cgHandler->HandleUnfocusedWindow(windowId, token, windowType, displayId, pid, uid);
         });
     }
 }
@@ -60,8 +60,8 @@ void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeIn
 void WindowVisibilityObserver::OnWindowVisibilityChanged(
     const std::vector<sptr<WindowVisibilityInfo>>& windowVisibilityInfo)
 {
-    auto cgHander = SchedController::GetInstance().GetCgroupEventHandler();
-    if (!cgHander) {
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (!cgHandler) {
         return;
     }
     for (auto& info : windowVisibilityInfo) {
@@ -72,8 +72,8 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
         auto isVisible = info->isVisible_;
         auto pid = info->pid_;
         auto uid = info->uid_;
-        cgHander->PostTask([cgHander, windowId, isVisible, pid, uid] {
-            cgHander->HandleWindowVisibilityChanged(windowId, isVisible, pid, uid);
+        cgHandler->PostTask([cgHandler, windowId, isVisible, pid, uid] {
+            cgHandler->HandleWindowVisibilityChanged(windowId, isVisible, pid, uid);
         });
         Json::Value payload;
         payload["pid"] = pid;
