@@ -63,7 +63,7 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         auto pid = abilityStateData.pid;
         auto bundleName = abilityStateData.bundleName;
         auto abilityName = abilityStateData.abilityName;
-        auto token = reinterpret_cast<uint64_t>(abilityStateData.token.GetRefPtr());
+        auto token = reinterpret_cast<uintptr_t>(abilityStateData.token.GetRefPtr());
         auto abilityState = abilityStateData.abilityState;
         auto abilityType = abilityStateData.abilityType;
 
@@ -93,7 +93,7 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
         auto pid = abilityStateData.pid;
         auto bundleName = abilityStateData.bundleName;
         auto abilityName = abilityStateData.abilityName;
-        auto token = reinterpret_cast<uint64_t>(abilityStateData.token.GetRefPtr());
+        auto token = reinterpret_cast<uintptr_t>(abilityStateData.token.GetRefPtr());
         auto abilityState = abilityStateData.abilityState;
         auto abilityType = abilityStateData.abilityType;
 

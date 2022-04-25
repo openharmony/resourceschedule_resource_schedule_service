@@ -23,10 +23,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-#ifndef VALUE_INT
-#define VALUE_INT(t) (static_cast<int32_t>(t))
-#endif
-
 using Clock = std::chrono::high_resolution_clock;
 using MilliSecondsType = std::chrono::duration<double, std::milli>;
 

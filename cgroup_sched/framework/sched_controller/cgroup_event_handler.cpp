@@ -14,7 +14,7 @@
  */
 
 #include "cgroup_event_handler.h"
-
+#include <cinttypes>
 #include "sched_controller.h"
 #include "cgroup_adjuster.h"
 #include "cgroup_sched_common.h"
@@ -44,8 +44,8 @@ CgroupEventHandler::~CgroupEventHandler()
 
 void CgroupEventHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event)
 {
-    CGS_LOGD("%{public}s : eventId:%{public}d param:%{public}llu",
-        __func__, event->GetInnerEventId(), (unsigned long long)event->GetParam());
+    CGS_LOGD("%{public}s : eventId:%{public}d param:%{public}" PRIu64,
+        __func__, event->GetInnerEventId(), event->GetParam());
     switch (event->GetInnerEventId()) {
         case EVENT_ID_REG_APP_STATE_OBSERVER: {
                 int64_t retry = event->GetParam();
@@ -142,7 +142,7 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, std::string bu
     CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
     ChronoScope cs("HandleApplicationStateChanged");
     // remove terminated application
-    if (state == VALUE_INT(ApplicationState::APP_STATE_TERMINATED)) {
+    if (state == (int32_t)(ApplicationState::APP_STATE_TERMINATED)) {
         supervisor_->RemoveApplication(uid);
         return;
     }
@@ -152,7 +152,7 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, std::string bu
 }
 
 void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName,
-    std::string abilityName, uint64_t token, int32_t abilityState, int32_t abilityType)
+    std::string abilityName, uintptr_t token, int32_t abilityState, int32_t abilityType)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -161,7 +161,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d",
         __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), abilityState, abilityType);
     ChronoScope cs("HandleAbilityStateChanged");
-    if (abilityState == VALUE_INT(AbilityState::ABILITY_STATE_TERMINATED)) {
+    if (abilityState == (int32_t)(AbilityState::ABILITY_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
         if (app) {
             auto procRecord = app->GetProcessRecord(pid);
@@ -184,7 +184,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
 }
 
 void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::string bundleName,
-    std::string abilityName, uint64_t token, int32_t extensionState, int32_t abilityType)
+    std::string abilityName, uintptr_t token, int32_t extensionState, int32_t abilityType)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -193,7 +193,7 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d",
         __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), extensionState, abilityType);
     ChronoScope cs("HandleExtensionStateChanged");
-    if (extensionState == VALUE_INT(ExtensionState::EXTENSION_STATE_TERMINATED)) {
+    if (extensionState == (int32_t)(ExtensionState::EXTENSION_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
         if (app) {
             auto procRecord = app->GetProcessRecord(pid);
@@ -315,14 +315,14 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::s
         AdjustSource::ADJS_CONTINUOUS_END);
 }
 
-void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uint64_t abilityToken,
+void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
     Json::Value payload;
     payload["pid"] = pid;
     payload["uid"] = uid;
     payload["windowId"] = windowId;
-    payload["windowType"] = VALUE_INT(windowType);
+    payload["windowType"] = (int32_t)(windowType);
     payload["displayId"] = displayId;
 
     if (!supervisor_) {
@@ -331,8 +331,8 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uint64_t ability
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}llu, %{public}d, %{public}d",
-        __func__, windowId, windowType, (unsigned long long)displayId, pid, uid);
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
+        __func__, windowId, windowType, displayId, pid, uid);
     if (!abilityToken) {
         CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
     }
@@ -344,7 +344,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uint64_t ability
         procRecord = app->GetProcessRecordNonNull(pid);
         auto win = procRecord->GetWindowInfoNonNull(windowId);
         auto abi = procRecord->GetAbilityInfo(abilityToken);
-        win->windowType_ = VALUE_INT(windowType);
+        win->windowType_ = (int32_t)(windowType);
         win->isFocused_ = true;
         win->displayId_ = displayId;
         win->ability_ = abi;
@@ -366,14 +366,14 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uint64_t ability
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
 }
 
-void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uint64_t abilityToken,
+void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
     Json::Value payload;
     payload["pid"] = pid;
     payload["uid"] = uid;
     payload["windowId"] = windowId;
-    payload["windowType"] = VALUE_INT(windowType);
+    payload["windowType"] = (int32_t)(windowType);
     payload["displayId"] = displayId;
 
     if (!supervisor_) {
@@ -382,8 +382,8 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uint64_t abili
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 1, payload);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}llu, %{public}d, %{public}d",
-        __func__, windowId, windowType, (unsigned long long)displayId, pid, uid);
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
+        __func__, windowId, windowType, displayId, pid, uid);
     if (!abilityToken) {
         CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
     }
@@ -405,7 +405,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uint64_t abili
         }
         auto win = procRecord->GetWindowInfoNonNull(windowId);
         auto abi = procRecord->GetAbilityInfo(abilityToken);
-        win->windowType_ = VALUE_INT(windowType);
+        win->windowType_ = (int32_t)(windowType);
         win->isFocused_ = false;
         win->displayId_ = displayId;
         win->ability_ = abi;

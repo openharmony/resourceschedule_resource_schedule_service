@@ -125,8 +125,8 @@ void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
         payload["pid"] = pr.GetPid();
         payload["uid"] = pr.GetUid();
         payload["name"] = app.name_;
-        payload["oldGroup"] = VALUE_INT(pr.lastSchedGroup_);
-        payload["newGroup"] = VALUE_INT(pr.curSchedGroup_);
+        payload["oldGroup"] = (int32_t)(pr.lastSchedGroup_);
+        payload["newGroup"] = (int32_t)(pr.curSchedGroup_);
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CGROUP_ADJUSTER, 0, payload);
     }
 }

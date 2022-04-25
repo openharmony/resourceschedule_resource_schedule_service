@@ -106,10 +106,10 @@ int SchedController::GetProcessGroup(pid_t pid)
 {
     if (!supervisor_) {
         CGS_LOGE("SchedController::GetProcessCgroup, supervisor nullptr.");
-        return VALUE_INT(SchedPolicy::SP_DEFAULT);
+        return (int32_t)(SchedPolicy::SP_DEFAULT);
     }
     std::shared_ptr<ProcessRecord> pr = supervisor_->FindProcessRecord(pid);
-    return pr ? VALUE_INT(pr->curSchedGroup_) : VALUE_INT(SchedPolicy::SP_DEFAULT);
+    return pr ? (int32_t)(pr->curSchedGroup_) : (int32_t)(SchedPolicy::SP_DEFAULT);
 }
 
 void SchedController::ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status)
