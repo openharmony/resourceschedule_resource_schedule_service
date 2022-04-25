@@ -20,49 +20,73 @@ ohos_sa_profile("socperf_sa_profile") {
 }
 
 ohos_prebuilt_etc("socperf_resource_config") {
-  if (device_name == "rk3568") {
-    source = "configs/rk3568/socperf_resource_config.xml"
-    install_enable = true
-  } else {
-    source = "configs/other/socperf_resource_config.xml"
-    install_enable = false
+  source = "configs/socperf_resource_config.xml"
+
+  VENDOR_CONFIG_PATH = rebase_path(
+          "//vendor/${product_company}/${product_name}/resourceschedule/soc_perf/socperf_resource_config.xml")
+  CMD = "if [ -f ${VENDOR_CONFIG_PATH} ]; then echo true; else echo false; fi"
+
+  vendor_config_exist =
+      exec_script("//build/lite/run_shell_cmd.py", [ CMD ], "value")
+  if (vendor_config_exist) {
+    source = VENDOR_CONFIG_PATH
   }
+
+  install_enable = true
   module_install_dir = "etc/socperf"
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
 }
 ohos_prebuilt_etc("socperf_boost_config") {
-  if (device_name == "rk3568") {
-    source = "configs/rk3568/socperf_boost_config.xml"
-    install_enable = true
-  } else {
-    source = "configs/other/socperf_boost_config.xml"
-    install_enable = false
+  source = "configs/socperf_boost_config.xml"
+
+  VENDOR_CONFIG_PATH = rebase_path(
+          "//vendor/${product_company}/${product_name}/resourceschedule/soc_perf/socperf_boost_config.xml")
+  CMD = "if [ -f ${VENDOR_CONFIG_PATH} ]; then echo true; else echo false; fi"
+
+  vendor_config_exist =
+      exec_script("//build/lite/run_shell_cmd.py", [ CMD ], "value")
+  if (vendor_config_exist) {
+    source = VENDOR_CONFIG_PATH
   }
+
+  install_enable = true
   module_install_dir = "etc/socperf"
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
 }
 ohos_prebuilt_etc("socperf_power_config") {
-  if (device_name == "rk3568") {
-    source = "configs/rk3568/socperf_power_config.xml"
-    install_enable = true
-  } else {
-    source = "configs/other/socperf_power_config.xml"
-    install_enable = false
+  source = "configs/socperf_power_config.xml"
+
+  VENDOR_CONFIG_PATH = rebase_path(
+          "//vendor/${product_company}/${product_name}/resourceschedule/soc_perf/socperf_power_config.xml")
+  CMD = "if [ -f ${VENDOR_CONFIG_PATH} ]; then echo true; else echo false; fi"
+
+  vendor_config_exist =
+      exec_script("//build/lite/run_shell_cmd.py", [ CMD ], "value")
+  if (vendor_config_exist) {
+    source = VENDOR_CONFIG_PATH
   }
+
+  install_enable = true
   module_install_dir = "etc/socperf"
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
 }
 ohos_prebuilt_etc("socperf_thermal_config") {
-  if (device_name == "rk3568") {
-    source = "configs/rk3568/socperf_thermal_config.xml"
-    install_enable = true
-  } else {
-    source = "configs/other/socperf_thermal_config.xml"
-    install_enable = false
+  source = "configs/socperf_thermal_config.xml"
+
+  VENDOR_CONFIG_PATH = rebase_path(
+          "//vendor/${product_company}/${product_name}/resourceschedule/soc_perf/socperf_thermal_config.xml")
+  CMD = "if [ -f ${VENDOR_CONFIG_PATH} ]; then echo true; else echo false; fi"
+
+  vendor_config_exist =
+      exec_script("//build/lite/run_shell_cmd.py", [ CMD ], "value")
+  if (vendor_config_exist) {
+    source = VENDOR_CONFIG_PATH
   }
+
+  install_enable = true
   module_install_dir = "etc/socperf"
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
