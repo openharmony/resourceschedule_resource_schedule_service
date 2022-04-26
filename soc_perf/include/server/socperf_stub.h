@@ -22,7 +22,7 @@ namespace OHOS {
 namespace SOCPERF {
 class SocPerfStub : public IRemoteStub<ISocPerfService> {
 public:
-    int OnRemoteRequest(uint32_t code, MessageParcel &data,
+    int32_t OnRemoteRequest(uint32_t code, MessageParcel &data,
         MessageParcel &reply, MessageOption &option) override;
 
 public:

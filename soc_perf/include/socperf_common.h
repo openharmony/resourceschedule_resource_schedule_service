@@ -53,12 +53,12 @@ enum ActionType {
 };
 
 namespace {
-    const int INNER_EVENT_ID_INIT_RES_NODE_INFO       = 0;
-    const int INNER_EVENT_ID_INIT_GOV_RES_NODE_INFO   = 1;
-    const int INNER_EVENT_ID_DO_FREQ_ACTION           = 2;
-    const int INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED   = 3;
-    const int INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ   = 4;
-    const int INNER_EVENT_ID_THERMAL_LIMIT_BOOST_FREQ = 5;
+    const int32_t INNER_EVENT_ID_INIT_RES_NODE_INFO       = 0;
+    const int32_t INNER_EVENT_ID_INIT_GOV_RES_NODE_INFO   = 1;
+    const int32_t INNER_EVENT_ID_DO_FREQ_ACTION           = 2;
+    const int32_t INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED   = 3;
+    const int32_t INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ   = 4;
+    const int32_t INNER_EVENT_ID_THERMAL_LIMIT_BOOST_FREQ = 5;
 }
 
 namespace {
@@ -66,28 +66,28 @@ namespace {
     const std::string SOCPERF_BOOST_CONFIG_XML    = "/system/etc/socperf/socperf_boost_config.xml";
     const std::string SOCPERF_POWER_CONFIG_XML    = "/system/etc/socperf/socperf_power_config.xml";
     const std::string SOCPERF_THERMAL_CONFIG_XML  = "/system/etc/socperf/socperf_thermal_config.xml";
-    const int MAX_INT_VALUE                       = 0x7FFFFFFF;
-    const int MIN_INT_VALUE                       = 0x80000000;
-    const int INVALID_VALUE                       = -1;
-    const int MAX_HANDLER_THREADS                 = 5;
-    const int MIN_RESOURCE_ID                     = 1000;
-    const int MAX_RESOURCE_ID                     = 5999;
-    const int RES_ID_AND_VALUE_PAIR               = 2;
-    const int RES_ID_NUMS_PER_TYPE                = 1000;
+    const int32_t MAX_INT_VALUE                       = 0x7FFFFFFF;
+    const int32_t MIN_INT_VALUE                       = 0x80000000;
+    const int32_t INVALID_VALUE                       = -1;
+    const int32_t MAX_HANDLER_THREADS                 = 5;
+    const int32_t MIN_RESOURCE_ID                     = 1000;
+    const int32_t MAX_RESOURCE_ID                     = 5999;
+    const int32_t RES_ID_AND_VALUE_PAIR               = 2;
+    const int32_t RES_ID_NUMS_PER_TYPE                = 1000;
 }
 
 class ResNode {
 public:
-    int id;
+    int32_t id;
     std::string name;
-    int def;
+    int32_t def;
     std::string path;
-    int mode;
-    int pair;
-    std::unordered_set<int> available;
+    int32_t mode;
+    int32_t pair;
+    std::unordered_set<int32_t> available;
 
 public:
-    ResNode(int resId, std::string resName, int resMode, int resPair)
+    ResNode(int32_t resId, std::string resName, int32_t resMode, int32_t resPair)
     {
         id = resId;
         name = resName;
@@ -103,7 +103,7 @@ public:
         SOC_PERF_LOGI("          path: [%{public}s]", path.c_str());
         SOC_PERF_LOGI("          def: [%{public}d], mode: [%{public}d], pair: [%{public}d]", def, mode, pair);
         std::string str;
-        str.append("available(").append(std::to_string((int)available.size())).append("): ");
+        str.append("available(").append(std::to_string((int32_t)available.size())).append("): ");
         str.append("[");
         for (auto validValue : available) {
             str.append(std::to_string(validValue)).append(",");
@@ -118,15 +118,15 @@ public:
 
 class GovResNode {
 public:
-    int id;
+    int32_t id;
     std::string name;
-    int def;
+    int32_t def;
     std::vector<std::string> paths;
-    std::unordered_set<int> available;
-    std::unordered_map<int, std::vector<std::string>> levelToStr;
+    std::unordered_set<int32_t> available;
+    std::unordered_map<int32_t, std::vector<std::string>> levelToStr;
 
 public:
-    GovResNode(int govResId, std::string govResName)
+    GovResNode(int32_t govResId, std::string govResName)
     {
         id = govResId;
         name = govResName;
@@ -142,7 +142,7 @@ public:
             SOC_PERF_LOGI("             path: [%{public}s]", path.c_str());
         }
         std::string str;
-        str.append("available(").append(std::to_string((int)available.size())).append("): ");
+        str.append("available(").append(std::to_string((int32_t)available.size())).append("): ");
         str.append("[");
         for (auto validValue : available) {
             str.append(std::to_string(validValue)).append(",");
@@ -154,9 +154,9 @@ public:
         SOC_PERF_LOGI("             %{public}s", str.c_str());
         for (auto iter = levelToStr.begin(); iter != levelToStr.end(); ++iter) {
             std::string str2;
-            int level = iter->first;
+            int32_t level = iter->first;
             std::vector<std::string> result = iter->second;
-            for (int i = 0; i < (int)result.size(); i++) {
+            for (int32_t i = 0; i < (int32_t)result.size(); i++) {
                 str2.append(result[i]).append(",");
             }
             if (!result.empty()) {
@@ -169,13 +169,13 @@ public:
 
 class Action {
 public:
-    int id;
+    int32_t id;
     std::string name;
-    int duration;
-    std::vector<int> variable;
+    int32_t duration;
+    std::vector<int32_t> variable;
 
 public:
-    Action(int cmdId, std::string cmdName)
+    Action(int32_t cmdId, std::string cmdName)
     {
         id = cmdId;
         name = cmdName;
@@ -188,8 +188,8 @@ public:
         SOC_PERF_LOGI("action-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
         SOC_PERF_LOGI("         duration: [%{public}d]", duration);
         std::string str;
-        str.append("variable(").append(std::to_string((int)variable.size())).append("): [");
-        for (int i = 0; i < (int)variable.size(); i++) {
+        str.append("variable(").append(std::to_string((int32_t)variable.size())).append("): [");
+        for (int32_t i = 0; i < (int32_t)variable.size(); i++) {
             str.append(std::to_string(variable[i])).append(",");
         }
         if (!variable.empty()) {
@@ -202,13 +202,13 @@ public:
 
 class ResAction {
 public:
-    int value;
-    int duration;
-    int type;
-    int onOff;
+    int32_t value;
+    int32_t duration;
+    int32_t type;
+    int32_t onOff;
 
 public:
-    ResAction(int resActionValue, int resActionDuration, int resActionType, int resActionOnOff)
+    ResAction(int32_t resActionValue, int32_t resActionDuration, int32_t resActionType, int32_t resActionOnOff)
     {
         value = resActionValue;
         duration = resActionDuration;
@@ -242,15 +242,15 @@ public:
 class ResStatus {
 public:
     std::vector<std::list<std::shared_ptr<ResAction>>> resActionList;
-    std::vector<int> candidates;
-    int candidate;
-    int current;
+    std::vector<int32_t> candidates;
+    int32_t candidate;
+    int32_t current;
 
 public:
-    explicit ResStatus(int val)
+    explicit ResStatus(int32_t val)
     {
         resActionList = std::vector<std::list<std::shared_ptr<ResAction>>>(ACTION_TYPE_MAX);
-        candidates = std::vector<int>(ACTION_TYPE_MAX);
+        candidates = std::vector<int32_t>(ACTION_TYPE_MAX);
         candidates[ACTION_TYPE_PERF] = INVALID_VALUE;
         candidates[ACTION_TYPE_POWER] = INVALID_VALUE;
         candidates[ACTION_TYPE_THERMAL] = INVALID_VALUE;
@@ -297,7 +297,7 @@ public:
     }
 };
 
-static inline int Max(int num1, int num2)
+static inline int32_t Max(int32_t num1, int32_t num2)
 {
     if (num1 >= num2) {
         return num1;
@@ -305,12 +305,12 @@ static inline int Max(int num1, int num2)
     return num2;
 }
 
-static inline int Max(int num1, int num2, int num3)
+static inline int32_t Max(int32_t num1, int32_t num2, int32_t num3)
 {
     return Max(Max(num1, num2), num3);
 }
 
-static inline int Min(int num1, int num2)
+static inline int32_t Min(int32_t num1, int32_t num2)
 {
     if (num1 <= num2) {
         return num1;
@@ -318,14 +318,14 @@ static inline int Min(int num1, int num2)
     return num2;
 }
 
-static inline int Min(int num1, int num2, int num3)
+static inline int32_t Min(int32_t num1, int32_t num2, int32_t num3)
 {
     return Min(Min(num1, num2), num3);
 }
 
 static inline bool IsNumber(std::string str)
 {
-    for (int i = 0; i < (int)str.size(); i++) {
+    for (int32_t i = 0; i < (int32_t)str.size(); i++) {
         if (i == 0 && str.at(i) == '-') {
             continue;
         }
@@ -336,7 +336,7 @@ static inline bool IsNumber(std::string str)
     return true;
 }
 
-static inline bool IsValidResId(int id)
+static inline bool IsValidResId(int32_t id)
 {
     if (id < MIN_RESOURCE_ID || id > MAX_RESOURCE_ID) {
         return false;
@@ -346,16 +346,16 @@ static inline bool IsValidResId(int id)
 
 static inline std::vector<std::string> Split(std::string str, std::string pattern)
 {
-    int position;
+    int32_t position;
     std::vector<std::string> result;
     str += pattern;
-    int length = (int)str.size();
-    for (int i = 0; i < length; i++) {
-        position = (int)str.find(pattern, i);
+    int32_t length = (int32_t)str.size();
+    for (int32_t i = 0; i < length; i++) {
+        position = (int32_t)str.find(pattern, i);
         if (position < length) {
             std::string tmp = str.substr(i, position - i);
             result.push_back(tmp);
-            i = position + (int)pattern.size() - 1;
+            i = position + (int32_t)pattern.size() - 1;
         }
     }
     return result;

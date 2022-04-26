@@ -31,13 +31,13 @@ namespace OHOS {
 namespace SOCPERF {
 class ISocPerfService : public IRemoteBroker {
 public:
-    virtual void PerfRequest(int cmdId, const std::string& msg) = 0;
-    virtual void PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg) = 0;
-    virtual void PowerRequest(int cmdId, const std::string& msg) = 0;
-    virtual void PowerRequestEx(int cmdId, bool onOffTag, const std::string& msg) = 0;
+    virtual void PerfRequest(int32_t cmdId, const std::string& msg) = 0;
+    virtual void PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) = 0;
+    virtual void PowerRequest(int32_t cmdId, const std::string& msg) = 0;
+    virtual void PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) = 0;
     virtual void PowerLimitBoost(bool onOffTag, const std::string& msg) = 0;
-    virtual void ThermalRequest(int cmdId, const std::string& msg) = 0;
-    virtual void ThermalRequestEx(int cmdId, bool onOffTag, const std::string& msg) = 0;
+    virtual void ThermalRequest(int32_t cmdId, const std::string& msg) = 0;
+    virtual void ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) = 0;
     virtual void ThermalLimitBoost(bool onOffTag, const std::string& msg) = 0;
 
 public:

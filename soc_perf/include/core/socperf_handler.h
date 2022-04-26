@@ -34,23 +34,24 @@ public:
     void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
 
 private:
-    std::unordered_map<int, std::shared_ptr<ResNode>> resNodeInfo;
-    std::unordered_map<int, std::shared_ptr<GovResNode>> govResNodeInfo;
-    std::unordered_map<int, std::shared_ptr<ResStatus>> resStatusInfo;
+    std::unordered_map<int32_t, std::shared_ptr<ResNode>> resNodeInfo;
+    std::unordered_map<int32_t, std::shared_ptr<GovResNode>> govResNodeInfo;
+    std::unordered_map<int32_t, std::shared_ptr<ResStatus>> resStatusInfo;
     bool powerLimitBoost = false;
     bool thermalLimitBoost = false;
 
 private:
-    void UpdateResActionList(int resId, std::shared_ptr<ResAction> resAction, bool delayed);
-    void UpdateCandidatesValue(int resId, int type);
-    void ArbitrateCandidate(int resId);
-    void ArbitratePairRes(int resId);
-    void UpdatePairResValue(int minResId, int minResValue, int maxResId, int maxResValue);
-    void UpdateCurrentValue(int resId, int value);
+    void UpdateResActionList(int32_t resId, std::shared_ptr<ResAction> resAction, bool delayed);
+    void UpdateCandidatesValue(int32_t resId, int32_t type);
+    void ArbitrateCandidate(int32_t resId);
+    void ArbitratePairRes(int32_t resId);
+    void UpdatePairResValue(int32_t minResId, int32_t minResValue, int32_t maxResId, int32_t maxResValue);
+    void UpdateCurrentValue(int32_t resId, int32_t value);
     void WriteNode(std::string path, std::string value);
-    bool ExistNoCandidate(int resId, std::shared_ptr<ResStatus> resStatus, int perf, int power, int thermal);
-    bool IsGovResId(int resId);
-    bool IsValidResId(int resId);
+    bool ExistNoCandidate(
+        int32_t resId, std::shared_ptr<ResStatus> resStatus, int32_t perf, int32_t power, int32_t thermal);
+    bool IsGovResId(int32_t resId);
+    bool IsValidResId(int32_t resId);
 };
 } // namespace SOCPERF
 } // namespace OHOS

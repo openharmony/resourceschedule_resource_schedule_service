@@ -64,7 +64,7 @@ bool SocPerf::Init()
     return true;
 }
 
-void SocPerf::PerfRequest(int cmdId, const std::string& msg)
+void SocPerf::PerfRequest(int32_t cmdId, const std::string& msg)
 {
     if (!enabled) {
         SOC_PERF_LOGE("SocPerf disabled!");
@@ -79,7 +79,7 @@ void SocPerf::PerfRequest(int cmdId, const std::string& msg)
     DoFreqAction(perfActionInfo[cmdId], EVENT_INVALID, ACTION_TYPE_PERF);
 }
 
-void SocPerf::PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg)
+void SocPerf::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
     if (!enabled) {
         SOC_PERF_LOGE("SocPerf disabled!");
@@ -94,7 +94,7 @@ void SocPerf::PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg)
     DoFreqAction(perfActionInfo[cmdId], onOffTag ? EVENT_ON : EVENT_OFF, ACTION_TYPE_PERF);
 }
 
-void SocPerf::PowerRequest(int cmdId, const std::string& msg)
+void SocPerf::PowerRequest(int32_t cmdId, const std::string& msg)
 {
     if (!enabled) {
         SOC_PERF_LOGE("SocPerf disabled!");
@@ -109,7 +109,7 @@ void SocPerf::PowerRequest(int cmdId, const std::string& msg)
     DoFreqAction(powerActionInfo[cmdId], EVENT_INVALID, ACTION_TYPE_POWER);
 }
 
-void SocPerf::PowerRequestEx(int cmdId, bool onOffTag, const std::string& msg)
+void SocPerf::PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
     if (!enabled) {
         SOC_PERF_LOGE("SocPerf disabled!");
@@ -137,7 +137,7 @@ void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
     }
 }
 
-void SocPerf::ThermalRequest(int cmdId, const std::string& msg)
+void SocPerf::ThermalRequest(int32_t cmdId, const std::string& msg)
 {
     if (!enabled) {
         SOC_PERF_LOGE("SocPerf disabled!");
@@ -152,7 +152,7 @@ void SocPerf::ThermalRequest(int cmdId, const std::string& msg)
     DoFreqAction(thermalActionInfo[cmdId], EVENT_INVALID, ACTION_TYPE_THERMAL);
 }
 
-void SocPerf::ThermalRequestEx(int cmdId, bool onOffTag, const std::string& msg)
+void SocPerf::ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
     if (!enabled) {
         SOC_PERF_LOGE("SocPerf disabled!");
@@ -180,9 +180,9 @@ void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
     }
 }
 
-void SocPerf::DoFreqAction(std::shared_ptr<Action> action, int onOff, int actionType)
+void SocPerf::DoFreqAction(std::shared_ptr<Action> action, int32_t onOff, int32_t actionType)
 {
-    for (int i = 0; i < (int)action->variable.size(); i += RES_ID_AND_VALUE_PAIR) {
+    for (int32_t i = 0; i < (int32_t)action->variable.size(); i += RES_ID_AND_VALUE_PAIR) {
         auto resAction = std::make_shared<ResAction>(action->variable[i + 1], action->duration, actionType, onOff);
         auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_DO_FREQ_ACTION, resAction, action->variable[i]);
         handlers[action->variable[i] / RES_ID_NUMS_PER_TYPE - 1]->SendEvent(event);
@@ -239,7 +239,7 @@ bool SocPerf::CreateHandlers()
 {
     handlers = std::vector<std::shared_ptr<SocPerfHandler>>(MAX_HANDLER_THREADS);
     std::string threadName = "socperf_handler";
-    for (int i = 0; i < (int)handlers.size(); i++) {
+    for (int32_t i = 0; i < (int32_t)handlers.size(); i++) {
         auto runner = AppExecFwk::EventRunner::Create(threadName);
         if (!runner) {
             SOC_PERF_LOGE("Failed to Create EventRunner");
@@ -303,8 +303,8 @@ bool SocPerf::LoadResource(xmlNode* child, std::string configFile)
                 return false;
             }
 
-            resStrToIdInfo.insert(std::pair<std::string, int>(resNode->name, resNode->id));
-            resNodeInfo.insert(std::pair<int, std::shared_ptr<ResNode>>(resNode->id, resNode));
+            resStrToIdInfo.insert(std::pair<std::string, int32_t>(resNode->name, resNode->id));
+            resNodeInfo.insert(std::pair<int32_t, std::shared_ptr<ResNode>>(resNode->id, resNode));
         }
     }
 
@@ -354,8 +354,8 @@ bool SocPerf::LoadGovResource(xmlNode* child, std::string configFile)
                 }
             }
 
-            resStrToIdInfo.insert(std::pair<std::string, int>(govResNode->name, govResNode->id));
-            govResNodeInfo.insert(std::pair<int, std::shared_ptr<GovResNode>>(govResNode->id, govResNode));
+            resStrToIdInfo.insert(std::pair<std::string, int32_t>(govResNode->name, govResNode->id));
+            govResNodeInfo.insert(std::pair<int32_t, std::shared_ptr<GovResNode>>(govResNode->id, govResNode));
         }
     }
 
@@ -401,11 +401,11 @@ bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
             }
 
             if (configFile == SOCPERF_BOOST_CONFIG_XML) {
-                perfActionInfo.insert(std::pair<int, std::shared_ptr<Action>>(action->id, action));
+                perfActionInfo.insert(std::pair<int32_t, std::shared_ptr<Action>>(action->id, action));
             } else if (configFile == SOCPERF_POWER_CONFIG_XML) {
-                powerActionInfo.insert(std::pair<int, std::shared_ptr<Action>>(action->id, action));
+                powerActionInfo.insert(std::pair<int32_t, std::shared_ptr<Action>>(action->id, action));
             } else if (configFile == SOCPERF_THERMAL_CONFIG_XML) {
-                thermalActionInfo.insert(std::pair<int, std::shared_ptr<Action>>(action->id, action));
+                thermalActionInfo.insert(std::pair<int32_t, std::shared_ptr<Action>>(action->id, action));
             }
         }
     }
@@ -468,9 +468,9 @@ bool SocPerf::LoadResourceAvailable(std::shared_ptr<ResNode> resNode, char* node
 bool SocPerf::CheckPairResIdValid()
 {
     for (auto iter = resNodeInfo.begin(); iter != resNodeInfo.end(); ++iter) {
-        int resId = iter->first;
+        int32_t resId = iter->first;
         std::shared_ptr<ResNode> resNode = iter->second;
-        int pairResId = resNode->pair;
+        int32_t pairResId = resNode->pair;
         if (resNodeInfo.find(pairResId) == resNodeInfo.end()) {
             SOC_PERF_LOGE("resId[%{public}d]'s pairResId[%{public}d] is not valid", resId, pairResId);
             return false;
@@ -482,9 +482,9 @@ bool SocPerf::CheckPairResIdValid()
 bool SocPerf::CheckResDefValid()
 {
     for (auto iter = resNodeInfo.begin(); iter != resNodeInfo.end(); ++iter) {
-        int resId = iter->first;
+        int32_t resId = iter->first;
         std::shared_ptr<ResNode> resNode = iter->second;
-        int def = resNode->def;
+        int32_t def = resNode->def;
         if (!resNode->available.empty() && resNode->available.find(def) == resNode->available.end()) {
             SOC_PERF_LOGE("resId[%{public}d]'s def[%{public}d] is not valid", resId, def);
             return false;
@@ -515,16 +515,16 @@ bool SocPerf::LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResNode, c
         SOC_PERF_LOGE("Invalid governor resource node matches paths");
         return false;
     }
-    govResNode->levelToStr.insert(std::pair<int, std::vector<std::string>>(atoi(level), result));
+    govResNode->levelToStr.insert(std::pair<int32_t, std::vector<std::string>>(atoi(level), result));
     return true;
 }
 
 bool SocPerf::CheckGovResDefValid()
 {
     for (auto iter = govResNodeInfo.begin(); iter != govResNodeInfo.end(); ++iter) {
-        int govResId = iter->first;
+        int32_t govResId = iter->first;
         std::shared_ptr<GovResNode> govResNode = iter->second;
-        int def = govResNode->def;
+        int32_t def = govResNode->def;
         if (govResNode->available.find(def) == govResNode->available.end()) {
             SOC_PERF_LOGE("govResId[%{public}d]'s def[%{public}d] is not valid", govResId, def);
             return false;
@@ -548,7 +548,7 @@ bool SocPerf::CheckCmdTag(char* id, char* name, std::string configFile)
 
 bool SocPerf::CheckActionResIdAndValueValid(std::string configFile)
 {
-    std::unordered_map<int, std::shared_ptr<Action>> actionInfo;
+    std::unordered_map<int32_t, std::shared_ptr<Action>> actionInfo;
     if (configFile == SOCPERF_BOOST_CONFIG_XML) {
         actionInfo = perfActionInfo;
     } else if (configFile == SOCPERF_POWER_CONFIG_XML) {
@@ -557,11 +557,11 @@ bool SocPerf::CheckActionResIdAndValueValid(std::string configFile)
         actionInfo = thermalActionInfo;
     }
     for (auto iter = actionInfo.begin(); iter != actionInfo.end(); ++iter) {
-        int actionId = iter->first;
+        int32_t actionId = iter->first;
         std::shared_ptr<Action> action = iter->second;
-        for (int i = 0; i < (int)action->variable.size(); i += RES_ID_AND_VALUE_PAIR) {
-            int resId = action->variable[i];
-            int resValue = action->variable[i + 1];
+        for (int32_t i = 0; i < (int32_t)action->variable.size(); i += RES_ID_AND_VALUE_PAIR) {
+            int32_t resId = action->variable[i];
+            int32_t resValue = action->variable[i + 1];
             if (resNodeInfo.find(resId) != resNodeInfo.end()) {
                 if (!resNodeInfo[resId]->available.empty()
                     && resNodeInfo[resId]->available.find(resValue) == resNodeInfo[resId]->available.end()) {
@@ -585,31 +585,31 @@ bool SocPerf::CheckActionResIdAndValueValid(std::string configFile)
 void SocPerf::PrintCachedInfo()
 {
     SOC_PERF_LOGI("------------------------------------");
-    SOC_PERF_LOGI("resNodeInfo(%{public}d)", (int)resNodeInfo.size());
+    SOC_PERF_LOGI("resNodeInfo(%{public}d)", (int32_t)resNodeInfo.size());
     for (auto iter = resNodeInfo.begin(); iter != resNodeInfo.end(); ++iter) {
         std::shared_ptr<ResNode> resNode = iter->second;
         resNode->PrintString();
     }
     SOC_PERF_LOGI("------------------------------------");
-    SOC_PERF_LOGI("govResNodeInfo(%{public}d)", (int)govResNodeInfo.size());
+    SOC_PERF_LOGI("govResNodeInfo(%{public}d)", (int32_t)govResNodeInfo.size());
     for (auto iter = govResNodeInfo.begin(); iter != govResNodeInfo.end(); ++iter) {
         std::shared_ptr<GovResNode> govResNode = iter->second;
         govResNode->PrintString();
     }
     SOC_PERF_LOGI("------------------------------------");
-    SOC_PERF_LOGI("perfActionInfo(%{public}d)", (int)perfActionInfo.size());
+    SOC_PERF_LOGI("perfActionInfo(%{public}d)", (int32_t)perfActionInfo.size());
     for (auto iter = perfActionInfo.begin(); iter != perfActionInfo.end(); ++iter) {
         std::shared_ptr<Action> action = iter->second;
         action->PrintString();
     }
     SOC_PERF_LOGI("------------------------------------");
-    SOC_PERF_LOGI("powerActionInfo(%{public}d)", (int)powerActionInfo.size());
+    SOC_PERF_LOGI("powerActionInfo(%{public}d)", (int32_t)powerActionInfo.size());
     for (auto iter = powerActionInfo.begin(); iter != powerActionInfo.end(); ++iter) {
         std::shared_ptr<Action> action = iter->second;
         action->PrintString();
     }
     SOC_PERF_LOGI("------------------------------------");
-    SOC_PERF_LOGI("thermalActionInfo(%{public}d)", (int)thermalActionInfo.size());
+    SOC_PERF_LOGI("thermalActionInfo(%{public}d)", (int32_t)thermalActionInfo.size());
     for (auto iter = thermalActionInfo.begin(); iter != thermalActionInfo.end(); ++iter) {
         std::shared_ptr<Action> action = iter->second;
         action->PrintString();

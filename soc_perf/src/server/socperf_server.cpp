@@ -38,22 +38,22 @@ void SocPerfServer::OnStop()
 {
 }
 
-void SocPerfServer::PerfRequest(int cmdId, const std::string& msg)
+void SocPerfServer::PerfRequest(int32_t cmdId, const std::string& msg)
 {
     socPerf.PerfRequest(cmdId, msg);
 }
 
-void SocPerfServer::PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg)
+void SocPerfServer::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
     socPerf.PerfRequestEx(cmdId, onOffTag, msg);
 }
 
-void SocPerfServer::PowerRequest(int cmdId, const std::string& msg)
+void SocPerfServer::PowerRequest(int32_t cmdId, const std::string& msg)
 {
     socPerf.PowerRequest(cmdId, msg);
 }
 
-void SocPerfServer::PowerRequestEx(int cmdId, bool onOffTag, const std::string& msg)
+void SocPerfServer::PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
     socPerf.PowerRequestEx(cmdId, onOffTag, msg);
 }
@@ -63,12 +63,12 @@ void SocPerfServer::PowerLimitBoost(bool onOffTag, const std::string& msg)
     socPerf.PowerLimitBoost(onOffTag, msg);
 }
 
-void SocPerfServer::ThermalRequest(int cmdId, const std::string& msg)
+void SocPerfServer::ThermalRequest(int32_t cmdId, const std::string& msg)
 {
     socPerf.ThermalRequest(cmdId, msg);
 }
 
-void SocPerfServer::ThermalRequestEx(int cmdId, bool onOffTag, const std::string& msg)
+void SocPerfServer::ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
     socPerf.ThermalRequestEx(cmdId, onOffTag, msg);
 }

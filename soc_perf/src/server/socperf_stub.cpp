@@ -17,7 +17,7 @@
 
 namespace OHOS {
 namespace SOCPERF {
-int SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
+int32_t SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
     auto remoteDescriptor = data.ReadInterfaceToken();
@@ -26,26 +26,26 @@ int SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     }
     switch (code) {
         case TRANS_IPC_ID_PERF_REQUEST: {
-            int cmdId = data.ReadInt32();
+            int32_t cmdId = data.ReadInt32();
             std::string msg = data.ReadString();
             PerfRequest(cmdId, msg);
             return 0;
         }
         case TRANS_IPC_ID_PERF_REQUEST_EX: {
-            int cmdId = data.ReadInt32();
+            int32_t cmdId = data.ReadInt32();
             bool onOffTag = data.ReadBool();
             std::string msg = data.ReadString();
             PerfRequestEx(cmdId, onOffTag, msg);
             return 0;
         }
         case TRANS_IPC_ID_POWER_REQUEST: {
-            int cmdId = data.ReadInt32();
+            int32_t cmdId = data.ReadInt32();
             std::string msg = data.ReadString();
             PowerRequest(cmdId, msg);
             return 0;
         }
         case TRANS_IPC_ID_POWER_REQUEST_EX: {
-            int cmdId = data.ReadInt32();
+            int32_t cmdId = data.ReadInt32();
             bool onOffTag = data.ReadBool();
             std::string msg = data.ReadString();
             PowerRequestEx(cmdId, onOffTag, msg);
@@ -58,13 +58,13 @@ int SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
             return 0;
         }
         case TRANS_IPC_ID_THERMAL_REQUEST: {
-            int cmdId = data.ReadInt32();
+            int32_t cmdId = data.ReadInt32();
             std::string msg = data.ReadString();
             ThermalRequest(cmdId, msg);
             return 0;
         }
         case TRANS_IPC_ID_THERMAL_REQUEST_EX: {
-            int cmdId = data.ReadInt32();
+            int32_t cmdId = data.ReadInt32();
             bool onOffTag = data.ReadBool();
             std::string msg = data.ReadString();
             ThermalRequestEx(cmdId, onOffTag, msg);
