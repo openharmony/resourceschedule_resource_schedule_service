@@ -15,13 +15,18 @@ import("//build/ohos.gni")
 import("//build/ohos/sa_profile/sa_profile.gni")
 
 ohos_prebuilt_etc("process_group_config") {
-  if (device_name == "rk3568") {
-    source = "rk3568/cgroup_action_config.json"
-    install_enable = true
-  } else {
-    source = "others/cgroup_action_config.json"
-    install_enable = false
+  source = "cgroup_action_config.json"
+
+  VENDOR_CONFIG_PATH = rebase_path(
+          "//vendor/${product_company}/${product_name}/resourceschedule/cgroup_sched/cgroup_action_config.json")
+  CMD = "if [ -f ${VENDOR_CONFIG_PATH} ]; then echo true; else echo false; fi"
+
+  vendor_config_exist =
+      exec_script("//build/lite/run_shell_cmd.py", [ CMD ], "value")
+  if (vendor_config_exist) {
+    source = VENDOR_CONFIG_PATH
   }
+  install_enable = true
   module_install_dir = "etc/process_group"
   part_name = "resource_schedule_service"
   subsystem_name = "resourceschedule"
