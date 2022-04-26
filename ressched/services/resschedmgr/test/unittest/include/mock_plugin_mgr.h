@@ -34,15 +34,15 @@ public:
         "/data/test/resource/resschedfwk/parseswitch/res_sched_plugin_switch.xml";
     const std::string TEST_PREFIX_RES_PATH = "/data/test/resource/resschedfwk/parseconfig/res_sched_config.xml";
     const std::string MOCK_RUNNER_NAME = "mockRssDispatcher";
-    const int DISPATCH_WARNING_TIME = 1; // ms
-    const int DISPATCH_TIME_OUT = 10; // ms
-    enum : int {
+    const int32_t DISPATCH_WARNING_TIME = 1; // ms
+    const int32_t DISPATCH_TIME_OUT = 10; // ms
+    enum : int32_t {
         SWITCH_NULL,
         LOAD_CONFIG_FAIL,
         LOAD_CUST_CONFIG_FAIL,
         INIT_SUCCESS
     };
-    int initStatus;
+    int32_t initStatus;
 
     void Init()
     {

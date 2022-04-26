@@ -21,7 +21,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 void ResSchedServiceProxy::ReportData(uint32_t resType, int64_t value, const Json::Value& payload)
 {
-    int error;
+    int32_t error;
     MessageParcel data;
     MessageParcel reply;
     MessageOption option = { MessageOption::TF_ASYNC };

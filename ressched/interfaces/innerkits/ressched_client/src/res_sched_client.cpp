@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #include "res_sched_client.h"
+#include <cinttypes>
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "res_sched_log.h"
@@ -30,8 +31,8 @@ ResSchedClient& ResSchedClient::GetInstance()
 void ResSchedClient::ReportData(uint32_t resType, int64_t value,
                                 const std::unordered_map<std::string, std::string>& mapPayload)
 {
-    RESSCHED_LOGD("ResSchedClient::ReportData receive resType = %{public}u, value = %{public}lld.",
-                  resType, (long long)value);
+    RESSCHED_LOGD("ResSchedClient::ReportData receive resType = %{public}u, value = %{public}" PRId64 ".",
+                  resType, value);
     if (TryConnect() != ERR_OK) {
         return;
     }
