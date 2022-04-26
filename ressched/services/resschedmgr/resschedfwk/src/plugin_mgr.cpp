@@ -207,7 +207,8 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         libNameAll.append(",");
     }
     libNameAll.append("]");
-    RESSCHED_LOGI("PluginMgr::DispatchResource resType = %{public}d, value = %{public}" PRId64 " pluginlist is %{public}s.",
+    RESSCHED_LOGI("PluginMgr::DispatchResource resType = %{public}d, "
+        "value = %{public}" PRId64 " pluginlist is %{public}s.",
         resData->resType, resData->value, libNameAll.c_str());
     {
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
