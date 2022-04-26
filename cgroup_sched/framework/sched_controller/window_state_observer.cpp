@@ -28,7 +28,7 @@ void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHandler && focusChangeInfo) {
         auto windowId = focusChangeInfo->windowId_;
-        auto token = reinterpret_cast<uint64_t>(focusChangeInfo->abilityToken_.GetRefPtr());
+        auto token = reinterpret_cast<uintptr_t>(focusChangeInfo->abilityToken_.GetRefPtr());
         auto windowType = focusChangeInfo->windowType_;
         auto displayId = focusChangeInfo->displayId_;
         auto pid = focusChangeInfo->pid_;
@@ -45,7 +45,7 @@ void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeIn
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHandler && focusChangeInfo) {
         auto windowId = focusChangeInfo->windowId_;
-        auto token = reinterpret_cast<uint64_t>(focusChangeInfo->abilityToken_.GetRefPtr());
+        auto token = reinterpret_cast<uintptr_t>(focusChangeInfo->abilityToken_.GetRefPtr());
         auto windowType = focusChangeInfo->windowType_;
         auto displayId = focusChangeInfo->displayId_;
         auto pid = focusChangeInfo->pid_;

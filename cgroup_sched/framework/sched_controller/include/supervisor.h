@@ -48,13 +48,13 @@ public:
 
 class AbilityInfo {
 public:
-    AbilityInfo(uint64_t token) : token_(token) {}
+    AbilityInfo(uintptr_t token) : token_(token) {}
     ~AbilityInfo() = default;
 
     int32_t state_ = -1; // normal ability state
     int32_t estate_ = -1; // extension state
     int32_t type_ = -1; // ability type
-    uint64_t token_ = 0;
+    uintptr_t token_ = 0;
     std::shared_ptr<WindowInfo> window_ = nullptr;
 };
 
@@ -67,11 +67,11 @@ public:
         windows_.clear();
     };
 
-    std::shared_ptr<AbilityInfo> GetAbilityInfoNonNull(uint64_t token);
-    std::shared_ptr<AbilityInfo> GetAbilityInfo(uint64_t token);
+    std::shared_ptr<AbilityInfo> GetAbilityInfoNonNull(uintptr_t token);
+    std::shared_ptr<AbilityInfo> GetAbilityInfo(uintptr_t token);
     std::shared_ptr<WindowInfo> GetWindowInfoNonNull(uint32_t windowId);
-    void RemoveAbilityByToken(uint64_t token);
-    bool HasAbility(uint64_t token) const;
+    void RemoveAbilityByToken(uintptr_t token);
+    bool HasAbility(uintptr_t token) const;
     bool HasServiceExtension() const;
     bool IsVisible() const;
 
@@ -108,8 +108,8 @@ public:
     void RemoveProcessRecord(pid_t pid);
     std::shared_ptr<ProcessRecord> GetProcessRecord(pid_t pid);
     std::shared_ptr<ProcessRecord> GetProcessRecordNonNull(pid_t pid);
-    std::shared_ptr<ProcessRecord> FindProcessRecord(uint64_t token);
-    std::shared_ptr<ProcessRecord> FindProcessRecord(uint32_t windowId);
+    std::shared_ptr<ProcessRecord> FindProcessRecordByToken(uintptr_t token);
+    std::shared_ptr<ProcessRecord> FindProcessRecordByWindowId(uint32_t windowId);
 
     inline uid_t GetUid() const
     {
@@ -140,7 +140,7 @@ public:
     std::shared_ptr<ProcessRecord> FindProcessRecord(pid_t pid);
     void RemoveApplication(int32_t uid);
     void SearchAbilityToken(std::shared_ptr<Application> &app, std::shared_ptr<ProcessRecord> &procRecord,
-        uint64_t token);
+        uintptr_t token);
     void SearchWindowId(std::shared_ptr<Application> &application, std::shared_ptr<ProcessRecord> &procRecord,
         uint32_t windowId);
 
