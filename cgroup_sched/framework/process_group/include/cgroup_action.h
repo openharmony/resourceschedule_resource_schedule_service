@@ -25,17 +25,32 @@ class CgroupAction {
 public:
     static CgroupAction& GetInstance();
 
-    CgroupAction(const CgroupAction& cgroupAction) = delete;
-    CgroupAction& operator= (const CgroupAction& cgroupAction) = delete;
-    ~CgroupAction() = default;
+    void AddSchedPolicyDeclaration(SchedPolicy policy, const std::string& fullName, const std::string& abbrName);
+    std::vector<SchedPolicy> GetSchedPolicyList();
+    const char* GetSchedPolicyFullName(SchedPolicy policy);
+    const char* GetSchedPolicyAbbrName(SchedPolicy policy);
+
     bool SetThreadSchedPolicy(int tid, SchedPolicy policy);
     bool SetThreadGroupSchedPolicy(int tid, SchedPolicy policy);
     int GetSchedPolicy(int tid, SchedPolicy* policy);
 
 private:
-    CgroupAction() = default;
-    bool loadConfigFile();
+    CgroupAction();
+    ~CgroupAction() = default;
+
+    CgroupAction(const CgroupAction&) = delete;
+    CgroupAction& operator=(const CgroupAction &) = delete;
+    CgroupAction(CgroupAction&&) = delete;
+    CgroupAction& operator=(CgroupAction&&) = delete;
+
+    std::mutex mutex_; // for sched policy maps
+    bool allowToAdd_ = true;
+    std::map<SchedPolicy, std::string> fullNames_;
+    std::map<SchedPolicy, std::string> abbrNames_;
+
+    bool LoadConfigFile();
     bool IsEnabled();
+    bool IsSchedPolicyValid(SchedPolicy policy);
     static bool ParseConfigFileToJsonObj(Json::Value& jsonObjRoot);
 };
 } // namespace CgroupSetting

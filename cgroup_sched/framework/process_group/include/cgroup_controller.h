@@ -18,7 +18,7 @@
 #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_CONTROLLER_H_
 
 #include <string>
-#include <vector>
+#include <map>
 #include "sched_policy.h"
 
 namespace OHOS {
@@ -36,12 +36,12 @@ public:
 
     const inline std::string GetName() const
     {
-        return path_;
+        return name_;
     }
 
     const inline std::string GetPath() const
     {
-        return name_;
+        return path_;
     }
     bool IsEnabled();
     bool SetThreadSchedPolicy(int tid, SchedPolicy policy, bool isSetThreadGroup);
@@ -51,8 +51,8 @@ public:
 private:
     std::string name_;
     std::string path_;
-    std::vector<int> policyToTaskFd_;
-    std::vector<int> policyToProcFd_;
+    std::map<SchedPolicy, int> policyToTaskFd_;
+    std::map<SchedPolicy, int> policyToProcFd_;
 
     bool AddThreadSchedPolicy(SchedPolicy policy, const std::string& subgroup);
     bool AddThreadGroupSchedPolicy(SchedPolicy policy, const std::string& subgroup);

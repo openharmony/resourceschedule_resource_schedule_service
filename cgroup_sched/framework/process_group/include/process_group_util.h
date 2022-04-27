@@ -36,7 +36,7 @@ bool WriteStringToFile(const std::string& content, const std::string& filePath);
 
 bool ReadFileToStringForVFS(const std::string& filePath, std::string& content);
 
-std::string JsonToString(const Json::Value &json);
+std::string JsonToString(const Json::Value& json);
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

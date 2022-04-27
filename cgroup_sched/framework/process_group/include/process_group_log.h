@@ -24,7 +24,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
 #define LOG_TAG_PGCGS "pg-cgs"
-#define LOG_TAG_DOMAIN_ID_PGCGS 0xD001700
+#define LOG_TAG_DOMAIN_ID_PGCGS 0xD001702
 
 static constexpr OHOS::HiviewDFX::HiLogLabel PGCGS_LOG_LABEL = {
     LOG_CORE,

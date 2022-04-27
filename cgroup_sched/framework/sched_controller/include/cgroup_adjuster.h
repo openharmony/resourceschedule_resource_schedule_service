@@ -35,20 +35,30 @@ enum class AdjustSource {
     ADJS_FOCUSED_WINDOW,
     ADJS_UNFOCUSED_WINDOW,
     ADJS_WINDOW_VISIBILITY_CHANGED,
+    ADJS_REPORT_RENDER_THREAD,
+    ADJS_REPORT_MMI_SERVICE_THREAD,
     ADJS_END
 };
 
 class CgroupAdjuster {
 public:
-    CgroupAdjuster() = default;
-    ~CgroupAdjuster() = default;
+    static CgroupAdjuster& GetInstance();
+
     void InitAdjuster();
     void AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source);
     void AdjustAllProcessGroup(Application &app, AdjustSource source);
+    void ApplyProcessGroup(Application &app, ProcessRecord &pr);
 
 private:
+    CgroupAdjuster() = default;
+    ~CgroupAdjuster() = default;
+
+    CgroupAdjuster(const CgroupAdjuster&) = delete;
+    CgroupAdjuster& operator=(const CgroupAdjuster &) = delete;
+    CgroupAdjuster(CgroupAdjuster&&) = delete;
+    CgroupAdjuster& operator=(CgroupAdjuster&&) = delete;
+
     void ComputeProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source);
-    void ApplyProcessGroup(Application &app, ProcessRecord &pr);
     inline void AdjustSelfProcessGroup();
 };
 } // namespace ResourceSchedule

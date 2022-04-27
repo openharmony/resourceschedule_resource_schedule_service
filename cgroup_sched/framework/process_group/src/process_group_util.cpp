@@ -148,7 +148,7 @@ bool WriteStringToFile(const std::string& content, const std::string& filePath)
     return result;
 }
 
-std::string JsonToString(const Json::Value &json)
+std::string JsonToString(const Json::Value& json)
 {
     std::string result;
     Json::StreamWriterBuilder builder;

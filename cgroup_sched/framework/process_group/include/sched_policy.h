@@ -16,24 +16,26 @@
 #ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_SCHED_POLICY_H_
 #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_SCHED_POLICY_H_
 
+#include <iostream>
+#include <sys/types.h>
+
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
+using SchedPolicy = uint32_t;
+
 /**
  * Schedule policy define, keep in sync with
  * (1) cgroup_controller.cpp: bool QuerySchedPolicyFullName(const std::string& name, SchedPolicy& policy);
  * (2) sched_policy.cpp: const char* GetSchedPolicyShortenedName(SchedPolicy policy);
  */
-enum SchedPolicy {
-    SP_DEFAULT = 0,
-    SP_BACKGROUND = 1,
-    SP_FOREGROUND = 2,
-    SP_SYSTEM = 3,
-    SP_TOP_APP = 4,
-    SP_CNT,
-    SP_MAX = SP_CNT - 1,
-    SP_SYSTEM_DEFAULT = SP_DEFAULT,
-};
+
+static constexpr SchedPolicy SP_DEFAULT = 0;
+static constexpr SchedPolicy SP_BACKGROUND = 1;
+static constexpr SchedPolicy SP_FOREGROUND = 2;
+static constexpr SchedPolicy SP_SYSTEM_BACKGROUND = 3;
+static constexpr SchedPolicy SP_TOP_APP = 4;
+static constexpr SchedPolicy SP_SYSTEM_DEFAULT = SP_DEFAULT;
 
 /**
  * Assign all threads in process pid to the cgroup associated with the specified policy.
@@ -89,6 +91,16 @@ const char* GetSchedPolicyShortenedName(SchedPolicy policy);
  * @return Return a displayable string corresponding to policy.
  */
 const char* GetSchedPolicyFullName(SchedPolicy policy);
+
+/**
+ * Add a new kind of sched policy, with unique policy id, full
+ * name and abbreviation name.
+ *
+ * @param policy schedule policy.
+ * @param fullName full name for policy.
+ * @param abbrName abbreviation name for policy.
+ */
+void AddSchedPolicyDeclaration(SchedPolicy policy, const std::string& fullName, const std::string& abbrName);
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -15,12 +15,14 @@
 
 #include "cgroup_event_handler.h"
 #include <cinttypes>
-#include "sched_controller.h"
+#include "app_mgr_constants.h"
 #include "cgroup_adjuster.h"
 #include "cgroup_sched_common.h"
 #include "cgroup_sched_log.h"
 #include "ressched_utils.h"
 #include "res_type.h"
+#include "sched_controller.h"
+#include "sched_policy.h"
 #include "system_ability_definition.h"
 
 namespace OHOS {
@@ -31,7 +33,13 @@ namespace {
     constexpr uint32_t EVENT_ID_REG_BGTASK_OBSERVER = 2;
     constexpr uint32_t DELAYED_RETRY_REGISTER_DURATION = 100;
     constexpr uint32_t MAX_RETRY_TIMES = 100;
+
+    const std::string MMI_SERVICE_NAME = "mmi_service";
 }
+
+using OHOS::AppExecFwk::ApplicationState;
+using OHOS::AppExecFwk::AbilityState;
+using OHOS::AppExecFwk::ExtensionState;
 
 CgroupEventHandler::CgroupEventHandler(const std::shared_ptr<EventRunner> &runner)
     : EventHandler(runner)
@@ -130,7 +138,7 @@ void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, std::stri
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     app->name_ = bundleName;
     app->state_ = state;
-    SchedController::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FG_APP_CHANGE);
+    CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FG_APP_CHANGE);
 }
 
 void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, std::string bundleName, int32_t state)
@@ -167,7 +175,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
             auto procRecord = app->GetProcessRecord(pid);
             if (procRecord) {
                 procRecord->RemoveAbilityByToken(token);
-                SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+                CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
                     AdjustSource::ADJS_ABILITY_STATE);
             }
         }
@@ -177,9 +185,10 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
     app->name_ = bundleName;
     auto procRecord = app->GetProcessRecordNonNull(pid);
     auto abiInfo = procRecord->GetAbilityInfoNonNull(token);
+    abiInfo->name_ = abilityName;
     abiInfo->state_ = abilityState;
     abiInfo->type_ = abilityType;
-    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_ABILITY_STATE);
 }
 
@@ -199,7 +208,7 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
             auto procRecord = app->GetProcessRecord(pid);
             if (procRecord) {
                 procRecord->RemoveAbilityByToken(token);
-                SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+                CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
                     AdjustSource::ADJS_EXTENSION_STATE);
             }
         }
@@ -209,9 +218,10 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
     app->name_ = bundleName;
     auto procRecord = app->GetProcessRecordNonNull(pid);
     auto abiInfo = procRecord->GetAbilityInfoNonNull(token);
+    abiInfo->name_ = abilityName;
     abiInfo->estate_ = extensionState;
     abiInfo->type_ = abilityType;
-    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_EXTENSION_STATE);
 }
 
@@ -227,7 +237,7 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, std::string 
     app->name_ = bundleName;
     std::shared_ptr<ProcessRecord> procRecord = std::make_shared<ProcessRecord>(uid, pid);
     app->AddProcessRecord(procRecord);
-    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_CREATE);
 }
 
@@ -282,36 +292,38 @@ void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, std::strin
     procRecord->runningTransientTask_ = false;
 }
 
-void CgroupEventHandler::HandleContinuousTaskStart(uid_t uid, pid_t pid, std::string abilityName)
+void CgroupEventHandler::HandleContinuousTaskStart(uid_t uid, pid_t pid, int32_t typeId, std::string abilityName)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, abilityName.c_str());
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}s",
+        __func__, uid, pid, typeId, abilityName.c_str());
     ChronoScope cs("HandleContinuousTaskStart");
     auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecordNonNull(pid);
-    procRecord->runningContinuousTask_ = true;
-    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+    procRecord->continuousTaskFlag_ |= (1U << typeId);
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_CONTINUOUS_BEGIN);
 }
 
-void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, std::string abilityName)
+void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId, std::string abilityName)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, abilityName.c_str());
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}s",
+        __func__, uid, pid, typeId, abilityName.c_str());
     ChronoScope cs("HandleContinuousTaskCancel");
     auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecord(pid);
     if (!procRecord) {
         return;
     }
-    procRecord->runningContinuousTask_ = false;
-    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+    procRecord->continuousTaskFlag_ &= ~(1U << typeId);
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_CONTINUOUS_END);
 }
 
@@ -356,11 +368,11 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
         auto lastFocusApp = supervisor_->focusedApp_;
         if (lastFocusApp && lastFocusApp != app) {
             lastFocusApp->focusedProcess_ = nullptr;
-            SchedController::GetInstance().AdjustAllProcessGroup(*(lastFocusApp.get()),
+            CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(lastFocusApp.get()),
                 AdjustSource::ADJS_FOCUSED_WINDOW);
         }
         supervisor_->focusedApp_ = app;
-        SchedController::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FOCUSED_WINDOW);
+        CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FOCUSED_WINDOW);
     }
     payload["bundleName"] = app->name_;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 0, payload);
@@ -416,7 +428,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
         if (app->focusedProcess_ == procRecord) {
             app->focusedProcess_ = nullptr;
         }
-        SchedController::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_UNFOCUSED_WINDOW);
+        CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_UNFOCUSED_WINDOW);
     }
     payload["bundleName"] = app->name_;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 1, payload);
@@ -448,8 +460,56 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t windowId, bool i
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
     windowInfo->isVisible_ = isVisible;
 
-    SchedController::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_WINDOW_VISIBILITY_CHANGED);
+}
+
+void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value, const Json::Value& payload)
+{
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+
+    int32_t uid = atoi(payload["uid"].asString().c_str());
+    int32_t pid = atoi(payload["pid"].asString().c_str());
+    int32_t mmi_service = static_cast<int32_t>(value);
+    CGS_LOGD("%{public}s : %{public}u, %{public}d, %{public}d, %{public}d",
+        __func__, resType, uid, pid, mmi_service);
+
+    if (uid <= 0 || pid <= 0 || mmi_service <= 0) {
+        return;
+    }
+
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    app->name_ = MMI_SERVICE_NAME;
+    auto procRecord = app->GetProcessRecordNonNull(mmi_service);
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_REPORT_MMI_SERVICE_THREAD);
+}
+
+void CgroupEventHandler::HandleReportRenderThread(uint32_t resType, int64_t value, const Json::Value& payload)
+{
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+
+    int32_t uid = atoi(payload["uid"].asString().c_str());
+    int32_t pid = atoi(payload["pid"].asString().c_str());
+    int32_t render = static_cast<int32_t>(value);
+    CGS_LOGD("%{public}s : %{public}u, %{public}d, %{public}d, %{public}d",
+        __func__, resType, uid, pid, render);
+
+    if (uid <= 0 || pid <= 0 || render <= 0) {
+        return;
+    }
+
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    auto procRecord = app->GetProcessRecordNonNull(pid);
+    procRecord->renderTid_ = render;
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_REPORT_RENDER_THREAD);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

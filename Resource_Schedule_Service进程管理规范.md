@@ -248,6 +248,10 @@ A. 事件打点延时
 | RES_TYPE_CLICK_RECOGNIZE        | ace手势点击识别器                    | 无                        | 无                                                           | <10ms         | soc_perf               |
 | RES_TYPE_PUSH_PAGE              | ace pipeline_context.cpp::PushPage() | 无                        | 无                                                           | <10ms         | soc_perf               |
 | RTS_TYPE_SLIDE_RECOGNIZE        | ace slide event recognize            | 1: slide on; 0: slide off | 无                                                           | <10ms         | soc_perf               |
+| RES_TYPE_WINDOW_VISIBILITY_CHANGE     | 窗口可见性状态变化事件          | 1: 可见, 0: 不可见     | 无                    | - | - |
+| RES_TYPE_WINDOW_UPDATE_STATE_CHANGE   | 窗口状态更新事件               | 更新的窗口类型          | 更新之前的窗口类型     | - | - |
+| RES_TYPE_REPORT_MMI_PROCESS           | 上报mmi_service线程ID          | mmi_service线程号     | {"uid"=?, "pid"=?}    | - | - |
+| RES_TYPE_REPORT_RENDER_THREAD         | 上报应用的RSRender线程ID       | RSRenderThread线程号   |  {"uid"=?, "pid"=?}   | - | - |
 
  
 

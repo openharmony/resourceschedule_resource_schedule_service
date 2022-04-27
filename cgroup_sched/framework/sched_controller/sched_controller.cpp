@@ -26,6 +26,7 @@
 #include "cgroup_sched_common.h"
 #include "cgroup_sched_log.h"
 #include "ressched_utils.h"
+#include "res_type.h"
 #include "supervisor.h"
 #include "background_task_observer.h"
 #include "window_state_observer.h"
@@ -38,7 +39,6 @@ namespace {
 }
 
 using OHOS::BackgroundTaskMgr::BackgroundTaskMgrHelper;
-using OHOS::ResourceSchedule::CgroupSetting::SchedPolicy;
 
 OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
 {
@@ -57,6 +57,8 @@ SchedController& SchedController::GetInstance()
 void SchedController::Init()
 {
     ChronoScope cs("Init SchedController.");
+    // Trigger load shared library
+    (void)ResSchedUtils::GetInstance();
     // Init supervisor which contains cached data for ccgroup controller.
     InitSupervisor();
     // Init cgroup handler thread
@@ -74,7 +76,6 @@ void SchedController::Deinit()
     if (supervisor_) {
         supervisor_ = nullptr;
     }
-    cgAdjuster_ = nullptr;
 }
 
 void SchedController::UnregisterStateObservers()
@@ -84,32 +85,14 @@ void SchedController::UnregisterStateObservers()
     UnsubscribeWindowState();
 }
 
-void SchedController::AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
-{
-    if (!cgAdjuster_) {
-        CGS_LOGE("SchedController is disabled due to null cgAdjuster_");
-        return;
-    }
-    cgAdjuster_->AdjustProcessGroup(app, pr, source);
-}
-
-void SchedController::AdjustAllProcessGroup(Application &app, AdjustSource source)
-{
-    if (!cgAdjuster_) {
-        CGS_LOGE("SchedController is disabled due to null cgAdjuster_");
-        return;
-    }
-    cgAdjuster_->AdjustAllProcessGroup(app, source);
-}
-
 int SchedController::GetProcessGroup(pid_t pid)
 {
     if (!supervisor_) {
         CGS_LOGE("SchedController::GetProcessCgroup, supervisor nullptr.");
-        return (int32_t)(SchedPolicy::SP_DEFAULT);
+        return (int32_t)(SP_DEFAULT);
     }
     std::shared_ptr<ProcessRecord> pr = supervisor_->FindProcessRecord(pid);
-    return pr ? (int32_t)(pr->curSchedGroup_) : (int32_t)(SchedPolicy::SP_DEFAULT);
+    return pr ? (int32_t)(pr->curSchedGroup_) : (int32_t)(SP_DEFAULT);
 }
 
 void SchedController::ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status)
@@ -128,6 +111,29 @@ void SchedController::ReportAbilityStatus(int32_t saId, const std::string& devic
     });
 }
 
+void SchedController::DispatchResource(uint32_t resType, int64_t value, const Json::Value& payload)
+{
+    auto handler = this->cgHandler_;
+    if (!handler) {
+        return;
+    }
+    handler->PostTask([handler, resType, value, payload] {
+        switch (resType) {
+            case ResType::RES_TYPE_REPORT_MMI_PROCESS: {
+                handler->HandleReportMMIProcess(resType, value, payload);
+                break;
+            }
+            case ResType::RES_TYPE_REPORT_RENDER_THREAD: {
+                handler->HandleReportRenderThread(resType, value, payload);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    });
+}
+
 inline void SchedController::InitCgroupHandler()
 {
     cgHandler_ = std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create(CG_HANDLER_THREAD));
@@ -136,8 +142,7 @@ inline void SchedController::InitCgroupHandler()
 
 inline void SchedController::InitCgroupAdjuster()
 {
-    cgAdjuster_ = std::make_shared<CgroupAdjuster>();
-    cgAdjuster_->InitAdjuster();
+    CgroupAdjuster::GetInstance().InitAdjuster();
 }
 
 inline void SchedController::InitSupervisor()
@@ -278,6 +283,11 @@ extern "C" int GetProcessGroup(pid_t pid)
 extern "C" void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status)
 {
     SchedController::GetInstance().ReportAbilityStatus(saId, deviceId, status);
+}
+
+extern "C" void CgroupSchedDispatch(uint32_t resType, int64_t value, const Json::Value& payload)
+{
+    SchedController::GetInstance().DispatchResource(resType, value, payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -22,7 +22,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-#define LOG_TAG_DOMAIN_ID_RMS 0xD001700
+#define LOG_TAG_DOMAIN_ID_RMS 0xD001702
 
 #define CGS_LOGF(...) (void)OHOS::HiviewDFX::HiLog::Fatal(LOG_LABEL, __VA_ARGS__)
 #define CGS_LOGE(...) (void)OHOS::HiviewDFX::HiLog::Error(LOG_LABEL, __VA_ARGS__)

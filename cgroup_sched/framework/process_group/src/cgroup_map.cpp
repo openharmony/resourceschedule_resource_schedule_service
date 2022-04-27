@@ -15,6 +15,7 @@
 
 #include "cgroup_map.h"
 
+#include "cgroup_action.h"
 #include "process_group_log.h"
 #include "process_group_util.h"
 
@@ -53,7 +54,7 @@ void CgroupMap::AddCgroupController(const std::string& name, CgroupController& c
     controllers_.insert(std::make_pair(name, std::move(controller)));
 }
 
-bool CgroupMap::loadConfigFromJsonObj(const Json::Value& jsonObj)
+bool CgroupMap::LoadConfigFromJsonObj(const Json::Value& jsonObj)
 {
     const Json::Value& jsonArrObj = jsonObj[JSON_KEY_CGROUPS];
     // check json format
@@ -76,12 +77,13 @@ bool CgroupMap::loadConfigFromJsonObj(const Json::Value& jsonObj)
         const Json::Value& schedPolicyJsonObj = cgroupObj[JSON_KEY_SCHED_POLICY];
         CgroupController controller(name, rootPath);
 
-        for (int i = 0; i < SP_CNT; i++) {
-            SchedPolicy policy = SchedPolicy(i);
+        auto policyList = CgroupAction::GetInstance().GetSchedPolicyList();
+        for (SchedPolicy policy : policyList) {
             const char* keyString = GetSchedPolicyFullName(policy);
             std::string relPath = schedPolicyJsonObj[keyString].asString();
             controller.AddSchedPolicy(policy, relPath);
         }
+
         this->AddCgroupController(name, controller);
         count++;
     }
@@ -100,13 +102,13 @@ bool CgroupMap::CheckCgroupJsonConfig(const Json::Value& cgroupObj)
         || cgroupObj[JSON_KEY_SCHED_POLICY].isNull() || !cgroupObj[JSON_KEY_SCHED_POLICY].isObject()) {
         return false;
     }
-    for (int i = SP_DEFAULT; i < SP_CNT; i++) {
-        SchedPolicy policy = SchedPolicy(i);
-        const char* string = GetSchedPolicyFullName(policy);
-        if (!strcmp(string, "error")) {
+    auto policyList = CgroupAction::GetInstance().GetSchedPolicyList();
+    for (SchedPolicy policy : policyList) {
+        const char* name = GetSchedPolicyFullName(policy);
+        if (!strcmp(name, "error")) {
             return false;
         }
-        const Json::Value& jsonObj = cgroupObj[JSON_KEY_SCHED_POLICY][string];
+        const Json::Value& jsonObj = cgroupObj[JSON_KEY_SCHED_POLICY][name];
         if (jsonObj.isNull() || !jsonObj.isString()) {
             return false;
         }
@@ -114,7 +116,7 @@ bool CgroupMap::CheckCgroupJsonConfig(const Json::Value& cgroupObj)
     return true;
 }
 
-bool CgroupMap::findFristEnableCgroupController(CgroupController** p)
+bool CgroupMap::FindFristEnableCgroupController(CgroupController** p)
 {
     for (auto it = controllers_.begin(); it != controllers_.end(); ++it) {
         if (it->second.IsEnabled()) {

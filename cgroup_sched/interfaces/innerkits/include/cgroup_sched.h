@@ -16,6 +16,7 @@
 #ifndef CGROUP_SCHED_INTERFACES_INNERKITS_INCLUDE_CGROUP_SCHED_H_
 #define CGROUP_SCHED_INTERFACES_INNERKITS_INCLUDE_CGROUP_SCHED_H_
 
+#include "json/json.h"
 #include "sys/types.h"
 
 namespace OHOS {
@@ -24,6 +25,7 @@ extern "C" void CgroupSchedInit();
 extern "C" void CgroupSchedDeinit();
 extern "C" int GetProcessGroup(pid_t pid);
 extern "C" void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status);
+extern "C" void CgroupSchedDispatch(uint32_t resType, int64_t value, const Json::Value& payload);
 } // namespace ResourceSchedule
 } // namespace OHOS
 

@@ -110,7 +110,7 @@
         "sp_default": "",
         "sp_background": "background",
         "sp_foreground": "foreground",
-        "sp_system": "system",
+        "sp_system_background": "system-background",
         "sp_top_app": "top-app"
       }
     }

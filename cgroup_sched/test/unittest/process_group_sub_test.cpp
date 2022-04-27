@@ -124,8 +124,8 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_005, Function 
  */
 HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_006, Function | MediumTest | Level0)
 {
-    const char* policyName = GetSchedPolicyFullName(SP_SYSTEM);
-    EXPECT_TRUE(!strcmp(policyName, "sp_system"));
+    const char* policyName = GetSchedPolicyFullName(SP_SYSTEM_BACKGROUND);
+    EXPECT_TRUE(!strcmp(policyName, "sp_system_background"));
 }
 
 /*
