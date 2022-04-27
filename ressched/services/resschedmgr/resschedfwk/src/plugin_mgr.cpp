@@ -14,6 +14,7 @@
  */
 
 #include "plugin_mgr.h"
+#include <cinttypes>
 #include <algorithm>
 #include <csignal>
 #include <csetjmp>
@@ -33,16 +34,16 @@ using Clock = std::chrono::high_resolution_clock;
 using TimePoint = std::chrono::time_point<Clock>;
 
 namespace {
-    const int DISPATCH_WARNING_TIME = 1; // ms
-    const int DISPATCH_TIME_OUT = 10; // ms
+    const int32_t DISPATCH_WARNING_TIME = 1; // ms
+    const int32_t DISPATCH_TIME_OUT = 10; // ms
     const std::string RUNNER_NAME = "rssDispatcher";
     const std::string PLUGIN_SWITCH_FILE_NAME = "/system/etc/ressched/res_sched_plugin_switch.xml";
     const std::string CONFIG_FILE_NAME = "/system/etc/ressched/res_sched_config.xml";
     static __thread jmp_buf env;
-    const int SIG_ALL[] = {SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGBUS, SIGTERM};
+    const int32_t SIG_ALL[] = {SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGBUS, SIGTERM};
 }
 
-extern "C" void Back(int sig)
+extern "C" void Back(int32_t sig)
 {
     siglongjmp(env, 1);
 }
@@ -206,8 +207,9 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         libNameAll.append(",");
     }
     libNameAll.append("]");
-    RESSCHED_LOGI("PluginMgr::DispatchResource resType = %{public}d, value = %{public}lld pluginlist is %{public}s.",
-        resData->resType, (long long)resData->value, libNameAll.c_str());
+    RESSCHED_LOGI("PluginMgr::DispatchResource resType = %{public}d, "
+        "value = %{public}" PRId64 " pluginlist is %{public}s.",
+        resData->resType, resData->value, libNameAll.c_str());
     {
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         for (const auto& libPath : iter->second) {
@@ -274,7 +276,7 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
         return;
     }
     auto endTime = Clock::now();
-    int costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
+    int32_t costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
     if (costTime > DISPATCH_TIME_OUT) {
         // dispatch resource use too long time, unload it
         RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin ERROR :"
@@ -333,7 +335,7 @@ void PluginMgr::CloseHandle(const DlHandle& handle)
         return;
     }
 
-    int ret = dlclose(handle);
+    int32_t ret = dlclose(handle);
     if (ret) {
         RESSCHED_LOGW("PluginMgr::CloseHandle handle close failed!");
     }

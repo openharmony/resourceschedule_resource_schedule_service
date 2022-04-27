@@ -14,6 +14,7 @@
  */
 
 #include "res_sched_mgr.h"
+#include <cinttypes>
 #include "res_sched_log.h"
 #include "plugin_mgr.h"
 
@@ -61,8 +62,8 @@ void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const Json::Value&
 
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
 {
-    RESSCHED_LOGI("ResSchedMgr::ReportDataInProcess receive resType = %{public}u, value = %{public}lld.",
-        resType, (long long)value);
+    RESSCHED_LOGI("ResSchedMgr::ReportDataInProcess receive resType = %{public}u, value = %{public}" PRId64".",
+        resType, value);
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 } // namespace ResourceSchedule
