@@ -26,13 +26,13 @@ class SocPerfServer : public SystemAbility, public SocPerfStub {
 DECLARE_SYSTEM_ABILITY(SocPerfServer);
 
 public:
-    void PerfRequest(int cmdId, const std::string& msg) override;
-    void PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg) override;
-    void PowerRequest(int cmdId, const std::string& msg) override;
-    void PowerRequestEx(int cmdId, bool onOffTag, const std::string& msg) override;
+    void PerfRequest(int32_t cmdId, const std::string& msg) override;
+    void PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) override;
+    void PowerRequest(int32_t cmdId, const std::string& msg) override;
+    void PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) override;
     void PowerLimitBoost(bool onOffTag, const std::string& msg) override;
-    void ThermalRequest(int cmdId, const std::string& msg) override;
-    void ThermalRequestEx(int cmdId, bool onOffTag, const std::string& msg) override;
+    void ThermalRequest(int32_t cmdId, const std::string& msg) override;
+    void ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) override;
     void ThermalLimitBoost(bool onOffTag, const std::string& msg) override;
 
 public:

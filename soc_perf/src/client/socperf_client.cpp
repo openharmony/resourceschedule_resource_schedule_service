@@ -77,8 +77,8 @@ void SocPerfClient::SocPerfDeathRecipient::OnRemoteDied(const wptr<IRemoteObject
 std::string SocPerfClient::AddPidAndTidInfo(const std::string& msg)
 {
     std::string str;
-    int pid = getpid();
-    int tid = gettid();
+    int32_t pid = getpid();
+    int32_t tid = gettid();
     str.append("pid=").append(std::to_string(pid)).append("|");
     str.append("tid=").append(std::to_string(tid));
     if (msg.size() > 0) {
@@ -87,7 +87,7 @@ std::string SocPerfClient::AddPidAndTidInfo(const std::string& msg)
     return str;
 }
 
-void SocPerfClient::PerfRequest(int cmdId, const std::string& msg)
+void SocPerfClient::PerfRequest(int32_t cmdId, const std::string& msg)
 {
     if (!CheckClientValid()) {
         return;
@@ -96,7 +96,7 @@ void SocPerfClient::PerfRequest(int cmdId, const std::string& msg)
     client->PerfRequest(cmdId, newMsg);
 }
 
-void SocPerfClient::PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg)
+void SocPerfClient::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
     if (!CheckClientValid()) {
         return;
@@ -105,7 +105,7 @@ void SocPerfClient::PerfRequestEx(int cmdId, bool onOffTag, const std::string& m
     client->PerfRequestEx(cmdId, onOffTag, newMsg);
 }
 
-void SocPerfClient::PowerRequest(int cmdId, const std::string& msg)
+void SocPerfClient::PowerRequest(int32_t cmdId, const std::string& msg)
 {
     if (!CheckClientValid()) {
         return;
@@ -114,7 +114,7 @@ void SocPerfClient::PowerRequest(int cmdId, const std::string& msg)
     client->PowerRequest(cmdId, newMsg);
 }
 
-void SocPerfClient::PowerRequestEx(int cmdId, bool onOffTag, const std::string& msg)
+void SocPerfClient::PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
     if (!CheckClientValid()) {
         return;
@@ -132,7 +132,7 @@ void SocPerfClient::PowerLimitBoost(bool onOffTag, const std::string& msg)
     client->PowerLimitBoost(onOffTag, newMsg);
 }
 
-void SocPerfClient::ThermalRequest(int cmdId, const std::string& msg)
+void SocPerfClient::ThermalRequest(int32_t cmdId, const std::string& msg)
 {
     if (!CheckClientValid()) {
         return;
@@ -141,7 +141,7 @@ void SocPerfClient::ThermalRequest(int cmdId, const std::string& msg)
     client->ThermalRequest(cmdId, newMsg);
 }
 
-void SocPerfClient::ThermalRequestEx(int cmdId, bool onOffTag, const std::string& msg)
+void SocPerfClient::ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
     if (!CheckClientValid()) {
         return;

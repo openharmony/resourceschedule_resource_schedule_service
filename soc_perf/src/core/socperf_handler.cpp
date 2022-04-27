@@ -31,24 +31,24 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
     switch (event->GetInnerEventId()) {
         case INNER_EVENT_ID_INIT_RES_NODE_INFO: {
             auto resNode = event->GetSharedObject<ResNode>();
-            resNodeInfo.insert(std::pair<int, std::shared_ptr<ResNode>>(resNode->id, resNode));
+            resNodeInfo.insert(std::pair<int32_t, std::shared_ptr<ResNode>>(resNode->id, resNode));
             WriteNode(resNode->path, std::to_string(resNode->def));
             auto resStatus = std::make_shared<ResStatus>(resNode->def);
-            resStatusInfo.insert(std::pair<int, std::shared_ptr<ResStatus>>(resNode->id, resStatus));
+            resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(resNode->id, resStatus));
             break;
         }
         case INNER_EVENT_ID_INIT_GOV_RES_NODE_INFO: {
             auto govResNode = event->GetSharedObject<GovResNode>();
-            govResNodeInfo.insert(std::pair<int, std::shared_ptr<GovResNode>>(govResNode->id, govResNode));
-            for (int i = 0; i < (int)govResNode->paths.size(); i++) {
+            govResNodeInfo.insert(std::pair<int32_t, std::shared_ptr<GovResNode>>(govResNode->id, govResNode));
+            for (int32_t i = 0; i < (int32_t)govResNode->paths.size(); i++) {
                 WriteNode(govResNode->paths[i], govResNode->levelToStr[govResNode->def][i]);
             }
             auto resStatus = std::make_shared<ResStatus>(govResNode->def);
-            resStatusInfo.insert(std::pair<int, std::shared_ptr<ResStatus>>(govResNode->id, resStatus));
+            resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(govResNode->id, resStatus));
             break;
         }
         case INNER_EVENT_ID_DO_FREQ_ACTION: {
-            int resId = event->GetParam();
+            int32_t resId = event->GetParam();
             if (!IsValidResId(resId)) {
                 return;
             }
@@ -57,7 +57,7 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
             break;
         }
         case INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED: {
-            int resId = event->GetParam();
+            int32_t resId = event->GetParam();
             if (!IsValidResId(resId)) {
                 return;
             }
@@ -85,10 +85,10 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
     }
 }
 
-void SocPerfHandler::UpdateResActionList(int resId, std::shared_ptr<ResAction> resAction, bool delayed)
+void SocPerfHandler::UpdateResActionList(int32_t resId, std::shared_ptr<ResAction> resAction, bool delayed)
 {
     std::shared_ptr<ResStatus> resStatus = resStatusInfo[resId];
-    int type = resAction->type;
+    int32_t type = resAction->type;
 
     if (delayed) {
         for (auto iter = resStatus->resActionList[type].begin();
@@ -147,23 +147,23 @@ void SocPerfHandler::UpdateResActionList(int resId, std::shared_ptr<ResAction> r
     }
 }
 
-void SocPerfHandler::UpdateCandidatesValue(int resId, int type)
+void SocPerfHandler::UpdateCandidatesValue(int32_t resId, int32_t type)
 {
     std::shared_ptr<ResStatus> resStatus = resStatusInfo[resId];
-    int prev = resStatus->candidates[type];
+    int32_t prev = resStatus->candidates[type];
 
     if (resStatus->resActionList[type].empty()) {
         resStatus->candidates[type] = INVALID_VALUE;
     } else {
         if (type == ACTION_TYPE_PERF) {
-            int res = MIN_INT_VALUE;
+            int32_t res = MIN_INT_VALUE;
             for (auto iter = resStatus->resActionList[type].begin();
                 iter != resStatus->resActionList[type].end(); ++iter) {
                 res = Max(res, (*iter)->value);
             }
             resStatus->candidates[type] = res;
         } else {
-            int res = MAX_INT_VALUE;
+            int32_t res = MAX_INT_VALUE;
             for (auto iter = resStatus->resActionList[type].begin();
                 iter != resStatus->resActionList[type].end(); ++iter) {
                 res = Min(res, (*iter)->value);
@@ -177,12 +177,12 @@ void SocPerfHandler::UpdateCandidatesValue(int resId, int type)
     }
 }
 
-void SocPerfHandler::ArbitrateCandidate(int resId)
+void SocPerfHandler::ArbitrateCandidate(int32_t resId)
 {
     std::shared_ptr<ResStatus> resStatus = resStatusInfo[resId];
-    int candidatePerf = resStatus->candidates[ACTION_TYPE_PERF];
-    int candidatePower = resStatus->candidates[ACTION_TYPE_POWER];
-    int candidateThermal = resStatus->candidates[ACTION_TYPE_THERMAL];
+    int32_t candidatePerf = resStatus->candidates[ACTION_TYPE_PERF];
+    int32_t candidatePower = resStatus->candidates[ACTION_TYPE_POWER];
+    int32_t candidateThermal = resStatus->candidates[ACTION_TYPE_THERMAL];
 
     if (ExistNoCandidate(resId, resStatus, candidatePerf, candidatePower, candidateThermal)) {
         return;
@@ -215,14 +215,14 @@ void SocPerfHandler::ArbitrateCandidate(int resId)
     ArbitratePairRes(resId);
 }
 
-void SocPerfHandler::ArbitratePairRes(int resId)
+void SocPerfHandler::ArbitratePairRes(int32_t resId)
 {
     if (IsGovResId(resId)) {
         UpdateCurrentValue(resId, resStatusInfo[resId]->candidate);
         return;
     }
 
-    int pairResId = resNodeInfo[resId]->pair;
+    int32_t pairResId = resNodeInfo[resId]->pair;
     if (pairResId == INVALID_VALUE) {
         UpdateCurrentValue(resId, resStatusInfo[resId]->candidate);
         return;
@@ -257,7 +257,7 @@ void SocPerfHandler::ArbitratePairRes(int resId)
     }
 }
 
-void SocPerfHandler::UpdatePairResValue(int minResId, int minResValue, int maxResId, int maxResValue)
+void SocPerfHandler::UpdatePairResValue(int32_t minResId, int32_t minResValue, int32_t maxResId, int32_t maxResValue)
 {
     if (resStatusInfo[minResId]->current != minResValue) {
         WriteNode(resNodeInfo[minResId]->path, std::to_string(resNodeInfo[minResId]->def));
@@ -269,13 +269,13 @@ void SocPerfHandler::UpdatePairResValue(int minResId, int minResValue, int maxRe
     UpdateCurrentValue(maxResId, maxResValue);
 }
 
-void SocPerfHandler::UpdateCurrentValue(int resId, int currValue)
+void SocPerfHandler::UpdateCurrentValue(int32_t resId, int32_t currValue)
 {
     if (resStatusInfo[resId]->current != currValue) {
         resStatusInfo[resId]->current = currValue;
         if (IsGovResId(resId)) {
             std::vector<std::string> targetStrs = govResNodeInfo[resId]->levelToStr[resStatusInfo[resId]->current];
-            for (int i = 0; i < (int)govResNodeInfo[resId]->paths.size(); i++) {
+            for (int32_t i = 0; i < (int32_t)govResNodeInfo[resId]->paths.size(); i++) {
                 WriteNode(govResNodeInfo[resId]->paths[i], targetStrs[i]);
             }
         } else {
@@ -300,7 +300,7 @@ void SocPerfHandler::WriteNode(std::string filePath, std::string value)
 }
 
 bool SocPerfHandler::ExistNoCandidate(
-    int resId, std::shared_ptr<ResStatus> resStatus, int perf, int power, int thermal)
+    int32_t resId, std::shared_ptr<ResStatus> resStatus, int32_t perf, int32_t power, int32_t thermal)
 {
     if (perf == INVALID_VALUE && power == INVALID_VALUE && thermal == INVALID_VALUE) {
         if (IsGovResId(resId)) {
@@ -314,7 +314,7 @@ bool SocPerfHandler::ExistNoCandidate(
     return false;
 }
 
-bool SocPerfHandler::IsGovResId(int resId)
+bool SocPerfHandler::IsGovResId(int32_t resId)
 {
     if (resNodeInfo.find(resId) == resNodeInfo.end()
         && govResNodeInfo.find(resId) != govResNodeInfo.end()) {
@@ -323,7 +323,7 @@ bool SocPerfHandler::IsGovResId(int resId)
     return false;
 }
 
-bool SocPerfHandler::IsValidResId(int resId)
+bool SocPerfHandler::IsValidResId(int32_t resId)
 {
     if (resNodeInfo.find(resId) == resNodeInfo.end()
         && govResNodeInfo.find(resId) == govResNodeInfo.end()) {

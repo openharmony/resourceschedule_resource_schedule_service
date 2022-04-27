@@ -31,13 +31,13 @@ namespace SOCPERF {
 class SocPerf {
 public:
     bool Init();
-    void PerfRequest(int cmdId, const std::string& msg);
-    void PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg);
-    void PowerRequest(int cmdId, const std::string& msg);
-    void PowerRequestEx(int cmdId, bool onOffTag, const std::string& msg);
+    void PerfRequest(int32_t cmdId, const std::string& msg);
+    void PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg);
+    void PowerRequest(int32_t cmdId, const std::string& msg);
+    void PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg);
     void PowerLimitBoost(bool onOffTag, const std::string& msg);
-    void ThermalRequest(int cmdId, const std::string& msg);
-    void ThermalRequestEx(int cmdId, bool onOffTag, const std::string& msg);
+    void ThermalRequest(int32_t cmdId, const std::string& msg);
+    void ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg);
     void ThermalLimitBoost(bool onOffTag, const std::string& msg);
 
 public:
@@ -45,15 +45,15 @@ public:
     ~SocPerf();
 
 private:
-    std::unordered_map<int, std::shared_ptr<Action>> perfActionInfo;
-    std::unordered_map<int, std::shared_ptr<Action>> powerActionInfo;
-    std::unordered_map<int, std::shared_ptr<Action>> thermalActionInfo;
+    std::unordered_map<int32_t, std::shared_ptr<Action>> perfActionInfo;
+    std::unordered_map<int32_t, std::shared_ptr<Action>> powerActionInfo;
+    std::unordered_map<int32_t, std::shared_ptr<Action>> thermalActionInfo;
     std::vector<std::shared_ptr<SocPerfHandler>> handlers;
     bool enabled = false;
 
-    std::unordered_map<int, std::shared_ptr<ResNode>> resNodeInfo;
-    std::unordered_map<int, std::shared_ptr<GovResNode>> govResNodeInfo;
-    std::unordered_map<std::string, int> resStrToIdInfo;
+    std::unordered_map<int32_t, std::shared_ptr<ResNode>> resNodeInfo;
+    std::unordered_map<int32_t, std::shared_ptr<GovResNode>> govResNodeInfo;
+    std::unordered_map<std::string, int32_t> resStrToIdInfo;
 
 private:
     bool LoadConfigXmlFile(std::string configFile);
@@ -72,7 +72,7 @@ private:
     bool CheckGovResDefValid();
     bool CheckCmdTag(char* id, char* name, std::string configFile);
     bool CheckActionResIdAndValueValid(std::string configFile);
-    void DoFreqAction(std::shared_ptr<Action> action, int onOff, int actionType);
+    void DoFreqAction(std::shared_ptr<Action> action, int32_t onOff, int32_t actionType);
     void PrintCachedInfo();
 };
 } // namespace SOCPERF

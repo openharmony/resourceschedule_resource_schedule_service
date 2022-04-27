@@ -15,11 +15,11 @@
 
 #include "socperf_client.h"
 
-const int PARAMETERS_NUM_MIN        = 2;
-const int PARAMETERS_NUM_WITHOUT_EX = 3;
-const int PARAMETERS_NUM_WITH_EX    = 4;
+const static int32_t PARAMETERS_NUM_MIN        = 2;
+const static int32_t PARAMETERS_NUM_WITHOUT_EX = 3;
+const static int32_t PARAMETERS_NUM_WITH_EX    = 4;
 
-static void PerfRequest(int argc, char *argv[])
+static void PerfRequest(int32_t argc, char *argv[])
 {
     if (argc == PARAMETERS_NUM_WITHOUT_EX) {
         char* cmdId = argv[2];
@@ -29,7 +29,7 @@ static void PerfRequest(int argc, char *argv[])
     }
 }
 
-static void PerfRequestEx(int argc, char *argv[])
+static void PerfRequestEx(int32_t argc, char *argv[])
 {
     if (argc == PARAMETERS_NUM_WITH_EX) {
         char* cmdId = argv[2];
@@ -44,7 +44,7 @@ static void PerfRequestEx(int argc, char *argv[])
     }
 }
 
-static void PowerRequest(int argc, char *argv[])
+static void PowerRequest(int32_t argc, char *argv[])
 {
     if (argc == PARAMETERS_NUM_WITHOUT_EX) {
         char* cmdId = argv[2];
@@ -54,7 +54,7 @@ static void PowerRequest(int argc, char *argv[])
     }
 }
 
-static void PowerRequestEx(int argc, char *argv[])
+static void PowerRequestEx(int32_t argc, char *argv[])
 {
     if (argc == PARAMETERS_NUM_WITH_EX) {
         char* cmdId = argv[2];
@@ -69,7 +69,7 @@ static void PowerRequestEx(int argc, char *argv[])
     }
 }
 
-static void PowerLimitBoost(int argc, char *argv[])
+static void PowerLimitBoost(int32_t argc, char *argv[])
 {
     if (argc == PARAMETERS_NUM_WITHOUT_EX) {
         char* onOffTag = argv[2];
@@ -83,7 +83,7 @@ static void PowerLimitBoost(int argc, char *argv[])
     }
 }
 
-static void ThermalRequest(int argc, char *argv[])
+static void ThermalRequest(int32_t argc, char *argv[])
 {
     if (argc == PARAMETERS_NUM_WITHOUT_EX) {
         char* cmdId = argv[2];
@@ -93,7 +93,7 @@ static void ThermalRequest(int argc, char *argv[])
     }
 }
 
-static void ThermalRequestEx(int argc, char *argv[])
+static void ThermalRequestEx(int32_t argc, char *argv[])
 {
     if (argc == PARAMETERS_NUM_WITH_EX) {
         char* cmdId = argv[2];
@@ -108,7 +108,7 @@ static void ThermalRequestEx(int argc, char *argv[])
     }
 }
 
-static void ThermalLimitBoost(int argc, char *argv[])
+static void ThermalLimitBoost(int32_t argc, char *argv[])
 {
     if (argc == PARAMETERS_NUM_WITHOUT_EX) {
         char* onOffTag = argv[2];
@@ -122,7 +122,7 @@ static void ThermalLimitBoost(int argc, char *argv[])
     }
 }
 
-int main(int argc, char *argv[])
+int32_t main(int32_t argc, char *argv[])
 {
     if (argc >= PARAMETERS_NUM_MIN && argv) {
         char* function = argv[1];

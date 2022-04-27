@@ -23,13 +23,13 @@ namespace OHOS {
 namespace SOCPERF {
 class SocPerfClient {
 public:
-    void PerfRequest(int cmdId, const std::string& msg);
-    void PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg);
-    void PowerRequest(int cmdId, const std::string& msg);
-    void PowerRequestEx(int cmdId, bool onOffTag, const std::string& msg);
+    void PerfRequest(int32_t cmdId, const std::string& msg);
+    void PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg);
+    void PowerRequest(int32_t cmdId, const std::string& msg);
+    void PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg);
     void PowerLimitBoost(bool onOffTag, const std::string& msg);
-    void ThermalRequest(int cmdId, const std::string& msg);
-    void ThermalRequestEx(int cmdId, bool onOffTag, const std::string& msg);
+    void ThermalRequest(int32_t cmdId, const std::string& msg);
+    void ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg);
     void ThermalLimitBoost(bool onOffTag, const std::string& msg);
     static SocPerfClient& GetInstance();
     void ResetClient();
