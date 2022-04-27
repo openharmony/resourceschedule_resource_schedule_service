@@ -114,13 +114,13 @@ ohos_shared_library("socperf_server") {
   ]
   deps = [
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/libxml2:xml2",
     "//utils/native/base:utils",
   ]
+  external_deps = [ "eventhandler:libeventhandler" ]
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
 }

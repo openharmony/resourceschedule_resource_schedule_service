@@ -34,7 +34,6 @@ ohos_unittest("SocPerfSubTest") {
 
   deps = [
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
@@ -43,6 +42,7 @@ ohos_unittest("SocPerfSubTest") {
     "//third_party/libxml2:xml2",
     "//utils/native/base:utils",
   ]
+  external_deps = [ "eventhandler:libeventhandler" ]
 }
 
 group("unittest") {
