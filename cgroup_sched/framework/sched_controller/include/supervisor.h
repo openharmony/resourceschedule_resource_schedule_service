@@ -20,17 +20,18 @@
 #include <map>
 #include <sys/types.h>
 #include <string>
+#include <vector>
 
-#include "iremote_object.h"
 #include "sched_policy.h"
-#include "app_mgr_constants.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-using OHOS::AppExecFwk::ApplicationState;
-using OHOS::AppExecFwk::AbilityState;
-using OHOS::AppExecFwk::ExtensionState;
 using OHOS::ResourceSchedule::CgroupSetting::SchedPolicy;
+using OHOS::ResourceSchedule::CgroupSetting::SP_DEFAULT;
+using OHOS::ResourceSchedule::CgroupSetting::SP_BACKGROUND;
+using OHOS::ResourceSchedule::CgroupSetting::SP_FOREGROUND;
+using OHOS::ResourceSchedule::CgroupSetting::SP_SYSTEM_BACKGROUND;
+using OHOS::ResourceSchedule::CgroupSetting::SP_TOP_APP;
 
 class AbilityInfo;
 class WindowInfo {
@@ -42,7 +43,7 @@ public:
     bool isVisible_ = false;
     bool isFocused_ = false;
     int32_t windowType_ = 0;
-    uint64_t displayId_ = -1ULL;
+    uint64_t displayId_ = 0;
     std::shared_ptr<AbilityInfo> ability_ = nullptr;
 };
 
@@ -55,6 +56,7 @@ public:
     int32_t estate_ = -1; // extension state
     int32_t type_ = -1; // ability type
     uintptr_t token_ = 0;
+    std::string name_;
     std::shared_ptr<WindowInfo> window_ = nullptr;
 };
 
@@ -85,11 +87,13 @@ public:
         return uid_;
     }
 
-    SchedPolicy lastSchedGroup_ = SchedPolicy::SP_DEFAULT;
-    SchedPolicy curSchedGroup_ = SchedPolicy::SP_DEFAULT;
-    SchedPolicy setSchedGroup_ = SchedPolicy::SP_DEFAULT;
+    SchedPolicy lastSchedGroup_ = SP_DEFAULT;
+    SchedPolicy curSchedGroup_ = SP_DEFAULT;
+    SchedPolicy setSchedGroup_ = SP_DEFAULT;
     bool runningTransientTask_ = false;
-    bool runningContinuousTask_ = false;
+    uint32_t continuousTaskFlag_ = 0;
+    int32_t renderTid_ = 0;
+    int32_t maliTid_ = 0;
 
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
     std::vector<std::shared_ptr<WindowInfo>> windows_;
@@ -121,12 +125,12 @@ public:
         return pidsMap_;
     }
 
+    int32_t state_ = -1;
     std::string name_;
     std::shared_ptr<ProcessRecord> focusedProcess_ = nullptr;
-    SchedPolicy lastSchedGroup_ = SchedPolicy::SP_DEFAULT;
-    SchedPolicy curSchedGroup_ = SchedPolicy::SP_DEFAULT;
-    SchedPolicy setSchedGroup_ = SchedPolicy::SP_DEFAULT;
-    int32_t state_ = static_cast<int32_t>(ApplicationState::APP_STATE_TERMINATED);
+    SchedPolicy lastSchedGroup_ = SP_DEFAULT;
+    SchedPolicy curSchedGroup_ = SP_DEFAULT;
+    SchedPolicy setSchedGroup_ = SP_DEFAULT;
 
 private:
     uid_t uid_;

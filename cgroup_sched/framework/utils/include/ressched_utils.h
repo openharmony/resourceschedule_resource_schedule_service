@@ -17,6 +17,8 @@
 #define CGROUP_SCHED_FRAMEWORK_UTILS_INCLUDE_RESSCHED_UTILS_H_
 
 #include <iostream>
+#include "cgroup_adjuster.h"
+#include "supervisor.h"
 #include "sys/types.h"
 #include "json/json.h"
 
@@ -32,9 +34,7 @@ public:
 private:
     ResSchedUtils()
     {
-        if (!reportFunc_) {
-            LoadUtils();
-        }
+        LoadUtils();
     }
     ~ResSchedUtils()
     {

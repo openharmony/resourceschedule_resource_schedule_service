@@ -36,6 +36,12 @@ using OHOS::AppExecFwk::AbilityState;
 using OHOS::AppExecFwk::ExtensionState;
 using OHOS::Rosen::WindowType;
 
+CgroupAdjuster& CgroupAdjuster::GetInstance()
+{
+    static CgroupAdjuster instance;
+    return instance;
+}
+
 void CgroupAdjuster::InitAdjuster()
 {
     auto handler = SchedController::GetInstance().GetCgroupEventHandler();
@@ -67,7 +73,7 @@ void CgroupAdjuster::AdjustAllProcessGroup(Application &app, AdjustSource source
 inline void CgroupAdjuster::AdjustSelfProcessGroup()
 {
     int pid = getpid();
-    int group = (int)(CgroupSetting::SchedPolicy::SP_FOREGROUND);
+    int group = SP_FOREGROUND;
     int ret = CgroupSetting::SetThreadGroupSchedPolicy(pid, group);
     if (ret != 0) {
         CGS_LOGE("%{public}s set %{public}d to group %{public}d failed, ret=%{public}d!", __func__, pid, group, ret);
@@ -76,30 +82,25 @@ inline void CgroupAdjuster::AdjustSelfProcessGroup()
 
 void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
 {
-    SchedPolicy group = SchedPolicy::SP_DEFAULT;
+    SchedPolicy group = SP_DEFAULT;
 
     {
         ChronoScope cs("ComputeProcessGroup");
         if (source == AdjustSource::ADJS_PROCESS_CREATE) {
-            group = SchedPolicy::SP_DEFAULT;
+            group = SP_DEFAULT;
         } else if (app.focusedProcess_) {
-            group = SchedPolicy::SP_TOP_APP;
+            group = SP_TOP_APP;
         } else {
             if (pr.abilities_.size() == 0) {
-                group = SchedPolicy::SP_DEFAULT;
+                group = SP_DEFAULT;
             } else if (pr.IsVisible()) {
-                group = SchedPolicy::SP_FOREGROUND;
+                group = SP_FOREGROUND;
             } else if (pr.HasServiceExtension()) {
-                group = SchedPolicy::SP_DEFAULT;
+                group = SP_DEFAULT;
             } else {
-                group = SchedPolicy::SP_BACKGROUND;
+                group = SP_BACKGROUND;
             }
         }
-
-        if (group == SchedPolicy::SP_BACKGROUND && pr.runningContinuousTask_) {
-            group = SchedPolicy::SP_FOREGROUND; // move background key task to fg
-        }
-
         pr.setSchedGroup_ = group;
     } // end ChronoScope
 }

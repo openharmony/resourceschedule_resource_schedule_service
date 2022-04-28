@@ -48,6 +48,7 @@ public:
     void ReportData(uint32_t resType, int64_t value = 0, const Json::Value& payload = nullptr);
 
 private:
+    void DispatchResourceInner(uint32_t resType, int64_t value, const Json::Value& payload);
     // main handler, use for report data
     std::shared_ptr<AppExecFwk::EventHandler> mainHandler_ = nullptr;
     std::mutex mainHandlerMutex_;

@@ -19,7 +19,7 @@
 #include <sys/types.h>
 #include <string>
 #include "hilog/log.h"
-
+#include "json/json.h"
 #include "window_state_observer.h"
 
 namespace OHOS {
@@ -46,10 +46,9 @@ public:
     void SubscribeWindowState();
     void UnsubscribeWindowState();
     void UnregisterStateObservers();
-    void AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source);
-    void AdjustAllProcessGroup(Application &app, AdjustSource source);
     int GetProcessGroup(pid_t pid);
     void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status);
+    void DispatchResource(uint32_t resType, int64_t value, const Json::Value& payload);
 
     const inline std::shared_ptr<CgroupEventHandler> GetCgroupEventHandler() const
     {
@@ -71,7 +70,6 @@ private:
     SchedController& operator=(SchedController&&) = delete;
 
     std::shared_ptr<CgroupEventHandler> cgHandler_;
-    std::shared_ptr<CgroupAdjuster> cgAdjuster_;
     std::shared_ptr<Supervisor> supervisor_;
     sptr<RmsApplicationStateObserver> appStateObserver_;
     std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_;

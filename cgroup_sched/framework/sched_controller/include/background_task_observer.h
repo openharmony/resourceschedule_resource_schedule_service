@@ -17,6 +17,7 @@
 #define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_BACKGROUND_TASK_OBSERVER_H_
 
 #include <sys/types.h>
+#include "background_mode.h"
 #include "continuous_task_callback_info.h"
 #include "transient_task_app_info.h"
 #include "background_task_subscriber.h"
@@ -50,7 +51,8 @@ private:
     inline bool ValidateTaskInfo(const std::shared_ptr<ContinuousTaskCallbackInfo>& eventData) const
     {
         return eventData->GetCreatorUid() > 0 && eventData->GetCreatorPid() >= 0
-            && eventData->GetAbilityName().size() > 0;
+            && eventData->GetAbilityName().size() > 0 && eventData->GetTypeId() > 0
+            && eventData->GetTypeId() <= BackgroundTaskMgr::BackgroundMode::TASK_KEEPING;
     }
 
     inline std::string PackPayload(const std::shared_ptr<TransientTaskAppInfo>& info) const

@@ -43,7 +43,6 @@ ohos_shared_library("ressched_client") {
   ]
 
   deps = [
-    "${ressched_services}:resschedsvc",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
     "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",

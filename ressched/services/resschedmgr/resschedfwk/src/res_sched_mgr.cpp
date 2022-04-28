@@ -15,6 +15,7 @@
 
 #include "res_sched_mgr.h"
 #include <cinttypes>
+#include "cgroup_sched.h"
 #include "res_sched_log.h"
 #include "plugin_mgr.h"
 
@@ -55,9 +56,15 @@ void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const Json::Value&
     }
     // dispatch resource async
     std::lock_guard<std::mutex> autoLock(mainHandlerMutex_);
-    mainHandler_->PostTask([resType, value, payload] {
+    mainHandler_->PostTask([this, resType, value, payload] {
+        DispatchResourceInner(resType, value, payload);
         PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
     });
+}
+
+void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const Json::Value& payload)
+{
+    CgroupSchedDispatch(resType, value, payload);
 }
 
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)

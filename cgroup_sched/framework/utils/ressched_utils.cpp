@@ -43,13 +43,12 @@ void ResSchedUtils::LoadUtils()
         return;
     }
 
-    auto func = reinterpret_cast<ReportDataFunc>(dlsym(handle, "ReportDataInProcess"));
-    if (!func) {
+    reportFunc_ = reinterpret_cast<ReportDataFunc>(dlsym(handle, "ReportDataInProcess"));
+    if (!reportFunc_) {
         CGS_LOGE("%{public}s load function:ReportDataInProcess failed!", __func__);
         dlclose(handle);
         return;
     }
-    reportFunc_ = func;
 }
 
 void ResSchedUtils::ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)

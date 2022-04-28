@@ -96,10 +96,11 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
     if (cgHandler) {
         auto uid = continuousTaskCallbackInfo->GetCreatorUid();
         auto pid = continuousTaskCallbackInfo->GetCreatorPid();
+        auto typeId = continuousTaskCallbackInfo->GetTypeId();
         auto abilityName = continuousTaskCallbackInfo->GetAbilityName();
 
-        cgHandler->PostTask([cgHandler, uid, pid, abilityName] {
-            cgHandler->HandleContinuousTaskStart(uid, pid, abilityName);
+        cgHandler->PostTask([cgHandler, uid, pid, typeId, abilityName] {
+            cgHandler->HandleContinuousTaskStart(uid, pid, typeId, abilityName);
         });
     }
 
@@ -121,10 +122,11 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
     if (cgHandler) {
         auto uid = continuousTaskCallbackInfo->GetCreatorUid();
         auto pid = continuousTaskCallbackInfo->GetCreatorPid();
+        auto typeId = continuousTaskCallbackInfo->GetTypeId();
         auto abilityName = continuousTaskCallbackInfo->GetAbilityName();
 
-        cgHandler->PostTask([cgHandler, uid, pid, abilityName] {
-            cgHandler->HandleContinuousTaskCancel(uid, pid, abilityName);
+        cgHandler->PostTask([cgHandler, uid, pid, typeId, abilityName] {
+            cgHandler->HandleContinuousTaskCancel(uid, pid, typeId, abilityName);
         });
     }
 

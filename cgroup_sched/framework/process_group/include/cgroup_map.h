@@ -29,20 +29,22 @@ namespace CgroupSetting {
 class CgroupMap {
 public:
     static CgroupMap& GetInstance();
-    CgroupMap(const CgroupMap&) = delete;
-    CgroupMap& operator=(const CgroupMap&) = delete;
-    ~CgroupMap() = default;
 
     bool SetThreadSchedPolicy(int tid, SchedPolicy policy, bool isSetThreadGroup);
-    bool loadConfigFromJsonObj(const Json::Value& jsonObj);
-
-    bool findFristEnableCgroupController(CgroupController** p);
+    bool LoadConfigFromJsonObj(const Json::Value& jsonObj);
+    bool FindFristEnableCgroupController(CgroupController** p);
 
 private:
+    CgroupMap() = default;
+    ~CgroupMap() = default;
+
+    CgroupMap(const CgroupMap&) = delete;
+    CgroupMap& operator=(const CgroupMap &) = delete;
+    CgroupMap(CgroupMap&&) = delete;
+    CgroupMap& operator=(CgroupMap&&) = delete;
+
     std::map<std::string, CgroupController> controllers_;
 
-    CgroupMap() = default;
-    bool checkCgroupConfig();
     void AddCgroupController(const std::string& name, CgroupController& controller);
     static bool CheckCgroupJsonConfig(const Json::Value& cgroupObj);
 };

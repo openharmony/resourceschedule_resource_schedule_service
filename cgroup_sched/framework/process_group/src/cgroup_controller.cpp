@@ -19,6 +19,7 @@
 #include <sys/stat.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+#include "cgroup_action.h"
 #include "process_group_macro.h"
 #include "process_group_log.h"
 #include "process_group_util.h"
@@ -27,22 +28,32 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
 CgroupController::CgroupController(const std::string& name, const std::string& path)
-    : name_(name), path_(path), policyToTaskFd_(SP_CNT, -1), policyToProcFd_(SP_CNT, -1) {}
+{
+    name_ = name;
+    path_ = path;
+    auto policyList = CgroupAction::GetInstance().GetSchedPolicyList();
+    for (SchedPolicy policy : policyList) {
+        policyToTaskFd_[policy] = -1;
+        policyToProcFd_[policy] = -1;
+    }
+}
 
 CgroupController::~CgroupController()
 {
-    for (auto& fd : policyToTaskFd_) {
-        if (fd != -1) {
-            close(fd);
-            fd = -1;
+    for (auto& kv : policyToTaskFd_) {
+        if (kv.second != -1) {
+            close(kv.second);
+            kv.second = -1;
         }
     }
-    for (auto& fd : policyToProcFd_) {
-        if (fd != -1) {
-            close(fd);
-            fd = -1;
+    policyToTaskFd_.clear();
+    for (auto& kv : policyToProcFd_) {
+        if (kv.second != -1) {
+            close(kv.second);
+            kv.second = -1;
         }
     }
+    policyToProcFd_.clear();
 }
 
 CgroupController::CgroupController(CgroupController&& controller)
