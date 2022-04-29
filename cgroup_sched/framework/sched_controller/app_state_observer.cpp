@@ -46,6 +46,7 @@ void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateD
     }
 
     Json::Value payload;
+    payload["pid"] = appStateData.pid;
     payload["uid"] = appStateData.uid;
     payload["bundleName"] = appStateData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);
@@ -178,6 +179,7 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     }
 
     Json::Value payload;
+    payload["pid"] = appStateData.pid;
     payload["uid"] = appStateData.uid;
     payload["bundleName"] = appStateData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);

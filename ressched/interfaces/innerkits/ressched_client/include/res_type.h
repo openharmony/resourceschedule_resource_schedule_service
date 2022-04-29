@@ -24,7 +24,7 @@ namespace ResType {
 enum : uint32_t {
     // screen status, value 0 means screen off, value 1 means screen on, else are invalid.
     RES_TYPE_SCREEN_STATUS,
-    // app state change event; value means app state; payload:uid,bundleName
+    // app state change event; value means app state; payload:pid,uid,bundleName
     RES_TYPE_APP_STATE_CHANGE,
     // ability state change event; value means ability state; payload:pid,uid,bundleName
     RES_TYPE_ABILITY_STATE_CHANGE,
