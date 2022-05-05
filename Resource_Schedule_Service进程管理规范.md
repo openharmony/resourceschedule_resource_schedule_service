@@ -237,7 +237,7 @@ A. 事件打点延时
 | 事件type                        | 事件用途                             | 事件value                 | 事件payload格式                                              | 事件打点延时: | 订阅事件插件           |
 | ------------------------------- | ------------------------------------ | ------------------------- | ------------------------------------------------------------ | ------------- | ---------------------- |
 | RES_TYPE_SCREEN_STATUS          | 屏幕状态                             | 0：屏幕暗 1：屏幕亮       | 无需payload                                                  |               |                        |
-| RES_TYPE_APP_STATE_CHANGE       | APP状态改变事件                      | value : app state         | {"uid"=?,"bundleName"="?"}                                   | <10ms         | soc_perf;  frame_aware |
+| RES_TYPE_APP_STATE_CHANGE       | APP状态改变事件                      | value : app state         | {"pid"=?,"uid"=?,"bundleName"="?"}                          | <10ms         | soc_perf;  frame_aware |
 | RES_TYPE_ABILITY_STATE_CHANGE   | ABILITY状态改变事件                  | value : ability state     | {"pid"=?,"uid"=?,"bundleName"="?"}                           |               |                        |
 | RES_TYPE_EXTENSION_STATE_CHANGE | EXTENSION状态改变事件                | value ：extension state   | {"pid"=?,"uid"=?,"bundleName"="?"}                           |               |                        |
 | RES_TYPE_PROCESS_STATE_CHANGE   | 进程状态事件                         | 0：创建 1：销毁           | {"pid"=?,"uid"=?,"bundleName"="?"}                           | <10ms         | frame_aware            |
