@@ -24,19 +24,19 @@ namespace ResourceSchedule {
 using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libsocperf_plugin.z.so";
-    const int PERF_REQUEST_CMD_ID_APP_COLD_START_FIRST  = 10000;
-    const int PERF_REQUEST_CMD_ID_APP_COLD_START_SECOND = 10001;
-    const int PERF_REQUEST_CMD_ID_APP_WARM_START_FIRST  = 10002;
-    const int PERF_REQUEST_CMD_ID_APP_WARM_START_SECOND = 10003;
-    const int PERF_REQUEST_CMD_ID_WINDOW_SWITCH_FIRST   = 10004;
-    const int PERF_REQUEST_CMD_ID_WINDOW_SWITCH_SECOND  = 10005;
-    const int PERF_REQUEST_CMD_ID_EVENT_CLICK           = 10006;
-    const int PERF_REQUEST_CMD_ID_PUSH_PAGE             = 10007;
-    const int PERF_REQUEST_CMD_ID_EVENT_SLIDE           = 10008;
-    const int PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER      = 10009;
-    const int EVENT_ON                                  = 1;
-    const int EVENT_OFF                                 = 0;
-    const int WINDOW_FOCUSED                            = 0;
+    const int32_t PERF_REQUEST_CMD_ID_APP_COLD_START_FIRST  = 10000;
+    const int32_t PERF_REQUEST_CMD_ID_APP_COLD_START_SECOND = 10001;
+    const int32_t PERF_REQUEST_CMD_ID_APP_WARM_START_FIRST  = 10002;
+    const int32_t PERF_REQUEST_CMD_ID_APP_WARM_START_SECOND = 10003;
+    const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH_FIRST   = 10004;
+    const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH_SECOND  = 10005;
+    const int32_t PERF_REQUEST_CMD_ID_EVENT_CLICK           = 10006;
+    const int32_t PERF_REQUEST_CMD_ID_PUSH_PAGE             = 10007;
+    const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE           = 10008;
+    const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER      = 10009;
+    const int32_t EVENT_ON                                  = 1;
+    const int32_t EVENT_OFF                                 = 0;
+    const int32_t WINDOW_FOCUSED                            = 0;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
