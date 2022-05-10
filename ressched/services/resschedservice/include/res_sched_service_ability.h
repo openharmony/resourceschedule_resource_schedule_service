@@ -18,15 +18,18 @@
 
 #include "system_ability.h"
 #include "res_sched_service.h"
+#include "singleton.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-class ResSchedServiceAbility : public SystemAbility {
+class ResSchedServiceAbility : public SystemAbility,
+    public std::enable_shared_from_this<ResSchedServiceAbility> {
+
     DECLARE_SYSTEM_ABILITY(ResSchedServiceAbility);
+    DECLARE_DELAYED_SINGLETON(ResSchedServiceAbility);
 
 public:
     ResSchedServiceAbility(int32_t sysAbilityId, bool runOnCreate) : SystemAbility(sysAbilityId, runOnCreate) {}
-    ~ResSchedServiceAbility() override = default;
 
 private:
     void OnStart() override;

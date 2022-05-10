@@ -23,6 +23,10 @@ namespace OHOS {
 namespace ResourceSchedule {
 class IResSchedService : public IRemoteBroker {
 public:
+    IResSchedService() = default;
+    ~IResSchedService() override = default;
+    DISALLOW_COPY_AND_MOVE(IResSchedService);
+
     enum : uint32_t {
         REPORT_DATA = 1,
     };

@@ -22,7 +22,17 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-REGISTER_SYSTEM_ABILITY_BY_ID(ResSchedServiceAbility, RES_SCHED_SYS_ABILITY_ID, true);
+
+const bool REGISTER_RESULT =
+    SystemAbility::MakeAndRegisterAbility(DelayedSingleton<ResSchedServiceAbility>::GetInstance().get());
+
+ResSchedServiceAbility::ResSchedServiceAbility() : SystemAbility(RES_SCHED_SYS_ABILITY_ID, true)
+{
+}
+
+ResSchedServiceAbility::~ResSchedServiceAbility()
+{
+}
 
 void ResSchedServiceAbility::OnStart()
 {
