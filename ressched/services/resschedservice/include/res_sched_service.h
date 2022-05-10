@@ -22,7 +22,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 class ResSchedService : public ResSchedServiceStub {
 public:
-    ResSchedService() {}
+    ResSchedService() = default;
     ~ResSchedService() override = default;
 
     void ReportData(uint32_t resType, int64_t value, const Json::Value& payload) override;
