@@ -18,7 +18,6 @@
 #include <cinttypes>
 
 #include "config_info.h"
-
 #include "plugin_mgr.h"
 #include "res_type.h"
 #include "res_sched_log.h"

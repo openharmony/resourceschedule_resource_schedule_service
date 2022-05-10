@@ -19,7 +19,6 @@
 #include <set>
 
 #include "json/json.h"
-
 #include "plugin.h"
 #include "single_instance.h"
 
