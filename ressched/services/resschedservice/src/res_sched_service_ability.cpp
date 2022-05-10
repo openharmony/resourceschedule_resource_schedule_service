@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 const bool REGISTER_RESULT =
     SystemAbility::MakeAndRegisterAbility(DelayedSingleton<ResSchedServiceAbility>::GetInstance().get());
 
