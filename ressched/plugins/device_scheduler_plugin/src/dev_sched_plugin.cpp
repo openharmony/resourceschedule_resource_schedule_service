@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "efficiency_plugin.h"
+#include "dev_sched_plugin.h"
 
 #include <cinttypes>
 
@@ -26,11 +26,11 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace ResType;
 namespace {
-    const std::string LIB_NAME = "libefficiency_plugin.z.so";
+    const std::string LIB_NAME = "libdevice_scheduler_plugin.z.so";
 }
-IMPLEMENT_SINGLE_INSTANCE(EfficiencyPlugin)
+IMPLEMENT_SINGLE_INSTANCE(DevSchedPlugin)
 
-void EfficiencyPlugin::Init()
+void DevSchedPlugin::Init()
 {
     resTypes.insert(RES_TYPE_SCREEN_STATUS);
     resTypes.insert(RES_TYPE_APP_STATE_CHANGE);
@@ -42,45 +42,45 @@ void EfficiencyPlugin::Init()
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
-    RESSCHED_LOGI("EfficiencyPlugin::Init success");
+    RESSCHED_LOGI("DevSchedPlugin::Init success");
 }
 
-void EfficiencyPlugin::Disable()
+void DevSchedPlugin::Disable()
 {
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
     resTypes.clear();
-    RESSCHED_LOGI("EfficiencyPlugin::Disable success");
+    RESSCHED_LOGI("DevSchedPlugin::Disable success");
 }
 
-void EfficiencyPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
+void DevSchedPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("EfficiencyPlugin::DispatchResource type:%{public}u, value:%{public}" PRId64,
+    RESSCHED_LOGI("DevSchedPlugin::DispatchResource type:%{public}u, value:%{public}" PRId64,
         data->resType, data->value);
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
 {
     if (libName != LIB_NAME) {
-        RESSCHED_LOGE("EfficiencyPlugin::OnPluginInit lib name is not match");
+        RESSCHED_LOGE("DevSchedPlugin::OnPluginInit lib name is not match");
         return false;
     }
-    EfficiencyPlugin::GetInstance().Init();
-    RESSCHED_LOGI("EfficiencyPlugin::OnPluginInit success.");
+    DevSchedPlugin::GetInstance().Init();
+    RESSCHED_LOGI("DevSchedPlugin::OnPluginInit success.");
     return true;
 }
 
 extern "C" void OnPluginDisable()
 {
-    EfficiencyPlugin::GetInstance().Disable();
-    RESSCHED_LOGI("EfficiencyPlugin::OnPluginDisable success.");
+    DevSchedPlugin::GetInstance().Disable();
+    RESSCHED_LOGI("DevSchedPlugin::OnPluginDisable success.");
 }
 
 extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& data)
 {
-    EfficiencyPlugin::GetInstance().DispatchResource(data);
-    RESSCHED_LOGI("EfficiencyPlugin::OnDispatchResource success.");
+    DevSchedPlugin::GetInstance().DispatchResource(data);
+    RESSCHED_LOGI("DevSchedPlugin::OnDispatchResource success.");
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

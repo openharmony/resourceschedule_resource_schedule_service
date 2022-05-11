@@ -15,21 +15,21 @@ import("//build/ohos.gni")
 import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
 
-config("efficiency_plugin_config") {
+config("device_scheduler_plugin_config") {
   include_dirs = [
     "include",
     "//utils/native/base/include",
   ]
 }
 
-ohos_shared_library("efficiency_plugin") {
+ohos_shared_library("device_scheduler_plugin") {
   configs = [
-    ":efficiency_plugin_config",
+    ":device_scheduler_plugin_config",
     "${ressched_services}:ressched_config",
     "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
   ]
 
-  sources = [ "src/efficiency_plugin.cpp" ]
+  sources = [ "src/device_scheduler_plugin.cpp" ]
 
   deps = [
     "${ressched_services}:resschedsvc",

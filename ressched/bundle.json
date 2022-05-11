@@ -39,7 +39,7 @@
       "sub_component": [
         "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc",
         "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
-        "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/efficiency_plugin:efficiency_plugin",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/device_scheduler_plugin:device_scheduler_plugin",
         "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/socperf_plugin:socperf_plugin",
         "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/frame_aware_plugin:frame_aware_plugin",
         "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_config",

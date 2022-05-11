@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef EFFICIENCY_PLUGIN_H
-#define EFFICIENCY_PLUGIN_H
+#ifndef DEV_SCHED_PLUGIN_H
+#define DEV_SCHED_PLUGIN_H
 
 #include <set>
 
@@ -24,8 +24,8 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-class EfficiencyPlugin : public Plugin {
-    DECLARE_SINGLE_INSTANCE(EfficiencyPlugin)
+class DevSchedPlugin : public Plugin {
+    DECLARE_SINGLE_INSTANCE(DevSchedPlugin)
 
 public:
     void Init() override;
@@ -37,4 +37,4 @@ private:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // EFFICIENCY_PLUGIN_H
+#endif // DEV_SCHED_PLUGIN_H
