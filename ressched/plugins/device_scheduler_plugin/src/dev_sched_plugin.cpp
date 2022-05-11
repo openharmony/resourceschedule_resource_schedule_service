@@ -32,14 +32,18 @@ IMPLEMENT_SINGLE_INSTANCE(DevSchedPlugin)
 
 void DevSchedPlugin::Init()
 {
-    resTypes.insert(RES_TYPE_SCREEN_STATUS);
-    resTypes.insert(RES_TYPE_APP_STATE_CHANGE);
-    resTypes.insert(RES_TYPE_ABILITY_STATE_CHANGE);
-    resTypes.insert(RES_TYPE_EXTENSION_STATE_CHANGE);
-    resTypes.insert(RES_TYPE_PROCESS_STATE_CHANGE);
-    resTypes.insert(RES_TYPE_WINDOW_FOCUS);
+    resTypes_.insert(RES_TYPE_ABILITY_STATE_CHANGE);
+    resTypes_.insert(RES_TYPE_APP_INSTALL);
+    resTypes_.insert(RES_TYPE_APP_STATE_CHANGE);  // app switch
+    resTypes_.insert(RES_TYPE_EXTENSION_STATE_CHANGE);
+    resTypes_.insert(RES_TYPE_NET_CONNECT_STATE_CHANGE);
+    resTypes_.insert(RSE_TYPE_NET_BEAR_TYPE);
+    resTypes_.insert(RES_TYPE_PROCESS_STATE_CHANGE);  // process create and died
+    resTypes_.insert(RES_TYPE_PUSH_PAGE);
+    resTypes_.insert(RES_TYPE_SCREEN_STATUS);
+    resTypes_.insert(RES_TYPE_WINDOW_FOCUS);
 
-    for (auto resType : resTypes) {
+    for (auto resType : resTypes_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
     RESSCHED_LOGI("DevSchedPlugin::Init success");
@@ -47,10 +51,10 @@ void DevSchedPlugin::Init()
 
 void DevSchedPlugin::Disable()
 {
-    for (auto resType : resTypes) {
+    for (auto resType : resTypes_) {
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
-    resTypes.clear();
+    resTypes_.clear();
     RESSCHED_LOGI("DevSchedPlugin::Disable success");
 }
 
