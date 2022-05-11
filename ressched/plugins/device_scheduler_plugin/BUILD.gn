@@ -29,7 +29,7 @@ ohos_shared_library("device_scheduler_plugin") {
     "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
   ]
 
-  sources = [ "src/device_scheduler_plugin.cpp" ]
+  sources = [ "src/dev_sched_plugin.cpp" ]
 
   deps = [
     "${ressched_services}:resschedsvc",
