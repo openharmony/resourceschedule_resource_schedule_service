@@ -16,4 +16,5 @@
 <pluginlist>
     <plugin libpath="libsocperf_plugin.z.so" switch="1" />
     <plugin libpath="libframe_aware_plugin.z.so" switch="1" />
+    <plugin libpath="libdevice_scheduler_plugin.z.so" switch="0" />
 </pluginlist>
