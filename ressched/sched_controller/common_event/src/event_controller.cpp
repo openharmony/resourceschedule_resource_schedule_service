@@ -32,7 +32,7 @@
 
 using namespace OHOS::EventFwk;
 namespace OHOS {
-namespace ResourceSchedule{
+namespace ResourceSchedule {
 IMPLEMENT_SINGLE_INSTANCE(EventController);
 
 void EventController::Init()

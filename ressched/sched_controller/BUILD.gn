@@ -13,8 +13,9 @@
 
 import("//build/ohos.gni")
 import(
+    "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
+import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/sched_controller.gni")
-import("//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
 
 ohos_shared_library("sched_controller") {
   include_dirs = [
@@ -29,13 +30,11 @@ ohos_shared_library("sched_controller") {
   ]
 
   sources = [
+    "${cgroup_sched_framework}/utils/ressched_utils.cpp",
     "common_event/src/event_controller.cpp",
-    "${cgroup_sched_framework}/utils/ressched_utils.cpp"
   ]
 
-  deps = [
-    "//third_party/jsoncpp:jsoncpp",
-  ]
+  deps = [ "//third_party/jsoncpp:jsoncpp" ]
 
   external_deps = [
     "ability_base:want",
