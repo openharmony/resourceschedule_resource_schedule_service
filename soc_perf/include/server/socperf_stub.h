@@ -22,12 +22,12 @@ namespace OHOS {
 namespace SOCPERF {
 class SocPerfStub : public IRemoteStub<ISocPerfService> {
 public:
+    SocPerfStub() = default;
+    ~SocPerfStub() override = default;
+    DISALLOW_COPY_AND_MOVE(SocPerfStub);
+
     int32_t OnRemoteRequest(uint32_t code, MessageParcel &data,
         MessageParcel &reply, MessageOption &option) override;
-
-public:
-    SocPerfStub() {}
-    ~SocPerfStub() {}
 };
 } // namespace SOCPERF
 } // namespace OHOS
