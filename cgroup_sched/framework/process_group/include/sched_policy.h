@@ -73,6 +73,16 @@ int SetThreadSchedPolicy(int pid, int policy);
 int GetThreadSchedPolicy(int tid, SchedPolicy* policy);
 
 /**
+ * Return the policy associated with policy name via policy pointer.
+ * Return value: 0 for success, or -1 for error and set errno.
+ *
+ * @param name policy full name.
+ * @param policy a policy pointer.
+ * @return Return value: 0 for success, or -errno for error.
+ */
+int GetSchedPolicyByName(const std::string& name, SchedPolicy* policy);
+
+/**
  * Return a displayable string corresponding to policy: shortened name.
  * Return value: NUL-terminated name of unspecified length, nullptr if invalid;
  * the caller is responsible for displaying the useful part of the string.
