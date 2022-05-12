@@ -68,7 +68,7 @@ ErrCode ResSchedClient::TryConnect()
     }
     recipient_ = new (std::nothrow) ResSchedDeathRecipient(*this);
     if (!recipient_) {
-        RESSCHED_LOGE("ResSchedClient::ResSchedDeathRecipient is nullptr.");
+        RESSCHED_LOGE("ResSchedClient::New ResSchedDeathRecipient failed.");
         return GET_RES_SCHED_SERVICE_FAILED;
     }
     rss_->AsObject()->AddDeathRecipient(recipient_);

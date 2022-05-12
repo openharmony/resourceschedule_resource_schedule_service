@@ -37,11 +37,10 @@ void ResSchedServiceAbility::OnStart()
 {
     ResSchedMgr::GetInstance().Init();
     if (!service_) {
-        try {
-            service_ = new ResSchedService();
-        } catch(const std::bad_alloc &e) {
-            RESSCHED_LOGE("ResSchedServiceAbility:: new ResSchedService failed.");
-        }
+        service_ = new (std::nothrow) ResSchedService();
+    }
+    if (service_ == nullptr) {
+        RESSCHED_LOGE("ResSchedServiceAbility:: New ResSchedService failed.");
     }
     if (!Publish(service_)) {
         RESSCHED_LOGE("ResSchedServiceAbility:: Register service failed.");
