@@ -47,7 +47,7 @@ bool SocPerfClient::CheckClientValid()
         return false;
     }
 
-    recipient_ = new SocPerfDeathRecipient(*this);
+    recipient_ = new (std::nothrow) SocPerfDeathRecipient(*this);
     if (!recipient_) {
         return false;
     }
