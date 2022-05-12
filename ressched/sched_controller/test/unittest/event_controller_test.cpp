@@ -94,7 +94,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00101, testing::ext::TestSize.L
 
 /**
  * @tc.name: connectivityChange_00102
- * @tc.desc: test dispatching ResType::RES_TYPE_APP_INSTALL when recieve COMMON_EVENT_PACKAGE_ADDED.
+ * @tc.desc: test dispatching ResType::RES_TYPE_APP_INSTALL_UNINSTALL when recieve COMMON_EVENT_PACKAGE_ADDED.
  * @tc.type: FUNC
  * @tc.require: SR000H0H3C AR000HORSU
  */
@@ -106,7 +106,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00102, testing::ext::TestSize.L
     data.SetWant(want);
 
     EventController::GetInstance().OnReceiveEvent(data);
-    uint32_t expectResType = ResType::RES_TYPE_APP_INSTALL;
+    uint32_t expectResType = ResType::RES_TYPE_APP_INSTALL_UNINSTALL;
     int64_t expectValue = 1;
     EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
     EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);
@@ -114,7 +114,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00102, testing::ext::TestSize.L
 
 /**
  * @tc.name: connectivityChange_00103
- * @tc.desc: test dispatching ResType::RES_TYPE_APP_INSTALL when recieve COMMON_EVENT_PACKAGE_REMOVED.
+ * @tc.desc: test dispatching ResType::RES_TYPE_APP_INSTALL_UNINSTALL when recieve COMMON_EVENT_PACKAGE_REMOVED.
  * @tc.type: FUNC
  * @tc.require: SR000H0H3C AR000HORSU
  */
@@ -126,7 +126,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00103, testing::ext::TestSize.L
     data.SetWant(want);
 
     EventController::GetInstance().OnReceiveEvent(data);
-    uint32_t expectResType = ResType::RES_TYPE_APP_INSTALL;
+    uint32_t expectResType = ResType::RES_TYPE_APP_INSTALL_UNINSTALL;
     int64_t expectValue = 0;
     EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
     EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);

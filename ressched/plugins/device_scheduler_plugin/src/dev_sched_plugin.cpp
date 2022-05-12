@@ -33,7 +33,7 @@ IMPLEMENT_SINGLE_INSTANCE(DevSchedPlugin)
 void DevSchedPlugin::Init()
 {
     resTypes_.insert(RES_TYPE_ABILITY_STATE_CHANGE);
-    resTypes_.insert(RES_TYPE_APP_INSTALL);
+    resTypes_.insert(RES_TYPE_APP_INSTALL_UNINSTALL);
     resTypes_.insert(RES_TYPE_APP_STATE_CHANGE);  // app switch
     resTypes_.insert(RES_TYPE_EXTENSION_STATE_CHANGE);
     resTypes_.insert(RES_TYPE_NET_CONNECT_STATE_CHANGE);

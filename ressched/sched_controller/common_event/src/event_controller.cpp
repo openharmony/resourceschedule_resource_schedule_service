@@ -79,6 +79,10 @@ int32_t EventController::GetUid(const int32_t &userId, const std::string &bundle
         return -1;
     }
     sptr<IRemoteObject> remoteObject  = systemAbilityManager->GetSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    if (remoteObject == nullptr) {
+        RESSCHED_LOGE("Failed to get uid due to get BMS is null.");
+        return -1;
+    }
     sptr<AppExecFwk::IBundleMgr> bundleMgr = iface_cast<AppExecFwk::IBundleMgr>(remoteObject);
     bundleMgr->GetApplicationInfo(bundleName, AppExecFwk::ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, info);
     return static_cast<int32_t>(info.uid);
@@ -139,11 +143,11 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
     Json::Value payload;
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED) {
         HandlePkgRemove(want, payload);
-        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL, 0, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, 0, payload);
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_ADDED) {
-        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL, 1, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, 1, payload);
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_SCREEN_ON) {
