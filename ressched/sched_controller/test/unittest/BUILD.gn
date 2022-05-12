@@ -1,0 +1,68 @@
+# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//build/test.gni")
+import(
+    "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/sched_controller.gni")
+import("//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
+
+module_output_path = "resource_schedule_service/ressched"
+
+ohos_unittest("event_controller_test") {
+  module_out_path = module_output_path
+
+  include_dirs = [
+    "//foundation/resourceschedule/resource_schedule_service/ressched/common/include",
+    "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client/include",
+    "${cgroup_sched_common}/include",
+    "${cgroup_sched_framework}/process_group/include",
+    "${cgroup_sched_framework}/sched_controller/include",
+    "${cgroup_sched_framework}/utils/include",
+    "${sched_controller_event}/include",
+  ]
+
+  sources = [
+    "${cgroup_sched_framework}/utils/ressched_utils.cpp",
+    #"${sched_controller_event}/src/event_controller.cpp",
+    "${sched_controller_path}/test/unittest/event_controller_test.cpp",
+  ]
+
+  deps = [
+    "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
+    "${sched_controller_path}:sched_controller",
+  ]
+
+  external_deps = [
+    "ability_base:want",
+    "ability_runtime:abilitykit_native",
+    "ability_runtime:app_manager",
+    "ability_runtime:wantagent_innerkits",
+    "bundle_framework:appexecfwk_base",
+    "common_event_service:cesfwk_innerkits",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+    "netmanager_base:net_conn_manager_if",
+    "samgr_standard:samgr_proxy",
+  ]
+
+  subsystem_name = "resourceschedule"
+  part_name = "resource_schedule_service"
+}
+
+group("unittest") {
+  testonly = true
+  deps = []
+  deps += [ ":event_controller_test" ]
+}

@@ -85,13 +85,21 @@ int32_t EventController::GetUid(const int32_t &userId, const std::string &bundle
 }
 
 void EventController::HandleConnectivityChange(
-    const EventFwk::Want &want, const int32_t &code, Json::Value &payload) const
+    const EventFwk::Want &want, const int32_t &code, Json::Value &payload)
 {
-    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_NET_CONNECT_STATE_CHANGE, code, payload);
+    ReportDataInProcess(ResType::RES_TYPE_NET_CONNECT_STATE_CHANGE, code, payload);
     if (code == NetManagerStandard::NetConnState::NET_CONN_STATE_CONNECTED) {
         int32_t netType = want.GetIntParam("NetType", -1);
-        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RSE_TYPE_NET_BEAR_TYPE, netType, payload);
+        ReportDataInProcess(ResType::RSE_TYPE_NET_BEAR_TYPE, netType, payload);
     }
+}
+
+void EventController::ReportDataInProcess(const uint32_t &resType, const int64_t &value, const Json::Value& payload)
+{
+    ResSchedUtils::GetInstance().ReportDataInProcess(resType, value, payload);
+    resType_ = resType;
+    value_ = value;
+    payload_ = payload;
 }
 
 void EventController::Stop()
@@ -131,19 +139,19 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
     Json::Value payload;
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED) {
         HandlePkgRemove(want, payload);
-        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL, 0, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL, 0, payload);
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_ADDED) {
-        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL, 1, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL, 1, payload);
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_SCREEN_ON) {
-        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_SCREEN_STATUS, 1, payload);
+        ReportDataInProcess(ResType::RES_TYPE_SCREEN_STATUS, 1, payload);
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_SCREEN_OFF) {
-        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_SCREEN_STATUS, 0, payload);
+        ReportDataInProcess(ResType::RES_TYPE_SCREEN_STATUS, 0, payload);
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_CONNECTIVITY_CHANGE) {

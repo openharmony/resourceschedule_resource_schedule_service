@@ -34,9 +34,12 @@ public:
     ~ EventController() {}
 
     virtual void OnReceiveEvent(const EventFwk::CommonEventData &data);
-
     void Init();
     void Stop();
+
+    uint32_t resType_ = 0;
+    int64_t value_ = 0;
+    Json::Value payload_;
 
 private:
 class SystemAbilityStatusChangeListener : public OHOS::SystemAbilityStatusChangeStub {
@@ -51,10 +54,12 @@ private:
 };
 
     void HandlePkgRemove(const EventFwk::Want &want, Json::Value &payload) const;
-    void HandleConnectivityChange(const EventFwk::Want &want, const int32_t &code, Json::Value &payload) const;
+    void HandleConnectivityChange(const EventFwk::Want &want, const int32_t &code, Json::Value &payload);
     int32_t GetUid(const int32_t &userId, const std::string &bundleName) const;
+    void ReportDataInProcess(const uint32_t &resType, const int64_t &value, const Json::Value& payload);
+
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
 };
-}  // namespace OHOS
 }  // namespace ResourceSchedule
+}  // namespace OHOS
 #endif  // RESSCHED_SCHED_CONTROLLER_EVENT_INCLUDE_COMMON_EVENT_CONTROLLER_H
