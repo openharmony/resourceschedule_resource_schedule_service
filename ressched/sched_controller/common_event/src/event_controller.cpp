@@ -135,7 +135,6 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_ADDED) {
-        // todo set payload info
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL, 1, payload);
         return;
     }
