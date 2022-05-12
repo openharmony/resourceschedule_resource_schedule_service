@@ -14,8 +14,9 @@
 import("//build/ohos.gni")
 import("//build/test.gni")
 import(
+    "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
+import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/sched_controller.gni")
-import("//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
 
 module_output_path = "resource_schedule_service/ressched"
 
@@ -34,14 +35,15 @@ ohos_unittest("event_controller_test") {
 
   sources = [
     "${cgroup_sched_framework}/utils/ressched_utils.cpp",
+
     #"${sched_controller_event}/src/event_controller.cpp",
     "${sched_controller_path}/test/unittest/event_controller_test.cpp",
   ]
 
   deps = [
+    "${sched_controller_path}:sched_controller",
     "//third_party/googletest:gtest_main",
     "//third_party/jsoncpp:jsoncpp",
-    "${sched_controller_path}:sched_controller",
   ]
 
   external_deps = [
