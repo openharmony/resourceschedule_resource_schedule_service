@@ -31,6 +31,11 @@ namespace OHOS {
 namespace SOCPERF {
 class ISocPerfService : public IRemoteBroker {
 public:
+    ISocPerfService() = default;
+    ~ISocPerfService() override = default;
+    DISALLOW_COPY_AND_MOVE(ISocPerfService);
+
+public:
     virtual void PerfRequest(int32_t cmdId, const std::string& msg) = 0;
     virtual void PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) = 0;
     virtual void PowerRequest(int32_t cmdId, const std::string& msg) = 0;

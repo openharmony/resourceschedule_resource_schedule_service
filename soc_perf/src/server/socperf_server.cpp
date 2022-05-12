@@ -17,11 +17,20 @@
 
 namespace OHOS {
 namespace SOCPERF {
-REGISTER_SYSTEM_ABILITY_BY_ID(SocPerfServer, SOC_PERF_SERVICE_SA_ID, true);
+const bool REGISTER_RESULT =
+    SystemAbility::MakeAndRegisterAbility(DelayedSingleton<SocPerfServer>::GetInstance().get());
+
+SocPerfServer::SocPerfServer() : SystemAbility(SOC_PERF_SERVICE_SA_ID, true)
+{
+}
+
+SocPerfServer::~SocPerfServer()
+{
+}
 
 void SocPerfServer::OnStart()
 {
-    if (!Publish(this)) {
+    if (!Publish(DelayedSingleton<SocPerfServer>::GetInstance().get())) {
         SOC_PERF_LOGE("Register SystemAbility for SocPerf FAILED.");
         return;
     }

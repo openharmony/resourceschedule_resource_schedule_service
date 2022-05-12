@@ -17,13 +17,17 @@
 #define SOC_PERF_INCLUDE_SERVER_SOCPERF_SERVER_H
 
 #include "i_socperf_service.h"
+#include "singleton.h"
 #include "socperf_stub.h"
 #include "socperf.h"
 
 namespace OHOS {
 namespace SOCPERF {
-class SocPerfServer : public SystemAbility, public SocPerfStub {
+class SocPerfServer : public SystemAbility, public SocPerfStub,
+    public std::enable_shared_from_this<SocPerfServer> {
+DISALLOW_COPY_AND_MOVE(SocPerfServer);
 DECLARE_SYSTEM_ABILITY(SocPerfServer);
+DECLARE_DELAYED_SINGLETON(SocPerfServer);
 
 public:
     void PerfRequest(int32_t cmdId, const std::string& msg) override;
@@ -36,9 +40,7 @@ public:
     void ThermalLimitBoost(bool onOffTag, const std::string& msg) override;
 
 public:
-    SocPerfServer(int32_t systemAbilityId, bool runOnCreate)
-        : SystemAbility(systemAbilityId, runOnCreate) {}
-    ~SocPerfServer() {}
+    SocPerfServer(int32_t systemAbilityId, bool runOnCreate);
 
 protected:
     void OnStart() override;
