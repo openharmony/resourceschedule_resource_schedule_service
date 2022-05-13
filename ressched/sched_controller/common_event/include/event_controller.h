@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef RESSCHED_SCHED_CONTROLLER_EVENT_INCLUDE_COMMON_EVENT_CONTROLLER_H
-#define RESSCHED_SCHED_CONTROLLER_EVENT_INCLUDE_COMMON_EVENT_CONTROLLER_H
+#ifndef RESSCHED_SCHED_CONTROLLER_COMMON_EVENT_INCLUDE_EVENT_CONTROLLER_H
+#define RESSCHED_SCHED_CONTROLLER_COMMON_EVENT_INCLUDE_EVENT_CONTROLLER_H
 
 #include "common_event_subscriber.h"
 #include "json/json.h"
@@ -53,7 +53,7 @@ private:
     std::shared_ptr<EventController> subscriber_ = nullptr;
 };
 
-    void HandlePkgRemove(const EventFwk::Want &want, Json::Value &payload) const;
+    void HandlePkgAddRemove(const EventFwk::Want &want, Json::Value &payload) const;
     void HandleConnectivityChange(const EventFwk::Want &want, const int32_t &code, Json::Value &payload);
     int32_t GetUid(const int32_t &userId, const std::string &bundleName) const;
     void ReportDataInProcess(const uint32_t &resType, const int64_t &value, const Json::Value& payload);
@@ -62,4 +62,4 @@ private:
 };
 }  // namespace ResourceSchedule
 }  // namespace OHOS
-#endif  // RESSCHED_SCHED_CONTROLLER_EVENT_INCLUDE_COMMON_EVENT_CONTROLLER_H
+#endif  // RESSCHED_SCHED_CONTROLLER_COMMON_EVENT_INCLUDE_EVENT_CONTROLLER_H

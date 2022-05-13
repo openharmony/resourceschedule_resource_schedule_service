@@ -24,10 +24,10 @@
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
 #include "net_supplier_info.h"
-#include "res_sched_log.h"
 #include "system_ability_definition.h"
 
 #include "ressched_utils.h"
+#include "res_sched_log.h"
 #include "res_type.h"
 
 using namespace OHOS::EventFwk;
@@ -48,7 +48,7 @@ void EventController::Init()
     sptr<ISystemAbilityManager> systemAbilityManager
         = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (systemAbilityManager == nullptr) {
-        RESSCHED_LOGD("systemAbilityManager is null");
+        RESSCHED_LOGE("systemAbilityManager is null");
         sysAbilityListener_ = nullptr;
         return;
     }
@@ -59,7 +59,7 @@ void EventController::Init()
     }
 }
 
-void EventController::HandlePkgRemove(const EventFwk::Want &want, Json::Value &payload) const
+void EventController::HandlePkgAddRemove(const EventFwk::Want &want, Json::Value &payload) const
 {
     AppExecFwk::ElementName ele = want.GetElement();
     std::string bundleName = ele.GetBundleName();
@@ -142,11 +142,12 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
 
     Json::Value payload;
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED) {
-        HandlePkgRemove(want, payload);
+        HandlePkgAddRemove(want, payload);
         ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, 0, payload);
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_ADDED) {
+        HandlePkgAddRemove(want, payload);
         ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, 1, payload);
         return;
     }

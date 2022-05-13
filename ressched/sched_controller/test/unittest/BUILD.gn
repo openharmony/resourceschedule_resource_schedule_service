@@ -35,8 +35,6 @@ ohos_unittest("event_controller_test") {
 
   sources = [
     "${cgroup_sched_framework}/utils/ressched_utils.cpp",
-
-    #"${sched_controller_event}/src/event_controller.cpp",
     "${sched_controller_path}/test/unittest/event_controller_test.cpp",
   ]
 
