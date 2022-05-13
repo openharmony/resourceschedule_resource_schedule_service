@@ -16,6 +16,9 @@ import("//build/test.gni")
 import(
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
 import(
+    "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/sched_controller.gni")
+
+import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
 
 config("ressched_config") {
@@ -28,6 +31,7 @@ config("ressched_config") {
     "//utils/native/base/include",
     "//third_party/libxml2/include",
     "${cgroup_sched_interfaces}/innerkits/include",
+    "${sched_controller_event}/include",
     "//third_party/jsoncpp/include",
   ]
 }
@@ -50,6 +54,7 @@ ohos_shared_library("resschedsvc") {
 
   deps = [
     "${cgroup_sched_framework}:cgroup_sched",
+    "${sched_controller_path}:sched_controller",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
     "//third_party/jsoncpp:jsoncpp",
     "//third_party/libxml2:xml2",
@@ -57,6 +62,8 @@ ohos_shared_library("resschedsvc") {
   ]
 
   external_deps = [
+    "ability_base:want",
+    "common_event_service:cesfwk_innerkits",
     "eventhandler:libeventhandler",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",

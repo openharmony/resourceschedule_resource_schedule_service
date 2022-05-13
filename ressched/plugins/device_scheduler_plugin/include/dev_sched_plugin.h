@@ -33,7 +33,7 @@ public:
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
 
 private:
-    std::set<uint32_t> resTypes;
+    std::set<uint32_t> resTypes_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

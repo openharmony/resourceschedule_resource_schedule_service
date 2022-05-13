@@ -17,6 +17,7 @@
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "res_sched_service.h"
+#include "event_controller.h"
 #include "system_ability_definition.h"
 #include "cgroup_sched.h"
 
@@ -49,6 +50,7 @@ void ResSchedServiceAbility::OnStart()
     AddSystemAbilityListener(APP_MGR_SERVICE_ID);
     AddSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID);
     AddSystemAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID);
+    EventController::GetInstance().Init();
     RESSCHED_LOGI("ResSchedServiceAbility ::OnStart.");
 }
 
@@ -59,6 +61,7 @@ void ResSchedServiceAbility::OnStop()
     RemoveSystemAbilityListener(APP_MGR_SERVICE_ID);
     ResSchedMgr::GetInstance().Stop();
     CgroupSchedDeinit();
+    EventController::GetInstance().Stop();
     RESSCHED_LOGI("ResSchedServiceAbility::OnStop!");
 }
 
