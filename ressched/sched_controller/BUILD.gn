@@ -15,11 +15,15 @@ import("//build/ohos.gni")
 import(
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
 import(
+    "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
+import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/sched_controller.gni")
 
 ohos_shared_library("sched_controller") {
   include_dirs = [
-    "./common_event/include",
+    "common_event/include",
+    "observer/include",
+    "//base/hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent_manager/include",
     "//foundation/resourceschedule/device_scheduler/common/include",
     "//foundation/resourceschedule/resource_schedule_service/ressched/common/include",
     "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client/include",
@@ -27,14 +31,20 @@ ohos_shared_library("sched_controller") {
     "${cgroup_sched_framework}/sched_controller/include",
     "${cgroup_sched_framework}/utils/include",
     "${cgroup_sched_common}/include",
+    "${ressched_common}/include",
   ]
 
   sources = [
     "${cgroup_sched_framework}/utils/ressched_utils.cpp",
     "common_event/src/event_controller.cpp",
+    "observer/src/camera_observer.cpp",
+    "observer/src/observer_manager.cpp",
   ]
 
-  deps = [ "//third_party/jsoncpp:jsoncpp" ]
+  deps = [
+    "//third_party/jsoncpp:jsoncpp",
+    "//utils/native/base:utils",
+  ]
 
   external_deps = [
     "ability_base:want",
@@ -43,6 +53,8 @@ ohos_shared_library("sched_controller") {
     "ability_runtime:wantagent_innerkits",
     "bundle_framework:appexecfwk_base",
     "common_event_service:cesfwk_innerkits",
+    "hisysevent_native:libhisysevent",
+    "hisysevent_native:libhisyseventmanager",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "netmanager_base:net_conn_manager_if",

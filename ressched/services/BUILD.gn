@@ -17,7 +17,6 @@ import(
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
 import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/sched_controller.gni")
-
 import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
 
@@ -27,6 +26,7 @@ config("ressched_config") {
     "${ressched_common}/include",
     "resschedmgr/resschedfwk/include",
     "resschedmgr/pluginbase/include",
+    "${sched_controller_observer}/include",
     "//utils/system/safwk/native/include",
     "//utils/native/base/include",
     "//third_party/libxml2/include",
@@ -65,6 +65,8 @@ ohos_shared_library("resschedsvc") {
     "ability_base:want",
     "common_event_service:cesfwk_innerkits",
     "eventhandler:libeventhandler",
+    "hisysevent_native:libhisysevent",
+    "hisysevent_native:libhisyseventmanager",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
