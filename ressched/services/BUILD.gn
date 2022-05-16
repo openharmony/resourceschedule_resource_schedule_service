@@ -16,9 +16,9 @@ import("//build/test.gni")
 import(
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
 import(
-    "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/sched_controller.gni")
-import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
+import(
+    "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/sched_controller.gni")
 
 config("ressched_config") {
   include_dirs = [
