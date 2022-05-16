@@ -59,6 +59,11 @@ int GetThreadSchedPolicy(int tid, SchedPolicy* policy)
     return CgroupAction::GetInstance().GetSchedPolicy(tid, policy);
 }
 
+int GetSchedPolicyByName(const std::string& name, SchedPolicy* policy)
+{
+    return CgroupAction::GetInstance().GetSchedPolicyByName(name, policy);
+}
+
 const char* GetSchedPolicyShortenedName(SchedPolicy policy)
 {
     return CgroupAction::GetInstance().GetSchedPolicyAbbrName(policy);

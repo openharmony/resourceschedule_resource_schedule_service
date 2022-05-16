@@ -33,6 +33,7 @@ public:
     bool SetThreadSchedPolicy(int tid, SchedPolicy policy);
     bool SetThreadGroupSchedPolicy(int tid, SchedPolicy policy);
     int GetSchedPolicy(int tid, SchedPolicy* policy);
+    int GetSchedPolicyByName(const std::string& name, SchedPolicy* policy);
 
 private:
     CgroupAction();

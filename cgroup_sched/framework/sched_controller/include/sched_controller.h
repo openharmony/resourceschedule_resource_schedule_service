@@ -20,18 +20,18 @@
 #include <string>
 #include "hilog/log.h"
 #include "json/json.h"
-#include "window_state_observer.h"
+#include "refbase.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 class RmsApplicationStateObserver;
 class BackgroundTaskObserver;
+class WindowStateObserver;
+class WindowVisibilityObserver;
+class WindowUpdateStateObserver;
 class Supervisor;
-class Application;
-class ProcessRecord;
 class CgroupAdjuster;
 class CgroupEventHandler;
-enum class AdjustSource;
 
 class SchedController {
 public:

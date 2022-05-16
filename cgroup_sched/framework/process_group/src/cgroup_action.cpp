@@ -180,8 +180,13 @@ int CgroupAction::GetSchedPolicy(int tid, SchedPolicy* policy)
 
     replace(subgroup.begin(), subgroup.end(), '-', '_');
     subgroup = "sp_" + subgroup;
+    return GetSchedPolicyByName(subgroup, policy);
+}
+
+int CgroupAction::GetSchedPolicyByName(const std::string& name, SchedPolicy* policy)
+{
     for (auto& kv : fullNames_) {
-        if (kv.second == subgroup) {
+        if (kv.second == name) {
             *policy = kv.first;
             return 0;
         }
