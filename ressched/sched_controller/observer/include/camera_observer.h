@@ -24,7 +24,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 class CameraObserver : public HiviewDFX::HiSysEventSubscribeCallBack {
 public:
-    explicit CameraObserver() : HiviewDFX::HiSysEventSubscribeCallBack() {}
+    CameraObserver() : HiviewDFX::HiSysEventSubscribeCallBack() {}
     virtual ~CameraObserver() {}
     void OnHandle(const std::string& domain, const std::string& eventName, const int eventType,
         const std::string& eventDetail) override;

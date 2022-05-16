@@ -110,7 +110,7 @@ void ObserverManager::InitCameraObserver()
     if (res) {
         RESSCHED_LOGD("ObserverManager init camera observer successfully");
     } else {
-        RESSCHED_LOGD("ObserverManager init camera observer failed");
+        RESSCHED_LOGW("ObserverManager init camera observer failed");
     }
 }
 
@@ -125,7 +125,7 @@ void ObserverManager::DisableCameraObserver()
     if (res) {
         RESSCHED_LOGD("ObserverManager disable camera observer successfully");
     } else {
-        RESSCHED_LOGD("ObserverManager disable camera observer failed");
+        RESSCHED_LOGW("ObserverManager disable camera observer failed");
     }
     cameraObserver_ = nullptr;
 }
