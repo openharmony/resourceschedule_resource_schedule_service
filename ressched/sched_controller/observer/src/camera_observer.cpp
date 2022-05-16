@@ -18,7 +18,7 @@
 #include "res_sched_log.h"
 
 namespace OHOS {
-namespace ResourceSchedule{
+namespace ResourceSchedule {
 void CameraObserver::OnHandle(const std::string& domain, const std::string& eventName, const int eventType,
     const std::string& eventDetail)
 {
