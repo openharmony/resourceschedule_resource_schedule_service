@@ -16,8 +16,6 @@
 #include "plugin_mgr.h"
 #include <cinttypes>
 #include <algorithm>
-#include <csignal>
-#include <csetjmp>
 #include <dlfcn.h>
 #include <iostream>
 #include "datetime_ex.h"
@@ -34,25 +32,11 @@ using Clock = std::chrono::high_resolution_clock;
 using TimePoint = std::chrono::time_point<Clock>;
 
 namespace {
-    const int32_t DISPATCH_WARNING_TIME = 1; // ms
-    const int32_t DISPATCH_TIME_OUT = 10; // ms
+    const int32_t DISPATCH_WARNING_TIME = 10; // ms
+    const int32_t DISPATCH_TIME_OUT = 50; // ms
     const std::string RUNNER_NAME = "rssDispatcher";
     const std::string PLUGIN_SWITCH_FILE_NAME = "/system/etc/ressched/res_sched_plugin_switch.xml";
     const std::string CONFIG_FILE_NAME = "/system/etc/ressched/res_sched_config.xml";
-    static __thread jmp_buf env;
-    const int32_t SIG_ALL[] = {SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGBUS, SIGTERM};
-}
-
-extern "C" void Back(int32_t sig)
-{
-    siglongjmp(env, 1);
-}
-
-extern "C" void StackProtect()
-{
-    for (uint32_t i = 0; i < sizeof(SIG_ALL) / sizeof(int); i++) {
-        (void)signal(SIG_ALL[i], &Back);
-    }
 }
 
 IMPLEMENT_SINGLE_INSTANCE(PluginMgr);
@@ -100,7 +84,6 @@ void PluginMgr::Init()
         }
     }
 
-    StackProtect();
     LoadPlugin();
     if (!dispatcherHandler_) {
         dispatcherHandler_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
@@ -140,15 +123,13 @@ void PluginMgr::LoadPlugin()
             dlclose(pluginHandle);
             continue;
         }
-        if (!sigsetjmp(env, 1)) {
-            if (!onPluginInitFunc(info.libPath)) {
-                RESSCHED_LOGE("PluginMgr::LoadPlugin %{public}s init failed!", info.libPath.c_str());
-                dlclose(pluginHandle);
-                continue;
-            }
-        } else {
-            RESSCHED_LOGE("PluginMgr::LoadPlugin %{public}s  init exception!", info.libPath.c_str());
+
+        if (!onPluginInitFunc(info.libPath)) {
+            RESSCHED_LOGE("PluginMgr::LoadPlugin %{public}s init failed!", info.libPath.c_str());
+            dlclose(pluginHandle);
+            continue;
         }
+
 
         // OnDispatchResource is not necessary for plugin
         auto onDispatchResourceFunc = reinterpret_cast<OnDispatchResourceFunc>(dlsym(pluginHandle,
@@ -269,12 +250,7 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
     }
 
     auto beginTime = Clock::now();
-    // if a exception happen, will goto else
-    if (!sigsetjmp(env, 1)) {
-        fun(resData);
-    } else {
-        return;
-    }
+    fun(resData);
     auto endTime = Clock::now();
     int32_t costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
     if (costTime > DISPATCH_TIME_OUT) {
@@ -283,11 +259,7 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
                       "%{public}s plugin cost time(%{public}dms) over 10 ms! disable it.",
                       pluginLib.c_str(), costTime);
         if (itMap->second.onPluginDisableFunc_) {
-            if (!sigsetjmp(env, 1)) {
-                itMap->second.onPluginDisableFunc_();
-            } else {
-                RESSCHED_LOGE("PluginMgr::LoadPlugin %{public}s disable exception!", pluginLib.c_str());
-            }
+            itMap->second.onPluginDisableFunc_();
         }
         pluginLibMap_.erase(itMap);
     } else if (costTime > DISPATCH_WARNING_TIME) {
@@ -305,11 +277,7 @@ void PluginMgr::UnLoadPlugin()
         if (!libInfo.onPluginDisableFunc_) {
             continue;
         }
-        if (!sigsetjmp(env, 1)) {
-            libInfo.onPluginDisableFunc_();
-        } else {
-            RESSCHED_LOGE("PluginMgr::LoadPlugin %{public}s disable exception!", libPath.c_str());
-        }
+        libInfo.onPluginDisableFunc_();
     }
     // close all plugin handle
     pluginLibMap_.clear();
