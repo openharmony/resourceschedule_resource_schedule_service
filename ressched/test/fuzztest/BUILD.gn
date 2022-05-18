@@ -15,8 +15,8 @@ group("fuzztest") {
   testonly = true
 
   deps = [
-    "loadfromconfigfile_fuzzer:fuzztest",
-    "loadfromcustconfigfile_fuzzer:fuzztest",
+    # "loadfromconfigfile_fuzzer:fuzztest",
+    # "loadfromcustconfigfile_fuzzer:fuzztest",
     "ressched_fuzzer:fuzztest",
   ]
 }

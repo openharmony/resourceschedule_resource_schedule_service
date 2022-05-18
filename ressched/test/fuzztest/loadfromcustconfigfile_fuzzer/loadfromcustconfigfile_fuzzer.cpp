@@ -28,19 +28,19 @@ namespace ResourceSchedule {
         // generate fuzzed xml
         FILE *pFile = fopen(fuzzedFile.c_str(), "wb");
         if (!pFile) {
-            RESSCHED_LOGE("zzzFuzz myFuzzed.xml open error.");
+            RESSCHED_LOGE("myFuzzed.xml open error.");
             return false;
         }
 
         int32_t retCode = fwrite(reinterpret_cast<const void*>(data), size, 1, pFile); // 1 means count=1
         if (retCode < FILE_RETURN_SUCCESS) {
-            RESSCHED_LOGE("zzzFuzz myFuzzed.xml write error.");
-            fclose(pFile);
+            RESSCHED_LOGE("myFuzzed.xml write error.");
+            (void)fclose(pFile);
             pFile = nullptr;
             return false;
         }
 
-        fclose(pFile);
+        (void)fclose(pFile);
         pFile = nullptr;
 
         std::shared_ptr<ConfigReader> configReader = std::make_shared<ConfigReader>();

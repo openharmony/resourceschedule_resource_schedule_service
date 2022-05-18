@@ -154,7 +154,7 @@ ohos_shared_library("socperf_client") {
 }
 
 ohos_executable("socperf_test") {
-  sources = [ "test/socperf_test.cpp" ]
+  sources = [ "test/unittest/socperf_test.cpp" ]
   include_dirs = [
     "include",
     "include/client",

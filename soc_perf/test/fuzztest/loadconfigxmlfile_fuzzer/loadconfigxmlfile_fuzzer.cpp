@@ -33,12 +33,12 @@ namespace SOCPERF {
 
         int32_t retCode = fwrite(reinterpret_cast<const void*>(data), size, 1, pFile); // 1 means count=1
         if (retCode < FILE_RETURN_SUCCESS) {
-            fclose(pFile);
+            (void)fclose(pFile);
             pFile = nullptr;
             return false;
         }
 
-        fclose(pFile);
+        (void)fclose(pFile);
         pFile = nullptr;
 
         std::shared_ptr<SocPerf> socPerf = std::make_shared<SocPerf>();

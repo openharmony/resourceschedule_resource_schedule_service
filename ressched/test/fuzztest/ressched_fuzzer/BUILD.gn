@@ -18,6 +18,7 @@ import(
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
 import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
+
 module_output_path = "resource_schedule_service/ressched"
 
 ##############################fuzztest##########################################
