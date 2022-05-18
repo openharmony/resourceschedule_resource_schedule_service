@@ -69,7 +69,7 @@ void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const J
 
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
 {
-    RESSCHED_LOGI("ResSchedMgr::ReportDataInProcess receive resType = %{public}u, value = %{public}" PRId64".",
+    RESSCHED_LOGI("ResSchedMgr::ReportDataInProcess receive resType = %{public}u, value = %{public}lld.",
         resType, value);
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }

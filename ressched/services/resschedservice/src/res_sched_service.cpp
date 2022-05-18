@@ -23,7 +23,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 void ResSchedService::ReportData(uint32_t resType, int64_t value, const Json::Value& payload)
 {
-    RESSCHED_LOGI("ResSchedService::ReportData from ipc receive data resType = %{public}u, value = %{public}" PRId64".",
+    RESSCHED_LOGI("ResSchedService::ReportData from ipc receive data resType = %{public}u, value = %{public}lld.",
         resType, value);
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }

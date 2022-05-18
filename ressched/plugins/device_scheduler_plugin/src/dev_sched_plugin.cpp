@@ -60,7 +60,7 @@ void DevSchedPlugin::Disable()
 
 void DevSchedPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("DevSchedPlugin::DispatchResource type:%{public}u, value:%{public}" PRId64,
+    RESSCHED_LOGI("DevSchedPlugin::DispatchResource type:%{public}u, value:%{public}lld."
         data->resType, data->value);
 }
 
