@@ -24,3 +24,6 @@ ressched_interfaces =
 
 ressched_plugins =
     "${resourceschedule_path}/resource_schedule_service/ressched/plugins"
+
+ressched_test =
+    "${resourceschedule_path}/resource_schedule_service/ressched/test"

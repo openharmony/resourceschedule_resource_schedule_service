@@ -130,7 +130,8 @@ bool ConfigReader::ParsePluginConfig(const xmlNode& currNode, map<string, Plugin
 bool ConfigReader::LoadFromCustConfigFile(const string& configFile)
 {
     // skip the empty string, else you will get empty node
-    xmlDocPtr xmlDocPtr = xmlReadFile(configFile.c_str(), nullptr, XML_PARSE_NOBLANKS);
+    xmlDocPtr xmlDocPtr = xmlReadFile(configFile.c_str(), nullptr,
+        XML_PARSE_NOBLANKS | XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!xmlDocPtr) {
         RESSCHED_LOGE("ConfigReader::LoadFromCustConfigFile xmlReadFile error!");
         return false;

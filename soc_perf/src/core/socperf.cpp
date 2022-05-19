@@ -192,7 +192,7 @@ void SocPerf::DoFreqAction(std::shared_ptr<Action> action, int32_t onOff, int32_
 bool SocPerf::LoadConfigXmlFile(std::string configFile)
 {
     xmlKeepBlanksDefault(0);
-    xmlDoc* file = xmlReadFile(configFile.c_str(), nullptr, 0);
+    xmlDoc* file = xmlReadFile(configFile.c_str(), nullptr, XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!file) {
         SOC_PERF_LOGE("Failed to open xml file");
         return false;

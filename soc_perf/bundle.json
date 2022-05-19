@@ -52,7 +52,8 @@
         }
       ],
       "test": [
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf/test:unittest"
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/unittest:unittest",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/fuzztest:fuzztest"
       ]
     }
   }
