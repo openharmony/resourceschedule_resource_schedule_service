@@ -24,7 +24,7 @@ namespace ResourceSchedule {
 void ResSchedService::ReportData(uint32_t resType, int64_t value, const Json::Value& payload)
 {
     RESSCHED_LOGI("ResSchedService::ReportData from ipc receive data resType = %{public}u, value = %{public}lld.",
-        resType, value);
+        resType, (long long)value);
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 } // namespace ResourceSchedule
