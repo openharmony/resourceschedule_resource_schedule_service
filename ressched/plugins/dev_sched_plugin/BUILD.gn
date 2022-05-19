@@ -15,16 +15,16 @@ import("//build/ohos.gni")
 import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
 
-config("device_scheduler_plugin_config") {
+config("dev_sched_plugin_config") {
   include_dirs = [
     "include",
     "//utils/native/base/include",
   ]
 }
 
-ohos_shared_library("device_scheduler_plugin") {
+ohos_shared_library("dev_sched_plugin") {
   configs = [
-    ":device_scheduler_plugin_config",
+    ":dev_sched_plugin_config",
     "${ressched_services}:ressched_config",
     "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
   ]
@@ -37,6 +37,7 @@ ohos_shared_library("device_scheduler_plugin") {
   ]
 
   external_deps = [
+    "bluetooth:btframework",
     "eventhandler:libeventhandler",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
