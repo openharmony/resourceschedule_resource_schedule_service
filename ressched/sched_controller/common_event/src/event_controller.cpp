@@ -94,7 +94,7 @@ void EventController::HandleConnectivityChange(
     ReportDataInProcess(ResType::RES_TYPE_NET_CONNECT_STATE_CHANGE, code, payload);
     if (code == NetManagerStandard::NetConnState::NET_CONN_STATE_CONNECTED) {
         int32_t netType = want.GetIntParam("NetType", -1);
-        ReportDataInProcess(ResType::RSE_TYPE_NET_BEAR_TYPE, netType, payload);
+        ReportDataInProcess(ResType::RES_TYPE_NET_BEAR_TYPE, netType, payload);
     }
 }
 
@@ -125,6 +125,8 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_SCREEN_OFF);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USER_SWITCHED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USER_REMOVED);
+    matchingSkills.AddEvent("common.event.UNLOCK_SCREEN");
+    matchingSkills.AddEvent("common.event.LOCK_SCREEN");
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
     if (CommonEventManager::SubscribeCommonEvent(subscriber_)) {
@@ -162,6 +164,24 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
     if (action == CommonEventSupport::COMMON_EVENT_CONNECTIVITY_CHANGE) {
         int32_t code = data.GetCode();
         HandleConnectivityChange(want, code, payload);
+        return;
+    }
+    if (action == CommonEventSupport::COMMON_EVENT_USER_SWITCHED) {
+        int32_t userId = data.GetCode();
+        ReportDataInProcess(ResType::RES_TYPE_USER_SWITCH, static_cast<int64_t>(userId), payload);
+        return;
+    }
+    if (action == CommonEventSupport::COMMON_EVENT_USER_REMOVED) {
+        int32_t userId = data.GetCode();
+        ReportDataInProcess(ResType::RES_TYPE_USER_REMOVE, static_cast<int64_t>(userId), payload);
+        return;
+    }
+    if (action == "common.event.UNLOCK_SCREEN") {
+        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, 0, payload);
+        return;
+    }
+    if (action == "common.event.LOCK_SCREEN") {
+        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, 1, payload);
         return;
     }
 }

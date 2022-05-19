@@ -53,8 +53,8 @@ private:
     std::shared_ptr<EventController> subscriber_ = nullptr;
 };
 
-    void HandlePkgAddRemove(const EventFwk::Want &want, Json::Value &payload) const;
     void HandleConnectivityChange(const EventFwk::Want &want, const int32_t &code, Json::Value &payload);
+    void HandlePkgAddRemove(const EventFwk::Want &want, Json::Value &payload) const;
     int32_t GetUid(const int32_t &userId, const std::string &bundleName) const;
     void ReportDataInProcess(const uint32_t &resType, const int64_t &value, const Json::Value& payload);
 

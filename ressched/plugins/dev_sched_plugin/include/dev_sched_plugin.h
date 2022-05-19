@@ -18,7 +18,9 @@
 
 #include <set>
 
+#include "event_handler.h"
 #include "json/json.h"
+
 #include "plugin.h"
 #include "single_instance.h"
 
@@ -33,7 +35,9 @@ public:
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
 
 private:
+    void DispatchResourceInner(const std::shared_ptr<ResData>& data);
     std::set<uint32_t> resTypes_;
+    std::shared_ptr<AppExecFwk::EventHandler> dispatcherHandler_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

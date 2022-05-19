@@ -63,7 +63,15 @@ enum : uint32_t {
     RES_TYPE_NET_CONNECT_STATE_CHANGE,
     // connected net type; value 0:BEARER_CELLULAR, 1:BEARER_WIFI, 2:BEARER_BLUETOOTH
     // 3:BEARER_ETHERNET, 4:BEARER_VPN, 5:BEARER_WIFI_AWARE, -1:unknow
-    RSE_TYPE_NET_BEAR_TYPE,
+    RES_TYPE_NET_BEAR_TYPE,
+    // user switch, value means the userId which switch to.
+    RES_TYPE_USER_SWITCH,
+    // user remove, value means the userId which is removed.
+    RES_TYPE_USER_REMOVE,
+    // screen unlock, value 0 means unlock, value 1 means locked.
+    RES_TYPE_SCREEN_LOCK,
+    // bluetooth a2dp connect state, value 1: connected, 3: disconnected.
+    RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
