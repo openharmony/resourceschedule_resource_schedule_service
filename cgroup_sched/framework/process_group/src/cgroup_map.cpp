@@ -58,35 +58,35 @@ bool CgroupMap::LoadConfigFromJsonObj(const Json::Value& jsonObj)
 {
     const Json::Value& jsonArrObj = jsonObj[JSON_KEY_CGROUPS];
     // check json format
-    if (jsonArrObj.isNull() || !jsonArrObj.isArray()) {
+    if (!jsonArrObj.isArray()) {
         PGCGS_LOGI("Cgroups json config format error, CgroupMap: disabled!.");
         return false;
     }
     int count = 0;
     for (Json::Value::ArrayIndex i = 0; i < jsonArrObj.size(); ++i) {
         const Json::Value& cgroupObj = jsonArrObj[i];
-        // check cgroup schedule policy json config format
-        if (!CheckCgroupJsonConfig(cgroupObj)) {
-            const std::string cgroupObjStr = JsonToString(cgroupObj);
-            PGCGS_LOGE("cgroup json config format error, ignore it: %{public}s", cgroupObjStr.c_str());
+        const Json::Value& nameObj = cgroupObj[JSON_KEY_CONTROLLER];
+        const Json::Value& pathObj = cgroupObj[JSON_KEY_PATH];
+        if (!nameObj.isString() || !pathObj.isString()) {
+            PGCGS_LOGE("invalid controller config.");
+            continue;
+        }
+        std::string name = nameObj.asString();
+        std::string rootPath = pathObj.asString();
+        if (name.empty() || rootPath.empty()) {
+            PGCGS_LOGE("empty controller config.");
             continue;
         }
 
-        std::string name = cgroupObj[JSON_KEY_CONTROLLER].asString();
-        std::string rootPath =  cgroupObj[JSON_KEY_PATH].asString();
-        const Json::Value& schedPolicyJsonObj = cgroupObj[JSON_KEY_SCHED_POLICY];
         CgroupController controller(name, rootPath);
-
-        auto policyList = CgroupAction::GetInstance().GetSchedPolicyList();
-        for (SchedPolicy policy : policyList) {
-            const char* keyString = GetSchedPolicyFullName(policy);
-            std::string relPath = schedPolicyJsonObj[keyString].asString();
-            controller.AddSchedPolicy(policy, relPath);
+        if (LoadSchedPolicyConfig(controller, cgroupObj[JSON_KEY_SCHED_POLICY])) {
+            this->AddCgroupController(name, controller);
+            count++;
+        } else {
+            PGCGS_LOGE("no valid policy config item.");
         }
-
-        this->AddCgroupController(name, controller);
-        count++;
     }
+
     if (count == 0) {
         PGCGS_LOGI("The number of valid cgroup config is 0, CgroupMap: disabled!");
         return false;
@@ -95,25 +95,30 @@ bool CgroupMap::LoadConfigFromJsonObj(const Json::Value& jsonObj)
     return true;
 }
 
-bool CgroupMap::CheckCgroupJsonConfig(const Json::Value& cgroupObj)
+bool CgroupMap::LoadSchedPolicyConfig(CgroupController& controller, const Json::Value& policyObj)
 {
-    if (cgroupObj[JSON_KEY_CONTROLLER].isNull() || !cgroupObj[JSON_KEY_CONTROLLER].isString()
-        || cgroupObj[JSON_KEY_PATH].isNull() || !cgroupObj[JSON_KEY_PATH].isString()
-        || cgroupObj[JSON_KEY_SCHED_POLICY].isNull() || !cgroupObj[JSON_KEY_SCHED_POLICY].isObject()) {
+    if (!policyObj.isObject()) {
+        PGCGS_LOGE("invalid policy config.");
         return false;
     }
+
     auto policyList = CgroupAction::GetInstance().GetSchedPolicyList();
+    uint32_t count = 0;
     for (SchedPolicy policy : policyList) {
-        const char* name = GetSchedPolicyFullName(policy);
-        if (!strcmp(name, "error")) {
-            return false;
+        const char* keyString = GetSchedPolicyFullName(policy);
+        if (!keyString || !strcmp(keyString, "error")) {
+            continue;
         }
-        const Json::Value& jsonObj = cgroupObj[JSON_KEY_SCHED_POLICY][name];
-        if (jsonObj.isNull() || !jsonObj.isString()) {
-            return false;
+        const Json::Value& obj = policyObj[keyString];
+        if (!obj.isString()) {
+            PGCGS_LOGE("%s is not properly configed.", keyString);
+            continue;
+        }
+        if (controller.AddSchedPolicy(policy, obj.asString())) {
+            count++;
         }
     }
-    return true;
+    return (count > 0);
 }
 
 bool CgroupMap::FindFristEnableCgroupController(CgroupController** p)
