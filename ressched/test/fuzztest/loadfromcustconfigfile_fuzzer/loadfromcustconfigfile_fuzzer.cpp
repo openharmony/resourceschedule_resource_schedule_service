@@ -16,7 +16,6 @@
 #include "loadfromcustconfigfile_fuzzer.h"
 
 #include "config_reader.h"
-#include "res_sched_log.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -28,13 +27,11 @@ namespace ResourceSchedule {
         // generate fuzzed xml
         FILE *pFile = fopen(fuzzedFile.c_str(), "wb");
         if (!pFile) {
-            RESSCHED_LOGE("myFuzzed.xml open error.");
             return false;
         }
 
         int32_t retCode = fwrite(reinterpret_cast<const void*>(data), size, 1, pFile); // 1 means count=1
         if (retCode < FILE_RETURN_SUCCESS) {
-            RESSCHED_LOGE("myFuzzed.xml write error.");
             (void)fclose(pFile);
             pFile = nullptr;
             return false;
