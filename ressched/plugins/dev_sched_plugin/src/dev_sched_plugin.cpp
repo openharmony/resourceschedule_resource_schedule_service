@@ -77,8 +77,8 @@ void DevSchedPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 void DevSchedPlugin::DispatchResourceInner(const std::shared_ptr<ResData>& data)
 {
     RESSCHED_LOGD(
-        "DevSchedPlugin::DEV_RECIEVE: type=%{public}u value=%{public}" PRId64 " payload=%{public}s",
-        data->resType, data->value, (data->payload.toStyledString()).c_str());
+        "DevSchedPlugin::DEV_RECIEVE: type=%{public}u value=%{public}lld payload=%{public}s",
+        data->resType, (long long)(data->value), (data->payload.toStyledString()).c_str());
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
