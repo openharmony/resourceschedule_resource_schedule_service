@@ -38,7 +38,10 @@ enum : uint32_t {
     RES_TYPE_TRANSIENT_TASK,
     // continuous task event; value 0:start, 1:finish; payload:pid,uid,abilityName
     RES_TYPE_CONTINUOUS_TASK,
-    // cgroup change event; value means nothing; payload:pid,uid,name,oldGroup,newGroup
+    /* cgroup change event;
+     * value 0:set thread group sched; 1:set thread sched
+     * payload: pid,uid,name,oldGroup,newGroup
+     */
     RES_TYPE_CGROUP_ADJUSTER,
     // ace gestures click_recognizer; value means nothing
     RES_TYPE_CLICK_RECOGNIZE,
