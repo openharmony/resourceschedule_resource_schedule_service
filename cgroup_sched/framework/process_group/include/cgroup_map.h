@@ -46,7 +46,7 @@ private:
     std::map<std::string, CgroupController> controllers_;
 
     void AddCgroupController(const std::string& name, CgroupController& controller);
-    static bool CheckCgroupJsonConfig(const Json::Value& cgroupObj);
+    bool LoadSchedPolicyConfig(CgroupController& controller, const Json::Value& policyObj);
 };
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
