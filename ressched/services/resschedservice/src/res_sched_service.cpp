@@ -14,7 +14,6 @@
  */
 
 #include "res_sched_service.h"
-#include <cinttypes>
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 
