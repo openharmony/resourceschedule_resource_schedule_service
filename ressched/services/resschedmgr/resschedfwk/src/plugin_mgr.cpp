@@ -129,8 +129,7 @@ void PluginMgr::LoadPlugin()
             dlclose(pluginHandle);
             continue;
         }
-
-
+        
         // OnDispatchResource is not necessary for plugin
         auto onDispatchResourceFunc = reinterpret_cast<OnDispatchResourceFunc>(dlsym(pluginHandle,
             "OnDispatchResource"));

@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 #include "res_sched_client.h"
-#include <cinttypes>
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "res_sched_log.h"
