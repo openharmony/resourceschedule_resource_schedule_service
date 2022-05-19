@@ -72,7 +72,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00100, testing::ext::TestSize.L
 /**
  * @tc.name: connectivityChange_00101
  * @tc.desc: test dispatching ResType::RES_TYPE_NET_BEAR_TYPE
- *           when recieve COMMON_EVENT_CONNECTIVITY_CHANGE and code is NET_CONN_STATE_CONNECTED.
+ *           when receive COMMON_EVENT_CONNECTIVITY_CHANGE and code is NET_CONN_STATE_CONNECTED.
  * @tc.type: FUNC
  * @tc.require: SR000H0H3C AR000HORSU
  */
