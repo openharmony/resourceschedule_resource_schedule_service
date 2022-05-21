@@ -44,6 +44,8 @@ CgroupAdjuster& CgroupAdjuster::GetInstance()
 
 void CgroupAdjuster::InitAdjuster()
 {
+    // Trigger load shared library
+    (void)ResSchedUtils::GetInstance();
     auto handler = SchedController::GetInstance().GetCgroupEventHandler();
     if (handler) {
         handler->PostTask([this] {
@@ -57,6 +59,7 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
     CGS_LOGI("%{public}s for %{public}d, source : %{public}d", __func__, pr.GetPid(), source);
     ComputeProcessGroup(app, pr, source);
     ApplyProcessGroup(app, pr);
+    ResSchedUtils::GetInstance().ReportArbitrationResult(app, pr, source);
 }
 
 void CgroupAdjuster::AdjustAllProcessGroup(Application &app, AdjustSource source)

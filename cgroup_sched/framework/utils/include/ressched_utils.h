@@ -25,22 +25,27 @@
 namespace OHOS {
 namespace ResourceSchedule {
 using ReportDataFunc = void (*)(uint32_t resType, int64_t value, const Json::Value& payload);
+using ReportArbitrationResultFunc = void (*)(Application &app, ProcessRecord &pr, AdjustSource source);
 
 class ResSchedUtils {
 public:
     static ResSchedUtils& GetInstance();
     void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload);
+    void ReportArbitrationResult(Application &app, ProcessRecord &pr, AdjustSource source);
 
 private:
     ResSchedUtils()
     {
         LoadUtils();
+        LoadUtilsExtra();
     }
     ~ResSchedUtils()
     {
         reportFunc_ = nullptr;
+        reportArbitrationResultFunc_ = nullptr;
     }
     void LoadUtils();
+    void LoadUtilsExtra();
 
     ResSchedUtils(const ResSchedUtils&) = delete;
     ResSchedUtils& operator=(const ResSchedUtils &) = delete;
@@ -48,6 +53,7 @@ private:
     ResSchedUtils& operator=(ResSchedUtils&&) = delete;
 
     ReportDataFunc reportFunc_ = nullptr;
+    ReportArbitrationResultFunc reportArbitrationResultFunc_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

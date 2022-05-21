@@ -57,8 +57,6 @@ SchedController& SchedController::GetInstance()
 void SchedController::Init()
 {
     ChronoScope cs("Init SchedController.");
-    // Trigger load shared library
-    (void)ResSchedUtils::GetInstance();
     // Init supervisor which contains cached data for ccgroup controller.
     InitSupervisor();
     // Init cgroup handler thread
