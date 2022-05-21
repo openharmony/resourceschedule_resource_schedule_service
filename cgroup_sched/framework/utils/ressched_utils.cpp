@@ -23,8 +23,10 @@ namespace ResourceSchedule {
 namespace {
 #ifdef __aarch64__
     const std::string RES_SCHED_SERVICE_SO = "/system/lib64/libresschedsvc.z.so";
+    const std::string RES_SCHED_CG_EXT_SO = "/system/lib64/libcgroup_sched_ext.z.so";
 #else
     const std::string RES_SCHED_SERVICE_SO = "/system/lib/libresschedsvc.z.so";
+    const std::string RES_SCHED_CG_EXT_SO = "/system/lib/libcgroup_sched_ext.z.so";
 #endif
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "ResSchedUtils"};
 }
@@ -51,6 +53,23 @@ void ResSchedUtils::LoadUtils()
     }
 }
 
+void ResSchedUtils::LoadUtilsExtra()
+{
+    auto handle = dlopen(RES_SCHED_CG_EXT_SO.c_str(), RTLD_NOW);
+    if (!handle) {
+        CGS_LOGE("%{public}s load %{public}s failed! errno:%{public}d", __func__, RES_SCHED_CG_EXT_SO.c_str(), errno);
+        return;
+    }
+
+    reportArbitrationResultFunc_ =
+        reinterpret_cast<ReportArbitrationResultFunc>(dlsym(handle, "ReportArbitrationResult"));
+    if (!reportArbitrationResultFunc_) {
+        CGS_LOGE("%{public}s load function:ReportArbitrationResult failed! errno:%{public}d", __func__, errno);
+        dlclose(handle);
+        return;
+    }
+}
+
 void ResSchedUtils::ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
 {
     if (!reportFunc_) {
@@ -58,6 +77,15 @@ void ResSchedUtils::ReportDataInProcess(uint32_t resType, int64_t value, const J
         return;
     }
     reportFunc_(resType, value, payload);
+}
+
+void ResSchedUtils::ReportArbitrationResult(Application &app, ProcessRecord &pr, AdjustSource source)
+{
+    if (!reportArbitrationResultFunc_) {
+        CGS_LOGE("%{public}s failed, function nullptr.", __func__);
+        return;
+    }
+    reportArbitrationResultFunc_(app, pr, source);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
