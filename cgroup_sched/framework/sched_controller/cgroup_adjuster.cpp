@@ -126,11 +126,11 @@ void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
             __func__, pr.GetPid(), pr.lastSchedGroup_, pr.curSchedGroup_);
 
         Json::Value payload;
-        payload["pid"] = pr.GetPid();
-        payload["uid"] = pr.GetUid();
+        payload["pid"] = std::to_string(pr.GetPid());
+        payload["uid"] = std::to_string(pr.GetUid());
         payload["name"] = app.name_;
-        payload["oldGroup"] = (int32_t)(pr.lastSchedGroup_);
-        payload["newGroup"] = (int32_t)(pr.curSchedGroup_);
+        payload["oldGroup"] = std::to_string((int32_t)(pr.lastSchedGroup_));
+        payload["newGroup"] = std::to_string((int32_t)(pr.curSchedGroup_));
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CGROUP_ADJUSTER, 0, payload);
     }
 }

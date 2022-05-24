@@ -46,8 +46,8 @@ void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateD
     }
 
     Json::Value payload;
-    payload["pid"] = appStateData.pid;
-    payload["uid"] = appStateData.uid;
+    payload["pid"] = std::to_string(appStateData.pid);
+    payload["uid"] = std::to_string(appStateData.uid);
     payload["bundleName"] = appStateData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);
 }
@@ -75,8 +75,8 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     }
 
     Json::Value payload;
-    payload["pid"] = abilityStateData.pid;
-    payload["uid"] = abilityStateData.uid;
+    payload["pid"] = std::to_string(abilityStateData.pid);
+    payload["uid"] = std::to_string(abilityStateData.uid);
     payload["bundleName"] = abilityStateData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
         abilityStateData.abilityState, payload);
@@ -105,8 +105,8 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
     }
 
     Json::Value payload;
-    payload["pid"] = abilityStateData.pid;
-    payload["uid"] = abilityStateData.uid;
+    payload["pid"] = std::to_string(abilityStateData.pid);
+    payload["uid"] = std::to_string(abilityStateData.uid);
     payload["bundleName"] = abilityStateData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_EXTENSION_STATE_CHANGE,
         abilityStateData.abilityState, payload);
@@ -130,8 +130,8 @@ void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processDat
     }
 
     Json::Value payload;
-    payload["pid"] = processData.pid;
-    payload["uid"] = processData.uid;
+    payload["pid"] = std::to_string(processData.pid);
+    payload["uid"] = std::to_string(processData.uid);
     payload["bundleName"] = processData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_PROCESS_STATE_CHANGE, 0, payload);
 }
@@ -154,8 +154,8 @@ void RmsApplicationStateObserver::OnProcessDied(const ProcessData &processData)
     }
 
     Json::Value payload;
-    payload["pid"] = processData.pid;
-    payload["uid"] = processData.uid;
+    payload["pid"] = std::to_string(processData.pid);
+    payload["uid"] = std::to_string(processData.uid);
     payload["bundleName"] = processData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_PROCESS_STATE_CHANGE, 1, payload);
 }
@@ -179,8 +179,8 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     }
 
     Json::Value payload;
-    payload["pid"] = appStateData.pid;
-    payload["uid"] = appStateData.uid;
+    payload["pid"] = std::to_string(appStateData.pid);
+    payload["uid"] = std::to_string(appStateData.uid);
     payload["bundleName"] = appStateData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);
 }

@@ -331,11 +331,11 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
     Json::Value payload;
-    payload["pid"] = pid;
-    payload["uid"] = uid;
-    payload["windowId"] = windowId;
-    payload["windowType"] = (int32_t)(windowType);
-    payload["displayId"] = displayId;
+    payload["pid"] = std::to_string(pid);
+    payload["uid"] = std::to_string(uid);
+    payload["windowId"] = std::to_string(windowId);
+    payload["windowType"] = std::to_string((int32_t)(windowType));
+    payload["displayId"] = std::to_string(displayId);
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -382,11 +382,11 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
     Json::Value payload;
-    payload["pid"] = pid;
-    payload["uid"] = uid;
-    payload["windowId"] = windowId;
-    payload["windowType"] = (int32_t)(windowType);
-    payload["displayId"] = displayId;
+    payload["pid"] = std::to_string(pid);
+    payload["uid"] = std::to_string(uid);
+    payload["windowId"] = std::to_string(windowId);
+    payload["windowType"] = std::to_string((int32_t)(windowType));
+    payload["displayId"] = std::to_string(displayId);
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
