@@ -60,13 +60,13 @@ void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
     switch (data->resType) {
         case RES_TYPE_APP_STATE_CHANGE:
             {
-                int uid = payload["uid"].asInt();
+                int uid = std::stoi(payload["uid"].asString());
                 RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:app state! uid:%{public}d", uid);
             }
             break;
         case RES_TYPE_PROCESS_STATE_CHANGE:
             {
-                pid = payload["pid"].asInt();
+                pid = std::stoi(payload["pid"].asString());
                 int tid = INIT_VAL;
                 RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
                 RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, tid, state);
@@ -75,7 +75,7 @@ void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
             break;
         case RES_TYPE_WINDOW_FOCUS:
             {
-                pid = payload["pid"].asInt();
+                pid = std::stoi(payload["pid"].asString());
                 RME::FrameMsgIntf::GetInstance().ReportWindowFocus(pid, data->value);
                 RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:window focus! resType: %{public}u.", data->resType);
             }

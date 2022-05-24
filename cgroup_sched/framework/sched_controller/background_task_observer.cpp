@@ -55,8 +55,8 @@ void BackgroundTaskObserver::OnTransientTaskStart(const std::shared_ptr<Transien
     }
 
     Json::Value payload;
-    payload["pid"] = info->GetPid();
-    payload["uid"] = info->GetUid();
+    payload["pid"] = std::to_string(info->GetPid());
+    payload["uid"] = std::to_string(info->GetUid());
     payload["bundleName"] = info->GetPackageName();
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_TRANSIENT_TASK, 0, payload);
 }
@@ -79,8 +79,8 @@ void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientT
     }
 
     Json::Value payload;
-    payload["pid"] = info->GetPid();
-    payload["uid"] = info->GetUid();
+    payload["pid"] = std::to_string(info->GetPid());
+    payload["uid"] = std::to_string(info->GetUid());
     payload["bundleName"] = info->GetPackageName();
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_TRANSIENT_TASK, 1, payload);
 }
@@ -105,8 +105,8 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
     }
 
     Json::Value payload;
-    payload["pid"] = continuousTaskCallbackInfo->GetCreatorPid();
-    payload["uid"] = continuousTaskCallbackInfo->GetCreatorUid();
+    payload["pid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorPid());
+    payload["uid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorUid());
     payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CONTINUOUS_TASK, 0, payload);
 }
@@ -131,8 +131,8 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
     }
 
     Json::Value payload;
-    payload["pid"] = continuousTaskCallbackInfo->GetCreatorPid();
-    payload["uid"] = continuousTaskCallbackInfo->GetCreatorUid();
+    payload["pid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorPid());
+    payload["uid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorUid());
     payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CONTINUOUS_TASK, 0, payload);
 }
