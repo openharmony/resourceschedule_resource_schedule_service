@@ -14,16 +14,4 @@
  * limitations under the License.
  -->
 <Configs>
-    <Resource>
-        <res id="1000" name="lit_cpu_min_freq" pair="1001">
-            <default>408000</default>
-            <path>/sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq</path>
-            <node>408000 600000 816000 1104000 1416000 1608000 1800000 1992000</node>
-        </res>
-        <res id="1001" name="lit_cpu_max_freq" pair="1000" mode="1">
-            <default>1992000</default>
-            <path>/sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq</path>
-            <node>408000 600000 816000 1104000 1416000 1608000 1800000 1992000</node>
-        </res>
-    </Resource>
 </Configs>
