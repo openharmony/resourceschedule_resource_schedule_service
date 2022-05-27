@@ -39,8 +39,7 @@ void DevSchedPlugin::Init()
     resTypes_.insert(RES_TYPE_APP_INSTALL_UNINSTALL);
     resTypes_.insert(RES_TYPE_APP_STATE_CHANGE);  // app switch
     resTypes_.insert(RES_TYPE_EXTENSION_STATE_CHANGE);
-    resTypes_.insert(RES_TYPE_NET_CONNECT_STATE_CHANGE);
-    resTypes_.insert(RES_TYPE_NET_BEAR_TYPE);
+    resTypes_.insert(RES_TYPE_WIFI_CONNECT_STATE_CHANGE);
     resTypes_.insert(RES_TYPE_PROCESS_STATE_CHANGE);  // process create and died
     resTypes_.insert(RES_TYPE_PUSH_PAGE);
     resTypes_.insert(RES_TYPE_SCREEN_STATUS);

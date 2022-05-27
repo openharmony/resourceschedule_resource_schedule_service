@@ -49,7 +49,7 @@ public:
 
 /**
  * @tc.name: connectivityChange_00100
- * @tc.desc: test dispatching ResType::RES_TYPE_NET_CONNECT_STATE_CHANGE
+ * @tc.desc: test dispatching ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE
  *           when recieve COMMON_EVENT_CONNECTIVITY_CHANGE.
  * @tc.type: FUNC
  * @tc.require: SR000H0H3C AR000HORSU
@@ -59,11 +59,12 @@ HWTEST_F(EventControllerTest, connectivityChange_00100, testing::ext::TestSize.L
     AAFwk::Want want;
     EventFwk::CommonEventData data;
     want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_CONNECTIVITY_CHANGE);
+    want.SetParam("NetType", 1);
     data.SetWant(want);
     data.SetCode(NetManagerStandard::NetConnState::NET_CONN_STATE_CONNECTING);
 
     EventController::GetInstance().OnReceiveEvent(data);
-    uint32_t expectResType = ResType::RES_TYPE_NET_CONNECT_STATE_CHANGE;
+    uint32_t expectResType = ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE;
     int64_t expectValue = 2;
     EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
     EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);

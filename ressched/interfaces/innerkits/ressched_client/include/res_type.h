@@ -57,13 +57,10 @@ enum : uint32_t {
     RES_TYPE_REPORT_MMI_PROCESS,
     // report render thread; value render tid; payload:uid,pid
     RES_TYPE_REPORT_RENDER_THREAD,
-    // app install and uninstall event; value 0: install, 1: uninstall; payload:uid,bundleName
+    // app install and uninstall event; value 0: uninstall, 1: install; payload:uid,bundleName
     RES_TYPE_APP_INSTALL_UNINSTALL,
     // net connect state; value 0:unknow, 1:idle, 2:connecting, 3:connected, 4:disconnecting, 5:disconnected
-    RES_TYPE_NET_CONNECT_STATE_CHANGE,
-    // connected net type; value 0:BEARER_CELLULAR, 1:BEARER_WIFI, 2:BEARER_BLUETOOTH
-    // 3:BEARER_ETHERNET, 4:BEARER_VPN, 5:BEARER_WIFI_AWARE, -1:unknow
-    RES_TYPE_NET_BEAR_TYPE,
+    RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
     // user switch, value means the userId which switch to.
     RES_TYPE_USER_SWITCH,
     // user remove, value means the userId which is removed.
