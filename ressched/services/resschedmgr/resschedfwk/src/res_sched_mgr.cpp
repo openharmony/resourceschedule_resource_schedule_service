@@ -18,6 +18,7 @@
 #include "cgroup_sched.h"
 #include "res_sched_log.h"
 #include "plugin_mgr.h"
+#include "hitrace_meter.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -56,10 +57,15 @@ void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const Json::Value&
     }
     // dispatch resource async
     std::lock_guard<std::mutex> autoLock(mainHandlerMutex_);
+    std::string trace_str(__func__);
+    trace_str.append(",resType[").append(std::to_string(resType)).append("]");
+    trace_str.append(",value[").append(std::to_string(value)).append("]");
+    StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
     mainHandler_->PostTask([this, resType, value, payload] {
         DispatchResourceInner(resType, value, payload);
         PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
     });
+    FinishTrace(HITRACE_TAG_OHOS);
 }
 
 void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const Json::Value& payload)
