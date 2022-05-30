@@ -90,11 +90,11 @@ int32_t EventController::GetUid(const int32_t &userId, const std::string &bundle
 void EventController::HandleConnectivityChange(
     const EventFwk::Want &want, const int32_t &code, Json::Value &payload)
 {
-    ReportDataInProcess(ResType::RES_TYPE_NET_CONNECT_STATE_CHANGE, code, payload);
-    if (code == NetManagerStandard::NetConnState::NET_CONN_STATE_CONNECTED) {
-        int32_t netType = want.GetIntParam("NetType", -1);
-        ReportDataInProcess(ResType::RES_TYPE_NET_BEAR_TYPE, netType, payload);
+    int32_t netType = want.GetIntParam("NetType", -1);
+    if (netType != 1) {
+        return;
     }
+    ReportDataInProcess(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE, code, payload);
 }
 
 void EventController::ReportDataInProcess(const uint32_t &resType, const int64_t &value, const Json::Value& payload)
