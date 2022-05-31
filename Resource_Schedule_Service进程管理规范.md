@@ -245,7 +245,7 @@ A. 事件打点延时
 | RES_TYPE_WINDOW_FOCUS           | 窗口聚焦事件                         | 0：聚焦1：不聚焦          | {"pid"=?,"uid"=?,"bundleName"="?",  "windowId"=?,"windowType"=?,displayId=?} | <10ms         | soc_perf ; frame_aware |
 | RES_TYPE_TRANSIENT_TASK         | 瞬态任务事件                         | 0：开始  1：结束          | {"pid"=?,"uid"=?,"bundleName"="?"}                           |               |                        |
 | RES_TYPE_CONTINUOUS_TASK        | 长时任务事件                         | 0：开始  1：结束          | {"pid"=?,"uid"=?,"abilityName"="?"}                          |               |                        |
-| RES_TYPE_CGROUP_ADJUSTER        | cgroup改变事件                       | 无                        | {"pid"=?,"uid"=?,"name"="?","oldGroup"=?, "newGroup"=?}      |               |                        |
+| RES_TYPE_CGROUP_ADJUSTER        | cgroup改变事件                       | 0: 进程组分组变化  1: 线程分组变化 | {"pid"=?,"uid"=?,"name"="?","oldGroup"=?, "newGroup"=?}      |               |                        |
 | RES_TYPE_CLICK_RECOGNIZE        | ace手势点击识别器                    | 无                        | 无                                                           | <10ms         | soc_perf               |
 | RES_TYPE_PUSH_PAGE              | ace pipeline_context.cpp::PushPage() | 无                        | 无                                                           | <10ms         | soc_perf               |
 | RTS_TYPE_SLIDE_RECOGNIZE        | ace slide event recognize            | 1: slide on; 0: slide off | 无                                                           | <10ms         | soc_perf               |

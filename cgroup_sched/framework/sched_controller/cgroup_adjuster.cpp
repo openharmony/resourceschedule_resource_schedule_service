@@ -100,6 +100,9 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
                 group = SP_FOREGROUND;
             } else if (pr.HasServiceExtension()) {
                 group = SP_DEFAULT;
+                if (app.state_ == (int32_t)ApplicationState::APP_STATE_BACKGROUND) {
+                    group = SP_BACKGROUND;
+                }
             } else {
                 group = SP_BACKGROUND;
             }
