@@ -422,7 +422,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
         win->displayId_ = displayId;
         win->ability_ = abi;
         if (abi) {
-            abi->window_ = nullptr;
+            abi->window_.reset();
         }
 
         if (app->focusedProcess_ == procRecord) {

@@ -57,7 +57,7 @@ public:
     int32_t type_ = -1; // ability type
     uintptr_t token_ = 0;
     std::string name_;
-    std::shared_ptr<WindowInfo> window_ = nullptr;
+    std::weak_ptr<WindowInfo> window_ = std::weak_ptr<WindowInfo>();
 };
 
 class ProcessRecord {
