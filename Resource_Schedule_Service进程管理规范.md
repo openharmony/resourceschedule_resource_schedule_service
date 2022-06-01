@@ -79,11 +79,11 @@
 
 由于插件需要高效的接收RSS框架的事件，所以推荐使用插件接收到事件后，即启动一个handler进行后续的事件处理。而这个handler原则上即使用IPC进行事件转发，分发到对应模块的services中进行事件次处理。这样即保证了插件不会增加太多RSS框架的开销，也能够快速的对事件进行响应。
 
- 
+
 
  ![img](figures/resource_schedule_service.png)
 
- 
+
 
 使用如此方式的插件，则只会增加RSS框架一个线程。而如果有特殊需求，需要增加RSS框架进程多个线程的，则需要说明原因并且参与评审，并且梳理清楚以下几点。
 
@@ -111,9 +111,9 @@
 | 插件需要的权限     | 读写特性IO的selinux权限等(暂时不涉及)                        |
 | 插件负责人         | 增加插件的人员                                               |
 
- 
 
- 
+
+
 
 ## • 事件管理规范
 
@@ -131,7 +131,7 @@ Payload ： 接口类型unordered_map<string,string>型，用于更详细的消�
 
 根据res_type.h中定义所需要的事件，添加相应信息。
 
- 
+
 
 RSS框架的事件完全继承IPC的传输规范，开发者可以在RSS框架代码中res_type.h中定义需要的事件type_id，以及定义对应的value和payload格式。
 
@@ -139,7 +139,7 @@ RSS框架的事件完全继承IPC的传输规范，开发者可以在RSS框架�
 
 payload为unordered_map<string,string>型。
 
- 
+
 
 Payload在RSS框架使用Json格式，大概如下:
 
@@ -177,7 +177,7 @@ payload: {
 
 }
 
- 
+
 
 Json格式有着非常丰富的库方法进行解析和生成，这里RSS框架代码推荐使用lib-jsoncpp-dev进行相关操作。尽可能减少其它三方库引入以节约内存。
 
@@ -199,7 +199,7 @@ A. 事件打点延时
 
 
 
- 
+
 
 ### 3. 新事件加入**check_list**
 
@@ -211,17 +211,17 @@ A. 事件打点延时
 | 事件打点延时    | 以RK3568测试为准，记录第一个插件收到事件的延时 |
 | 订阅事件插件    | 给出订阅了改事件的插件名列表。                 |
 
- 
 
- 
 
- 
 
- 
+
+
+
+
 
 ##  **Check_List**
 
-### 1：插件Check_List   
+### 1：插件Check_List
 
 更新2022年2月18日14:35:24
 
@@ -231,9 +231,9 @@ A. 事件打点延时
 | frame_aware_sched | 智能感知调度 | RES_TYPE_WINDOW_FOCUS;  RES_TYPE_PROCESS_STATE_CHANGE;  RES_TYPE_APP_STATE_CHANGE | 常驻：4537             | 常驻：109            |                    |              | 暂无            |                | rongkunshi |
 | dev_sched | 外设调度 | RES_TYPE_SCREEN_STATUS；RES_TYPE_APP_STATE_CHANGE；RES_TYPE_ABILITY_STATE_CHANGE；RES_TYPE_EXTENSION_STATE_CHANGE；RES_TYPE_PROCESS_STATE_CHANGE；RES_TYPE_WINDOW_FOCUS; | 常驻：             | 常驻： 动态:            |                    |              | 暂无            |                | linyunxuan |
 
-### 2：事件Check_List   
+### 2：事件Check_List
 
-更新2022年2月18日14:35:24
+更新2022年6月01日14:35:24
 
 | 事件type                        | 事件用途                             | 事件value                 | 事件payload格式                                              | 事件打点延时: | 订阅事件插件           |
 | ------------------------------- | ------------------------------------ | ------------------------- | ------------------------------------------------------------ | ------------- | ---------------------- |
@@ -253,16 +253,21 @@ A. 事件打点延时
 | RES_TYPE_WINDOW_UPDATE_STATE_CHANGE   | 窗口状态更新事件               | 更新的窗口类型          | 更新之前的窗口类型     | - | - |
 | RES_TYPE_REPORT_MMI_PROCESS           | 上报mmi_service线程ID          | mmi_service线程号     | {"uid"=?, "pid"=?}    | - | - |
 | RES_TYPE_REPORT_RENDER_THREAD         | 上报应用的RSRender线程ID       | RSRenderThread线程号   |  {"uid"=?, "pid"=?}   | - | - |
+| RES_TYPE_APP_INSTALL_UNINSTALL  | 应用安装和卸载事件                    | value 0: 卸载, 1: 安装  | {"uid"=?,"bundleName"="?} | - | - |
+| RES_TYPE_WIFI_CONNECT_STATE_CHANGE | wifi连接状态事件                  | 1:空闲, 2:连接中, 3:已连接, 4:断开中, 5:已断开   | 无需payload | - | - |
+| RES_TYPE_USER_SWITCH            | 用户切换事件                         | value: 切换到的目标用户id  | 无需payload         | - | - |
+| RES_TYPE_USER_REMOVE            | 用户删除事件                         | value: 删除的用户id        | 无需payload         | - | - |
+| RES_TYPE_SCREEN_LOCK            | 锁屏和解锁事件                       | 0：解锁 1：锁屏             | 无需payload         | - | - |
 
- 
 
- 
 
- 
 
- 
 
- 
+
+
+
+
+
 
 ## 附件1：
 
@@ -270,7 +275,7 @@ A. 事件打点延时
 
 每天定期检查待评审issues。待评审人可以在“附件2中”跟踪问题进展。
 
- 
+
 
 评审问题模板：
 
@@ -278,11 +283,11 @@ A. 事件打点延时
 | ---------- | ---- | -------- | ------------ |
 | XXX        | xx   | Xxx      | Xxx          |
 
- 
 
- 
 
- 
+
+
+
 
 ##  附件2：
 
@@ -292,10 +297,10 @@ A. 事件打点延时
 | ---- | ---- | ---------- | -------- | -------- | ------------ | -------- |
 |      |      |            |          |          |              |          |
 
- 
 
- 
 
- 
 
- 
+
+
+
+
