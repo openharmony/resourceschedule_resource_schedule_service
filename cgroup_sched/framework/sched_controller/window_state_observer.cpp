@@ -70,15 +70,17 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
         }
         auto windowId = info->windowId_;
         auto isVisible = info->isVisible_;
+        auto windowType = info->windowType_;
         auto pid = info->pid_;
         auto uid = info->uid_;
-        cgHandler->PostTask([cgHandler, windowId, isVisible, pid, uid] {
-            cgHandler->HandleWindowVisibilityChanged(windowId, isVisible, pid, uid);
+        cgHandler->PostTask([cgHandler, windowId, isVisible, windowType, pid, uid] {
+            cgHandler->HandleWindowVisibilityChanged(windowId, isVisible, windowType, pid, uid);
         });
         Json::Value payload;
         payload["pid"] = std::to_string(pid);
         payload["uid"] = std::to_string(uid);
         payload["windowId"] = std::to_string(windowId);
+        payload["windowType"] = std::to_string((int32_t)windowType);
         ResSchedUtils::GetInstance().ReportDataInProcess(
             ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE, isVisible ? 1 : 0, payload);
     }

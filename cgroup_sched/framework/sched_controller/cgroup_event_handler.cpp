@@ -434,14 +434,15 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_FOCUS, 1, payload);
 }
 
-void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t windowId, bool isVisible, int32_t pid, int32_t uid)
+void CgroupEventHandler::HandleWindowVisibilityChanged(
+    uint32_t windowId, bool isVisible, WindowType windowType, int32_t pid, int32_t uid)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
-        isVisible, pid, uid);
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
+        isVisible, (int32_t)windowType, pid, uid);
 
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
@@ -459,6 +460,7 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t windowId, bool i
     }
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
     windowInfo->isVisible_ = isVisible;
+    windowInfo->windowType_ = (int32_t)windowType;
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_WINDOW_VISIBILITY_CHANGED);
