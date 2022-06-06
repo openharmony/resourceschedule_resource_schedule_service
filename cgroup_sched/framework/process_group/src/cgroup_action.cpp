@@ -67,6 +67,11 @@ void CgroupAction::AddSchedPolicyDeclaration(const SchedPolicy policy,
             __func__, policy, fullName.c_str(), abbrName.c_str());
         return;
     }
+    if (policy >= SP_UPPER_LIMIT) {
+        PGCGS_LOGI("%{public}s out of range: %{public}u, %{public}s, %{public}s",
+            __func__, policy, fullName.c_str(), abbrName.c_str());
+        return;
+    }
     if (fullName.empty() || abbrName.empty()) {
         return;
     }
@@ -163,6 +168,7 @@ bool CgroupAction::IsEnabled()
 int CgroupAction::GetSchedPolicy(int tid, SchedPolicy* policy)
 {
     if (!IsEnabled()) {
+        *policy = SP_UPPER_LIMIT;
         return -1;
     }
     std::string subgroup;
@@ -170,6 +176,7 @@ int CgroupAction::GetSchedPolicy(int tid, SchedPolicy* policy)
     CgroupMap& instance = CgroupMap::GetInstance();
     if (instance.FindFristEnableCgroupController(&controller)) {
         if (!controller->GetTaskGroup(tid, subgroup)) {
+            *policy = SP_UPPER_LIMIT;
             return -1;
         }
     }
@@ -191,6 +198,7 @@ int CgroupAction::GetSchedPolicyByName(const std::string& name, SchedPolicy* pol
             return 0;
         }
     }
+    *policy = SP_UPPER_LIMIT;
     return -1;
 }
 
