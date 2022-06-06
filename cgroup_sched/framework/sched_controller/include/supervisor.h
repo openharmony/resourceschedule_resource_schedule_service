@@ -37,7 +37,10 @@ class AbilityInfo;
 class WindowInfo {
 public:
     explicit WindowInfo(int32_t windowId) : windowId_(windowId) {}
-    ~WindowInfo() {};
+    ~WindowInfo()
+    {
+        ability_ = nullptr;
+    }
 
     uint32_t windowId_;
     bool isVisible_ = false;
@@ -50,7 +53,10 @@ public:
 class AbilityInfo {
 public:
     AbilityInfo(uintptr_t token) : token_(token) {}
-    ~AbilityInfo() = default;
+    ~AbilityInfo()
+    {
+        window_.reset();
+    }
 
     int32_t state_ = -1; // normal ability state
     int32_t estate_ = -1; // extension state
