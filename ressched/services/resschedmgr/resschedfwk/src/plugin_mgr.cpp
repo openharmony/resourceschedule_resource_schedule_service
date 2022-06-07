@@ -165,16 +165,20 @@ void PluginMgr::RemoveDisablePluginHandler()
 {
     // clear already disable plugin handler
     std::lock_guard<std::mutex> autoLock(disablePluginsMutex_);
+    dispatcherHandlerMutex_.lock();
     for (auto plugin : disablePlugins_) {
         RESSCHED_LOGI("PluginMgr::RemoveDisablePluginHandler remove %{plugin}s handler.", plugin.c_str());
-        std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         auto iter = dispatcherHandlerMap_.find(plugin);
         if (iter != dispatcherHandlerMap_.end()) {
+            auto runner = iter->second->GetEventRunner();
             iter->second->RemoveAllEvents();
+            runner->Stop();
+            runner = nullptr;
             iter->second = nullptr;
             dispatcherHandlerMap_.erase(iter);
         }
     }
+    dispatcherHandlerMutex_.unlock();
     disablePlugins_.clear();
 }
 
