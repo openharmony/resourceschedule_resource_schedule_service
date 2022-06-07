@@ -257,8 +257,8 @@ void PluginMgr::RepairPluginLocked(TimePoint endTime, const std::string& pluginL
 {
     int32_t crash_time = (int32_t)((endTime - pluginTimeoutTime_[pluginLib].front()) / std::chrono::milliseconds(1));
     pluginTimeoutTime_[pluginLib].emplace_back(endTime);
-    RESSCHED_LOGW("PluginMgr::RepairPluginLocked %{public}s crash %{public}d times"
-            "in %{public}d ms!", pluginLib.c_str(), (int32_t)pluginTimeoutTime_[pluginLib].size(), crash_time);
+    RESSCHED_LOGW("PluginMgr::RepairPluginLocked %{public}s crash %{public}d times in %{public}d ms!",
+        pluginLib.c_str(), (int32_t)pluginTimeoutTime_[pluginLib].size(), crash_time);
     if ((int32_t)pluginTimeoutTime_[pluginLib].size() >= MAX_PLUGIN_TIMEOUT_TIMES) {
         if (crash_time < DISABLE_PLUGIN_TIME) {
             // disable plugin forever
