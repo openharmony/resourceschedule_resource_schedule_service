@@ -25,7 +25,7 @@
 namespace OHOS {
 namespace SOCPERF {
 #define LOG_TAG_SOC_PERF "socperf"
-#define LOG_TAG_DOMAIN_ID_SOC_PERF 0xD001700
+#define LOG_TAG_DOMAIN_ID_SOC_PERF 0xD001703
 
 static constexpr OHOS::HiviewDFX::HiLogLabel SOC_PERF_LOG_LABEL = {
     LOG_CORE,

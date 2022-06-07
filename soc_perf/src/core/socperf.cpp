@@ -76,7 +76,7 @@ void SocPerf::PerfRequest(int32_t cmdId, const std::string& msg)
         SOC_PERF_LOGE("Invalid PerfRequest cmdId[%{public}d]", cmdId);
         return;
     }
-    SOC_PERF_LOGI("PerfRequest cmdId[%{public}d]msg[%{public}s]", cmdId, msg.c_str());
+    SOC_PERF_LOGI("%{public}s, cmdId[%{public}d]msg[%{public}s]", __func__, cmdId, msg.c_str());
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
@@ -95,8 +95,8 @@ void SocPerf::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg
         SOC_PERF_LOGE("Invalid PerfRequestEx cmdId[%{public}d]", cmdId);
         return;
     }
-    SOC_PERF_LOGI("PerfRequestEx cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
-        cmdId, onOffTag, msg.c_str());
+    SOC_PERF_LOGI("%{public}s, cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
+        __func__, cmdId, onOffTag, msg.c_str());
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
@@ -117,7 +117,7 @@ void SocPerf::PowerRequest(int32_t cmdId, const std::string& msg)
         SOC_PERF_LOGE("Invalid PowerRequest cmdId[%{public}d]", cmdId);
         return;
     }
-    SOC_PERF_LOGI("PowerRequest cmdId[%{public}d]msg[%{public}s]", cmdId, msg.c_str());
+    SOC_PERF_LOGI("%{public}s, cmdId[%{public}d]msg[%{public}s]", __func__, cmdId, msg.c_str());
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
@@ -136,8 +136,8 @@ void SocPerf::PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& ms
         SOC_PERF_LOGE("Invalid PowerRequestEx cmdId[%{public}d]", cmdId);
         return;
     }
-    SOC_PERF_LOGI("PowerRequestEx cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
-        cmdId, onOffTag, msg.c_str());
+    SOC_PERF_LOGI("%{public}s, cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
+        __func__, cmdId, onOffTag, msg.c_str());
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
@@ -153,7 +153,7 @@ void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
         SOC_PERF_LOGE("SocPerf disabled!");
         return;
     }
-    SOC_PERF_LOGI("PowerLimitBoost onOffTag[%{public}d]msg[%{public}s]", onOffTag, msg.c_str());
+    SOC_PERF_LOGI("%{public}s, onOffTag[%{public}d]msg[%{public}s]", __func__, onOffTag, msg.c_str());
     std::string trace_str(__func__);
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
@@ -176,7 +176,7 @@ void SocPerf::ThermalRequest(int32_t cmdId, const std::string& msg)
         SOC_PERF_LOGE("Invalid ThermalRequest cmdId[%{public}d]", cmdId);
         return;
     }
-    SOC_PERF_LOGI("ThermalRequest cmdId[%{public}d]msg[%{public}s]", cmdId, msg.c_str());
+    SOC_PERF_LOGI("%{public}s, cmdId[%{public}d]msg[%{public}s]", __func__, cmdId, msg.c_str());
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
@@ -195,8 +195,8 @@ void SocPerf::ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& 
         SOC_PERF_LOGE("Invalid ThermalRequestEx cmdId[%{public}d]", cmdId);
         return;
     }
-    SOC_PERF_LOGI("ThermalRequestEx cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
-        cmdId, onOffTag, msg.c_str());
+    SOC_PERF_LOGI("%{public}s, cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
+        __func__, cmdId, onOffTag, msg.c_str());
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
@@ -212,7 +212,7 @@ void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
         SOC_PERF_LOGE("SocPerf disabled!");
         return;
     }
-    SOC_PERF_LOGI("ThermalLimitBoost onOffTag[%{public}d]msg[%{public}s]", onOffTag, msg.c_str());
+    SOC_PERF_LOGI("%{public}s, onOffTag[%{public}d]msg[%{public}s]", __func__, onOffTag, msg.c_str());
     std::string trace_str(__func__);
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
     trace_str.append(",msg[").append(msg).append("]");

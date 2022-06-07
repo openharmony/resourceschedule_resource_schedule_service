@@ -79,8 +79,6 @@ void SocPerfPlugin::Disable()
 
 void SocPerfPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("SocPerfPlugin::DispatchResource resType=%{public}u, value=%{public}lld",
-        data->resType, (long long)data->value);
     auto funcIter = functionMap.find(data->resType);
     if (funcIter != functionMap.end()) {
         auto function = funcIter->second;
@@ -142,20 +140,17 @@ extern "C" bool OnPluginInit(std::string& libName)
         return false;
     }
     SocPerfPlugin::GetInstance().Init();
-    RESSCHED_LOGI("SocPerfPlugin::OnPluginInit success.");
     return true;
 }
 
 extern "C" void OnPluginDisable()
 {
     SocPerfPlugin::GetInstance().Disable();
-    RESSCHED_LOGI("SocPerfPlugin::OnPluginDisable success.");
 }
 
 extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& data)
 {
     SocPerfPlugin::GetInstance().DispatchResource(data);
-    RESSCHED_LOGI("SocPerfPlugin::OnDispatchResource success.");
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
