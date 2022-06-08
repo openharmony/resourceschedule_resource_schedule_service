@@ -31,16 +31,13 @@ SocPerfServer::~SocPerfServer()
 void SocPerfServer::OnStart()
 {
     if (!Publish(DelayedSingleton<SocPerfServer>::GetInstance().get())) {
-        SOC_PERF_LOGE("Register SystemAbility for SocPerf FAILED.");
+        SOC_PERF_LOGE("%{public}s, Register SystemAbility for SocPerf FAILED.", __func__);
         return;
     }
-    SOC_PERF_LOGI("Register SystemAbility for SocPerf SUCCESS.");
-
     if (!socPerf.Init()) {
-        SOC_PERF_LOGE("SocPerf Init FAILED");
+        SOC_PERF_LOGE("%{public}s, SocPerf Init FAILED", __func__);
         return;
     }
-    SOC_PERF_LOGI("SocPerf Init SUCCESS.");
 }
 
 void SocPerfServer::OnStop()

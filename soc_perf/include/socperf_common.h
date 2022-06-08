@@ -99,9 +99,9 @@ public:
 
     void PrintString()
     {
-        SOC_PERF_LOGI("resNode-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
-        SOC_PERF_LOGI("          path: [%{public}s]", path.c_str());
-        SOC_PERF_LOGI("          def: [%{public}d], mode: [%{public}d], pair: [%{public}d]", def, mode, pair);
+        SOC_PERF_LOGD("resNode-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
+        SOC_PERF_LOGD("          path: [%{public}s]", path.c_str());
+        SOC_PERF_LOGD("          def: [%{public}d], mode: [%{public}d], pair: [%{public}d]", def, mode, pair);
         std::string str;
         str.append("available(").append(std::to_string((int32_t)available.size())).append("): ");
         str.append("[");
@@ -112,7 +112,7 @@ public:
             str.pop_back();
         }
         str.append("]");
-        SOC_PERF_LOGI("          %{public}s", str.c_str());
+        SOC_PERF_LOGD("          %{public}s", str.c_str());
     }
 };
 
@@ -136,10 +136,10 @@ public:
 
     void PrintString()
     {
-        SOC_PERF_LOGI("govResNode-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
-        SOC_PERF_LOGI("             def: [%{public}d]", def);
+        SOC_PERF_LOGD("govResNode-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
+        SOC_PERF_LOGD("             def: [%{public}d]", def);
         for (auto path : paths) {
-            SOC_PERF_LOGI("             path: [%{public}s]", path.c_str());
+            SOC_PERF_LOGD("             path: [%{public}s]", path.c_str());
         }
         std::string str;
         str.append("available(").append(std::to_string((int32_t)available.size())).append("): ");
@@ -151,7 +151,7 @@ public:
             str.pop_back();
         }
         str.append("]");
-        SOC_PERF_LOGI("             %{public}s", str.c_str());
+        SOC_PERF_LOGD("             %{public}s", str.c_str());
         for (auto iter = levelToStr.begin(); iter != levelToStr.end(); ++iter) {
             std::string str2;
             int32_t level = iter->first;
@@ -162,7 +162,7 @@ public:
             if (!result.empty()) {
                 str2.pop_back();
             }
-            SOC_PERF_LOGI("             %{public}d: [%{public}s]", level, str2.c_str());
+            SOC_PERF_LOGD("             %{public}d: [%{public}s]", level, str2.c_str());
         }
     }
 };
@@ -185,8 +185,8 @@ public:
 
     void PrintString()
     {
-        SOC_PERF_LOGI("action-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
-        SOC_PERF_LOGI("         duration: [%{public}d]", duration);
+        SOC_PERF_LOGD("action-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
+        SOC_PERF_LOGD("         duration: [%{public}d]", duration);
         std::string str;
         str.append("variable(").append(std::to_string((int32_t)variable.size())).append("): [");
         for (int32_t i = 0; i < (int32_t)variable.size(); i++) {
@@ -196,7 +196,7 @@ public:
             str.pop_back();
         }
         str.append("]");
-        SOC_PERF_LOGI("         %{public}s", str.c_str());
+        SOC_PERF_LOGD("         %{public}s", str.c_str());
     }
 };
 

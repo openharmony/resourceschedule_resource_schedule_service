@@ -28,30 +28,32 @@ SocPerf::~SocPerf()
 
 bool SocPerf::Init()
 {
+    debugLogEnabled = HiLogIsLoggable(LOG_TAG_DOMAIN_ID_SOC_PERF, LOG_TAG_SOC_PERF, LOG_DEBUG);
+
     if (!LoadConfigXmlFile(SOCPERF_RESOURCE_CONFIG_XML)) {
-        SOC_PERF_LOGE("Failed to load %{public}s", SOCPERF_RESOURCE_CONFIG_XML.c_str());
+        SOC_PERF_LOGE("%{public}s, Failed to load %{public}s", __func__, SOCPERF_RESOURCE_CONFIG_XML.c_str());
         return false;
     }
 
     if (!LoadConfigXmlFile(SOCPERF_BOOST_CONFIG_XML)) {
-        SOC_PERF_LOGE("Failed to load %{public}s", SOCPERF_BOOST_CONFIG_XML.c_str());
+        SOC_PERF_LOGE("%{public}s, Failed to load %{public}s", __func__, SOCPERF_BOOST_CONFIG_XML.c_str());
         return false;
     }
 
     if (!LoadConfigXmlFile(SOCPERF_POWER_CONFIG_XML)) {
-        SOC_PERF_LOGE("Failed to load %{public}s", SOCPERF_POWER_CONFIG_XML.c_str());
+        SOC_PERF_LOGE("%{public}s, Failed to load %{public}s", __func__, SOCPERF_POWER_CONFIG_XML.c_str());
         return false;
     }
 
     if (!LoadConfigXmlFile(SOCPERF_THERMAL_CONFIG_XML)) {
-        SOC_PERF_LOGE("Failed to load %{public}s", SOCPERF_THERMAL_CONFIG_XML.c_str());
+        SOC_PERF_LOGE("%{public}s, Failed to load %{public}s", __func__, SOCPERF_THERMAL_CONFIG_XML.c_str());
         return false;
     }
 
     PrintCachedInfo();
 
     if (!CreateHandlers()) {
-        SOC_PERF_LOGE("Failed to create handler threads");
+        SOC_PERF_LOGE("%{public}s, Failed to create handler threads", __func__);
         return false;
     }
 
@@ -62,21 +64,28 @@ bool SocPerf::Init()
     resStrToIdInfo.clear();
 
     enabled = true;
+
+    if (debugLogEnabled) {
+        SOC_PERF_LOGD("%{public}s, SocPerf Init SUCCESS!", __func__);
+    }
+
     return true;
 }
 
 void SocPerf::PerfRequest(int32_t cmdId, const std::string& msg)
 {
     if (!enabled) {
-        SOC_PERF_LOGE("SocPerf disabled!");
+        SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
         return;
     }
     if (perfActionInfo.find(cmdId) == perfActionInfo.end()
         || perfActionInfo[cmdId]->duration == 0) {
-        SOC_PERF_LOGE("Invalid PerfRequest cmdId[%{public}d]", cmdId);
+        SOC_PERF_LOGE("%{public}s, Invalid PerfRequest cmdId[%{public}d]", __func__, cmdId);
         return;
     }
-    SOC_PERF_LOGI("%{public}s, cmdId[%{public}d]msg[%{public}s]", __func__, cmdId, msg.c_str());
+    if (debugLogEnabled) {
+        SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]msg[%{public}s]", __func__, cmdId, msg.c_str());
+    }
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
@@ -88,15 +97,17 @@ void SocPerf::PerfRequest(int32_t cmdId, const std::string& msg)
 void SocPerf::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
     if (!enabled) {
-        SOC_PERF_LOGE("SocPerf disabled!");
+        SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
         return;
     }
     if (perfActionInfo.find(cmdId) == perfActionInfo.end()) {
-        SOC_PERF_LOGE("Invalid PerfRequestEx cmdId[%{public}d]", cmdId);
+        SOC_PERF_LOGE("%{public}s, Invalid PerfRequestEx cmdId[%{public}d]", __func__, cmdId);
         return;
     }
-    SOC_PERF_LOGI("%{public}s, cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
-        __func__, cmdId, onOffTag, msg.c_str());
+    if (debugLogEnabled) {
+        SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
+            __func__, cmdId, onOffTag, msg.c_str());
+    }
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
@@ -109,15 +120,17 @@ void SocPerf::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg
 void SocPerf::PowerRequest(int32_t cmdId, const std::string& msg)
 {
     if (!enabled) {
-        SOC_PERF_LOGE("SocPerf disabled!");
+        SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
         return;
     }
     if (powerActionInfo.find(cmdId) == powerActionInfo.end()
         || powerActionInfo[cmdId]->duration == 0) {
-        SOC_PERF_LOGE("Invalid PowerRequest cmdId[%{public}d]", cmdId);
+        SOC_PERF_LOGE("%{public}s, Invalid PowerRequest cmdId[%{public}d]", __func__, cmdId);
         return;
     }
-    SOC_PERF_LOGI("%{public}s, cmdId[%{public}d]msg[%{public}s]", __func__, cmdId, msg.c_str());
+    if (debugLogEnabled) {
+        SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]msg[%{public}s]", __func__, cmdId, msg.c_str());
+    }
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
@@ -129,15 +142,17 @@ void SocPerf::PowerRequest(int32_t cmdId, const std::string& msg)
 void SocPerf::PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
     if (!enabled) {
-        SOC_PERF_LOGE("SocPerf disabled!");
+        SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
         return;
     }
     if (powerActionInfo.find(cmdId) == powerActionInfo.end()) {
-        SOC_PERF_LOGE("Invalid PowerRequestEx cmdId[%{public}d]", cmdId);
+        SOC_PERF_LOGE("%{public}s, Invalid PowerRequestEx cmdId[%{public}d]", __func__, cmdId);
         return;
     }
-    SOC_PERF_LOGI("%{public}s, cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
-        __func__, cmdId, onOffTag, msg.c_str());
+    if (debugLogEnabled) {
+        SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
+            __func__, cmdId, onOffTag, msg.c_str());
+    }
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
@@ -150,10 +165,12 @@ void SocPerf::PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& ms
 void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
 {
     if (!enabled) {
-        SOC_PERF_LOGE("SocPerf disabled!");
+        SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
         return;
     }
-    SOC_PERF_LOGI("%{public}s, onOffTag[%{public}d]msg[%{public}s]", __func__, onOffTag, msg.c_str());
+    if (debugLogEnabled) {
+        SOC_PERF_LOGD("%{public}s, onOffTag[%{public}d]msg[%{public}s]", __func__, onOffTag, msg.c_str());
+    }
     std::string trace_str(__func__);
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
@@ -168,15 +185,17 @@ void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
 void SocPerf::ThermalRequest(int32_t cmdId, const std::string& msg)
 {
     if (!enabled) {
-        SOC_PERF_LOGE("SocPerf disabled!");
+        SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
         return;
     }
     if (thermalActionInfo.find(cmdId) == thermalActionInfo.end()
         || thermalActionInfo[cmdId]->duration == 0) {
-        SOC_PERF_LOGE("Invalid ThermalRequest cmdId[%{public}d]", cmdId);
+        SOC_PERF_LOGE("%{public}s, Invalid ThermalRequest cmdId[%{public}d]", __func__, cmdId);
         return;
     }
-    SOC_PERF_LOGI("%{public}s, cmdId[%{public}d]msg[%{public}s]", __func__, cmdId, msg.c_str());
+    if (debugLogEnabled) {
+        SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]msg[%{public}s]", __func__, cmdId, msg.c_str());
+    }
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
@@ -188,15 +207,17 @@ void SocPerf::ThermalRequest(int32_t cmdId, const std::string& msg)
 void SocPerf::ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
     if (!enabled) {
-        SOC_PERF_LOGE("SocPerf disabled!");
+        SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
         return;
     }
     if (thermalActionInfo.find(cmdId) == thermalActionInfo.end()) {
-        SOC_PERF_LOGE("Invalid ThermalRequestEx cmdId[%{public}d]", cmdId);
+        SOC_PERF_LOGE("%{public}s, Invalid ThermalRequestEx cmdId[%{public}d]", __func__, cmdId);
         return;
     }
-    SOC_PERF_LOGI("%{public}s, cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
-        __func__, cmdId, onOffTag, msg.c_str());
+    if (debugLogEnabled) {
+        SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
+            __func__, cmdId, onOffTag, msg.c_str());
+    }
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
@@ -209,10 +230,12 @@ void SocPerf::ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& 
 void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
 {
     if (!enabled) {
-        SOC_PERF_LOGE("SocPerf disabled!");
+        SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
         return;
     }
-    SOC_PERF_LOGI("%{public}s, onOffTag[%{public}d]msg[%{public}s]", __func__, onOffTag, msg.c_str());
+    if (debugLogEnabled) {
+        SOC_PERF_LOGD("%{public}s, onOffTag[%{public}d]msg[%{public}s]", __func__, onOffTag, msg.c_str());
+    }
     std::string trace_str(__func__);
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
@@ -238,12 +261,12 @@ bool SocPerf::LoadConfigXmlFile(std::string configFile)
     xmlKeepBlanksDefault(0);
     xmlDoc* file = xmlReadFile(configFile.c_str(), nullptr, XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!file) {
-        SOC_PERF_LOGE("Failed to open xml file");
+        SOC_PERF_LOGE("%{public}s, Failed to open xml file", __func__);
         return false;
     }
     xmlNode* rootNode = xmlDocGetRootElement(file);
     if (!rootNode) {
-        SOC_PERF_LOGE("Failed to get xml file's RootNode");
+        SOC_PERF_LOGE("%{public}s, Failed to get xml file's RootNode", __func__);
         xmlFreeDoc(file);
         return false;
     }
@@ -270,12 +293,14 @@ bool SocPerf::LoadConfigXmlFile(std::string configFile)
             }
         }
     } else {
-        SOC_PERF_LOGE("Wrong format for xml file");
+        SOC_PERF_LOGE("%{public}s, Wrong format for xml file", __func__);
         xmlFreeDoc(file);
         return false;
     }
     xmlFreeDoc(file);
-    SOC_PERF_LOGI("Success to Load %{public}s", configFile.c_str());
+    if (debugLogEnabled) {
+        SOC_PERF_LOGD("%{public}s, Success to Load %{public}s", __func__, configFile.c_str());
+    }
     return true;
 }
 
@@ -286,13 +311,14 @@ bool SocPerf::CreateHandlers()
     for (int32_t i = 0; i < (int32_t)handlers.size(); i++) {
         auto runner = AppExecFwk::EventRunner::Create(threadName);
         if (!runner) {
-            SOC_PERF_LOGE("Failed to Create EventRunner");
+            SOC_PERF_LOGE("%{public}s, Failed to Create EventRunner", __func__);
             return false;
         }
         handlers[i] = std::make_shared<SocPerfHandler>(runner);
-        SOC_PERF_LOGI("Success to Create SocPerfHandler");
     }
-    SOC_PERF_LOGI("Success to Create All Handler threads");
+    if (debugLogEnabled) {
+        SOC_PERF_LOGD("%{public}s, Success to Create All Handler threads", __func__);
+    }
     return true;
 }
 
@@ -343,7 +369,7 @@ bool SocPerf::LoadResource(xmlNode* child, std::string configFile)
             resNode->def = atoi(def);
             resNode->path = path;
             if (node && !LoadResourceAvailable(resNode, node)) {
-                SOC_PERF_LOGE("Invalid resource node for %{public}s", configFile.c_str());
+                SOC_PERF_LOGE("%{public}s, Invalid resource node for %{public}s", __func__, configFile.c_str());
                 return false;
             }
 
@@ -375,14 +401,16 @@ bool SocPerf::LoadGovResource(xmlNode* child, std::string configFile)
                 if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("default"))) {
                     char* def = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
                     if (!def || !IsNumber(def)) {
-                        SOC_PERF_LOGE("Invalid governor resource default for %{public}s", configFile.c_str());
+                        SOC_PERF_LOGE("%{public}s, Invalid governor resource default for %{public}s",
+                            __func__, configFile.c_str());
                         return false;
                     }
                     govResNode->def = atoi(def);
                 } else if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("path"))) {
                     char* path = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
                     if (!path) {
-                        SOC_PERF_LOGE("Invalid governor resource path for %{public}s", configFile.c_str());
+                        SOC_PERF_LOGE("%{public}s, Invalid governor resource path for %{public}s",
+                            __func__, configFile.c_str());
                         return false;
                     }
                     govResNode->paths.push_back(path);
@@ -392,7 +420,8 @@ bool SocPerf::LoadGovResource(xmlNode* child, std::string configFile)
                     char* node = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
                     if (!level || !IsNumber(level) || !node
                         || !LoadGovResourceAvailable(govResNode, level, node)) {
-                        SOC_PERF_LOGE("Invalid governor resource node for %{public}s", configFile.c_str());
+                        SOC_PERF_LOGE("%{public}s, Invalid governor resource node for %{public}s",
+                            __func__, configFile.c_str());
                         return false;
                     }
                 }
@@ -426,7 +455,7 @@ bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
                 if (!xmlStrcmp(grandson->name, reinterpret_cast<const xmlChar*>("duration"))) {
                     char* duration = reinterpret_cast<char*>(xmlNodeGetContent(grandson));
                     if (!duration || !IsNumber(duration)) {
-                        SOC_PERF_LOGE("Invalid cmd duration for %{public}s", configFile.c_str());
+                        SOC_PERF_LOGE("%{public}s, Invalid cmd duration for %{public}s", __func__, configFile.c_str());
                         return false;
                     }
                     action->duration = atoi(duration);
@@ -435,8 +464,8 @@ bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
                     char* resValue = reinterpret_cast<char*>(xmlNodeGetContent(grandson));
                     if (!resStr || resStrToIdInfo.find(resStr) == resStrToIdInfo.end()
                         || !resValue || !IsNumber(resValue)) {
-                        SOC_PERF_LOGE("Invalid cmd resource(%{public}s) for %{public}s, cannot find resId",
-                            resStr, configFile.c_str());
+                        SOC_PERF_LOGE("%{public}s, Invalid cmd resource(%{public}s) for %{public}s, cannot find resId",
+                            __func__, resStr, configFile.c_str());
                         return false;
                     }
                     action->variable.push_back(resStrToIdInfo[resStr]);
@@ -464,19 +493,19 @@ bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
 bool SocPerf::CheckResourceTag(char* id, char* name, char* pair, char* mode, std::string configFile)
 {
     if (!id || !IsNumber(id) || !IsValidResId(atoi(id))) {
-        SOC_PERF_LOGE("Invalid resource id for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("%{public}s, Invalid resource id for %{public}s", __func__, configFile.c_str());
         return false;
     }
     if (!name) {
-        SOC_PERF_LOGE("Invalid resource name for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("%{public}s, Invalid resource name for %{public}s", __func__, configFile.c_str());
         return false;
     }
     if (pair && (!IsNumber(pair) || !IsValidResId(atoi(pair)))) {
-        SOC_PERF_LOGE("Invalid resource pair for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("%{public}s, Invalid resource pair for %{public}s", __func__, configFile.c_str());
         return false;
     }
     if (mode && !IsNumber(mode)) {
-        SOC_PERF_LOGE("Invalid resource mode for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("%{public}s, Invalid resource mode for %{public}s", __func__, configFile.c_str());
         return false;
     }
     return true;
@@ -485,11 +514,11 @@ bool SocPerf::CheckResourceTag(char* id, char* name, char* pair, char* mode, std
 bool SocPerf::CheckResourceTag(char* def, char* path, std::string configFile)
 {
     if (!def || !IsNumber(def)) {
-        SOC_PERF_LOGE("Invalid resource default for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("%{public}s, Invalid resource default for %{public}s", __func__, configFile.c_str());
         return false;
     }
     if (!path) {
-        SOC_PERF_LOGE("Invalid resource path for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("%{public}s, Invalid resource path for %{public}s", __func__, configFile.c_str());
         return false;
     }
     return true;
@@ -516,7 +545,8 @@ bool SocPerf::CheckPairResIdValid()
         std::shared_ptr<ResNode> resNode = iter->second;
         int32_t pairResId = resNode->pair;
         if (resNodeInfo.find(pairResId) == resNodeInfo.end()) {
-            SOC_PERF_LOGE("resId[%{public}d]'s pairResId[%{public}d] is not valid", resId, pairResId);
+            SOC_PERF_LOGE("%{public}s, resId[%{public}d]'s pairResId[%{public}d] is not valid",
+                __func__, resId, pairResId);
             return false;
         }
     }
@@ -530,7 +560,7 @@ bool SocPerf::CheckResDefValid()
         std::shared_ptr<ResNode> resNode = iter->second;
         int32_t def = resNode->def;
         if (!resNode->available.empty() && resNode->available.find(def) == resNode->available.end()) {
-            SOC_PERF_LOGE("resId[%{public}d]'s def[%{public}d] is not valid", resId, def);
+            SOC_PERF_LOGE("%{public}s, resId[%{public}d]'s def[%{public}d] is not valid", __func__, resId, def);
             return false;
         }
     }
@@ -540,11 +570,11 @@ bool SocPerf::CheckResDefValid()
 bool SocPerf::CheckGovResourceTag(char* id, char* name, std::string configFile)
 {
     if (!id || !IsNumber(id) || !IsValidResId(atoi(id))) {
-        SOC_PERF_LOGE("Invalid governor resource id for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("%{public}s, Invalid governor resource id for %{public}s", __func__, configFile.c_str());
         return false;
     }
     if (!name) {
-        SOC_PERF_LOGE("Invalid governor resource name for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("%{public}s, Invalid governor resource name for %{public}s", __func__, configFile.c_str());
         return false;
     }
     return true;
@@ -556,7 +586,7 @@ bool SocPerf::LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResNode, c
     std::string nodeStr = node;
     std::vector<std::string> result = Split(nodeStr, "|");
     if (result.size() != govResNode->paths.size()) {
-        SOC_PERF_LOGE("Invalid governor resource node matches paths");
+        SOC_PERF_LOGE("%{public}s, Invalid governor resource node matches paths", __func__);
         return false;
     }
     govResNode->levelToStr.insert(std::pair<int32_t, std::vector<std::string>>(atoi(level), result));
@@ -570,7 +600,7 @@ bool SocPerf::CheckGovResDefValid()
         std::shared_ptr<GovResNode> govResNode = iter->second;
         int32_t def = govResNode->def;
         if (govResNode->available.find(def) == govResNode->available.end()) {
-            SOC_PERF_LOGE("govResId[%{public}d]'s def[%{public}d] is not valid", govResId, def);
+            SOC_PERF_LOGE("%{public}s, govResId[%{public}d]'s def[%{public}d] is not valid", __func__, govResId, def);
             return false;
         }
     }
@@ -580,11 +610,11 @@ bool SocPerf::CheckGovResDefValid()
 bool SocPerf::CheckCmdTag(char* id, char* name, std::string configFile)
 {
     if (!id || !IsNumber(id)) {
-        SOC_PERF_LOGE("Invalid cmd id for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("%{public}s, Invalid cmd id for %{public}s", __func__, configFile.c_str());
         return false;
     }
     if (!name) {
-        SOC_PERF_LOGE("Invalid cmd name for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("%{public}s, Invalid cmd name for %{public}s", __func__, configFile.c_str());
         return false;
     }
     return true;
@@ -609,16 +639,19 @@ bool SocPerf::CheckActionResIdAndValueValid(std::string configFile)
             if (resNodeInfo.find(resId) != resNodeInfo.end()) {
                 if (!resNodeInfo[resId]->available.empty()
                     && resNodeInfo[resId]->available.find(resValue) == resNodeInfo[resId]->available.end()) {
-                    SOC_PERF_LOGE("action[%{public}d]'s resValue[%{public}d] is not valid", actionId, resValue);
+                    SOC_PERF_LOGE("%{public}s, action[%{public}d]'s resValue[%{public}d] is not valid",
+                        __func__, actionId, resValue);
                     return false;
                 }
             } else if (govResNodeInfo.find(resId) != govResNodeInfo.end()) {
                 if (govResNodeInfo[resId]->available.find(resValue) == govResNodeInfo[resId]->available.end()) {
-                    SOC_PERF_LOGE("action[%{public}d]'s resValue[%{public}d] is not valid", actionId, resValue);
+                    SOC_PERF_LOGE("%{public}s, action[%{public}d]'s resValue[%{public}d] is not valid",
+                        __func__, actionId, resValue);
                     return false;
                 }
             } else {
-                SOC_PERF_LOGE("action[%{public}d]'s resId[%{public}d] is not valid", actionId, resId);
+                SOC_PERF_LOGE("%{public}s, action[%{public}d]'s resId[%{public}d] is not valid",
+                    __func__, actionId, resId);
                 return false;
             }
         }
@@ -628,37 +661,39 @@ bool SocPerf::CheckActionResIdAndValueValid(std::string configFile)
 
 void SocPerf::PrintCachedInfo()
 {
-    SOC_PERF_LOGI("------------------------------------");
-    SOC_PERF_LOGI("resNodeInfo(%{public}d)", (int32_t)resNodeInfo.size());
-    for (auto iter = resNodeInfo.begin(); iter != resNodeInfo.end(); ++iter) {
-        std::shared_ptr<ResNode> resNode = iter->second;
-        resNode->PrintString();
+    if (debugLogEnabled) {
+        SOC_PERF_LOGD("------------------------------------");
+        SOC_PERF_LOGD("resNodeInfo(%{public}d)", (int32_t)resNodeInfo.size());
+        for (auto iter = resNodeInfo.begin(); iter != resNodeInfo.end(); ++iter) {
+            std::shared_ptr<ResNode> resNode = iter->second;
+            resNode->PrintString();
+        }
+        SOC_PERF_LOGD("------------------------------------");
+        SOC_PERF_LOGD("govResNodeInfo(%{public}d)", (int32_t)govResNodeInfo.size());
+        for (auto iter = govResNodeInfo.begin(); iter != govResNodeInfo.end(); ++iter) {
+            std::shared_ptr<GovResNode> govResNode = iter->second;
+            govResNode->PrintString();
+        }
+        SOC_PERF_LOGD("------------------------------------");
+        SOC_PERF_LOGD("perfActionInfo(%{public}d)", (int32_t)perfActionInfo.size());
+        for (auto iter = perfActionInfo.begin(); iter != perfActionInfo.end(); ++iter) {
+            std::shared_ptr<Action> action = iter->second;
+            action->PrintString();
+        }
+        SOC_PERF_LOGD("------------------------------------");
+        SOC_PERF_LOGD("powerActionInfo(%{public}d)", (int32_t)powerActionInfo.size());
+        for (auto iter = powerActionInfo.begin(); iter != powerActionInfo.end(); ++iter) {
+            std::shared_ptr<Action> action = iter->second;
+            action->PrintString();
+        }
+        SOC_PERF_LOGD("------------------------------------");
+        SOC_PERF_LOGD("thermalActionInfo(%{public}d)", (int32_t)thermalActionInfo.size());
+        for (auto iter = thermalActionInfo.begin(); iter != thermalActionInfo.end(); ++iter) {
+            std::shared_ptr<Action> action = iter->second;
+            action->PrintString();
+        }
+        SOC_PERF_LOGD("------------------------------------");
     }
-    SOC_PERF_LOGI("------------------------------------");
-    SOC_PERF_LOGI("govResNodeInfo(%{public}d)", (int32_t)govResNodeInfo.size());
-    for (auto iter = govResNodeInfo.begin(); iter != govResNodeInfo.end(); ++iter) {
-        std::shared_ptr<GovResNode> govResNode = iter->second;
-        govResNode->PrintString();
-    }
-    SOC_PERF_LOGI("------------------------------------");
-    SOC_PERF_LOGI("perfActionInfo(%{public}d)", (int32_t)perfActionInfo.size());
-    for (auto iter = perfActionInfo.begin(); iter != perfActionInfo.end(); ++iter) {
-        std::shared_ptr<Action> action = iter->second;
-        action->PrintString();
-    }
-    SOC_PERF_LOGI("------------------------------------");
-    SOC_PERF_LOGI("powerActionInfo(%{public}d)", (int32_t)powerActionInfo.size());
-    for (auto iter = powerActionInfo.begin(); iter != powerActionInfo.end(); ++iter) {
-        std::shared_ptr<Action> action = iter->second;
-        action->PrintString();
-    }
-    SOC_PERF_LOGI("------------------------------------");
-    SOC_PERF_LOGI("thermalActionInfo(%{public}d)", (int32_t)thermalActionInfo.size());
-    for (auto iter = thermalActionInfo.begin(); iter != thermalActionInfo.end(); ++iter) {
-        std::shared_ptr<Action> action = iter->second;
-        action->PrintString();
-    }
-    SOC_PERF_LOGI("------------------------------------");
 }
 } // namespace SOCPERF
 } // namespace OHOS
