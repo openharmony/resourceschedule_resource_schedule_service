@@ -50,6 +50,7 @@ private:
     std::unordered_map<int32_t, std::shared_ptr<Action>> thermalActionInfo;
     std::vector<std::shared_ptr<SocPerfHandler>> handlers;
     bool enabled = false;
+    bool debugLogEnabled = false;
 
     std::unordered_map<int32_t, std::shared_ptr<ResNode>> resNodeInfo;
     std::unordered_map<int32_t, std::shared_ptr<GovResNode>> govResNodeInfo;
