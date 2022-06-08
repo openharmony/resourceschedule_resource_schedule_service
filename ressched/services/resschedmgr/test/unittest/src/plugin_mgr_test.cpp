@@ -76,8 +76,8 @@ HWTEST_F(PluginMgrTest, Stop001, TestSize.Level1)
     pluginMgr_->Stop();
     EXPECT_EQ(pluginMgr_->pluginLibMap_.size(), 0);
     EXPECT_EQ(pluginMgr_->resTypeLibMap_.size(), 0);
+    EXPECT_EQ(pluginMgr_->dispatcherHandlerMap_.size(), 0);
     EXPECT_TRUE(pluginMgr_->configReader_ == nullptr);
-    EXPECT_TRUE(pluginMgr_->dispatcherHandler_ == nullptr);
 }
 
 /**

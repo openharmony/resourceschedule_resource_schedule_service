@@ -67,10 +67,6 @@ public:
             }
         }
 
-        if (!dispatcherHandler_) {
-            dispatcherHandler_ = std::make_shared<AppExecFwk::EventHandler>
-                (AppExecFwk::EventRunner::Create(MOCK_RUNNER_NAME));
-        }
         initStatus = INIT_SUCCESS;
     }
 };
