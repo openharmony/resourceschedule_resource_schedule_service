@@ -107,7 +107,7 @@ void ObserverManager::InitCameraObserver()
     sysRules.push_back(cameraStateRule);
     sysRules.push_back(cameraStatisticRule);
     auto res = HiviewDFX::HiSysEventManager::AddEventListener(cameraObserver_, sysRules);
-    if (res) {
+    if (res == 0) {
         RESSCHED_LOGD("ObserverManager init camera observer successfully");
     } else {
         RESSCHED_LOGW("ObserverManager init camera observer failed");
@@ -122,7 +122,7 @@ void ObserverManager::DisableCameraObserver()
     }
 
     auto res = HiviewDFX::HiSysEventManager::RemoveListener(cameraObserver_);
-    if (res) {
+    if (res == 0) {
         RESSCHED_LOGD("ObserverManager disable camera observer successfully");
     } else {
         RESSCHED_LOGW("ObserverManager disable camera observer failed");
