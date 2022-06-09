@@ -122,9 +122,9 @@ ohos_shared_library("socperf_server") {
     "//utils/native/base:utils",
   ]
   external_deps = [
+    "config_policy:configpolicy_util",
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",
-    "config_policy:configpolicy_util",
   ]
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
