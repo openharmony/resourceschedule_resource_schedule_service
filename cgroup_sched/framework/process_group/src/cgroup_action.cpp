@@ -211,7 +211,6 @@ bool CgroupAction::ParseConfigFileToJsonObj(Json::Value& jsonObjRoot)
         PGCGS_LOGE("ParseConfigFileToJsonObj: read config file failed");
         return false;
     }
-
     Json::CharReaderBuilder builder;
     std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
     std::string errorMsg;

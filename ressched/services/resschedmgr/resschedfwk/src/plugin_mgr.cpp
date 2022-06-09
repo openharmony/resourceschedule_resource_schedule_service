@@ -60,7 +60,6 @@ void PluginMgr::Init()
         }
     }
 
-
     if (!configReader_) {
         configReader_ = make_unique<ConfigReader>();
         std::string realPath = GetRealConfigPath(CONFIG_FILE_NAME);
@@ -321,7 +320,6 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
 void PluginMgr::UnLoadPlugin()
 {
     std::lock_guard<std::mutex> autoLock(pluginMutex_);
-
     // unload all plugin
     for (const auto& [libPath, libInfo] : pluginLibMap_) {
         if (!libInfo.onPluginDisableFunc_) {
