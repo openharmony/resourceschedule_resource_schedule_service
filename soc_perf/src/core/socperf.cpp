@@ -257,19 +257,25 @@ void SocPerf::DoFreqAction(std::shared_ptr<Action> action, int32_t onOff, int32_
     }
 }
 
-bool SocPerf::LoadConfigXmlFile(std::string configFile)
+std::string SocPerf::GetRealConfigPath(const std::string configFile)
 {
-
     char buf[MAX_PATH_LEN];
     char* configFilePath = GetOneCfgFile(configFile.c_str(), buf, MAX_PATH_LEN);
     char tmpPath[PATH_MAX + 1] = {0};
     if (strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
         !realpath(configFilePath, tmpPath)) {
         SOC_PERF_LOGE("%{public}s, load %{public}s file fail", __func__, configFile.c_str());
+        return "";
+    }
+    return std::string(tmpPath);
+}
+
+bool SocPerf::LoadConfigXmlFile(std::string configFile)
+{
+    std::string realConfigFile = GetRealConfigPath(configFile);
+    if (realConfigFile.size() <= 0) {
         return false;
     }
-    std::string realConfigFile(tmpPath);
-
     xmlKeepBlanksDefault(0);
     xmlDoc* file = xmlReadFile(realConfigFile.c_str(), nullptr, XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!file) {

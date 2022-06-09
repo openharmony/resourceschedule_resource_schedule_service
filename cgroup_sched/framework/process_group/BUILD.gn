@@ -16,7 +16,7 @@ import("//build/ohos.gni")
 config("libprocess_group_config") {
   include_dirs = [
     "./include",
-    "//base/customization/config_policy/interfaces/innerkits/include", 
+    "//base/customization/config_policy/interfaces/innerkits/include",
   ]
 }
 
@@ -34,9 +34,7 @@ ohos_shared_library("libprocess_group") {
     "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
   ]
-  external_deps = [
-    "config_policy:configpolicy_util",
-  ]
+  external_deps = [ "config_policy:configpolicy_util" ]
   public_configs = [ ":libprocess_group_config" ]
   part_name = "resource_schedule_service"
   subsystem_name = "resourceschedule"
