@@ -70,6 +70,7 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
         }
         auto windowId = info->windowId_;
         auto isVisible = info->isVisible_;
+        auto windowType = info->windowType_;
         auto pid = info->pid_;
         auto uid = info->uid_;
         cgHandler->PostTask([cgHandler, windowId, isVisible, pid, uid] {
@@ -79,18 +80,10 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
         payload["pid"] = std::to_string(pid);
         payload["uid"] = std::to_string(uid);
         payload["windowId"] = std::to_string(windowId);
+        payload["windowType"] = std::to_string((int32_t)windowType);
         ResSchedUtils::GetInstance().ReportDataInProcess(
             ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE, isVisible ? 1 : 0, payload);
     }
-}
-
-void WindowUpdateStateObserver::OnWindowUpdate(
-    const sptr<AccessibilityWindowInfo>& windowInfo, WindowUpdateType type)
-{
-    Json::Value payload;
-    payload["currentWindowType"] = std::to_string((int32_t)windowInfo->currentWindowInfo_->type_);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_WINDOW_UPDATE_STATE_CHANGE, (int64_t)type, payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
