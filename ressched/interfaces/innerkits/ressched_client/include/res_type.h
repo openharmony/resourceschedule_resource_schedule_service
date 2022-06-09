@@ -49,10 +49,8 @@ enum : uint32_t {
     RES_TYPE_PUSH_PAGE,
     // ace slide event recognize; value 1: slide on; 0: slide off
     RES_TYPE_SLIDE_RECOGNIZE,
-    // window visibility change, value 1: isVisible, 0: not isVisible, payload:pid,uid,windowId
+    // window visibility change, value 1: isVisible, 0: not isVisible, payload:pid,uid,windowId,windowType
     RES_TYPE_WINDOW_VISIBILITY_CHANGE,
-    // window update state change; value means WindowUpdateType; payload:currentWindowType
-    RES_TYPE_WINDOW_UPDATE_STATE_CHANGE,
     // report mmi_service service; value mmi_service tid; payload:uid,pid
     RES_TYPE_REPORT_MMI_PROCESS,
     // report render thread; value render tid; payload:uid,pid
