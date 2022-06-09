@@ -111,6 +111,7 @@ ohos_shared_library("socperf_server") {
     "include",
     "include/server",
     "include/core",
+    "//base/customization/config_policy/interfaces/innerkits/include",
   ]
   deps = [
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
@@ -123,6 +124,7 @@ ohos_shared_library("socperf_server") {
   external_deps = [
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",
+    "config_policy:configpolicy_util",
   ]
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"

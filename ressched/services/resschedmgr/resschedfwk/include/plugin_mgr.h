@@ -89,6 +89,7 @@ public:
 
 private:
     PluginMgr() = default;
+    std::string GetRealConfigPath(const char* configName);
     void OnDestroy();
     void LoadPlugin();
     void UnLoadPlugin();

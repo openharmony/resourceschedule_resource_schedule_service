@@ -14,6 +14,7 @@
  */
 
 #include "socperf.h"
+#include "config_policy_utils.h"
 #include "hitrace_meter.h"
 
 namespace OHOS {
@@ -258,8 +259,19 @@ void SocPerf::DoFreqAction(std::shared_ptr<Action> action, int32_t onOff, int32_
 
 bool SocPerf::LoadConfigXmlFile(std::string configFile)
 {
+
+    char buf[MAX_PATH_LEN];
+    char* configFilePath = GetOneCfgFile(configFile.c_str(), buf, MAX_PATH_LEN);
+    char tmpPath[PATH_MAX + 1] = {0};
+    if (strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
+        !realpath(configFilePath, tmpPath)) {
+        SOC_PERF_LOGE("%{public}s, load %{public}s file fail", __func__, configFile.c_str());
+        return false;
+    }
+    std::string realConfigFile(tmpPath);
+
     xmlKeepBlanksDefault(0);
-    xmlDoc* file = xmlReadFile(configFile.c_str(), nullptr, XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
+    xmlDoc* file = xmlReadFile(realConfigFile.c_str(), nullptr, XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!file) {
         SOC_PERF_LOGE("%{public}s, Failed to open xml file", __func__);
         return false;
@@ -271,23 +283,23 @@ bool SocPerf::LoadConfigXmlFile(std::string configFile)
         return false;
     }
     if (!xmlStrcmp(rootNode->name, reinterpret_cast<const xmlChar*>("Configs"))) {
-        if (configFile == SOCPERF_RESOURCE_CONFIG_XML) {
+        if (realConfigFile.find(SOCPERF_RESOURCE_CONFIG_XML) != std::string::npos) {
             xmlNode* child = rootNode->children;
             for (; child; child = child->next) {
                 if (!xmlStrcmp(child->name, reinterpret_cast<const xmlChar*>("Resource"))) {
-                    if (!LoadResource(child, configFile)) {
+                    if (!LoadResource(child, realConfigFile)) {
                         xmlFreeDoc(file);
                         return false;
                     }
                 } else if (!xmlStrcmp(child->name, reinterpret_cast<const xmlChar*>("GovResource"))) {
-                    if (!LoadGovResource(child, configFile)) {
+                    if (!LoadGovResource(child, realConfigFile)) {
                         xmlFreeDoc(file);
                         return false;
                     }
                 }
             }
         } else {
-            if (!LoadCmd(rootNode, configFile)) {
+            if (!LoadCmd(rootNode, realConfigFile)) {
                 xmlFreeDoc(file);
                 return false;
             }
@@ -473,11 +485,11 @@ bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
                 }
             }
 
-            if (configFile == SOCPERF_BOOST_CONFIG_XML) {
+            if (configFile.find(SOCPERF_BOOST_CONFIG_XML) != std::string::npos) {
                 perfActionInfo.insert(std::pair<int32_t, std::shared_ptr<Action>>(action->id, action));
-            } else if (configFile == SOCPERF_POWER_CONFIG_XML) {
+            } else if (configFile.find(SOCPERF_POWER_CONFIG_XML) != std::string::npos) {
                 powerActionInfo.insert(std::pair<int32_t, std::shared_ptr<Action>>(action->id, action));
-            } else if (configFile == SOCPERF_THERMAL_CONFIG_XML) {
+            } else if (configFile.find(SOCPERF_THERMAL_CONFIG_XML) != std::string::npos) {
                 thermalActionInfo.insert(std::pair<int32_t, std::shared_ptr<Action>>(action->id, action));
             }
         }
@@ -623,11 +635,11 @@ bool SocPerf::CheckCmdTag(char* id, char* name, std::string configFile)
 bool SocPerf::CheckActionResIdAndValueValid(std::string configFile)
 {
     std::unordered_map<int32_t, std::shared_ptr<Action>> actionInfo;
-    if (configFile == SOCPERF_BOOST_CONFIG_XML) {
+    if (configFile.find(SOCPERF_BOOST_CONFIG_XML) != std::string::npos) {
         actionInfo = perfActionInfo;
-    } else if (configFile == SOCPERF_POWER_CONFIG_XML) {
+    } else if (configFile.find(SOCPERF_POWER_CONFIG_XML) != std::string::npos) {
         actionInfo = powerActionInfo;
-    } else if (configFile == SOCPERF_THERMAL_CONFIG_XML) {
+    } else if (configFile.find(SOCPERF_THERMAL_CONFIG_XML) != std::string::npos) {
         actionInfo = thermalActionInfo;
     }
     for (auto iter = actionInfo.begin(); iter != actionInfo.end(); ++iter) {
