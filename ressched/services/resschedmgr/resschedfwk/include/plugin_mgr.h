@@ -21,6 +21,7 @@
 #include <string>
 #include <memory>
 #include <map>
+#include "datetime_ex.h"
 #include "event_handler.h"
 #include "config_reader.h"
 #include "plugin_switch.h"
@@ -32,11 +33,15 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+using Clock = std::chrono::high_resolution_clock;
+using TimePoint = std::chrono::time_point<Clock>;
+using OnPluginInitFunc = bool (*)(const std::string);
 using OnDispatchResourceFunc = void (*)(const std::shared_ptr<ResData>&);
 using OnPluginDisableFunc = void (*)();
 
 struct PluginLib {
     std::shared_ptr<void> handle = nullptr;
+    OnPluginInitFunc onPluginInitFunc_;
     OnDispatchResourceFunc onDispatchResourceFunc_;
     OnPluginDisableFunc onPluginDisableFunc_;
 };
@@ -89,11 +94,16 @@ private:
     void UnLoadPlugin();
     void ClearResource();
     void deliverResourceToPlugin(const std::string& pluginLib, const std::shared_ptr<ResData>& resData);
+    void RepairPluginLocked(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo);
+    void RemoveDisablePluginHandler();
 
     using DlHandle = void*;
 
     static void CloseHandle(const DlHandle& handle);
 
+    // plugin crash 3 times in 60s, will be disable forever
+    const int32_t MAX_PLUGIN_TIMEOUT_TIMES = 3;
+    const int32_t DISABLE_PLUGIN_TIME = 60000;
     std::unique_ptr<ConfigReader> configReader_ = nullptr;
     std::unique_ptr<PluginSwitch> pluginSwitch_ = nullptr;
 
@@ -105,8 +115,12 @@ private:
     std::mutex resTypeMutex_;
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
 
-    // handler use for dispatch resource data
-    std::shared_ptr<OHOS::AppExecFwk::EventHandler> dispatcherHandler_ = nullptr;
+    // handler map use for dispatch resource data
+    std::map<std::string, std::shared_ptr<OHOS::AppExecFwk::EventHandler>> dispatcherHandlerMap_;
+    int32_t handlerNum_ = 0;
+    std::map<std::string, std::list<TimePoint>> pluginTimeoutTime_;
+    std::list<std::string> disablePlugins_;
+    std::mutex disablePluginsMutex_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

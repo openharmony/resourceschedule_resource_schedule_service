@@ -18,7 +18,6 @@
 #include <algorithm>
 #include <dlfcn.h>
 #include <iostream>
-#include "datetime_ex.h"
 #include "event_runner.h"
 #include "res_sched_log.h"
 
@@ -28,13 +27,11 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace AppExecFwk;
 using OnPluginInitFunc = bool (*)(std::string);
-using Clock = std::chrono::high_resolution_clock;
-using TimePoint = std::chrono::time_point<Clock>;
 
 namespace {
     const int32_t DISPATCH_WARNING_TIME = 10; // ms
     const int32_t DISPATCH_TIME_OUT = 50; // ms
-    const std::string RUNNER_NAME = "rssDispatcher";
+    const std::string RUNNER_NAME = "rssDispatcher#";
     const std::string PLUGIN_SWITCH_FILE_NAME = "/system/etc/ressched/res_sched_plugin_switch.xml";
     const std::string CONFIG_FILE_NAME = "/system/etc/ressched/res_sched_config.xml";
 }
@@ -85,9 +82,6 @@ void PluginMgr::Init()
     }
 
     LoadPlugin();
-    if (!dispatcherHandler_) {
-        dispatcherHandler_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
-    }
     RESSCHED_LOGI("PluginMgr::Init success!");
 }
 
@@ -130,6 +124,9 @@ void PluginMgr::LoadPlugin()
             continue;
         }
         
+        dispatcherHandlerMap_[info.libPath] =
+            std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME + to_string(handlerNum_++)));
+
         // OnDispatchResource is not necessary for plugin
         auto onDispatchResourceFunc = reinterpret_cast<OnDispatchResourceFunc>(dlsym(pluginHandle,
             "OnDispatchResource"));
@@ -139,6 +136,7 @@ void PluginMgr::LoadPlugin()
 
         PluginLib libInfo;
         libInfo.handle = sharedPluginHandle;
+        libInfo.onPluginInitFunc_ = onPluginInitFunc;
         libInfo.onDispatchResourceFunc_ = onDispatchResourceFunc;
         libInfo.onPluginDisableFunc_ = onPluginDisableFunc;
         {
@@ -163,18 +161,34 @@ void PluginMgr::Stop()
     OnDestroy();
 }
 
+void PluginMgr::RemoveDisablePluginHandler()
+{
+    // clear already disable plugin handler
+    std::lock_guard<std::mutex> autoLock(disablePluginsMutex_);
+    dispatcherHandlerMutex_.lock();
+    for (auto plugin : disablePlugins_) {
+        RESSCHED_LOGI("PluginMgr::RemoveDisablePluginHandler remove %{plugin}s handler.", plugin.c_str());
+        auto iter = dispatcherHandlerMap_.find(plugin);
+        if (iter != dispatcherHandlerMap_.end()) {
+            auto runner = iter->second->GetEventRunner();
+            iter->second->RemoveAllEvents();
+            runner->Stop();
+            runner = nullptr;
+            iter->second = nullptr;
+            dispatcherHandlerMap_.erase(iter);
+        }
+    }
+    dispatcherHandlerMutex_.unlock();
+    disablePlugins_.clear();
+}
+
 void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 {
+    RemoveDisablePluginHandler();
     if (!resData) {
         RESSCHED_LOGE("PluginMgr::DispatchResource failed, null res data.");
         return;
     }
-
-    if (!dispatcherHandler_) {
-        RESSCHED_LOGE("PluginMgr::DispatchResource failed, dispatcher is stopped.");
-        return;
-    }
-
     std::lock_guard<std::mutex> autoLock(resTypeMutex_);
     auto iter = resTypeLibMap_.find(resData->resType);
     if (iter == resTypeLibMap_.end()) {
@@ -193,7 +207,12 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     {
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         for (const auto& libPath : iter->second) {
-            dispatcherHandler_->PostTask(
+            if (!dispatcherHandlerMap_[libPath]) {
+                RESSCHED_LOGE("PluginMgr::DispatchResource failed, %{public}s dispatcher handler is stopped.",
+                    libPath.c_str());
+                continue;
+            }
+            dispatcherHandlerMap_[libPath]->PostTask(
                 [libPath, resData, this] { deliverResourceToPlugin(libPath, resData); });
         }
     }
@@ -234,6 +253,39 @@ void PluginMgr::ClearResource()
     resTypeLibMap_.clear();
 }
 
+void PluginMgr::RepairPluginLocked(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo)
+{
+    int32_t crash_time = (int32_t)((endTime - pluginTimeoutTime_[pluginLib].front()) / std::chrono::milliseconds(1));
+    pluginTimeoutTime_[pluginLib].emplace_back(endTime);
+    RESSCHED_LOGW("PluginMgr::RepairPluginLocked %{public}s crash %{public}d times in %{public}d ms!",
+        pluginLib.c_str(), (int32_t)pluginTimeoutTime_[pluginLib].size(), crash_time);
+    if ((int32_t)pluginTimeoutTime_[pluginLib].size() >= MAX_PLUGIN_TIMEOUT_TIMES) {
+        if (crash_time < DISABLE_PLUGIN_TIME) {
+            // disable plugin forever
+            RESSCHED_LOGE("PluginMgr::RepairPluginLocked %{public}s disable it forever", pluginLib.c_str());
+            if (libInfo.onPluginDisableFunc_) {
+                libInfo.onPluginDisableFunc_();
+            }
+            pluginTimeoutTime_[pluginLib].clear();
+            // pluginLibMap_ already locked
+            auto itMap = pluginLibMap_.find(pluginLib);
+            pluginLibMap_.erase(itMap);
+            std::lock_guard<std::mutex> autoLock(disablePluginsMutex_);
+            disablePlugins_.emplace_back(pluginLib);
+            return;
+        }
+
+        auto iter = pluginTimeoutTime_[pluginLib].begin();
+        pluginTimeoutTime_[pluginLib].erase(iter);
+    }
+
+    if (libInfo.onPluginDisableFunc_ && libInfo.onPluginInitFunc_) {
+        RESSCHED_LOGW("PluginMgr::RepairPluginLocked %{public}s disable and enable it", pluginLib.c_str());
+        libInfo.onPluginDisableFunc_();
+        libInfo.onPluginInitFunc_(pluginLib);
+    }
+}
+
 void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std::shared_ptr<ResData>& resData)
 {
     std::lock_guard<std::mutex> autoLock(pluginMutex_);
@@ -255,12 +307,9 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
     if (costTime > DISPATCH_TIME_OUT) {
         // dispatch resource use too long time, unload it
         RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin ERROR :"
-                      "%{public}s plugin cost time(%{public}dms) over %{public}d ms! disable it.",
+                      "%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
                       pluginLib.c_str(), costTime, DISPATCH_TIME_OUT);
-        if (itMap->second.onPluginDisableFunc_) {
-            itMap->second.onPluginDisableFunc_();
-        }
-        pluginLibMap_.erase(itMap);
+        RepairPluginLocked(endTime, pluginLib, itMap->second);
     } else if (costTime > DISPATCH_WARNING_TIME) {
         RESSCHED_LOGW("PluginMgr::deliverResourceToPlugin WARNING :"
                       "%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
@@ -287,11 +336,13 @@ void PluginMgr::OnDestroy()
     UnLoadPlugin();
     configReader_ = nullptr;
     ClearResource();
-
-    if (dispatcherHandler_) {
-        std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
-        dispatcherHandler_->RemoveAllEvents();
-        dispatcherHandler_ = nullptr;
+    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
+    for (auto iter = dispatcherHandlerMap_.begin(); iter != dispatcherHandlerMap_.end();) {
+        if (iter->second != nullptr) {
+            iter->second->RemoveAllEvents();
+            iter->second = nullptr;
+        }
+        dispatcherHandlerMap_.erase(iter++);
     }
 }
 
