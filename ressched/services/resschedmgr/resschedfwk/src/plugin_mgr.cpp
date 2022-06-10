@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <dlfcn.h>
 #include <iostream>
+#include "config_policy_utils.h"
 #include "event_runner.h"
 #include "res_sched_log.h"
 
@@ -32,8 +33,8 @@ namespace {
     const int32_t DISPATCH_WARNING_TIME = 10; // ms
     const int32_t DISPATCH_TIME_OUT = 50; // ms
     const std::string RUNNER_NAME = "rssDispatcher#";
-    const std::string PLUGIN_SWITCH_FILE_NAME = "/system/etc/ressched/res_sched_plugin_switch.xml";
-    const std::string CONFIG_FILE_NAME = "/system/etc/ressched/res_sched_config.xml";
+    const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
+    const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
 }
 
 IMPLEMENT_SINGLE_INSTANCE(PluginMgr);
@@ -53,30 +54,16 @@ void PluginMgr::Init()
 
     if (!pluginSwitch_) {
         pluginSwitch_ = make_unique<PluginSwitch>();
-        char tmpPath[PATH_MAX + 1] = {0};
-        if (PLUGIN_SWITCH_FILE_NAME.size() == 0 || PLUGIN_SWITCH_FILE_NAME.size() > PATH_MAX ||
-            !realpath(PLUGIN_SWITCH_FILE_NAME.c_str(), tmpPath)) {
-            RESSCHED_LOGE("PluginMgr::load switch config file wrong !");
-            return;
-        }
-        std::string realPath(tmpPath);
-        bool loadRet = pluginSwitch_->LoadFromConfigFile(realPath);
-        if (!loadRet) {
-            RESSCHED_LOGW("PluginMgr::Init load switch config file failed!");
+        std::string realPath = GetRealConfigPath(PLUGIN_SWITCH_FILE_NAME);
+        if (realPath.size() <= 0 || !pluginSwitch_->LoadFromConfigFile(realPath)) {
+            RESSCHED_LOGW("PluginMgr::Init load config file failed!");
         }
     }
 
     if (!configReader_) {
         configReader_ = make_unique<ConfigReader>();
-        char tmpPath[PATH_MAX + 1] = {0};
-        if (CONFIG_FILE_NAME.size() == 0 || CONFIG_FILE_NAME.size() > PATH_MAX ||
-            !realpath(CONFIG_FILE_NAME.c_str(), tmpPath)) {
-            RESSCHED_LOGE("PluginMgr::load config file wrong !");
-            return;
-        }
-        std::string realPath(tmpPath);
-        bool loadRet = configReader_->LoadFromCustConfigFile(realPath);
-        if (!loadRet) {
+        std::string realPath = GetRealConfigPath(CONFIG_FILE_NAME);
+        if (realPath.size() <= 0 || !configReader_->LoadFromCustConfigFile(realPath)) {
             RESSCHED_LOGW("PluginMgr::Init load config file failed!");
         }
     }
@@ -245,6 +232,19 @@ void PluginMgr::UnSubscribeResource(const std::string& pluginLib, uint32_t resTy
     if (iter->second.empty()) {
         resTypeLibMap_.erase(iter);
     }
+}
+
+std::string PluginMgr::GetRealConfigPath(const char* configName)
+{
+    char buf[PATH_MAX + 1];
+    char* configFilePath = GetOneCfgFile(configName, buf, PATH_MAX + 1);
+    char tmpPath[PATH_MAX + 1] = {0};
+    if (strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
+        !realpath(configFilePath, tmpPath)) {
+        RESSCHED_LOGE("%{public}s load config file wrong !", __func__);
+        return "";
+    }
+    return std::string(tmpPath);
 }
 
 void PluginMgr::ClearResource()

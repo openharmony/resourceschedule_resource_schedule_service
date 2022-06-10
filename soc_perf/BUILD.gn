@@ -111,6 +111,7 @@ ohos_shared_library("socperf_server") {
     "include",
     "include/server",
     "include/core",
+    "//base/customization/config_policy/interfaces/innerkits/include",
   ]
   deps = [
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
@@ -121,6 +122,7 @@ ohos_shared_library("socperf_server") {
     "//utils/native/base:utils",
   ]
   external_deps = [
+    "config_policy:configpolicy_util",
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",
   ]

@@ -20,6 +20,7 @@
 #include "json/reader.h"
 #include "json/value.h"
 #include "cgroup_map.h"
+#include "config_policy_utils.h"
 #include "process_group_log.h"
 #include "process_group_util.h"
 #include "sched_policy.h"
@@ -196,8 +197,17 @@ int CgroupAction::GetSchedPolicyByName(const std::string& name, SchedPolicy* pol
 
 bool CgroupAction::ParseConfigFileToJsonObj(Json::Value& jsonObjRoot)
 {
+    char buf[PATH_MAX + 1];
+    char* configFilePath = GetOneCfgFile(CGROUP_SETTING_CONFIG_FILE, buf, PATH_MAX + 1);
+    char tmpPath[PATH_MAX + 1] = {0};
+    if (strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
+        !realpath(configFilePath, tmpPath)) {
+        PGCGS_LOGE("%{public}s: read %{public}s failed", __func__, CGROUP_SETTING_CONFIG_FILE);
+        return false;
+    }
+    std::string realConfigFile(tmpPath);
     std::string jsonString;
-    if (!ReadFileToString(CGROUP_SETTING_CONFIG_FILE, jsonString)) {
+    if (!ReadFileToString(realConfigFile, jsonString)) {
         PGCGS_LOGE("ParseConfigFileToJsonObj: read config file failed");
         return false;
     }

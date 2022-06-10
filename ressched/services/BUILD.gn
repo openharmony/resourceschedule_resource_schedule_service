@@ -33,6 +33,7 @@ config("ressched_config") {
     "${cgroup_sched_interfaces}/innerkits/include",
     "${sched_controller_event}/include",
     "//third_party/jsoncpp/include",
+    "//base/customization/config_policy/interfaces/innerkits/include",
   ]
 }
 
@@ -64,6 +65,7 @@ ohos_shared_library("resschedsvc") {
   external_deps = [
     "ability_base:want",
     "common_event_service:cesfwk_innerkits",
+    "config_policy:configpolicy_util",
     "eventhandler:libeventhandler",
     "hisysevent_native:libhisysevent",
     "hisysevent_native:libhisyseventmanager",

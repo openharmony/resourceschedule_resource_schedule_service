@@ -57,6 +57,7 @@ private:
     std::unordered_map<std::string, int32_t> resStrToIdInfo;
 
 private:
+    std::string GetRealConfigPath(const std::string configFile);
     bool LoadConfigXmlFile(std::string configFile);
     bool CreateHandlers();
     void InitHandlerThreads();
