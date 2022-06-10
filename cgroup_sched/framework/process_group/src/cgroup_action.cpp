@@ -197,8 +197,8 @@ int CgroupAction::GetSchedPolicyByName(const std::string& name, SchedPolicy* pol
 
 bool CgroupAction::ParseConfigFileToJsonObj(Json::Value& jsonObjRoot)
 {
-    char buf[MAX_PATH_LEN];
-    char* configFilePath = GetOneCfgFile(CGROUP_SETTING_CONFIG_FILE, buf, MAX_PATH_LEN);
+    char buf[PATH_MAX + 1];
+    char* configFilePath = GetOneCfgFile(CGROUP_SETTING_CONFIG_FILE, buf, PATH_MAX + 1);
     char tmpPath[PATH_MAX + 1] = {0};
     if (strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
         !realpath(configFilePath, tmpPath)) {

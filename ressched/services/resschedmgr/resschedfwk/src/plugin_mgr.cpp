@@ -236,8 +236,8 @@ void PluginMgr::UnSubscribeResource(const std::string& pluginLib, uint32_t resTy
 
 std::string PluginMgr::GetRealConfigPath(const char* configName)
 {
-    char buf[MAX_PATH_LEN];
-    char* configFilePath = GetOneCfgFile(configName, buf, MAX_PATH_LEN);
+    char buf[PATH_MAX + 1];
+    char* configFilePath = GetOneCfgFile(configName, buf, PATH_MAX + 1);
     char tmpPath[PATH_MAX + 1] = {0};
     if (strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
         !realpath(configFilePath, tmpPath)) {
