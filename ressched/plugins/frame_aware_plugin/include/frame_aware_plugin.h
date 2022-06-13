@@ -21,7 +21,7 @@
 #include "json/json.h"
 
 #include <set>
-#include <vector>
+#include <unordered_map>
 #include <string>
 
 namespace OHOS {
@@ -35,6 +35,12 @@ public:
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
 private:
     std::set<uint32_t> resTypes;
+    std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData> data)>> functionMap;
+    void HandleAppStateChange(const std::shared_ptr<ResData>& data);
+    void HandleProcessStateChange(const std::shared_ptr<ResData>& data);
+    void HandleCgroupAdjuster(const std::shared_ptr<ResData>& data);
+    void HandleWindowsFocus(const std::shared_ptr<ResData>& data);
+    void HandleReportRender(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
