@@ -73,8 +73,8 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
         auto windowType = info->windowType_;
         auto pid = info->pid_;
         auto uid = info->uid_;
-        cgHandler->PostTask([cgHandler, windowId, isVisible, pid, uid] {
-            cgHandler->HandleWindowVisibilityChanged(windowId, isVisible, pid, uid);
+        cgHandler->PostTask([cgHandler, windowId, isVisible, windowType, pid, uid] {
+            cgHandler->HandleWindowVisibilityChanged(windowId, isVisible, windowType, pid, uid);
         });
         Json::Value payload;
         payload["pid"] = std::to_string(pid);

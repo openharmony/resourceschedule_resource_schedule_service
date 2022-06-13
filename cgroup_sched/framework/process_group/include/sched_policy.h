@@ -37,6 +37,8 @@ static constexpr SchedPolicy SP_SYSTEM_BACKGROUND = 3;
 static constexpr SchedPolicy SP_TOP_APP = 4;
 static constexpr SchedPolicy SP_SYSTEM_DEFAULT = SP_DEFAULT;
 
+static constexpr SchedPolicy SP_UPPER_LIMIT = 0xff;
+
 /**
  * Assign all threads in process pid to the cgroup associated with the specified policy.
  * On platforms which support getpid(), zero pid means current process.
