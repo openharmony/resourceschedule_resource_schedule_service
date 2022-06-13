@@ -42,6 +42,7 @@ ohos_shared_library("cgroup_sched") {
     "ability_runtime:wantagent_innerkits",
     "background_task_mgr:bgtaskmgr_innerkits",
     "eventhandler:libeventhandler",
+    "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "samgr_standard:samgr_proxy",
