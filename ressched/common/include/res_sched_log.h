@@ -47,8 +47,9 @@ public:
     bool debugLogEnabled_ = false;
     bool otherLogEnable_ = true;
 private:
-    ResschedLog(){
-        debugLogEnabled_ = HiLogIsLoggable(LOG_DOMIN_ID_RESSCHED,LOG_RESSCHED,LOG_DEBUG);
+    ResschedLog()
+    {
+        debugLogEnabled_ = HiLogIsLoggable(LOG_DOMIN_ID_RESSCHED, LOG_RESSCHED, LOG_DEBUG);
     }
 };
 #ifdef RESSCHED_LOGF
@@ -76,9 +77,8 @@ private:
 #endif
 
 #define RESSCHED_LOG(RESSCHEDLOGLEVEL, level, ...)                                                  \
-    if(ResschedLog::GetInstance().getLogEnableByLevel(RESSCHEDLOGLEVEL))                           \
+    if (ResschedLog::GetInstance().getLogEnableByLevel(RESSCHEDLOGLEVEL))                           \
         OHOS::HiviewDFX::HiLog::level(RES_SCHED_LABEL, ##__VA_ARGS__)                               \
-
 
 #define RESSCHED_LOGF(...) RESSCHED_LOG(ResschedLogLevel::FATAL, Fatal, ##__VA_ARGS__)
 #define RESSCHED_LOGE(...) RESSCHED_LOG(ResschedLogLevel::ERROR, Error, ##__VA_ARGS__)
