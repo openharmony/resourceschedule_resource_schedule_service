@@ -315,9 +315,6 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
         RESSCHED_LOGE("%{public}s, ERROR :"
                       "%{public}s plugin cost time(%{public}dms) over %{public}d ms! disable it.",
                       __func__, pluginLib.c_str(), costTime, DISPATCH_TIME_OUT);
-        if (itMap->second.onPluginDisableFunc_) {
-            itMap->second.onPluginDisableFunc_();
-        }
         RepairPluginLocked(endTime, pluginLib, itMap->second);
     } else if (costTime > DISPATCH_WARNING_TIME) {
         RESSCHED_LOGW("%{public}s, WARNING :"
