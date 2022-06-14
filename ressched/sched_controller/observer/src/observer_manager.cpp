@@ -21,7 +21,6 @@
 #include "iservice_registry.h"
 #include "res_sched_log.h"
 #include "system_ability_definition.h"
-#include "hitrace_meter.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
