@@ -37,11 +37,10 @@ public:
     }
     bool& getLogEnableByLevel(const ResschedLogLevel &level)
     {
-        switch (level) {
-            case ResschedLogLevel::DEBUG:
-                return debugLogEnabled_;
-            default:
-                return otherLogEnable_;
+        if (level == ResschedLogLevel::DEBUG) {
+            return debugLogEnabled_;
+        } else {
+            return otherLogEnable_;
         }
     }
     bool debugLogEnabled_ = false;
