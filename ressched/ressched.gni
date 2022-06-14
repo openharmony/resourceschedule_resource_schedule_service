@@ -29,10 +29,10 @@ ressched_test =
     "${resourceschedule_path}/resource_schedule_service/ressched/test"
 
 declare_args() {
-    component_sched_enable = true
+  component_sched_enable = true
 
-    if (defined(global_parts_info) &&
-        !defined(global_parts_info.resourceschedule_component_scheduler)) {
-      component_sched_enable = false
-    }
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.resourceschedule_component_scheduler)) {
+    component_sched_enable = false
+  }
 }
