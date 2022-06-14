@@ -25,64 +25,104 @@ namespace ResourceSchedule {
 using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libframe_aware_plugin.z.so";
-    const int INIT_VAL = -1;
 }
 IMPLEMENT_SINGLE_INSTANCE(FrameAwarePlugin)
 
 void FrameAwarePlugin::Init()
 {
-    resTypes.insert(RES_TYPE_WINDOW_FOCUS);
-    resTypes.insert(RES_TYPE_PROCESS_STATE_CHANGE);
-    resTypes.insert(RES_TYPE_APP_STATE_CHANGE);
+    functionMap = {
+        { RES_TYPE_APP_STATE_CHANGE,
+            [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
+        { RES_TYPE_PROCESS_STATE_CHANGE,
+            [this](const std::shared_ptr<ResData>& data) { HandleProcessStateChange(data); } },
+        { RES_TYPE_CGROUP_ADJUSTER,
+            [this](const std::shared_ptr<ResData>& data) { HandleCgroupAdjuster(data); } },
+        { RES_TYPE_WINDOW_FOCUS,
+            [this](const std::shared_ptr<ResData>& data) { HandleWindowsFocus(data); } },
+        { RES_TYPE_REPORT_RENDER_THREAD,
+            [this](const std::shared_ptr<ResData>& data) { HandleReportRender(data); } },
+    };
+    resTypes = {
+        RES_TYPE_APP_STATE_CHANGE,
+        RES_TYPE_PROCESS_STATE_CHANGE,
+        RES_TYPE_CGROUP_ADJUSTER,
+        RES_TYPE_WINDOW_FOCUS,
+        RES_TYPE_REPORT_RENDER_THREAD,
+    };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
     RME::FrameMsgIntf::GetInstance().Init();
-    RESSCHED_LOGI("FrameAwarePlugin::Init success");
+    RESSCHED_LOGI("FrameAwarePlugin::Init ueaServer success");
 }
 
 void FrameAwarePlugin::Disable()
 {
-    RME::FrameMsgIntf::GetInstance().Stop();
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
+    RME::FrameMsgIntf::GetInstance().Stop();
+    functionMap.clear();
     resTypes.clear();
-    RESSCHED_LOGI("ueaServerFrameAwarePlugin::Disable success");
+    RESSCHED_LOGI("FrameAwarePlugin::Disable ueaServer success");
+}
+
+void FrameAwarePlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
+{
+    Json::Value payload = data->payload;
+    int uid = atoi(payload["uid"].asString().c_str());
+    int pid = atoi(payload["pid"].asString().c_str());
+    std::string bundleName = payload["bundleName"].asString().c_str();
+    RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
+    RME::FrameMsgIntf::GetInstance().ReportAppInfo(pid, uid, bundleName, state);
+}
+
+void FrameAwarePlugin::HandleProcessStateChange(const std::shared_ptr<ResData>& data)
+{
+    Json::Value payload = data->payload;
+    int pid = atoi(payload["pid"].asString().c_str());
+    int uid = atoi(payload["uid"].asString().c_str());
+    std::string bundleName = payload["bundleName"].asString().c_str();
+    RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
+    RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, uid, bundleName, state);
+}
+
+void FrameAwarePlugin::HandleCgroupAdjuster(const std::shared_ptr<ResData>& data)
+{
+    Json::Value payload = data->payload;
+    int pid = atoi(payload["pid"].asString().c_str());
+    int uid = atoi(payload["uid"].asString().c_str());
+    int oldGroup = atoi(payload["oldGroup"].asString().c_str());
+    int newGroup = atoi(payload["newGroup"].asString().c_str());
+    RME::FrameMsgIntf::GetInstance().ReportCgroupChange(pid, uid, oldGroup, newGroup);
+}
+
+void FrameAwarePlugin::HandleWindowsFocus(const std::shared_ptr<ResData>& data)
+{
+    Json::Value payload = data->payload;
+    int pid = atoi(payload["pid"].asString().c_str());
+    int uid = atoi(payload["uid"].asString().c_str());
+    RME::FrameMsgIntf::GetInstance().ReportWindowFocus(pid, uid, data->value);
+}
+
+void FrameAwarePlugin::HandleReportRender(const std::shared_ptr<ResData>& data)
+{
+    Json::Value payload = data->payload;
+    int pid = atoi(payload["pid"].asString().c_str());
+    int uid = atoi(payload["uid"].asString().c_str());
+    RME::FrameMsgIntf::GetInstance().ReportRenderThread(pid, uid, data->value);
 }
 
 void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
     RESSCHED_LOGI("FrameAwarePlugin:DispatchResource type:%{public}u, value:%{public}lld",
                   data->resType, (long long)data->value);
-    Json::Value payload = data->payload;
-    int pid = INIT_VAL;
-    switch (data->resType) {
-        case RES_TYPE_APP_STATE_CHANGE:
-            {
-                int uid = atoi(payload["uid"].asString().c_str());
-                RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:app state! uid:%{public}d", uid);
-            }
-            break;
-        case RES_TYPE_PROCESS_STATE_CHANGE:
-            {
-                pid = atoi(payload["pid"].asString().c_str());
-                int tid = INIT_VAL;
-                RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
-                RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, tid, state);
-                RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:process info! resType: %{public}u.", data->resType);
-            }
-            break;
-        case RES_TYPE_WINDOW_FOCUS:
-            {
-                pid = atoi(payload["pid"].asString().c_str());
-                RME::FrameMsgIntf::GetInstance().ReportWindowFocus(pid, data->value);
-                RESSCHED_LOGD("FrameAwarePlugin::[DispatchResource]:window focus! resType: %{public}u.", data->resType);
-            }
-            break;
-        default:
-            RESSCHED_LOGI("FrameAwarePlugin::[DispatchResource]:unknow msg, resType: %{public}u.", data->resType);
-            break;
+    auto funcIter = functionMap.find(data->resType);
+    if (funcIter != functionMap.end()) {
+        auto function = funcIter->second;
+        if (function) {
+            function(data);
+        }
     }
 }
 
