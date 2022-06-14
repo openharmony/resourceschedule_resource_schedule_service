@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 
-#include "dev_sched_plugin.h"
-
-#include <cinttypes>
+#include "component_sched_plugin.h"
 
 #include "bluetooth_def.h"
+#ifdef COMPONENT_SCHED_ENABLE
+#include "component_sched_client.h"
+#endif
 
 #include "config_info.h"
 #include "plugin_mgr.h"
@@ -28,12 +29,11 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace ResType;
 namespace {
-    const std::string LIB_NAME = "libdev_sched_plugin.z.so";
-    const std::string RUNNER_NAME = "dev_sched_plugin";
+    const std::string LIB_NAME = "libcomponent_sched_plugin.z.so";
 }
-IMPLEMENT_SINGLE_INSTANCE(DevSchedPlugin)
+IMPLEMENT_SINGLE_INSTANCE(ComponentSchedPlugin)
 
-void DevSchedPlugin::Init()
+void ComponentSchedPlugin::Init()
 {
     resTypes_.insert(RES_TYPE_ABILITY_STATE_CHANGE);
     resTypes_.insert(RES_TYPE_APP_INSTALL_UNINSTALL);
@@ -52,55 +52,55 @@ void DevSchedPlugin::Init()
     for (auto resType : resTypes_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
-
-    if (!dispatcherHandler_) {
-        dispatcherHandler_ = std::make_shared<AppExecFwk::EventHandler>(AppExecFwk::EventRunner::Create(RUNNER_NAME));
-    }
-    RESSCHED_LOGI("DevSchedPlugin::Init success");
+    RESSCHED_LOGI("ComponentSchedPlugin::Init success");
 }
 
-void DevSchedPlugin::Disable()
+void ComponentSchedPlugin::Disable()
 {
     for (auto resType : resTypes_) {
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
     resTypes_.clear();
-    RESSCHED_LOGI("DevSchedPlugin::Disable success");
+    RESSCHED_LOGI("ComponentSchedPlugin::Disable success");
 }
 
-void DevSchedPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
+void ComponentSchedPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
-    dispatcherHandler_->PostTask([data, this] { DispatchResourceInner(data); });
-}
-
-void DevSchedPlugin::DispatchResourceInner(const std::shared_ptr<ResData>& data)
-{
+    if (!data) {
+        RESSCHED_LOGW("ComponentSchedPlugin::DispatchResource data is null");
+        return;
+    }
+    
     RESSCHED_LOGD(
-        "DevSchedPlugin::DEV_RECIEVE: type=%{public}u value=%{public}lld payload=%{public}s",
+        "ComponentSchedPlugin::DispatchResource type=%{public}u value=%{public}lld payload=%{public}s",
         data->resType, (long long)(data->value), (data->payload.toStyledString()).c_str());
+
+#ifdef COMPONENT_SCHED_ENABLE
+    ComponentScheduler::ComponentSchedClient::GetInstance().ReportSceneInfo(data);
+#endif
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
 {
     if (libName != LIB_NAME) {
-        RESSCHED_LOGE("DevSchedPlugin::OnPluginInit lib name is not match");
+        RESSCHED_LOGE("ComponentSchedPlugin::OnPluginInit lib name is not match");
         return false;
     }
-    DevSchedPlugin::GetInstance().Init();
-    RESSCHED_LOGI("DevSchedPlugin::OnPluginInit success.");
+    ComponentSchedPlugin::GetInstance().Init();
+    RESSCHED_LOGI("ComponentSchedPlugin::OnPluginInit success.");
     return true;
 }
 
 extern "C" void OnPluginDisable()
 {
-    DevSchedPlugin::GetInstance().Disable();
-    RESSCHED_LOGI("DevSchedPlugin::OnPluginDisable success.");
+    ComponentSchedPlugin::GetInstance().Disable();
+    RESSCHED_LOGI("ComponentSchedPlugin::OnPluginDisable success.");
 }
 
 extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& data)
 {
-    DevSchedPlugin::GetInstance().DispatchResource(data);
-    RESSCHED_LOGI("DevSchedPlugin::OnDispatchResource success.");
+    ComponentSchedPlugin::GetInstance().DispatchResource(data);
+    RESSCHED_LOGD("ComponentSchedPlugin::OnDispatchResource success.");
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

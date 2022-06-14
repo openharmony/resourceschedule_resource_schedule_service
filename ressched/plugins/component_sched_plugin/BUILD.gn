@@ -15,21 +15,21 @@ import("//build/ohos.gni")
 import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
 
-config("dev_sched_plugin_config") {
+config("component_sched_plugin_config") {
   include_dirs = [
     "include",
     "//utils/native/base/include",
   ]
 }
 
-ohos_shared_library("dev_sched_plugin") {
+ohos_shared_library("component_sched_plugin") {
   configs = [
-    ":dev_sched_plugin_config",
+    ":component_sched_plugin_config",
     "${ressched_services}:ressched_config",
     "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
   ]
 
-  sources = [ "src/dev_sched_plugin.cpp" ]
+  sources = [ "src/component_sched_plugin.cpp" ]
 
   deps = [
     "${ressched_services}:resschedsvc",
@@ -44,6 +44,13 @@ ohos_shared_library("dev_sched_plugin") {
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
   ]
+
+  defines = []
+
+  if (component_sched_enable) {
+    external_deps += [ "component_scheduler:component_sched_innerkits" ]
+    defines += [ "COMPONENT_SCHED_ENABLE" ]
+  }
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

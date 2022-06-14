@@ -52,15 +52,15 @@ void ObserverManager::InitSysAbilityListener()
     sptr<ISystemAbilityManager> systemAbilityManager
         = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (systemAbilityManager == nullptr) {
-        RESSCHED_LOGE("systemAbilityManager is null");
         sysAbilityListener_ = nullptr;
+        RESSCHED_LOGE("systemAbilityManager is null");
         return;
     }
 
     int32_t ret = systemAbilityManager->SubscribeSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, sysAbilityListener_);
     if (ret != ERR_OK) {
-        RESSCHED_LOGE("subscribe system ability id: %{public}d failed", DFX_SYS_EVENT_SERVICE_ABILITY_ID);
         sysAbilityListener_ = nullptr;
+        RESSCHED_LOGE("subscribe system ability id: %{public}d failed", DFX_SYS_EVENT_SERVICE_ABILITY_ID);
     }
 }
 

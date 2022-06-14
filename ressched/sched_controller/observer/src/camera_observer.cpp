@@ -29,5 +29,5 @@ void CameraObserver::OnServiceDied()
 {
     RESSCHED_LOGE("CameraObserver service disconnected");
 }
-}  // namespace ResourceSchedule
-}  // namespace OHOS
+} // namespace ResourceSchedule
+} // namespace OHOS
