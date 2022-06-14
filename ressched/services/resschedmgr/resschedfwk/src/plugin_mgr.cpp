@@ -21,6 +21,7 @@
 #include "config_policy_utils.h"
 #include "event_runner.h"
 #include "res_sched_log.h"
+#include "hitrace_meter.h"
 
 using namespace std;
 
@@ -46,9 +47,8 @@ PluginMgr::~PluginMgr()
 
 void PluginMgr::Init()
 {
-    RESSCHED_LOGI("PluginMgr::Init enter!");
     if (pluginSwitch_) {
-        RESSCHED_LOGW("PluginMgr::Init has Initialized!");
+        RESSCHED_LOGW("%{public}s, PluginMgr has Initialized!", __func__);
         return;
     }
 
@@ -56,7 +56,7 @@ void PluginMgr::Init()
         pluginSwitch_ = make_unique<PluginSwitch>();
         std::string realPath = GetRealConfigPath(PLUGIN_SWITCH_FILE_NAME);
         if (realPath.size() <= 0 || !pluginSwitch_->LoadFromConfigFile(realPath)) {
-            RESSCHED_LOGW("PluginMgr::Init load config file failed!");
+            RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
         }
     }
 
@@ -64,7 +64,7 @@ void PluginMgr::Init()
         configReader_ = make_unique<ConfigReader>();
         std::string realPath = GetRealConfigPath(CONFIG_FILE_NAME);
         if (realPath.size() <= 0 || !configReader_->LoadFromCustConfigFile(realPath)) {
-            RESSCHED_LOGW("PluginMgr::Init load config file failed!");
+            RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
         }
     }
 
@@ -75,7 +75,7 @@ void PluginMgr::Init()
 void PluginMgr::LoadPlugin()
 {
     if (!pluginSwitch_) {
-        RESSCHED_LOGW("PluginMgr::LoadPlugin configReader null!");
+        RESSCHED_LOGW("%{public}s, configReader null!", __func__);
         return;
     }
 
@@ -87,26 +87,26 @@ void PluginMgr::LoadPlugin()
 
         auto pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
         if (!pluginHandle) {
-            RESSCHED_LOGE("PluginMgr::LoadPlugin not find plugin lib !");
+            RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
             continue;
         }
 
         auto onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(pluginHandle, "OnPluginInit"));
         if (!onPluginInitFunc) {
-            RESSCHED_LOGE("PluginMgr::LoadPlugin dlsym OnPluginInit failed!");
+            RESSCHED_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
             dlclose(pluginHandle);
             continue;
         }
 
         auto onPluginDisableFunc = reinterpret_cast<OnPluginDisableFunc>(dlsym(pluginHandle, "OnPluginDisable"));
         if (!onPluginDisableFunc) {
-            RESSCHED_LOGE("PluginMgr::LoadPlugin dlsym OnPluginDisable failed!");
+            RESSCHED_LOGE("%{public}s, dlsym OnPluginDisable failed!", __func__);
             dlclose(pluginHandle);
             continue;
         }
 
         if (!onPluginInitFunc(info.libPath)) {
-            RESSCHED_LOGE("PluginMgr::LoadPlugin %{public}s init failed!", info.libPath.c_str());
+            RESSCHED_LOGE("%{public}s, %{public}s init failed!", __func__, info.libPath.c_str());
             dlclose(pluginHandle);
             continue;
         }
@@ -130,7 +130,7 @@ void PluginMgr::LoadPlugin()
             std::lock_guard<std::mutex> autoLock(pluginMutex_);
             pluginLibMap_.emplace(info.libPath, libInfo);
         }
-        RESSCHED_LOGE("PluginMgr::LoadPlugin init %{public}s success!", info.libPath.c_str());
+        RESSCHED_LOGE("%{public}s, init %{public}s success!", __func__, info.libPath.c_str());
     }
 }
 
@@ -173,13 +173,13 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 {
     RemoveDisablePluginHandler();
     if (!resData) {
-        RESSCHED_LOGE("PluginMgr::DispatchResource failed, null res data.");
+        RESSCHED_LOGE("%{public}s, failed, null res data.", __func__);
         return;
     }
     std::lock_guard<std::mutex> autoLock(resTypeMutex_);
     auto iter = resTypeLibMap_.find(resData->resType);
     if (iter == resTypeLibMap_.end()) {
-        RESSCHED_LOGW("PluginMgr::DispatchResource resType no lib register!");
+        RESSCHED_LOGD("%{public}s, PluginMgr resType no lib register!", __func__);
         return;
     }
     std::string libNameAll = "[";
@@ -188,14 +188,20 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         libNameAll.append(",");
     }
     libNameAll.append("]");
-    RESSCHED_LOGI("PluginMgr::DispatchResource resType = %{public}d, "
-        "value = %{public}lld, pluginlist is %{public}s.",
-        resData->resType, (long long)resData->value, libNameAll.c_str());
+    string trace_str(__func__);
+    trace_str.append(" PluginMgr ,resType[").append(std::to_string(resData->resType)).append("]");
+    trace_str.append(",value[").append(std::to_string(resData->value)).append("]");
+    trace_str.append(",pluginlist").append(libNameAll);
+    StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
+    RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, "
+                  "value = %{public}lld, pluginlist is %{public}s.", __func__,
+                  resData->resType, (long long)resData->value, libNameAll.c_str());
+    FinishTrace(HITRACE_TAG_OHOS);
     {
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         for (const auto& libPath : iter->second) {
             if (!dispatcherHandlerMap_[libPath]) {
-                RESSCHED_LOGE("PluginMgr::DispatchResource failed, %{public}s dispatcher handler is stopped.",
+                RESSCHED_LOGE("%{public}s, failed, %{public}s dispatcher handler is stopped.", __func__,
                     libPath.c_str());
                 continue;
             }
@@ -208,7 +214,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 void PluginMgr::SubscribeResource(const std::string& pluginLib, uint32_t resType)
 {
     if (pluginLib.size() == 0) {
-        RESSCHED_LOGE("PluginMgr::SubscribeResource failed, pluginLib is null.");
+        RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
         return;
     }
     std::lock_guard<std::mutex> autoLock(resTypeMutex_);
@@ -218,13 +224,13 @@ void PluginMgr::SubscribeResource(const std::string& pluginLib, uint32_t resType
 void PluginMgr::UnSubscribeResource(const std::string& pluginLib, uint32_t resType)
 {
     if (pluginLib.size() == 0) {
-        RESSCHED_LOGE("PluginMgr::UnSubscribeResource failed, pluginLib is null.");
+        RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
         return;
     }
     std::lock_guard<std::mutex> autoLock(resTypeMutex_);
     auto iter = resTypeLibMap_.find(resType);
     if (iter == resTypeLibMap_.end()) {
-        RESSCHED_LOGE("PluginMgr::UnSubscribeResource failed, res type has no plugin subscribe.");
+        RESSCHED_LOGE("%{public}s, PluginMgr failed, res type has no plugin subscribe.", __func__);
         return;
     }
 
@@ -262,7 +268,7 @@ void PluginMgr::RepairPluginLocked(TimePoint endTime, const std::string& pluginL
     if ((int32_t)pluginTimeoutTime_[pluginLib].size() >= MAX_PLUGIN_TIMEOUT_TIMES) {
         if (crash_time < DISABLE_PLUGIN_TIME) {
             // disable plugin forever
-            RESSCHED_LOGE("PluginMgr::RepairPluginLocked %{public}s disable it forever", pluginLib.c_str());
+            RESSCHED_LOGE("%{public}s, %{public}s disable it forever", __func__, pluginLib.c_str());
             if (libInfo.onPluginDisableFunc_) {
                 libInfo.onPluginDisableFunc_();
             }
@@ -280,7 +286,7 @@ void PluginMgr::RepairPluginLocked(TimePoint endTime, const std::string& pluginL
     }
 
     if (libInfo.onPluginDisableFunc_ && libInfo.onPluginInitFunc_) {
-        RESSCHED_LOGW("PluginMgr::RepairPluginLocked %{public}s disable and enable it", pluginLib.c_str());
+        RESSCHED_LOGW("%{public}s, %{public}s disable and enable it", __func__, pluginLib.c_str());
         libInfo.onPluginDisableFunc_();
         libInfo.onPluginInitFunc_(pluginLib);
     }
@@ -291,12 +297,12 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
     std::lock_guard<std::mutex> autoLock(pluginMutex_);
     auto itMap = pluginLibMap_.find(pluginLib);
     if (itMap == pluginLibMap_.end()) {
-        RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin no plugin %{public}s !", pluginLib.c_str());
+        RESSCHED_LOGE("%{public}s, no plugin %{public}s !", __func__, pluginLib.c_str());
         return;
     }
     OnDispatchResourceFunc fun = itMap->second.onDispatchResourceFunc_;
     if (!fun) {
-        RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin no DispatchResourceFun !");
+        RESSCHED_LOGE("%{public}s, no DispatchResourceFun !", __func__);
         return;
     }
 
@@ -306,14 +312,17 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
     int32_t costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
     if (costTime > DISPATCH_TIME_OUT) {
         // dispatch resource use too long time, unload it
-        RESSCHED_LOGE("PluginMgr::deliverResourceToPlugin ERROR :"
-                      "%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
-                      pluginLib.c_str(), costTime, DISPATCH_TIME_OUT);
-        RepairPluginLocked(endTime, pluginLib, itMap->second);
+        RESSCHED_LOGE("%{public}s, ERROR :"
+                      "%{public}s plugin cost time(%{public}dms) over %{public}d ms! disable it.",
+                      __func__, pluginLib.c_str(), costTime, DISPATCH_TIME_OUT);
+        if (itMap->second.onPluginDisableFunc_) {
+            itMap->second.onPluginDisableFunc_();
+        }
+        pluginLibMap_.erase(itMap);
     } else if (costTime > DISPATCH_WARNING_TIME) {
-        RESSCHED_LOGW("PluginMgr::deliverResourceToPlugin WARNING :"
+        RESSCHED_LOGW("%{public}s, WARNING :"
                       "%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
-                      pluginLib.c_str(), costTime, DISPATCH_WARNING_TIME);
+                      __func__, pluginLib.c_str(), costTime, DISPATCH_WARNING_TIME);
     }
 }
 
@@ -349,13 +358,13 @@ void PluginMgr::OnDestroy()
 void PluginMgr::CloseHandle(const DlHandle& handle)
 {
     if (!handle) {
-        RESSCHED_LOGW("PluginMgr::CloseHandle nullptr handle!");
+        RESSCHED_LOGW("%{public}s, nullptr handle!", __func__);
         return;
     }
 
     int32_t ret = dlclose(handle);
     if (ret) {
-        RESSCHED_LOGW("PluginMgr::CloseHandle handle close failed!");
+        RESSCHED_LOGW("%{public}s, handle close failed!", __func__);
     }
 }
 } // namespace ResourceSchedule

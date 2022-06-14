@@ -43,12 +43,12 @@ void ConfigReader::ParseProperties(const xmlNode& currNode, map<string, string>&
     for (; attrs; attrs = attrs->next) {
         auto name = attrs->name;
         if (!name) {
-            RESSCHED_LOGW("ConfigReader::ParseProperties name null!");
+            RESSCHED_LOGW("%{public}s, name null!", __func__);
             continue;
         }
         value = xmlGetProp(&currNode, name);
         if (!value) {
-            RESSCHED_LOGW("ConfigReader::ParseProperties name(%{public}s) value null!", name);
+            RESSCHED_LOGW("%{public}s, name(%{public}s) value null!", __func__, name);
             continue;
         }
         properties[reinterpret_cast<const char*>(name)] = reinterpret_cast<const char*>(value);
@@ -62,7 +62,7 @@ void ConfigReader::ParseSubItem(const xmlNode& parentNode, Item& item)
     xmlChar *value;
     for (; currNodePtr; currNodePtr = currNodePtr->next) {
         if (IsInvalidNode(*currNodePtr)) {
-            RESSCHED_LOGW("ConfigReader::ParseSubItem skip invalid node!");
+            RESSCHED_LOGW("%{public}s, skip invalid node!", __func__);
             continue;
         }
         SubItem subItem;
@@ -103,7 +103,7 @@ void ConfigReader::ParseConfig(const xmlNode& parentNode, PluginConfigMap& plugi
         }
         auto propName = xmlGetProp(currNodePtr, reinterpret_cast<const xmlChar*>(XML_ATTR_NAME));
         if (!propName) {
-            RESSCHED_LOGW("ConfigReader::ParseConfig propName null!");
+            RESSCHED_LOGW("%{public}s, propName null!", __func__);
             continue;
         }
 
@@ -118,7 +118,7 @@ bool ConfigReader::ParsePluginConfig(const xmlNode& currNode, map<string, Plugin
 {
     auto propName = xmlGetProp(&currNode, reinterpret_cast<const xmlChar*>(XML_ATTR_NAME));
     if (!propName) {
-        RESSCHED_LOGW("ConfigReader::ParsePluginConfig propName null!");
+        RESSCHED_LOGW("%{public}s, propName null!", __func__);
         return false;
     }
     string pluginName(reinterpret_cast<char*>(propName));
@@ -133,13 +133,13 @@ bool ConfigReader::LoadFromCustConfigFile(const string& configFile)
     xmlDocPtr xmlDocPtr = xmlReadFile(configFile.c_str(), nullptr,
         XML_PARSE_NOBLANKS | XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!xmlDocPtr) {
-        RESSCHED_LOGE("ConfigReader::LoadFromCustConfigFile xmlReadFile error!");
+        RESSCHED_LOGE("%{public}s, xmlReadFile error!", __func__);
         return false;
     }
     xmlNodePtr rootNodePtr = xmlDocGetRootElement(xmlDocPtr);
     if (!rootNodePtr || !rootNodePtr->name ||
         xmlStrcmp(rootNodePtr->name, reinterpret_cast<const xmlChar*>(XML_TAG_RES_SCHED)) != 0) {
-        RESSCHED_LOGE("ConfigReader::LoadFromCustConfigFile root element tag wrong!");
+        RESSCHED_LOGE("%{public}s, root element tag wrong!", __func__);
         xmlFreeDoc(xmlDocPtr);
         return false;
     }
@@ -154,7 +154,7 @@ bool ConfigReader::LoadFromCustConfigFile(const string& configFile)
             ret = ParsePluginConfig(*currNodePtr, allPluginConfigs);
         }
         if (!ret) {
-            RESSCHED_LOGW("ConfigReader::LoadFromCustConfigFile plugin (%{public}s) config wrong!", currNodePtr->name);
+            RESSCHED_LOGW("%{public}s, plugin (%{public}s) config wrong!", __func__, currNodePtr->name);
             xmlFreeDoc(xmlDocPtr);
             return false;
         }
@@ -171,13 +171,13 @@ PluginConfig ConfigReader::GetConfig(const std::string& pluginName, const std::s
     PluginConfig config;
     auto itMap = allPluginConfigs_.find(pluginName);
     if (itMap == allPluginConfigs_.end()) {
-        RESSCHED_LOGE("ConfigReader::GetConfig no pluginName:%{public}s config!", pluginName.c_str());
+        RESSCHED_LOGE("%{public}s, no pluginName:%{public}s config!", __func__, pluginName.c_str());
         return config;
     }
     PluginConfigMap configMap = allPluginConfigs_[pluginName];
     auto itConfig = configMap.find(configName);
     if (itConfig == configMap.end()) {
-        RESSCHED_LOGE("ConfigReader::GetConfig pluginName:%{public}s config:%{public}s null!",
+        RESSCHED_LOGE("%{public}s, pluginName:%{public}s config:%{public}s null!", __func__,
             pluginName.c_str(), configName.c_str());
         return config;
     }

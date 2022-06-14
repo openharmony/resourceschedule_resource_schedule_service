@@ -21,6 +21,7 @@
 #include "iservice_registry.h"
 #include "res_sched_log.h"
 #include "system_ability_definition.h"
+#include "hitrace_meter.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -82,7 +83,11 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
 void ObserverManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
-    RESSCHED_LOGI("Remove system ability, system ability id: %{public}d", systemAbilityId);
+    std::string trace_str(__func__);
+    trace_str.append("Remove system ability, system ability id:").append(std::to_string(systemAbilityId));
+    StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
+    RESSCHED_LOGD("Remove system ability, system ability id: %{public}d", systemAbilityId);
+    FinishTrace(HITRACE_TAG_OHOS);
     switch (systemAbilityId) {
         case DFX_SYS_EVENT_SERVICE_ABILITY_ID: {
             ObserverManager::GetInstance().DisableCameraObserver();

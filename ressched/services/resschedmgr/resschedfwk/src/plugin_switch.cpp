@@ -41,13 +41,13 @@ bool PluginSwitch::LoadFromConfigFile(const string& configFile)
     xmlDocPtr xmlDocPtr = xmlReadFile(configFile.c_str(), nullptr,
         XML_PARSE_NOBLANKS | XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!xmlDocPtr) {
-        RESSCHED_LOGE("PluginSwitch::LoadFromConfigFile xmlReadFile error!");
+        RESSCHED_LOGE("%{public}s, xmlReadFile error!", __func__);
         return false;
     }
     xmlNodePtr rootNodePtr = xmlDocGetRootElement(xmlDocPtr);
     if (!rootNodePtr || !rootNodePtr->name ||
         xmlStrcmp(rootNodePtr->name, reinterpret_cast<const xmlChar*>(XML_TAG_PLUGIN_LIST)) != 0) {
-        RESSCHED_LOGE("PluginSwitch::LoadFromConfigFile root element tag wrong!");
+        RESSCHED_LOGE("%{public}s, root element tag wrong!", __func__);
         xmlFreeDoc(xmlDocPtr);
         return false;
     }
@@ -61,14 +61,14 @@ bool PluginSwitch::LoadFromConfigFile(const string& configFile)
 
         xmlChar *attrValue = nullptr;
         if (xmlStrcmp(currNodePtr->name, reinterpret_cast<const xmlChar*>(XML_TAG_PLUGIN)) != 0) {
-            RESSCHED_LOGW("PluginSwitch::LoadFromConfigFile plugin (%{public}s) config wrong!", currNodePtr->name);
+            RESSCHED_LOGW("%{public}s, plugin (%{public}s) config wrong!", __func__, currNodePtr->name);
             xmlFreeDoc(xmlDocPtr);
             return false;
         }
         PluginInfo info;
         attrValue = xmlGetProp(currNodePtr, reinterpret_cast<const xmlChar*>(XML_ATTR_LIB_PATH));
         if (!attrValue) {
-            RESSCHED_LOGW("PluginSwitch::LoadFromConfigFile libPath null!");
+            RESSCHED_LOGW("%{public}s, libPath null!", __func__);
             continue;
         }
         info.libPath = reinterpret_cast<const char*>(attrValue);
