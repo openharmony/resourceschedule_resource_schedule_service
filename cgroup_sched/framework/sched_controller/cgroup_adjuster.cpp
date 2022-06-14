@@ -20,6 +20,7 @@
 #include "cgroup_event_handler.h"
 #include "cgroup_sched_common.h"
 #include "cgroup_sched_log.h"
+#include "hitrace_meter.h"
 #include "sched_controller.h"
 #include "ressched_utils.h"
 #include "res_type.h"
@@ -96,6 +97,9 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
         } else {
             if (pr.abilities_.size() == 0) {
                 group = SP_DEFAULT;
+                if (app.state_ == (int32_t)ApplicationState::APP_STATE_BACKGROUND) {
+                    group = SP_BACKGROUND;
+                }
             } else if (pr.IsVisible()) {
                 group = SP_FOREGROUND;
             } else if (pr.HasServiceExtension()) {
@@ -128,6 +132,12 @@ void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
         CGS_LOGI("%{public}s Set %{public}d's cgroup from %{public}d to %{public}d.",
             __func__, pr.GetPid(), pr.lastSchedGroup_, pr.curSchedGroup_);
 
+        std::string traceStr(__func__);
+        traceStr.append(" for ").append(std::to_string(pid)).append(", group change from ")
+            .append(std::to_string((int32_t)(pr.lastSchedGroup_))).append(" to ")
+            .append(std::to_string((int32_t)(pr.curSchedGroup_)));
+        StartTrace(HITRACE_TAG_OHOS, traceStr);
+
         Json::Value payload;
         payload["pid"] = std::to_string(pr.GetPid());
         payload["uid"] = std::to_string(pr.GetUid());
@@ -135,6 +145,8 @@ void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
         payload["oldGroup"] = std::to_string((int32_t)(pr.lastSchedGroup_));
         payload["newGroup"] = std::to_string((int32_t)(pr.curSchedGroup_));
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CGROUP_ADJUSTER, 0, payload);
+
+        FinishTrace(HITRACE_TAG_OHOS);
     }
 }
 } // namespace ResourceSchedule
