@@ -84,7 +84,6 @@ private:
 #define RESSCHED_LOGW(...) RESSCHED_LOG(ResschedLogLevel::WARN, Warn, ##__VA_ARGS__)
 #define RESSCHED_LOGI(...) RESSCHED_LOG(ResschedLogLevel::INFO, Info, ##__VA_ARGS__)
 #define RESSCHED_LOGD(...) RESSCHED_LOG(ResschedLogLevel::DEBUG, Debug, ##__VA_ARGS__)
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 
