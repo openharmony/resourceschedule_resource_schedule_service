@@ -30,6 +30,6 @@ public:
         const std::string& eventDetail) override;
     void OnServiceDied() override;
 };
-}  // namespace ResourceSchedule
-}  // namespace OHOS
-#endif  // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_CAMERA_OBSERVER_H
+} // namespace ResourceSchedule
+} // namespace OHOS
+#endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_CAMERA_OBSERVER_H

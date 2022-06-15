@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef DEV_SCHED_PLUGIN_H
-#define DEV_SCHED_PLUGIN_H
+#ifndef COMPONENT_SCHED_PLUGIN_H
+#define COMPONENT_SCHED_PLUGIN_H
 
 #include <set>
 
@@ -26,8 +26,8 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-class DevSchedPlugin : public Plugin {
-    DECLARE_SINGLE_INSTANCE(DevSchedPlugin)
+class ComponentSchedPlugin : public Plugin {
+    DECLARE_SINGLE_INSTANCE(ComponentSchedPlugin)
 
 public:
     void Init() override;
@@ -35,10 +35,8 @@ public:
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
 
 private:
-    void DispatchResourceInner(const std::shared_ptr<ResData>& data);
     std::set<uint32_t> resTypes_;
-    std::shared_ptr<AppExecFwk::EventHandler> dispatcherHandler_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // DEV_SCHED_PLUGIN_H
+#endif // COMPONENT_SCHED_PLUGIN_H

@@ -46,6 +46,6 @@ public:
     std::shared_ptr<HiviewDFX::HiSysEventSubscribeCallBack> cameraObserver_ = nullptr;
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
 };
-}  // namespace ResourceSchedule
-}  // namespace OHOS
-#endif  // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_OBSERVER_MANAGER_H
+} // namespace ResourceSchedule
+} // namespace OHOS
+#endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_OBSERVER_MANAGER_H
