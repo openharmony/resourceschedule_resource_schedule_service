@@ -22,7 +22,7 @@ namespace ResourceSchedule {
 void CameraObserver::OnHandle(const std::string& domain, const std::string& eventName, const int eventType,
     const std::string& eventDetail)
 {
-    RESSCHED_LOGI("EventDetail: %{public}s", eventDetail.c_str());
+    RESSCHED_LOGD("EventDetail: %{public}s", eventDetail.c_str());
 }
 
 void CameraObserver::OnServiceDied()

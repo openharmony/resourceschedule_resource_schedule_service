@@ -82,7 +82,7 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
 void ObserverManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
-    RESSCHED_LOGI("Remove system ability, system ability id: %{public}d", systemAbilityId);
+    RESSCHED_LOGD("Remove system ability, system ability id: %{public}d", systemAbilityId);
     switch (systemAbilityId) {
         case DFX_SYS_EVENT_SERVICE_ABILITY_ID: {
             ObserverManager::GetInstance().DisableCameraObserver();

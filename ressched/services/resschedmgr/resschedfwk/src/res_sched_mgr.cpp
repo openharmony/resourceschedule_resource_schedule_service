@@ -75,7 +75,7 @@ void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const J
 
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
 {
-    RESSCHED_LOGI("ResSchedMgr::ReportDataInProcess receive resType = %{public}u, value = %{public}lld.",
+    RESSCHED_LOGD("%{public}s,  receive resType = %{public}u, value = %{public}lld.", __func__,
         resType, (long long)value);
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
