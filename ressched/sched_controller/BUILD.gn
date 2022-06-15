@@ -35,6 +35,7 @@ ohos_shared_library("sched_controller") {
   ]
 
   sources = [
+    "${cgroup_sched_common}/cgroup_sched_log.cpp",
     "${cgroup_sched_framework}/utils/ressched_utils.cpp",
     "common_event/src/event_controller.cpp",
     "observer/src/camera_observer.cpp",

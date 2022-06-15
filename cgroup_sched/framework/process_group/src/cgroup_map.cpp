@@ -59,7 +59,7 @@ bool CgroupMap::LoadConfigFromJsonObj(const Json::Value& jsonObj)
     const Json::Value& jsonArrObj = jsonObj[JSON_KEY_CGROUPS];
     // check json format
     if (!jsonArrObj.isArray()) {
-        PGCGS_LOGI("Cgroups json config format error, CgroupMap: disabled!.");
+        PGCGS_LOGE("Cgroups json config format error, CgroupMap: disabled!.");
         return false;
     }
     int count = 0;
@@ -88,7 +88,7 @@ bool CgroupMap::LoadConfigFromJsonObj(const Json::Value& jsonObj)
     }
 
     if (count == 0) {
-        PGCGS_LOGI("The number of valid cgroup config is 0, CgroupMap: disabled!");
+        PGCGS_LOGW("The number of valid cgroup config is 0, CgroupMap: disabled!");
         return false;
     }
     PGCGS_LOGI("CgroupMap: enabled!");

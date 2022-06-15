@@ -80,7 +80,7 @@ bool CgroupController::SetThreadSchedPolicy(int tid, SchedPolicy policy, bool is
 {
     int fd = (isSetThreadGroup ? policyToProcFd_[policy] : policyToTaskFd_[policy]);
     if (fd < 0) {
-        PGCGS_LOGI("SetThreadSchedPolicy failed; fd = %{public}d", fd);
+        PGCGS_LOGE("SetThreadSchedPolicy failed; fd = %{public}d", fd);
         errno = EINVAL;
         return false;
     }
