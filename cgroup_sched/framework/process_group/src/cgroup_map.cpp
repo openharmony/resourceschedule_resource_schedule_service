@@ -41,8 +41,8 @@ bool CgroupMap::SetThreadSchedPolicy(int tid, SchedPolicy policy, bool isThreadG
         CgroupController& controller = it -> second;
         if (controller.IsEnabled()) {
             if (!controller.SetThreadSchedPolicy(tid, policy, isThreadGroup)) {
-                PGCGS_LOGD("SetThreadSchedPolicy failed, controller = %{public}s, policy = %{public}d.",
-                    controller.GetName().c_str(), policy);
+                PGCGS_LOGD("%{public}s failed, controller = %{public}s, policy = %{public}d.",
+                    __func__, controller.GetName().c_str(), policy);
             }
         }
     }
@@ -59,7 +59,7 @@ bool CgroupMap::LoadConfigFromJsonObj(const Json::Value& jsonObj)
     const Json::Value& jsonArrObj = jsonObj[JSON_KEY_CGROUPS];
     // check json format
     if (!jsonArrObj.isArray()) {
-        PGCGS_LOGE("Cgroups json config format error, CgroupMap: disabled!.");
+        PGCGS_LOGE("%{public}s json config format error, CgroupMap: disabled!", __func__);
         return false;
     }
     int count = 0;
@@ -68,13 +68,13 @@ bool CgroupMap::LoadConfigFromJsonObj(const Json::Value& jsonObj)
         const Json::Value& nameObj = cgroupObj[JSON_KEY_CONTROLLER];
         const Json::Value& pathObj = cgroupObj[JSON_KEY_PATH];
         if (!nameObj.isString() || !pathObj.isString()) {
-            PGCGS_LOGE("invalid controller config.");
+            PGCGS_LOGE("%{public}s invalid controller config.", __func__);
             continue;
         }
         std::string name = nameObj.asString();
         std::string rootPath = pathObj.asString();
         if (name.empty() || rootPath.empty()) {
-            PGCGS_LOGE("empty controller config.");
+            PGCGS_LOGE("%{public}s empty controller config.", __func__);
             continue;
         }
 
@@ -83,22 +83,22 @@ bool CgroupMap::LoadConfigFromJsonObj(const Json::Value& jsonObj)
             this->AddCgroupController(name, controller);
             count++;
         } else {
-            PGCGS_LOGE("no valid policy config item.");
+            PGCGS_LOGE("%{public}s no valid policy config item.", __func__);
         }
     }
 
     if (count == 0) {
-        PGCGS_LOGW("The number of valid cgroup config is 0, CgroupMap: disabled!");
+        PGCGS_LOGW("%{public}s The number of valid cgroup config is 0, CgroupMap: disabled!", __func__);
         return false;
     }
-    PGCGS_LOGI("CgroupMap: enabled!");
+    PGCGS_LOGI("%{public}s CgroupMap: enabled!", __func__);
     return true;
 }
 
 bool CgroupMap::LoadSchedPolicyConfig(CgroupController& controller, const Json::Value& policyObj)
 {
     if (!policyObj.isObject()) {
-        PGCGS_LOGE("invalid policy config.");
+        PGCGS_LOGE("%{public}s invalid policy config.", __func__);
         return false;
     }
 
@@ -111,7 +111,7 @@ bool CgroupMap::LoadSchedPolicyConfig(CgroupController& controller, const Json::
         }
         const Json::Value& obj = policyObj[keyString];
         if (!obj.isString()) {
-            PGCGS_LOGE("%s is not properly configed.", keyString);
+            PGCGS_LOGE("%{public}s %s is not properly configed.", __func__, keyString);
             continue;
         }
         if (controller.AddSchedPolicy(policy, obj.asString())) {

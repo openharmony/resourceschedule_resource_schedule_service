@@ -23,11 +23,19 @@
 namespace OHOS {
 namespace ResourceSchedule {
 #define LOG_TAG_DOMAIN_ID_RMS 0xD001702
+#define LOG_TAG_CGROUP_SCHED "CGS"
 
 class CgroupSchedLog {
 public:
     CgroupSchedLog() = delete;
     ~CgroupSchedLog() = delete;
+
+    /**
+     * @brief Init log level on loaded.
+     *
+     * @return true if success, else false
+     */
+    static bool InitOnLoaded();
 
     /**
      * @brief Judge level.

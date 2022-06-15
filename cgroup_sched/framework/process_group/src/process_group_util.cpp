@@ -57,7 +57,7 @@ bool GetRealPath(const std::string& path, std::string& realPath)
 {
     char resolvedPath[PATH_MAX] = { 0 };
     if (path.size() > PATH_MAX || !realpath(path.c_str(), resolvedPath)) {
-        PGCGS_LOGE("Error: _fullpath %{public}s failed", path.c_str());
+        PGCGS_LOGE("%{public}s realpath for %s failed", __func__, path.c_str());
         return false;
     }
     realPath = std::string(resolvedPath);
@@ -142,10 +142,10 @@ bool WriteStringToFile(const std::string& content, const std::string& filePath)
     }
     int fd = open(realPath.c_str(), O_WRONLY | O_CLOEXEC);
     if (fd < 0) {
-        PGCGS_LOGE("WriteStringToFile fail. file: %{public}s, fd = %{public}d", realPath.c_str(), fd);
+        PGCGS_LOGE("%{public}s failed. file: %s, fd = %{public}d", __func__, realPath.c_str(), fd);
         return false;
     }
-    bool result =  WriteStringToFile(fd, content);
+    bool result = WriteStringToFile(fd, content);
     close(fd);
     return result;
 }

@@ -13,32 +13,34 @@
  * limitations under the License.
  */
 
-#include "cgroup_sched_log.h"
+#include "process_group_log.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-LogLevel CgroupSchedLog::level_ = { LOG_DEBUG };
-const bool RESULT = CgroupSchedLog::InitOnLoaded();
+namespace CgroupSetting {
+LogLevel ProcessGroupLog::level_ = { LOG_DEBUG };
+const bool RESULT = ProcessGroupLog::InitOnLoaded();
 
-bool CgroupSchedLog::JudgeLevel(const LogLevel &level)
+bool ProcessGroupLog::JudgeLevel(const LogLevel &level)
 {
-    const LogLevel &curLevel = CgroupSchedLog::GetLogLevel();
+    const LogLevel &curLevel = ProcessGroupLog::GetLogLevel();
     if (level < curLevel) {
         return false;
     }
     return true;
 }
 
-bool CgroupSchedLog::InitOnLoaded()
+bool ProcessGroupLog::InitOnLoaded()
 {
     const std::vector<LogLevel> levels = { LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
     for (const LogLevel& level : levels) {
-        if (HiLogIsLoggable(LOG_TAG_DOMAIN_ID_RMS, LOG_TAG_CGROUP_SCHED, level)) {
-            CgroupSchedLog::SetLogLevel(level);
+        if (HiLogIsLoggable(LOG_TAG_DOMAIN_ID_PGCGS, LOG_TAG_PGCGS, level)) {
+            ProcessGroupLog::SetLogLevel(level);
             break;
         }
     }
     return true;
 }
+} // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
