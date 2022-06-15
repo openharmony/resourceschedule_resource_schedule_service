@@ -21,11 +21,11 @@
 namespace OHOS {
 namespace ResourceSchedule {
 #define LOG_RESSCHED "RSS"
-#define LOG_DOMIN_ID_RESSCHED 0xD001700
+#define LOG_DOMAIN_ID_RESSCHED 0xD001700
 enum class ResschedLogLevel : uint8_t { DEBUG = 0, INFO, WARN, ERROR, FATAL};
 static constexpr OHOS::HiviewDFX::HiLogLabel RES_SCHED_LABEL = {
     LOG_CORE,
-    LOG_DOMIN_ID_RESSCHED,
+    LOG_DOMAIN_ID_RESSCHED,
     LOG_RESSCHED
 };
 class ResschedLog {
@@ -48,7 +48,7 @@ public:
 private:
     ResschedLog()
     {
-        debugLogEnabled_ = HiLogIsLoggable(LOG_DOMIN_ID_RESSCHED, LOG_RESSCHED, LOG_DEBUG);
+        debugLogEnabled_ = HiLogIsLoggable(LOG_DOMAIN_ID_RESSCHED, LOG_RESSCHED, LOG_DEBUG);
     }
 };
 #ifdef RESSCHED_LOGF

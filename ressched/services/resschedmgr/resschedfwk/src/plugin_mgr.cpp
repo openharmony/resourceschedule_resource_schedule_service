@@ -191,7 +191,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     string trace_str(__func__);
     trace_str.append(" PluginMgr ,resType[").append(std::to_string(resData->resType)).append("]");
     trace_str.append(",value[").append(std::to_string(resData->value)).append("]");
-    trace_str.append(",pluginlist").append(libNameAll);
+    trace_str.append(",pluginlist:").append(libNameAll);
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
     RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, "
                   "value = %{public}lld, pluginlist is %{public}s.", __func__,
