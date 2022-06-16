@@ -34,6 +34,7 @@ config("ressched_config") {
     "${sched_controller_event}/include",
     "//third_party/jsoncpp/include",
     "//base/customization/config_policy/interfaces/innerkits/include",
+    "//base//hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent/include",
   ]
 }
 

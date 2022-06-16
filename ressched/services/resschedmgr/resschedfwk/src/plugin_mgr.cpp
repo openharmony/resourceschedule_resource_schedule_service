@@ -20,6 +20,7 @@
 #include <iostream>
 #include "config_policy_utils.h"
 #include "event_runner.h"
+#include "hisysevent.h"
 #include "res_sched_log.h"
 #include "hitrace_meter.h"
 
@@ -28,6 +29,7 @@ using namespace std;
 namespace OHOS {
 namespace ResourceSchedule {
 using namespace AppExecFwk;
+using namespace HiviewDFX;
 using OnPluginInitFunc = bool (*)(std::string);
 
 namespace {
@@ -240,6 +242,48 @@ void PluginMgr::UnSubscribeResource(const std::string& pluginLib, uint32_t resTy
     }
 }
 
+void PluginMgr::DumpAllPlugin(std::string &result)
+{
+    std::lock_guard<std::mutex> autoLock(pluginMutex_);
+    std::list<PluginInfo> pluginInfoList = pluginSwitch_->GetPluginSwitch();
+    for (const auto& info : pluginInfoList) {
+        result.append(info.libPath + std::string(DUMP_ONE_STRING_SIZE - info.libPath.size(), ' '));
+        if (info.switchOn) {
+            result.append(" | switch on\t");
+        } else {
+            result.append(" | switch off\t");
+        }
+        if (pluginLibMap_.find(info.libPath) != pluginLibMap_.end()) {
+            result.append(" | running now\n");
+        } else {
+            result.append(" | disabled\n");
+        }
+    }
+}
+
+void PluginMgr::DumpOnePlugin(std::string &result, std::string pluginName)
+{
+    std::list<PluginInfo> pluginInfoList = pluginSwitch_->GetPluginSwitch();
+    result.append(pluginName + std::string(DUMP_ONE_STRING_SIZE - pluginName.size(), ' '));
+    for (const auto& info : pluginInfoList) {
+        if (pluginName == info.libPath) {
+            if (info.switchOn) {
+                result.append(" | switch on\t");
+            } else {
+                result.append(" | switch off\t");
+            }
+            std::lock_guard<std::mutex> autoLock(pluginMutex_);
+            if (pluginLibMap_.find(info.libPath) != pluginLibMap_.end()) {
+                result.append(" | running now\n");
+            } else {
+                result.append(" | disabled\n");
+            }
+            return;
+        }
+    }
+    result.append(" not find!\n");
+}
+
 std::string PluginMgr::GetRealConfigPath(const char* configName)
 {
     char buf[PATH_MAX + 1];
@@ -272,6 +316,8 @@ void PluginMgr::RepairPluginLocked(TimePoint endTime, const std::string& pluginL
             if (libInfo.onPluginDisableFunc_) {
                 libInfo.onPluginDisableFunc_();
             }
+            HiSysEvent::Write("RSS", "PLUGIN_DISABLE",
+                HiSysEvent::EventType::FAULT, "plugin_name", pluginLib);
             pluginTimeoutTime_[pluginLib].clear();
             // pluginLibMap_ already locked
             auto itMap = pluginLibMap_.find(pluginLib);
