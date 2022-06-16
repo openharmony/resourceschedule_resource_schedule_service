@@ -80,7 +80,7 @@ bool CgroupController::SetThreadSchedPolicy(int tid, SchedPolicy policy, bool is
 {
     int fd = (isSetThreadGroup ? policyToProcFd_[policy] : policyToTaskFd_[policy]);
     if (fd < 0) {
-        PGCGS_LOGI("SetThreadSchedPolicy failed; fd = %{public}d", fd);
+        PGCGS_LOGE("%{public}s failed; fd = %{public}d", __func__, fd);
         errno = EINVAL;
         return false;
     }
@@ -100,7 +100,7 @@ bool CgroupController::AddTidToCgroup(int tid, int fd)
     if (errno == ESRCH) {
         return true;
     }
-    PGCGS_LOGE("AddTidToCgroup failed to write; fd = %{public}d, errno = %{public}d", fd, errno);
+    PGCGS_LOGE("%{public}s failed to write; fd = %{public}d, errno = %{public}d", __func__, fd, errno);
     return false;
 }
 
@@ -114,7 +114,7 @@ bool CgroupController::GetTaskGroup(int tid, std::string& subgroup)
     std::string content;
     std::string filePath = StringPrintf("/proc/%d/cgroup", tid);
     if (!ReadFileToStringForVFS(filePath, content)) {
-        PGCGS_LOGE("GetTaskGroup: fail to read  = %{public}s", filePath.c_str());
+        PGCGS_LOGE("%{public}s: fail to read  = %{public}s", __func__, filePath.c_str());
         return -1;
     }
     std::string cgTag = StringPrintf(":%s:", name_.c_str());
@@ -146,8 +146,8 @@ bool CgroupController::AddThreadSchedPolicy(SchedPolicy policy, const std::strin
     }
     int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
-        PGCGS_LOGE("AddThreadSchedPolicy open file failed; file = %{public}s, fd = %{public}d ",
-            realPath.c_str(), fd);
+        PGCGS_LOGE("%{public}s open file failed; file = %{public}s, fd = %{public}d ",
+            __func__, realPath.c_str(), fd);
         return false;
     }
     policyToTaskFd_[policy] = fd;
@@ -168,8 +168,8 @@ bool CgroupController::AddThreadGroupSchedPolicy(SchedPolicy policy, const std::
     }
     int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
-        PGCGS_LOGE("AddThreadGroupSchedPolicy open file failed; file = %{public}s'; fd = %{public}d ",
-            realPath.c_str(), fd);
+        PGCGS_LOGE("%{public}s open file failed; file = %{public}s'; fd = %{public}d",
+            __func__, realPath.c_str(), fd);
         return false;
     }
     policyToProcFd_[policy] = fd;

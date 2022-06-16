@@ -86,7 +86,7 @@ void SchedController::UnregisterStateObservers()
 int SchedController::GetProcessGroup(pid_t pid)
 {
     if (!supervisor_) {
-        CGS_LOGE("SchedController::GetProcessCgroup, supervisor nullptr.");
+        CGS_LOGE("%{public}s, supervisor nullptr.", __func__);
         return (int32_t)(SP_DEFAULT);
     }
     std::shared_ptr<ProcessRecord> pr = supervisor_->FindProcessRecord(pid);
@@ -165,11 +165,11 @@ bool SchedController::SubscribeAppState()
     }
     int32_t err = appManager->RegisterApplicationStateObserver(appStateObserver_);
     if (err != 0) {
-        CGS_LOGE("RegisterApplicationStateObserver failed. err:%{public}d", err);
+        CGS_LOGE("%{public}s register to appmanager failed. err:%{public}d", __func__, err);
         appStateObserver_ = nullptr;
         return false;
     }
-    CGS_LOGI("RegisterApplicationStateObserver success.");
+    CGS_LOGI("%{public}s success.", __func__);
     return true;
 }
 
@@ -183,9 +183,9 @@ void SchedController::UnsubscribeAppState()
     if (appManager) {
         int32_t err = appManager->UnregisterApplicationStateObserver(appStateObserver_);
         if (err == 0) {
-            CGS_LOGI("UnregisterApplicationStateObserver success.");
+            CGS_LOGI("%{public}s success.", __func__);
         } else {
-            CGS_LOGE("UnregisterApplicationStateObserver failed. err:%{public}d", err);
+            CGS_LOGE("%{public}s failed. err:%{public}d", __func__, err);
         }
     }
     appStateObserver_ = nullptr;
@@ -200,10 +200,10 @@ bool SchedController::SubscribeBackgroundTask()
     int ret = BackgroundTaskMgrHelper::SubscribeBackgroundTask(*backgroundTaskObserver_);
     if (ret != 0) {
         backgroundTaskObserver_ = nullptr;
-        CGS_LOGE("Register BackgroundTaskObserver failed, err:%{public}d.", ret);
+        CGS_LOGE("%{public}s failed, err:%{public}d.", __func__, ret);
         return false;
     }
-    CGS_LOGI("Register BackgroundTaskObserver success.");
+    CGS_LOGI("%{public}s success.", __func__);
     return true;
 }
 
@@ -214,9 +214,9 @@ void SchedController::UnsubscribeBackgroundTask()
     }
     int32_t ret = BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*backgroundTaskObserver_);
     if (ret == 0) {
-        CGS_LOGI("UnsubscribeBackgroundTask success.");
+        CGS_LOGI("%{public}s success.", __func__);
     } else {
-        CGS_LOGE("UnsubscribeBackgroundTask failed. ret:%{public}d", ret);
+        CGS_LOGE("%{public}s failed. ret:%{public}d", __func__, ret);
     }
     backgroundTaskObserver_ = nullptr;
 }

@@ -44,7 +44,7 @@ public:
         Clock::time_point t2 = Clock::now();
         MilliSecondsType time_span = std::chrono::duration_cast<MilliSecondsType>(t2 - t1);
         HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "ChronoScope"};
-        CGS_LOGI("[%{public}s] cost %{public}lf milliseconds.", outmsg_.c_str(), time_span.count());
+        CGS_LOGD("[%{public}s] cost %{public}lf milliseconds.", outmsg_.c_str(), time_span.count());
         if (out_) {
             *out_ = time_span.count();
         }

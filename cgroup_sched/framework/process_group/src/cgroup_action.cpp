@@ -148,7 +148,7 @@ bool CgroupAction::SetThreadGroupSchedPolicy(int tid, SchedPolicy policy)
 
 bool CgroupAction::LoadConfigFile()
 {
-    PGCGS_LOGI("CgroupAction::LoadConfigFile loading config file");
+    PGCGS_LOGI("%{public}s CgroupAction::LoadConfigFile loading config file", __func__);
     Json::Value jsonObjRoot;
     if (!ParseConfigFileToJsonObj(jsonObjRoot)) {
         return false;
@@ -216,14 +216,14 @@ bool CgroupAction::ParseConfigFileToJsonObj(Json::Value& jsonObjRoot)
     std::string realConfigFile(tmpPath);
     std::string jsonString;
     if (!ReadFileToString(realConfigFile, jsonString)) {
-        PGCGS_LOGE("ParseConfigFileToJsonObj: read config file failed");
+        PGCGS_LOGE("%{public}s: read config file failed", __func__);
         return false;
     }
     Json::CharReaderBuilder builder;
     std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
     std::string errorMsg;
     if (!reader->parse(&*jsonString.begin(), &*jsonString.end(), &jsonObjRoot, &errorMsg)) {
-        PGCGS_LOGE("ParseConfigFileToJsonObj: parse json failed, errorMsg:%{public}s", errorMsg.c_str());
+        PGCGS_LOGE("%{public}s: parse json failed, errorMsg:%{public}s", __func__, errorMsg.c_str());
         return false;
     }
     return true;
