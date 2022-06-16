@@ -88,7 +88,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00101, testing::ext::TestSize.L
 
     EventController::GetInstance().OnReceiveEvent(data);
     uint32_t expectResType = ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE;
-    int64_t expectValue = 1;
+    int64_t expectValue = 3;
     EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
     EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);
 }
