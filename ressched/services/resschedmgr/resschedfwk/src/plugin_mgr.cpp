@@ -244,7 +244,6 @@ void PluginMgr::UnSubscribeResource(const std::string& pluginLib, uint32_t resTy
 
 void PluginMgr::DumpAllPlugin(std::string &result)
 {
-    std::lock_guard<std::mutex> autoLock(pluginMutex_);
     std::list<PluginInfo> pluginInfoList = pluginSwitch_->GetPluginSwitch();
     for (const auto& info : pluginInfoList) {
         result.append(info.libPath + std::string(DUMP_ONE_STRING_SIZE - info.libPath.size(), ' '));
@@ -253,6 +252,7 @@ void PluginMgr::DumpAllPlugin(std::string &result)
         } else {
             result.append(" | switch off\t");
         }
+        std::lock_guard<std::mutex> autoLock(pluginMutex_);
         if (pluginLibMap_.find(info.libPath) != pluginLibMap_.end()) {
             result.append(" | running now\n");
         } else {
