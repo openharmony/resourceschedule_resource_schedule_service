@@ -262,7 +262,7 @@ std::string SocPerf::GetRealConfigPath(const std::string configFile)
     char buf[PATH_MAX + 1];
     char* configFilePath = GetOneCfgFile(configFile.c_str(), buf, PATH_MAX + 1);
     char tmpPath[PATH_MAX + 1] = {0};
-    if (strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
+    if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
         !realpath(configFilePath, tmpPath)) {
         SOC_PERF_LOGE("%{public}s, load %{public}s file fail", __func__, configFile.c_str());
         return "";
