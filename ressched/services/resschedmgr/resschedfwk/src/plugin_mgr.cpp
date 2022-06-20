@@ -132,7 +132,7 @@ void PluginMgr::LoadPlugin()
             std::lock_guard<std::mutex> autoLock(pluginMutex_);
             pluginLibMap_.emplace(info.libPath, libInfo);
         }
-        RESSCHED_LOGE("%{public}s, init %{public}s success!", __func__, info.libPath.c_str());
+        RESSCHED_LOGI("%{public}s, init %{public}s success!", __func__, info.libPath.c_str());
     }
 }
 
