@@ -85,6 +85,10 @@ public:
      */
     void UnSubscribeResource(const std::string& pluginLib, uint32_t resType);
 
+    void DumpAllPlugin(std::string &result);
+
+    void DumpOnePlugin(std::string &result, std::string pluginName);
+
     PluginConfig GetConfig(const std::string& pluginName, const std::string& configName);
 
 private:
@@ -105,6 +109,7 @@ private:
     // plugin crash 3 times in 60s, will be disable forever
     const int32_t MAX_PLUGIN_TIMEOUT_TIMES = 3;
     const int32_t DISABLE_PLUGIN_TIME = 60000;
+    const int32_t DUMP_ONE_STRING_SIZE = 32;
     std::unique_ptr<ConfigReader> configReader_ = nullptr;
     std::unique_ptr<PluginSwitch> pluginSwitch_ = nullptr;
 

@@ -27,8 +27,13 @@ public:
 
     void ReportData(uint32_t resType, int64_t value, const Json::Value& payload) override;
 
+    int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
+
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedService);
+
+    void DumpAllInfo(std::string &result);
+    void DumpUsage(std::string &result);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
