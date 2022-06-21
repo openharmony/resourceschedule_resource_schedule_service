@@ -132,7 +132,7 @@ void PluginMgr::LoadPlugin()
             std::lock_guard<std::mutex> autoLock(pluginMutex_);
             pluginLibMap_.emplace(info.libPath, libInfo);
         }
-        RESSCHED_LOGE("%{public}s, init %{public}s success!", __func__, info.libPath.c_str());
+        RESSCHED_LOGI("%{public}s, init %{public}s success!", __func__, info.libPath.c_str());
     }
 }
 
@@ -289,7 +289,7 @@ std::string PluginMgr::GetRealConfigPath(const char* configName)
     char buf[PATH_MAX + 1];
     char* configFilePath = GetOneCfgFile(configName, buf, PATH_MAX + 1);
     char tmpPath[PATH_MAX + 1] = {0};
-    if (strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
+    if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
         !realpath(configFilePath, tmpPath)) {
         RESSCHED_LOGE("%{public}s load config file wrong !", __func__);
         return "";
