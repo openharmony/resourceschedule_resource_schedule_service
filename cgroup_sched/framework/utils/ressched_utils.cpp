@@ -41,13 +41,13 @@ void ResSchedUtils::LoadUtils()
 {
     auto handle = dlopen(RES_SCHED_SERVICE_SO.c_str(), RTLD_NOW);
     if (!handle) {
-        CGS_LOGE("%{public}s load %{public}s failed!", __func__, RES_SCHED_SERVICE_SO.c_str());
+        CGS_LOGW("%{public}s load %{public}s failed!", __func__, RES_SCHED_SERVICE_SO.c_str());
         return;
     }
 
     reportFunc_ = reinterpret_cast<ReportDataFunc>(dlsym(handle, "ReportDataInProcess"));
     if (!reportFunc_) {
-        CGS_LOGE("%{public}s load function:ReportDataInProcess failed!", __func__);
+        CGS_LOGW("%{public}s load function:ReportDataInProcess failed!", __func__);
         dlclose(handle);
         return;
     }
@@ -57,14 +57,14 @@ void ResSchedUtils::LoadUtilsExtra()
 {
     auto handle = dlopen(RES_SCHED_CG_EXT_SO.c_str(), RTLD_NOW);
     if (!handle) {
-        CGS_LOGE("%{public}s load %{public}s failed! errno:%{public}d", __func__, RES_SCHED_CG_EXT_SO.c_str(), errno);
+        CGS_LOGD("%{public}s load %{public}s failed! errno:%{public}d", __func__, RES_SCHED_CG_EXT_SO.c_str(), errno);
         return;
     }
 
     reportArbitrationResultFunc_ =
         reinterpret_cast<ReportArbitrationResultFunc>(dlsym(handle, "ReportArbitrationResult"));
     if (!reportArbitrationResultFunc_) {
-        CGS_LOGE("%{public}s load function:ReportArbitrationResult failed! errno:%{public}d", __func__, errno);
+        CGS_LOGD("%{public}s load function:ReportArbitrationResult failed! errno:%{public}d", __func__, errno);
         dlclose(handle);
         return;
     }
@@ -73,7 +73,7 @@ void ResSchedUtils::LoadUtilsExtra()
 void ResSchedUtils::ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
 {
     if (!reportFunc_) {
-        CGS_LOGE("%{public}s failed, function nullptr.", __func__);
+        CGS_LOGD("%{public}s failed, function nullptr.", __func__);
         return;
     }
     reportFunc_(resType, value, payload);
@@ -82,7 +82,7 @@ void ResSchedUtils::ReportDataInProcess(uint32_t resType, int64_t value, const J
 void ResSchedUtils::ReportArbitrationResult(Application &app, ProcessRecord &pr, AdjustSource source)
 {
     if (!reportArbitrationResultFunc_) {
-        CGS_LOGE("%{public}s failed, function nullptr.", __func__);
+        CGS_LOGD("%{public}s failed, function nullptr.", __func__);
         return;
     }
     reportArbitrationResultFunc_(app, pr, source);
