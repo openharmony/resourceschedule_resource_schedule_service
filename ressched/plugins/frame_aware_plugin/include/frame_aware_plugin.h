@@ -16,13 +16,15 @@
 #ifndef FRAME_AWARE_PLUGIN_H
 #define FRAME_AWARE_PLUGIN_H
 
-#include "single_instance.h"
-#include "plugin.h"
+#include <set>
+#include <string>
+#include <unordered_map>
+
 #include "json/json.h"
 
-#include <set>
-#include <unordered_map>
-#include <string>
+#include "network_latency_controller.h"
+#include "plugin.h"
+#include "single_instance.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -36,11 +38,13 @@ public:
 private:
     std::set<uint32_t> resTypes;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData> data)>> functionMap;
+    NetworkLatencyController netLatCtrl;
     void HandleAppStateChange(const std::shared_ptr<ResData>& data);
     void HandleProcessStateChange(const std::shared_ptr<ResData>& data);
     void HandleCgroupAdjuster(const std::shared_ptr<ResData>& data);
     void HandleWindowsFocus(const std::shared_ptr<ResData>& data);
     void HandleReportRender(const std::shared_ptr<ResData>& data);
+    void HandleNetworkLatencyRequest(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

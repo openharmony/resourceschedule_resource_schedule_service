@@ -31,7 +31,10 @@ ohos_shared_library("frame_aware_plugin") {
     "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
   ]
 
-  sources = [ "src/frame_aware_plugin.cpp" ]
+  sources = [
+    "src/frame_aware_plugin.cpp",
+    "src/network_latency_controller.cpp",
+  ]
 
   deps = [
     "${ressched_services}:resschedsvc",
