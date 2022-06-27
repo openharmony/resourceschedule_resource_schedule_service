@@ -259,28 +259,22 @@ void SocPerfHandler::ArbitratePairRes(int32_t resId)
 
 void SocPerfHandler::UpdatePairResValue(int32_t minResId, int32_t minResValue, int32_t maxResId, int32_t maxResValue)
 {
-    if (resStatusInfo[minResId]->current != minResValue) {
-        WriteNode(resNodeInfo[minResId]->path, std::to_string(resNodeInfo[minResId]->def));
-    }
-    if (resStatusInfo[maxResId]->current != maxResValue) {
-        WriteNode(resNodeInfo[maxResId]->path, std::to_string(resNodeInfo[maxResId]->def));
-    }
+    WriteNode(resNodeInfo[minResId]->path, std::to_string(resNodeInfo[minResId]->def));
+    WriteNode(resNodeInfo[maxResId]->path, std::to_string(resNodeInfo[maxResId]->def));
     UpdateCurrentValue(minResId, minResValue);
     UpdateCurrentValue(maxResId, maxResValue);
 }
 
 void SocPerfHandler::UpdateCurrentValue(int32_t resId, int32_t currValue)
 {
-    if (resStatusInfo[resId]->current != currValue) {
-        resStatusInfo[resId]->current = currValue;
-        if (IsGovResId(resId)) {
-            std::vector<std::string> targetStrs = govResNodeInfo[resId]->levelToStr[resStatusInfo[resId]->current];
-            for (int32_t i = 0; i < (int32_t)govResNodeInfo[resId]->paths.size(); i++) {
-                WriteNode(govResNodeInfo[resId]->paths[i], targetStrs[i]);
-            }
-        } else {
-            WriteNode(resNodeInfo[resId]->path, std::to_string(resStatusInfo[resId]->current));
+    resStatusInfo[resId]->current = currValue;
+    if (IsGovResId(resId)) {
+        std::vector<std::string> targetStrs = govResNodeInfo[resId]->levelToStr[resStatusInfo[resId]->current];
+        for (int32_t i = 0; i < (int32_t)govResNodeInfo[resId]->paths.size(); i++) {
+            WriteNode(govResNodeInfo[resId]->paths[i], targetStrs[i]);
         }
+    } else {
+        WriteNode(resNodeInfo[resId]->path, std::to_string(resStatusInfo[resId]->current));
     }
 }
 

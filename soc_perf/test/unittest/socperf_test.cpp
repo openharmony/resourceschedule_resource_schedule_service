@@ -18,6 +18,7 @@
 const static int32_t PARAMETERS_NUM_MIN        = 2;
 const static int32_t PARAMETERS_NUM_WITHOUT_EX = 3;
 const static int32_t PARAMETERS_NUM_WITH_EX    = 4;
+const static int32_t PARAMETERS_NUM_LIMIT      = 5;
 
 static void PerfRequest(int32_t argc, char *argv[])
 {
@@ -122,6 +123,18 @@ static void ThermalLimitBoost(int32_t argc, char *argv[])
     }
 }
 
+static void LimitRequest(int32_t argc, char *argv[])
+{
+    if (argc == PARAMETERS_NUM_LIMIT) {
+        char* clientId = argv[2];
+        char* tags = argv[3];
+        char* configs = argv[4];
+        std::vector<int32_t> tagsVector = { atoi(tags) };
+        std::vector<int32_t> configsVector = { atoi(configs) };
+        OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(atoi(clientId), tagsVector, configsVector, "");
+    }
+}
+
 int32_t main(int32_t argc, char *argv[])
 {
     if (argc >= PARAMETERS_NUM_MIN && argv) {
@@ -142,6 +155,8 @@ int32_t main(int32_t argc, char *argv[])
             ThermalRequestEx(argc, argv);
         } else if (strcmp(function, "ThermalLimitBoost") == 0) {
             ThermalLimitBoost(argc, argv);
+        } else if (strcmp(function, "LimitRequest") == 0) {
+            LimitRequest(argc, argv);
         }
     }
     return 0;

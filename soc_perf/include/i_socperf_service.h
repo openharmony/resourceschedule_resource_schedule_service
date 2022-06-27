@@ -44,6 +44,8 @@ public:
     virtual void ThermalRequest(int32_t cmdId, const std::string& msg) = 0;
     virtual void ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) = 0;
     virtual void ThermalLimitBoost(bool onOffTag, const std::string& msg) = 0;
+    virtual void LimitRequest(int32_t clientId,
+        const std::vector<int32_t>& tags, const std::vector<int32_t>& configs, const std::string& msg) = 0;
 
 public:
     enum {
@@ -55,6 +57,7 @@ public:
         TRANS_IPC_ID_THERMAL_REQUEST          = 0x0006,
         TRANS_IPC_ID_THERMAL_REQUEST_EX       = 0x0007,
         TRANS_IPC_ID_THERMAL_LIMIT_BOOST_FREQ = 0x0008,
+        TRANS_IPC_ID_LIMIT_REQUEST            = 0x0009,
     };
 
 public:

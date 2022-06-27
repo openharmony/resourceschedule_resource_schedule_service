@@ -76,6 +76,16 @@ int32_t SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
             ThermalLimitBoost(onOffTag, msg);
             return 0;
         }
+        case TRANS_IPC_ID_LIMIT_REQUEST: {
+            int32_t clientId = data.ReadInt32();
+            std::vector<int32_t> tags;
+            data.ReadInt32Vector(&tags);
+            std::vector<int32_t> configs;
+            data.ReadInt32Vector(&configs);
+            std::string msg = data.ReadString();
+            LimitRequest(clientId, tags, configs, msg);
+            return 0;
+        }
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }

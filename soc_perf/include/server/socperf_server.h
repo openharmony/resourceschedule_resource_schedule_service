@@ -38,6 +38,8 @@ public:
     void ThermalRequest(int32_t cmdId, const std::string& msg) override;
     void ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) override;
     void ThermalLimitBoost(bool onOffTag, const std::string& msg) override;
+    void LimitRequest(int32_t clientId,
+        const std::vector<int32_t>& tags, const std::vector<int32_t>& configs, const std::string& msg) override;
 
 public:
     SocPerfServer(int32_t systemAbilityId, bool runOnCreate);
