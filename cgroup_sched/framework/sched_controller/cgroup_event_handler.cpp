@@ -360,9 +360,6 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
         win->isFocused_ = true;
         win->displayId_ = displayId;
         win->ability_ = abi;
-        if (abi) {
-            abi->window_ = win;
-        }
 
         app->focusedProcess_ = procRecord;
         auto lastFocusApp = supervisor_->focusedApp_;
@@ -421,9 +418,6 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
         win->isFocused_ = false;
         win->displayId_ = displayId;
         win->ability_ = abi;
-        if (abi) {
-            abi->window_.reset();
-        }
 
         if (app->focusedProcess_ == procRecord) {
             app->focusedProcess_ = nullptr;
