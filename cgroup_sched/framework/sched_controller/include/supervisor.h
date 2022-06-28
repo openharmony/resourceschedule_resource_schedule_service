@@ -53,17 +53,13 @@ public:
 class AbilityInfo {
 public:
     AbilityInfo(uintptr_t token) : token_(token) {}
-    ~AbilityInfo()
-    {
-        window_.reset();
-    }
+    ~AbilityInfo() {}
 
     int32_t state_ = -1; // normal ability state
     int32_t estate_ = -1; // extension state
     int32_t type_ = -1; // ability type
     uintptr_t token_ = 0;
     std::string name_;
-    std::weak_ptr<WindowInfo> window_ = std::weak_ptr<WindowInfo>();
 };
 
 class ProcessRecord {
