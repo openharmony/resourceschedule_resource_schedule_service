@@ -63,6 +63,7 @@ bool SocPerf::Init()
     resNodeInfo.clear();
     govResNodeInfo.clear();
     resStrToIdInfo.clear();
+    limitRequest = std::vector<std::unordered_map<int32_t, int32_t>>(ACTION_TYPE_MAX);
 
     enabled = true;
 
@@ -246,6 +247,48 @@ void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
         handler->SendEvent(event);
     }
     FinishTrace(HITRACE_TAG_OHOS);
+}
+
+void SocPerf::LimitRequest(int32_t clientId,
+    const std::vector<int32_t>& tags, const std::vector<int32_t>& configs, const std::string& msg)
+{
+    if (!enabled) {
+        SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
+        return;
+    }
+    if (tags.size() != configs.size()) {
+        SOC_PERF_LOGE("%{public}s, tags'size and configs' size must be the same!", __func__);
+        return;
+    }
+    if (clientId <= ACTION_TYPE_PERF || clientId >= ACTION_TYPE_MAX) {
+        SOC_PERF_LOGE("%{public}s, clientId must be between ACTION_TYPE_PERF and ACTION_TYPE_MAX!", __func__);
+        return;
+    }
+    if (debugLogEnabled) {
+        for (int32_t i = 0; i < (int32_t)tags.size(); i++) {
+            SOC_PERF_LOGD("%{public}s, clientId[%{public}d],tags[%{public}d],configs[%{public}d],msg[%{public}s]",
+                __func__, clientId, tags[i], configs[i], msg.c_str());
+        }
+    }
+    for (int32_t i = 0; i < (int32_t)tags.size(); i++) {
+        int32_t resId = tags[i];
+        int32_t resValue = configs[i];
+        auto iter = limitRequest[clientId].find(resId);
+        if (iter != limitRequest[clientId].end()
+            && limitRequest[clientId][resId] != INVALID_VALUE) {
+            auto resAction = std::make_shared<ResAction>(
+                limitRequest[clientId][resId], 0, clientId, EVENT_OFF);
+            auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_DO_FREQ_ACTION, resAction, resId);
+            handlers[resId / RES_ID_NUMS_PER_TYPE - 1]->SendEvent(event);
+            limitRequest[clientId].erase(iter);
+        }
+        if (resValue != INVALID_VALUE) {
+            auto resAction = std::make_shared<ResAction>(resValue, 0, clientId, EVENT_ON);
+            auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_DO_FREQ_ACTION, resAction, resId);
+            handlers[resId / RES_ID_NUMS_PER_TYPE - 1]->SendEvent(event);
+            limitRequest[clientId].insert(std::pair<int32_t, int32_t>(resId, resValue));
+        }
+    }
 }
 
 void SocPerf::DoFreqAction(std::shared_ptr<Action> action, int32_t onOff, int32_t actionType)

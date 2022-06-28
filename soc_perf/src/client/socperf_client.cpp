@@ -158,5 +158,15 @@ void SocPerfClient::ThermalLimitBoost(bool onOffTag, const std::string& msg)
     std::string newMsg = AddPidAndTidInfo(msg);
     client->ThermalLimitBoost(onOffTag, newMsg);
 }
+
+void SocPerfClient::LimitRequest(int32_t clientId,
+    const std::vector<int32_t>& tags, const std::vector<int32_t>& configs, const std::string& msg)
+{
+    if (!CheckClientValid()) {
+        return;
+    }
+    std::string newMsg = AddPidAndTidInfo(msg);
+    client->LimitRequest(clientId, tags, configs, newMsg);
+}
 } // namespace SOCPERF
 } // namespace OHOS

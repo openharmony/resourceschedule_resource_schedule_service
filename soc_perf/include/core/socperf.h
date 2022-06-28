@@ -39,6 +39,8 @@ public:
     void ThermalRequest(int32_t cmdId, const std::string& msg);
     void ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg);
     void ThermalLimitBoost(bool onOffTag, const std::string& msg);
+    void LimitRequest(int32_t clientId,
+        const std::vector<int32_t>& tags, const std::vector<int32_t>& configs, const std::string& msg);
 
 public:
     SocPerf();
@@ -55,6 +57,7 @@ private:
     std::unordered_map<int32_t, std::shared_ptr<ResNode>> resNodeInfo;
     std::unordered_map<int32_t, std::shared_ptr<GovResNode>> govResNodeInfo;
     std::unordered_map<std::string, int32_t> resStrToIdInfo;
+    std::vector<std::unordered_map<int32_t, int32_t>> limitRequest;
 
 private:
     std::string GetRealConfigPath(const std::string configFile);

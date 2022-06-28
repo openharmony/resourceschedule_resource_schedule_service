@@ -83,5 +83,11 @@ void SocPerfServer::ThermalLimitBoost(bool onOffTag, const std::string& msg)
 {
     socPerf.ThermalLimitBoost(onOffTag, msg);
 }
+
+void SocPerfServer::LimitRequest(int32_t clientId,
+    const std::vector<int32_t>& tags, const std::vector<int32_t>& configs, const std::string& msg)
+{
+    socPerf.LimitRequest(clientId, tags, configs, msg);
+}
 } // namespace SOCPERF
 } // namespace OHOS
