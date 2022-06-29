@@ -15,17 +15,6 @@ import("//build/ohos.gni")
 
 ohos_prebuilt_etc("ressched_plugin_config") {
   source = "res_sched_config.xml"
-
-  VENDOR_CONFIG_PATH = rebase_path(
-          "//vendor/${product_company}/${product_name}/resourceschedule/ressched/res_sched_config.xml")
-  CMD = "if [ -f ${VENDOR_CONFIG_PATH} ]; then echo true; else echo false; fi"
-
-  vendor_config_exist =
-      exec_script("//build/lite/run_shell_cmd.py", [ CMD ], "value")
-  if (vendor_config_exist) {
-    source = VENDOR_CONFIG_PATH
-  }
-
   install_enable = true
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
@@ -34,17 +23,6 @@ ohos_prebuilt_etc("ressched_plugin_config") {
 
 ohos_prebuilt_etc("ressched_plugin_switch") {
   source = "res_sched_plugin_switch.xml"
-
-  VENDOR_CONFIG_PATH = rebase_path(
-          "//vendor/${product_company}/${product_name}/resourceschedule/ressched/res_sched_plugin_switch.xml")
-  CMD = "if [ -f ${VENDOR_CONFIG_PATH} ]; then echo true; else echo false; fi"
-
-  vendor_config_exist =
-      exec_script("//build/lite/run_shell_cmd.py", [ CMD ], "value")
-  if (vendor_config_exist) {
-    source = VENDOR_CONFIG_PATH
-  }
-
   install_enable = true
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
