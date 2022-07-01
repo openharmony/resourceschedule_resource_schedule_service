@@ -30,6 +30,7 @@ IMPLEMENT_SINGLE_INSTANCE(FrameAwarePlugin)
 
 void FrameAwarePlugin::Init()
 {
+    netLatCtrl.Init();
     functionMap = {
         { RES_TYPE_APP_STATE_CHANGE,
             [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
@@ -41,6 +42,8 @@ void FrameAwarePlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleWindowsFocus(data); } },
         { RES_TYPE_REPORT_RENDER_THREAD,
             [this](const std::shared_ptr<ResData>& data) { HandleReportRender(data); } },
+        { RES_TYPE_NETWORK_LATENCY_REQUEST,
+            [this](const std::shared_ptr<ResData>& data) { HandleNetworkLatencyRequest(data); } },
     };
     resTypes = {
         RES_TYPE_APP_STATE_CHANGE,
@@ -48,6 +51,7 @@ void FrameAwarePlugin::Init()
         RES_TYPE_CGROUP_ADJUSTER,
         RES_TYPE_WINDOW_FOCUS,
         RES_TYPE_REPORT_RENDER_THREAD,
+        RES_TYPE_NETWORK_LATENCY_REQUEST,
     };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
@@ -111,6 +115,14 @@ void FrameAwarePlugin::HandleReportRender(const std::shared_ptr<ResData>& data)
     int pid = atoi(payload["pid"].asString().c_str());
     int uid = atoi(payload["uid"].asString().c_str());
     RME::FrameMsgIntf::GetInstance().ReportRenderThread(pid, uid, data->value);
+}
+
+void FrameAwarePlugin::HandleNetworkLatencyRequest(const std::shared_ptr<ResData>& data)
+{
+    Json::Value payload = data->payload;
+    long long value = data->value;
+    std::string identity = payload["identity"].asString();
+    netLatCtrl.HandleRequest(value, identity);
 }
 
 void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
