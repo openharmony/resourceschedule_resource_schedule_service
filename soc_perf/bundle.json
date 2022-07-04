@@ -23,10 +23,15 @@
     "ram": "10240KB",
     "deps": {
       "components": [
-        "libeventhandler",
-        "ipc_core",
-        "samgr_proxy",
-        "system_ability_fwk"
+        "safwk",
+        "eventhandler",
+        "ipc",
+        "libxml2",
+        "utils_base",
+        "config_policy",
+        "hitrace_native",
+        "hilog_native",
+        "samgr_standard"
       ],
       "third_party": [
         "xml2"
