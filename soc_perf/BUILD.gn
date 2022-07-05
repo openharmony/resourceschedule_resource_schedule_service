@@ -22,28 +22,28 @@ ohos_sa_profile("socperf_sa_profile") {
 ohos_prebuilt_etc("socperf_resource_config") {
   source = "configs/socperf_resource_config.xml"
   install_enable = true
-  module_install_dir = "etc/socperf"
+  module_install_dir = "etc/soc_perf"
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
 }
 ohos_prebuilt_etc("socperf_boost_config") {
   source = "configs/socperf_boost_config.xml"
   install_enable = true
-  module_install_dir = "etc/socperf"
+  module_install_dir = "etc/soc_perf"
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
 }
 ohos_prebuilt_etc("socperf_power_config") {
   source = "configs/socperf_power_config.xml"
   install_enable = true
-  module_install_dir = "etc/socperf"
+  module_install_dir = "etc/soc_perf"
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
 }
 ohos_prebuilt_etc("socperf_thermal_config") {
   source = "configs/socperf_thermal_config.xml"
   install_enable = true
-  module_install_dir = "etc/socperf"
+  module_install_dir = "etc/soc_perf"
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
 }
