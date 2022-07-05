@@ -29,7 +29,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
 namespace {
-    static constexpr const char* CGROUP_SETTING_CONFIG_FILE = "etc/process_group/cgroup_action_config.json";
+    static constexpr const char* CGROUP_SETTING_CONFIG_FILE = "etc/cgroup_sched/cgroup_action_config.json";
 
     static const std::string STR_SP_DEFAULT = "sp_default";
     static const std::string STR_SP_BACKGROUND = "sp_background";
