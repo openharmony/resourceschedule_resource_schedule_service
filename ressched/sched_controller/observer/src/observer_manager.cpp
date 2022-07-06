@@ -20,6 +20,8 @@
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
 #include "res_sched_log.h"
+#include "telephony_observer_client.h"
+#include "core_service_client.h"
 #include "system_ability_definition.h"
 
 namespace OHOS {
