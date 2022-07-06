@@ -35,6 +35,7 @@ config("ressched_config") {
     "//third_party/jsoncpp/include",
     "//base/customization/config_policy/interfaces/innerkits/include",
     "//base//hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent/include",
+    "//base/telephony/state_registry/frameworks/native/observer/include",
   ]
 }
 
