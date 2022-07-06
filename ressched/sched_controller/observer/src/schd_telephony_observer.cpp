@@ -22,10 +22,10 @@ namespace OHOS {
 namespace ResourceSchedule {
 void schdTelephonyObserver::OnCallStateUpdated(int32_t slotId, int32_t callState, const std::u16string &phoneNumber)
 {
-    RESSCHED_LOGI("enter schdTelephonyObserver::UpdateCallState, slotId is %{public}d", slot);
+    RESSCHED_LOGI("enter schdTelephonyObserver::UpdateCallState, slotId is %{public}d", slotId);
     RESSCHED_LOGI("enter schdTelephonyObserver::UpdateCallState, callState is %{public}d", callState);
     const Json::Value payload = "";
-    ResSchedUtils::GetInstance.ReportDataInProcess(ResType::RES_TYPE_CALL_STATE_UPDATE, callState, payload);
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CALL_STATE_UPDATE, callState, payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -67,6 +67,7 @@ ohos_shared_library("resschedsvc") {
     "ability_base:want",
     "common_event_service:cesfwk_innerkits",
     "config_policy:configpolicy_util",
+    "core_service:tel_core_service_api",
     "eventhandler:libeventhandler",
     "hisysevent_native:libhisysevent",
     "hisysevent_native:libhisyseventmanager",
