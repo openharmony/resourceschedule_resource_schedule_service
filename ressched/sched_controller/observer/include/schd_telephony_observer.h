@@ -21,8 +21,8 @@
 #include "telephony_observer.h"
 namespace OHOS {
 namespace ResourceSchedule {
-class schdTelephonyObserver : public Telephony::TelephonyObserver
-{
+class schdTelephonyObserver : public Telephony::TelephonyObserver {
+public:
     schdTelephonyObserver() = default;
     ~schdTelephonyObserver() = default;
     virtual void OnCallStateUpdated(

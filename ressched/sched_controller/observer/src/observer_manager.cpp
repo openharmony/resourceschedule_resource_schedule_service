@@ -167,7 +167,8 @@ void ObserverManager::DisableTelephonyObserver()
         telephonyObserver_ = nullptr;
     }
     slotId_ = 0;
-    Telephony::TelephonyObserverClient::GetInstance().RemoveStateObserver(slotId_, Telephony::TelephonyObserverBroker::OBSERVER_MASK_CALL_STATE);
+    Telephony::TelephonyObserverClient::GetInstance().RemoveStateObserver(
+        slotId_, Telephony::TelephonyObserverBroker::OBSERVER_MASK_CALL_STATE);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

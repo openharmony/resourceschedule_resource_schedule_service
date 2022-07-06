@@ -27,6 +27,5 @@ void schdTelephonyObserver::OnCallStateUpdated(int32_t slotId, int32_t callState
     const Json::Value payload = "";
     ResSchedUtils::GetInstance.ReportDataInProcess(ResType::RES_TYPE_CALL_STATE_UPDATE, callState, payload);
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS
