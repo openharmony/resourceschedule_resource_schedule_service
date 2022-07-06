@@ -150,7 +150,7 @@ void ObserverManager::InitTelephonyObserver()
 {
     RESSCHED_LOGI("Init telephony observer");
     if (!telephonyObserver_) {
-        telephonyObserver_ = std::make_unique<schdTelephonyObserver>().release();
+        telephonyObserver_ = std::make_unique<SchdTelephonyObserver>().release();
     }
     slotId_ = 0;
     auto res = Telephony::TelephonyObserverClient::GetInstance().AddStateObserver(
@@ -165,7 +165,7 @@ void ObserverManager::InitTelephonyObserver()
 void ObserverManager::DisableTelephonyObserver()
 {
     RESSCHED_LOGI("Disable telephony observer");
-    if (!telephonyObserver_) {
+    if (telephonyObserver_) {
         telephonyObserver_ = nullptr;
     }
     slotId_ = 0;

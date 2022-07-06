@@ -48,7 +48,7 @@ public:
 
     std::shared_ptr<HiviewDFX::HiSysEventSubscribeCallBack> cameraObserver_ = nullptr;
     int32_t slotId_;
-    sptr<schdTelephonyObserver> telephonyObserver_ = nullptr;
+    sptr<SchdTelephonyObserver> telephonyObserver_ = nullptr;
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
 };
 } // namespace ResourceSchedule

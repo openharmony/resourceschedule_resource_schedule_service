@@ -21,10 +21,10 @@
 #include "telephony_observer.h"
 namespace OHOS {
 namespace ResourceSchedule {
-class schdTelephonyObserver : public Telephony::TelephonyObserver {
+class SchdTelephonyObserver : public Telephony::TelephonyObserver {
 public:
-    schdTelephonyObserver() = default;
-    ~schdTelephonyObserver() = default;
+    SchdTelephonyObserver() = default;
+    ~SchdTelephonyObserver() = default;
     virtual void OnCallStateUpdated(
         int32_t slotId, int32_t callState, const std::u16string &phoneNumber) override;
 };
