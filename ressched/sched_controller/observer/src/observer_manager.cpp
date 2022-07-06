@@ -24,6 +24,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+const static int8_t TELEPHONY_SUCCESS = 0;
 IMPLEMENT_SINGLE_INSTANCE(ObserverManager)
 
 void ObserverManager::Init()
@@ -62,6 +63,11 @@ void ObserverManager::InitSysAbilityListener()
         sysAbilityListener_ = nullptr;
         RESSCHED_LOGE("subscribe system ability id: %{public}d failed", DFX_SYS_EVENT_SERVICE_ABILITY_ID);
     }
+    ret = systemAbilityManager->SubscribeSystemAbility(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, sysAbilityListener_);
+    if (ret != ERR_OK) {
+        sysAbilityListener_ = nullptr;
+        RESSCHED_LOGE("subscribe system ability id: %{public}d failed", TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID);
+    }
 }
 
 void ObserverManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
@@ -71,6 +77,10 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     switch (systemAbilityId) {
         case DFX_SYS_EVENT_SERVICE_ABILITY_ID: {
             ObserverManager::GetInstance().InitCameraObserver();
+            break;
+        }
+        case TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID: {
+            ObserverManager::GetInstance().InitTelephonyObserver();
             break;
         }
         default: {
@@ -86,6 +96,10 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     switch (systemAbilityId) {
         case DFX_SYS_EVENT_SERVICE_ABILITY_ID: {
             ObserverManager::GetInstance().DisableCameraObserver();
+            break;
+        }
+        case TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID: {
+            ObserverManager::GetInstance().DisableTelephonyObserver();
             break;
         }
         default: {
@@ -128,6 +142,32 @@ void ObserverManager::DisableCameraObserver()
         RESSCHED_LOGW("ObserverManager disable camera observer failed");
     }
     cameraObserver_ = nullptr;
+}
+
+void ObserverManager::InitTelephonyObserver()
+{
+    RESSCHED_LOGI("Init telephony observer");
+    if (!telephonyObserver_) {
+        telephonyObserver_ = std::make_unique<schdTelephonyObserver>().release();
+    }
+    slotId_ = 0;
+    auto res = Telephony::TelephonyObserverClient::GetInstance().AddStateObserver(
+        telephonyObserver_, slotId_, Telephony::TelephonyObserverBroker::OBSERVER_MASK_CALL_STATE, true);
+    if (res == TELEPHONY_SUCCESS) {
+        RESSCHED_LOGD("ObserverManager init telephony observer successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager init telephony observer failed");
+    }
+}
+
+void ObserverManager::DisableTelephonyObserver()
+{
+    RESSCHED_LOGI("Disable telephony observer");
+    if (!telephonyObserver_) {
+        telephonyObserver_ = nullptr;
+    }
+    slotId_ = 0;
+    Telephony::TelephonyObserverClient::GetInstance().RemoveStateObserver(slotId_, Telephony::TelephonyObserverBroker::OBSERVER_MASK_CALL_STATE);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

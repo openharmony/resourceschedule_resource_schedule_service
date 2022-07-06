@@ -26,12 +26,13 @@ ohos_shared_library("sched_controller") {
     "//base/hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent_manager/include",
     "//foundation/resourceschedule/device_scheduler/common/include",
     "//foundation/resourceschedule/resource_schedule_service/ressched/common/include",
-    "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client/include",
+    "//base/telephony/state_registry/frameworks/native/observer/include",
     "${cgroup_sched_framework}/process_group/include",
     "${cgroup_sched_framework}/sched_controller/include",
     "${cgroup_sched_framework}/utils/include",
     "${cgroup_sched_common}/include",
     "${ressched_common}/include",
+    "${ressched_interfaces}/innerkits/ressched_client/include"
   ]
 
   sources = [
@@ -39,16 +40,20 @@ ohos_shared_library("sched_controller") {
     "${cgroup_sched_framework}/utils/ressched_utils.cpp",
     "common_event/src/event_controller.cpp",
     "observer/src/camera_observer.cpp",
+    "observer/src/schd_telephony_observer.cpp",
     "observer/src/observer_manager.cpp",
   ]
 
   deps = [
     "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
+    "//base/telephony/call_manager/frameworks/native:tel_call_manager_api",
+    "//base/telephony/state_registry/frameworks/native/observer:tel_state_registry_api",
   ]
 
   external_deps = [
     "ability_base:want",
+    "core_service:tel_core_service_api",
     "ability_runtime:abilitykit_native",
     "ability_runtime:app_manager",
     "ability_runtime:wantagent_innerkits",
