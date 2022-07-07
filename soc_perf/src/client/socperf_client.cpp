@@ -105,24 +105,6 @@ void SocPerfClient::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::strin
     client->PerfRequestEx(cmdId, onOffTag, newMsg);
 }
 
-void SocPerfClient::PowerRequest(int32_t cmdId, const std::string& msg)
-{
-    if (!CheckClientValid()) {
-        return;
-    }
-    std::string newMsg = AddPidAndTidInfo(msg);
-    client->PowerRequest(cmdId, newMsg);
-}
-
-void SocPerfClient::PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
-{
-    if (!CheckClientValid()) {
-        return;
-    }
-    std::string newMsg = AddPidAndTidInfo(msg);
-    client->PowerRequestEx(cmdId, onOffTag, newMsg);
-}
-
 void SocPerfClient::PowerLimitBoost(bool onOffTag, const std::string& msg)
 {
     if (!CheckClientValid()) {
@@ -130,24 +112,6 @@ void SocPerfClient::PowerLimitBoost(bool onOffTag, const std::string& msg)
     }
     std::string newMsg = AddPidAndTidInfo(msg);
     client->PowerLimitBoost(onOffTag, newMsg);
-}
-
-void SocPerfClient::ThermalRequest(int32_t cmdId, const std::string& msg)
-{
-    if (!CheckClientValid()) {
-        return;
-    }
-    std::string newMsg = AddPidAndTidInfo(msg);
-    client->ThermalRequest(cmdId, newMsg);
-}
-
-void SocPerfClient::ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
-{
-    if (!CheckClientValid()) {
-        return;
-    }
-    std::string newMsg = AddPidAndTidInfo(msg);
-    client->ThermalRequestEx(cmdId, onOffTag, newMsg);
 }
 
 void SocPerfClient::ThermalLimitBoost(bool onOffTag, const std::string& msg)

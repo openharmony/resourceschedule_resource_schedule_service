@@ -38,36 +38,10 @@ int32_t SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
             PerfRequestEx(cmdId, onOffTag, msg);
             return 0;
         }
-        case TRANS_IPC_ID_POWER_REQUEST: {
-            int32_t cmdId = data.ReadInt32();
-            std::string msg = data.ReadString();
-            PowerRequest(cmdId, msg);
-            return 0;
-        }
-        case TRANS_IPC_ID_POWER_REQUEST_EX: {
-            int32_t cmdId = data.ReadInt32();
-            bool onOffTag = data.ReadBool();
-            std::string msg = data.ReadString();
-            PowerRequestEx(cmdId, onOffTag, msg);
-            return 0;
-        }
         case TRANS_IPC_ID_POWER_LIMIT_BOOST_FREQ: {
             bool onOffTag = data.ReadBool();
             std::string msg = data.ReadString();
             PowerLimitBoost(onOffTag, msg);
-            return 0;
-        }
-        case TRANS_IPC_ID_THERMAL_REQUEST: {
-            int32_t cmdId = data.ReadInt32();
-            std::string msg = data.ReadString();
-            ThermalRequest(cmdId, msg);
-            return 0;
-        }
-        case TRANS_IPC_ID_THERMAL_REQUEST_EX: {
-            int32_t cmdId = data.ReadInt32();
-            bool onOffTag = data.ReadBool();
-            std::string msg = data.ReadString();
-            ThermalRequestEx(cmdId, onOffTag, msg);
             return 0;
         }
         case TRANS_IPC_ID_THERMAL_LIMIT_BOOST_FREQ: {

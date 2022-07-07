@@ -64,8 +64,6 @@ namespace {
 namespace {
     const std::string SOCPERF_RESOURCE_CONFIG_XML = "etc/soc_perf/socperf_resource_config.xml";
     const std::string SOCPERF_BOOST_CONFIG_XML    = "etc/soc_perf/socperf_boost_config.xml";
-    const std::string SOCPERF_POWER_CONFIG_XML    = "etc/soc_perf/socperf_power_config.xml";
-    const std::string SOCPERF_THERMAL_CONFIG_XML  = "etc/soc_perf/socperf_thermal_config.xml";
     const int32_t MAX_INT_VALUE                       = 0x7FFFFFFF;
     const int32_t MIN_INT_VALUE                       = 0x80000000;
     const int32_t INVALID_VALUE                       = -1;

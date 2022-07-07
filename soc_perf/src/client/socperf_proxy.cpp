@@ -44,33 +44,6 @@ void SocPerfProxy::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string
     Remote()->SendRequest(TRANS_IPC_ID_PERF_REQUEST_EX, data, reply, option);
 }
 
-void SocPerfProxy::PowerRequest(int32_t cmdId, const std::string& msg)
-{
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option = { MessageOption::TF_ASYNC };
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        return;
-    }
-    data.WriteInt32(cmdId);
-    data.WriteString(msg);
-    Remote()->SendRequest(TRANS_IPC_ID_POWER_REQUEST, data, reply, option);
-}
-
-void SocPerfProxy::PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
-{
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option = { MessageOption::TF_ASYNC };
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        return;
-    }
-    data.WriteInt32(cmdId);
-    data.WriteBool(onOffTag);
-    data.WriteString(msg);
-    Remote()->SendRequest(TRANS_IPC_ID_POWER_REQUEST_EX, data, reply, option);
-}
-
 void SocPerfProxy::PowerLimitBoost(bool onOffTag, const std::string& msg)
 {
     MessageParcel data;
@@ -82,33 +55,6 @@ void SocPerfProxy::PowerLimitBoost(bool onOffTag, const std::string& msg)
     data.WriteBool(onOffTag);
     data.WriteString(msg);
     Remote()->SendRequest(TRANS_IPC_ID_POWER_LIMIT_BOOST_FREQ, data, reply, option);
-}
-
-void SocPerfProxy::ThermalRequest(int32_t cmdId, const std::string& msg)
-{
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option = { MessageOption::TF_ASYNC };
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        return;
-    }
-    data.WriteInt32(cmdId);
-    data.WriteString(msg);
-    Remote()->SendRequest(TRANS_IPC_ID_THERMAL_REQUEST, data, reply, option);
-}
-
-void SocPerfProxy::ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
-{
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option = { MessageOption::TF_ASYNC };
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        return;
-    }
-    data.WriteInt32(cmdId);
-    data.WriteBool(onOffTag);
-    data.WriteString(msg);
-    Remote()->SendRequest(TRANS_IPC_ID_THERMAL_REQUEST_EX, data, reply, option);
 }
 
 void SocPerfProxy::ThermalLimitBoost(bool onOffTag, const std::string& msg)
