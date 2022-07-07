@@ -22,6 +22,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 void SchedTelephonyObserver::OnCallStateUpdated(int32_t slotId, int32_t callState, const std::u16string &phoneNumber)
 {
+    RESSCHED_LOGD("SchedTelephonyObserver::OnCallStateUpdated callState is %{public}d", callState);
     const Json::Value payload = "";
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CALL_STATE_UPDATE, callState, payload);
 }
