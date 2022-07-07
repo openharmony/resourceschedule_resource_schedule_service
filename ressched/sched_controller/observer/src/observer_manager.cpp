@@ -82,8 +82,8 @@ void ObserverManager::InitSysAbilityListener()
     }
     handleObserverMap_.emplace(
         TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [this]() { ObserverManager::GetInstance().InitTelephonyObserver(); });
-    removeObserverMap_.emplace(
-        TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [this]() { ObserverManager::GetInstance().DisableTelephonyObserver(); });
+    removeObserverMap_.emplace(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
+        [this]() { ObserverManager::GetInstance().DisableTelephonyObserver(); });
 }
 
 void ObserverManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
