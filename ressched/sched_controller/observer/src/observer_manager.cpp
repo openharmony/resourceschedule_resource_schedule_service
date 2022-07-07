@@ -69,8 +69,10 @@ void ObserverManager::InitSysAbilityListener()
         RESSCHED_LOGE(
             "%{public}s: subscribe system ability id: %{public}d failed", __func__, DFX_SYS_EVENT_SERVICE_ABILITY_ID);
     }
-    handleObserverMap_.emplace(DFX_SYS_EVENT_SERVICE_ABILITY_ID, [this]() { ObserverManager::GetInstance().InitCameraObserver(); });
-    removeObserverMap_.emplace(DFX_SYS_EVENT_SERVICE_ABILITY_ID, [this]() { ObserverManager::GetInstance().DisableCameraObserver(); });
+    handleObserverMap_.emplace(
+        DFX_SYS_EVENT_SERVICE_ABILITY_ID, [this]() { ObserverManager::GetInstance().InitCameraObserver(); });
+    removeObserverMap_.emplace(
+        DFX_SYS_EVENT_SERVICE_ABILITY_ID, [this]() { ObserverManager::GetInstance().DisableCameraObserver(); });
 
     ret = systemAbilityManager->SubscribeSystemAbility(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, sysAbilityListener_);
     if (ret != ERR_OK) {
@@ -78,8 +80,10 @@ void ObserverManager::InitSysAbilityListener()
         RESSCHED_LOGE("%{public}s: subscribe system ability id: %{public}d failed",
             __func__, TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID);
     }
-    handleObserverMap_.emplace(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [this]() { InitTelephonyObserver(); });
-    removeObserverMap_.emplace(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [this]() { DisableTelephonyObserver(); });
+    handleObserverMap_.emplace(
+        TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [this]() { ObserverManager::GetInstance().InitTelephonyObserver(); });
+    removeObserverMap_.emplace(
+        TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [this]() { ObserverManager::GetInstance().DisableTelephonyObserver(); });
 }
 
 void ObserverManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
