@@ -41,16 +41,6 @@ bool SocPerf::Init()
         return false;
     }
 
-    if (!LoadConfigXmlFile(SOCPERF_POWER_CONFIG_XML)) {
-        SOC_PERF_LOGE("%{public}s, Failed to load %{public}s", __func__, SOCPERF_POWER_CONFIG_XML.c_str());
-        return false;
-    }
-
-    if (!LoadConfigXmlFile(SOCPERF_THERMAL_CONFIG_XML)) {
-        SOC_PERF_LOGE("%{public}s, Failed to load %{public}s", __func__, SOCPERF_THERMAL_CONFIG_XML.c_str());
-        return false;
-    }
-
     PrintCachedInfo();
 
     if (!CreateHandlers()) {
@@ -119,51 +109,6 @@ void SocPerf::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg
     FinishTrace(HITRACE_TAG_OHOS);
 }
 
-void SocPerf::PowerRequest(int32_t cmdId, const std::string& msg)
-{
-    if (!enabled) {
-        SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
-        return;
-    }
-    if (powerActionInfo.find(cmdId) == powerActionInfo.end()
-        || powerActionInfo[cmdId]->duration == 0) {
-        SOC_PERF_LOGE("%{public}s, Invalid PowerRequest cmdId[%{public}d]", __func__, cmdId);
-        return;
-    }
-    if (debugLogEnabled) {
-        SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]msg[%{public}s]", __func__, cmdId, msg.c_str());
-    }
-    std::string trace_str(__func__);
-    trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
-    trace_str.append(",msg[").append(msg).append("]");
-    StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    DoFreqAction(powerActionInfo[cmdId], EVENT_INVALID, ACTION_TYPE_POWER);
-    FinishTrace(HITRACE_TAG_OHOS);
-}
-
-void SocPerf::PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
-{
-    if (!enabled) {
-        SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
-        return;
-    }
-    if (powerActionInfo.find(cmdId) == powerActionInfo.end()) {
-        SOC_PERF_LOGE("%{public}s, Invalid PowerRequestEx cmdId[%{public}d]", __func__, cmdId);
-        return;
-    }
-    if (debugLogEnabled) {
-        SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
-            __func__, cmdId, onOffTag, msg.c_str());
-    }
-    std::string trace_str(__func__);
-    trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
-    trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
-    trace_str.append(",msg[").append(msg).append("]");
-    StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    DoFreqAction(powerActionInfo[cmdId], onOffTag ? EVENT_ON : EVENT_OFF, ACTION_TYPE_POWER);
-    FinishTrace(HITRACE_TAG_OHOS);
-}
-
 void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
 {
     if (!enabled) {
@@ -181,51 +126,6 @@ void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
         auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ, onOffTag ? 1 : 0);
         handler->SendEvent(event);
     }
-    FinishTrace(HITRACE_TAG_OHOS);
-}
-
-void SocPerf::ThermalRequest(int32_t cmdId, const std::string& msg)
-{
-    if (!enabled) {
-        SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
-        return;
-    }
-    if (thermalActionInfo.find(cmdId) == thermalActionInfo.end()
-        || thermalActionInfo[cmdId]->duration == 0) {
-        SOC_PERF_LOGE("%{public}s, Invalid ThermalRequest cmdId[%{public}d]", __func__, cmdId);
-        return;
-    }
-    if (debugLogEnabled) {
-        SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]msg[%{public}s]", __func__, cmdId, msg.c_str());
-    }
-    std::string trace_str(__func__);
-    trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
-    trace_str.append(",msg[").append(msg).append("]");
-    StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    DoFreqAction(thermalActionInfo[cmdId], EVENT_INVALID, ACTION_TYPE_THERMAL);
-    FinishTrace(HITRACE_TAG_OHOS);
-}
-
-void SocPerf::ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
-{
-    if (!enabled) {
-        SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
-        return;
-    }
-    if (thermalActionInfo.find(cmdId) == thermalActionInfo.end()) {
-        SOC_PERF_LOGE("%{public}s, Invalid ThermalRequestEx cmdId[%{public}d]", __func__, cmdId);
-        return;
-    }
-    if (debugLogEnabled) {
-        SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
-            __func__, cmdId, onOffTag, msg.c_str());
-    }
-    std::string trace_str(__func__);
-    trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
-    trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
-    trace_str.append(",msg[").append(msg).append("]");
-    StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    DoFreqAction(thermalActionInfo[cmdId], onOffTag ? EVENT_ON : EVENT_OFF, ACTION_TYPE_THERMAL);
     FinishTrace(HITRACE_TAG_OHOS);
 }
 
@@ -536,10 +436,6 @@ bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
 
             if (configFile.find(SOCPERF_BOOST_CONFIG_XML) != std::string::npos) {
                 perfActionInfo.insert(std::pair<int32_t, std::shared_ptr<Action>>(action->id, action));
-            } else if (configFile.find(SOCPERF_POWER_CONFIG_XML) != std::string::npos) {
-                powerActionInfo.insert(std::pair<int32_t, std::shared_ptr<Action>>(action->id, action));
-            } else if (configFile.find(SOCPERF_THERMAL_CONFIG_XML) != std::string::npos) {
-                thermalActionInfo.insert(std::pair<int32_t, std::shared_ptr<Action>>(action->id, action));
             }
         }
     }
@@ -686,10 +582,6 @@ bool SocPerf::CheckActionResIdAndValueValid(std::string configFile)
     std::unordered_map<int32_t, std::shared_ptr<Action>> actionInfo;
     if (configFile.find(SOCPERF_BOOST_CONFIG_XML) != std::string::npos) {
         actionInfo = perfActionInfo;
-    } else if (configFile.find(SOCPERF_POWER_CONFIG_XML) != std::string::npos) {
-        actionInfo = powerActionInfo;
-    } else if (configFile.find(SOCPERF_THERMAL_CONFIG_XML) != std::string::npos) {
-        actionInfo = thermalActionInfo;
     }
     for (auto iter = actionInfo.begin(); iter != actionInfo.end(); ++iter) {
         int32_t actionId = iter->first;
@@ -738,18 +630,6 @@ void SocPerf::PrintCachedInfo()
         SOC_PERF_LOGD("------------------------------------");
         SOC_PERF_LOGD("perfActionInfo(%{public}d)", (int32_t)perfActionInfo.size());
         for (auto iter = perfActionInfo.begin(); iter != perfActionInfo.end(); ++iter) {
-            std::shared_ptr<Action> action = iter->second;
-            action->PrintString();
-        }
-        SOC_PERF_LOGD("------------------------------------");
-        SOC_PERF_LOGD("powerActionInfo(%{public}d)", (int32_t)powerActionInfo.size());
-        for (auto iter = powerActionInfo.begin(); iter != powerActionInfo.end(); ++iter) {
-            std::shared_ptr<Action> action = iter->second;
-            action->PrintString();
-        }
-        SOC_PERF_LOGD("------------------------------------");
-        SOC_PERF_LOGD("thermalActionInfo(%{public}d)", (int32_t)thermalActionInfo.size());
-        for (auto iter = thermalActionInfo.begin(); iter != thermalActionInfo.end(); ++iter) {
             std::shared_ptr<Action> action = iter->second;
             action->PrintString();
         }

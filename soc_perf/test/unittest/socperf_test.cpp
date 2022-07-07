@@ -45,31 +45,6 @@ static void PerfRequestEx(int32_t argc, char *argv[])
     }
 }
 
-static void PowerRequest(int32_t argc, char *argv[])
-{
-    if (argc == PARAMETERS_NUM_WITHOUT_EX) {
-        char* cmdId = argv[2];
-        if (cmdId) {
-            OHOS::SOCPERF::SocPerfClient::GetInstance().PowerRequest(atoi(cmdId), "");
-        }
-    }
-}
-
-static void PowerRequestEx(int32_t argc, char *argv[])
-{
-    if (argc == PARAMETERS_NUM_WITH_EX) {
-        char* cmdId = argv[2];
-        char* onOffTag = argv[3];
-        if (cmdId && onOffTag) {
-            if (strcmp(onOffTag, "true") == 0) {
-                OHOS::SOCPERF::SocPerfClient::GetInstance().PowerRequestEx(atoi(cmdId), true, "");
-            } else if (strcmp(onOffTag, "false") == 0) {
-                OHOS::SOCPERF::SocPerfClient::GetInstance().PowerRequestEx(atoi(cmdId), false, "");
-            }
-        }
-    }
-}
-
 static void PowerLimitBoost(int32_t argc, char *argv[])
 {
     if (argc == PARAMETERS_NUM_WITHOUT_EX) {
@@ -79,31 +54,6 @@ static void PowerLimitBoost(int32_t argc, char *argv[])
                 OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(true, "");
             } else if (strcmp(onOffTag, "false") == 0) {
                 OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(false, "");
-            }
-        }
-    }
-}
-
-static void ThermalRequest(int32_t argc, char *argv[])
-{
-    if (argc == PARAMETERS_NUM_WITHOUT_EX) {
-        char* cmdId = argv[2];
-        if (cmdId) {
-            OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalRequest(atoi(cmdId), "");
-        }
-    }
-}
-
-static void ThermalRequestEx(int32_t argc, char *argv[])
-{
-    if (argc == PARAMETERS_NUM_WITH_EX) {
-        char* cmdId = argv[2];
-        char* onOffTag = argv[3];
-        if (cmdId && onOffTag) {
-            if (strcmp(onOffTag, "true") == 0) {
-                OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalRequestEx(atoi(cmdId), true, "");
-            } else if (strcmp(onOffTag, "false") == 0) {
-                OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalRequestEx(atoi(cmdId), false, "");
             }
         }
     }
@@ -143,16 +93,8 @@ int32_t main(int32_t argc, char *argv[])
             PerfRequest(argc, argv);
         } else if (strcmp(function, "PerfRequestEx") == 0) {
             PerfRequestEx(argc, argv);
-        } else if (strcmp(function, "PowerRequest") == 0) {
-            PowerRequest(argc, argv);
-        } else if (strcmp(function, "PowerRequestEx") == 0) {
-            PowerRequestEx(argc, argv);
         } else if (strcmp(function, "PowerLimitBoost") == 0) {
             PowerLimitBoost(argc, argv);
-        } else if (strcmp(function, "ThermalRequest") == 0) {
-            ThermalRequest(argc, argv);
-        } else if (strcmp(function, "ThermalRequestEx") == 0) {
-            ThermalRequestEx(argc, argv);
         } else if (strcmp(function, "ThermalLimitBoost") == 0) {
             ThermalLimitBoost(argc, argv);
         } else if (strcmp(function, "LimitRequest") == 0) {

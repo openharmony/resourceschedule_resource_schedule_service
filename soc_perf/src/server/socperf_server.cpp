@@ -54,29 +54,9 @@ void SocPerfServer::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::strin
     socPerf.PerfRequestEx(cmdId, onOffTag, msg);
 }
 
-void SocPerfServer::PowerRequest(int32_t cmdId, const std::string& msg)
-{
-    socPerf.PowerRequest(cmdId, msg);
-}
-
-void SocPerfServer::PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
-{
-    socPerf.PowerRequestEx(cmdId, onOffTag, msg);
-}
-
 void SocPerfServer::PowerLimitBoost(bool onOffTag, const std::string& msg)
 {
     socPerf.PowerLimitBoost(onOffTag, msg);
-}
-
-void SocPerfServer::ThermalRequest(int32_t cmdId, const std::string& msg)
-{
-    socPerf.ThermalRequest(cmdId, msg);
-}
-
-void SocPerfServer::ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
-{
-    socPerf.ThermalRequestEx(cmdId, onOffTag, msg);
 }
 
 void SocPerfServer::ThermalLimitBoost(bool onOffTag, const std::string& msg)

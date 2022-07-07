@@ -33,11 +33,7 @@ public:
     bool Init();
     void PerfRequest(int32_t cmdId, const std::string& msg);
     void PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg);
-    void PowerRequest(int32_t cmdId, const std::string& msg);
-    void PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg);
     void PowerLimitBoost(bool onOffTag, const std::string& msg);
-    void ThermalRequest(int32_t cmdId, const std::string& msg);
-    void ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg);
     void ThermalLimitBoost(bool onOffTag, const std::string& msg);
     void LimitRequest(int32_t clientId,
         const std::vector<int32_t>& tags, const std::vector<int32_t>& configs, const std::string& msg);
@@ -48,8 +44,6 @@ public:
 
 private:
     std::unordered_map<int32_t, std::shared_ptr<Action>> perfActionInfo;
-    std::unordered_map<int32_t, std::shared_ptr<Action>> powerActionInfo;
-    std::unordered_map<int32_t, std::shared_ptr<Action>> thermalActionInfo;
     std::vector<std::shared_ptr<SocPerfHandler>> handlers;
     bool enabled = false;
     bool debugLogEnabled = false;

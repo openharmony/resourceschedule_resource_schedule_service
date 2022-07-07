@@ -32,11 +32,7 @@ DECLARE_DELAYED_SINGLETON(SocPerfServer);
 public:
     void PerfRequest(int32_t cmdId, const std::string& msg) override;
     void PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) override;
-    void PowerRequest(int32_t cmdId, const std::string& msg) override;
-    void PowerRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) override;
     void PowerLimitBoost(bool onOffTag, const std::string& msg) override;
-    void ThermalRequest(int32_t cmdId, const std::string& msg) override;
-    void ThermalRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) override;
     void ThermalLimitBoost(bool onOffTag, const std::string& msg) override;
     void LimitRequest(int32_t clientId,
         const std::vector<int32_t>& tags, const std::vector<int32_t>& configs, const std::string& msg) override;
