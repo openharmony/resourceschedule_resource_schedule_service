@@ -41,7 +41,7 @@ ohos_shared_library("sched_controller") {
     "common_event/src/event_controller.cpp",
     "observer/src/camera_observer.cpp",
     "observer/src/observer_manager.cpp",
-    "observer/src/schd_telephony_observer.cpp",
+    "observer/src/sched_telephony_observer.cpp",
   ]
 
   deps = [

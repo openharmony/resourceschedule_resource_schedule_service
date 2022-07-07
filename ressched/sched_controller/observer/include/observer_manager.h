@@ -17,7 +17,7 @@
 #define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_OBSERVER_MANAGER_H
 
 #include "camera_observer.h"
-#include "schd_telephony_observer.h"
+#include "sched_telephony_observer.h"
 #include "single_instance.h"
 #include "system_ability_status_change_stub.h"
 
@@ -46,9 +46,9 @@ public:
     void DisableTelephonyObserver();
     void InitSysAbilityListener();
 
-    std::shared_ptr<HiviewDFX::HiSysEventSubscribeCallBack> cameraObserver_ = nullptr;
     int32_t slotId_;
-    sptr<SchdTelephonyObserver> telephonyObserver_ = nullptr;
+    std::shared_ptr<HiviewDFX::HiSysEventSubscribeCallBack> cameraObserver_ = nullptr;
+    sptr<SchedTelephonyObserver> telephonyObserver_ = nullptr;
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
 };
 } // namespace ResourceSchedule

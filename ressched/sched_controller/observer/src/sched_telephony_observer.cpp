@@ -13,21 +13,17 @@
  * limitations under the License.
  */
 
-#ifndef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_SCHD_TELEPHONY_OBSERVER_H
-#define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_SCHD_TELEPHONY_OBSERVER_H
+#include "sched_telephony_observer.h"
 
-#include <string>
-
-#include "telephony_observer.h"
+#include "ressched_utils.h"
+#include "res_sched_log.h"
+#include "res_type.h"
 namespace OHOS {
 namespace ResourceSchedule {
-class SchdTelephonyObserver : public Telephony::TelephonyObserver {
-public:
-    SchdTelephonyObserver() = default;
-    ~SchdTelephonyObserver() = default;
-    virtual void OnCallStateUpdated(
-        int32_t slotId, int32_t callState, const std::u16string &phoneNumber) override;
-};
+void SchedTelephonyObserver::OnCallStateUpdated(int32_t slotId, int32_t callState, const std::u16string &phoneNumber)
+{
+    const Json::Value payload = "";
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CALL_STATE_UPDATE, callState, payload);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_SCHD_TELEPHONY_OBSERVER_H

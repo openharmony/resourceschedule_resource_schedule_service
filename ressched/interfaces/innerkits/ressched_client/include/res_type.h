@@ -69,6 +69,8 @@ enum : uint32_t {
     RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE,
     // network latency request, value 0: low latency, 1: normal latency, payload: identity
     RES_TYPE_NETWORK_LATENCY_REQUEST,
+    // call state update; value 0 : active, value 1 : holding, value 2 : dialing, value 3 : alerting, value 4 : incoming, value 5 : waiting
+    // value 6 : disconnected, value 7 : disconnecting, value 8 : idle 
     RES_TYPE_CALL_STATE_UPDATE,
 };
 } // namespace ResType

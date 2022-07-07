@@ -68,7 +68,8 @@ void ObserverManager::InitSysAbilityListener()
     ret = systemAbilityManager->SubscribeSystemAbility(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, sysAbilityListener_);
     if (ret != ERR_OK) {
         sysAbilityListener_ = nullptr;
-        RESSCHED_LOGE("subscribe system ability id: %{public}d failed", TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID);
+        RESSCHED_LOGE("%{public}s: subscribe system ability id: %{public}d failed",
+            __func__, TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID);
     }
 }
 
@@ -150,7 +151,7 @@ void ObserverManager::InitTelephonyObserver()
 {
     RESSCHED_LOGI("Init telephony observer");
     if (!telephonyObserver_) {
-        telephonyObserver_ = std::make_unique<SchdTelephonyObserver>().release();
+        telephonyObserver_ = std::make_unique<SchedTelephonyObserver>().release();
     }
     slotId_ = 0;
     auto res = Telephony::TelephonyObserverClient::GetInstance().AddStateObserver(
