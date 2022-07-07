@@ -167,34 +167,44 @@ public:
 
 class Action {
 public:
-    int32_t id;
-    std::string name;
     int32_t duration;
     std::vector<int32_t> variable;
 
 public:
-    Action(int32_t cmdId, std::string cmdName)
+    Action() {}
+    ~Action() {}
+};
+
+class Actions {
+public:
+    int32_t id;
+    std::string name;
+    std::list<std::shared_ptr<Action>> actionList;
+
+public:
+    Actions(int32_t cmdId, std::string cmdName)
     {
         id = cmdId;
         name = cmdName;
-        duration = INVALID_VALUE;
     }
-    ~Action() {}
+    ~Actions() {}
 
     void PrintString()
     {
-        SOC_PERF_LOGD("action-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
-        SOC_PERF_LOGD("         duration: [%{public}d]", duration);
-        std::string str;
-        str.append("variable(").append(std::to_string((int32_t)variable.size())).append("): [");
-        for (int32_t i = 0; i < (int32_t)variable.size(); i++) {
-            str.append(std::to_string(variable[i])).append(",");
+        SOC_PERF_LOGD("Actions-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
+        for (auto iter = actionList.begin(); iter != actionList.end(); iter++) {
+            std::shared_ptr<Action> action = *iter;
+            std::string str;
+            str.append("variable(").append(std::to_string((int32_t)action->variable.size())).append("): [");
+            for (int32_t i = 0; i < (int32_t)action->variable.size(); i++) {
+                str.append(std::to_string(action->variable[i])).append(",");
+            }
+            if (!action->variable.empty()) {
+                str.pop_back();
+            }
+            str.append("]");
+            SOC_PERF_LOGD("   duration: [%{public}d], %{public}s", action->duration, str.c_str());
         }
-        if (!variable.empty()) {
-            str.pop_back();
-        }
-        str.append("]");
-        SOC_PERF_LOGD("         %{public}s", str.c_str());
     }
 };
 

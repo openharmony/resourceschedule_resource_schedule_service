@@ -43,7 +43,7 @@ public:
     ~SocPerf();
 
 private:
-    std::unordered_map<int32_t, std::shared_ptr<Action>> perfActionInfo;
+    std::unordered_map<int32_t, std::shared_ptr<Actions>> perfActionsInfo;
     std::vector<std::shared_ptr<SocPerfHandler>> handlers;
     bool enabled = false;
     bool debugLogEnabled = false;
@@ -71,7 +71,7 @@ private:
     bool CheckGovResDefValid();
     bool CheckCmdTag(char* id, char* name, std::string configFile);
     bool CheckActionResIdAndValueValid(std::string configFile);
-    void DoFreqAction(std::shared_ptr<Action> action, int32_t onOff, int32_t actionType);
+    void DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int32_t actionType);
     void PrintCachedInfo();
 };
 } // namespace SOCPERF
