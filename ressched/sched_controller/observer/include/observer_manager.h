@@ -47,6 +47,8 @@ public:
     void InitSysAbilityListener();
 
     int32_t slotId_;
+    std::map<int32_t, std::function<void()>> handleObserverMap_;
+    std::map<int32_t, std::function<void()>> removeObserverMap_;
     std::shared_ptr<HiviewDFX::HiSysEventSubscribeCallBack> cameraObserver_ = nullptr;
     sptr<SchedTelephonyObserver> telephonyObserver_ = nullptr;
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;

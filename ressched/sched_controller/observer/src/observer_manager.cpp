@@ -36,7 +36,10 @@ void ObserverManager::Init()
 
 void ObserverManager::Disable()
 {
+    handleObserverMap_.clear();
+    removeObserverMap_.clear();
     DisableCameraObserver();
+    DisableTelephonyObserver();
     sysAbilityListener_ = nullptr;
 }
 
@@ -63,32 +66,32 @@ void ObserverManager::InitSysAbilityListener()
     int32_t ret = systemAbilityManager->SubscribeSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, sysAbilityListener_);
     if (ret != ERR_OK) {
         sysAbilityListener_ = nullptr;
-        RESSCHED_LOGE("subscribe system ability id: %{public}d failed", DFX_SYS_EVENT_SERVICE_ABILITY_ID);
+        RESSCHED_LOGE(
+            "%{public}s: subscribe system ability id: %{public}d failed", __func__, DFX_SYS_EVENT_SERVICE_ABILITY_ID);
     }
+    handleObserverMap_.emplace(DFX_SYS_EVENT_SERVICE_ABILITY_ID, [this]() { ObserverManager::GetInstance().InitCameraObserver(); });
+    removeObserverMap_.emplace(DFX_SYS_EVENT_SERVICE_ABILITY_ID, [this]() { ObserverManager::GetInstance().DisableCameraObserver(); });
+
     ret = systemAbilityManager->SubscribeSystemAbility(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, sysAbilityListener_);
     if (ret != ERR_OK) {
         sysAbilityListener_ = nullptr;
         RESSCHED_LOGE("%{public}s: subscribe system ability id: %{public}d failed",
             __func__, TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID);
     }
+    handleObserverMap_.emplace(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [this]() { InitTelephonyObserver(); });
+    removeObserverMap_.emplace(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [this]() { DisableTelephonyObserver(); });
 }
 
 void ObserverManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
     RESSCHED_LOGI("Add system ability, system ability id: %{public}d", systemAbilityId);
-    switch (systemAbilityId) {
-        case DFX_SYS_EVENT_SERVICE_ABILITY_ID: {
-            ObserverManager::GetInstance().InitCameraObserver();
-            break;
-        }
-        case TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID: {
-            ObserverManager::GetInstance().InitTelephonyObserver();
-            break;
-        }
-        default: {
-            break;
-        }
+    auto funcIter = ObserverManager::GetInstance().handleObserverMap_.find(systemAbilityId);
+    if (funcIter != ObserverManager::GetInstance().handleObserverMap_.end()) {
+        auto function = funcIter->second;
+            if (function) {
+                function();
+            }
     }
 }
 
@@ -96,18 +99,12 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
     RESSCHED_LOGD("Remove system ability, system ability id: %{public}d", systemAbilityId);
-    switch (systemAbilityId) {
-        case DFX_SYS_EVENT_SERVICE_ABILITY_ID: {
-            ObserverManager::GetInstance().DisableCameraObserver();
-            break;
-        }
-        case TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID: {
-            ObserverManager::GetInstance().DisableTelephonyObserver();
-            break;
-        }
-        default: {
-            break;
-        }
+    auto funcIter = ObserverManager::GetInstance().removeObserverMap_.find(systemAbilityId);
+    if (funcIter != ObserverManager::GetInstance().removeObserverMap_.end()) {
+        auto function = funcIter->second;
+            if (function) {
+                function();
+            }
     }
 }
 
@@ -166,12 +163,14 @@ void ObserverManager::InitTelephonyObserver()
 void ObserverManager::DisableTelephonyObserver()
 {
     RESSCHED_LOGI("Disable telephony observer");
-    if (telephonyObserver_) {
-        telephonyObserver_ = nullptr;
+    if (!telephonyObserver_) {
+        RESSCHED_LOGD("ObserverManager has been disable telephony observer");
+        return ;
     }
     slotId_ = 0;
     Telephony::TelephonyObserverClient::GetInstance().RemoveStateObserver(
         slotId_, Telephony::TelephonyObserverBroker::OBSERVER_MASK_CALL_STATE);
+    telephonyObserver_ = nullptr;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
