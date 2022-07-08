@@ -41,7 +41,7 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
     Json::Value payload;
     payload["clientPid"] = std::to_string(getpid());
     for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
-            payload[it->first] = it->second;
+        payload[it->first] = it->second;
     }
     rss_->ReportData(resType, value, payload);
 }
