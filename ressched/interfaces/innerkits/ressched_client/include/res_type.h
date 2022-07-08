@@ -70,7 +70,7 @@ enum : uint32_t {
     // network latency request, value 0: low latency, 1: normal latency, payload: identity
     RES_TYPE_NETWORK_LATENCY_REQUEST,
     // Other process modify the thread Qos, value for client name id, payload: tid : qos , clientpid, pid
-    RES_TYPE_THREAD_CHANGE,
+    RES_TYPE_THREAD_QOS_CHANGE,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
