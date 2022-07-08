@@ -19,7 +19,6 @@
 #include "res_sched_log.h"
 #include "res_sched_errors.h"
 #include "system_ability_definition.h"
-#include "res_type.h"
 #include "string_ex.h"
 #include "res_sched_client.h"
 
