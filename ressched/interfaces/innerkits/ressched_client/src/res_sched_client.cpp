@@ -14,7 +14,6 @@
  */
 #include <string>
 #include <unistd.h>
-#include "res_sched_client.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "res_sched_log.h"
@@ -22,6 +21,7 @@
 #include "system_ability_definition.h"
 #include "res_type.h"
 #include "string_ex.h"
+#include "res_sched_client.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -47,14 +47,14 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
             temp["qos"] = it->second;
             payload["amendThreadList"].append(temp);
         }
+        payload["clientPid"] = std::to_string(getpid());
+        if (!payload.isMember("pid")) {
+            payload["pid"] = std::to_string(getpid());
+        }
     } else {
         for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
             payload[it->first] = it->second;
         }
-    }
-    payload["clientPid"] = std::to_string(getpid());
-    if (!payload.isMember("pid")) {
-        payload["pid"] = std::to_string(getpid());
     }
     rss_->ReportData(resType, value, payload);
 }
