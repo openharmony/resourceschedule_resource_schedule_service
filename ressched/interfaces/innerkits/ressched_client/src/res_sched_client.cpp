@@ -40,21 +40,9 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
         return;
     }
     Json::Value payload;
-    if (resType == ResType::RES_TYPE_THREAD_CHANGE) {
-        for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
-            Json::Value temp;
-            temp["tid"] = it->first;
-            temp["qos"] = it->second;
-            payload["amendThreadList"].append(temp);
-        }
-        payload["clientPid"] = std::to_string(getpid());
-        if (!payload.isMember("pid")) {
-            payload["pid"] = std::to_string(getpid());
-        }
-    } else {
-        for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
+    payload["clientPid"] = std::to_string(getpid());
+    for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
             payload[it->first] = it->second;
-        }
     }
     rss_->ReportData(resType, value, payload);
 }
