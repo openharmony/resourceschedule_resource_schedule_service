@@ -72,9 +72,12 @@ enum : uint32_t {
     // call state update; value 0 : active, value 1 : holding, value 2 : dialing, value 3 : alerting,
     // value 4 : incoming, value 5 : waiting, value 6 : disconnected, value 7 : disconnecting, value 8 : idle
     RES_TYPE_CALL_STATE_UPDATE,
+    // Other process modify the thread Qos, value for client name id, payload: tid : qos , clientpid, pid
+    RES_TYPE_THREAD_QOS_CHANGE,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
 
 #endif // RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_TYPE_H
+

@@ -12,12 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "res_sched_client.h"
+#include <string>
+#include <unistd.h>
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "res_sched_log.h"
 #include "res_sched_errors.h"
 #include "system_ability_definition.h"
+#include "string_ex.h"
+#include "res_sched_client.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -36,6 +39,7 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
         return;
     }
     Json::Value payload;
+    payload["clientPid"] = std::to_string(getpid());
     for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
         payload[it->first] = it->second;
     }
