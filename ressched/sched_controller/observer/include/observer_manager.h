@@ -46,7 +46,7 @@ public:
     void DisableTelephonyObserver();
     void InitSysAbilityListener();
 
-    int32_t slotId_;
+    int32_t slotId_{0};
     std::map<int32_t, std::function<void()>> handleObserverMap_;
     std::map<int32_t, std::function<void()>> removeObserverMap_;
     std::shared_ptr<HiviewDFX::HiSysEventSubscribeCallBack> cameraObserver_ = nullptr;
