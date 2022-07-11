@@ -264,7 +264,7 @@ void PluginMgr::DumpOnePlugin(std::string &result, std::string pluginName)
     result.append(" not find!\n");
 }
 
-void PluginMgr::DumpPluginInfoAppend(std::string &result,PluginInfo info)
+void PluginMgr::DumpPluginInfoAppend(std::string &result, PluginInfo info)
 {
     if (info.switchOn) {
         result.append(" | switch on\t");

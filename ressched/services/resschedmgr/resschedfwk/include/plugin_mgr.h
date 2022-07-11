@@ -101,7 +101,7 @@ private:
     void deliverResourceToPlugin(const std::string& pluginLib, const std::shared_ptr<ResData>& resData);
     void RepairPluginLocked(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo);
     void RemoveDisablePluginHandler();
-    void DumpPluginInfoAppend(std::string &result,PluginInfo info);
+    void DumpPluginInfoAppend(std::string &result, PluginInfo info);
 
     using DlHandle = void*;
 
