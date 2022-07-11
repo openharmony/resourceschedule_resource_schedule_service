@@ -24,12 +24,9 @@ namespace ResourceSchedule {
 using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libsocperf_plugin.z.so";
-    const int32_t PERF_REQUEST_CMD_ID_APP_COLD_START_FIRST  = 10000;
-    const int32_t PERF_REQUEST_CMD_ID_APP_COLD_START_SECOND = 10001;
-    const int32_t PERF_REQUEST_CMD_ID_APP_WARM_START_FIRST  = 10002;
-    const int32_t PERF_REQUEST_CMD_ID_APP_WARM_START_SECOND = 10003;
-    const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH_FIRST   = 10004;
-    const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH_SECOND  = 10005;
+    const int32_t PERF_REQUEST_CMD_ID_APP_START             = 10000;
+    const int32_t PERF_REQUEST_CMD_ID_WARM_START            = 10001;
+    const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH         = 10002;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_CLICK           = 10006;
     const int32_t PERF_REQUEST_CMD_ID_PUSH_PAGE             = 10007;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE           = 10008;
@@ -92,12 +89,10 @@ void SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
 {
     if (data->value == static_cast<int32_t>(AppExecFwk::ApplicationState::APP_STATE_CREATE)) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_COLD_START_FIRST, "");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_COLD_START_SECOND, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
     } else if (data->value == static_cast<int32_t>(AppExecFwk::ApplicationState::APP_STATE_FOREGROUND)) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->APP_WARM_START");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_WARM_START_FIRST, "");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_WARM_START_SECOND, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WARM_START, "");
     }
 }
 
@@ -105,8 +100,7 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
 {
     if (data->value == WINDOW_FOCUSED) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH_FIRST, "");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH_SECOND, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, "");
     }
 }
 
