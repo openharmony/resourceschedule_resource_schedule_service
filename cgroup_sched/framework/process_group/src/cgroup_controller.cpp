@@ -93,7 +93,7 @@ bool CgroupController::SetThreadSchedPolicy(int tid, SchedPolicy policy, bool is
 bool CgroupController::AddTidToCgroup(int tid, int fd)
 {
     std::string value = std::to_string(tid);
-    int32_t len = value.length();
+    int32_t len = static_cast<int32_t>(value.length());
     if (TEMP_FAILURE_RETRY(write(fd, value.c_str(), value.length())) == len) {
         return true;
     }
