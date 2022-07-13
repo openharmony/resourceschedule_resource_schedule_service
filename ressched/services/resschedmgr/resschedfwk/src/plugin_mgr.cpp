@@ -247,17 +247,7 @@ void PluginMgr::DumpAllPlugin(std::string &result)
     std::list<PluginInfo> pluginInfoList = pluginSwitch_->GetPluginSwitch();
     for (const auto& info : pluginInfoList) {
         result.append(info.libPath + std::string(DUMP_ONE_STRING_SIZE - info.libPath.size(), ' '));
-        if (info.switchOn) {
-            result.append(" | switch on\t");
-        } else {
-            result.append(" | switch off\t");
-        }
-        std::lock_guard<std::mutex> autoLock(pluginMutex_);
-        if (pluginLibMap_.find(info.libPath) != pluginLibMap_.end()) {
-            result.append(" | running now\n");
-        } else {
-            result.append(" | disabled\n");
-        }
+        DumpPluginInfoAppend(result, info);
     }
 }
 
@@ -267,21 +257,26 @@ void PluginMgr::DumpOnePlugin(std::string &result, std::string pluginName)
     result.append(pluginName + std::string(DUMP_ONE_STRING_SIZE - pluginName.size(), ' '));
     for (const auto& info : pluginInfoList) {
         if (pluginName == info.libPath) {
-            if (info.switchOn) {
-                result.append(" | switch on\t");
-            } else {
-                result.append(" | switch off\t");
-            }
-            std::lock_guard<std::mutex> autoLock(pluginMutex_);
-            if (pluginLibMap_.find(info.libPath) != pluginLibMap_.end()) {
-                result.append(" | running now\n");
-            } else {
-                result.append(" | disabled\n");
-            }
+            DumpPluginInfoAppend(result, info);
             return;
         }
     }
     result.append(" not find!\n");
+}
+
+void PluginMgr::DumpPluginInfoAppend(std::string &result, PluginInfo info)
+{
+    if (info.switchOn) {
+        result.append(" | switch on\t");
+    } else {
+        result.append(" | switch off\t");
+    }
+    std::lock_guard<std::mutex> autoLock(pluginMutex_);
+    if (pluginLibMap_.find(info.libPath) != pluginLibMap_.end()) {
+        result.append(" | running now\n");
+    } else {
+        result.append(" | disabled\n");
+    }
 }
 
 std::string PluginMgr::GetRealConfigPath(const char* configName)
