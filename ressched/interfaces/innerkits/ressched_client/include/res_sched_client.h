@@ -16,9 +16,16 @@
 #ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_CLIENT_H
 #define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_CLIENT_H
 
-#include <unordered_map>
-#include "iremote_object.h"
-#include "ires_sched_service.h"
+#include <cstdint>              // for int64_t, uint32_t
+#include <unordered_map>         // for unordered_map
+#include <mutex>                // for mutex
+#include <iosfwd>                // for string
+#include "errors.h"              // for ErrCode
+#include "iremote_object.h"      // for IRemoteObject, IRemoteObject::DeathR...
+#include "ires_sched_service.h"  // for IResSchedService
+#include "json/value.h"          // for Value
+#include "nocopyable.h"          // for DISALLOW_COPY_AND_MOVE
+#include "refbase.h"             // for sptr, wptr
 
 namespace OHOS {
 namespace ResourceSchedule {

@@ -12,12 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "cgroup_map.h"
-
-#include "cgroup_action.h"
-#include "process_group_log.h"
-#include "process_group_util.h"
+#include "cgroup_action.h"      // for CgroupAction
+#include "process_group_log.h"  // for PGCGS_LOGE, PGCGS_LOGD, PGCGS_LOGI
 
 namespace OHOS {
 namespace ResourceSchedule {

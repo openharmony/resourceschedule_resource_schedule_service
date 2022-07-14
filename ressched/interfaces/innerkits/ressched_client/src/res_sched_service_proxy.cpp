@@ -14,8 +14,12 @@
  */
 
 #include "res_sched_service_proxy.h"
-#include "res_sched_log.h"
-#include "ipc_util.h"
+#include "ipc_types.h"       // for NO_ERROR
+#include "ipc_util.h"        // for WRITE_PARCEL
+#include "iremote_object.h"  // for IRemoteObject
+#include "message_option.h"  // for MessageOption, MessageOption::TF_ASYNC
+#include "message_parcel.h"  // for MessageParcel
+#include "res_sched_log.h"   // for RESSCHED_LOGD, RESSCHED_LOGE
 
 namespace OHOS {
 namespace ResourceSchedule {

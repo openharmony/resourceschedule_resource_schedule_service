@@ -16,9 +16,8 @@
 #ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_PROCESS_GROUP_LOG_H_
 #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_PROCESS_GROUP_LOG_H_
 
-#include <string>
-#include <vector>
-#include "hilog/log.h"
+#include "hilog/log_c.h"    // for LogLevel, LOG_CORE, LOG_LEVEL_MAX, LOG_LE...
+#include "hilog/log_cpp.h"  // for HiLogLabel
 
 namespace OHOS {
 namespace ResourceSchedule {

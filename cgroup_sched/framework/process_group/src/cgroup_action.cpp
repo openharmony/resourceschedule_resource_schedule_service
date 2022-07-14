@@ -13,17 +13,21 @@
  * limitations under the License.
  */
 #include "cgroup_action.h"
-
-#include <algorithm>
-#include <vector>
-
-#include "json/reader.h"
-#include "json/value.h"
-#include "cgroup_map.h"
-#include "config_policy_utils.h"
-#include "process_group_log.h"
-#include "process_group_util.h"
-#include "sched_policy.h"
+#include <algorithm>              // for replace
+#include <vector>                 // for vector
+#include <climits>               // for PATH_MAX
+#include <memory>                // for unique_ptr
+#include <cstdlib>               // for realpath
+#include <cstring>               // for strlen
+#include <utility>                // for pair
+#include "cgroup_controller.h"    // for CgroupController
+#include "cgroup_map.h"           // for CgroupMap
+#include "config_policy_utils.h"  // for GetOneCfgFile
+#include "json/reader.h"          // for CharReader, CharReaderBuilder
+#include "json/value.h"           // for Value
+#include "process_group_log.h"    // for PGCGS_LOGI, PGCGS_LOGE
+#include "process_group_util.h"   // for ReadFileToString
+#include "sched_policy.h"         // for SchedPolicy, SP_UPPER_LIMIT, SP_DEF...
 
 namespace OHOS {
 namespace ResourceSchedule {

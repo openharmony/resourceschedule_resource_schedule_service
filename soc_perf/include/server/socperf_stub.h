@@ -16,6 +16,7 @@
 #ifndef SOC_PERF_INCLUDE_SERVER_SOCPERF_STUB_H
 #define SOC_PERF_INCLUDE_SERVER_SOCPERF_STUB_H
 
+#include <cstdint>        // for int32_t, uint32_t
 #include "i_socperf_service.h"
 
 namespace OHOS {

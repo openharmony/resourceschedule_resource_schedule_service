@@ -16,14 +16,18 @@
 #ifndef SOC_PERF_INCLUDE_CORE_SOCPERF_HANDLER_H
 #define SOC_PERF_INCLUDE_CORE_SOCPERF_HANDLER_H
 
-#include <unistd.h>
-#include <unordered_map>
-#include <stdlib.h>
-#include <algorithm>
-#include <climits>
-#include "event_handler.h"
-#include "event_runner.h"
-#include "socperf_common.h"
+#include <cstdint>         // for int32_t
+#include <memory>           // for allocator
+#include <unordered_map>    // for unordered_map
+#include <iosfwd>           // for string
+#include <memory>           // for shared_ptr
+#include "event_handler.h"  // for EventHandler
+#include "inner_event.h"    // for InnerEvent, InnerEvent::Pointer
+namespace OHOS { namespace AppExecFwk { class EventRunner; } }
+namespace OHOS { namespace SOCPERF { class GovResNode; } }
+namespace OHOS { namespace SOCPERF { class ResAction; } }
+namespace OHOS { namespace SOCPERF { class ResNode; } }
+namespace OHOS { namespace SOCPERF { class ResStatus; } }
 
 namespace OHOS {
 namespace SOCPERF {

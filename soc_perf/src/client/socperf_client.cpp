@@ -14,6 +14,9 @@
  */
 
 #include "socperf_client.h"
+#include <new>                          // for nothrow, operator new
+#include <string>                       // for basic_string, to_string
+#include <unistd.h>                     // for getpid, gettid
 
 namespace OHOS {
 namespace SOCPERF {

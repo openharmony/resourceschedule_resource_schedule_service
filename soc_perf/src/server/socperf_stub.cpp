@@ -14,6 +14,7 @@
  */
 
 #include "socperf_stub.h"
+#include <iosfwd>               // for string
 
 namespace OHOS {
 namespace SOCPERF {

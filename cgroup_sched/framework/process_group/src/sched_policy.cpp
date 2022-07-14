@@ -13,13 +13,8 @@
  * limitations under the License.
  */
 #include "sched_policy.h"
-
-#include <array>
-#include <string>
-#include <unistd.h>
-#include "cgroup_action.h"
-#include "cgroup_map.h"
-#include "process_group_util.h"
+#include <unistd.h>         // for gettid, getpid
+#include "cgroup_action.h"  // for CgroupAction
 
 namespace OHOS {
 namespace ResourceSchedule {
