@@ -16,9 +16,9 @@
 #ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_CLIENT_H
 #define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_CLIENT_H
 
-#include <cstdint>              // for int64_t, uint32_t
+#include <cstdint>               // for int64_t, uint32_t
 #include <unordered_map>         // for unordered_map
-#include <mutex>                // for mutex
+#include <mutex>                 // for mutex
 #include <iosfwd>                // for string
 #include "errors.h"              // for ErrCode
 #include "iremote_object.h"      // for IRemoteObject, IRemoteObject::DeathR...

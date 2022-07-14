@@ -19,7 +19,7 @@
 
 #include <map>                // for map
 #include <string>             // for basic_string
-#include <functional>  // for less
+#include <functional>         // for less
 #include <iosfwd>             // for string
 #include "sched_policy.h"     // for SchedPolicy
 

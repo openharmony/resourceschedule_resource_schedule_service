@@ -16,11 +16,15 @@
 #ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_ACTION_H_
 #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_ACTION_H_
 
-#include <functional>  // for less
+#include <functional>         // for less
+#include <mutex>              // for mutex
 #include <iosfwd>             // for string
 #include <map>                // for map
 #include <string>             // for basic_string
+#include <vector>             // for vector
 #include "sched_policy.h"     // for SchedPolicy
+
+namespace Json { class Value; }
 
 namespace Json { class Value; }
 

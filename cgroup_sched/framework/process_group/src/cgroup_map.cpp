@@ -13,6 +13,12 @@
  * limitations under the License.
  */
 #include "cgroup_map.h"
+#include <cstdint>              // for uint32_t
+#include <string>               // for basic_string, operator<
+#include <cstring>              // for strcmp
+#include <type_traits>          // for remove_reference<>::type, move
+#include <utility>              // for pair, make_pair
+#include <vector>               // for vector
 #include "cgroup_action.h"      // for CgroupAction
 #include "process_group_log.h"  // for PGCGS_LOGE, PGCGS_LOGD, PGCGS_LOGI
 

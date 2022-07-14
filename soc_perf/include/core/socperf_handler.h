@@ -16,7 +16,7 @@
 #ifndef SOC_PERF_INCLUDE_CORE_SOCPERF_HANDLER_H
 #define SOC_PERF_INCLUDE_CORE_SOCPERF_HANDLER_H
 
-#include <cstdint>         // for int32_t
+#include <cstdint>          // for int32_t
 #include <memory>           // for allocator
 #include <unordered_map>    // for unordered_map
 #include <iosfwd>           // for string

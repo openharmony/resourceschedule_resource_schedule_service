@@ -16,7 +16,8 @@
 #ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_SCHED_POLICY_H_
 #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_SCHED_POLICY_H_
 
-#include <cstdint>  // for uint32_t
+#include <cstdint>    // for uint32_t
+#include <iosfwd>     // for string
 
 namespace OHOS {
 namespace ResourceSchedule {

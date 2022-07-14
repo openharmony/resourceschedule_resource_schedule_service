@@ -16,8 +16,8 @@
 #ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_SERVICE_PROXY_H
 #define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_SERVICE_PROXY_H
 
-#include <cstdint>              // for int64_t, uint32_t
-#include <functional>           // for __base
+#include <cstdint>               // for int64_t, uint32_t
+#include <functional>            // for __base
 #include "iremote_broker.h"      // for BrokerDelegator
 #include "iremote_proxy.h"       // for IRemoteProxy
 #include "ires_sched_service.h"  // for IResSchedService

@@ -1,0 +1,438 @@
+diff --git a/cgroup_sched/framework/process_group/include/cgroup_action.h b/cgroup_sched/framework/process_group/include/cgroup_action.h
+index 678b928148615b38370039d7d3da25708e541703..5028be9ae4c90553b0749b846375b0680b947b97 100644
+--- a/cgroup_sched/framework/process_group/include/cgroup_action.h
++++ b/cgroup_sched/framework/process_group/include/cgroup_action.h
+@@ -16,7 +16,13 @@
+ #ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_ACTION_H_
+ #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_ACTION_H_
+ 
+-#include "cgroup_map.h"
++#include <functional>  // for less
++#include <iosfwd>             // for string
++#include <map>                // for map
++#include <string>             // for basic_string
++#include "sched_policy.h"     // for SchedPolicy
++
++namespace Json { class Value; }
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/cgroup_sched/framework/process_group/include/cgroup_controller.h b/cgroup_sched/framework/process_group/include/cgroup_controller.h
+index 67690b044865cef3aaf33eb9de849e7bfe2c2f0f..c936a35d5bc75840af5bce927e13b95dd96125bc 100644
+--- a/cgroup_sched/framework/process_group/include/cgroup_controller.h
++++ b/cgroup_sched/framework/process_group/include/cgroup_controller.h
+@@ -17,9 +17,11 @@
+ #ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_CONTROLLER_H_
+ #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_CONTROLLER_H_
+ 
+-#include <string>
+-#include <map>
+-#include "sched_policy.h"
++#include <map>                // for map
++#include <string>             // for basic_string
++#include <functional>  // for less
++#include <iosfwd>             // for string
++#include "sched_policy.h"     // for SchedPolicy
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/cgroup_sched/framework/process_group/include/cgroup_map.h b/cgroup_sched/framework/process_group/include/cgroup_map.h
+index 44109d0a9f81cdcc29110acf11258b0a280da835..025744d5b8214bbc5451dcf0a72e211d00c7f06e 100644
+--- a/cgroup_sched/framework/process_group/include/cgroup_map.h
++++ b/cgroup_sched/framework/process_group/include/cgroup_map.h
+@@ -16,12 +16,13 @@
+ #ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_MAP_H_
+ #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_MAP_H_
+ 
+-#include <string>
+-#include <map>
+-#include <memory>
+-#include "sched_policy.h"
+-#include "json/value.h"
+-#include "cgroup_controller.h"
++#include <map>                  // for map
++#include <string>               // for basic_string, operator<
++#include <functional>    // for less
++#include <iosfwd>               // for string
++#include "cgroup_controller.h"  // for CgroupController
++#include "json/value.h"         // for Value
++#include "sched_policy.h"       // for SchedPolicy
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/cgroup_sched/framework/process_group/include/process_group_log.h b/cgroup_sched/framework/process_group/include/process_group_log.h
+index 9c285bd34079475a8966436b09378f4bd3f9d870..14c82ef4216be34ec83a8fd464355c9ac3a939b5 100644
+--- a/cgroup_sched/framework/process_group/include/process_group_log.h
++++ b/cgroup_sched/framework/process_group/include/process_group_log.h
+@@ -16,9 +16,8 @@
+ #ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_PROCESS_GROUP_LOG_H_
+ #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_PROCESS_GROUP_LOG_H_
+ 
+-#include <string>
+-#include <vector>
+-#include "hilog/log.h"
++#include "hilog/log_c.h"    // for LogLevel, LOG_CORE, LOG_LEVEL_MAX, LOG_LE...
++#include "hilog/log_cpp.h"  // for HiLogLabel
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/cgroup_sched/framework/process_group/include/sched_policy.h b/cgroup_sched/framework/process_group/include/sched_policy.h
+index f3e54805ab7b5d3a3e24f0fc14a2c7de82949f22..40e82c1fe93da6f0176d98505043a1e81a7121da 100644
+--- a/cgroup_sched/framework/process_group/include/sched_policy.h
++++ b/cgroup_sched/framework/process_group/include/sched_policy.h
+@@ -16,8 +16,7 @@
+ #ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_SCHED_POLICY_H_
+ #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_SCHED_POLICY_H_
+ 
+-#include <iostream>
+-#include <sys/types.h>
++#include <cstdint>  // for uint32_t
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/cgroup_sched/framework/process_group/src/cgroup_action.cpp b/cgroup_sched/framework/process_group/src/cgroup_action.cpp
+index 05e8530c1ea02624ab2870dfa2373e35d788a86f..a469b2606d7dcec772c4577fdcabd814c981605f 100644
+--- a/cgroup_sched/framework/process_group/src/cgroup_action.cpp
++++ b/cgroup_sched/framework/process_group/src/cgroup_action.cpp
+@@ -13,17 +13,21 @@
+  * limitations under the License.
+  */
+ #include "cgroup_action.h"
+-
+-#include <algorithm>
+-#include <vector>
+-
+-#include "json/reader.h"
+-#include "json/value.h"
+-#include "cgroup_map.h"
+-#include "config_policy_utils.h"
+-#include "process_group_log.h"
+-#include "process_group_util.h"
+-#include "sched_policy.h"
++#include <algorithm>              // for replace
++#include <vector>                 // for vector
++#include <climits>               // for PATH_MAX
++#include <memory>                // for unique_ptr
++#include <cstdlib>               // for realpath
++#include <cstring>               // for strlen
++#include <utility>                // for pair
++#include "cgroup_controller.h"    // for CgroupController
++#include "cgroup_map.h"           // for CgroupMap
++#include "config_policy_utils.h"  // for GetOneCfgFile
++#include "json/reader.h"          // for CharReader, CharReaderBuilder
++#include "json/value.h"           // for Value
++#include "process_group_log.h"    // for PGCGS_LOGI, PGCGS_LOGE
++#include "process_group_util.h"   // for ReadFileToString
++#include "sched_policy.h"         // for SchedPolicy, SP_UPPER_LIMIT, SP_DEF...
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/cgroup_sched/framework/process_group/src/cgroup_controller.cpp b/cgroup_sched/framework/process_group/src/cgroup_controller.cpp
+index 85ff31f19a65a7507710999659f4de3a1f75d135..e5f556c0dc4572a6fd2650e6f25942d5b985e3e5 100644
+--- a/cgroup_sched/framework/process_group/src/cgroup_controller.cpp
++++ b/cgroup_sched/framework/process_group/src/cgroup_controller.cpp
+@@ -13,16 +13,21 @@
+  * limitations under the License.
+  */
+ #include "cgroup_controller.h"
+-
+-#include <cerrno>
+-#include <fcntl.h>
+-#include <sys/stat.h>
+-#include <sys/syscall.h>
+-#include <unistd.h>
+-#include "cgroup_action.h"
+-#include "process_group_macro.h"
+-#include "process_group_log.h"
+-#include "process_group_util.h"
++#include <fcntl.h>               // for open, O_WRONLY
++#include <stddef.h>              // for size_t
++#include <cstdint>              // for int32_t
++#include <unistd.h>              // for close, TEMP_FAILURE_RETRY, access
++#include <cerrno>              // for errno
++#include <map>                 // for map
++#include <string>                // for basic_string, operator+, to_string
++#include <type_traits>           // for move
++#include <utility>               // for pair
++#include <vector>                // for vector
++#include "bits/errno.h"          // for EINVAL, ESRCH
++#include "bits/fcntl.h"          // for O_CLOEXEC
++#include "cgroup_action.h"       // for CgroupAction
++#include "process_group_log.h"   // for PGCGS_LOGE
++#include "process_group_util.h"  // for StringPrintf, GetRealPath, ReadFileT...
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/cgroup_sched/framework/process_group/src/cgroup_map.cpp b/cgroup_sched/framework/process_group/src/cgroup_map.cpp
+index b62d80e04e10855ab379c4fa441cf16d8b23f900..bfab054290ca1dcfc04c788d30038fca6bda3f6d 100644
+--- a/cgroup_sched/framework/process_group/src/cgroup_map.cpp
++++ b/cgroup_sched/framework/process_group/src/cgroup_map.cpp
+@@ -12,12 +12,9 @@
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+-
+ #include "cgroup_map.h"
+-
+-#include "cgroup_action.h"
+-#include "process_group_log.h"
+-#include "process_group_util.h"
++#include "cgroup_action.h"      // for CgroupAction
++#include "process_group_log.h"  // for PGCGS_LOGE, PGCGS_LOGD, PGCGS_LOGI
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/cgroup_sched/framework/process_group/src/process_group_log.cpp b/cgroup_sched/framework/process_group/src/process_group_log.cpp
+index 3fc09c0da7588a00baf30dc2487acf7b001ee580..19a51433ba4587df62c7716d705bf968279e9d89 100644
+--- a/cgroup_sched/framework/process_group/src/process_group_log.cpp
++++ b/cgroup_sched/framework/process_group/src/process_group_log.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "process_group_log.h"
++#include <vector>  // for vector
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/cgroup_sched/framework/process_group/src/sched_policy.cpp b/cgroup_sched/framework/process_group/src/sched_policy.cpp
+index 6e25967b91c65840b5c75467da5abffde3749515..855208c8998e886407acddab3b68d086d9edd807 100644
+--- a/cgroup_sched/framework/process_group/src/sched_policy.cpp
++++ b/cgroup_sched/framework/process_group/src/sched_policy.cpp
+@@ -13,13 +13,8 @@
+  * limitations under the License.
+  */
+ #include "sched_policy.h"
+-
+-#include <array>
+-#include <string>
+-#include <unistd.h>
+-#include "cgroup_action.h"
+-#include "cgroup_map.h"
+-#include "process_group_util.h"
++#include <unistd.h>         // for gettid, getpid
++#include "cgroup_action.h"  // for CgroupAction
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/ressched/interfaces/innerkits/ressched_client/include/res_sched_client.h b/ressched/interfaces/innerkits/ressched_client/include/res_sched_client.h
+index 94436d6e0f494a25532eefc09e59bf24b9eb621e..75a223d0e8f67fed795fe37384a98496fd216da4 100644
+--- a/ressched/interfaces/innerkits/ressched_client/include/res_sched_client.h
++++ b/ressched/interfaces/innerkits/ressched_client/include/res_sched_client.h
+@@ -16,9 +16,16 @@
+ #ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_CLIENT_H
+ #define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_CLIENT_H
+ 
+-#include <unordered_map>
+-#include "iremote_object.h"
+-#include "ires_sched_service.h"
++#include <cstdint>              // for int64_t, uint32_t
++#include <unordered_map>         // for unordered_map
++#include <mutex>                // for mutex
++#include <iosfwd>                // for string
++#include "errors.h"              // for ErrCode
++#include "iremote_object.h"      // for IRemoteObject, IRemoteObject::DeathR...
++#include "ires_sched_service.h"  // for IResSchedService
++#include "json/value.h"          // for Value
++#include "nocopyable.h"          // for DISALLOW_COPY_AND_MOVE
++#include "refbase.h"             // for sptr, wptr
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/ressched/interfaces/innerkits/ressched_client/include/res_sched_service_proxy.h b/ressched/interfaces/innerkits/ressched_client/include/res_sched_service_proxy.h
+index 433b0e2112e969f46ed31e25727a903b9a27da61..a777c6355edc56fc9b4227f99f5c1a00ed733923 100644
+--- a/ressched/interfaces/innerkits/ressched_client/include/res_sched_service_proxy.h
++++ b/ressched/interfaces/innerkits/ressched_client/include/res_sched_service_proxy.h
+@@ -16,9 +16,15 @@
+ #ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_SERVICE_PROXY_H
+ #define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_SERVICE_PROXY_H
+ 
+-#include "iremote_proxy.h"
+-#include "iremote_object.h"
+-#include "ires_sched_service.h"
++#include <cstdint>              // for int64_t, uint32_t
++#include <functional>           // for __base
++#include "iremote_broker.h"      // for BrokerDelegator
++#include "iremote_proxy.h"       // for IRemoteProxy
++#include "ires_sched_service.h"  // for IResSchedService
++#include "json/value.h"          // for Value
++#include "nocopyable.h"          // for DISALLOW_COPY_AND_MOVE
++#include "refbase.h"             // for sptr
++namespace OHOS { class IRemoteObject; }
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/ressched/interfaces/innerkits/ressched_client/src/res_sched_client.cpp b/ressched/interfaces/innerkits/ressched_client/src/res_sched_client.cpp
+index 2393e348b8a426e9ba74c738a21b98cfbda27287..b9cf59d070c9d0f62d14e454f53fd4e236b8728e 100644
+--- a/ressched/interfaces/innerkits/ressched_client/src/res_sched_client.cpp
++++ b/ressched/interfaces/innerkits/ressched_client/src/res_sched_client.cpp
+@@ -12,15 +12,18 @@
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+-#include <string>
+-#include <unistd.h>
+-#include "if_system_ability_manager.h"
+-#include "iservice_registry.h"
+-#include "res_sched_log.h"
+-#include "res_sched_errors.h"
+-#include "system_ability_definition.h"
+-#include "string_ex.h"
+ #include "res_sched_client.h"
++#include <string>                       // for to_string
++#include <unistd.h>                     // for getpid
++#include <new>                          // for nothrow, operator new
++#include <unordered_map>                // for unordered_map, __hash_map_con...
++#include <utility>                      // for pair
++#include "if_system_ability_manager.h"  // for ISystemAbilityManager
++#include "iremote_broker.h"             // for iface_cast
++#include "iservice_registry.h"          // for SystemAbilityManagerClient
++#include "res_sched_errors.h"           // for GET_RES_SCHED_SERVICE_FAILED
++#include "res_sched_log.h"              // for RESSCHED_LOGE, RESSCHED_LOGD
++#include "system_ability_definition.h"  // for RES_SCHED_SYS_ABILITY_ID
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/ressched/interfaces/innerkits/ressched_client/src/res_sched_service_proxy.cpp b/ressched/interfaces/innerkits/ressched_client/src/res_sched_service_proxy.cpp
+index 6e57450caf49c46150b3fb6f2a5d01f526dc0834..da01f1d6ae99fa1f718b71ae994c91e2fe92ffa1 100644
+--- a/ressched/interfaces/innerkits/ressched_client/src/res_sched_service_proxy.cpp
++++ b/ressched/interfaces/innerkits/ressched_client/src/res_sched_service_proxy.cpp
+@@ -14,8 +14,12 @@
+  */
+ 
+ #include "res_sched_service_proxy.h"
+-#include "res_sched_log.h"
+-#include "ipc_util.h"
++#include "ipc_types.h"       // for NO_ERROR
++#include "ipc_util.h"        // for WRITE_PARCEL
++#include "iremote_object.h"  // for IRemoteObject
++#include "message_option.h"  // for MessageOption, MessageOption::TF_ASYNC
++#include "message_parcel.h"  // for MessageParcel
++#include "res_sched_log.h"   // for RESSCHED_LOGD, RESSCHED_LOGE
+ 
+ namespace OHOS {
+ namespace ResourceSchedule {
+diff --git a/soc_perf/include/client/socperf_client.h b/soc_perf/include/client/socperf_client.h
+index 37aee39b3e62c4b82d2d9e6a7d4e59693d79232b..e56356d2e82b10bafcec288bb5fc5a6c88b3b4a6 100644
+--- a/soc_perf/include/client/socperf_client.h
++++ b/soc_perf/include/client/socperf_client.h
+@@ -16,8 +16,10 @@
+ #ifndef SOC_PERF_INCLUDE_CLIENT_SOCPERF_CLIENT_H
+ #define SOC_PERF_INCLUDE_CLIENT_SOCPERF_CLIENT_H
+ 
+-#include "i_socperf_service.h"
+-#include "unistd.h"
++#include <stdint.h>             // for int32_t
++#include <iosfwd>               // for string
++#include <vector>               // for vector
++#include "i_socperf_service.h"  // for ISocPerfService
+ 
+ namespace OHOS {
+ namespace SOCPERF {
+diff --git a/soc_perf/include/core/socperf_handler.h b/soc_perf/include/core/socperf_handler.h
+index 46788051abf8a8158c1a88faf04cabf661f51612..6f451c9bebc80f7f36b62d66263b66bbfd8d93c6 100644
+--- a/soc_perf/include/core/socperf_handler.h
++++ b/soc_perf/include/core/socperf_handler.h
+@@ -16,14 +16,18 @@
+ #ifndef SOC_PERF_INCLUDE_CORE_SOCPERF_HANDLER_H
+ #define SOC_PERF_INCLUDE_CORE_SOCPERF_HANDLER_H
+ 
+-#include <unistd.h>
+-#include <unordered_map>
+-#include <stdlib.h>
+-#include <algorithm>
+-#include <climits>
+-#include "event_handler.h"
+-#include "event_runner.h"
+-#include "socperf_common.h"
++#include <cstdint>         // for int32_t
++#include <memory>           // for allocator
++#include <unordered_map>    // for unordered_map
++#include <iosfwd>           // for string
++#include <memory>           // for shared_ptr
++#include "event_handler.h"  // for EventHandler
++#include "inner_event.h"    // for InnerEvent, InnerEvent::Pointer
++namespace OHOS { namespace AppExecFwk { class EventRunner; } }
++namespace OHOS { namespace SOCPERF { class GovResNode; } }
++namespace OHOS { namespace SOCPERF { class ResAction; } }
++namespace OHOS { namespace SOCPERF { class ResNode; } }
++namespace OHOS { namespace SOCPERF { class ResStatus; } }
+ 
+ namespace OHOS {
+ namespace SOCPERF {
+diff --git a/soc_perf/include/server/socperf_stub.h b/soc_perf/include/server/socperf_stub.h
+index b8d80b981391110d46f98bac5d686e9b53b71802..dcb1dad7daa5349f15fd573eceb6c59669cd0ec4 100644
+--- a/soc_perf/include/server/socperf_stub.h
++++ b/soc_perf/include/server/socperf_stub.h
+@@ -16,6 +16,7 @@
+ #ifndef SOC_PERF_INCLUDE_SERVER_SOCPERF_STUB_H
+ #define SOC_PERF_INCLUDE_SERVER_SOCPERF_STUB_H
+ 
++#include <cstdint>        // for int32_t, uint32_t
+ #include "i_socperf_service.h"
+ 
+ namespace OHOS {
+diff --git a/soc_perf/src/client/socperf_client.cpp b/soc_perf/src/client/socperf_client.cpp
+index 75e814998dba20a5b2fcbe4e9e00b3292b2757ba..cb8540a3554dba89c6b5c07b25c6b42477ef0b3f 100644
+--- a/soc_perf/src/client/socperf_client.cpp
++++ b/soc_perf/src/client/socperf_client.cpp
+@@ -14,6 +14,9 @@
+  */
+ 
+ #include "socperf_client.h"
++#include <new>                          // for nothrow, operator new
++#include <string>                       // for basic_string, to_string
++#include <unistd.h>                     // for getpid, gettid
+ 
+ namespace OHOS {
+ namespace SOCPERF {
+diff --git a/soc_perf/src/core/socperf_handler.cpp b/soc_perf/src/core/socperf_handler.cpp
+index 9e8b161b8261e5962385c109055b431e66aead51..c92ae3558ec42f8a5f97adaa8ebd74f386aa9fce 100644
+--- a/soc_perf/src/core/socperf_handler.cpp
++++ b/soc_perf/src/core/socperf_handler.cpp
+@@ -14,6 +14,17 @@
+  */
+ 
+ #include "socperf_handler.h"
++#include <cstdio>           // for FILE
++#include <cstdint>           // for int32_t
++#include <climits>          // for PATH_MAX
++#include <list>              // for list, __list_iterator, operator!=
++#include <new>               // for operator delete, operator new
++#include <cstdlib>          // for realpath
++#include <string>            // for basic_string, to_string
++#include <unordered_map>     // for unordered_map, operator==, operator!=
++#include <utility>           // for pair
++#include <vector>            // for vector
++#include "socperf_common.h"  // for ResStatus, ResAction, ResNode, INVALID_V...
+ 
+ namespace OHOS {
+ namespace SOCPERF {
+diff --git a/soc_perf/src/server/socperf_stub.cpp b/soc_perf/src/server/socperf_stub.cpp
+index bfb47ddaf386992326f40f181b24b530bdfe1ff3..712feb652151f2a84b2d527b8b1c249d71bf3752 100644
+--- a/soc_perf/src/server/socperf_stub.cpp
++++ b/soc_perf/src/server/socperf_stub.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "socperf_stub.h"
++#include <iosfwd>               // for string
+ 
+ namespace OHOS {
+ namespace SOCPERF {
+diff --git a/soc_perf/test/unittest/socperf_test.cpp b/soc_perf/test/unittest/socperf_test.cpp
+index be53269d3bd7bba9c0c5e800c9c857aff02595f0..45823f0fd09e56c23530e2f24f7db179bb879a68 100644
+--- a/soc_perf/test/unittest/socperf_test.cpp
++++ b/soc_perf/test/unittest/socperf_test.cpp
+@@ -13,7 +13,11 @@
+  * limitations under the License.
+  */
+ 
+-#include "socperf_client.h"
++#include <cstdint>           // for int32_t
++#include <cstdlib>          // for atoi
++#include <vector>            // for vector
++#include <cstring>          // for strcmp
++#include "socperf_client.h"  // for SocPerfClient
+ 
+ const static int32_t PARAMETERS_NUM_MIN        = 2;
+ const static int32_t PARAMETERS_NUM_WITHOUT_EX = 3;

@@ -12,14 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "socperf_handler.h"
-#include <cstdio>           // for FILE
+#include <cstdio>            // for FILE
 #include <cstdint>           // for int32_t
-#include <climits>          // for PATH_MAX
+#include <climits>           // for PATH_MAX
 #include <list>              // for list, __list_iterator, operator!=
 #include <new>               // for operator delete, operator new
-#include <cstdlib>          // for realpath
+#include <cstdlib>           // for realpath
 #include <string>            // for basic_string, to_string
 #include <unordered_map>     // for unordered_map, operator==, operator!=
 #include <utility>           // for pair
