@@ -12,15 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <string>
-#include <unistd.h>
-#include "if_system_ability_manager.h"
-#include "iservice_registry.h"
-#include "res_sched_log.h"
-#include "res_sched_errors.h"
-#include "system_ability_definition.h"
-#include "string_ex.h"
 #include "res_sched_client.h"
+#include <string>                       // for to_string
+#include <unistd.h>                     // for getpid
+#include <new>                          // for nothrow, operator new
+#include <unordered_map>                // for unordered_map, __hash_map_con...
+#include <utility>                      // for pair
+#include "if_system_ability_manager.h"  // for ISystemAbilityManager
+#include "iremote_broker.h"             // for iface_cast
+#include "iservice_registry.h"          // for SystemAbilityManagerClient
+#include "res_sched_errors.h"           // for GET_RES_SCHED_SERVICE_FAILED
+#include "res_sched_log.h"              // for RESSCHED_LOGE, RESSCHED_LOGD
+#include "system_ability_definition.h"  // for RES_SCHED_SYS_ABILITY_ID
 
 namespace OHOS {
 namespace ResourceSchedule {

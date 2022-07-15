@@ -16,12 +16,13 @@
 #ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_MAP_H_
 #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_MAP_H_
 
-#include <string>
-#include <map>
-#include <memory>
-#include "sched_policy.h"
-#include "json/value.h"
-#include "cgroup_controller.h"
+#include <map>                  // for map
+#include <string>               // for basic_string, operator<
+#include <functional>           // for less
+#include <iosfwd>               // for string
+#include "cgroup_controller.h"  // for CgroupController
+#include "json/value.h"         // for Value
+#include "sched_policy.h"       // for SchedPolicy
 
 namespace OHOS {
 namespace ResourceSchedule {
