@@ -27,7 +27,7 @@ void AudioRingModeObserver::OnRingerModeUpdated(const AudioStandard::AudioRinger
     if (ringerMode != mode_) {
         const Json::Value payload = "";
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_AUDIO_RING_MODE_CHANGE, ringerMode, payload);
-    } 
+    }
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

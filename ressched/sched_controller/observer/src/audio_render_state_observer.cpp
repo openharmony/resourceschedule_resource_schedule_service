@@ -22,7 +22,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 void AudioRenderStateObserver::OnRendererStateChange(
-        const std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos)
+    const std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos)
 {
     RESSCHED_LOGD("enter AudioRenderStateObserver::OnRendererStateChange");
     for (const auto &audioRendererChangeInfo : audioRendererChangeInfos) {
