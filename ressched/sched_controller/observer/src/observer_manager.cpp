@@ -68,12 +68,14 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(AUDIO_POLICY_SERVICE_ID, systemAbilityManager);
     handleObserverMap_ = {
         {DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::InitCameraObserver, std::placeholders::_1)},
-        {TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, std::bind(&ObserverManager::InitTelephonyObserver, std::placeholders::_1)},
+        {TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
+            std::bind(&ObserverManager::InitTelephonyObserver, std::placeholders::_1)},
         {AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1)}
     };
     removeObserverMap_ = {
         {DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::DisableCameraObserver, std::placeholders::_1)},
-        {TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, std::bind(&ObserverManager::DisableTelephonyObserver, std::placeholders::_1)},
+        {TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
+            std::bind(&ObserverManager::DisableTelephonyObserver, std::placeholders::_1)},
         {AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1)}
     };
 }
@@ -185,7 +187,8 @@ void ObserverManager::InitAudioObserver()
     if (!audioRenderStateObserver_) {
         audioRenderStateObserver_ = std::make_shared<AudioRenderStateObserver>();
     }
-    int32_t res = AudioStandard::AudioStreamManager::GetInstance()->RegisterAudioRendererEventListener(pid_, audioRenderStateObserver_);
+    int32_t res = AudioStandard::AudioStreamManager::GetInstance()->RegisterAudioRendererEventListener(pid_,
+        audioRenderStateObserver_);
     if (res == TELEPHONY_SUCCESS) {
         RESSCHED_LOGD("ObserverManager init audioRenderStateObserver successfully");
     } else {
@@ -205,7 +208,8 @@ void ObserverManager::InitAudioObserver()
     if (!audioVolumeKeyObserver_) {
         audioVolumeKeyObserver_ = std::make_shared<AudioVolumeKeyObserver>();
     }
-    res = AudioStandard::AudioSystemManager::GetInstance()->RegisterVolumeKeyEventCallback(pid_, audioVolumeKeyObserver_);
+    res = AudioStandard::AudioSystemManager::GetInstance()->RegisterVolumeKeyEventCallback(pid_,
+        audioVolumeKeyObserver_);
     if (res == TELEPHONY_SUCCESS) {
         RESSCHED_LOGD("ObserverManager init audioVolumeKeyObserver successfully");
     } else {

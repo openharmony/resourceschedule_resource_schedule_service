@@ -28,7 +28,8 @@ void AudioRenderStateObserver::OnRendererStateChange(
     for (const auto &audioRendererChangeInfo : audioRendererChangeInfos) {
         Json::Value payload;
         payload["uid"] = std::to_string(audioRendererChangeInfo->clientUID);
-        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, audioRendererChangeInfo->rendererState, payload);
+        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
+            audioRendererChangeInfo->rendererState, payload);
     }
 }
 } // namespace ResourceSchedule
