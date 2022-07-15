@@ -23,8 +23,6 @@
 #include <type_traits>           // for move
 #include <utility>               // for pair
 #include <vector>                // for vector
-#include "bits/errno.h"          // for EINVAL, ESRCH
-#include "bits/fcntl.h"          // for O_CLOEXEC
 #include "cgroup_action.h"       // for CgroupAction
 #include "process_group_log.h"   // for PGCGS_LOGE
 #include "process_group_util.h"  // for StringPrintf, GetRealPath, ReadFileT...
