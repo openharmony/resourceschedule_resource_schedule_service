@@ -39,12 +39,12 @@ ohos_shared_library("sched_controller") {
     "${cgroup_sched_common}/cgroup_sched_log.cpp",
     "${cgroup_sched_framework}/utils/ressched_utils.cpp",
     "common_event/src/event_controller.cpp",
-    "observer/src/camera_observer.cpp",
-    "observer/src/observer_manager.cpp",
-    "observer/src/sched_telephony_observer.cpp",
     "observer/src/audio_render_state_observer.cpp",
     "observer/src/audio_ring_mode_observer.cpp",
     "observer/src/audio_volume_key_observer.cpp",
+    "observer/src/camera_observer.cpp",
+    "observer/src/observer_manager.cpp",
+    "observer/src/sched_telephony_observer.cpp",
   ]
 
   deps = [
