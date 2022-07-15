@@ -74,6 +74,18 @@ enum : uint32_t {
     RES_TYPE_CALL_STATE_UPDATE,
     // Other process modify the thread Qos, value for client name id, payload: tid : qos , clientpid, pid
     RES_TYPE_THREAD_QOS_CHANGE,
+    // audio render state change; value -1 : RENDERER_INVALID, value 0 : RENDERER_NEW, value 1 : RENDERER_PREPARED,
+    // value 2 : RENDERER_RUNNING, value 3 : RENDERER_STOPPED, value 4 : RENDERER_RELEASED, value 5 : RENDERER_PAUSED
+    // payload:uid
+    RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
+    // audio ring mode change; value -1 : RINGER_MODE_NORMAL, value -1 : RINGER_MODE_SILENT, value -1 : RINGER_MODE_VIBRATE
+    RES_TYPE_AUDIO_RING_MODE_CHANGE,
+    // audio volume key change; value -1 : STREAM_DEFAULT, value 0 : STREAM_VOICE_CALL, value 1 : STREAM_MUSIC,
+    // value 2 : STREAM_RING, value 3 : STREAM_MEDIA, value 4 : STREAM_VOICE_ASSISTANT,  value 5 : STREAM_SYSTEM,
+    // value 6 : STREAM_ALARM, value 7 : STREAM_NOTIFICATION, value 8 : STREAM_BLUETOOTH_SCO, value 9 : STREAM_ENFORCED_AUDIBLE,
+    // value 10 : STREAM_DTMF, value 11 : STREAM_TTS, value 12 : STREAM_ACCESSIBILITY, value 13 : STREAM_RECORDING,
+    // payload:volumeKey
+    RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
 };
 } // namespace ResType
 } // namespace ResourceSchedule

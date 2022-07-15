@@ -16,10 +16,15 @@
 #ifndef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_OBSERVER_MANAGER_H
 #define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_OBSERVER_MANAGER_H
 
+#include "if_system_ability_manager.h"
+#include "system_ability_status_change_stub.h"
+
 #include "camera_observer.h"
 #include "sched_telephony_observer.h"
+#include "audio_render_state_observer.h"
+#include "audio_ring_mode_observer.h"
+#include "audio_volume_key_observer.h"
 #include "single_instance.h"
-#include "system_ability_status_change_stub.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -44,13 +49,20 @@ public:
     void DisableCameraObserver();
     void InitTelephonyObserver();
     void DisableTelephonyObserver();
+    void InitAudioObserver();
+    void DisableAudioObserver();
     void InitSysAbilityListener();
+    void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
 
     int32_t slotId_ = 0;
-    std::map<int32_t, std::function<void()>> handleObserverMap_;
-    std::map<int32_t, std::function<void()>> removeObserverMap_;
+    pid_t pid_;
+    std::map<int32_t, std::function<void(ObserverManager *)>> handleObserverMap_;
+    std::map<int32_t, std::function<void(ObserverManager *)>> removeObserverMap_;
     std::shared_ptr<HiviewDFX::HiSysEventSubscribeCallBack> cameraObserver_ = nullptr;
     sptr<SchedTelephonyObserver> telephonyObserver_ = nullptr;
+    std::shared_ptr<AudioRenderStateObserver> audioRenderStateObserver_ = nullptr;
+    std::shared_ptr<AudioRingModeObserver> audioRingModeObserver_ = nullptr;
+    std::shared_ptr<AudioVolumeKeyObserver> audioVolumeKeyObserver_ = nullptr;
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
 };
 } // namespace ResourceSchedule
