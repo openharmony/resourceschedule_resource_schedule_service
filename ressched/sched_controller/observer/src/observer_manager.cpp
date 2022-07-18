@@ -25,7 +25,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-const static int8_t TELEPHONY_SUCCESS = 0;
+const static int8_t OPERATION_SUCCESS = 0;
 IMPLEMENT_SINGLE_INSTANCE(ObserverManager)
 
 void ObserverManager::Init()
@@ -161,7 +161,7 @@ void ObserverManager::InitTelephonyObserver()
     slotId_ = 0;
     auto res = Telephony::TelephonyObserverClient::GetInstance().AddStateObserver(
         telephonyObserver_, slotId_, Telephony::TelephonyObserverBroker::OBSERVER_MASK_CALL_STATE, true);
-    if (res == TELEPHONY_SUCCESS) {
+    if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager init telephony observer successfully");
     } else {
         RESSCHED_LOGW("ObserverManager init telephony observer failed");
@@ -183,13 +183,13 @@ void ObserverManager::DisableTelephonyObserver()
 
 void ObserverManager::InitAudioObserver()
 {
-    RESSCHED_LOGI("Init audio observer");
+    RESSCHED_LOGI("ObserverManager Init audio observer, pid: %{public}d", pid_);
     if (!audioRenderStateObserver_) {
         audioRenderStateObserver_ = std::make_shared<AudioRenderStateObserver>();
     }
-    int32_t res = AudioStandard::AudioStreamManager::GetInstance()->RegisterAudioRendererEventListener(pid_,
+    auto res = AudioStandard::AudioStreamManager::GetInstance()->RegisterAudioRendererEventListener(pid_,
         audioRenderStateObserver_);
-    if (res == TELEPHONY_SUCCESS) {
+    if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager init audioRenderStateObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager init audioRenderStateObserver failed");
@@ -199,7 +199,7 @@ void ObserverManager::InitAudioObserver()
         audioRingModeObserver_ = std::make_shared<AudioRingModeObserver>();
     }
     res = AudioStandard::AudioSystemManager::GetInstance()->SetRingerModeCallback(pid_, audioRingModeObserver_);
-    if (res == TELEPHONY_SUCCESS) {
+    if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager init audioRingModeObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager init audioRingModeObserver failed");
@@ -210,7 +210,7 @@ void ObserverManager::InitAudioObserver()
     }
     res = AudioStandard::AudioSystemManager::GetInstance()->RegisterVolumeKeyEventCallback(pid_,
         audioVolumeKeyObserver_);
-    if (res == TELEPHONY_SUCCESS) {
+    if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager init audioVolumeKeyObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager init audioVolumeKeyObserver failed");
@@ -220,24 +220,24 @@ void ObserverManager::InitAudioObserver()
 void ObserverManager::DisableAudioObserver()
 {
     RESSCHED_LOGI("Disable telephony observer");
-    if (!audioVolumeKeyObserver_) {
+    if (!audioRenderStateObserver_) {
         RESSCHED_LOGD("ObserverManager has been disable audioRenderStateObserver");
         return ;
     }
     auto res = AudioStandard::AudioStreamManager::GetInstance()->UnregisterAudioRendererEventListener(pid_);
-    if (res == TELEPHONY_SUCCESS) {
+    if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager disable audioVolumeKeyObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager disable audioVolumeKeyObserver failed");
     }
-    audioVolumeKeyObserver_ = nullptr;
+    audioRenderStateObserver_ = nullptr;
 
     if (!audioRingModeObserver_) {
         RESSCHED_LOGD("ObserverManager has been disable audioRingModeObserver");
         return ;
     }
     res = AudioStandard::AudioSystemManager::GetInstance()->UnsetRingerModeCallback(pid_);
-    if (res == TELEPHONY_SUCCESS) {
+    if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager disable audioVolumeKeyObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager disable audioVolumeKeyObserver failed");
@@ -249,7 +249,7 @@ void ObserverManager::DisableAudioObserver()
         return ;
     }
     res = AudioStandard::AudioSystemManager::GetInstance()->UnregisterVolumeKeyEventCallback(pid_);
-    if (res == TELEPHONY_SUCCESS) {
+    if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager disable audioVolumeKeyObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager disable audioVolumeKeyObserver failed");
