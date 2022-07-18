@@ -23,7 +23,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 void AudioRingModeObserver::OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode)
 {
-    RESSCHED_LOGD("enter AudioRenderStateObserver::OnRendererStateChange");
+    RESSCHED_LOGD("enter AudioRingModeObserver::OnRingerModeUpdated");
     if (ringerMode != mode_) {
         const Json::Value payload = "";
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_AUDIO_RING_MODE_CHANGE, ringerMode, payload);

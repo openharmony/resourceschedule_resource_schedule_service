@@ -55,7 +55,7 @@ public:
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
 
     int32_t slotId_ = 0;
-    pid_t pid_;
+    pid_t pid_ = -1;
     std::map<int32_t, std::function<void(ObserverManager *)>> handleObserverMap_;
     std::map<int32_t, std::function<void(ObserverManager *)>> removeObserverMap_;
     std::shared_ptr<HiviewDFX::HiSysEventSubscribeCallBack> cameraObserver_ = nullptr;
