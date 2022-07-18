@@ -24,7 +24,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 class AudioVolumeKeyObserver : public AudioStandard::VolumeKeyEventCallback {
 public:
-    void OnVolumeKeyEvent(AudioStandard::AudioStreamType streamType, int32_t volumeLevel, bool isUpdateUi);
+    void OnVolumeKeyEvent(VolumeEvent volumeEvent) override;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -25,7 +25,7 @@ namespace ResourceSchedule {
 class AudioRenderStateObserver : public AudioStandard::AudioRendererStateChangeCallback {
 public:
     void OnRendererStateChange(
-        const std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos);
+        const std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos) override;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

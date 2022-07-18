@@ -24,7 +24,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 class AudioRingModeObserver : public AudioStandard::AudioRingerModeCallback {
 public:
-    void OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode);
+    void OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode) override;
 private:
     int32_t mode_ = -1;
 };

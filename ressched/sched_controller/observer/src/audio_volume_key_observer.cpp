@@ -21,17 +21,14 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-void AudioVolumeKeyObserver::OnVolumeKeyEvent(AudioStandard::AudioStreamType streamType, int32_t volumeLevel,
-    bool isUpdateUi)
+void AudioVolumeKeyObserver::OnVolumeKeyEvent(VolumeEvent volumeEvent)
 {
     RESSCHED_LOGD("enter AudioVolumeKeyObserver::OnVolumeKeyEvent, streamType: %{public}d, volumeLevel: %{public}d",
-        streamType, volumeLevel);
-    if (streamType == AudioStandard::AudioStreamType::STREAM_MEDIA) {
-        Json::Value payload;
-        payload["streamType"] = std::to_string(streamType);
-        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
-            volumeLevel, payload);
-    }
+        volumeEvent.volumeType, volumeEvent.volume);
+    Json::Value payload;
+    payload["volumeType"] = std::to_string(volumeEvent.volumeType);
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
+        volumeEvent.volume, payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

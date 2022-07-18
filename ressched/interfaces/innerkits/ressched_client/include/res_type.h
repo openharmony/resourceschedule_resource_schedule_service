@@ -81,7 +81,7 @@ enum : uint32_t {
     // audio ring mode change; value 0 : RINGER_MODE_NORMAL, value 1 : RINGER_MODE_SILENT
     // value 2 : RINGER_MODE_VIBRATE
     RES_TYPE_AUDIO_RING_MODE_CHANGE,
-    // audio volume key change; value volumeKey, payload streamType eg.
+    // audio volume key change; value volume, payload volumeType eg.
     // type -1 : STREAM_DEFAULT, type 0 : STREAM_VOICE_CALL, type 1 : STREAM_MUSIC, type 2 : STREAM_RING,
     // type 3 : STREAM_MEDIA, type 4 : STREAM_VOICE_ASSISTANT,  type 5 : STREAM_SYSTEM, type 6 : STREAM_ALARM,
     // type 7 : STREAM_NOTIFICATION, type 8 : STREAM_BLUETOOTH_SCO, type 9 : STREAM_ENFORCED_AUDIBLE,
