@@ -25,7 +25,7 @@ void AudioRenderStateObserver::OnRendererStateChange(
     const std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos)
 {
     RESSCHED_LOGD("enter AudioRenderStateObserver::OnRendererStateChange, state: %{public}d",
-        audioRendererChangeInfo->rendererState);
+        audioRendererChangeInfos->rendererState);
     for (const auto &audioRendererChangeInfo : audioRendererChangeInfos) {
         Json::Value payload;
         payload["uid"] = std::to_string(audioRendererChangeInfo->clientUID);
