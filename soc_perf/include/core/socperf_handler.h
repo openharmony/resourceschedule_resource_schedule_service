@@ -22,8 +22,8 @@
 #include <iosfwd>           // for string
 #include <memory>           // for shared_ptr
 #include "event_handler.h"  // for EventHandler
+#include "event_runner.h"
 #include "inner_event.h"    // for InnerEvent, InnerEvent::Pointer
-namespace OHOS { namespace AppExecFwk { class EventRunner; } }
 namespace OHOS { namespace SOCPERF { class GovResNode; } }
 namespace OHOS { namespace SOCPERF { class ResAction; } }
 namespace OHOS { namespace SOCPERF { class ResNode; } }
