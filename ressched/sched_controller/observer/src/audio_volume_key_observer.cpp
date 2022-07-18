@@ -21,7 +21,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-void AudioVolumeKeyObserver::OnVolumeKeyEvent(VolumeEvent volumeEvent)
+void AudioVolumeKeyObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
 {
     RESSCHED_LOGD("enter AudioVolumeKeyObserver::OnVolumeKeyEvent, streamType: %{public}d, volumeLevel: %{public}d",
         volumeEvent.volumeType, volumeEvent.volume);
