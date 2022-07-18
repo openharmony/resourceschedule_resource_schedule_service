@@ -24,7 +24,8 @@ namespace ResourceSchedule {
 void AudioVolumeKeyObserver::OnVolumeKeyEvent(AudioStandard::AudioStreamType streamType, int32_t volumeLevel,
     bool isUpdateUi)
 {
-    RESSCHED_LOGD("enter AudioVolumeKeyObserver::OnVolumeKeyEvent");
+    RESSCHED_LOGD("enter AudioVolumeKeyObserver::OnVolumeKeyEvent, streamType: %{public}d, volumeLevel: %{public}d",
+        streamType, volumeLevel);
     if (streamType == AudioStandard::AudioStreamType::STREAM_MEDIA) {
         Json::Value payload;
         payload["streamType"] = std::to_string(streamType);
