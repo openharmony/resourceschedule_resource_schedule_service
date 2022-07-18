@@ -81,11 +81,11 @@ enum : uint32_t {
     // audio ring mode change; value 0 : RINGER_MODE_NORMAL, value 1 : RINGER_MODE_SILENT
     // value 2 : RINGER_MODE_VIBRATE
     RES_TYPE_AUDIO_RING_MODE_CHANGE,
-    // audio volume key change; value -1 : STREAM_DEFAULT, value 0 : STREAM_VOICE_CALL, value 1 : STREAM_MUSIC,
-    // value 2 : STREAM_RING, value 3 : STREAM_MEDIA, value 4 : STREAM_VOICE_ASSISTANT,  value 5 : STREAM_SYSTEM,
-    // value 6 : STREAM_ALARM, value 7 : STREAM_NOTIFICATION, value 8 : STREAM_BLUETOOTH_SCO,
-    // value 9 : STREAM_ENFORCED_AUDIBLE, value 10 : STREAM_DTMF, value 11 : STREAM_TTS
-    // value 12 : STREAM_ACCESSIBILITY, value 13 : STREAM_RECORDING, payload:volumeKey
+    // audio volume key change; value volumeKey, payload streamType eg.
+    // type -1 : STREAM_DEFAULT, type 0 : STREAM_VOICE_CALL, type 1 : STREAM_MUSIC, type 2 : STREAM_RING,
+    // type 3 : STREAM_MEDIA, type 4 : STREAM_VOICE_ASSISTANT,  type 5 : STREAM_SYSTEM, type 6 : STREAM_ALARM,
+    // type 7 : STREAM_NOTIFICATION, type 8 : STREAM_BLUETOOTH_SCO, type 9 : STREAM_ENFORCED_AUDIBLE,
+    // type 10 : STREAM_DTMF, type 11 : STREAM_TTS, type 12 : STREAM_ACCESSIBILITY, type 13 : STREAM_RECORDING
     RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
 };
 } // namespace ResType
