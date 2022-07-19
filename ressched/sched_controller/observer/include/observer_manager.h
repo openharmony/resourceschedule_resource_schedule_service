@@ -21,9 +21,7 @@
 
 #include "camera_observer.h"
 #include "sched_telephony_observer.h"
-#include "audio_render_state_observer.h"
-#include "audio_ring_mode_observer.h"
-#include "audio_volume_key_observer.h"
+#include "audio_observer.h"
 #include "single_instance.h"
 
 namespace OHOS {
@@ -60,9 +58,7 @@ public:
     std::map<int32_t, std::function<void(ObserverManager *)>> removeObserverMap_;
     std::shared_ptr<HiviewDFX::HiSysEventSubscribeCallBack> cameraObserver_ = nullptr;
     sptr<SchedTelephonyObserver> telephonyObserver_ = nullptr;
-    std::shared_ptr<AudioRenderStateObserver> audioRenderStateObserver_ = nullptr;
-    std::shared_ptr<AudioRingModeObserver> audioRingModeObserver_ = nullptr;
-    std::shared_ptr<AudioVolumeKeyObserver> audioVolumeKeyObserver_ = nullptr;
+    std::shared_ptr<AudioObserver> audioObserver_ = nullptr;
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
 };
 } // namespace ResourceSchedule

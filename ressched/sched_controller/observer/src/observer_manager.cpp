@@ -184,32 +184,26 @@ void ObserverManager::DisableTelephonyObserver()
 void ObserverManager::InitAudioObserver()
 {
     RESSCHED_LOGI("ObserverManager Init audio observer, pid: %{public}d", pid_);
-    if (!audioRenderStateObserver_) {
-        audioRenderStateObserver_ = std::make_shared<AudioRenderStateObserver>();
+    if (!audioObserver_) {
+        audioObserver_ = std::make_shared<AudioObserver>();
     }
+
     auto res = AudioStandard::AudioStreamManager::GetInstance()->RegisterAudioRendererEventListener(pid_,
-        audioRenderStateObserver_);
+        audioObserver_);
     if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager init audioRenderStateObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager init audioRenderStateObserver failed");
     }
 
-    if (!audioRingModeObserver_) {
-        audioRingModeObserver_ = std::make_shared<AudioRingModeObserver>();
-    }
-    res = AudioStandard::AudioSystemManager::GetInstance()->SetRingerModeCallback(pid_, audioRingModeObserver_);
+    res = AudioStandard::AudioSystemManager::GetInstance()->SetRingerModeCallback(pid_, audioObserver_);
     if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager init audioRingModeObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager init audioRingModeObserver failed");
     }
 
-    if (!audioVolumeKeyObserver_) {
-        audioVolumeKeyObserver_ = std::make_shared<AudioVolumeKeyObserver>();
-    }
-    res = AudioStandard::AudioSystemManager::GetInstance()->RegisterVolumeKeyEventCallback(pid_,
-        audioVolumeKeyObserver_);
+    res = AudioStandard::AudioSystemManager::GetInstance()->RegisterVolumeKeyEventCallback(pid_, audioObserver_);
     if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager init audioVolumeKeyObserver successfully");
     } else {
@@ -220,41 +214,32 @@ void ObserverManager::InitAudioObserver()
 void ObserverManager::DisableAudioObserver()
 {
     RESSCHED_LOGI("Disable telephony observer");
-    if (!audioRenderStateObserver_) {
+    if (!audioObserver_) {
         RESSCHED_LOGD("ObserverManager has been disable audioRenderStateObserver");
         return ;
     }
+    
     auto res = AudioStandard::AudioStreamManager::GetInstance()->UnregisterAudioRendererEventListener(pid_);
     if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager disable audioVolumeKeyObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager disable audioVolumeKeyObserver failed");
     }
-    audioRenderStateObserver_ = nullptr;
 
-    if (!audioRingModeObserver_) {
-        RESSCHED_LOGD("ObserverManager has been disable audioRingModeObserver");
-        return ;
-    }
     res = AudioStandard::AudioSystemManager::GetInstance()->UnsetRingerModeCallback(pid_);
     if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager disable audioVolumeKeyObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager disable audioVolumeKeyObserver failed");
     }
-    audioRingModeObserver_ = nullptr;
 
-    if (!audioVolumeKeyObserver_) {
-        RESSCHED_LOGD("ObserverManager has been disable audioVolumeKeyObserver");
-        return ;
-    }
     res = AudioStandard::AudioSystemManager::GetInstance()->UnregisterVolumeKeyEventCallback(pid_);
     if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager disable audioVolumeKeyObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager disable audioVolumeKeyObserver failed");
     }
-    audioVolumeKeyObserver_ = nullptr;
+    audioObserver_ = nullptr;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

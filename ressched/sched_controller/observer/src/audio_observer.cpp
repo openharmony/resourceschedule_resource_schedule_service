@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "audio_volume_key_observer.h"
+#include "audio_observer.h"
 
 #include "ressched_utils.h"
 #include "res_sched_log.h"
@@ -21,6 +21,29 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+void AudioObserver::OnRendererStateChange(
+    const std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos)
+{
+    for (const auto &audioRendererChangeInfo : audioRendererChangeInfos) {
+        RESSCHED_LOGD("enter AudioRenderStateObserver::OnRendererStateChange, state: %{public}d",
+            audioRendererChangeInfo->rendererState);
+        Json::Value payload;
+        payload["uid"] = std::to_string(audioRendererChangeInfo->clientUID);
+        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
+            audioRendererChangeInfo->rendererState, payload);
+    }
+}
+
+void AudioRingModeObserver::OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode)
+{
+    RESSCHED_LOGD("enter AudioRingModeObserver::OnRingerModeUpdated, ringerMode: %{public}d", ringerMode);
+    if (ringerMode != mode_) {
+        mode_ = ringerMode;
+        const Json::Value payload = "";
+        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_AUDIO_RING_MODE_CHANGE, ringerMode, payload);
+    }
+}
+
 void AudioVolumeKeyObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
 {
     RESSCHED_LOGD("enter AudioVolumeKeyObserver::OnVolumeKeyEvent, streamType: %{public}d, volumeLevel: %{public}d",

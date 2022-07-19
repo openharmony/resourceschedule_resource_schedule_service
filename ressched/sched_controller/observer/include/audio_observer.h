@@ -13,19 +13,27 @@
  * limitations under the License.
  */
 
-#ifndef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_AUDIO_VOLUME_KEY_OBSERVER_H
-#define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_AUDIO_VOLUME_KEY_OBSERVER_H
+#ifndef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_AUDIO_OBSERVER_H
+#define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_AUDIO_OBSERVER_H
 
 #include <string>
 
+#include "audio_stream_manager.h"
+#include "audio_system_manager.h"
 #include "audio_system_manager.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-class AudioVolumeKeyObserver : public AudioStandard::VolumeKeyEventCallback {
+class AudioObserver : public AudioStandard::AudioRendererStateChangeCallback,
+    public AudioStandard::AudioRingerModeCallback, public AudioStandard::VolumeKeyEventCallback {
 public:
+    void OnRendererStateChange(
+        const std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos) override;
+    void OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode) override;
     void OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent) override;
+private:
+    int32_t mode_ = -1;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_AUDIO_VOLUME_KEY_OBSERVER_H
+#endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_AUDIO_RENDER_STATE_OBSERVER_H
