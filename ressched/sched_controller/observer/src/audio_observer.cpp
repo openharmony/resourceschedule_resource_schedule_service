@@ -34,7 +34,7 @@ void AudioObserver::OnRendererStateChange(
     }
 }
 
-void AudioRingModeObserver::OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode)
+void AudioObserver::OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode)
 {
     RESSCHED_LOGD("enter AudioRingModeObserver::OnRingerModeUpdated, ringerMode: %{public}d", ringerMode);
     if (ringerMode != mode_) {
@@ -44,7 +44,7 @@ void AudioRingModeObserver::OnRingerModeUpdated(const AudioStandard::AudioRinger
     }
 }
 
-void AudioVolumeKeyObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
+void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
 {
     RESSCHED_LOGD("enter AudioVolumeKeyObserver::OnVolumeKeyEvent, streamType: %{public}d, volumeLevel: %{public}d",
         volumeEvent.volumeType, volumeEvent.volume);
