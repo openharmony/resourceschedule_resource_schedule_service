@@ -20,7 +20,6 @@
 
 #include "audio_stream_manager.h"
 #include "audio_system_manager.h"
-#include "audio_system_manager.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
