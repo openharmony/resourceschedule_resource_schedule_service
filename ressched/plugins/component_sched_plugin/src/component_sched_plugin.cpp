@@ -35,19 +35,8 @@ IMPLEMENT_SINGLE_INSTANCE(ComponentSchedPlugin)
 
 void ComponentSchedPlugin::Init()
 {
-    resTypes_.insert(RES_TYPE_ABILITY_STATE_CHANGE);
-    resTypes_.insert(RES_TYPE_APP_INSTALL_UNINSTALL);
-    resTypes_.insert(RES_TYPE_APP_STATE_CHANGE);  // app switch
-    resTypes_.insert(RES_TYPE_EXTENSION_STATE_CHANGE);
-    resTypes_.insert(RES_TYPE_WIFI_CONNECT_STATE_CHANGE);
-    resTypes_.insert(RES_TYPE_PROCESS_STATE_CHANGE);  // process create and died
-    resTypes_.insert(RES_TYPE_PUSH_PAGE);
     resTypes_.insert(RES_TYPE_SCREEN_STATUS);
     resTypes_.insert(RES_TYPE_WINDOW_FOCUS);
-    resTypes_.insert(RES_TYPE_USER_SWITCH);
-    resTypes_.insert(RES_TYPE_USER_REMOVE);
-    resTypes_.insert(RES_TYPE_SCREEN_LOCK);
-    resTypes_.insert(RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE);
 
     for (auto resType : resTypes_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
@@ -70,7 +59,7 @@ void ComponentSchedPlugin::DispatchResource(const std::shared_ptr<ResData>& data
         RESSCHED_LOGW("ComponentSchedPlugin::DispatchResource data is null");
         return;
     }
-    
+
     RESSCHED_LOGD(
         "ComponentSchedPlugin::DispatchResource type=%{public}u value=%{public}lld payload=%{public}s",
         data->resType, (long long)(data->value), (data->payload.toStyledString()).c_str());
