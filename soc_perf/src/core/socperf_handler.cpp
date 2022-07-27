@@ -103,7 +103,7 @@ void SocPerfHandler::UpdateResActionList(int32_t resId, std::shared_ptr<ResActio
     if (delayed) {
         for (auto iter = resStatus->resActionList[type].begin();
             iter != resStatus->resActionList[type].end(); ++iter) {
-            if (resAction->TotalSame(*iter)) {
+            if (resAction == *iter) {
                 resStatus->resActionList[type].erase(iter);
                 UpdateCandidatesValue(resId, type);
                 break;
