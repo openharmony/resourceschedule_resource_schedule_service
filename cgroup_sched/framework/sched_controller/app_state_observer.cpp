@@ -134,7 +134,7 @@ void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processDat
     payload["uid"] = std::to_string(processData.uid);
     payload["bundleName"] = processData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_PROCESS_STATE_CHANGE, ProcessStatus::PROCESS_CREATED, payload);
+        ResType::RES_TYPE_PROCESS_STATE_CHANGE, ResType::ProcessStatus::PROCESS_CREATED, payload);
 }
 
 void RmsApplicationStateObserver::OnProcessDied(const ProcessData &processData)
@@ -159,7 +159,7 @@ void RmsApplicationStateObserver::OnProcessDied(const ProcessData &processData)
     payload["uid"] = std::to_string(processData.uid);
     payload["bundleName"] = processData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_PROCESS_STATE_CHANGE, ProcessStatus::PROCESS_DIED, payload);
+        ResType::RES_TYPE_PROCESS_STATE_CHANGE, ResType::ProcessStatus::PROCESS_DIED, payload);
 }
 
 void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &appStateData)

@@ -341,7 +341,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         payload["bundleName"] = "";
         ResSchedUtils::GetInstance().ReportDataInProcess(
-            ResType::RES_TYPE_WINDOW_FOCUS, WindowFocusStatus::WINDOW_FOCUS, payload);
+            ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_FOCUS, payload);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
@@ -374,7 +374,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
     }
     payload["bundleName"] = app->name_;
     ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_WINDOW_FOCUS, WindowFocusStatus::WINDOW_FOCUS, payload);
+        ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_FOCUS, payload);
 }
 
 void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abilityToken,
@@ -391,7 +391,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         payload["bundleName"] = "";
         ResSchedUtils::GetInstance().ReportDataInProcess(
-            ResType::RES_TYPE_WINDOW_FOCUS, WindowFocusStatus::WINDOW_UNFOCUS, payload);
+            ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
@@ -407,14 +407,14 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
         if (!app) {
             payload["bundleName"] = "";
             ResSchedUtils::GetInstance().ReportDataInProcess(
-                ResType::RES_TYPE_WINDOW_FOCUS, WindowFocusStatus::WINDOW_UNFOCUS, payload);
+                ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
             return;
         }
         procRecord = app->GetProcessRecord(pid);
         if (!procRecord) {
             payload["bundleName"] = "";
             ResSchedUtils::GetInstance().ReportDataInProcess(
-                ResType::RES_TYPE_WINDOW_FOCUS, WindowFocusStatus::WINDOW_UNFOCUS, payload);
+                ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
             return;
         }
         auto win = procRecord->GetWindowInfoNonNull(windowId);
@@ -431,7 +431,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
     }
     payload["bundleName"] = app->name_;
     ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_WINDOW_FOCUS, WindowFocusStatus::WINDOW_UNFOCUS, payload);
+        ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
 }
 
 void CgroupEventHandler::HandleWindowVisibilityChanged(
