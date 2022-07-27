@@ -75,6 +75,70 @@ enum : uint32_t {
     // Other process modify the thread Qos, value for client name id, payload: tid : qos , clientpid, pid
     RES_TYPE_THREAD_QOS_CHANGE,
 };
+
+/**
+ * @brief Screen status
+ */
+enum ScreenStatus : int64_t {
+    SCREEN_OFF,
+    SCREEN_ON,
+};
+
+/**
+ * @brief App install status
+ */
+enum AppInstallStatus : int64_t {
+    APP_UNINSTALL,
+    APP_INSTALL,
+};
+
+/**
+ * @brief Screen lock status
+ */
+enum ScreenLockStatus : int64_t {
+    SCREEN_UNLOCK,
+    SCREEN_LOCK,
+};
+
+/**
+ * @brief Process status
+ */
+enum ProcessStatus : int64_t {
+    PROCESS_CREATED,
+    PROCESS_DIED,
+};
+
+/**
+ * @brief Transient task status
+ */
+enum TransientTaskStatus : int64_t {
+    TASK_START,
+    TASK_FINISH,
+};
+
+/**
+ * @brief Continuous task status
+ */
+enum ContinuousTaskStatus : int64_t {
+    TASK_START,
+    TASK_FINISH,
+};
+
+/**
+ * @brief Window focus status
+ */
+enum WindowFocusStatus : int64_t {
+    WINDOW_FOCUS,
+    WINDOW_UNFOUS,
+};
+
+/**
+ * @brief Window visibility status
+ */
+enum WindowVisibilityStatus : int64_t {
+    NOT_VISIBILITY,
+    VISIBILITY,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
