@@ -112,16 +112,16 @@ enum ProcessStatus : int64_t {
  * @brief Transient task status
  */
 enum TransientTaskStatus : int64_t {
-    TASK_START,
-    TASK_FINISH,
+    TRANSIENT_TASK_START,
+    TRANSIENT_TASK_FINISH,
 };
 
 /**
  * @brief Continuous task status
  */
 enum ContinuousTaskStatus : int64_t {
-    TASK_START,
-    TASK_FINISH,
+    CONTINUOUS_TASK_START,
+    CONTINUOUS_TASK_FINISH,
 };
 
 /**
@@ -144,4 +144,3 @@ enum WindowVisibilityStatus : int64_t {
 } // namespace OHOS
 
 #endif // RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_TYPE_H
-

@@ -59,7 +59,7 @@ void BackgroundTaskObserver::OnTransientTaskStart(const std::shared_ptr<Transien
     payload["uid"] = std::to_string(info->GetUid());
     payload["bundleName"] = info->GetPackageName();
     ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TASK_START, payload);
+        ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TRANSIENT_TASK_START, payload);
 }
 
 void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientTaskAppInfo>& info)
@@ -84,7 +84,7 @@ void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientT
     payload["uid"] = std::to_string(info->GetUid());
     payload["bundleName"] = info->GetPackageName();
     ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TASK_FINISH, payload);
+        ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TRANSIENT_TASK_FINISH, payload);
 }
 
 void BackgroundTaskObserver::OnContinuousTaskStart(
@@ -111,7 +111,7 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
     payload["uid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorUid());
     payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();
     ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::TASK_START, payload);
+        ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_START, payload);
 }
 
 void BackgroundTaskObserver::OnContinuousTaskStop(
@@ -138,7 +138,7 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
     payload["uid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorUid());
     payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();
     ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::TASK_FINISH, payload);
+        ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_FINISH, payload);
 }
 
 void BackgroundTaskObserver::OnRemoteDied(const wptr<IRemoteObject> &object)
