@@ -47,6 +47,12 @@
 |   ├── plugins                    # 插件代码实现
 |   ├── profile                    # 插件开关以及私有配置
 |   ├── sa_profile                 # 系统元能力配置
+|   ├── sched_controller           # 事件采集
+|   |   ├── common_event           # 
+|   |   └── observer               # 监听事件采集
+|   |       ├── audio_observer     # 音频事件监听回调
+|   |       ├── camera_observer    # 相机事件监听回调
+|   |       └── telephony_observer # 电话状态监听回调
 |   └── services
 |       ├── resschedmgr
 |       │   ├── pluginbase         # 插件结构定义
@@ -190,7 +196,16 @@ ACE子系统仓内实现了对资源调度框架提供的可动态加载接口Re
 
 第四步，  
 调频插件socperf_plugin对于点击事件分配了cmdID：PERF_REQUEST_CMD_ID_EVENT_CLICK，路径在/ressched/plugins/socperf_plugin/src/socperf_plugin.cpp下  
-通过调用调频服务提供的IPC接口PerfRequest，插件会给调频服务发送请求，实现点击提频功能。  
+通过调用调频服务提供的IPC接口PerfRequest，插件会给调频服务发送请求，实现点击提频功能。
+
+## 监听事件采集
+目前支持音频框架相关事件、电话子系统相关事件、相机相关事件监听回调，
+
+监听音频框架中音频流状态变化、声音模式变化和整机声音变化
+
+监听电话状态变化
+
+监听相机状态变化
 
 ## 相关仓<a name="section1371113476307"></a>
 - [aafwk_standard](https://gitee.com/openharmony/aafwk_standard)

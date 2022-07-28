@@ -257,6 +257,10 @@ A. 事件打点延时
 | RES_TYPE_USER_SWITCH            | 用户切换事件                         | value: 切换到的目标用户id  | 无需payload         | - | - |
 | RES_TYPE_USER_REMOVE            | 用户删除事件                         | value: 删除的用户id        | 无需payload         | - | - |
 | RES_TYPE_SCREEN_LOCK            | 锁屏和解锁事件                       | 0：解锁 1：锁屏             | 无需payload         | - | - |
+| RES_TYPE_CALL_STATE_UPDATE          | 电话状态改变事件                 | value：电话状态             | 无需payload         | - | - |
+| RES_TYPE_AUDIO_RENDER_STATE_CHANGE  | 音频流状态改变事件               | value：音频流状态           | {"uid"=?,"sessionId"=?}          | - | - |
+| RES_TYPE_AUDIO_RING_MODE_CHANGE     | 声音模式改变事件                 | 0：响铃模式 1：静音模式     | 无需payload         | - | - |
+| RES_TYPE_AUDIO_VOLUME_KEY_CHANGE    | 音量改变事件                     | value：音量大小             | {"volumeType"=?}         | - | - |
 
 
 

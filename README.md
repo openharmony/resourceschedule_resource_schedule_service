@@ -47,6 +47,12 @@ In resource schedule subsystem, the module of cgroup schedule decides the group 
 |   ├── plugins                    # Plugin code
 |   ├── profile                    # Plugin switch xml and plugin private xml
 |   ├── sa_profile                 # System ability xml
+|   ├── sched_controller           # event receive
+|   |   ├── common_event           # 
+|   |   └── observer               # callback event receive
+|   |       ├── audio_observer     # audio framework event callback
+|   |       ├── camera_observer    # camera event callback
+|   |       └── telephony_observer # telephony event callback
 |   └── services
 |       ├── resschedmgr
 |       │   ├── pluginbase         # Plugin struct definition
@@ -169,6 +175,15 @@ Config files description
 All xml files are different for particular products.
 For specific product, all resources which could be modify are defined in socperf_resource_config.xml. Each resource has its own resID.
 The cmdID in the socperf_boost_config.xml/socperf_resource_config.xml/socperf_thermal_config.xml must be different.
+
+## callback event receive
+Now support audio frameWork event、 telephony event、camera event callback
+
+audio frameWork contains renserState change、 ringMode change、 volumeKey change
+
+telphony change
+
+camera change
 
 ## Repositories Involved<a name="section1371113476307"></a>
 
