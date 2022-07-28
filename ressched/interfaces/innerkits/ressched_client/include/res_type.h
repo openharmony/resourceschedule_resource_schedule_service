@@ -129,7 +129,7 @@ enum ContinuousTaskStatus : int64_t {
  */
 enum WindowFocusStatus : int64_t {
     WINDOW_FOCUS,
-    WINDOW_UNFOUS,
+    WINDOW_UNFOCUS,
 };
 
 /**
