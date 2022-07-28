@@ -40,7 +40,7 @@ void EventController::Init()
     if (sysAbilityListener_ != nullptr) {
         return;
     }
-    sysAbilityListener_= new (std::nothrow) SystemAbilityStatusChangeListener();
+    sysAbilityListener_ = new (std::nothrow) SystemAbilityStatusChangeListener();
     if (sysAbilityListener_ == nullptr) {
         RESSCHED_LOGE("Failed to create statusChangeListener due to no memory.");
         return;
@@ -144,20 +144,20 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
     Json::Value payload;
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED) {
         HandlePkgAddRemove(want, payload);
-        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, 0, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_UNINSTALL, payload);
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_ADDED) {
         HandlePkgAddRemove(want, payload);
-        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, 1, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_INSTALL, payload);
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_SCREEN_ON) {
-        ReportDataInProcess(ResType::RES_TYPE_SCREEN_STATUS, 1, payload);
+        ReportDataInProcess(ResType::RES_TYPE_SCREEN_STATUS, ResType::ScreenStatus::SCREEN_ON, payload);
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_SCREEN_OFF) {
-        ReportDataInProcess(ResType::RES_TYPE_SCREEN_STATUS, 0, payload);
+        ReportDataInProcess(ResType::RES_TYPE_SCREEN_STATUS, ResType::ScreenStatus::SCREEN_OFF, payload);
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_CONNECTIVITY_CHANGE) {
@@ -176,11 +176,11 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         return;
     }
     if (action == "common.event.UNLOCK_SCREEN") {
-        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, 0, payload);
+        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_UNLOCK, payload);
         return;
     }
     if (action == "common.event.LOCK_SCREEN") {
-        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, 1, payload);
+        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_LOCK, payload);
         return;
     }
 }

@@ -32,7 +32,7 @@ declare_args() {
   component_sched_enable = true
 
   if (defined(global_parts_info) &&
-      !defined(global_parts_info.resourceschedule_component_scheduler)) {
+      !defined(global_parts_info.resourceschedule_efficiency_manager)) {
     component_sched_enable = false
   }
 }
