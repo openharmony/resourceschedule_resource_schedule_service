@@ -136,8 +136,8 @@ enum WindowFocusStatus : int64_t {
  * @brief Window visibility status
  */
 enum WindowVisibilityStatus : int64_t {
-    NOT_VISIBILITY,
-    VISIBILITY,
+    INVISIBLE,
+    VISIBLE,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
