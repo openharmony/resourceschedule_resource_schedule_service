@@ -113,7 +113,7 @@ enum ProcessStatus : int64_t {
  */
 enum TransientTaskStatus : int64_t {
     TRANSIENT_TASK_START,
-    TRANSIENT_TASK_FINISH,
+    TRANSIENT_TASK_END,
 };
 
 /**
@@ -121,7 +121,7 @@ enum TransientTaskStatus : int64_t {
  */
 enum ContinuousTaskStatus : int64_t {
     CONTINUOUS_TASK_START,
-    CONTINUOUS_TASK_FINISH,
+    CONTINUOUS_TASK_END,
 };
 
 /**

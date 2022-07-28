@@ -84,7 +84,7 @@ void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientT
     payload["uid"] = std::to_string(info->GetUid());
     payload["bundleName"] = info->GetPackageName();
     ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TRANSIENT_TASK_FINISH, payload);
+        ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TRANSIENT_TASK_END, payload);
 }
 
 void BackgroundTaskObserver::OnContinuousTaskStart(
@@ -138,7 +138,7 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
     payload["uid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorUid());
     payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();
     ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_FINISH, payload);
+        ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_END, payload);
 }
 
 void BackgroundTaskObserver::OnRemoteDied(const wptr<IRemoteObject> &object)
