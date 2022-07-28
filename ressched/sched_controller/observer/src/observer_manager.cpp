@@ -30,7 +30,6 @@ IMPLEMENT_SINGLE_INSTANCE(ObserverManager)
 
 void ObserverManager::Init()
 {
-    pid_ = getpid();
     InitSysAbilityListener();
 }
 
@@ -63,28 +62,27 @@ void ObserverManager::InitSysAbilityListener()
         return;
     }
 
+    handleObserverMap_ = {
+        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::InitCameraObserver, std::placeholders::_1) },
+        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
+            std::bind(&ObserverManager::InitTelephonyObserver, std::placeholders::_1) },
+        { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1) }
+    };
+    removeObserverMap_ = {
+        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::DisableCameraObserver, std::placeholders::_1) },
+        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
+            std::bind(&ObserverManager::DisableTelephonyObserver, std::placeholders::_1) },
+        { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1) }
+    };
     AddItemToSysAbilityListener(DFX_SYS_EVENT_SERVICE_ABILITY_ID, systemAbilityManager);
     AddItemToSysAbilityListener(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, systemAbilityManager);
     AddItemToSysAbilityListener(AUDIO_POLICY_SERVICE_ID, systemAbilityManager);
-    handleObserverMap_ = {
-        {DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::InitCameraObserver, std::placeholders::_1)},
-        {TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
-            std::bind(&ObserverManager::InitTelephonyObserver, std::placeholders::_1)},
-        {AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1)}
-    };
-    removeObserverMap_ = {
-        {DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::DisableCameraObserver, std::placeholders::_1)},
-        {TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
-            std::bind(&ObserverManager::DisableTelephonyObserver, std::placeholders::_1)},
-        {AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1)}
-    };
 }
 
 inline void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId,
     sptr<ISystemAbilityManager>& systemAbilityManager)
 {
-    auto ret = systemAbilityManager->SubscribeSystemAbility(systemAbilityId, sysAbilityListener_);
-    if (ret != ERR_OK) {
+    if (systemAbilityManager->SubscribeSystemAbility(systemAbilityId, sysAbilityListener_) != ERR_OK) {
         sysAbilityListener_ = nullptr;
         RESSCHED_LOGE("%{public}s: subscribe system ability id: %{public}d failed", __func__, systemAbilityId);
     }
@@ -183,6 +181,7 @@ void ObserverManager::DisableTelephonyObserver()
 
 void ObserverManager::InitAudioObserver()
 {
+    pid_ = getpid();
     RESSCHED_LOGI("ObserverManager Init audio observer, pid: %{public}d", pid_);
     if (!audioObserver_) {
         audioObserver_ = std::make_shared<AudioObserver>();
@@ -215,10 +214,10 @@ void ObserverManager::DisableAudioObserver()
 {
     RESSCHED_LOGI("Disable telephony observer");
     if (!audioObserver_) {
-        RESSCHED_LOGD("ObserverManager has been disable audioRenderStateObserver");
+        RESSCHED_LOGD("ObserverManager has been disable audioObserver");
         return ;
     }
-    
+
     auto res = AudioStandard::AudioStreamManager::GetInstance()->UnregisterAudioRendererEventListener(pid_);
     if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager disable audioVolumeKeyObserver successfully");

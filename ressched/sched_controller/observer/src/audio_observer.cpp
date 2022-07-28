@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "audio_observer.h"
 
 #include "ressched_utils.h"
@@ -29,6 +28,7 @@ void AudioObserver::OnRendererStateChange(
             audioRendererChangeInfo->rendererState);
         Json::Value payload;
         payload["uid"] = std::to_string(audioRendererChangeInfo->clientUID);
+        payload["sessionId"] = std::to_string(audioRendererChangeInfo->sessionId);
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
             audioRendererChangeInfo->rendererState, payload);
     }
@@ -36,10 +36,10 @@ void AudioObserver::OnRendererStateChange(
 
 void AudioObserver::OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode)
 {
-    RESSCHED_LOGD("enter AudioRingModeObserver::OnRingerModeUpdated, ringerMode: %{public}d", ringerMode);
     if (ringerMode != mode_) {
+        RESSCHED_LOGD("enter AudioRingModeObserver::OnRingerModeUpdated, ringerMode: %{public}d", ringerMode);
         mode_ = ringerMode;
-        const Json::Value payload = "";
+        const Json::Value payload;
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_AUDIO_RING_MODE_CHANGE, ringerMode, payload);
     }
 }

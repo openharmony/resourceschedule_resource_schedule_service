@@ -18,11 +18,11 @@
 
 #include "if_system_ability_manager.h"
 #include "system_ability_status_change_stub.h"
+#include "single_instance.h"
 
+#include "audio_observer.h"
 #include "camera_observer.h"
 #include "sched_telephony_observer.h"
-#include "audio_observer.h"
-#include "single_instance.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
