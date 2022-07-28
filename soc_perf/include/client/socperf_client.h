@@ -16,8 +16,10 @@
 #ifndef SOC_PERF_INCLUDE_CLIENT_SOCPERF_CLIENT_H
 #define SOC_PERF_INCLUDE_CLIENT_SOCPERF_CLIENT_H
 
-#include "i_socperf_service.h"
-#include "unistd.h"
+#include <stdint.h>             // for int32_t
+#include <iosfwd>               // for string
+#include <vector>               // for vector
+#include "i_socperf_service.h"  // for ISocPerfService
 
 namespace OHOS {
 namespace SOCPERF {

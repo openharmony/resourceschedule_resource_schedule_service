@@ -63,7 +63,7 @@ void ComponentSchedPlugin::DispatchResource(const std::shared_ptr<ResData>& data
         RESSCHED_LOGW("ComponentSchedPlugin::DispatchResource data is null");
         return;
     }
-    
+
     RESSCHED_LOGD(
         "ComponentSchedPlugin::DispatchResource type=%{public}u value=%{public}lld payload=%{public}s",
         data->resType, (long long)(data->value), (data->payload.toStyledString()).c_str());

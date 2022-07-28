@@ -81,8 +81,8 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
         payload["uid"] = std::to_string(uid);
         payload["windowId"] = std::to_string(windowId);
         payload["windowType"] = std::to_string((int32_t)windowType);
-        ResSchedUtils::GetInstance().ReportDataInProcess(
-            ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE, isVisible ? 1 : 0, payload);
+        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
+            isVisible ? ResType::WindowVisibilityStatus::VISIBLE : ResType::WindowVisibilityStatus::INVISIBLE, payload);
     }
 }
 } // namespace ResourceSchedule

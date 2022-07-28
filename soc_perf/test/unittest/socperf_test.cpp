@@ -13,7 +13,13 @@
  * limitations under the License.
  */
 
-#include "socperf_client.h"
+
+#include <stdint.h>          // for int32_t
+#include <cstdint>           // for int32_t
+#include <cstdlib>           // for atoi
+#include <vector>            // for vector
+#include <cstring>           // for strcmp
+#include "socperf_client.h"  // for SocPerfClient
 
 const static int32_t PARAMETERS_NUM_MIN        = 2;
 const static int32_t PARAMETERS_NUM_WITHOUT_EX = 3;

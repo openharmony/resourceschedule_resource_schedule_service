@@ -108,7 +108,13 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
                     group = SP_BACKGROUND;
                 }
             } else {
-                group = SP_BACKGROUND;
+                if (app.state_ == (int32_t)ApplicationState::APP_STATE_BACKGROUND) {
+                    group = SP_BACKGROUND;
+                } else if (app.state_ == (int32_t)ApplicationState::APP_STATE_FOREGROUND) {
+                    group = SP_FOREGROUND;
+                } else {
+                    group = SP_DEFAULT;
+                }
             }
         }
         pr.setSchedGroup_ = group;

@@ -14,6 +14,7 @@
  */
 
 #include "process_group_log.h"
+#include <vector>  // for vector
 
 namespace OHOS {
 namespace ResourceSchedule {

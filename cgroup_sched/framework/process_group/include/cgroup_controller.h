@@ -17,9 +17,11 @@
 #ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_CONTROLLER_H_
 #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_CONTROLLER_H_
 
-#include <string>
-#include <map>
-#include "sched_policy.h"
+#include <map>                // for map
+#include <string>             // for basic_string
+#include <functional>         // for less
+#include <iosfwd>             // for string
+#include "sched_policy.h"     // for SchedPolicy
 
 namespace OHOS {
 namespace ResourceSchedule {
