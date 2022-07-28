@@ -35,19 +35,8 @@ IMPLEMENT_SINGLE_INSTANCE(ComponentSchedPlugin)
 
 void ComponentSchedPlugin::Init()
 {
-    resTypes_.insert(RES_TYPE_ABILITY_STATE_CHANGE);
-    resTypes_.insert(RES_TYPE_APP_INSTALL_UNINSTALL);
-    resTypes_.insert(RES_TYPE_APP_STATE_CHANGE);  // app switch
-    resTypes_.insert(RES_TYPE_EXTENSION_STATE_CHANGE);
-    resTypes_.insert(RES_TYPE_WIFI_CONNECT_STATE_CHANGE);
-    resTypes_.insert(RES_TYPE_PROCESS_STATE_CHANGE);  // process create and died
-    resTypes_.insert(RES_TYPE_PUSH_PAGE);
     resTypes_.insert(RES_TYPE_SCREEN_STATUS);
     resTypes_.insert(RES_TYPE_WINDOW_FOCUS);
-    resTypes_.insert(RES_TYPE_USER_SWITCH);
-    resTypes_.insert(RES_TYPE_USER_REMOVE);
-    resTypes_.insert(RES_TYPE_SCREEN_LOCK);
-    resTypes_.insert(RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE);
     resTypes_.insert(RES_TYPE_CALL_STATE_UPDATE);
     resTypes_.insert(RES_TYPE_AUDIO_RENDER_STATE_CHANGE);
     resTypes_.insert(RES_TYPE_AUDIO_RING_MODE_CHANGE);
