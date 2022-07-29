@@ -39,6 +39,7 @@ ohos_shared_library("sched_controller") {
     "${cgroup_sched_common}/cgroup_sched_log.cpp",
     "${cgroup_sched_framework}/utils/ressched_utils.cpp",
     "common_event/src/event_controller.cpp",
+    "observer/src/audio_observer.cpp",
     "observer/src/camera_observer.cpp",
     "observer/src/observer_manager.cpp",
     "observer/src/sched_telephony_observer.cpp",
@@ -63,6 +64,7 @@ ohos_shared_library("sched_controller") {
     "hisysevent_native:libhisyseventmanager",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "multimedia_audio_framework:audio_client",
     "netmanager_base:net_conn_manager_if",
     "samgr_standard:samgr_proxy",
   ]

@@ -74,6 +74,7 @@ ohos_shared_library("resschedsvc") {
     "hisysevent_native:libhisyseventmanager",
     "hitrace_native:hitrace_meter",
     "ipc:ipc_core",
+    "multimedia_audio_framework:audio_client",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
   ]

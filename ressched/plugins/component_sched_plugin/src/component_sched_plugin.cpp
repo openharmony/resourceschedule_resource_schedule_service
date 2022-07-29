@@ -37,6 +37,10 @@ void ComponentSchedPlugin::Init()
 {
     resTypes_.insert(RES_TYPE_SCREEN_STATUS);
     resTypes_.insert(RES_TYPE_WINDOW_FOCUS);
+    resTypes_.insert(RES_TYPE_CALL_STATE_UPDATE);
+    resTypes_.insert(RES_TYPE_AUDIO_RENDER_STATE_CHANGE);
+    resTypes_.insert(RES_TYPE_AUDIO_RING_MODE_CHANGE);
+    resTypes_.insert(RES_TYPE_AUDIO_VOLUME_KEY_CHANGE);
 
     for (auto resType : resTypes_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
