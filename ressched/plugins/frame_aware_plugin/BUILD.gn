@@ -20,7 +20,7 @@ config("frame_aware_plugin_config") {
     "include",
     "//foundation/resourceschedule/frame_aware_sched/common/include",
     "//foundation/resourceschedule/frame_aware_sched/interfaces/innerkits/frameintf",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
   ]
 }
 
@@ -44,10 +44,12 @@ ohos_shared_library("frame_aware_plugin") {
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/resourceschedule/frame_aware_sched/interfaces/innerkits/frameintf:frame_msg_intf",
     "//third_party/jsoncpp:jsoncpp",
-    "//utils/native/base:utils",
   ]
 
-  external_deps = [ "eventhandler:libeventhandler" ]
+  external_deps = [
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
+  ]
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

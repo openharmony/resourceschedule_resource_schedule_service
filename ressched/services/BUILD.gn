@@ -28,7 +28,7 @@ config("ressched_config") {
     "resschedmgr/pluginbase/include",
     "${sched_controller_observer}/include",
     "//utils/system/safwk/native/include",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "//third_party/libxml2/include",
     "${cgroup_sched_interfaces}/innerkits/include",
     "${sched_controller_event}/include",
@@ -61,11 +61,11 @@ ohos_shared_library("resschedsvc") {
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
     "//third_party/jsoncpp:jsoncpp",
     "//third_party/libxml2:xml2",
-    "//utils/native/base:utils",
   ]
 
   external_deps = [
     "ability_base:want",
+    "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
     "config_policy:configpolicy_util",
     "core_service:tel_core_service_api",

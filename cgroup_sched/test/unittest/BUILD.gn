@@ -41,8 +41,8 @@ ohos_unittest("ProcessGroupSubTest") {
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group:libprocess_group",
     "//third_party/googletest:gtest_main",
-    "//utils/native/base:utils",
   ]
+  external_deps = [ "c_utils:utils" ]
 }
 
 ohos_executable("process_proup_test") {
