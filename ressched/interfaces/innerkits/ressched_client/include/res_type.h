@@ -45,7 +45,7 @@ enum : uint32_t {
     RES_TYPE_CGROUP_ADJUSTER,
     // ace gestures click_recognizer; value 0 touch_down, value 1 touch_up, value 2 click_normal
     RES_TYPE_CLICK_RECOGNIZE,
-    // ace pipeline_context.cpp::PushPage(); value means nothing
+    // ace pipeline_context.cpp::PushPage(); value 0: push_page_start, 1: push_page_complete
     RES_TYPE_PUSH_PAGE,
     // ace slide event recognize; value 1: slide on; 0: slide off
     RES_TYPE_SLIDE_RECOGNIZE,
@@ -87,6 +87,10 @@ enum : uint32_t {
     // type 7 : STREAM_NOTIFICATION, type 8 : STREAM_BLUETOOTH_SCO, type 9 : STREAM_ENFORCED_AUDIBLE,
     // type 10 : STREAM_DTMF, type 11 : STREAM_TTS, type 12 : STREAM_ACCESSIBILITY, type 13 : STREAM_RECORDING
     RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
+    // app_ability_start_event : a very early app startup stub, when the app process has not been pulled up.
+    // stub position : ability_runtime ability_manager_service.cpp::StartAbilityInner().
+    // specifically : ability type is PAGE and ability launchMode is not SPECIFIED.
+    RES_TYPE_APP_ABILITY_START,
 };
 
 /**

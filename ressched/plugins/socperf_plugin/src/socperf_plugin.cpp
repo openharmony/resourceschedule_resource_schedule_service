@@ -123,8 +123,10 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandlePushPage(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("SocPerfPlugin: socperf->PUSH_PAGE");
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_PUSH_PAGE, "");
+    if (data->value == 0) {
+        RESSCHED_LOGI("SocPerfPlugin: socperf->PUSH_PAGE");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_PUSH_PAGE, "");
+    }
 }
 
 void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
