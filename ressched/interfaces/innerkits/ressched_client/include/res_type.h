@@ -43,7 +43,7 @@ enum : uint32_t {
      * payload: pid,uid,name,oldGroup,newGroup
      */
     RES_TYPE_CGROUP_ADJUSTER,
-    // ace gestures click_recognizer; value means nothing
+    // ace gestures click_recognizer; value 1 touch event, value 2 click event
     RES_TYPE_CLICK_RECOGNIZE,
     // ace pipeline_context.cpp::PushPage(); value 0: push_page_start, 1: push_page_complete
     RES_TYPE_PUSH_PAGE,

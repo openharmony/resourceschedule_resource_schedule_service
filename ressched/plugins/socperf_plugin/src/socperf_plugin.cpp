@@ -31,9 +31,12 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_PUSH_PAGE             = 10007;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE           = 10008;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER      = 10009;
+    const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH           = 10010;
     const int32_t EVENT_ON                                  = 1;
     const int32_t EVENT_OFF                                 = 0;
     const int32_t WINDOW_FOCUSED                            = 0;
+    const int32_t TOUCH_EVENT                               = 1;
+    const int32_t CLICK_EVENT                               = 2;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -106,8 +109,12 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("SocPerfPlugin: socperf->CLICK_NORMAL");
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
+    RESSCHED_LOGI("SocPerfPlugin: socperf->EVENT_CLICK: %{public}lld", (long long)data->value);
+    if (data->value == TOUCH_EVENT) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH, "");
+    } else if (data->value == CLICK_EVENT) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
+    }
 }
 
 void SocPerfPlugin::HandlePushPage(const std::shared_ptr<ResData>& data)
