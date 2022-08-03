@@ -158,7 +158,7 @@ void ObserverManager::InitTelephonyObserver()
     }
     slotId_ = 0;
     auto res = Telephony::TelephonyObserverClient::GetInstance().AddStateObserver(
-        telephonyObserver_, slotId_, Telephony::TelephonyObserverBroker::OBSERVER_MASK_CALL_STATE, true);
+        telephonyObserver_, slotId_, Telephony::TelephonyObserverBroker::OBSERVER_MASK_CALL_STATE, false);
     if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager init telephony observer successfully");
     } else {
