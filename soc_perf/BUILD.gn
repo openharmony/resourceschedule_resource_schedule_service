@@ -59,9 +59,9 @@ ohos_shared_library("socperf_server") {
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/libxml2:xml2",
-    "//utils/native/base:utils",
   ]
   external_deps = [
+    "c_utils:utils",
     "config_policy:configpolicy_util",
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",
@@ -92,10 +92,10 @@ ohos_shared_library("socperf_client") {
     "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-    "//utils/native/base:utils",
   ]
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
+  external_deps = [ "c_utils:utils" ]
 }
 
 ohos_executable("socperf_test") {
@@ -110,9 +110,9 @@ ohos_executable("socperf_test") {
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_client",
-    "//utils/native/base:utils",
   ]
   install_enable = true
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
+  external_deps = [ "c_utils:utils" ]
 }

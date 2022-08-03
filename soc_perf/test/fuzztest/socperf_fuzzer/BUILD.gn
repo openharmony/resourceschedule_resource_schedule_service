@@ -48,9 +48,11 @@ ohos_fuzztest("SocPerfFuzzTest") {
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_server",
     "//third_party/libxml2:xml2",
-    "//utils/native/base:utils",
   ]
-  external_deps = [ "eventhandler:libeventhandler" ]
+  external_deps = [
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
+  ]
 }
 
 ###############################################################################

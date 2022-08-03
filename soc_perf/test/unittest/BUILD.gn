@@ -40,9 +40,11 @@ ohos_unittest("SocPerfSubTest") {
     "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_client",
     "//third_party/googletest:gtest_main",
     "//third_party/libxml2:xml2",
-    "//utils/native/base:utils",
   ]
-  external_deps = [ "eventhandler:libeventhandler" ]
+  external_deps = [
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
+  ]
 }
 
 group("unittest") {

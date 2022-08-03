@@ -34,8 +34,8 @@ private_external_deps = [
 private_deps = [
   "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
   "${ressched_services}:resschedsvc",
+  "//commonlibrary/c_utils/base:utils",
   "//third_party/googletest:gtest_main",
-  "//utils/native/base:utils",
 ]
 
 ohos_unittest("resschedfwk_test") {
