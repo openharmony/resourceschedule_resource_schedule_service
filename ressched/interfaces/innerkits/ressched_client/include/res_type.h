@@ -156,6 +156,23 @@ enum WindowVisibilityStatus : int64_t {
     INVISIBLE,
     VISIBLE,
 };
+
+/**
+ * @brief Slide event status
+ */
+enum SlideEventStatus : int64_t {
+    SLIDE_EVENT_OFF,
+    SLIDE_EVENT_ON,
+};
+
+/**
+ * @brief Click event type
+ */
+enum ClickEventType : int64_t {
+    INVALID_EVENT,
+    TOUCH_EVENT,
+    CLICK_EVENT,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
