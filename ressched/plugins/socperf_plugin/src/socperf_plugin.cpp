@@ -32,11 +32,6 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE           = 10008;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER      = 10009;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH           = 10010;
-    const int32_t EVENT_ON                                  = 1;
-    const int32_t EVENT_OFF                                 = 0;
-    const int32_t WINDOW_FOCUSED                            = 0;
-    const int32_t TOUCH_EVENT                               = 1;
-    const int32_t CLICK_EVENT                               = 2;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -101,7 +96,7 @@ void SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
 {
-    if (data->value == WINDOW_FOCUSED) {
+    if (data->value == WindowFocusStatus::WINDOW_FOCUS) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, "");
     }
@@ -110,9 +105,9 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
 void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 {
     RESSCHED_LOGI("SocPerfPlugin: socperf->EVENT_CLICK: %{public}lld", (long long)data->value);
-    if (data->value == TOUCH_EVENT) {
+    if (data->value == ClickEventType::TOUCH_EVENT) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH, "");
-    } else if (data->value == CLICK_EVENT) {
+    } else if (data->value == ClickEventType::CLICK_EVENT) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
     }
 }
@@ -128,9 +123,9 @@ void SocPerfPlugin::HandlePushPage(const std::shared_ptr<ResData>& data)
 void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
     RESSCHED_LOGI("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
-    if (data->value == EVENT_ON) {
+    if (data->value == SlideEventStatus::SLIDE_EVENT_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, true, "");
-    } else if (data->value == EVENT_OFF) {
+    } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER, "");
     }
