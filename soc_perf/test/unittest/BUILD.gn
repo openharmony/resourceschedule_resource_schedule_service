@@ -35,9 +35,9 @@ ohos_unittest("SocPerfSubTest") {
   deps = [
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
     "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_client",
+    "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
     "//third_party/libxml2:xml2",
   ]
