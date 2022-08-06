@@ -31,7 +31,7 @@
         "config_policy",
         "hitrace_native",
         "hilog_native",
-        "samgr_standard"
+        "samgr"
       ],
       "third_party": [
         "xml2"

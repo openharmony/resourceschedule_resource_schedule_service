@@ -44,7 +44,7 @@
         "hisysevent_native",
         "hilog_native",
         "common_event_service",
-        "samgr_standard"
+        "samgr"
       ],
       "third_party": [
         "xml2",

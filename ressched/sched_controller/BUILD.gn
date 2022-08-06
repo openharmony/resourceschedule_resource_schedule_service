@@ -66,7 +66,7 @@ ohos_shared_library("sched_controller") {
     "ipc:ipc_core",
     "multimedia_audio_framework:audio_client",
     "netmanager_base:net_conn_manager_if",
-    "samgr_standard:samgr_proxy",
+    "samgr:samgr_proxy",
   ]
 
   part_name = "resource_schedule_service"
