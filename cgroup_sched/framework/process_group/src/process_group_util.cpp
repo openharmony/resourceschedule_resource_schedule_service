@@ -14,13 +14,14 @@
  */
 
 #include "process_group_util.h"
-
+#include <sstream>
+#include <string>
 #include <fstream>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <linux/limits.h>
-#include "json/writer.h"
+#include "nlohmann/json.hpp"
 #include "securec.h"
 #include "process_group_log.h"
 
@@ -147,15 +148,6 @@ bool WriteStringToFile(const std::string& content, const std::string& filePath)
     }
     bool result = WriteStringToFile(fd, content);
     close(fd);
-    return result;
-}
-
-std::string JsonToString(const Json::Value& json)
-{
-    std::string result;
-    Json::StreamWriterBuilder builder;
-    builder["indentation"] = ""; // Optional if you want whitespace-less output
-    result = Json::writeString(builder, json);
     return result;
 }
 } // namespace CgroupSetting

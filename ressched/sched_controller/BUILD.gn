@@ -48,7 +48,6 @@ ohos_shared_library("sched_controller") {
   deps = [
     "//base/telephony/call_manager/frameworks/native:tel_call_manager_api",
     "//base/telephony/state_registry/frameworks/native/observer:tel_state_registry_api",
-    "//third_party/jsoncpp:jsoncpp",
   ]
 
   external_deps = [

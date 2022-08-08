@@ -21,12 +21,14 @@ config("client_private_config") {
     "//commonlibrary/c_utils/base/include",
     "//utils/system/safwk/native/include",
     "${ressched_common}/include",
-    "//third_party/jsoncpp/include",
   ]
 }
 
 config("client_public_config") {
-  include_dirs = [ "include" ]
+  include_dirs = [
+    "include",
+    "//third_party/json/single_include",
+  ]
 }
 
 ohos_shared_library("ressched_client") {
@@ -42,10 +44,7 @@ ohos_shared_library("ressched_client") {
     "src/res_sched_service_proxy.cpp",
   ]
 
-  deps = [
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//third_party/jsoncpp:jsoncpp",
-  ]
+  deps = [ "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog" ]
 
   external_deps = [
     "c_utils:utils",

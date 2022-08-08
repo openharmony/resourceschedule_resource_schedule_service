@@ -17,7 +17,7 @@
 #define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_IRES_SCHED_SERVICE_H
 
 #include "iremote_broker.h"
-#include "json/json.h"
+#include "nlohmann/json.hpp"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -33,7 +33,7 @@ public:
 
     DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ResourceSchedule.ResSchedService");
 
-    virtual void ReportData(uint32_t resType, int64_t value, const Json::Value& payload) = 0;
+    virtual void ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload) = 0;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

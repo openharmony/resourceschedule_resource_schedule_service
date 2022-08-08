@@ -21,7 +21,7 @@
 #include "iremote_broker.h"      // for BrokerDelegator
 #include "iremote_proxy.h"       // for IRemoteProxy
 #include "ires_sched_service.h"  // for IResSchedService
-#include "json/value.h"          // for Value
+#include "nlohmann/json.hpp"          // for Value
 #include "nocopyable.h"          // for DISALLOW_COPY_AND_MOVE
 #include "refbase.h"             // for sptr
 namespace OHOS { class IRemoteObject; }
@@ -33,7 +33,7 @@ public:
     explicit ResSchedServiceProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IResSchedService>(impl) {}
     virtual ~ResSchedServiceProxy() {}
 
-    void ReportData(uint32_t resType, int64_t value, const Json::Value& payload) override;
+    void ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload) override;
 
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedServiceProxy);

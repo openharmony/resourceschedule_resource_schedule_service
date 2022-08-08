@@ -16,7 +16,7 @@
 
 #include <dlfcn.h>
 #include "cgroup_sched_log.h"
-#include "json/value.h"
+#include "nlohmann/json.hpp"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -70,7 +70,7 @@ void ResSchedUtils::LoadUtilsExtra()
     }
 }
 
-void ResSchedUtils::ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
+void ResSchedUtils::ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!reportFunc_) {
         CGS_LOGD("%{public}s failed, function nullptr.", __func__);

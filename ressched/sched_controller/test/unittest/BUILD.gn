@@ -41,7 +41,6 @@ ohos_unittest("event_controller_test") {
   deps = [
     "${sched_controller_path}:sched_controller",
     "//third_party/googletest:gtest_main",
-    "//third_party/jsoncpp:jsoncpp",
   ]
 
   external_deps = [

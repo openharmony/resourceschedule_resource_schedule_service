@@ -19,7 +19,7 @@
 #include <set>
 
 #include "event_handler.h"
-#include "json/json.h"
+#include "nlohmann/json.hpp"
 
 #include "plugin.h"
 #include "single_instance.h"

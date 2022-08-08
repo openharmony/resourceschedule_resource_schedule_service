@@ -54,7 +54,7 @@ void BackgroundTaskObserver::OnTransientTaskStart(const std::shared_ptr<Transien
         });
     }
 
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(info->GetPid());
     payload["uid"] = std::to_string(info->GetUid());
     payload["bundleName"] = info->GetPackageName();
@@ -79,7 +79,7 @@ void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientT
         });
     }
 
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(info->GetPid());
     payload["uid"] = std::to_string(info->GetUid());
     payload["bundleName"] = info->GetPackageName();
@@ -106,7 +106,7 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
         });
     }
 
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorPid());
     payload["uid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorUid());
     payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();
@@ -133,7 +133,7 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
         });
     }
 
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorPid());
     payload["uid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorUid());
     payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();

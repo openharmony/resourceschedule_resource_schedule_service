@@ -23,8 +23,7 @@
 #include "cgroup_controller.h"    // for CgroupController
 #include "cgroup_map.h"           // for CgroupMap
 #include "config_policy_utils.h"  // for GetOneCfgFile
-#include "json/reader.h"          // for CharReader, CharReaderBuilder
-#include "json/value.h"           // for Value
+#include "nlohmann/json.hpp"           // for Value
 #include "process_group_log.h"    // for PGCGS_LOGI, PGCGS_LOGE
 #include "process_group_util.h"   // for ReadFileToString
 #include "sched_policy.h"         // for SchedPolicy, SP_UPPER_LIMIT, SP_DEF...
@@ -153,7 +152,7 @@ bool CgroupAction::SetThreadGroupSchedPolicy(int tid, SchedPolicy policy)
 bool CgroupAction::LoadConfigFile()
 {
     PGCGS_LOGI("%{public}s CgroupAction::LoadConfigFile loading config file", __func__);
-    Json::Value jsonObjRoot;
+    nlohmann::json jsonObjRoot;
     if (!ParseConfigFileToJsonObj(jsonObjRoot)) {
         return false;
     }
@@ -207,7 +206,7 @@ int CgroupAction::GetSchedPolicyByName(const std::string& name, SchedPolicy* pol
     return -1;
 }
 
-bool CgroupAction::ParseConfigFileToJsonObj(Json::Value& jsonObjRoot)
+bool CgroupAction::ParseConfigFileToJsonObj(nlohmann::json& jsonObjRoot)
 {
     char buf[PATH_MAX + 1];
     char* configFilePath = GetOneCfgFile(CGROUP_SETTING_CONFIG_FILE, buf, PATH_MAX + 1);
@@ -223,11 +222,10 @@ bool CgroupAction::ParseConfigFileToJsonObj(Json::Value& jsonObjRoot)
         PGCGS_LOGE("%{public}s: read config file failed", __func__);
         return false;
     }
-    Json::CharReaderBuilder builder;
-    std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-    std::string errorMsg;
-    if (!reader->parse(&*jsonString.begin(), &*jsonString.end(), &jsonObjRoot, &errorMsg)) {
-        PGCGS_LOGE("%{public}s: parse json failed, errorMsg:%{public}s", __func__, errorMsg.c_str());
+
+    jsonObjRoot = nlohmann::json::parse(jsonString);
+    if (jsonObjRoot.is_discarded()) {
+        PGCGS_LOGE("%{public}s: json obj parse failed, jsonString=%{public}s", __func__, jsonString.c_str());
         return false;
     }
     return true;

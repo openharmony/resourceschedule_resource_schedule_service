@@ -75,16 +75,11 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
 }
 
-Json::Value ResSchedServiceStub::StringToJson(const std::string& payload)
+nlohmann::json ResSchedServiceStub::StringToJson(const std::string& payload)
 {
-    bool res;
-    Json::CharReaderBuilder readerBuilder;
-    JSONCPP_STRING errs;
-    std::unique_ptr<Json::CharReader> const jsonReader(readerBuilder.newCharReader());
-    Json::Value root;
-    res = jsonReader->parse(payload.c_str(), payload.c_str() + payload.length(), &root, &errs);
-    if (!res || !errs.empty()) {
-        RESSCHED_LOGE("ResSchedServiceStub::payload = %{public}s Incorrect JSON format ", payload.c_str());
+    nlohmann::json root = nlohmann::json::parse(payload);
+    if (root.is_discarded()) {
+        RESSCHED_LOGE("ResSchedServiceStub::StringToJson fail, payload = %{public}s", payload.c_str());
     }
     return root;
 }

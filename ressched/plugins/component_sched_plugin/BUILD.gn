@@ -31,10 +31,7 @@ ohos_shared_library("component_sched_plugin") {
 
   sources = [ "src/component_sched_plugin.cpp" ]
 
-  deps = [
-    "${ressched_services}:resschedsvc",
-    "//third_party/jsoncpp:jsoncpp",
-  ]
+  deps = [ "${ressched_services}:resschedsvc" ]
 
   external_deps = [
     "bluetooth:btframework",

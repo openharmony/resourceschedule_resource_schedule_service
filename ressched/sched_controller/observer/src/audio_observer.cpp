@@ -26,7 +26,7 @@ void AudioObserver::OnRendererStateChange(
     for (const auto &audioRendererChangeInfo : audioRendererChangeInfos) {
         RESSCHED_LOGD("enter AudioRenderStateObserver::OnRendererStateChange, state: %{public}d",
             audioRendererChangeInfo->rendererState);
-        Json::Value payload;
+        nlohmann::json payload;
         payload["uid"] = std::to_string(audioRendererChangeInfo->clientUID);
         payload["sessionId"] = std::to_string(audioRendererChangeInfo->sessionId);
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
@@ -39,7 +39,7 @@ void AudioObserver::OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ri
     if (ringerMode != mode_) {
         RESSCHED_LOGD("enter AudioRingModeObserver::OnRingerModeUpdated, ringerMode: %{public}d", ringerMode);
         mode_ = ringerMode;
-        const Json::Value payload;
+        const nlohmann::json payload = nlohmann::json::object();
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_AUDIO_RING_MODE_CHANGE, ringerMode, payload);
     }
 }
@@ -48,7 +48,7 @@ void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
 {
     RESSCHED_LOGD("enter AudioVolumeKeyObserver::OnVolumeKeyEvent, streamType: %{public}d, volumeLevel: %{public}d",
         volumeEvent.volumeType, volumeEvent.volume);
-    Json::Value payload;
+    nlohmann::json payload;
     payload["volumeType"] = std::to_string(volumeEvent.volumeType);
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
         volumeEvent.volume, payload);

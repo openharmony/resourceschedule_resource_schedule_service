@@ -45,7 +45,7 @@ void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateD
         });
     }
 
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(appStateData.pid);
     payload["uid"] = std::to_string(appStateData.uid);
     payload["bundleName"] = appStateData.bundleName;
@@ -74,7 +74,7 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         });
     }
 
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(abilityStateData.pid);
     payload["uid"] = std::to_string(abilityStateData.uid);
     payload["bundleName"] = abilityStateData.bundleName;
@@ -104,7 +104,7 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
         });
     }
 
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(abilityStateData.pid);
     payload["uid"] = std::to_string(abilityStateData.uid);
     payload["bundleName"] = abilityStateData.bundleName;
@@ -129,7 +129,7 @@ void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processDat
         });
     }
 
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(processData.pid);
     payload["uid"] = std::to_string(processData.uid);
     payload["bundleName"] = processData.bundleName;
@@ -154,7 +154,7 @@ void RmsApplicationStateObserver::OnProcessDied(const ProcessData &processData)
         });
     }
 
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(processData.pid);
     payload["uid"] = std::to_string(processData.uid);
     payload["bundleName"] = processData.bundleName;
@@ -180,7 +180,7 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
         });
     }
 
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(appStateData.pid);
     payload["uid"] = std::to_string(appStateData.uid);
     payload["bundleName"] = appStateData.bundleName;

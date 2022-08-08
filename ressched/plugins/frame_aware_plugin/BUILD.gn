@@ -43,7 +43,6 @@ ohos_shared_library("frame_aware_plugin") {
     "//foundation/resourceschedule/frame_aware_sched/interfaces/innerkits/frameintf:frame_msg_intf",
     "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-    "//third_party/jsoncpp:jsoncpp",
   ]
 
   external_deps = [

@@ -109,7 +109,7 @@ void SchedController::ReportAbilityStatus(int32_t saId, const std::string& devic
     });
 }
 
-void SchedController::DispatchResource(uint32_t resType, int64_t value, const Json::Value& payload)
+void SchedController::DispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     auto handler = this->cgHandler_;
     if (!handler) {
@@ -272,7 +272,7 @@ extern "C" void ReportAbilityStatus(int32_t saId, const std::string& deviceId, u
     SchedController::GetInstance().ReportAbilityStatus(saId, deviceId, status);
 }
 
-extern "C" void CgroupSchedDispatch(uint32_t resType, int64_t value, const Json::Value& payload)
+extern "C" void CgroupSchedDispatch(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     SchedController::GetInstance().DispatchResource(resType, value, payload);
 }
