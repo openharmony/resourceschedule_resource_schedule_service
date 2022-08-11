@@ -39,7 +39,7 @@
         "bluetooth",
         "hitrace_native",
         "hiviewdfx_hilog_native",
-        "utils_base",
+        "c_utils",
         "window_manager",
         "hisysevent_native",
         "hilog_native",
