@@ -20,17 +20,17 @@
 #include "cgroup_adjuster.h"
 #include "supervisor.h"
 #include "sys/types.h"
-#include "json/json.h"
+#include "nlohmann/json.hpp"
 
 namespace OHOS {
 namespace ResourceSchedule {
-using ReportDataFunc = void (*)(uint32_t resType, int64_t value, const Json::Value& payload);
+using ReportDataFunc = void (*)(uint32_t resType, int64_t value, const nlohmann::json& payload);
 using ReportArbitrationResultFunc = void (*)(Application &app, ProcessRecord &pr, AdjustSource source);
 
 class ResSchedUtils {
 public:
     static ResSchedUtils& GetInstance();
-    void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload);
+    void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void ReportArbitrationResult(Application &app, ProcessRecord &pr, AdjustSource source);
 
 private:

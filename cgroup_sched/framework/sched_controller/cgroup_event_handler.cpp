@@ -330,7 +330,7 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_
 void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(pid);
     payload["uid"] = std::to_string(uid);
     payload["windowId"] = std::to_string(windowId);
@@ -380,7 +380,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
 void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(pid);
     payload["uid"] = std::to_string(uid);
     payload["windowId"] = std::to_string(windowId);
@@ -466,15 +466,31 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(
         AdjustSource::ADJS_WINDOW_VISIBILITY_CHANGED);
 }
 
-void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value, const Json::Value& payload)
+void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
+    int32_t uid = 0;
+    int32_t pid = 0;
+    nlohmann::json payloadTmp;
+
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
 
-    int32_t uid = atoi(payload["uid"].asString().c_str());
-    int32_t pid = atoi(payload["pid"].asString().c_str());
+    if (payload.is_object()) {
+        payloadTmp = payload;
+    } else {
+        payloadTmp = nlohmann::json::parse(payload.get<std::string>());
+    }
+
+    if (payloadTmp.contains("uid") && payloadTmp.at("uid").is_string()) {
+        uid = atoi(payloadTmp["uid"].get<std::string>().c_str());
+    }
+
+    if (payloadTmp.contains("pid") && payloadTmp.at("pid").is_string()) {
+        pid = atoi(payloadTmp["pid"].get<std::string>().c_str());
+    }
+
     int32_t mmi_service = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s : %{public}u, %{public}d, %{public}d, %{public}d",
         __func__, resType, uid, pid, mmi_service);
@@ -490,15 +506,31 @@ void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value,
         AdjustSource::ADJS_REPORT_MMI_SERVICE_THREAD);
 }
 
-void CgroupEventHandler::HandleReportRenderThread(uint32_t resType, int64_t value, const Json::Value& payload)
+void CgroupEventHandler::HandleReportRenderThread(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
+    int32_t uid = 0;
+    int32_t pid = 0;
+    nlohmann::json payloadTmp;
+
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
 
-    int32_t uid = atoi(payload["uid"].asString().c_str());
-    int32_t pid = atoi(payload["pid"].asString().c_str());
+    if (payload.is_object()) {
+        payloadTmp = payload;
+    } else {
+        payloadTmp = nlohmann::json::parse(payload.get<std::string>());
+    }
+
+    if (payloadTmp.contains("uid") && payloadTmp.at("uid").is_string()) {
+        uid = atoi(payloadTmp["uid"].get<std::string>().c_str());
+    }
+
+    if (payloadTmp.contains("pid") && payloadTmp.at("pid").is_string()) {
+        pid = atoi(payloadTmp["pid"].get<std::string>().c_str());
+    }
+
     int32_t render = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s : %{public}u, %{public}d, %{public}d, %{public}d",
         __func__, resType, uid, pid, render);

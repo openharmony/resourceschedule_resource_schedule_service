@@ -23,10 +23,7 @@
 #include <string>             // for basic_string
 #include <vector>             // for vector
 #include "sched_policy.h"     // for SchedPolicy
-
-namespace Json { class Value; }
-
-namespace Json { class Value; }
+#include "nlohmann/json.hpp"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -62,7 +59,7 @@ private:
     bool LoadConfigFile();
     bool IsEnabled();
     bool IsSchedPolicyValid(SchedPolicy policy);
-    static bool ParseConfigFileToJsonObj(Json::Value& jsonObjRoot);
+    static bool ParseConfigFileToJsonObj(nlohmann::json& jsonObjRoot);
 };
 } // namespace CgroupSetting
 } // namespace ResourceSchedule

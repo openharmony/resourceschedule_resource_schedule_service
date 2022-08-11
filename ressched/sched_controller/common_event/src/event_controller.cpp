@@ -59,7 +59,7 @@ void EventController::Init()
     }
 }
 
-void EventController::HandlePkgAddRemove(const EventFwk::Want &want, Json::Value &payload) const
+void EventController::HandlePkgAddRemove(const EventFwk::Want &want, nlohmann::json &payload) const
 {
     AppExecFwk::ElementName ele = want.GetElement();
     std::string bundleName = ele.GetBundleName();
@@ -88,7 +88,7 @@ int32_t EventController::GetUid(const int32_t &userId, const std::string &bundle
 }
 
 void EventController::HandleConnectivityChange(
-    const EventFwk::Want &want, const int32_t &code, Json::Value &payload)
+    const EventFwk::Want &want, const int32_t &code, nlohmann::json &payload)
 {
     int32_t netType = want.GetIntParam("NetType", -1);
     if (netType != 1) {
@@ -97,7 +97,7 @@ void EventController::HandleConnectivityChange(
     ReportDataInProcess(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE, code, payload);
 }
 
-void EventController::ReportDataInProcess(const uint32_t &resType, const int64_t &value, const Json::Value& payload)
+void EventController::ReportDataInProcess(const uint32_t &resType, const int64_t &value, const nlohmann::json& payload)
 {
     ResSchedUtils::GetInstance().ReportDataInProcess(resType, value, payload);
     resType_ = resType;
@@ -141,7 +141,7 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
     std::string action = want.GetAction();
     RESSCHED_LOGD("Recieved common event:%{public}s", action.c_str());
 
-    Json::Value payload;
+    nlohmann::json payload = nlohmann::json::object();
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED) {
         HandlePkgAddRemove(want, payload);
         ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_UNINSTALL, payload);

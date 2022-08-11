@@ -20,7 +20,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "json/json.h"
+#include "nlohmann/json.hpp"
 
 #include "network_latency_controller.h"
 #include "plugin.h"

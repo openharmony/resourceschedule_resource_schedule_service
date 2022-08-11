@@ -41,7 +41,7 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
     if (TryConnect() != ERR_OK) {
         return;
     }
-    Json::Value payload;
+    nlohmann::json payload;
     payload["clientPid"] = std::to_string(getpid());
     for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
         payload[it->first] = it->second;

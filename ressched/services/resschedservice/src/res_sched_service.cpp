@@ -27,7 +27,7 @@ namespace {
     constexpr int32_t DUMP_PARAM_INDEX = 1;
 }
 
-void ResSchedService::ReportData(uint32_t resType, int64_t value, const Json::Value& payload)
+void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     RESSCHED_LOGI("ResSchedService::ReportData from ipc receive data resType = %{public}u, value = %{public}lld.",
         resType, (long long)value);

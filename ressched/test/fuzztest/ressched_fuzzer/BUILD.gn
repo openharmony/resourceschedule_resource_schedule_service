@@ -42,7 +42,6 @@ ohos_fuzztest("ResSchedFuzzTest") {
   deps = [
     "${cgroup_sched_framework}:cgroup_sched",
     "${ressched_services}:resschedsvc",
-    "//third_party/jsoncpp:jsoncpp",
     "//third_party/libxml2:xml2",
   ]
 

@@ -32,7 +32,7 @@ public:
 
 private:
     int32_t ReportDataInner(MessageParcel& data, MessageParcel& reply);
-    Json::Value StringToJson(const std::string& str);
+    nlohmann::json StringToJson(const std::string& str);
 
     void Init();
 

@@ -17,7 +17,7 @@
 #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_PROCESS_GROUP_UTIL_H_
 
 #include <string>
-#include "json/value.h"
+#include "nlohmann/json.hpp"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -35,8 +35,6 @@ bool WriteStringToFile(int fd, const std::string& content);
 bool WriteStringToFile(const std::string& content, const std::string& filePath);
 
 bool ReadFileToStringForVFS(const std::string& filePath, std::string& content);
-
-std::string JsonToString(const Json::Value& json);
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

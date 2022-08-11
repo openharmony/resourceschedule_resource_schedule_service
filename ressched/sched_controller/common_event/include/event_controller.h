@@ -17,7 +17,7 @@
 #define RESSCHED_SCHED_CONTROLLER_COMMON_EVENT_INCLUDE_EVENT_CONTROLLER_H
 
 #include "common_event_subscriber.h"
-#include "json/json.h"
+#include "nlohmann/json.hpp"
 #include "system_ability_status_change_stub.h"
 
 #include "single_instance.h"
@@ -39,7 +39,7 @@ public:
 
     uint32_t resType_ = 0;
     int64_t value_ = 0;
-    Json::Value payload_;
+    nlohmann::json payload_;
 
 private:
 class SystemAbilityStatusChangeListener : public OHOS::SystemAbilityStatusChangeStub {
@@ -53,10 +53,10 @@ private:
     std::shared_ptr<EventController> subscriber_ = nullptr;
 };
 
-    void HandleConnectivityChange(const EventFwk::Want &want, const int32_t &code, Json::Value &payload);
-    void HandlePkgAddRemove(const EventFwk::Want &want, Json::Value &payload) const;
+    void HandleConnectivityChange(const EventFwk::Want &want, const int32_t &code, nlohmann::json &payload);
+    void HandlePkgAddRemove(const EventFwk::Want &want, nlohmann::json &payload) const;
     int32_t GetUid(const int32_t &userId, const std::string &bundleName) const;
-    void ReportDataInProcess(const uint32_t &resType, const int64_t &value, const Json::Value& payload);
+    void ReportDataInProcess(const uint32_t &resType, const int64_t &value, const nlohmann::json& payload);
 
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
 };

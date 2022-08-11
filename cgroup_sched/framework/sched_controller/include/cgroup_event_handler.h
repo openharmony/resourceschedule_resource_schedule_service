@@ -18,7 +18,7 @@
 
 #include <sys/types.h>
 #include "event_handler.h"
-#include "json/json.h"
+#include "nlohmann/json.hpp"
 #include "supervisor.h"
 #include "wm_common.h"
 
@@ -54,8 +54,8 @@ public:
         WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
     void HandleWindowVisibilityChanged(uint32_t windowId, bool isVisible,
         WindowType windowType, int32_t pid, int32_t uid);
-    void HandleReportMMIProcess(uint32_t resType, int64_t value, const Json::Value& payload);
-    void HandleReportRenderThread(uint32_t resType, int64_t value, const Json::Value& payload);
+    void HandleReportMMIProcess(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleReportRenderThread(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
     std::shared_ptr<Supervisor> supervisor_;
