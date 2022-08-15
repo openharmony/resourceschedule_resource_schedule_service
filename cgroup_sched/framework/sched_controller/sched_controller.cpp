@@ -132,6 +132,25 @@ void SchedController::DispatchResource(uint32_t resType, int64_t value, const nl
     });
 }
 
+std::string SchedController::GetBundleNameByUid(const int32_t uid)
+{
+    std::string bundleName = "";
+    OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
+        OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    OHOS::sptr<OHOS::IRemoteObject> object =
+        systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    sptr<AppExecFwk::IBundleMgr> iBundleMgr = OHOS::iface_cast<OHOS::AppExecFwk::IBundleMgr>(object);
+    if (!iBundleMgr) {
+        CGS_LOGD("%{public}s null bundle manager.", __func__);
+        return bundleName;
+    }
+
+    if (!iBundleMgr->GetBundleNameForUid(uid, bundleName)) {
+        CGS_LOGD("%{public}s get bundle name failed for %{public}d.", __func__, uid);
+    }
+    return bundleName;
+}
+
 inline void SchedController::InitCgroupHandler()
 {
     cgHandler_ = std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create(CG_HANDLER_THREAD));
@@ -235,6 +254,7 @@ void SchedController::SubscribeWindowState()
             OHOS::Rosen::WindowManager::GetInstance().RegisterVisibilityChangedListener(windowVisibilityObserver_);
         }
     }
+    CGS_LOGI("%{public}s success.", __func__);
 }
 
 void SchedController::UnsubscribeWindowState()

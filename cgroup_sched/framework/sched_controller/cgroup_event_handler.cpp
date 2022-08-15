@@ -339,7 +339,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        payload["bundleName"] = "";
+        payload["bundleName"] = SchedController::GetInstance().GetBundleNameByUid(uid);
         ResSchedUtils::GetInstance().ReportDataInProcess(
             ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_FOCUS, payload);
         return;
@@ -372,6 +372,9 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
         supervisor_->focusedApp_ = app;
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FOCUSED_WINDOW);
     }
+    if (app->name_.empty()) {
+        app->name_ = SchedController::GetInstance().GetBundleNameByUid(uid);
+    }
     payload["bundleName"] = app->name_;
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_FOCUS, payload);
@@ -389,7 +392,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        payload["bundleName"] = "";
+        payload["bundleName"] = SchedController::GetInstance().GetBundleNameByUid(uid);
         ResSchedUtils::GetInstance().ReportDataInProcess(
             ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
         return;
@@ -404,15 +407,9 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
     {
         ChronoScope cs("HandleUnfocusedWindow");
         app = supervisor_->GetAppRecord(uid);
-        if (!app) {
-            payload["bundleName"] = "";
-            ResSchedUtils::GetInstance().ReportDataInProcess(
-                ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
-            return;
-        }
-        procRecord = app->GetProcessRecord(pid);
-        if (!procRecord) {
-            payload["bundleName"] = "";
+        procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+        if (!app || !procRecord) {
+            payload["bundleName"] = SchedController::GetInstance().GetBundleNameByUid(uid);
             ResSchedUtils::GetInstance().ReportDataInProcess(
                 ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
             return;
@@ -428,6 +425,9 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
             app->focusedProcess_ = nullptr;
         }
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_UNFOCUSED_WINDOW);
+    }
+    if (app->name_.empty()) {
+        app->name_ = SchedController::GetInstance().GetBundleNameByUid(uid);
     }
     payload["bundleName"] = app->name_;
     ResSchedUtils::GetInstance().ReportDataInProcess(
