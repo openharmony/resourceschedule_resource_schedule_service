@@ -28,10 +28,11 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_WARM_START            = 10001;
     const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH         = 10002;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_CLICK           = 10006;
-    const int32_t PERF_REQUEST_CMD_ID_PUSH_PAGE             = 10007;
+    const int32_t PERF_REQUEST_CMD_ID_PUSH_PAGE_START       = 10007;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE           = 10008;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER      = 10009;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH           = 10010;
+    const int32_t PERF_REQUEST_CMD_ID_PUSH_PAGE_COMPLETE    = 10011;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -114,9 +115,13 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandlePushPage(const std::shared_ptr<ResData>& data)
 {
-    if (data->value == 0) {
-        RESSCHED_LOGI("SocPerfPlugin: socperf->PUSH_PAGE");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_PUSH_PAGE, "");
+    if (data->value == PUSH_PAGE_START) {
+        RESSCHED_LOGI("SocPerfPlugin: socperf->PUSH_PAGE_START");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_PUSH_PAGE_START, true, "");
+    } else if (data->value == PUSH_PAGE_COMPLETE) {
+        RESSCHED_LOGI("SocPerfPlugin: socperf->PUSH_PAGE_COMPLETE");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_PUSH_PAGE_START, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_PUSH_PAGE_COMPLETE, "");
     }
 }
 

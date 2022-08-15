@@ -173,6 +173,14 @@ enum ClickEventType : int64_t {
     TOUCH_EVENT,
     CLICK_EVENT,
 };
+
+/**
+ * @brief Click event type
+ */
+enum PushPageType : int64_t {
+    PUSH_PAGE_START,
+    PUSH_PAGE_COMPLETE,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
