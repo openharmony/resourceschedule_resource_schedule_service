@@ -175,7 +175,7 @@ enum ClickEventType : int64_t {
 };
 
 /**
- * @brief Click event type
+ * @brief PushPage event type
  */
 enum PushPageType : int64_t {
     PUSH_PAGE_START,
