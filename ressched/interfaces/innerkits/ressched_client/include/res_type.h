@@ -43,7 +43,7 @@ enum : uint32_t {
      * payload: pid,uid,name,oldGroup,newGroup
      */
     RES_TYPE_CGROUP_ADJUSTER,
-    // ace gestures click_recognizer; value means nothing
+    // ace gestures click_recognizer; value 1 touch event, value 2 click event
     RES_TYPE_CLICK_RECOGNIZE,
     // ace pipeline_context.cpp::PushPage(); value 0: push_page_start, 1: push_page_complete
     RES_TYPE_PUSH_PAGE,
@@ -157,6 +157,31 @@ enum WindowFocusStatus : int64_t {
 enum WindowVisibilityStatus : int64_t {
     INVISIBLE,
     VISIBLE,
+};
+
+/**
+ * @brief Slide event status
+ */
+enum SlideEventStatus : int64_t {
+    SLIDE_EVENT_OFF,
+    SLIDE_EVENT_ON,
+};
+
+/**
+ * @brief Click event type
+ */
+enum ClickEventType : int64_t {
+    INVALID_EVENT,
+    TOUCH_EVENT,
+    CLICK_EVENT,
+};
+
+/**
+ * @brief PushPage event type
+ */
+enum PushPageType : int64_t {
+    PUSH_PAGE_START,
+    PUSH_PAGE_COMPLETE,
 };
 } // namespace ResType
 } // namespace ResourceSchedule

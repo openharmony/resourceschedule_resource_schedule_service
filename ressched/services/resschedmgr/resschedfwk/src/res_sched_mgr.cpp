@@ -50,7 +50,7 @@ void ResSchedMgr::Stop()
     }
 }
 
-void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const Json::Value& payload)
+void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!mainHandler_) {
         return;
@@ -68,12 +68,12 @@ void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const Json::Value&
     FinishTrace(HITRACE_TAG_OHOS);
 }
 
-void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const Json::Value& payload)
+void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     CgroupSchedDispatch(resType, value, payload);
 }
 
-extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload)
+extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     RESSCHED_LOGD("%{public}s,  receive resType = %{public}u, value = %{public}lld.", __func__,
         resType, (long long)value);

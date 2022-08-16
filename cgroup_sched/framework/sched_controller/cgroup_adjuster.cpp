@@ -144,7 +144,7 @@ void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
             .append(std::to_string((int32_t)(pr.curSchedGroup_)));
         StartTrace(HITRACE_TAG_OHOS, traceStr);
 
-        Json::Value payload;
+        nlohmann::json payload;
         payload["pid"] = std::to_string(pr.GetPid());
         payload["uid"] = std::to_string(pr.GetUid());
         payload["name"] = app.name_;

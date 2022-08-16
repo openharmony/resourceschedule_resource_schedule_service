@@ -33,21 +33,18 @@ ohos_shared_library("cgroup_sched") {
     "./sched_controller/include",
     "./utils/include",
   ]
-  deps = [
-    "./process_group:libprocess_group",
-    "//third_party/jsoncpp:jsoncpp",
-  ]
+  deps = [ "./process_group:libprocess_group" ]
   external_deps = [
     "ability_base:want",
     "ability_runtime:app_manager",
     "ability_runtime:wantagent_innerkits",
     "background_task_mgr:bgtaskmgr_innerkits",
+    "c_utils:utils",
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "samgr_standard:samgr_proxy",
-    "utils_base:utils",
+    "samgr:samgr_proxy",
     "window_manager:libwm",
   ]
 

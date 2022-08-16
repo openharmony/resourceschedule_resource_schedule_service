@@ -23,7 +23,7 @@
 #include "errors.h"              // for ErrCode
 #include "iremote_object.h"      // for IRemoteObject, IRemoteObject::DeathR...
 #include "ires_sched_service.h"  // for IResSchedService
-#include "json/value.h"          // for Value
+#include "nlohmann/json.hpp"          // for Value
 #include "nocopyable.h"          // for DISALLOW_COPY_AND_MOVE
 #include "refbase.h"             // for sptr, wptr
 
@@ -55,7 +55,7 @@ public:
      * @param payload is empty is valid. The interface only used for In-Process call.
      * ATTENTION: payload is empty is valid. The interface only used for In-Process call.
      */
-    void ReportDataInProcess(uint32_t resType, int64_t value, const Json::Value& payload);
+    void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 protected:
     ResSchedClient() = default;

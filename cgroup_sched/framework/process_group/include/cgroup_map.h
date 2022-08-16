@@ -21,7 +21,7 @@
 #include <functional>           // for less
 #include <iosfwd>               // for string
 #include "cgroup_controller.h"  // for CgroupController
-#include "json/value.h"         // for Value
+#include "nlohmann/json.hpp"         // for Value
 #include "sched_policy.h"       // for SchedPolicy
 
 namespace OHOS {
@@ -32,7 +32,7 @@ public:
     static CgroupMap& GetInstance();
 
     bool SetThreadSchedPolicy(int tid, SchedPolicy policy, bool isSetThreadGroup);
-    bool LoadConfigFromJsonObj(const Json::Value& jsonObj);
+    bool LoadConfigFromJsonObj(const nlohmann::json& jsonObj);
     bool FindFristEnableCgroupController(CgroupController** p);
 
 private:
@@ -47,7 +47,7 @@ private:
     std::map<std::string, CgroupController> controllers_;
 
     void AddCgroupController(const std::string& name, CgroupController& controller);
-    bool LoadSchedPolicyConfig(CgroupController& controller, const Json::Value& policyObj);
+    bool LoadSchedPolicyConfig(CgroupController& controller, const nlohmann::json& policyObj);
 };
 } // namespace CgroupSetting
 } // namespace ResourceSchedule

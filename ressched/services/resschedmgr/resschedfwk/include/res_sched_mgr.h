@@ -20,7 +20,7 @@
 #include <string>
 #include "event_handler.h"
 #include "single_instance.h"
-#include "json/json.h"
+#include "nlohmann/json.hpp"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -45,10 +45,10 @@ public:
      * @param value bit64 content.
      * @param payload Extra content.
      */
-    void ReportData(uint32_t resType, int64_t value = 0, const Json::Value& payload = nullptr);
+    void ReportData(uint32_t resType, int64_t value = 0, const nlohmann::json& payload = nullptr);
 
 private:
-    void DispatchResourceInner(uint32_t resType, int64_t value, const Json::Value& payload);
+    void DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload);
     // main handler, use for report data
     std::shared_ptr<AppExecFwk::EventHandler> mainHandler_ = nullptr;
     std::mutex mainHandlerMutex_;

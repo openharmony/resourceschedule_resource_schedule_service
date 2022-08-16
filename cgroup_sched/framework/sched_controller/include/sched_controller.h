@@ -19,7 +19,7 @@
 #include <sys/types.h>
 #include <string>
 #include "hilog/log.h"
-#include "json/json.h"
+#include "nlohmann/json.hpp"
 #include "refbase.h"
 
 namespace OHOS {
@@ -48,7 +48,8 @@ public:
     void UnregisterStateObservers();
     int GetProcessGroup(pid_t pid);
     void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status);
-    void DispatchResource(uint32_t resType, int64_t value, const Json::Value& payload);
+    void DispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    std::string GetBundleNameByUid(const int32_t uid);
 
     const inline std::shared_ptr<CgroupEventHandler> GetCgroupEventHandler() const
     {

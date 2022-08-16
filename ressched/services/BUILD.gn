@@ -28,11 +28,11 @@ config("ressched_config") {
     "resschedmgr/pluginbase/include",
     "${sched_controller_observer}/include",
     "//utils/system/safwk/native/include",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "//third_party/libxml2/include",
     "${cgroup_sched_interfaces}/innerkits/include",
     "${sched_controller_event}/include",
-    "//third_party/jsoncpp/include",
+    "//third_party/json/single_include",
     "//base/customization/config_policy/interfaces/innerkits/include",
     "//base//hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent/include",
     "//base/telephony/state_registry/frameworks/native/observer/include",
@@ -59,13 +59,12 @@ ohos_shared_library("resschedsvc") {
     "${cgroup_sched_framework}:cgroup_sched",
     "${sched_controller_path}:sched_controller",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//third_party/jsoncpp:jsoncpp",
     "//third_party/libxml2:xml2",
-    "//utils/native/base:utils",
   ]
 
   external_deps = [
     "ability_base:want",
+    "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
     "config_policy:configpolicy_util",
     "core_service:tel_core_service_api",
@@ -76,7 +75,7 @@ ohos_shared_library("resschedsvc") {
     "ipc:ipc_core",
     "multimedia_audio_framework:audio_client",
     "safwk:system_ability_fwk",
-    "samgr_standard:samgr_proxy",
+    "samgr:samgr_proxy",
   ]
 
   subsystem_name = "resourceschedule"

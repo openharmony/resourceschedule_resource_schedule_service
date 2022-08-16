@@ -279,11 +279,13 @@ void SocPerfHandler::UpdateCurrentValue(int32_t resId, int32_t currValue)
 {
     resStatusInfo[resId]->current = currValue;
     if (IsGovResId(resId)) {
-        std::vector<std::string> targetStrs = govResNodeInfo[resId]->levelToStr[resStatusInfo[resId]->current];
-        for (int32_t i = 0; i < (int32_t)govResNodeInfo[resId]->paths.size(); i++) {
-            WriteNode(govResNodeInfo[resId]->paths[i], targetStrs[i]);
+        if (govResNodeInfo[resId]->levelToStr.find(currValue) != govResNodeInfo[resId]->levelToStr.end()) {
+            std::vector<std::string> targetStrs = govResNodeInfo[resId]->levelToStr[resStatusInfo[resId]->current];
+            for (int32_t i = 0; i < (int32_t)govResNodeInfo[resId]->paths.size(); i++) {
+                WriteNode(govResNodeInfo[resId]->paths[i], targetStrs[i]);
+            }
         }
-    } else {
+    } else if (IsResId(resId)) {
         WriteNode(resNodeInfo[resId]->path, std::to_string(resStatusInfo[resId]->current));
     }
 }
@@ -309,7 +311,7 @@ bool SocPerfHandler::ExistNoCandidate(
     if (perf == INVALID_VALUE && power == INVALID_VALUE && thermal == INVALID_VALUE) {
         if (IsGovResId(resId)) {
             resStatus->candidate = govResNodeInfo[resId]->def;
-        } else {
+        } else if (IsResId(resId)) {
             resStatus->candidate = resNodeInfo[resId]->def;
         }
         ArbitratePairRes(resId);
@@ -322,6 +324,15 @@ bool SocPerfHandler::IsGovResId(int32_t resId)
 {
     if (resNodeInfo.find(resId) == resNodeInfo.end()
         && govResNodeInfo.find(resId) != govResNodeInfo.end()) {
+        return true;
+    }
+    return false;
+}
+
+bool SocPerfHandler::IsResId(int32_t resId)
+{
+    if (govResNodeInfo.find(resId) == govResNodeInfo.end()
+        && resNodeInfo.find(resId) != resNodeInfo.end()) {
         return true;
     }
     return false;

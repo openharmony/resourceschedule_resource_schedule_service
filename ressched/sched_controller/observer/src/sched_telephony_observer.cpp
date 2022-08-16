@@ -23,7 +23,7 @@ namespace ResourceSchedule {
 void SchedTelephonyObserver::OnCallStateUpdated(int32_t slotId, int32_t callState, const std::u16string &phoneNumber)
 {
     RESSCHED_LOGD("SchedTelephonyObserver::OnCallStateUpdated callState is %{public}d", callState);
-    const Json::Value payload;
+    const nlohmann::json payload = nlohmann::json::object();
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CALL_STATE_UPDATE, callState, payload);
 }
 } // namespace ResourceSchedule

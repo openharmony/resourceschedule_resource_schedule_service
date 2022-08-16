@@ -18,7 +18,7 @@ import(
 config("component_sched_plugin_config") {
   include_dirs = [
     "include",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
   ]
 }
 
@@ -31,10 +31,7 @@ ohos_shared_library("component_sched_plugin") {
 
   sources = [ "src/component_sched_plugin.cpp" ]
 
-  deps = [
-    "${ressched_services}:resschedsvc",
-    "//third_party/jsoncpp:jsoncpp",
-  ]
+  deps = [ "${ressched_services}:resschedsvc" ]
 
   external_deps = [
     "bluetooth:btframework",
@@ -42,7 +39,7 @@ ohos_shared_library("component_sched_plugin") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",
-    "samgr_standard:samgr_proxy",
+    "samgr:samgr_proxy",
   ]
 
   defines = []

@@ -42,17 +42,16 @@ ohos_fuzztest("ResSchedFuzzTest") {
   deps = [
     "${cgroup_sched_framework}:cgroup_sched",
     "${ressched_services}:resschedsvc",
-    "//third_party/jsoncpp:jsoncpp",
     "//third_party/libxml2:xml2",
   ]
 
   external_deps = [
+    "c_utils:utils",
     "eventhandler:libeventhandler",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",
-    "samgr_standard:samgr_proxy",
-    "utils_base:utils",
+    "samgr:samgr_proxy",
   ]
 }
 

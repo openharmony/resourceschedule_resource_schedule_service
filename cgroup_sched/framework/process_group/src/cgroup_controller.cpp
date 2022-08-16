@@ -14,7 +14,7 @@
  */
 #include "cgroup_controller.h"
 #include <fcntl.h>               // for open, O_WRONLY
-#include <stddef.h>              // for size_t
+#include <cstddef>              // for size_t
 #include <cstdint>               // for int32_t
 #include <unistd.h>              // for close, TEMP_FAILURE_RETRY, access
 #include <cerrno>                // for errno

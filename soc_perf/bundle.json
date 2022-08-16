@@ -27,11 +27,11 @@
         "eventhandler",
         "ipc",
         "libxml2",
-        "utils_base",
+        "c_utils",
         "config_policy",
         "hitrace_native",
         "hilog_native",
-        "samgr_standard"
+        "samgr"
       ],
       "third_party": [
         "xml2"

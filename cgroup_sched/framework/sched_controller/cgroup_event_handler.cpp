@@ -330,7 +330,7 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_
 void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(pid);
     payload["uid"] = std::to_string(uid);
     payload["windowId"] = std::to_string(windowId);
@@ -339,7 +339,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        payload["bundleName"] = "";
+        payload["bundleName"] = SchedController::GetInstance().GetBundleNameByUid(uid);
         ResSchedUtils::GetInstance().ReportDataInProcess(
             ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_FOCUS, payload);
         return;
@@ -372,6 +372,9 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
         supervisor_->focusedApp_ = app;
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FOCUSED_WINDOW);
     }
+    if (app->name_.empty()) {
+        app->name_ = SchedController::GetInstance().GetBundleNameByUid(uid);
+    }
     payload["bundleName"] = app->name_;
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_FOCUS, payload);
@@ -380,7 +383,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
 void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
-    Json::Value payload;
+    nlohmann::json payload;
     payload["pid"] = std::to_string(pid);
     payload["uid"] = std::to_string(uid);
     payload["windowId"] = std::to_string(windowId);
@@ -389,7 +392,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        payload["bundleName"] = "";
+        payload["bundleName"] = SchedController::GetInstance().GetBundleNameByUid(uid);
         ResSchedUtils::GetInstance().ReportDataInProcess(
             ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
         return;
@@ -404,15 +407,9 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
     {
         ChronoScope cs("HandleUnfocusedWindow");
         app = supervisor_->GetAppRecord(uid);
-        if (!app) {
-            payload["bundleName"] = "";
-            ResSchedUtils::GetInstance().ReportDataInProcess(
-                ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
-            return;
-        }
-        procRecord = app->GetProcessRecord(pid);
-        if (!procRecord) {
-            payload["bundleName"] = "";
+        procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+        if (!app || !procRecord) {
+            payload["bundleName"] = SchedController::GetInstance().GetBundleNameByUid(uid);
             ResSchedUtils::GetInstance().ReportDataInProcess(
                 ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
             return;
@@ -428,6 +425,9 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
             app->focusedProcess_ = nullptr;
         }
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_UNFOCUSED_WINDOW);
+    }
+    if (app->name_.empty()) {
+        app->name_ = SchedController::GetInstance().GetBundleNameByUid(uid);
     }
     payload["bundleName"] = app->name_;
     ResSchedUtils::GetInstance().ReportDataInProcess(
@@ -466,19 +466,23 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(
         AdjustSource::ADJS_WINDOW_VISIBILITY_CHANGED);
 }
 
-void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value, const Json::Value& payload)
+void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
+    int32_t uid = 0;
+    int32_t pid = 0;
+    int32_t mmi_service;
+
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
 
-    int32_t uid = atoi(payload["uid"].asString().c_str());
-    int32_t pid = atoi(payload["pid"].asString().c_str());
-    int32_t mmi_service = static_cast<int32_t>(value);
+    if (!ParsePayload(uid, pid, mmi_service, value, payload)) {
+        return;
+    }
+
     CGS_LOGD("%{public}s : %{public}u, %{public}d, %{public}d, %{public}d",
         __func__, resType, uid, pid, mmi_service);
-
     if (uid <= 0 || pid <= 0 || mmi_service <= 0) {
         return;
     }
@@ -490,19 +494,23 @@ void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value,
         AdjustSource::ADJS_REPORT_MMI_SERVICE_THREAD);
 }
 
-void CgroupEventHandler::HandleReportRenderThread(uint32_t resType, int64_t value, const Json::Value& payload)
+void CgroupEventHandler::HandleReportRenderThread(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
+    int32_t uid = 0;
+    int32_t pid = 0;
+    int32_t render = 0;
+
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
 
-    int32_t uid = atoi(payload["uid"].asString().c_str());
-    int32_t pid = atoi(payload["pid"].asString().c_str());
-    int32_t render = static_cast<int32_t>(value);
+    if (!ParsePayload(uid, pid, render, value, payload)) {
+        return;
+    }
+
     CGS_LOGD("%{public}s : %{public}u, %{public}d, %{public}d, %{public}d",
         __func__, resType, uid, pid, render);
-
     if (uid <= 0 || pid <= 0 || render <= 0) {
         return;
     }
@@ -512,6 +520,27 @@ void CgroupEventHandler::HandleReportRenderThread(uint32_t resType, int64_t valu
     procRecord->renderTid_ = render;
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_RENDER_THREAD);
+}
+
+bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,
+    int64_t value, const nlohmann::json& payload)
+{
+    nlohmann::json payloadTmp;
+    if (payload.is_object()) {
+        payloadTmp = payload;
+    } else {
+        payloadTmp = nlohmann::json::parse(payload.get<std::string>());
+    }
+
+    if (payloadTmp.contains("uid") && payloadTmp.at("uid").is_string()) {
+        uid = atoi(payloadTmp["uid"].get<std::string>().c_str());
+    }
+
+    if (payloadTmp.contains("pid") && payloadTmp.at("pid").is_string()) {
+        pid = atoi(payloadTmp["pid"].get<std::string>().c_str());
+    }
+    tid = static_cast<int32_t>(value);
+    return true;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

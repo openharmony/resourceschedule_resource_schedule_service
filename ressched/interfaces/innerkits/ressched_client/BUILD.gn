@@ -18,15 +18,17 @@ import(
 
 config("client_private_config") {
   include_dirs = [
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "//utils/system/safwk/native/include",
     "${ressched_common}/include",
-    "//third_party/jsoncpp/include",
   ]
 }
 
 config("client_public_config") {
-  include_dirs = [ "include" ]
+  include_dirs = [
+    "include",
+    "//third_party/json/single_include",
+  ]
 }
 
 ohos_shared_library("ressched_client") {
@@ -42,16 +44,13 @@ ohos_shared_library("ressched_client") {
     "src/res_sched_service_proxy.cpp",
   ]
 
-  deps = [
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//third_party/jsoncpp:jsoncpp",
-    "//utils/native/base:utils",
-  ]
+  deps = [ "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog" ]
 
   external_deps = [
+    "c_utils:utils",
     "eventhandler:libeventhandler",
     "ipc:ipc_core",
-    "samgr_standard:samgr_proxy",
+    "samgr:samgr_proxy",
   ]
 
   subsystem_name = "resourceschedule"

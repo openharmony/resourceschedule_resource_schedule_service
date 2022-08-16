@@ -39,12 +39,12 @@
         "bluetooth",
         "hitrace_native",
         "hiviewdfx_hilog_native",
-        "utils_base",
+        "c_utils",
         "window_manager",
         "hisysevent_native",
         "hilog_native",
         "common_event_service",
-        "samgr_standard"
+        "samgr"
       ],
       "third_party": [
         "xml2",

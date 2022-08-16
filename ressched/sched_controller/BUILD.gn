@@ -48,8 +48,6 @@ ohos_shared_library("sched_controller") {
   deps = [
     "//base/telephony/call_manager/frameworks/native:tel_call_manager_api",
     "//base/telephony/state_registry/frameworks/native/observer:tel_state_registry_api",
-    "//third_party/jsoncpp:jsoncpp",
-    "//utils/native/base:utils",
   ]
 
   external_deps = [
@@ -58,6 +56,7 @@ ohos_shared_library("sched_controller") {
     "ability_runtime:app_manager",
     "ability_runtime:wantagent_innerkits",
     "bundle_framework:appexecfwk_base",
+    "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
     "core_service:tel_core_service_api",
     "hisysevent_native:libhisysevent",
@@ -66,7 +65,7 @@ ohos_shared_library("sched_controller") {
     "ipc:ipc_core",
     "multimedia_audio_framework:audio_client",
     "netmanager_base:net_conn_manager_if",
-    "samgr_standard:samgr_proxy",
+    "samgr:samgr_proxy",
   ]
 
   part_name = "resource_schedule_service"

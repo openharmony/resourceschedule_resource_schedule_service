@@ -17,6 +17,7 @@ config("libprocess_group_config") {
   include_dirs = [
     "./include",
     "//base/customization/config_policy/interfaces/innerkits/include",
+    "//third_party/json/single_include",
   ]
 }
 
@@ -30,12 +31,11 @@ ohos_shared_library("libprocess_group") {
     "./src/sched_policy.cpp",
   ]
   include_dirs = [ "./include" ]
-  deps = [
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//third_party/jsoncpp:jsoncpp",
-    "//utils/native/base:utils",
+  deps = [ "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog" ]
+  external_deps = [
+    "c_utils:utils",
+    "config_policy:configpolicy_util",
   ]
-  external_deps = [ "config_policy:configpolicy_util" ]
   public_configs = [ ":libprocess_group_config" ]
   part_name = "resource_schedule_service"
   subsystem_name = "resourceschedule"
