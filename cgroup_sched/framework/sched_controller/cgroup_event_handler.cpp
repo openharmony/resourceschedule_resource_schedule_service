@@ -470,31 +470,19 @@ void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value,
 {
     int32_t uid = 0;
     int32_t pid = 0;
-    nlohmann::json payloadTmp;
+    int32_t mmi_service;
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
 
-    if (payload.is_object()) {
-        payloadTmp = payload;
-    } else {
-        payloadTmp = nlohmann::json::parse(payload.get<std::string>());
+    if (!ParsePayload(uid, pid, mmi_service, value, payload)) {
+        return;
     }
 
-    if (payloadTmp.contains("uid") && payloadTmp.at("uid").is_string()) {
-        uid = atoi(payloadTmp["uid"].get<std::string>().c_str());
-    }
-
-    if (payloadTmp.contains("pid") && payloadTmp.at("pid").is_string()) {
-        pid = atoi(payloadTmp["pid"].get<std::string>().c_str());
-    }
-
-    int32_t mmi_service = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s : %{public}u, %{public}d, %{public}d, %{public}d",
         __func__, resType, uid, pid, mmi_service);
-
     if (uid <= 0 || pid <= 0 || mmi_service <= 0) {
         return;
     }
@@ -510,13 +498,34 @@ void CgroupEventHandler::HandleReportRenderThread(uint32_t resType, int64_t valu
 {
     int32_t uid = 0;
     int32_t pid = 0;
-    nlohmann::json payloadTmp;
+    int32_t render = 0;
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
 
+    if (!ParsePayload(uid, pid, render, value, payload)) {
+        return;
+    }
+
+    CGS_LOGD("%{public}s : %{public}u, %{public}d, %{public}d, %{public}d",
+        __func__, resType, uid, pid, render);
+    if (uid <= 0 || pid <= 0 || render <= 0) {
+        return;
+    }
+
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    auto procRecord = app->GetProcessRecordNonNull(pid);
+    procRecord->renderTid_ = render;
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_REPORT_RENDER_THREAD);
+}
+
+bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,
+    int64_t value, const nlohmann::json& payload)
+{
+    nlohmann::json payloadTmp;
     if (payload.is_object()) {
         payloadTmp = payload;
     } else {
@@ -530,20 +539,8 @@ void CgroupEventHandler::HandleReportRenderThread(uint32_t resType, int64_t valu
     if (payloadTmp.contains("pid") && payloadTmp.at("pid").is_string()) {
         pid = atoi(payloadTmp["pid"].get<std::string>().c_str());
     }
-
-    int32_t render = static_cast<int32_t>(value);
-    CGS_LOGD("%{public}s : %{public}u, %{public}d, %{public}d, %{public}d",
-        __func__, resType, uid, pid, render);
-
-    if (uid <= 0 || pid <= 0 || render <= 0) {
-        return;
-    }
-
-    auto app = supervisor_->GetAppRecordNonNull(uid);
-    auto procRecord = app->GetProcessRecordNonNull(pid);
-    procRecord->renderTid_ = render;
-    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-        AdjustSource::ADJS_REPORT_RENDER_THREAD);
+    tid = static_cast<int32_t>(value);
+    return true;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

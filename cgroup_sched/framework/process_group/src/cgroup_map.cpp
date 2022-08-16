@@ -66,7 +66,8 @@ bool CgroupMap::LoadConfigFromJsonObj(const nlohmann::json& jsonObj)
         return false;
     }
     int count = 0;
-    for (auto i = 0; i < jsonArrObj.size(); ++i) {
+    int32_t objSize = static_cast<int32_t>(jsonArrObj.size());
+    for (int32_t i = 0; i < objSize; ++i) {
         const nlohmann::json& cgroupObj = jsonArrObj[i];
         const nlohmann::json& nameObj = cgroupObj[JSON_KEY_CONTROLLER];
         const nlohmann::json& pathObj = cgroupObj[JSON_KEY_PATH];
