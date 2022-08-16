@@ -55,6 +55,7 @@ private:
     bool ExistNoCandidate(
         int32_t resId, std::shared_ptr<ResStatus> resStatus, int32_t perf, int32_t power, int32_t thermal);
     bool IsGovResId(int32_t resId);
+    bool IsResId(int32_t resId);
     bool IsValidResId(int32_t resId);
 };
 } // namespace SOCPERF
