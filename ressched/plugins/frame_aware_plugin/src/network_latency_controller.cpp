@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include <unistd.h>
 
@@ -37,14 +38,19 @@ void NetworkLatencyController::Init()
     int err = access(PmqosNetworkLatencySwitcher::PMQOS_PATH.data(), W_OK);
     if (!err) {
         RESSCHED_LOGI("%{public}s: using pmqos latency switcher", __func__);
-        switcher = std::make_unique<PmqosNetworkLatencySwitcher>();
+        Init(std::make_unique<PmqosNetworkLatencySwitcher>());
         return;
     }
 
     // Another latency switchers can be implemented if required.
     // If nothing matched, use default object, which is noop switcher.
     RESSCHED_LOGI("%{public}s: using default latency switcher", __func__);
-    switcher = std::make_unique<NoopNetworkLatencySwitcher>();
+    Init(std::make_unique<NoopNetworkLatencySwitcher>());
+}
+
+void NetworkLatencyController::Init(std::unique_ptr<INetworkLatencySwitcher> sw)
+{
+    switcher = std::move(sw);
 }
 
 void NetworkLatencyController::HandleRequest(long long value, const std::string &identity)

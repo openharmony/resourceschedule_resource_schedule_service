@@ -26,6 +26,7 @@ namespace OHOS::ResourceSchedule {
 class NetworkLatencyController {
 public:
     void Init();
+    void Init(std::unique_ptr<INetworkLatencySwitcher> switcher);
     void HandleRequest(long long value, const std::string &identity);
 private:
     void AddRequest(const std::string &identity);
