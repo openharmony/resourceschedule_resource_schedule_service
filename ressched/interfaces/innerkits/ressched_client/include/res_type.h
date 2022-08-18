@@ -93,6 +93,8 @@ enum : uint32_t {
     RES_TYPE_APP_ABILITY_START,
     // ace pipeline_context.cpp::PopPage(); value means nothing
     RES_TYPE_POP_PAGE,
+    // ace web gesture event recognize; value means nothing
+    RES_TYPE_WEB_GESTURE,
 };
 
 /**

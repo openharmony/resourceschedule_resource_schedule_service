@@ -262,6 +262,7 @@ A. 事件打点延时
 | RES_TYPE_AUDIO_RING_MODE_CHANGE     | 声音模式改变事件                 | 0：响铃模式 1：静音模式     | 无需payload         | - | - |
 | RES_TYPE_AUDIO_VOLUME_KEY_CHANGE    | 音量改变事件                     | value：音量大小             | {"volumeType"=?}         | - | - |
 | RES_TYPE_POP_PAGE    | ace pipeline_context.cpp::PopPage();          | 无             |{"pid"=?,"uid"=?,"bundleName"="?","abilityName"="?", "pageUrl"="?"} | - | - |
+| RES_TYPE_WEB_GESTURE                | web手势事件                     | 无                        |无     | -        | -       |
 
 
 
