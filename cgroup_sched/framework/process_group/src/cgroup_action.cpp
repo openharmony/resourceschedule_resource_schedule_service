@@ -223,7 +223,10 @@ bool CgroupAction::ParseConfigFileToJsonObj(nlohmann::json& jsonObjRoot)
         return false;
     }
 
-    jsonObjRoot = nlohmann::json::parse(jsonString);
+    if (jsonString.empty()) {
+        return false;
+    }
+    jsonObjRoot = nlohmann::json::parse(jsonString, nullptr, false);
     if (jsonObjRoot.is_discarded()) {
         PGCGS_LOGE("%{public}s: json obj parse failed, jsonString=%{public}s", __func__, jsonString.c_str());
         return false;

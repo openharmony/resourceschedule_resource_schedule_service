@@ -529,7 +529,11 @@ bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,
     if (payload.is_object()) {
         payloadTmp = payload;
     } else {
-        payloadTmp = nlohmann::json::parse(payload.get<std::string>());
+        std::string payloadStr = payload.get<std::string>();
+        if (payloadStr.empty()) {
+            return false;
+        }
+        payloadTmp = nlohmann::json::parse(payloadStr, nullptr, false);
     }
 
     if (payloadTmp.contains("uid") && payloadTmp.at("uid").is_string()) {
