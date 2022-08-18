@@ -27,11 +27,6 @@
 #include "network_latency_controller.h"
 
 namespace OHOS::ResourceSchedule {
-namespace {
-    const long long NETWORK_LATENCY_REQUEST_LOW = 0;
-    const long long NETWORK_LATENCY_REQUEST_NORMAL = 1;
-}
-
 void NetworkLatencyController::Init()
 {
     // use PMQoS switch if available

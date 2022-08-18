@@ -43,22 +43,21 @@ protected:
     std::shared_ptr<SwitchCounter> counter;
     std::unique_ptr<MockSwitcher> switcher;
     OHOS::ResourceSchedule::NetworkLatencyController ctrl;
-
-    static const long long LOW_LATENCY_VALUE = 0;
-    static const long long DEFAULT_LATENCY_VALUE = 1;
 };
+
+using OHOS::ResourceSchedule::NetworkLatencyController;
 
 HWTEST_F(NetworkLatencyControllerTest, singleUser_001, testing::ext::TestSize.Level1)
 {
     const std::string identity("test.application.1");
 
     // enable low latency
-    ctrl.HandleRequest(LOW_LATENCY_VALUE, identity);
+    ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_LOW, identity);
     EXPECT_EQ(counter->onCount, 1);
     EXPECT_EQ(counter->offCount, 0);
 
     // disable low latency
-    ctrl.HandleRequest(DEFAULT_LATENCY_VALUE, identity);
+    ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_NORMAL, identity);
     EXPECT_EQ(counter->onCount, 1);
     EXPECT_EQ(counter->offCount, 1);
 }
@@ -69,21 +68,22 @@ HWTEST_F(NetworkLatencyControllerTest, multiUser_002, testing::ext::TestSize.Lev
     const std::string identity2("test.application.2");
 
     // enable low latency from the first user
-    ctrl.HandleRequest(LOW_LATENCY_VALUE, identity1);
+    ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_LOW, identity1);
     EXPECT_EQ(counter->onCount, 1);
     EXPECT_EQ(counter->offCount, 0);
 
     // enable low latency from the second user
-    ctrl.HandleRequest(LOW_LATENCY_VALUE, identity2);
+    ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_LOW, identity2);
     EXPECT_EQ(counter->onCount, 1); // already activated
     EXPECT_EQ(counter->offCount, 0);
 
     // try reset to normal latency from the first user
-    ctrl.HandleRequest(DEFAULT_LATENCY_VALUE, identity1);
+    ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_NORMAL, identity1);
     EXPECT_EQ(counter->onCount, 1);
     EXPECT_EQ(counter->offCount, 0); // there is a second user alive
 
-    ctrl.HandleRequest(DEFAULT_LATENCY_VALUE, identity2);
+    // finally reset from the second user
+    ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_NORMAL, identity2);
     EXPECT_EQ(counter->onCount, 1);
     EXPECT_EQ(counter->offCount, 1); // finally disable
 }
@@ -93,7 +93,7 @@ HWTEST_F(NetworkLatencyControllerTest, errorEmptyIdentity_003, testing::ext::Tes
     const std::string empty;
 
     // cannot create latency request with empty identity
-    ctrl.HandleRequest(LOW_LATENCY_VALUE, empty);
+    ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_LOW, empty);
     EXPECT_EQ(counter->onCount, 0);
     EXPECT_EQ(counter->offCount, 0);
 }
@@ -103,12 +103,12 @@ HWTEST_F(NetworkLatencyControllerTest, errorDuplicateRequests_004, testing::ext:
     const std::string identity("my.test.application");
 
     // send initial latency request
-    ctrl.HandleRequest(LOW_LATENCY_VALUE, identity);
+    ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_LOW, identity);
     EXPECT_EQ(counter->onCount, 1);
     EXPECT_EQ(counter->offCount, 0);
 
     // create another latency request shouldn't change anything
-    ctrl.HandleRequest(LOW_LATENCY_VALUE, identity);
+    ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_LOW, identity);
     EXPECT_EQ(counter->onCount, 1);
     EXPECT_EQ(counter->offCount, 0);
 }
@@ -118,7 +118,7 @@ HWTEST_F(NetworkLatencyControllerTest, errorCancelNonExistentRequest_005, testin
     const std::string identity("my.test.application");
 
     // cancelling a non-existing latency request should not do anything
-    ctrl.HandleRequest(DEFAULT_LATENCY_VALUE, identity);
+    ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_NORMAL, identity);
     EXPECT_EQ(counter->onCount, 0);
     EXPECT_EQ(counter->offCount, 0); // nothing changed
 }
@@ -129,12 +129,12 @@ HWTEST_F(NetworkLatencyControllerTest, errorCancelForeignRequest_006, testing::e
     const std::string identity2("my.test.application2");
 
     // register a latency request from the first user
-    ctrl.HandleRequest(LOW_LATENCY_VALUE, identity1);
+    ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_LOW, identity1);
     EXPECT_EQ(counter->onCount, 1);
     EXPECT_EQ(counter->offCount, 0);
 
     // cannot cancel the request using another identity
-    ctrl.HandleRequest(DEFAULT_LATENCY_VALUE, identity2);
+    ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_NORMAL, identity2);
     EXPECT_EQ(counter->onCount, 1); // nothing changed
     EXPECT_EQ(counter->offCount, 0);
 }
