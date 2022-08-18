@@ -77,7 +77,13 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
 
 nlohmann::json ResSchedServiceStub::StringToJson(const std::string& payload)
 {
-    nlohmann::json root = nlohmann::json::parse(payload);
+    nlohmann::json root;
+
+    if (payload.empty()) {
+        return root;
+    }
+
+    root = nlohmann::json::parse(payload, nullptr, false);
     if (root.is_discarded()) {
         RESSCHED_LOGE("ResSchedServiceStub::StringToJson fail, payload = %{public}s", payload.c_str());
     }
