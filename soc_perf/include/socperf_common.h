@@ -82,7 +82,7 @@ public:
     std::string path;
     int32_t mode;
     int32_t pair;
-    std::unordered_set<int32_t> available;
+    std::unordered_set<int64_t> available;
 
 public:
     ResNode(int32_t resId, std::string resName, int32_t resMode, int32_t resPair)
