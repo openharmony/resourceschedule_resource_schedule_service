@@ -12,7 +12,8 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
+import(
+    "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
 
 module_output_path = "resource_schedule_service/ressched"
 
@@ -33,4 +34,3 @@ group("unittest") {
   testonly = true
   deps = [ ":NetworkLatencyControllerTest" ]
 }
-
