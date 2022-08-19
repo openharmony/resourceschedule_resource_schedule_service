@@ -497,7 +497,7 @@ bool SocPerf::LoadResourceAvailable(std::shared_ptr<ResNode> resNode, char* node
     std::vector<std::string> result = Split(nodeStr, " ");
     for (auto str : result) {
         if (IsNumber(str)) {
-            resNode->available.insert(stoi(str));
+            resNode->available.insert(stoll(str));
         } else {
             return false;
         }
