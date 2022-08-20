@@ -91,6 +91,8 @@ enum : uint32_t {
     // stub position : ability_runtime ability_manager_service.cpp::StartAbilityInner().
     // specifically : ability type is PAGE and ability launchMode is not SPECIFIED.
     RES_TYPE_APP_ABILITY_START,
+    // ace pipeline_context.cpp::PopPage(); value means nothing
+    RES_TYPE_POP_PAGE,
 };
 
 /**
