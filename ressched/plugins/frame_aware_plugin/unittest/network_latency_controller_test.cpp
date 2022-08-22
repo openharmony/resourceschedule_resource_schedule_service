@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include <iostream>
 #include <memory>
 #include <string>
@@ -7,45 +22,49 @@
 #include <inetwork_latency_switcher.h>
 #include <network_latency_controller.h>
 
-struct SwitchCounter {
-    int onCount = 0;
-    int offCount = 0;
-};
+namespace OHOS {
+namespace ResourceSchedule {
+struct MockSwitcher : INetworkLatencySwitcher {
+    struct Counter {
+        int onCount = 0;
+        int offCount = 0;
+    };
 
-struct MockSwitcher : OHOS::ResourceSchedule::INetworkLatencySwitcher {
-    MockSwitcher(std::shared_ptr<SwitchCounter> &counter)
+    explicit MockSwitcher(std::shared_ptr<Counter> &counter)
         : counter(counter)
     { }
 
-    virtual void LowLatencyOn() override {
+    virtual void LowLatencyOn() override
+    {
         ++counter->onCount;
     }
 
-    virtual void LowLatencyOff() override {
+    virtual void LowLatencyOff() override
+    {
         ++counter->offCount;
     }
 
 private:
-    std::shared_ptr<SwitchCounter> counter;
+    std::shared_ptr<Counter> counter;
 };
 
 class NetworkLatencyControllerTest : public testing::Test {
 public:
-    void SetUp() {
-        counter = std::make_shared<SwitchCounter>();
+    void SetUp()
+    {
+        counter = std::make_shared<MockSwitcher::Counter>();
         switcher = std::make_unique<MockSwitcher>(counter);
         ctrl.Init(std::move(switcher));
     }
 
-    void TearDown() { }
+    void TearDown()
+    { }
 
 protected:
-    std::shared_ptr<SwitchCounter> counter;
+    std::shared_ptr<MockSwitcher::Counter> counter;
     std::unique_ptr<MockSwitcher> switcher;
-    OHOS::ResourceSchedule::NetworkLatencyController ctrl;
+    NetworkLatencyController ctrl;
 };
-
-using OHOS::ResourceSchedule::NetworkLatencyController;
 
 HWTEST_F(NetworkLatencyControllerTest, singleUser_001, testing::ext::TestSize.Level1)
 {
@@ -149,3 +168,5 @@ HWTEST_F(NetworkLatencyControllerTest, errorInvalidLatencyValue_007, testing::ex
     EXPECT_EQ(counter->onCount, 0); // should not activate
     EXPECT_EQ(counter->offCount, 0);
 }
+} // namespace ResourceSchedule
+} // namespace OHOS
