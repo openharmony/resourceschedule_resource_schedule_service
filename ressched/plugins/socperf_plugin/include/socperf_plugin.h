@@ -42,6 +42,7 @@ private:
     void HandleWindowFocus(const std::shared_ptr<ResData>& data);
     void HandleEventClick(const std::shared_ptr<ResData>& data);
     void HandlePushPage(const std::shared_ptr<ResData>& data);
+    void HandlePopPage(const std::shared_ptr<ResData>& data);
     void HandleEventSlide(const std::shared_ptr<ResData>& data);
     void HandleEventWebGesture(const std::shared_ptr<ResData>& data);
 };
