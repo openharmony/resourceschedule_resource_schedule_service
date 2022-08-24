@@ -27,7 +27,7 @@ public:
     void PowerLimitBoost(bool onOffTag, const std::string& msg) override;
     void ThermalLimitBoost(bool onOffTag, const std::string& msg) override;
     void LimitRequest(int32_t clientId,
-        const std::vector<int32_t>& tags, const std::vector<int32_t>& configs, const std::string& msg) override;
+        const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg) override;
 
 public:
     explicit SocPerfProxy(const sptr<IRemoteObject> &impl)

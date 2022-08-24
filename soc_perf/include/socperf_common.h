@@ -64,8 +64,8 @@ namespace {
 namespace {
     const std::string SOCPERF_RESOURCE_CONFIG_XML = "etc/soc_perf/socperf_resource_config.xml";
     const std::string SOCPERF_BOOST_CONFIG_XML    = "etc/soc_perf/socperf_boost_config.xml";
-    const int32_t MAX_INT_VALUE                       = 0x7FFFFFFF;
-    const int32_t MIN_INT_VALUE                       = 0x80000000;
+    const int64_t MAX_INT_VALUE                       = 0x7FFFFFFFFFFFFFFF;
+    const int64_t MIN_INT_VALUE                       = 0x8000000000000000;
     const int32_t INVALID_VALUE                       = -1;
     const int32_t MAX_HANDLER_THREADS                 = 5;
     const int32_t MIN_RESOURCE_ID                     = 1000;
@@ -78,7 +78,7 @@ class ResNode {
 public:
     int32_t id;
     std::string name;
-    int32_t def;
+    int64_t def;
     std::string path;
     int32_t mode;
     int32_t pair;
@@ -99,7 +99,7 @@ public:
     {
         SOC_PERF_LOGD("resNode-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
         SOC_PERF_LOGD("          path: [%{public}s]", path.c_str());
-        SOC_PERF_LOGD("          def: [%{public}d], mode: [%{public}d], pair: [%{public}d]", def, mode, pair);
+        SOC_PERF_LOGD("          def: [%{public}lld], mode: [%{public}d], pair: [%{public}d]", def, mode, pair);
         std::string str;
         str.append("available(").append(std::to_string((int32_t)available.size())).append("): ");
         str.append("[");
@@ -118,10 +118,10 @@ class GovResNode {
 public:
     int32_t id;
     std::string name;
-    int32_t def;
+    int64_t def;
     std::vector<std::string> paths;
-    std::unordered_set<int32_t> available;
-    std::unordered_map<int32_t, std::vector<std::string>> levelToStr;
+    std::unordered_set<int64_t> available;
+    std::unordered_map<int64_t, std::vector<std::string>> levelToStr;
 
 public:
     GovResNode(int32_t govResId, std::string govResName)
@@ -135,7 +135,7 @@ public:
     void PrintString()
     {
         SOC_PERF_LOGD("govResNode-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
-        SOC_PERF_LOGD("             def: [%{public}d]", def);
+        SOC_PERF_LOGD("             def: [%{public}lld]", def);
         for (auto path : paths) {
             SOC_PERF_LOGD("             path: [%{public}s]", path.c_str());
         }
@@ -152,7 +152,7 @@ public:
         SOC_PERF_LOGD("             %{public}s", str.c_str());
         for (auto iter = levelToStr.begin(); iter != levelToStr.end(); ++iter) {
             std::string str2;
-            int32_t level = iter->first;
+            int64_t level = iter->first;
             std::vector<std::string> result = iter->second;
             for (int32_t i = 0; i < (int32_t)result.size(); i++) {
                 str2.append(result[i]).append(",");
@@ -160,7 +160,7 @@ public:
             if (!result.empty()) {
                 str2.pop_back();
             }
-            SOC_PERF_LOGD("             %{public}d: [%{public}s]", level, str2.c_str());
+            SOC_PERF_LOGD("             %{public}lld: [%{public}s]", level, str2.c_str());
         }
     }
 };
@@ -168,7 +168,7 @@ public:
 class Action {
 public:
     int32_t duration;
-    std::vector<int32_t> variable;
+    std::vector<int64_t> variable;
 
 public:
     Action() {}
@@ -210,13 +210,13 @@ public:
 
 class ResAction {
 public:
-    int32_t value;
+    int64_t value;
     int32_t duration;
     int32_t type;
     int32_t onOff;
 
 public:
-    ResAction(int32_t resActionValue, int32_t resActionDuration, int32_t resActionType, int32_t resActionOnOff)
+    ResAction(int64_t resActionValue, int32_t resActionDuration, int32_t resActionType, int32_t resActionOnOff)
     {
         value = resActionValue;
         duration = resActionDuration;
@@ -250,15 +250,15 @@ public:
 class ResStatus {
 public:
     std::vector<std::list<std::shared_ptr<ResAction>>> resActionList;
-    std::vector<int32_t> candidates;
-    int32_t candidate;
-    int32_t current;
+    std::vector<int64_t> candidates;
+    int64_t candidate;
+    int64_t current;
 
 public:
-    explicit ResStatus(int32_t val)
+    explicit ResStatus(int64_t val)
     {
         resActionList = std::vector<std::list<std::shared_ptr<ResAction>>>(ACTION_TYPE_MAX);
-        candidates = std::vector<int32_t>(ACTION_TYPE_MAX);
+        candidates = std::vector<int64_t>(ACTION_TYPE_MAX);
         candidates[ACTION_TYPE_PERF] = INVALID_VALUE;
         candidates[ACTION_TYPE_POWER] = INVALID_VALUE;
         candidates[ACTION_TYPE_THERMAL] = INVALID_VALUE;
@@ -305,7 +305,7 @@ public:
     }
 };
 
-static inline int32_t Max(int32_t num1, int32_t num2)
+static inline int64_t Max(int64_t num1, int64_t num2)
 {
     if (num1 >= num2) {
         return num1;
@@ -313,12 +313,12 @@ static inline int32_t Max(int32_t num1, int32_t num2)
     return num2;
 }
 
-static inline int32_t Max(int32_t num1, int32_t num2, int32_t num3)
+static inline int64_t Max(int64_t num1, int64_t num2, int64_t num3)
 {
     return Max(Max(num1, num2), num3);
 }
 
-static inline int32_t Min(int32_t num1, int32_t num2)
+static inline int64_t Min(int64_t num1, int64_t num2)
 {
     if (num1 <= num2) {
         return num1;
@@ -326,7 +326,7 @@ static inline int32_t Min(int32_t num1, int32_t num2)
     return num2;
 }
 
-static inline int32_t Min(int32_t num1, int32_t num2, int32_t num3)
+static inline int64_t Min(int64_t num1, int64_t num2, int64_t num3)
 {
     return Min(Min(num1, num2), num3);
 }

@@ -59,8 +59,8 @@ int32_t SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
             int32_t clientId = data.ReadInt32();
             std::vector<int32_t> tags;
             data.ReadInt32Vector(&tags);
-            std::vector<int32_t> configs;
-            data.ReadInt32Vector(&configs);
+            std::vector<int64_t> configs;
+            data.ReadInt64Vector(&configs);
             std::string msg = data.ReadString();
             LimitRequest(clientId, tags, configs, msg);
             return 0;

@@ -149,7 +149,7 @@ void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
 }
 
 void SocPerf::LimitRequest(int32_t clientId,
-    const std::vector<int32_t>& tags, const std::vector<int32_t>& configs, const std::string& msg)
+    const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg)
 {
     if (!enabled) {
         SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
@@ -165,13 +165,13 @@ void SocPerf::LimitRequest(int32_t clientId,
     }
     if (debugLogEnabled) {
         for (int32_t i = 0; i < (int32_t)tags.size(); i++) {
-            SOC_PERF_LOGD("%{public}s, clientId[%{public}d],tags[%{public}d],configs[%{public}d],msg[%{public}s]",
+            SOC_PERF_LOGD("%{public}s, clientId[%{public}d],tags[%{public}d],configs[%{public}lld],msg[%{public}s]",
                 __func__, clientId, tags[i], configs[i], msg.c_str());
         }
     }
     for (int32_t i = 0; i < (int32_t)tags.size(); i++) {
         int32_t resId = tags[i];
-        int32_t resValue = configs[i];
+        int64_t resValue = configs[i];
         auto iter = limitRequest[clientId].find(resId);
         if (iter != limitRequest[clientId].end()
             && limitRequest[clientId][resId] != INVALID_VALUE) {
@@ -329,7 +329,7 @@ bool SocPerf::LoadResource(xmlNode* child, std::string configFile)
             if (!CheckResourceTag(def, path, configFile)) {
                 return false;
             }
-            resNode->def = atoi(def);
+            resNode->def = atoll(def);
             resNode->path = path;
             if (node && !LoadResourceAvailable(resNode, node)) {
                 SOC_PERF_LOGE("%{public}s, Invalid resource node for %{public}s", __func__, configFile.c_str());
@@ -370,7 +370,7 @@ bool SocPerf::LoadGovResource(xmlNode* child, std::string configFile)
                         __func__, configFile.c_str());
                     return false;
                 }
-                govResNode->def = atoi(def);
+                govResNode->def = atoll(def);
             } else if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("path"))) {
                 char* path = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
                 if (!path) {
@@ -439,7 +439,7 @@ bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
                         return false;
                     }
                     action->variable.push_back(resStrToIdInfo[resStr]);
-                    action->variable.push_back(atoi(resValue));
+                    action->variable.push_back(atoll(resValue));
                 }
             }
             actions->actionList.push_back(action);
@@ -525,9 +525,9 @@ bool SocPerf::CheckResDefValid()
     for (auto iter = resNodeInfo.begin(); iter != resNodeInfo.end(); ++iter) {
         int32_t resId = iter->first;
         std::shared_ptr<ResNode> resNode = iter->second;
-        int32_t def = resNode->def;
+        int64_t def = resNode->def;
         if (!resNode->available.empty() && resNode->available.find(def) == resNode->available.end()) {
-            SOC_PERF_LOGE("%{public}s, resId[%{public}d]'s def[%{public}d] is not valid", __func__, resId, def);
+            SOC_PERF_LOGE("%{public}s, resId[%{public}d]'s def[%{public}lld] is not valid", __func__, resId, def);
             return false;
         }
     }
@@ -549,14 +549,14 @@ bool SocPerf::CheckGovResourceTag(char* id, char* name, std::string configFile)
 
 bool SocPerf::LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResNode, char* level, char* node)
 {
-    govResNode->available.insert(atoi(level));
+    govResNode->available.insert(atoll(level));
     std::string nodeStr = node;
     std::vector<std::string> result = Split(nodeStr, "|");
     if (result.size() != govResNode->paths.size()) {
         SOC_PERF_LOGE("%{public}s, Invalid governor resource node matches paths", __func__);
         return false;
     }
-    govResNode->levelToStr.insert(std::pair<int32_t, std::vector<std::string>>(atoi(level), result));
+    govResNode->levelToStr.insert(std::pair<int32_t, std::vector<std::string>>(atoll(level), result));
     return true;
 }
 
@@ -600,16 +600,16 @@ bool SocPerf::CheckActionResIdAndValueValid(std::string configFile)
             std::shared_ptr<Action> action = *actionIter;
             for (int32_t i = 0; i < (int32_t)action->variable.size() - 1; i += RES_ID_AND_VALUE_PAIR) {
                 int32_t resId = action->variable[i];
-                int32_t resValue = action->variable[i + 1];
+                int64_t resValue = action->variable[i + 1];
                 if (resNodeInfo.find(resId) != resNodeInfo.end()) {
                     if (resNodeInfo[resId]->available.find(resValue) == resNodeInfo[resId]->available.end()) {
-                        SOC_PERF_LOGE("%{public}s, action[%{public}d]'s resValue[%{public}d] is not valid",
+                        SOC_PERF_LOGE("%{public}s, action[%{public}d]'s resValue[%{public}lld] is not valid",
                             __func__, actionId, resValue);
                         return false;
                     }
                 } else if (govResNodeInfo.find(resId) != govResNodeInfo.end()) {
                     if (govResNodeInfo[resId]->available.find(resValue) == govResNodeInfo[resId]->available.end()) {
-                        SOC_PERF_LOGE("%{public}s, action[%{public}d]'s resValue[%{public}d] is not valid",
+                        SOC_PERF_LOGE("%{public}s, action[%{public}d]'s resValue[%{public}lld] is not valid",
                             __func__, actionId, resValue);
                         return false;
                     }

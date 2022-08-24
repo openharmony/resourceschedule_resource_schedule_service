@@ -85,7 +85,7 @@ static void LimitRequest(int32_t argc, char *argv[])
         char* tags = argv[3];
         char* configs = argv[4];
         std::vector<int32_t> tagsVector = { atoi(tags) };
-        std::vector<int32_t> configsVector = { atoi(configs) };
+        std::vector<int64_t> configsVector = { atoll(configs) };
         OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(atoi(clientId), tagsVector, configsVector, "");
     }
 }

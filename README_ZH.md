@@ -165,12 +165,10 @@ msg参数为拓展字符串信息，可承载例如调用客户端pid/tid等信�
 |----------|-------|
 | socperf_resource_config.xml | 定义产品可支持的资源配置，例如CPU/GPU/DDR/NPU等 |
 | socperf_boost_config.xml | 用于性能提频的配置文件 |
-| socperf_resource_config.xml | 用于功耗限频的配置文件 |
-| socperf_thermal_config.xml | 用于热限频的配置文件 |
 
 各个xml配置文件都需要按产品定制，不同产品的配置不相同。  
 对于指定的某产品，所有可支持配置的资源都定义在socperf_resource_config.xml内，支持单路径/多路径配置，任何资源都有唯一的resID。  
-socperf_boost_config.xml、socperf_resource_config.xml、socperf_thermal_config.xml使用的cmdID不能重复。  
+socperf_boost_config.xml使用的cmdID不能重复。  
 
 ### 调频使用举例
 
