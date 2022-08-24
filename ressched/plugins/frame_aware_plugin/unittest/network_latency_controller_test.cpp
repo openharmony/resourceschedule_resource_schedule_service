@@ -66,6 +66,12 @@ protected:
     NetworkLatencyController ctrl;
 };
 
+/**
+ * @tc.name: singleUser_001
+ * @tc.desc: test latency switching with a single user
+ * @tc.type: FUNC
+ * @tc.require: SR000H029E SR000GVT7U
+ */
 HWTEST_F(NetworkLatencyControllerTest, singleUser_001, testing::ext::TestSize.Level1)
 {
     const std::string identity("test.application.1");
@@ -81,6 +87,12 @@ HWTEST_F(NetworkLatencyControllerTest, singleUser_001, testing::ext::TestSize.Le
     EXPECT_EQ(counter->offCount, 1);
 }
 
+/**
+ * @tc.name: multiUser_002
+ * @tc.desc: test latency switching with multiple users
+ * @tc.type: FUNC
+ * @tc.require: SR000H029E SR000GVT7U
+ */
 HWTEST_F(NetworkLatencyControllerTest, multiUser_002, testing::ext::TestSize.Level1)
 {
     const std::string identity1("test.application.1");
@@ -107,6 +119,12 @@ HWTEST_F(NetworkLatencyControllerTest, multiUser_002, testing::ext::TestSize.Lev
     EXPECT_EQ(counter->offCount, 1); // finally disable
 }
 
+/**
+ * @tc.name: errorEmptyIdentity_003
+ * @tc.desc: test that empty identities are not accepted
+ * @tc.type: FUNC
+ * @tc.require: SR000H029E SR000GVT7U
+ */
 HWTEST_F(NetworkLatencyControllerTest, errorEmptyIdentity_003, testing::ext::TestSize.Level1)
 {
     const std::string empty;
@@ -117,6 +135,12 @@ HWTEST_F(NetworkLatencyControllerTest, errorEmptyIdentity_003, testing::ext::Tes
     EXPECT_EQ(counter->offCount, 0);
 }
 
+/**
+ * @tc.name: errorDuplicateRequests_004
+ * @tc.desc: test that duplicate requests are ignored
+ * @tc.type: FUNC
+ * @tc.require: SR000H029E SR000GVT7U
+ */
 HWTEST_F(NetworkLatencyControllerTest, errorDuplicateRequests_004, testing::ext::TestSize.Level1)
 {
     const std::string identity("my.test.application");
@@ -132,6 +156,12 @@ HWTEST_F(NetworkLatencyControllerTest, errorDuplicateRequests_004, testing::ext:
     EXPECT_EQ(counter->offCount, 0);
 }
 
+/**
+ * @tc.name: errorCancelNonExistentRequest_005
+ * @tc.desc: test that it is impossible to cancel non-existent request
+ * @tc.type: FUNC
+ * @tc.require: SR000H029E SR000GVT7U
+ */
 HWTEST_F(NetworkLatencyControllerTest, errorCancelNonExistentRequest_005, testing::ext::TestSize.Level1)
 {
     const std::string identity("my.test.application");
@@ -142,6 +172,12 @@ HWTEST_F(NetworkLatencyControllerTest, errorCancelNonExistentRequest_005, testin
     EXPECT_EQ(counter->offCount, 0); // nothing changed
 }
 
+/**
+ * @tc.name: errorCancelForeignRequest_006
+ * @tc.desc: test that it is impossible to cancel another user's request
+ * @tc.type: FUNC
+ * @tc.require: SR000H029E SR000GVT7U
+ */
 HWTEST_F(NetworkLatencyControllerTest, errorCancelForeignRequest_006, testing::ext::TestSize.Level1)
 {
     const std::string identity1("my.test.application1");
@@ -158,6 +194,12 @@ HWTEST_F(NetworkLatencyControllerTest, errorCancelForeignRequest_006, testing::e
     EXPECT_EQ(counter->offCount, 0);
 }
 
+/**
+ * @tc.name: errorInvalidLatencyValue_007
+ * @tc.desc: test that invalid request values are ignored
+ * @tc.type: FUNC
+ * @tc.require: SR000H029E SR000GVT7U
+ */
 HWTEST_F(NetworkLatencyControllerTest, errorInvalidLatencyValue_007, testing::ext::TestSize.Level1)
 {
     const std::string identity("my.test.application");
