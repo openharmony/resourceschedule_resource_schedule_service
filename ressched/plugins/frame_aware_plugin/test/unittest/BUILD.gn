@@ -20,7 +20,7 @@ module_output_path = "resource_schedule_service/ressched"
 ohos_unittest("NetworkLatencyControllerTest") {
   module_out_path = module_output_path
 
-  include_dirs = [ "../include" ]
+  include_dirs = [ "../../include" ]
 
   sources = [ "network_latency_controller_test.cpp" ]
 
