@@ -30,7 +30,7 @@ public:
     void PowerLimitBoost(bool onOffTag, const std::string& msg);
     void ThermalLimitBoost(bool onOffTag, const std::string& msg);
     void LimitRequest(int32_t clientId,
-        const std::vector<int32_t>& tags, const std::vector<int32_t>& configs, const std::string& msg);
+        const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg);
     static SocPerfClient& GetInstance();
     void ResetClient();
 

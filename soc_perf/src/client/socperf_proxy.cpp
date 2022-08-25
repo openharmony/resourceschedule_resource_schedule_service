@@ -71,7 +71,7 @@ void SocPerfProxy::ThermalLimitBoost(bool onOffTag, const std::string& msg)
 }
 
 void SocPerfProxy::LimitRequest(int32_t clientId,
-    const std::vector<int32_t>& tags, const std::vector<int32_t>& configs, const std::string& msg)
+    const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg)
 {
     MessageParcel data;
     MessageParcel reply;
@@ -81,7 +81,7 @@ void SocPerfProxy::LimitRequest(int32_t clientId,
     }
     data.WriteInt32(clientId);
     data.WriteInt32Vector(tags);
-    data.WriteInt32Vector(configs);
+    data.WriteInt64Vector(configs);
     data.WriteString(msg);
     Remote()->SendRequest(TRANS_IPC_ID_LIMIT_REQUEST, data, reply, option);
 }

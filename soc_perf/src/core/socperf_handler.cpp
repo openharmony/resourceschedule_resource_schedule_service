@@ -160,20 +160,20 @@ void SocPerfHandler::UpdateResActionList(int32_t resId, std::shared_ptr<ResActio
 void SocPerfHandler::UpdateCandidatesValue(int32_t resId, int32_t type)
 {
     std::shared_ptr<ResStatus> resStatus = resStatusInfo[resId];
-    int32_t prev = resStatus->candidates[type];
+    int64_t prev = resStatus->candidates[type];
 
     if (resStatus->resActionList[type].empty()) {
         resStatus->candidates[type] = INVALID_VALUE;
     } else {
         if (type == ACTION_TYPE_PERF) {
-            int32_t res = MIN_INT_VALUE;
+            int64_t res = MIN_INT_VALUE;
             for (auto iter = resStatus->resActionList[type].begin();
                 iter != resStatus->resActionList[type].end(); ++iter) {
                 res = Max(res, (*iter)->value);
             }
             resStatus->candidates[type] = res;
         } else {
-            int32_t res = MAX_INT_VALUE;
+            int64_t res = MAX_INT_VALUE;
             for (auto iter = resStatus->resActionList[type].begin();
                 iter != resStatus->resActionList[type].end(); ++iter) {
                 res = Min(res, (*iter)->value);
@@ -190,9 +190,9 @@ void SocPerfHandler::UpdateCandidatesValue(int32_t resId, int32_t type)
 void SocPerfHandler::ArbitrateCandidate(int32_t resId)
 {
     std::shared_ptr<ResStatus> resStatus = resStatusInfo[resId];
-    int32_t candidatePerf = resStatus->candidates[ACTION_TYPE_PERF];
-    int32_t candidatePower = resStatus->candidates[ACTION_TYPE_POWER];
-    int32_t candidateThermal = resStatus->candidates[ACTION_TYPE_THERMAL];
+    int64_t candidatePerf = resStatus->candidates[ACTION_TYPE_PERF];
+    int64_t candidatePower = resStatus->candidates[ACTION_TYPE_POWER];
+    int64_t candidateThermal = resStatus->candidates[ACTION_TYPE_THERMAL];
 
     if (ExistNoCandidate(resId, resStatus, candidatePerf, candidatePower, candidateThermal)) {
         return;
@@ -267,7 +267,7 @@ void SocPerfHandler::ArbitratePairRes(int32_t resId)
     }
 }
 
-void SocPerfHandler::UpdatePairResValue(int32_t minResId, int32_t minResValue, int32_t maxResId, int32_t maxResValue)
+void SocPerfHandler::UpdatePairResValue(int32_t minResId, int64_t minResValue, int32_t maxResId, int64_t maxResValue)
 {
     WriteNode(resNodeInfo[minResId]->path, std::to_string(resNodeInfo[minResId]->def));
     WriteNode(resNodeInfo[maxResId]->path, std::to_string(resNodeInfo[maxResId]->def));
@@ -275,7 +275,7 @@ void SocPerfHandler::UpdatePairResValue(int32_t minResId, int32_t minResValue, i
     UpdateCurrentValue(maxResId, maxResValue);
 }
 
-void SocPerfHandler::UpdateCurrentValue(int32_t resId, int32_t currValue)
+void SocPerfHandler::UpdateCurrentValue(int32_t resId, int64_t currValue)
 {
     resStatusInfo[resId]->current = currValue;
     if (IsGovResId(resId)) {
@@ -306,7 +306,7 @@ void SocPerfHandler::WriteNode(std::string filePath, std::string value)
 }
 
 bool SocPerfHandler::ExistNoCandidate(
-    int32_t resId, std::shared_ptr<ResStatus> resStatus, int32_t perf, int32_t power, int32_t thermal)
+    int32_t resId, std::shared_ptr<ResStatus> resStatus, int64_t perf, int64_t power, int64_t thermal)
 {
     if (perf == INVALID_VALUE && power == INVALID_VALUE && thermal == INVALID_VALUE) {
         if (IsGovResId(resId)) {

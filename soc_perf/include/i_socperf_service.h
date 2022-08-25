@@ -41,7 +41,7 @@ public:
     virtual void PowerLimitBoost(bool onOffTag, const std::string& msg) = 0;
     virtual void ThermalLimitBoost(bool onOffTag, const std::string& msg) = 0;
     virtual void LimitRequest(int32_t clientId,
-        const std::vector<int32_t>& tags, const std::vector<int32_t>& configs, const std::string& msg) = 0;
+        const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg) = 0;
 
 public:
     enum {
