@@ -298,11 +298,11 @@ void PluginMgr::ClearResource()
     resTypeLibMap_.clear();
 }
 
-void PluginMgr::RepairPluginLocked(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo)
+void PluginMgr::RepairPlugin(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo)
 {
     int32_t crash_time = (int32_t)((endTime - pluginTimeoutTime_[pluginLib].front()) / std::chrono::milliseconds(1));
     pluginTimeoutTime_[pluginLib].emplace_back(endTime);
-    RESSCHED_LOGW("PluginMgr::RepairPluginLocked %{public}s crash %{public}d times in %{public}d ms!",
+    RESSCHED_LOGW("%{public}s %{public}s crash %{public}d times in %{public}d ms!", __func__,
         pluginLib.c_str(), (int32_t)pluginTimeoutTime_[pluginLib].size(), crash_time);
     if ((int32_t)pluginTimeoutTime_[pluginLib].size() >= MAX_PLUGIN_TIMEOUT_TIMES) {
         if (crash_time < DISABLE_PLUGIN_TIME) {
@@ -314,9 +314,10 @@ void PluginMgr::RepairPluginLocked(TimePoint endTime, const std::string& pluginL
             HiSysEvent::Write("RSS", "PLUGIN_DISABLE",
                 HiSysEvent::EventType::FAULT, "plugin_name", pluginLib);
             pluginTimeoutTime_[pluginLib].clear();
-            // pluginLibMap_ already locked
+            pluginMutex_.lock();
             auto itMap = pluginLibMap_.find(pluginLib);
             pluginLibMap_.erase(itMap);
+            pluginMutex_.unlock();
             std::lock_guard<std::mutex> autoLock(disablePluginsMutex_);
             disablePlugins_.emplace_back(pluginLib);
             return;
@@ -335,20 +336,25 @@ void PluginMgr::RepairPluginLocked(TimePoint endTime, const std::string& pluginL
 
 void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std::shared_ptr<ResData>& resData)
 {
-    std::lock_guard<std::mutex> autoLock(pluginMutex_);
-    auto itMap = pluginLibMap_.find(pluginLib);
-    if (itMap == pluginLibMap_.end()) {
-        RESSCHED_LOGE("%{public}s, no plugin %{public}s !", __func__, pluginLib.c_str());
-        return;
+    PluginLib libInfo;
+    {
+        std::lock_guard<std::mutex> autoLock(pluginMutex_);
+        auto itMap = pluginLibMap_.find(pluginLib);
+        if (itMap == pluginLibMap_.end()) {
+            RESSCHED_LOGE("%{public}s, no plugin %{public}s !", __func__, pluginLib.c_str());
+            return;
+        }
+        libInfo = itMap->second;
     }
-    OnDispatchResourceFunc fun = itMap->second.onDispatchResourceFunc_;
-    if (!fun) {
+
+    OnDispatchResourceFunc pluginDispatchFunc = libInfo.onDispatchResourceFunc_;
+    if (!pluginDispatchFunc) {
         RESSCHED_LOGE("%{public}s, no DispatchResourceFun !", __func__);
         return;
     }
 
     auto beginTime = Clock::now();
-    fun(resData);
+    pluginDispatchFunc(resData);
     auto endTime = Clock::now();
     int32_t costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
     if (costTime > DISPATCH_TIME_OUT) {
@@ -356,7 +362,7 @@ void PluginMgr::deliverResourceToPlugin(const std::string& pluginLib, const std:
         RESSCHED_LOGE("%{public}s, ERROR :"
                       "%{public}s plugin cost time(%{public}dms) over %{public}d ms! disable it.",
                       __func__, pluginLib.c_str(), costTime, DISPATCH_TIME_OUT);
-        RepairPluginLocked(endTime, pluginLib, itMap->second);
+        RepairPlugin(endTime, pluginLib, libInfo);
     } else if (costTime > DISPATCH_WARNING_TIME) {
         RESSCHED_LOGW("%{public}s, WARNING :"
                       "%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
