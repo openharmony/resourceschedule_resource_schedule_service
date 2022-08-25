@@ -166,7 +166,7 @@ void SocPerf::LimitRequest(int32_t clientId,
     if (debugLogEnabled) {
         for (int32_t i = 0; i < (int32_t)tags.size(); i++) {
             SOC_PERF_LOGD("%{public}s, clientId[%{public}d],tags[%{public}d],configs[%{public}lld],msg[%{public}s]",
-                __func__, clientId, tags[i], configs[i], msg.c_str());
+                __func__, clientId, tags[i], (long long)configs[i], msg.c_str());
         }
     }
     for (int32_t i = 0; i < (int32_t)tags.size(); i++) {
@@ -527,7 +527,8 @@ bool SocPerf::CheckResDefValid()
         std::shared_ptr<ResNode> resNode = iter->second;
         int64_t def = resNode->def;
         if (!resNode->available.empty() && resNode->available.find(def) == resNode->available.end()) {
-            SOC_PERF_LOGE("%{public}s, resId[%{public}d]'s def[%{public}lld] is not valid", __func__, resId, def);
+            SOC_PERF_LOGE("%{public}s, resId[%{public}d]'s def[%{public}lld] is not valid", __func__,
+                resId, (long long)def);
             return false;
         }
     }
@@ -604,13 +605,13 @@ bool SocPerf::CheckActionResIdAndValueValid(std::string configFile)
                 if (resNodeInfo.find(resId) != resNodeInfo.end()) {
                     if (resNodeInfo[resId]->available.find(resValue) == resNodeInfo[resId]->available.end()) {
                         SOC_PERF_LOGE("%{public}s, action[%{public}d]'s resValue[%{public}lld] is not valid",
-                            __func__, actionId, resValue);
+                            __func__, actionId, (long long)resValue);
                         return false;
                     }
                 } else if (govResNodeInfo.find(resId) != govResNodeInfo.end()) {
                     if (govResNodeInfo[resId]->available.find(resValue) == govResNodeInfo[resId]->available.end()) {
                         SOC_PERF_LOGE("%{public}s, action[%{public}d]'s resValue[%{public}lld] is not valid",
-                            __func__, actionId, resValue);
+                            __func__, actionId, (long long)resValue);
                         return false;
                     }
                 } else {
