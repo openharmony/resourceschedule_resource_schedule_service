@@ -99,7 +99,8 @@ public:
     {
         SOC_PERF_LOGD("resNode-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
         SOC_PERF_LOGD("          path: [%{public}s]", path.c_str());
-        SOC_PERF_LOGD("          def: [%{public}lld], mode: [%{public}d], pair: [%{public}d]", def, mode, pair);
+        SOC_PERF_LOGD("          def: [%{public}lld], mode: [%{public}d], pair: [%{public}d]",
+            (long long)def, mode, pair);
         std::string str;
         str.append("available(").append(std::to_string((int32_t)available.size())).append("): ");
         str.append("[");
@@ -135,7 +136,7 @@ public:
     void PrintString()
     {
         SOC_PERF_LOGD("govResNode-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
-        SOC_PERF_LOGD("             def: [%{public}lld]", def);
+        SOC_PERF_LOGD("             def: [%{public}lld]", (long long)def);
         for (auto path : paths) {
             SOC_PERF_LOGD("             path: [%{public}s]", path.c_str());
         }
@@ -160,7 +161,7 @@ public:
             if (!result.empty()) {
                 str2.pop_back();
             }
-            SOC_PERF_LOGD("             %{public}lld: [%{public}s]", level, str2.c_str());
+            SOC_PERF_LOGD("             %{public}lld: [%{public}s]", (long long)level, str2.c_str());
         }
     }
 };
