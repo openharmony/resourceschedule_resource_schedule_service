@@ -34,6 +34,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH           = 10010;
     const int32_t PERF_REQUEST_CMD_ID_PUSH_PAGE_COMPLETE    = 10011;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE     = 10012;
+    const int32_t PERF_REQUEST_CMD_ID_POP_PAGE              = 10016;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -52,6 +53,8 @@ void SocPerfPlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleEventSlide(data); } },
         { RES_TYPE_WEB_GESTURE,
             [this](const std::shared_ptr<ResData>& data) { HandleEventWebGesture(data); } },
+        { RES_TYPE_POP_PAGE,
+            [this](const std::shared_ptr<ResData>& data) { HandlePopPage(data); } },
     };
     resTypes = {
         RES_TYPE_APP_STATE_CHANGE,
@@ -60,6 +63,7 @@ void SocPerfPlugin::Init()
         RES_TYPE_PUSH_PAGE,
         RES_TYPE_SLIDE_RECOGNIZE,
         RES_TYPE_WEB_GESTURE,
+        RES_TYPE_POP_PAGE,
     };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
@@ -127,6 +131,12 @@ void SocPerfPlugin::HandlePushPage(const std::shared_ptr<ResData>& data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_PUSH_PAGE_START, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_PUSH_PAGE_COMPLETE, "");
     }
+}
+
+void SocPerfPlugin::HandlePopPage(const std::shared_ptr<ResData>& data)
+{
+    RESSCHED_LOGI("SocPerfPlugin: socperf->POP_PAGE: %{public}lld", (long long)data->value);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_POP_PAGE, "");
 }
 
 void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
