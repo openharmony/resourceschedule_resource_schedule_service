@@ -185,6 +185,14 @@ enum PushPageType : int64_t {
     PUSH_PAGE_START,
     PUSH_PAGE_COMPLETE,
 };
+
+/**
+ * @brief App Start type
+ */
+enum AppStartType : int64_t {
+    APP_WARM_START,
+    APP_COLD_START,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
