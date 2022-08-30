@@ -41,8 +41,6 @@ IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 void SocPerfPlugin::Init()
 {
     functionMap = {
-        { RES_TYPE_APP_STATE_CHANGE,
-            [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
         { RES_TYPE_WINDOW_FOCUS,
             [this](const std::shared_ptr<ResData>& data) { HandleWindowFocus(data); } },
         { RES_TYPE_CLICK_RECOGNIZE,
@@ -55,15 +53,17 @@ void SocPerfPlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleEventWebGesture(data); } },
         { RES_TYPE_POP_PAGE,
             [this](const std::shared_ptr<ResData>& data) { HandlePopPage(data); } },
+        { RES_TYPE_APP_ABILITY_START,
+            [this](const std::shared_ptr<ResData>& data) { HandleAppAbilityStart(data); } },
     };
     resTypes = {
-        RES_TYPE_APP_STATE_CHANGE,
         RES_TYPE_WINDOW_FOCUS,
         RES_TYPE_CLICK_RECOGNIZE,
         RES_TYPE_PUSH_PAGE,
         RES_TYPE_SLIDE_RECOGNIZE,
         RES_TYPE_WEB_GESTURE,
         RES_TYPE_POP_PAGE,
+        RES_TYPE_APP_ABILITY_START,
     };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
@@ -92,12 +92,12 @@ void SocPerfPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
     }
 }
 
-void SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
+void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 {
-    if (data->value == static_cast<int32_t>(AppExecFwk::ApplicationState::APP_STATE_CREATE)) {
+    if (data->value == AppStartType::APP_COLD_START) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
-    } else if (data->value == static_cast<int32_t>(AppExecFwk::ApplicationState::APP_STATE_FOREGROUND)) {
+    } else if (data->value == AppStartType::APP_WARM_START) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->APP_WARM_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WARM_START, "");
     }
