@@ -23,6 +23,8 @@
 #include <unordered_map>     // for unordered_map, operator==, operator!=
 #include <utility>           // for pair
 #include <vector>            // for vector
+#include <unistd.h>          // for open, write
+#include <fcntl.h>           // for O_RDWR, O_CLOEXEC
 #include "socperf_common.h"  // for ResStatus, ResAction, ResNode, INVALID_V...
 
 namespace OHOS {
@@ -292,17 +294,28 @@ void SocPerfHandler::UpdateCurrentValue(int32_t resId, int64_t currValue)
 
 void SocPerfHandler::WriteNode(std::string filePath, std::string value)
 {
+    int32_t fd = GetFdForFilePath(filePath);
+    if (fd < 0) {
+        return;
+    }
+    write(fd, value.c_str(), sizeof(value));
+}
+
+int32_t SocPerfHandler::GetFdForFilePath(std::string filePath)
+{
+    if (fdInfo.find(filePath) != fdInfo.end()) {
+        return fdInfo[filePath];
+    }
     char path[PATH_MAX + 1] = {0};
     if (filePath.size() == 0 || filePath.size() > PATH_MAX || !realpath(filePath.c_str(), path)) {
-        return;
+        return -1;
     }
-    FILE* fd = fopen(path, "w");
-    if (!fd) {
-        return;
+    int32_t fd = open(path, O_RDWR | O_CLOEXEC);
+    if (fd < 0) {
+        return fd;
     }
-    fprintf(fd, "%s", value.c_str());
-    fclose(fd);
-    fd = nullptr;
+    fdInfo.insert(std::pair<std::string, int32_t>(filePath, fd));
+    return fdInfo[filePath];
 }
 
 bool SocPerfHandler::ExistNoCandidate(
