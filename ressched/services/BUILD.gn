@@ -63,19 +63,13 @@ ohos_shared_library("resschedsvc") {
   ]
 
   external_deps = [
-    "ability_base:want",
     "c_utils:utils",
-    "common_event_service:cesfwk_innerkits",
     "config_policy:configpolicy_util",
-    "core_service:tel_core_service_api",
     "eventhandler:libeventhandler",
     "hisysevent_native:libhisysevent",
-    "hisysevent_native:libhisyseventmanager",
     "hitrace_native:hitrace_meter",
     "ipc:ipc_core",
-    "multimedia_audio_framework:audio_client",
     "safwk:system_ability_fwk",
-    "samgr:samgr_proxy",
   ]
 
   subsystem_name = "resourceschedule"

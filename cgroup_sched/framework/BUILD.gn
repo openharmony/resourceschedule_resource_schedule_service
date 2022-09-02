@@ -27,6 +27,7 @@ ohos_shared_library("cgroup_sched") {
     "sched_controller/window_state_observer.cpp",
     "utils/ressched_utils.cpp",
   ]
+  configs = [ "//foundation/ability/ability_runtime/interfaces/inner_api/wantagent:wantagent_innerkits_public_config" ]
   include_dirs = [
     "../../ressched/interfaces/innerkits/ressched_client/include",
     "../common/include",
@@ -35,9 +36,7 @@ ohos_shared_library("cgroup_sched") {
   ]
   deps = [ "./process_group:libprocess_group" ]
   external_deps = [
-    "ability_base:want",
     "ability_runtime:app_manager",
-    "ability_runtime:wantagent_innerkits",
     "background_task_mgr:bgtaskmgr_innerkits",
     "c_utils:utils",
     "eventhandler:libeventhandler",

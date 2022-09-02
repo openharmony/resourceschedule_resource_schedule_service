@@ -18,7 +18,9 @@ import(
 config("component_sched_plugin_config") {
   include_dirs = [
     "include",
+    "//base/notification/eventhandler/interfaces/inner_api",
     "//commonlibrary/c_utils/base/include",
+    "//foundation/communication/bluetooth/interfaces/inner_api/include",
   ]
 }
 
@@ -33,14 +35,7 @@ ohos_shared_library("component_sched_plugin") {
 
   deps = [ "${ressched_services}:resschedsvc" ]
 
-  external_deps = [
-    "bluetooth:btframework",
-    "eventhandler:libeventhandler",
-    "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
-    "safwk:system_ability_fwk",
-    "samgr:samgr_proxy",
-  ]
+  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
 
   defines = []
 

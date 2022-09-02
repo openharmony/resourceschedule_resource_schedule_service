@@ -18,6 +18,7 @@ import(
 config("frame_aware_plugin_config") {
   include_dirs = [
     "include",
+    "//base/notification/eventhandler/interfaces/inner_api",
     "//foundation/resourceschedule/frame_aware_sched/common/include",
     "//foundation/resourceschedule/frame_aware_sched/interfaces/innerkits/frameintf",
     "//commonlibrary/c_utils/base/include",
@@ -39,15 +40,7 @@ ohos_shared_library("frame_aware_plugin") {
   deps = [
     "${ressched_services}:resschedsvc",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
     "//foundation/resourceschedule/frame_aware_sched/interfaces/innerkits/frameintf:frame_msg_intf",
-    "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-  ]
-
-  external_deps = [
-    "c_utils:utils",
-    "eventhandler:libeventhandler",
   ]
 
   subsystem_name = "resourceschedule"

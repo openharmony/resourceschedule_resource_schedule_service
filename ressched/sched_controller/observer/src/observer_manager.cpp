@@ -240,5 +240,15 @@ void ObserverManager::DisableAudioObserver()
     }
     audioObserver_ = nullptr;
 }
+
+extern "C" void ObserverManagerInit()
+{
+    ObserverManager::GetInstance().Init();
+}
+
+extern "C" void ObserverManagerDisable()
+{
+    ObserverManager::GetInstance().Disable();
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
