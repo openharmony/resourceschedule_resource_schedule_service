@@ -126,7 +126,7 @@ void ObserverManager::InitCameraObserver()
     std::vector<HiviewDFX::ListenerRule> sysRules;
     sysRules.push_back(cameraStateRule);
     sysRules.push_back(cameraStatisticRule);
-    auto res = HiviewDFX::HiSysEventManager::AddEventListener(cameraObserver_, sysRules);
+    auto res = HiviewDFX::HiSysEventManager::AddListener(cameraObserver_, sysRules);
     if (res == 0) {
         RESSCHED_LOGD("ObserverManager init camera observer successfully");
     } else {

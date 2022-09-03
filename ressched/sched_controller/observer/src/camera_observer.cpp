@@ -19,10 +19,12 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-void CameraObserver::OnHandle(const std::string& domain, const std::string& eventName, const int eventType,
-    const std::string& eventDetail)
+void CameraObserver::OnEvent(std::shared_ptr<HiviewDFX::HiSysEventRecord> sysEvent)
 {
-    RESSCHED_LOGD("EventDetail: %{public}s", eventDetail.c_str());
+    if (sysEvent == nullptr) {
+        return;
+    }
+    RESSCHED_LOGD("EventDetail: %{public}s", sysEvent->AsJson().c_str());
 }
 
 void CameraObserver::OnServiceDied()

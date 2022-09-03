@@ -56,7 +56,7 @@ public:
     pid_t pid_ = -1;
     std::map<int32_t, std::function<void(ObserverManager *)>> handleObserverMap_;
     std::map<int32_t, std::function<void(ObserverManager *)>> removeObserverMap_;
-    std::shared_ptr<HiviewDFX::HiSysEventSubscribeCallBack> cameraObserver_ = nullptr;
+    std::shared_ptr<HiviewDFX::HiSysEventListener> cameraObserver_ = nullptr;
     sptr<SchedTelephonyObserver> telephonyObserver_ = nullptr;
     std::shared_ptr<AudioObserver> audioObserver_ = nullptr;
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
