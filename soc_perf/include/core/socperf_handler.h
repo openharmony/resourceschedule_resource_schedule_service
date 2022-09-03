@@ -41,6 +41,7 @@ private:
     std::unordered_map<int32_t, std::shared_ptr<ResNode>> resNodeInfo;
     std::unordered_map<int32_t, std::shared_ptr<GovResNode>> govResNodeInfo;
     std::unordered_map<int32_t, std::shared_ptr<ResStatus>> resStatusInfo;
+    std::unordered_map<std::string, int32_t> fdInfo;
     bool powerLimitBoost = false;
     bool thermalLimitBoost = false;
 
@@ -57,6 +58,7 @@ private:
     bool IsGovResId(int32_t resId);
     bool IsResId(int32_t resId);
     bool IsValidResId(int32_t resId);
+    int32_t GetFdForFilePath(std::string filePath);
 };
 } // namespace SOCPERF
 } // namespace OHOS
