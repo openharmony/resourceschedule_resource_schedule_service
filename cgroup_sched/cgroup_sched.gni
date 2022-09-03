@@ -21,3 +21,12 @@ cgroup_sched_common = "${cgroup_sched_path}/common"
 cgroup_sched_dummy = "${cgroup_sched_path}/dummy_adaption"
 
 cgroup_sched_interfaces = "${cgroup_sched_path}/interfaces"
+
+declare_args() {
+  has_bg_task_mgr = false
+
+  if (defined(global_parts_info) &&
+      defined(global_parts_info.resourceschedule_background_task_mgr)) {
+    has_bg_task_mgr = true
+  }
+}

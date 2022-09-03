@@ -20,7 +20,10 @@
 #include "system_ability_definition.h"
 #include "app_mgr_interface.h"
 #include "app_state_observer.h"
+#ifdef CONFIG_BGTASK_MGR
 #include "background_task_mgr_helper.h"
+#include "background_task_observer.h"
+#endif
 #include "cgroup_adjuster.h"
 #include "cgroup_event_handler.h"
 #include "cgroup_sched_common.h"
@@ -28,7 +31,6 @@
 #include "ressched_utils.h"
 #include "res_type.h"
 #include "supervisor.h"
-#include "background_task_observer.h"
 #include "window_state_observer.h"
 
 namespace OHOS {
@@ -212,6 +214,7 @@ void SchedController::UnsubscribeAppState()
 
 bool SchedController::SubscribeBackgroundTask()
 {
+#ifdef CONFIG_BGTASK_MGR
     if (backgroundTaskObserver_) {
         return true;
     }
@@ -223,11 +226,13 @@ bool SchedController::SubscribeBackgroundTask()
         return false;
     }
     CGS_LOGI("%{public}s success.", __func__);
+#endif
     return true;
 }
 
 void SchedController::UnsubscribeBackgroundTask()
 {
+#ifdef CONFIG_BGTASK_MGR
     if (!backgroundTaskObserver_) {
         return;
     }
@@ -238,6 +243,7 @@ void SchedController::UnsubscribeBackgroundTask()
         CGS_LOGE("%{public}s failed. ret:%{public}d", __func__, ret);
     }
     backgroundTaskObserver_ = nullptr;
+#endif
 }
 
 void SchedController::SubscribeWindowState()

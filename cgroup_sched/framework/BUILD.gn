@@ -19,7 +19,6 @@ ohos_shared_library("cgroup_sched") {
   sources = [
     "${cgroup_sched_common}/cgroup_sched_log.cpp",
     "sched_controller/app_state_observer.cpp",
-    "sched_controller/background_task_observer.cpp",
     "sched_controller/cgroup_adjuster.cpp",
     "sched_controller/cgroup_event_handler.cpp",
     "sched_controller/sched_controller.cpp",
@@ -38,7 +37,6 @@ ohos_shared_library("cgroup_sched") {
     "ability_base:want",
     "ability_runtime:app_manager",
     "ability_runtime:wantagent_innerkits",
-    "background_task_mgr:bgtaskmgr_innerkits",
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",
@@ -47,6 +45,12 @@ ohos_shared_library("cgroup_sched") {
     "samgr:samgr_proxy",
     "window_manager:libwm",
   ]
+
+  if (has_bg_task_mgr) {
+    defines = [ "CONFIG_BGTASK_MGR" ]
+    sources += [ "sched_controller/background_task_observer.cpp" ]
+    external_deps += [ "background_task_mgr:bgtaskmgr_innerkits" ]
+  }
 
   part_name = "resource_schedule_service"
   subsystem_name = "resourceschedule"

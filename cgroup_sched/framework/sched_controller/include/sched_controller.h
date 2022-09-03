@@ -25,7 +25,9 @@
 namespace OHOS {
 namespace ResourceSchedule {
 class RmsApplicationStateObserver;
+#ifdef CONFIG_BGTASK_MGR
 class BackgroundTaskObserver;
+#endif
 class WindowStateObserver;
 class WindowVisibilityObserver;
 class WindowUpdateStateObserver;
@@ -73,7 +75,9 @@ private:
     std::shared_ptr<CgroupEventHandler> cgHandler_;
     std::shared_ptr<Supervisor> supervisor_;
     sptr<RmsApplicationStateObserver> appStateObserver_;
+#ifdef CONFIG_BGTASK_MGR
     std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_;
+#endif
     sptr<WindowStateObserver> windowStateObserver_;
     sptr<WindowVisibilityObserver> windowVisibilityObserver_;
 
