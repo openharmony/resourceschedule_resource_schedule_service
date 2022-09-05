@@ -28,6 +28,7 @@ ohos_shared_library("sched_controller") {
     "//foundation/communication/netmanager_base/interfaces/innerkits/netconnclient/include",
     "//foundation/resourceschedule/device_scheduler/common/include",
     "//foundation/resourceschedule/resource_schedule_service/ressched/common/include",
+    "//base/hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent/include",
     "//base/telephony/core_service/interfaces/innerkits/include",
     "//base/telephony/state_registry/frameworks/native/observer/include",
     "${cgroup_sched_framework}/process_group/include",
