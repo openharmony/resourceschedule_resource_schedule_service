@@ -16,18 +16,18 @@
 #ifndef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_CAMERA_OBSERVER_H
 #define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_CAMERA_OBSERVER_H
 
+#include <memory>
 #include <string>
 
-#include "hisysevent_subscribe_callback.h"
+#include "hisysevent_listener.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-class CameraObserver : public HiviewDFX::HiSysEventSubscribeCallBack {
+class CameraObserver : public HiviewDFX::HiSysEventListener {
 public:
-    CameraObserver() : HiviewDFX::HiSysEventSubscribeCallBack() {}
+    CameraObserver() : HiviewDFX::HiSysEventListener() {}
     virtual ~CameraObserver() {}
-    void OnHandle(const std::string& domain, const std::string& eventName, const int eventType,
-        const std::string& eventDetail) override;
+    void OnEvent(std::shared_ptr<HiviewDFX::HiSysEventRecord> sysEvent) override;
     void OnServiceDied() override;
 };
 } // namespace ResourceSchedule
