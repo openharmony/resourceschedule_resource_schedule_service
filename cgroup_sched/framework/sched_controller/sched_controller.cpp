@@ -24,6 +24,7 @@
 #include "background_task_mgr_helper.h"
 #include "background_task_observer.h"
 #endif
+#include "bundle_mgr_interface.h"
 #include "cgroup_adjuster.h"
 #include "cgroup_event_handler.h"
 #include "cgroup_sched_common.h"
@@ -40,7 +41,9 @@ namespace {
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "SchedController"};
 }
 
+#ifdef CONFIG_BGTASK_MGR
 using OHOS::BackgroundTaskMgr::BackgroundTaskMgrHelper;
+#endif
 
 OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
 {
