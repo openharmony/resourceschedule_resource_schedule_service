@@ -40,23 +40,30 @@ SocPerfHandler::~SocPerfHandler()
 
 void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
 {
+    if (event == nullptr) {
+        return;
+    }
     switch (event->GetInnerEventId()) {
         case INNER_EVENT_ID_INIT_RES_NODE_INFO: {
             auto resNode = event->GetSharedObject<ResNode>();
-            resNodeInfo.insert(std::pair<int32_t, std::shared_ptr<ResNode>>(resNode->id, resNode));
-            WriteNode(resNode->path, std::to_string(resNode->def));
-            auto resStatus = std::make_shared<ResStatus>(resNode->def);
-            resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(resNode->id, resStatus));
+            if (resNode != nullptr) {
+                resNodeInfo.insert(std::pair<int32_t, std::shared_ptr<ResNode>>(resNode->id, resNode));
+                WriteNode(resNode->path, std::to_string(resNode->def));
+                auto resStatus = std::make_shared<ResStatus>(resNode->def);
+                resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(resNode->id, resStatus));
+            }
             break;
         }
         case INNER_EVENT_ID_INIT_GOV_RES_NODE_INFO: {
             auto govResNode = event->GetSharedObject<GovResNode>();
-            govResNodeInfo.insert(std::pair<int32_t, std::shared_ptr<GovResNode>>(govResNode->id, govResNode));
-            for (int32_t i = 0; i < (int32_t)govResNode->paths.size(); i++) {
-                WriteNode(govResNode->paths[i], govResNode->levelToStr[govResNode->def][i]);
+            if (govResNode != nullptr) {
+                govResNodeInfo.insert(std::pair<int32_t, std::shared_ptr<GovResNode>>(govResNode->id, govResNode));
+                for (int32_t i = 0; i < (int32_t)govResNode->paths.size(); i++) {
+                    WriteNode(govResNode->paths[i], govResNode->levelToStr[govResNode->def][i]);
+                }
+                auto resStatus = std::make_shared<ResStatus>(govResNode->def);
+                resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(govResNode->id, resStatus));
             }
-            auto resStatus = std::make_shared<ResStatus>(govResNode->def);
-            resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(govResNode->id, resStatus));
             break;
         }
         case INNER_EVENT_ID_DO_FREQ_ACTION: {
@@ -65,7 +72,9 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
                 return;
             }
             std::shared_ptr<ResAction> resAction = event->GetSharedObject<ResAction>();
-            UpdateResActionList(resId, resAction, false);
+            if (resAction != nullptr) {
+                UpdateResActionList(resId, resAction, false);
+            }
             break;
         }
         case INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED: {
@@ -74,7 +83,9 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
                 return;
             }
             std::shared_ptr<ResAction> resAction = event->GetSharedObject<ResAction>();
-            UpdateResActionList(resId, resAction, true);
+            if (resAction != nullptr) {
+                UpdateResActionList(resId, resAction, true);
+            }
             break;
         }
         case INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ: {
