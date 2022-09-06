@@ -14,11 +14,11 @@
  */
 
 #include "res_sched_service_ability.h"
-#include "observer_manager.h"
+#include "observer_manager_intf.h"
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "res_sched_service.h"
-#include "event_controller.h"
+#include "event_controller_intf.h"
 #include "system_ability_definition.h"
 #include "cgroup_sched.h"
 
@@ -51,15 +51,15 @@ void ResSchedServiceAbility::OnStart()
     AddSystemAbilityListener(APP_MGR_SERVICE_ID);
     AddSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID);
     AddSystemAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID);
-    EventController::GetInstance().Init();
-    ObserverManager::GetInstance().Init();
+    EventControllerInit();
+    ObserverManagerInit();
     RESSCHED_LOGI("ResSchedServiceAbility ::OnStart.");
 }
 
 void ResSchedServiceAbility::OnStop()
 {
-    ObserverManager::GetInstance().Disable();
-    EventController::GetInstance().Stop();
+    ObserverManagerDisable();
+    EventControllerStop();
     RemoveSystemAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID);
     RemoveSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID);
     RemoveSystemAbilityListener(APP_MGR_SERVICE_ID);

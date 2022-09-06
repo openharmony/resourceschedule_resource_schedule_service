@@ -57,7 +57,6 @@ ohos_shared_library("socperf_server") {
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
     "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
     "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/libxml2:xml2",
   ]
   external_deps = [
@@ -85,12 +84,12 @@ ohos_shared_library("socperf_client") {
   include_dirs = [
     "include",
     "include/client",
+    "//foundation/systemabilitymgr/safwk/services/safwk/include",
   ]
   public_configs = [ ":socperf_client_public_config" ]
   deps = [
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
     "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
-    "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
   ]
   part_name = "soc_perf"

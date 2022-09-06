@@ -200,5 +200,15 @@ void EventController::SystemAbilityStatusChangeListener::Stop()
     CommonEventManager::UnSubscribeCommonEvent(subscriber_);
     subscriber_ = nullptr;
 }
+
+extern "C" void EventControllerInit()
+{
+    EventController::GetInstance().Init();
+}
+
+extern "C" void EventControllerStop()
+{
+    EventController::GetInstance().Stop();
+}
 }
 }
