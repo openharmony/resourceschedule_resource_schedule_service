@@ -309,7 +309,7 @@ void SocPerfHandler::WriteNode(std::string filePath, std::string value)
     if (fd < 0) {
         return;
     }
-    write(fd, value.c_str(), sizeof(value));
+    write(fd, value.c_str(), value.size());
 }
 
 int32_t SocPerfHandler::GetFdForFilePath(std::string filePath)

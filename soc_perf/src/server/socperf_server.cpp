@@ -44,6 +44,26 @@ void SocPerfServer::OnStop()
 {
 }
 
+int32_t SocPerfServer::Dump(int32_t fd, const std::vector<std::u16string>& args)
+{
+    std::vector<std::string> argsInStr;
+    std::transform(args.begin(), args.end(), std::back_inserter(argsInStr),
+        [](const std::u16string &arg) {
+        return Str16ToStr8(arg);
+    });
+    std::string result;
+    result.append("usage: soc_perf service dump [<options>]\n")
+        .append("    1. PerfRequest(cmdId, msg)\n")
+        .append("    2. PerfRequestEx(cmdId, onOffTag, msg)\n")
+        .append("    3. LimitRequest(clientId, tags, configs, msg)\n")
+        .append("    -h: show the help.\n")
+        .append("    -a: show all info.\n");
+    if (!SaveStringToFd(fd, result)) {
+        SOC_PERF_LOGE("%{public}s, Dump FAILED", __func__);
+    }
+    return ERR_OK;
+}
+
 void SocPerfServer::PerfRequest(int32_t cmdId, const std::string& msg)
 {
     socPerf.PerfRequest(cmdId, msg);

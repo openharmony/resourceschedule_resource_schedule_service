@@ -16,6 +16,8 @@
 #ifndef SOC_PERF_INCLUDE_SERVER_SOCPERF_SERVER_H
 #define SOC_PERF_INCLUDE_SERVER_SOCPERF_SERVER_H
 
+#include <file_ex.h>
+#include <string_ex.h>
 #include "i_socperf_service.h"
 #include "singleton.h"
 #include "socperf_stub.h"
@@ -36,6 +38,7 @@ public:
     void ThermalLimitBoost(bool onOffTag, const std::string& msg) override;
     void LimitRequest(int32_t clientId,
         const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg) override;
+    int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
 
 public:
     SocPerfServer(int32_t systemAbilityId, bool runOnCreate);
