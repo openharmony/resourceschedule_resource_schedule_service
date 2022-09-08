@@ -34,12 +34,12 @@ struct MockSwitcher : INetworkLatencySwitcher {
         : counter(counter)
     { }
 
-    virtual void LowLatencyOn() override
+    void LowLatencyOn() override
     {
         ++counter->onCount;
     }
 
-    virtual void LowLatencyOff() override
+    void LowLatencyOff() override
     {
         ++counter->offCount;
     }
