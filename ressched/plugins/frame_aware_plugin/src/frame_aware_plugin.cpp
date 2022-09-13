@@ -98,7 +98,9 @@ void FrameAwarePlugin::HandleCgroupAdjuster(const std::shared_ptr<ResData>& data
     int uid = atoi(payload["uid"].asString().c_str());
     int oldGroup = atoi(payload["oldGroup"].asString().c_str());
     int newGroup = atoi(payload["newGroup"].asString().c_str());
-    RME::FrameMsgIntf::GetInstance().ReportCgroupChange(pid, uid, oldGroup, newGroup);
+    if (!data->value) {
+        RME::FrameMsgIntf::GetInstance().ReportCgroupChange(pid, uid, oldGroup, newGroup);
+    }
 }
 
 void FrameAwarePlugin::HandleWindowsFocus(const std::shared_ptr<ResData>& data)
