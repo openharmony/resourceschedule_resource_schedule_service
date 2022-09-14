@@ -110,6 +110,7 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
     payload["pid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorPid());
     payload["uid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorUid());
     payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();
+    payload["typeId"] = std::to_string(continuousTaskCallbackInfo->GetTypeId());
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_START, payload);
 }
@@ -137,6 +138,7 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
     payload["pid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorPid());
     payload["uid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorUid());
     payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();
+    payload["typeId"] = std::to_string(continuousTaskCallbackInfo->GetTypeId());
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_END, payload);
 }

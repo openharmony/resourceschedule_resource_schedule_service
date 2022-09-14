@@ -63,6 +63,14 @@ ohos_shared_library("sched_controller") {
     "samgr:samgr_proxy",
   ]
 
+  defines = []
+
+  if (device_movement_perception_enable) {
+    external_deps += [ "movement:movement_client" ]
+    sources += [ "observer/src/device_movement_observer.cpp" ]
+    defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
+  }
+
   part_name = "resource_schedule_service"
   subsystem_name = "resourceschedule"
 }

@@ -95,6 +95,8 @@ enum : uint32_t {
     RES_TYPE_POP_PAGE,
     // ace web gesture event recognize; value means nothing
     RES_TYPE_WEB_GESTURE,
+    // info from msdp, means device still state change(enter or exit)
+    RES_TYPE_DEVICE_STILL_STATE_CHANGE,
 };
 
 /**
