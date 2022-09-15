@@ -31,7 +31,7 @@ public:
     void OnMovementChanged(const Msdp::MovementDataUtils::MovementData &movementData) override;
 
 private:
-    int32_t DeviceMovementObserverStub(MessageParcel &data);
+    int32_t OnReceiveDeviceMovementEvent(MessageParcel &data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

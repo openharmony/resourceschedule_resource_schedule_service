@@ -33,7 +33,7 @@ int32_t DeviceMovementObserver::OnRemoteRequest(uint32_t code, MessageParcel &da
 
     switch (code) {
         case static_cast<int32_t>(Msdp::ImovementCallback::MOVEMENT_CHANGE): {
-            return DeviceMovementObserverStub(data);
+            return OnReceiveDeviceMovementEvent(data);
         }
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
@@ -41,7 +41,7 @@ int32_t DeviceMovementObserver::OnRemoteRequest(uint32_t code, MessageParcel &da
     return ERR_OK;
 }
 
-int32_t DeviceMovementObserver::DeviceMovementObserverStub(MessageParcel &data)
+int32_t DeviceMovementObserver::OnReceiveDeviceMovementEvent(MessageParcel &data)
 {
     int32_t type = data.ReadInt32();
     int32_t value = data.ReadInt32();

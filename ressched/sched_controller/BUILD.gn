@@ -65,10 +65,13 @@ ohos_shared_library("sched_controller") {
 
   defines = []
 
+  configs = []
+
   if (device_movement_perception_enable) {
+    configs += [ "//base/msdp/movement/utils:movement_utils_config" ]
+    defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
     external_deps += [ "movement:movement_client" ]
     sources += [ "observer/src/device_movement_observer.cpp" ]
-    defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
   }
 
   part_name = "resource_schedule_service"
