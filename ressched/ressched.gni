@@ -37,8 +37,7 @@ declare_args() {
     component_sched_enable = false
   }
 
-  if (defined(global_parts_info) &&
-      !defined(global_parts_info.msdp_movement)) {
+  if (defined(global_parts_info) && !defined(global_parts_info.msdp_movement)) {
     device_movement_perception_enable = false
   }
 }
