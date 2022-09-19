@@ -30,9 +30,14 @@ ressched_test =
 
 declare_args() {
   component_sched_enable = true
+  device_movement_perception_enable = true
 
   if (defined(global_parts_info) &&
       !defined(global_parts_info.resourceschedule_efficiency_manager)) {
     component_sched_enable = false
+  }
+
+  if (defined(global_parts_info) && !defined(global_parts_info.msdp_movement)) {
+    device_movement_perception_enable = false
   }
 }

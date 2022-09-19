@@ -22,6 +22,9 @@
 
 #include "audio_observer.h"
 #include "camera_observer.h"
+#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
+#include "device_movement_observer.h"
+#endif
 #include "sched_telephony_observer.h"
 
 namespace OHOS {
@@ -49,6 +52,8 @@ public:
     void DisableTelephonyObserver();
     void InitAudioObserver();
     void DisableAudioObserver();
+    void InitDeviceMovementObserver();
+    void DisableDeviceMovementObserver();
     void InitSysAbilityListener();
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
 
@@ -59,6 +64,9 @@ public:
     std::shared_ptr<HiviewDFX::HiSysEventListener> cameraObserver_ = nullptr;
     sptr<SchedTelephonyObserver> telephonyObserver_ = nullptr;
     std::shared_ptr<AudioObserver> audioObserver_ = nullptr;
+#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
+    sptr<DeviceMovementObserver> deviceMovementObserver_ = nullptr;
+#endif
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
 };
 } // namespace ResourceSchedule

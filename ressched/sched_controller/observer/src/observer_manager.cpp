@@ -22,6 +22,10 @@
 #include "telephony_observer_client.h"
 #include "core_service_client.h"
 #include "system_ability_definition.h"
+#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
+#include "movement_client.h"
+#include "movement_data_utils.h"
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -66,17 +70,20 @@ void ObserverManager::InitSysAbilityListener()
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::InitCameraObserver, std::placeholders::_1) },
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
             std::bind(&ObserverManager::InitTelephonyObserver, std::placeholders::_1) },
-        { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1) }
+        { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1) },
+        { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::InitDeviceMovementObserver, std::placeholders::_1) }
     };
     removeObserverMap_ = {
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::DisableCameraObserver, std::placeholders::_1) },
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
             std::bind(&ObserverManager::DisableTelephonyObserver, std::placeholders::_1) },
-        { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1) }
+        { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1) },
+        { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::DisableDeviceMovementObserver, std::placeholders::_1) }
     };
     AddItemToSysAbilityListener(DFX_SYS_EVENT_SERVICE_ABILITY_ID, systemAbilityManager);
     AddItemToSysAbilityListener(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, systemAbilityManager);
     AddItemToSysAbilityListener(AUDIO_POLICY_SERVICE_ID, systemAbilityManager);
+    AddItemToSysAbilityListener(MSDP_MOVEMENT_SERVICE_ID, systemAbilityManager);
 }
 
 inline void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId,
@@ -239,6 +246,32 @@ void ObserverManager::DisableAudioObserver()
         RESSCHED_LOGW("ObserverManager disable audioVolumeKeyObserver failed");
     }
     audioObserver_ = nullptr;
+}
+
+void ObserverManager::InitDeviceMovementObserver()
+{
+#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
+    RESSCHED_LOGI("InitDeviceMovementObserver");
+    if (!deviceMovementObserver_) {
+        deviceMovementObserver_ = sptr<DeviceMovementObserver>(new DeviceMovementObserver());
+    }
+    Msdp::MovementClient::GetInstance().SubscribeCallback(
+        Msdp::MovementDataUtils::MovementType::TYPE_STILL, deviceMovementObserver_);
+#endif
+}
+
+void ObserverManager::DisableDeviceMovementObserver()
+{
+#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
+    RESSCHED_LOGI("DisableDeviceMovementObserver");
+    if (!deviceMovementObserver_) {
+        RESSCHED_LOGD("ObserverManager has been disable deviceMovementObserver");
+        return;
+    }
+    Msdp::MovementClient::GetInstance().UnSubscribeCallback(
+        Msdp::MovementDataUtils::MovementType::TYPE_STILL, deviceMovementObserver_);
+    deviceMovementObserver_ = nullptr;
+#endif
 }
 
 extern "C" void ObserverManagerInit()

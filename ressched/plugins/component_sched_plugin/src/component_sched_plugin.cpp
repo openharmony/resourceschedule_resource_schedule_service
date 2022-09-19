@@ -41,6 +41,8 @@ void ComponentSchedPlugin::Init()
     resTypes_.insert(RES_TYPE_AUDIO_RENDER_STATE_CHANGE);
     resTypes_.insert(RES_TYPE_AUDIO_RING_MODE_CHANGE);
     resTypes_.insert(RES_TYPE_AUDIO_VOLUME_KEY_CHANGE);
+    resTypes_.insert(RES_TYPE_CONTINUOUS_TASK);
+    resTypes_.insert(RES_TYPE_DEVICE_STILL_STATE_CHANGE);
 
     for (auto resType : resTypes_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
