@@ -67,8 +67,8 @@ void ComponentSchedPlugin::DispatchResource(const std::shared_ptr<ResData>& data
     }
 
     RESSCHED_LOGD(
-        "ComponentSchedPlugin::DispatchResource type=%{public}u value=%{public}lld payload=%{public}s",
-        data->resType, (long long)(data->value), (data->payload.dump()).c_str());
+        "ComponentSchedPlugin::DispatchResource type=%{public}u value=%{public}lld",
+        data->resType, (long long)(data->value));
 
 #ifdef COMPONENT_SCHED_ENABLE
     ComponentScheduler::ComponentSchedClient::GetInstance().ReportSceneInfo(data);
