@@ -17,6 +17,8 @@
 #define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_TYPE_H
 
 #include <cstdint>
+#include <map>
+#include <string>
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -129,7 +131,8 @@ static const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_AUDIO_VOLUME_KEY_CHANGE, "AUDIO_VOLUME_KEY_CHANGE" },
     { RES_TYPE_APP_ABILITY_START, "APP_ABILITY_START" },
     { RES_TYPE_POP_PAGE, "POP_PAGE" },
-    { RES_TYPE_WEB_GESTURE, "WEB_GESTURE" }
+    { RES_TYPE_WEB_GESTURE, "WEB_GESTURE" },
+    { RES_TYPE_DEVICE_STILL_STATE_CHANGE, "DEVICE_STILL_STATE_CHANGE" }
 };
 
 /**
