@@ -36,6 +36,7 @@ config("ressched_config") {
     "//base/customization/config_policy/interfaces/innerkits/include",
     "//base//hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent/include",
     "//base/telephony/state_registry/frameworks/native/observer/include",
+    "${ressched_interfaces}/innerkits/ressched_client/include",
   ]
 }
 

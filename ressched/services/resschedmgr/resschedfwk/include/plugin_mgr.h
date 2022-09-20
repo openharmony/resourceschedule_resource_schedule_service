@@ -28,6 +28,7 @@
 #include "plugin.h"
 #include "nocopyable.h"
 #include "res_data.h"
+#include "res_type.h"
 #include "single_instance.h"
 #include "config_info.h"
 
