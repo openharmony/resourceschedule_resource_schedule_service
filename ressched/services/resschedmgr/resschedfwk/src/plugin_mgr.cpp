@@ -57,7 +57,7 @@ void PluginMgr::Init()
     if (!pluginSwitch_) {
         pluginSwitch_ = make_unique<PluginSwitch>();
         std::string realPath = GetRealConfigPath(PLUGIN_SWITCH_FILE_NAME);
-        if (realPath.size() <= 0 || !pluginSwitch_->LoadFromConfigFile(realPath)) {
+        if (realPath.empty() || !pluginSwitch_->LoadFromConfigFile(realPath)) {
             RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
         }
     }
@@ -65,7 +65,7 @@ void PluginMgr::Init()
     if (!configReader_) {
         configReader_ = make_unique<ConfigReader>();
         std::string realPath = GetRealConfigPath(CONFIG_FILE_NAME);
-        if (realPath.size() <= 0 || !configReader_->LoadFromCustConfigFile(realPath)) {
+        if (realPath.empty() || !configReader_->LoadFromCustConfigFile(realPath)) {
             RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
         }
     }
@@ -202,17 +202,15 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
                   "value = %{public}lld, pluginlist is %{public}s.", __func__,
                   resData->resType, (long long)resData->value, libNameAll.c_str());
     FinishTrace(HITRACE_TAG_OHOS);
-    {
-        std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
-        for (const auto& libPath : iter->second) {
-            if (!dispatcherHandlerMap_[libPath]) {
-                RESSCHED_LOGE("%{public}s, failed, %{public}s dispatcher handler is stopped.", __func__,
-                    libPath.c_str());
-                continue;
-            }
-            dispatcherHandlerMap_[libPath]->PostTask(
-                [libPath, resData, this] { deliverResourceToPlugin(libPath, resData); });
+    std::lock_guard<std::mutex> autoLock2(dispatcherHandlerMutex_);
+    for (const auto& libPath : iter->second) {
+        if (!dispatcherHandlerMap_[libPath]) {
+            RESSCHED_LOGE("%{public}s, failed, %{public}s dispatcher handler is stopped.", __func__,
+                libPath.c_str());
+            continue;
         }
+        dispatcherHandlerMap_[libPath]->PostTask(
+            [libPath, resData, this] { deliverResourceToPlugin(libPath, resData); });
     }
 }
 
@@ -258,11 +256,11 @@ void PluginMgr::DumpOnePlugin(std::string &result, std::string pluginName)
 {
     std::list<PluginInfo> pluginInfoList = pluginSwitch_->GetPluginSwitch();
     result.append(pluginName + std::string(DUMP_ONE_STRING_SIZE - pluginName.size(), ' '));
-    for (const auto& info : pluginInfoList) {
-        if (pluginName == info.libPath) {
-            DumpPluginInfoAppend(result, info);
-            return;
-        }
+    auto pos = std::find_if(pluginInfoList.begin(),
+        pluginInfoList.end(), [&pluginName](PluginInfo &info) { return pluginName == info.libPath; });
+    if (pos != pluginInfoList.end()) {
+        DumpPluginInfoAppend(result, *pos);
+        return;
     }
     result.append(" not find!\n");
 }
