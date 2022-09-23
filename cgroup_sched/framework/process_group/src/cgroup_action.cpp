@@ -82,10 +82,9 @@ void CgroupAction::AddSchedPolicyDeclaration(const SchedPolicy policy,
     if (fullNames_.find(policy) != fullNames_.end()) {
         return;
     }
-    for (auto& kv : fullNames_) {
-        if (kv.second == fullName) {
-            return;
-        }
+    if (std::any_of(fullNames_.begin(), fullNames_.end(),
+        [ &fullName ] (const auto& kv) { return kv.second == fullName; })) {
+        return;
     }
     PGCGS_LOGI("%{public}s add sched policy: %{public}u, %{public}s, %{public}s",
         __func__, policy, fullName.c_str(), abbrName.c_str());
@@ -97,9 +96,8 @@ std::vector<SchedPolicy> CgroupAction::GetSchedPolicyList()
 {
     std::lock_guard<std::mutex> lock(mutex_);
     std::vector<SchedPolicy> policyList;
-    for (auto& kv : fullNames_) {
-        policyList.push_back(kv.first);
-    }
+    std::transform(fullNames_.begin(), fullNames_.end(), std::back_inserter(policyList),
+        [] (const auto& kv) { return kv.first; });
     return policyList;
 }
 
@@ -196,11 +194,11 @@ int CgroupAction::GetSchedPolicy(int tid, SchedPolicy* policy)
 
 int CgroupAction::GetSchedPolicyByName(const std::string& name, SchedPolicy* policy)
 {
-    for (auto& kv : fullNames_) {
-        if (kv.second == name) {
-            *policy = kv.first;
-            return 0;
-        }
+    const auto& result = std::find_if(fullNames_.begin(), fullNames_.end(),
+        [ &name ] (const auto& kv) { return kv.second == name; });
+    if (result != fullNames_.end()) {
+        *policy = result->first;
+        return 0;
     }
     *policy = SP_UPPER_LIMIT;
     return -1;

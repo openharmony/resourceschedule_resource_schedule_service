@@ -80,13 +80,12 @@ bool ReadFileToString(const std::string& filePath, std::string& content)
         content.resize(sb.st_size);
     }
 
-    ssize_t n;
     ssize_t remaining = sb.st_size;
     bool readStatus = true;
     char* p = const_cast<char*>(content.data());
 
     while (remaining > 0) {
-        n = read(fd, p, remaining);
+        ssize_t n = read(fd, p, remaining);
         if (n < 0) {
             readStatus = false;
             break;
