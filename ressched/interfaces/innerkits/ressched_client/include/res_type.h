@@ -99,6 +99,10 @@ enum : uint32_t {
     RES_TYPE_WEB_GESTURE,
     // info from msdp, means device still state change(enter or exit)
     RES_TYPE_DEVICE_STILL_STATE_CHANGE,
+    // window resize event; value 0: resize window , value 1: stop resizing window.
+    RES_TYPE_RESIZE_WINDOW,
+    // window move event; value 0: move window, value 1: stop moving window.
+    RES_TYPE_MOVE_WINDOW,
 };
 
 static const std::map<uint32_t, std::string> resTypeToStr = {
@@ -132,7 +136,9 @@ static const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_APP_ABILITY_START, "APP_ABILITY_START" },
     { RES_TYPE_POP_PAGE, "POP_PAGE" },
     { RES_TYPE_WEB_GESTURE, "WEB_GESTURE" },
-    { RES_TYPE_DEVICE_STILL_STATE_CHANGE, "DEVICE_STILL_STATE_CHANGE" }
+    { RES_TYPE_DEVICE_STILL_STATE_CHANGE, "DEVICE_STILL_STATE_CHANGE" },
+    { RES_TYPE_RESIZE_WINDOW, "RES_TYPE_RESIZE_WINDOW" },
+    { RES_TYPE_MOVE_WINDOW, "RES_TYPE_MOVE_WINDOW" }
 };
 
 /**
@@ -230,6 +236,22 @@ enum PushPageType : int64_t {
 enum AppStartType : int64_t {
     APP_WARM_START,
     APP_COLD_START,
+};
+
+/**
+ * @brief Window resize type
+ */
+enum WindowResizeType : int64_t {
+    WINDOW_RESIZING,
+    WINDOW_RESIZE_STOP,
+};
+
+/**
+ * @brief Window move type
+ */
+enum WindowMoveType : int64_t {
+    WINDOW_MOVING,
+    WINDOW_MOVE_STOP,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
