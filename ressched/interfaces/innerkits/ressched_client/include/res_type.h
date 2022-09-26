@@ -95,6 +95,10 @@ enum : uint32_t {
     RES_TYPE_POP_PAGE,
     // ace web gesture event recognize; value means nothing
     RES_TYPE_WEB_GESTURE,
+    // window resize event; value 0: resize window , value 1: stop resizing window.
+    RES_TYPE_RESIZE_WINDOW = 31,
+    // window move event; value 0: move window, value 1: stop moving window.
+    RES_TYPE_MOVE_WINDOW,
 };
 
 /**
@@ -192,6 +196,22 @@ enum PushPageType : int64_t {
 enum AppStartType : int64_t {
     APP_WARM_START,
     APP_COLD_START,
+};
+
+/**
+ * @brief Window resize type
+ */
+enum WindowResizeType : int64_t {
+    WINDOW_RESIZING,
+    WINDOW_RESIZE_STOP,
+};
+
+/**
+ * @brief Window move type
+ */
+enum WindowMoveType : int64_t {
+    WINDOW_MOVING,
+    WINDOW_MOVE_STOP,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
