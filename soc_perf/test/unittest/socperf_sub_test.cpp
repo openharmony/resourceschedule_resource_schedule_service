@@ -301,5 +301,58 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_ThermalLimitBoost_002, Function | Medium
 {
     OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(false, "");
 }
+
+/*
+ * @tc.name: SocPerfSubTest_LimitRequest_001
+ * @tc.desc: LimitRequest thermal
+ * @tc.type FUNC
+ */
+HWTEST_F(SocPerfSubTest, SocPerfSubTest_LimitRequest_001, Function | MediumTest | Level0)
+{
+    int32_t clientId_power = ACTION_TYPE_POWER;
+    std::vector<int32_t> tags;
+    tags.push_back(1001);
+    std::vector<int64_t> configs;
+    EXPECT_NE(tags.size(), configs.size());
+    configs.push_back(1608000);
+    EXPECT_EQ(tags.size(), configs.size());
+    OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(clientId_power, tags, configs, "");
+}
+
+/*
+ * @tc.name: SocPerfSubTest_LimitRequest_002
+ * @tc.desc: LimitRequest thermal
+ * @tc.type FUNC
+ */
+HWTEST_F(SocPerfSubTest, SocPerfSubTest_LimitRequest_002, Function | MediumTest | Level0)
+{
+    int32_t clientId_thermal = ACTION_TYPE_THERMAL;
+    std::vector<int32_t> tags;
+    tags.push_back(1000);
+    tags.push_back(1001);
+    std::vector<int64_t> configs;
+    EXPECT_NE(tags.size(), configs.size());
+    configs.push_back(1800000);
+    configs.push_back(1992000);
+    EXPECT_EQ(tags.size(), configs.size());
+    OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(clientId_thermal, tags, configs, "");
+}
+
+/*
+ * @tc.name: SocPerfSubTest_ResetClient_001
+ * @tc.desc: ResetClient
+ * @tc.type FUNC
+ */
+HWTEST_F(SocPerfSubTest, SocPerfSubTest_ResetClient_001, Function | MediumTest | Level0)
+{
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(10000, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(10000, true, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(10000, false, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(true, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(false, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(true, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(false, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().ResetClient();
+}
 } // namespace SOCPERF
 } // namespace OHOS
