@@ -23,10 +23,11 @@ using OHOS::AppExecFwk::AbilityType;
 
 std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfoNonNull(uintptr_t token)
 {
-    for (auto a : abilities_) {
-        if (a->token_ == token) {
-            return a;
-        }
+    auto a = std::find_if(abilities_.begin(), abilities_.end(), [ token ] (const auto& a) {
+        return a->token_ == token;
+    });
+    if (a != abilities_.end()) {
+        return *a;
     }
     std::shared_ptr<AbilityInfo> abi = std::make_shared<AbilityInfo>(token);
     abilities_.push_back(abi);
@@ -35,20 +36,22 @@ std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfoNonNull(uintptr_t toke
 
 std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfo(uintptr_t token)
 {
-    for (auto a : abilities_) {
-        if (a->token_ == token) {
-            return a;
-        }
+    auto a = std::find_if(abilities_.begin(), abilities_.end(), [ token ] (const auto& a) {
+        return a->token_ == token;
+    });
+    if (a != abilities_.end()) {
+        return *a;
     }
     return nullptr;
 }
 
 std::shared_ptr<WindowInfo> ProcessRecord::GetWindowInfoNonNull(uint32_t windowId)
 {
-    for (auto w : windows_) {
-        if (w->windowId_ == windowId) {
-            return w;
-        }
+    auto w = std::find_if(windows_.begin(), windows_.end(), [ windowId ] (const auto& w) {
+        return w->windowId_ == windowId;
+    });
+    if (w != windows_.end()) {
+        return *w;
     }
     std::shared_ptr<WindowInfo> win = std::make_shared<WindowInfo>(windowId);
     windows_.push_back(win);
@@ -67,33 +70,25 @@ void ProcessRecord::RemoveAbilityByToken(uintptr_t token)
 
 bool ProcessRecord::HasAbility(uintptr_t token) const
 {
-    for (auto abi : abilities_) {
-        if (abi->token_ == token)
-            return true;
-    }
-    return false;
+    return std::any_of(abilities_.begin(), abilities_.end(), [ token ] (const auto& abi) {
+        return abi->token_ == token;
+    });
 }
 
 bool ProcessRecord::HasServiceExtension() const
 {
-    for (auto abi : abilities_) {
-        if (abi->type_ == (int32_t)(AbilityType::SERVICE)
+    return std::any_of(abilities_.begin(), abilities_.end(), [] (const auto& abi) {
+        return abi->type_ == (int32_t)(AbilityType::SERVICE)
             || abi->type_ == (int32_t)(AbilityType::EXTENSION)
-            || abi->type_ == (int32_t)(AbilityType::DATA)) {
-            return true;
-        }
-    }
-    return false;
+            || abi->type_ == (int32_t)(AbilityType::DATA);
+    });
 }
 
 bool ProcessRecord::IsVisible() const
 {
-    for (auto w : windows_) {
-        if (w->isVisible_) {
-            return true;
-        }
-    }
-    return false;
+    return std::any_of(windows_.begin(), windows_.end(), [] (const auto& w) {
+        return w->isVisible_;
+    });
 }
 
 std::shared_ptr<ProcessRecord> Application::AddProcessRecord(std::shared_ptr<ProcessRecord> pr)
@@ -148,10 +143,11 @@ std::shared_ptr<ProcessRecord> Application::FindProcessRecordByWindowId(uint32_t
 {
     for (auto iter = pidsMap_.begin(); iter != pidsMap_.end(); iter++) {
         auto pr = iter->second;
-        for (auto& w : pr->windows_) {
-            if (w->windowId_ == windowId) {
-                return pr;
-            }
+        if (std::any_of(pr->windows_.begin(), pr->windows_.end(),
+            [ windowId ] (const auto& w) {
+                return w->windowId_ == windowId;
+            })) {
+            return pr;
         }
     }
     return nullptr;
