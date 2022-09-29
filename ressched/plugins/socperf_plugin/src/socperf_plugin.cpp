@@ -35,6 +35,8 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_PUSH_PAGE_COMPLETE    = 10011;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE     = 10012;
     const int32_t PERF_REQUEST_CMD_ID_POP_PAGE              = 10016;
+    const int32_t PERF_REQUEST_CMD_ID_RESIZE_WINDOW         = 10018;
+    const int32_t PERF_REQUEST_CMD_ID_MOVE_WINDOW           = 10019;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -55,6 +57,10 @@ void SocPerfPlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandlePopPage(data); } },
         { RES_TYPE_APP_ABILITY_START,
             [this](const std::shared_ptr<ResData>& data) { HandleAppAbilityStart(data); } },
+        { RES_TYPE_RESIZE_WINDOW,
+            [this](const std::shared_ptr<ResData>& data) { HandleResizeWindow(data); } },
+        { RES_TYPE_MOVE_WINDOW,
+            [this](const std::shared_ptr<ResData>& data) { HandleMoveWindow(data); } },
     };
     resTypes = {
         RES_TYPE_WINDOW_FOCUS,
@@ -64,6 +70,8 @@ void SocPerfPlugin::Init()
         RES_TYPE_WEB_GESTURE,
         RES_TYPE_POP_PAGE,
         RES_TYPE_APP_ABILITY_START,
+        RES_TYPE_RESIZE_WINDOW,
+        RES_TYPE_MOVE_WINDOW,
     };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
@@ -154,6 +162,32 @@ void SocPerfPlugin::HandleEventWebGesture(const std::shared_ptr<ResData>& data)
 {
     RESSCHED_LOGI("SocPerfPlugin: socperf->WEB_GESTURE: %{public}lld", (long long)data->value);
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE, "");
+}
+
+void SocPerfPlugin::HandleResizeWindow(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    RESSCHED_LOGI("SocPerfPlugin: socperf->RESIZE_WINDOW: %{public}lld", (long long)data->value);
+    if (data->value == WindowResizeType::WINDOW_RESIZING) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_RESIZE_WINDOW, "");
+    } else if (data->value == WindowResizeType::WINDOW_RESIZE_STOP) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_RESIZE_WINDOW, false, "");
+    }
+}
+
+void SocPerfPlugin::HandleMoveWindow(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    RESSCHED_LOGI("SocPerfPlugin: socperf->MOVE_WINDOW: %{public}lld", (long long)data->value);
+    if (data->value == WindowMoveType::WINDOW_MOVING) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_MOVE_WINDOW, "");
+    } else if (data->value == WindowMoveType::WINDOW_MOVE_STOP) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_MOVE_WINDOW, false, "");
+    }
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
