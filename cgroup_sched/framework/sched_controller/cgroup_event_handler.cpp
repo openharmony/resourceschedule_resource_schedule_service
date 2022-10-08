@@ -525,23 +525,12 @@ void CgroupEventHandler::HandleReportRenderThread(uint32_t resType, int64_t valu
 bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,
     int64_t value, const nlohmann::json& payload)
 {
-    nlohmann::json payloadTmp;
-    if (payload.is_object()) {
-        payloadTmp = payload;
-    } else {
-        std::string payloadStr = payload.get<std::string>();
-        if (payloadStr.empty()) {
-            return false;
-        }
-        payloadTmp = nlohmann::json::parse(payloadStr, nullptr, false);
+    if (payload.contains("uid") && payload.at("uid").is_string()) {
+        uid = atoi(payload["uid"].get<std::string>().c_str());
     }
 
-    if (payloadTmp.contains("uid") && payloadTmp.at("uid").is_string()) {
-        uid = atoi(payloadTmp["uid"].get<std::string>().c_str());
-    }
-
-    if (payloadTmp.contains("pid") && payloadTmp.at("pid").is_string()) {
-        pid = atoi(payloadTmp["pid"].get<std::string>().c_str());
+    if (payload.contains("pid") && payload.at("pid").is_string()) {
+        pid = atoi(payload["pid"].get<std::string>().c_str());
     }
     tid = static_cast<int32_t>(value);
     return true;
