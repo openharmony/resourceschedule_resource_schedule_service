@@ -15,6 +15,9 @@
 
 #include "ressched_fuzzer.h"
 
+#include "iservice_registry.h"
+#include "system_ability_definition.h"
+
 #include "res_sched_mgr.h"
 #include "res_sched_service.h"
 #include "res_sched_service_stub.h"
@@ -22,16 +25,34 @@
 namespace OHOS {
 namespace ResourceSchedule {
     constexpr int32_t MIN_LEN = 4;
+    std::mutex mutexLock;
+    sptr<IRemoteObject> remoteObj;
+
+    bool DoInit()
+    {
+        std::lock_guard<std::mutex> lock(mutexLock);
+        if (remoteObj) {
+            return true;
+        }
+        auto samgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+        if (!samgr) {
+            return false;
+        }
+        remoteObj = samgr->GetSystemAbility(RES_SCHED_SYS_ABILITY_ID);
+        if (!remoteObj) {
+            return false;
+        }
+        return true;
+    }
 
     int32_t onRemoteRequest(uint32_t code, MessageParcel& data)
     {
+        if (!DoInit()) {
+            return -1;
+        }
         MessageParcel reply;
         MessageOption option;
-        std::shared_ptr<ResSchedService> resSchedService = std::make_shared<ResSchedService>();
-        ResSchedMgr::GetInstance().Init();
-        int32_t ret = resSchedService->OnRemoteRequest(code, data, reply, option);
-        ResSchedMgr::GetInstance().Stop();
-        return ret;
+        return remoteObj->SendRequest(code, data, reply, option);
     }
 
     bool DoSomethingInterestingWithMyAPI(const uint8_t* data, size_t size)

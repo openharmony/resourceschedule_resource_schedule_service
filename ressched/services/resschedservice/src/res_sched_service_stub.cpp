@@ -54,7 +54,7 @@ int32_t ResSchedServiceStub::ReportDataInner(MessageParcel& data, [[maybe_unused
     std::string payload;
     READ_PARCEL(data, String, payload, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
 
-    ReportData(type, value, StringToJson(payload));
+    ReportData(type, value, StringToJsonObj(payload));
     return ERR_OK;
 }
 
@@ -75,19 +75,22 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
 }
 
-nlohmann::json ResSchedServiceStub::StringToJson(const std::string& payload)
+nlohmann::json ResSchedServiceStub::StringToJsonObj(const std::string& payload)
 {
-    nlohmann::json root;
-
+    nlohmann::json jsonObj = nlohmann::json::object();
     if (payload.empty()) {
-        return root;
+        return jsonObj;
     }
-
-    root = nlohmann::json::parse(payload, nullptr, false);
-    if (root.is_discarded()) {
-        RESSCHED_LOGE("ResSchedServiceStub::StringToJson fail, payload = %{public}s", payload.c_str());
+    nlohmann::json jsonTmp = nlohmann::json::parse(payload, nullptr, false);
+    if (jsonTmp.is_discarded()) {
+        RESSCHED_LOGE("%{public}s parse payload to json failed: %{public}s", __func__, payload.c_str());
+        return jsonObj;
     }
-    return root;
+    if (!jsonTmp.is_object()) {
+        RESSCHED_LOGE("%{public}s payload converted result is not a jsonObj: %{public}s", __func__, payload.c_str());
+        return jsonObj;
+    }
+    return jsonTmp;
 }
 
 void ResSchedServiceStub::Init()
