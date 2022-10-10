@@ -23,9 +23,20 @@ If you need to obtain system events and perform related resource schedule, you c
 
 In resource schedule subsystem, the module of cgroup schedule decides the group schedule policy of each process by analyzing application state, window status and background task status. And with proper configuration, it can bind each process to certain cgroup node. These schedule policies can be used to gain better performance. And this module forward different kinds of events to plugin manager and then be distributed to subscribers.
 
+Resource_schedule_service is an engine that receives events, decides schedule policies and executes schedule mechanisms. It's architecture is shown as follows:
+ ![img](figures/resource_schedule_service_architecture.png)
+It consists of the following important parts:
+1. Event manager, which includes the function of using external interfaces to sense system events, as well as the function of using listening forms to sense system events.
+2. Application intelligent grouping, which receives the event of application life cycle change and decides the priority of application grouping, is the fundamental basis for global resource schedule.
+3. Plugin manager, which is responsible for loading the resource schedule plugin corresponding to the product, receiving system and application events, and distributing events to the plugin according to the plugin subscription.
+4. Soc_perf service, which receives frequency modulation events from the related plugin, arbitration the frequency value, and finally uses the kernel interface to set the CPU frequency.
+
+Resource_schedule_service policy is mainly used to extend and schedule the system's global resources with related plugins. Plugins run in the form of dynamic-link, and different users can choose different plugin combinations. At present, the existing plugins include: intelligent perception schedule plugin, device's status management plugin, and soc_perf plugin.The soc_perf plugin is implemented in resource_schedule_service code repository, while the other two plugins are implemented in other code repositories. However, system events are used as the basis for setting schedule policies to the system kernel.
+
 ## Directory Structure<a name="section161941989596"></a>
 
 ```
+</foundation/resourceschedule/resource_schedule_service>
 ├── cgroup_sched
 |   ├── common
 |   │   └── include                   # common header files
@@ -34,11 +45,11 @@ In resource schedule subsystem, the module of cgroup schedule decides the group 
 |   │   ├── sched_controller          # cgroup schedule
 |   │   └── utils                     # adaption interface to forwarding data
 |   │       ├── include
-|   │       │   └── ressched_utils.h
-|   │       └── ressched_utils.cpp
+|   │       │   └── ressched_utils.h  # event report header files
+|   │       └── ressched_utils.cpp    # event report interface
 |   ├── interfaces                    # Init/Denit/Query interface for rss
-|   │   └── innerkits
-|   └── profiles
+|   │   └── innerkits                 # Interface APIs
+|   └── profiles                      # config files
 └── ressched
 |   ├── common                     # Common header file
 |   ├── interfaces
@@ -48,7 +59,7 @@ In resource schedule subsystem, the module of cgroup schedule decides the group 
 |   ├── profile                    # Plugin switch xml and plugin private xml
 |   ├── sa_profile                 # System ability xml
 |   ├── sched_controller           # event receive
-|   |   ├── common_event           # 
+|   |   ├── common_event           # event receive common interface
 |   |   └── observer               # callback event receive
 |   |       ├── audio_observer     # audio framework event callback
 |   |       ├── camera_observer    # camera event callback
@@ -79,7 +90,7 @@ In resource schedule subsystem, the module of cgroup schedule decides the group 
 |-------------------------------------------------------------------------------|----------------------------------|
 | function OnPluginInit(std::string& libName): bool;                            | plugin init                      |
 | function OnPluginDisable(): void;                                             | plugin disable                   |
-| function OnDispatchResource(const std::shared_ptr<ResData>& data):void;       | dispatch resource event          |
+| function OnDispatchResource(const std::shared_ptr\<ResData\>& data):void;       | dispatch resource event          |
 
 ### Usage Guidelines<a name="section129654513264"></a>
 
@@ -112,8 +123,19 @@ Each schedule policy is configured in a json file, and is bound to different cgr
 ```
   "Cgroups": [
     {
-      "controller": "cpuctl",
+      "controller": "cpu",
       "path": "/dev/cpuctl",
+      "sched_policy": {
+        "sp_default": "",
+        "sp_background": "background",
+        "sp_foreground": "foreground",
+        "sp_system_background": "system-background",
+        "sp_top_app": "top-app"
+      }
+    },
+    {
+      "controller": "cpuset",
+      "path": "/dev/cpuset",
       "sched_policy": {
         "sp_default": "",
         "sp_background": "background",
@@ -147,14 +169,11 @@ Supported SocPerf interfaces description
 
 | Interface  | Description  |
 |----------|-------|
-| PerfRequest(int cmdId, const std::string& msg) | Used for Performace boost freq |
-| PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg) | Used for Performace boost freq and support ON/OFF |
-| PowerRequest(int cmdId, const std::string& msg) | Used for Power limit freq |
-| PowerRequestEx(int cmdId, bool onOffTag, const std::string& msg) | Used for Power limit freq and support ON/OFF |
+| PerfRequest(int32_t cmdId, const std::string& msg) | Used for Performace boost freq |
+| PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) | Used for Performace boost freq and support ON/OFF |
 | PowerLimitBoost(bool onOffTag, const std::string& msg) | Used for Power limit freq which cannot be boosted |
-| ThermalRequest(int cmdId, const std::string& msg) | Used for Thermal limit freq  |
-| ThermalRequestEx(int cmdId, bool onOffTag, const std::string& msg) | Used for Thermal limit freq and support ON/OFF  |
 | ThermalLimitBoost(bool onOffTag, const std::string& msg) | Used for Thermal limit freq which cannot be boosted |
+| LimitRequest(int32_t clientId, const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg) | Used for Power or Thermal limit freq and multiple freq items can be set together |
 
 All interfaces are based on the key parameter cmdID, cmdID connects scenes and configs, which is used to boost freq or limit freq.
 Interface with parameter onOffTag means it support ON/OFF event. Normally, these interfaces are used for long-term event,
@@ -169,8 +188,6 @@ Config files description
 |----------|-------|
 | socperf_resource_config.xml | Define resource which can be modify，such as CPU/GPU/DDR/NPU |
 | socperf_boost_config.xml | Config file used for Performace boost |
-| socperf_resource_config.xml | Config file used for Power limit |
-| socperf_thermal_config.xml | Config file used for Thermal limit |
 
 All xml files are different for particular products.
 For specific product, all resources which could be modify are defined in socperf_resource_config.xml. Each resource has its own resID.
@@ -186,8 +203,6 @@ telphony change
 camera change
 
 ## Repositories Involved<a name="section1371113476307"></a>
-
-- [aafwk_standard](https://gitee.com/openharmony/aafwk_standard)
 - [windowmanager](https://gitee.com/openharmony/windowmanager)
 - [communication_ipc](https://gitee.com/openharmony/communication_ipc)
 - [hiviewdfx_hilog](https://gitee.com/openharmony/hiviewdfx_hilog)

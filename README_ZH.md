@@ -23,22 +23,33 @@
 
 作为资源调度子系统的子模块，智能分组模块通过系统内应用前后台切换、用户焦点输入、后台任务的执行状态，决策进程的分组调度策略，并支持通过配置将调度策略映射到不同的CGROUP分组，为系统的性能、功耗均衡调度提供决策依据。同时该模块向资源调度框架转发应用状态、焦点状态、后台任务状态等系统事件，供插件订阅。
 
+resource_schedule_service是接收事件，决策调度策略和执行调度机制的引擎，其架构图示如下：
+ ![img](figures/resource_schedule_service_architecture_ZH.png)
+其中包括以下几个重要组成部分：
+1、事件管理器，包含了使用对外接口直接感知系统事件，以及使用监听形式感知系统事件功能。
+2、应用智能分组，该组件接收应用生命周期变更的事件，决策应用的分组优先级，是全局资源调度的根本依据。
+3、插件管理器，负责产品对应资源调度插件的加载，接收系统和应用的事件，并根据插件的订阅情况将事件分发给插件。
+4、SOC统一调频服务，该服务主要是从SOC统一调频插件中接收调频事件，进行相关的调频仲裁，最终使用内核接口设置CPU频率策略。
+
+resource_schedule_service主要通过插件的形式进行扩展和实现系统全局资源的调度功能，插件以动态链接的形式运行，不同产品可以选择不同的插件进行加载。目前已知的插件有智能感知调度插件、设备状态管理插件、SOC统一调频插件。其中SOC统一调频插件的服务包含在resource_schedule_service中，而另外两个插件的服务包含在其它仓内，最终都是根据系统事件设置调度策略到内核中进行实施。
+
 ## 目录<a name="section161941989596"></a>
 
 ```
+/foundation/resourceschedule/resource_schedule_service
 ├── cgroup_sched
 |   ├── common
 |   │   └── include                   # 公共头文件
 |   ├── framework                     # 主体代码
 |   │   ├── process_group             # 分组设置接口
 |   │   ├── sched_controller          # 分组计算
-|   │   └── utils                     # RMS数据转发适配接口
+|   │   └── utils                     # RSS数据转发适配接口
 |   │       ├── include
-|   │       │   └── ressched_utils.h
-|   │       └── ressched_utils.cpp
+|   │       │   └── ressched_utils.h  # 事件上报头文件
+|   │       └── ressched_utils.cpp    # 事件上报接口
 |   ├── interfaces                    # 供RSS初始化、查询分组接口
-|   │   └── innerkits
-|   └── profiles
+|   │   └── innerkits                 # 对外接口目录
+|   └── profiles                      # 配置文件
 └── ressched
 |   ├── common                     # 公共头文件
 |   ├── interfaces
@@ -48,7 +59,7 @@
 |   ├── profile                    # 插件开关以及私有配置
 |   ├── sa_profile                 # 系统元能力配置
 |   ├── sched_controller           # 事件采集
-|   |   ├── common_event           # 
+|   |   ├── common_event           # 事件采集公共接口
 |   |   └── observer               # 监听事件采集
 |   |       ├── audio_observer     # 音频事件监听回调
 |   |       ├── camera_observer    # 相机事件监听回调
@@ -79,7 +90,7 @@
 |-------------------------------------------------------------------------------|----------------------------------|
 | function OnPluginInit(std::string& libName): bool;                            | 插件初始化                       |
 | function OnPluginDisable(): void;                                             | 插件退出                         |
-| function OnDispatchResource(const std::shared_ptr<ResData>& data):void;       | 获取分发的事件                   |
+| function OnDispatchResource(const std::shared_ptr\<ResData\>& data):void;       | 获取分发的事件                   |
 
 ### 使用说明<a name="section129654513264"></a>
 
@@ -110,8 +121,19 @@
 ```
   "Cgroups": [
     {
-      "controller": "cpuctl",
+      "controller": "cpu",
       "path": "/dev/cpuctl",
+      "sched_policy": {
+        "sp_default": "",
+        "sp_background": "background",
+        "sp_foreground": "foreground",
+        "sp_system_background": "system-background",
+        "sp_top_app": "top-app"
+      }
+    },
+    {
+      "controller": "cpuset",
+      "path": "/dev/cpuset",
       "sched_policy": {
         "sp_default": "",
         "sp_background": "background",
@@ -144,14 +166,11 @@
 
 | 接口  | 说明  |
 |----------|-------|
-| PerfRequest(int cmdId, const std::string& msg) | 用于性能提频使用 |
-| PerfRequestEx(int cmdId, bool onOffTag, const std::string& msg) | 用于性能提频使用且支持ON/OFF事件 |
-| PowerRequest(int cmdId, const std::string& msg) | 用于功耗限频使用 |
-| PowerRequestEx(int cmdId, bool onOffTag, const std::string& msg) | 用于功耗限频使用且支持ON/OFF事件 |
+| PerfRequest(int32_t cmdId, const std::string& msg) | 用于性能提频使用 |
+| PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) | 用于性能提频使用且支持ON/OFF事件 |
 | PowerLimitBoost(bool onOffTag, const std::string& msg) | 用于限制boost无法突破功耗限频 |
-| ThermalRequest(int cmdId, const std::string& msg) | 用于热限频使用  |
-| ThermalRequestEx(int cmdId, bool onOffTag, const std::string& msg) | 用于热限频使用且支持ON  |
 | ThermalLimitBoost(bool onOffTag, const std::string& msg) | 用于限制boost无法突破热限频 |
+| LimitRequest(int32_t clientId, const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg) | 用于热或功耗模块的限频且支持多项值一同设置 |
 
 如表格所示，所有的调频接口都以cmdID为核心，将调频场景和调频参数互相关联，实现提频或者限频的功能。  
 带onOffTag参数的接口表示该接口支持ON/OFF的开关调频模式，一般用于生效时间不固定的长期调频事件，需要调用者手动开启或者关闭。  
@@ -206,7 +225,6 @@ ACE子系统仓内实现了对资源调度框架提供的可动态加载接口Re
 监听相机状态变化
 
 ## 相关仓<a name="section1371113476307"></a>
-- [aafwk_standard](https://gitee.com/openharmony/aafwk_standard)
 - [windowmanager](https://gitee.com/openharmony/windowmanager)
 - [communication_ipc](https://gitee.com/openharmony/communication_ipc)
 - [hiviewdfx_hilog](https://gitee.com/openharmony/hiviewdfx_hilog)
