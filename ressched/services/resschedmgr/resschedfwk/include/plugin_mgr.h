@@ -38,12 +38,14 @@ using Clock = std::chrono::high_resolution_clock;
 using TimePoint = std::chrono::time_point<Clock>;
 using OnPluginInitFunc = bool (*)(const std::string);
 using OnDispatchResourceFunc = void (*)(const std::shared_ptr<ResData>&);
+using OnDumpFunc = char* (*)(const std::vector<std::string>&);
 using OnPluginDisableFunc = void (*)();
 
 struct PluginLib {
     std::shared_ptr<void> handle = nullptr;
     OnPluginInitFunc onPluginInitFunc_;
     OnDispatchResourceFunc onDispatchResourceFunc_;
+    OnDumpFunc onDumpFunc_;
     OnPluginDisableFunc onPluginDisableFunc_;
 };
 
@@ -88,7 +90,11 @@ public:
 
     void DumpAllPlugin(std::string &result);
 
-    void DumpOnePlugin(std::string &result, std::string pluginName);
+    void DumpOnePlugin(std::string &result, std::string pluginName, std::vector<std::string>& args);
+
+    void DumpInfoFromPlugin(std::string& result, std::string libPath, std::vector<std::string>& args);
+
+    void DumpHelpFromPlugin(std::string& result);
 
     PluginConfig GetConfig(const std::string& pluginName, const std::string& configName);
 
@@ -97,6 +103,7 @@ private:
     std::string GetRealConfigPath(const char* configName);
     void OnDestroy();
     void LoadPlugin();
+    std::shared_ptr<PluginLib> LoadOnePlugin(const PluginInfo& info);
     void UnLoadPlugin();
     void ClearResource();
     void deliverResourceToPlugin(const std::string& pluginLib, const std::shared_ptr<ResData>& resData);
