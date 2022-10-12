@@ -16,6 +16,7 @@
 #ifndef CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_BACKGROUND_TASK_OBSERVER_H_
 #define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_BACKGROUND_TASK_OBSERVER_H_
 
+#ifdef CONFIG_BGTASK_MGR
 #include <sys/types.h>
 #include "background_mode.h"
 #include "continuous_task_callback_info.h"
@@ -69,4 +70,5 @@ private:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif
 #endif // CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_BACKGROUND_TASK_OBSERVER_H_
