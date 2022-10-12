@@ -15,6 +15,7 @@
 
 #include "background_task_observer.h"
 
+#ifdef CONFIG_BGTASK_MGR
 #include "cgroup_sched_log.h"
 #include "sched_controller.h"
 #include "cgroup_event_handler.h"
@@ -149,3 +150,4 @@ void BackgroundTaskObserver::OnRemoteDied(const wptr<IRemoteObject> &object)
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif
