@@ -45,30 +45,26 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
         return ret;
     });
     std::string result;
-    switch (argsInStr.size()) {
-        case 0:
-            // hidumper -s said '-h'
+    if (argsInStr.size() == 0) {
+        // hidumper -s said '-h'
+        DumpUsage(result);
+    } else if (argsInStr.size() == DUMP_OPTION + 1) {
+        // hidumper -s said '-h' or hidumper -s said '-a'
+        if (argsInStr[DUMP_OPTION] == "-h") {
             DumpUsage(result);
-            break;
-        case DUMP_OPTION + 1:
-            // hidumper -s said '-h' or hidumper -s said '-a'
-            if (argsInStr[DUMP_OPTION] == "-h") {
-                DumpUsage(result);
-            } else if (argsInStr[DUMP_OPTION] == "-a") {
-                DumpAllInfo(result);
-            } else if (argsInStr[DUMP_OPTION] == "-p") {
-                PluginMgr::GetInstance().DumpAllPlugin(result);
-            } else {
-                result.append("Error params.");
-            }
-            break;
-        case DUMP_PARAM_INDEX + 1:
-            if (argsInStr[DUMP_OPTION] == "-p") {
-                PluginMgr::GetInstance().DumpOnePlugin(result, argsInStr[DUMP_PARAM_INDEX]);
-            }
-            break;
-        default:
+        } else if (argsInStr[DUMP_OPTION] == "-a") {
+            DumpAllInfo(result);
+        } else if (argsInStr[DUMP_OPTION] == "-p") {
+            PluginMgr::GetInstance().DumpAllPlugin(result);
+        } else {
             result.append("Error params.");
+        }
+    } else if (argsInStr.size() >= DUMP_PARAM_INDEX + 1) {
+        if (argsInStr[DUMP_OPTION] == "-p") {
+            std::vector<std::string> argsInStrToPlugin;
+            argsInStrToPlugin.assign(argsInStr.begin() + DUMP_PARAM_INDEX + 1, argsInStr.end());
+            PluginMgr::GetInstance().DumpOnePlugin(result, argsInStr[DUMP_PARAM_INDEX], argsInStrToPlugin);
+        }
     }
 
     if (!SaveStringToFd(fd, result)) {
@@ -83,6 +79,7 @@ void ResSchedService::DumpUsage(std::string &result)
         .append("    -a: show all info.\n")
         .append("    -p: show the all plugin info.\n")
         .append("    -p (plugin name): show one plugin info.\n");
+    PluginMgr::GetInstance().DumpHelpFromPlugin(result);
 }
 
 void ResSchedService::DumpAllInfo(std::string &result)

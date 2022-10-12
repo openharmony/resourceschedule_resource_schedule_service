@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <dlfcn.h>
 #include <iostream>
+#include <string>
 #include "config_policy_utils.h"
 #include "event_runner.h"
 #include "hisysevent.h"
@@ -86,54 +87,66 @@ void PluginMgr::LoadPlugin()
         if (!info.switchOn) {
             continue;
         }
-
-        auto pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
-        if (!pluginHandle) {
-            RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
+        shared_ptr<PluginLib> libInfoPtr = LoadOnePlugin(info);
+        if (libInfoPtr == nullptr) {
             continue;
         }
+        std::lock_guard<std::mutex> autoLock(pluginMutex_);
+        pluginLibMap_.emplace(info.libPath, *libInfoPtr);
 
-        auto onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(pluginHandle, "OnPluginInit"));
-        if (!onPluginInitFunc) {
-            RESSCHED_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
-            dlclose(pluginHandle);
-            continue;
-        }
-
-        auto onPluginDisableFunc = reinterpret_cast<OnPluginDisableFunc>(dlsym(pluginHandle, "OnPluginDisable"));
-        if (!onPluginDisableFunc) {
-            RESSCHED_LOGE("%{public}s, dlsym OnPluginDisable failed!", __func__);
-            dlclose(pluginHandle);
-            continue;
-        }
-
-        if (!onPluginInitFunc(info.libPath)) {
-            RESSCHED_LOGE("%{public}s, %{public}s init failed!", __func__, info.libPath.c_str());
-            dlclose(pluginHandle);
-            continue;
-        }
-        
-        dispatcherHandlerMap_[info.libPath] =
-            std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME + to_string(handlerNum_++)));
-
-        // OnDispatchResource is not necessary for plugin
-        auto onDispatchResourceFunc = reinterpret_cast<OnDispatchResourceFunc>(dlsym(pluginHandle,
-            "OnDispatchResource"));
-
-        // shared_ptr save handle pointer and ensure handle close correctly
-        shared_ptr<void> sharedPluginHandle(pluginHandle, CloseHandle);
-
-        PluginLib libInfo;
-        libInfo.handle = sharedPluginHandle;
-        libInfo.onPluginInitFunc_ = onPluginInitFunc;
-        libInfo.onDispatchResourceFunc_ = onDispatchResourceFunc;
-        libInfo.onPluginDisableFunc_ = onPluginDisableFunc;
-        {
-            std::lock_guard<std::mutex> autoLock(pluginMutex_);
-            pluginLibMap_.emplace(info.libPath, libInfo);
-        }
         RESSCHED_LOGI("%{public}s, init %{public}s success!", __func__, info.libPath.c_str());
     }
+}
+
+shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
+{
+    auto pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
+    if (!pluginHandle) {
+        RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
+        return nullptr;
+    }
+
+    auto onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(pluginHandle, "OnPluginInit"));
+    if (!onPluginInitFunc) {
+        RESSCHED_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
+        dlclose(pluginHandle);
+        return nullptr;
+    }
+
+    auto onPluginDisableFunc = reinterpret_cast<OnPluginDisableFunc>(dlsym(pluginHandle, "OnPluginDisable"));
+    if (!onPluginDisableFunc) {
+        RESSCHED_LOGE("%{public}s, dlsym OnPluginDisable failed!", __func__);
+        dlclose(pluginHandle);
+        return nullptr;
+    }
+
+    if (!onPluginInitFunc(info.libPath)) {
+        RESSCHED_LOGE("%{public}s, %{public}s init failed!", __func__, info.libPath.c_str());
+        dlclose(pluginHandle);
+        return nullptr;
+    }
+
+    dispatcherHandlerMap_[info.libPath] =
+            std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME + to_string(handlerNum_++)));
+
+    // OnDispatchResource is not necessary for plugin
+    auto onDispatchResourceFunc = reinterpret_cast<OnDispatchResourceFunc>(dlsym(pluginHandle,
+        "OnDispatchResource"));
+
+    // OnDispatchResource is not necessary for plugin
+    auto onDumpFunc = reinterpret_cast<OnDumpFunc>(dlsym(pluginHandle, "OnDump"));
+
+    // shared_ptr save handle pointer and ensure handle close correctly
+    shared_ptr<void> sharedPluginHandle(pluginHandle, CloseHandle);
+
+    PluginLib libInfo;
+    libInfo.handle = sharedPluginHandle;
+    libInfo.onPluginInitFunc_ = onPluginInitFunc;
+    libInfo.onDispatchResourceFunc_ = onDispatchResourceFunc;
+    libInfo.onDumpFunc_ = onDumpFunc;
+    libInfo.onPluginDisableFunc_ = onPluginDisableFunc;
+
+    return make_shared<PluginLib>(libInfo);
 }
 
 PluginConfig PluginMgr::GetConfig(const std::string& pluginName, const std::string& configName)
@@ -252,17 +265,57 @@ void PluginMgr::DumpAllPlugin(std::string &result)
     }
 }
 
-void PluginMgr::DumpOnePlugin(std::string &result, std::string pluginName)
+void PluginMgr::DumpOnePlugin(std::string &result, std::string pluginName, std::vector<std::string>& args)
 {
     std::list<PluginInfo> pluginInfoList = pluginSwitch_->GetPluginSwitch();
-    result.append(pluginName + std::string(DUMP_ONE_STRING_SIZE - pluginName.size(), ' '));
     auto pos = std::find_if(pluginInfoList.begin(),
         pluginInfoList.end(), [&pluginName](PluginInfo &info) { return pluginName == info.libPath; });
-    if (pos != pluginInfoList.end()) {
-        DumpPluginInfoAppend(result, *pos);
+    if (pos == pluginInfoList.end()) {
+        result.append(" Error params.\n");
         return;
     }
-    result.append(" not find!\n");
+    if (args.size() == 0) {
+        result.append(pluginName + std::string(DUMP_ONE_STRING_SIZE - pluginName.size(), ' '));
+        DumpPluginInfoAppend(result, *pos);
+    } else {
+        result.append("\n");
+        DumpInfoFromPlugin(result, pos->libPath, args);
+    }
+}
+
+void PluginMgr::DumpInfoFromPlugin(std::string& result, std::string libPath, std::vector<std::string>& args)
+{
+    std::lock_guard<std::mutex> autoLock(pluginMutex_);
+    auto pluginLib = pluginLibMap_.find(libPath);
+    if (pluginLib == pluginLibMap_.end()) {
+        result.append(" Error params.\n");
+        return;
+    }
+
+    if (pluginLib->second.onDumpFunc_) {
+        result.append(pluginLib->second.onDumpFunc_(args));
+    } else {
+        result.append(libPath).append(" no HiDumper.\n");
+    }
+}
+
+void PluginMgr::DumpHelpFromPlugin(std::string& result)
+{
+    std::vector<std::string> args;
+    args.emplace_back("-h");
+    std::string pluginHelpMsg = "";
+    std::list<PluginInfo> pluginInfoList = pluginSwitch_->GetPluginSwitch();
+    std::lock_guard<std::mutex> autoLock(pluginMutex_);
+    for (auto &pluginInfo : pluginInfoList) {
+        auto pluginLib = pluginLibMap_.find(pluginInfo.libPath);
+        if (pluginLib == pluginLibMap_.end()) {
+            continue;
+        }
+        if (pluginLib->second.onDumpFunc_) {
+            pluginHelpMsg.append(pluginLib->second.onDumpFunc_(args)).append("\n");
+        }
+    }
+    result.append(pluginHelpMsg);
 }
 
 void PluginMgr::DumpPluginInfoAppend(std::string &result, PluginInfo info)
