@@ -279,24 +279,26 @@ void PluginMgr::DumpOnePlugin(std::string &result, std::string pluginName, std::
         DumpPluginInfoAppend(result, *pos);
     } else {
         result.append("\n");
-        DumpInfoFromPlugin(result, pos->libPath, args);
+        std::string errMsg = DumpInfoFromPlugin(result, pos->libPath, args);
+        if (errMsg != "") {
+            result.append(errMsg);
+        }
     }
 }
 
-void PluginMgr::DumpInfoFromPlugin(std::string& result, std::string libPath, std::vector<std::string>& args)
+std::string PluginMgr::DumpInfoFromPlugin(std::string& result, std::string libPath, std::vector<std::string>& args)
 {
     std::lock_guard<std::mutex> autoLock(pluginMutex_);
     auto pluginLib = pluginLibMap_.find(libPath);
     if (pluginLib == pluginLibMap_.end()) {
-        result.append(" Error params.\n");
-        return;
+        return "Error params.";
     }
 
     if (pluginLib->second.onDumpFunc_) {
-        result.append(pluginLib->second.onDumpFunc_(args));
-    } else {
-        result.append(libPath).append(" no HiDumper.\n");
+        pluginLib->second.onDumpFunc_(args, result);
+        result.append("\n");
     }
+    return "";
 }
 
 void PluginMgr::DumpHelpFromPlugin(std::string& result)
@@ -305,15 +307,8 @@ void PluginMgr::DumpHelpFromPlugin(std::string& result)
     args.emplace_back("-h");
     std::string pluginHelpMsg = "";
     std::list<PluginInfo> pluginInfoList = pluginSwitch_->GetPluginSwitch();
-    std::lock_guard<std::mutex> autoLock(pluginMutex_);
     for (auto &pluginInfo : pluginInfoList) {
-        auto pluginLib = pluginLibMap_.find(pluginInfo.libPath);
-        if (pluginLib == pluginLibMap_.end()) {
-            continue;
-        }
-        if (pluginLib->second.onDumpFunc_) {
-            pluginHelpMsg.append(pluginLib->second.onDumpFunc_(args)).append("\n");
-        }
+        DumpInfoFromPlugin(pluginHelpMsg, pluginInfo.libPath, args);
     }
     result.append(pluginHelpMsg);
 }

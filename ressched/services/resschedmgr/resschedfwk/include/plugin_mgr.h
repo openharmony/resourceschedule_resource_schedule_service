@@ -38,7 +38,7 @@ using Clock = std::chrono::high_resolution_clock;
 using TimePoint = std::chrono::time_point<Clock>;
 using OnPluginInitFunc = bool (*)(const std::string);
 using OnDispatchResourceFunc = void (*)(const std::shared_ptr<ResData>&);
-using OnDumpFunc = char* (*)(const std::vector<std::string>&);
+using OnDumpFunc = void (*)(const std::vector<std::string>&, std::string&);
 using OnPluginDisableFunc = void (*)();
 
 struct PluginLib {
@@ -92,7 +92,7 @@ public:
 
     void DumpOnePlugin(std::string &result, std::string pluginName, std::vector<std::string>& args);
 
-    void DumpInfoFromPlugin(std::string& result, std::string libPath, std::vector<std::string>& args);
+    std::string DumpInfoFromPlugin(std::string& result, std::string libPath, std::vector<std::string>& args);
 
     void DumpHelpFromPlugin(std::string& result);
 
