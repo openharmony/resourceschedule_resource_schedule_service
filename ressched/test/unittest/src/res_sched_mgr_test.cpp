@@ -28,20 +28,9 @@ void ResSchedMgrTest::SetUpTestCase() {}
 
 void ResSchedMgrTest::TearDownTestCase() {}
 
-void ResSchedMgrTest::SetUp()
-{
-    /**
-     * @tc.setup: initialize the member variable pluginMgr_
-     */
-}
+void ResSchedMgrTest::SetUp() {}
 
-void ResSchedMgrTest::TearDown()
-{
-    /**
-     * @tc.teardown: clear pluginMgr_
-     */
-    ResSchedMgr::GetInstance().Stop();
-}
+void ResSchedMgrTest::TearDown() {}
 
 /**
  * @tc.name: Init ressched mgr 001
@@ -57,16 +46,19 @@ HWTEST_F(ResSchedMgrTest, Init001, TestSize.Level1)
 }
 
 /**
- * @tc.name: Init ressched mgr 002
- * @tc.desc: Verify if can Init the plugin correctly
+ * @tc.name: Init ressched ReportData 002
+ * @tc.desc: Verify if ReportData is success
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH00L
- * @tc.author:xukuan
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
  */
-HWTEST_F(ResSchedMgrTest, Init002, TestSize.Level1)
+HWTEST_F(ResSchedMgrTest, ReportData001, TestSize.Level1)
 {
-    ResSchedMgr::GetInstance().Stop();
-    EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ == nullptr);
+    nlohmann::json payload;
+    ResSchedMgr::GetInstance().ReportData(0, 0, payload);
+    EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ != nullptr);
+    
+    ResSchedMgr::GetInstance().DispatchResourceInner(0, 0, payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
