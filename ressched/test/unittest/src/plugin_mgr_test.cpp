@@ -84,6 +84,19 @@ HWTEST_F(PluginMgrTest, Stop001, TestSize.Level1)
 }
 
 /**
+ * @tc.name: Plugin mgr test GetConfig 001
+ * @tc.desc: Verify if can get config with wrong env.
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
+ */
+HWTEST_F(PluginMgrTest, GetConfig001, TestSize.Level1)
+{
+    PluginConfig config = pluginMgr_->GetConfig("", "");
+    EXPECT_TRUE(config.itemList.empty());
+}
+
+/**
  * @tc.name: Plugin mgr test SubscribeResource 001
  * @tc.desc: Verify if can stop success.
  * @tc.type: FUNC
@@ -100,6 +113,50 @@ HWTEST_F(PluginMgrTest, SubscribeResource001, TestSize.Level1)
 }
 
 /**
+ * @tc.name: Plugin mgr test Dump 001
+ * @tc.desc: Verify if dump commands is success.
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
+ */
+HWTEST_F(PluginMgrTest, Dump001, TestSize.Level1)
+{
+    std::string res;
+    pluginMgr_->Init();
+    pluginMgr_->DumpAllPlugin(res);
+    EXPECT_TRUE(!res.empty());
+    res = "";
+
+    pluginMgr_->LoadPlugin();
+    pluginMgr_->DumpHelpFromPlugin(res);
+    EXPECT_TRUE(res.empty());
+    res = "";
+
+    std::vector<std::string> args;
+    pluginMgr_->DumpOnePlugin(res, LIB_NAME, args);
+    EXPECT_TRUE(!res.empty());
+    res = "";
+
+    args.emplace_back("-h");
+    pluginMgr_->DumpOnePlugin(res, LIB_NAME, args);
+    EXPECT_TRUE(!res.empty());
+}
+
+/**
+ * @tc.name: Plugin mgr test RepairPlugin 001
+ * @tc.desc: Verify if RepairPlugin is success.
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
+ */
+HWTEST_F(PluginMgrTest, RepairPlugin001, TestSize.Level1)
+{
+    PluginLib libInfo = pluginMgr_->pluginLibMap_.find(LIB_NAME)->second;
+    pluginMgr_->RepairPlugin(Clock::now(), LIB_NAME, libInfo);
+    EXPECT_TRUE(true);
+}
+
+/**
  * @tc.name: Plugin mgr test UnSubscribeResource 001
  * @tc.desc: Verify if can stop success.
  * @tc.type: FUNC
@@ -111,6 +168,21 @@ HWTEST_F(PluginMgrTest, UnSubscribeResource001, TestSize.Level1)
     pluginMgr_->UnSubscribeResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
     auto iter = pluginMgr_->resTypeLibMap_.find(ResType::RES_TYPE_SCREEN_STATUS);
     EXPECT_TRUE(iter == pluginMgr_->resTypeLibMap_.end());
+}
+
+/**
+ * @tc.name: Plugin mgr test Remove 001
+ * @tc.desc: Verify if RemoveDisablePluginHandler is success.
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
+ */
+HWTEST_F(PluginMgrTest, Remove001, TestSize.Level1)
+{
+    pluginMgr_->RemoveDisablePluginHandler();
+    EXPECT_TRUE(!pluginMgr_->disablePlugins_.size());
+
+    pluginMgr_->LoadPlugin();
 }
 
 /*
@@ -180,6 +252,5 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_001, TestSize.Level1)
     data->value = ResType::WindowMoveType::WINDOW_MOVE_STOP;
     SocPerfPlugin::GetInstance().DispatchResource(data);
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS

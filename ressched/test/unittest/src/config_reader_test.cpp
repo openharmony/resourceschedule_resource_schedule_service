@@ -120,5 +120,21 @@ HWTEST_F(ConfigReaderTest, LoadConfigFile005, TestSize.Level1)
     bool ret = ParseConfigFile("res_sched_config_comments.xml");
     EXPECT_TRUE(ret);
 }
+
+/**
+ * @tc.name: Get Config 001
+ * @tc.desc: Verify if can load config with wrong pluginName or configName.
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
+ */
+HWTEST_F(ConfigReaderTest, GetConfig001, TestSize.Level1)
+{
+    PluginConfig config = configReader_->GetConfig("error.xml", "");
+    EXPECT_TRUE(config.itemList.empty());
+
+    config = configReader_->GetConfig("res_sched_config_comments.xml", "error.xml");
+    EXPECT_TRUE(config.itemList.empty());
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
