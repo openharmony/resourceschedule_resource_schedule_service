@@ -32,6 +32,7 @@ using OHOS::ResourceSchedule::CgroupSetting::SP_BACKGROUND;
 using OHOS::ResourceSchedule::CgroupSetting::SP_FOREGROUND;
 using OHOS::ResourceSchedule::CgroupSetting::SP_SYSTEM_BACKGROUND;
 using OHOS::ResourceSchedule::CgroupSetting::SP_TOP_APP;
+using OHOS::ResourceSchedule::CgroupSetting::SP_UPPER_LIMIT;
 
 class AbilityInfo;
 class WindowInfo {
@@ -89,9 +90,9 @@ public:
         return uid_;
     }
 
-    SchedPolicy lastSchedGroup_ = SP_DEFAULT;
-    SchedPolicy curSchedGroup_ = SP_DEFAULT;
-    SchedPolicy setSchedGroup_ = SP_DEFAULT;
+    SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
+    SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
+    SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
     bool runningTransientTask_ = false;
     uint32_t continuousTaskFlag_ = 0;
     int32_t renderTid_ = 0;
@@ -130,9 +131,9 @@ public:
     int32_t state_ = -1;
     std::string name_;
     std::shared_ptr<ProcessRecord> focusedProcess_ = nullptr;
-    SchedPolicy lastSchedGroup_ = SP_DEFAULT;
-    SchedPolicy curSchedGroup_ = SP_DEFAULT;
-    SchedPolicy setSchedGroup_ = SP_DEFAULT;
+    SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
+    SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
+    SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
 
 private:
     uid_t uid_;
