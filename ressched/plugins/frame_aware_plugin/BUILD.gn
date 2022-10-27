@@ -43,6 +43,8 @@ ohos_shared_library("frame_aware_plugin") {
     "//foundation/resourceschedule/frame_aware_sched/interfaces/innerkits/frameintf:frame_msg_intf",
   ]
 
+  external_deps = [ "eventhandler:libeventhandler" ]
+
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
 }

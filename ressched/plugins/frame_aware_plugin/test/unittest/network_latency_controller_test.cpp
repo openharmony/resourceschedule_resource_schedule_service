@@ -19,8 +19,8 @@
 
 #include <gtest/gtest.h>
 
-#include <inetwork_latency_switcher.h>
-#include <network_latency_controller.h>
+#include <latency_control/inetwork_latency_switcher.h>
+#include <latency_control/network_latency_controller.h>
 
 namespace OHOS {
 namespace ResourceSchedule {

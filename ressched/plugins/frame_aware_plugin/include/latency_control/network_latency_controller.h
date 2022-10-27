@@ -16,9 +16,15 @@
 #ifndef NETWORK_LATENCY_CONTROLLER_H
 #define NETWORK_LATENCY_CONTROLLER_H
 
+#include <chrono>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <utility>
 #include <unordered_set>
+
+#include "inner_event.h"
+#include "event_handler.h"
 
 #include "inetwork_latency_switcher.h"
 
@@ -33,8 +39,14 @@ public:
     static const long long NETWORK_LATENCY_REQUEST_NORMAL = 1;
 
 private:
+    void HandleAddRequest(const std::string &identity);
+    void HandleDelRequest(const std::string &identity);
     void AddRequest(const std::string &identity);
     void DelRequest(const std::string &identity);
+    void AutoDisableTask(const std::string &identity);
+
+    std::mutex mtx;
+    std::shared_ptr<AppExecFwk::EventHandler> handler;
     std::unique_ptr<INetworkLatencySwitcher> switcher;
     std::unordered_set<std::string> requests;
 };
