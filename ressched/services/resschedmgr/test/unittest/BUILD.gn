@@ -21,7 +21,11 @@ group("unittest") {
 }
 
 config("ut_resschedfwk_config") {
-  include_dirs = [ "include" ]
+  include_dirs = [
+    "include",
+    "//foundation/resourceschedule/resource_schedule_service/soc_perf/include",
+    "//foundation/resourceschedule/resource_schedule_service/soc_perf/include/client",
+  ]
 }
 
 module_output_path = "resource_schedule_service/resschedfwk"
@@ -33,7 +37,9 @@ private_external_deps = [
 
 private_deps = [
   "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
+  "${ressched_plugins}/socperf_plugin:socperf_plugin",
   "${ressched_services}:resschedsvc",
+  "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
   "//commonlibrary/c_utils/base:utils",
   "//third_party/googletest:gtest_main",
 ]
@@ -51,6 +57,7 @@ ohos_unittest("resschedfwk_test") {
     ":ut_resschedfwk_config",
     "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
     "${ressched_services}:ressched_config",
+    "${ressched_plugins}/socperf_plugin:socperf_plugin_config",
   ]
 
   deps = private_deps

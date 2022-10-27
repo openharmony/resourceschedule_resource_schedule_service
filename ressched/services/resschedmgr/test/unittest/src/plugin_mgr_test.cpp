@@ -20,6 +20,9 @@
 #include "plugin_mgr_test.h"
 #undef private
 #include "mock_plugin_mgr.h"
+#include "socperf_plugin.h"
+#include "res_data.h"
+#include "res_type.h"
 
 using namespace std;
 using namespace testing::ext;
@@ -109,5 +112,74 @@ HWTEST_F(PluginMgrTest, UnSubscribeResource001, TestSize.Level1)
     auto iter = pluginMgr_->resTypeLibMap_.find(ResType::RES_TYPE_SCREEN_STATUS);
     EXPECT_TRUE(iter == pluginMgr_->resTypeLibMap_.end());
 }
+
+/*
+ * @tc.name: SocPerfSubTest_DispatchResource_001
+ * @tc.desc: DispatchResource Plugin
+ * @tc.type FUNC
+ * @tc.author:zoujie
+ * @tc.require: issueI5VWUI
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_001, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto data = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    /* HandleAppAbilityStart */
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+    data->value = ResType::AppStartType::APP_WARM_START;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+
+    /* HandleWindowFocus */
+    data->resType = ResType::RES_TYPE_WINDOW_FOCUS;
+    data->value = ResType::WindowFocusStatus::WINDOW_FOCUS;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+
+    /* HandleEventClick */
+    data->resType = ResType::RES_TYPE_CLICK_RECOGNIZE;
+    data->value = ResType::ClickEventType::TOUCH_EVENT;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+    data->value = ResType::ClickEventType::CLICK_EVENT;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+
+    /* HandlePushPage */
+    data->resType = ResType::RES_TYPE_PUSH_PAGE;
+    data->value = ResType::PushPageType::PUSH_PAGE_START;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+    data->value = ResType::PushPageType::PUSH_PAGE_COMPLETE;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+
+    /* HandlePopPage */
+    data->resType = ResType::RES_TYPE_POP_PAGE;
+    data->value = 0;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+
+    /* HandleEventSlide */
+    data->resType = ResType::RES_TYPE_SLIDE_RECOGNIZE;
+    data->value = ResType::SlideEventStatus::SLIDE_EVENT_ON;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+    data->value = ResType::SlideEventStatus::SLIDE_EVENT_OFF;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+
+    /* HandleEventWebGesture */
+    data->resType = ResType::RES_TYPE_WEB_GESTURE;
+    data->value = 0;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+
+    /* HandleResizeWindow */
+    data->resType = ResType::RES_TYPE_RESIZE_WINDOW;
+    data->value = ResType::WindowResizeType::WINDOW_RESIZING;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+    data->value = ResType::WindowResizeType::WINDOW_RESIZE_STOP;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+
+    /* HandleMoveWindow */
+    data->resType = ResType::RES_TYPE_MOVE_WINDOW;
+    data->value = ResType::WindowMoveType::WINDOW_MOVING;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+    data->value = ResType::WindowMoveType::WINDOW_MOVE_STOP;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+}
+
 } // namespace ResourceSchedule
 } // namespace OHOS
