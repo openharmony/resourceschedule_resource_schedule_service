@@ -43,7 +43,8 @@ declare_args() {
     device_movement_perception_enable = false
   }
 
-  if (defined(global_parts_info) && !defined(global_parts_info.telephony_state_registry)) {
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.telephony_state_registry)) {
     ressched_with_telephony_state_registry_enable = false
   }
 
