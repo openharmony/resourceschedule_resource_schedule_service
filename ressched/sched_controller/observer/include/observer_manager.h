@@ -25,7 +25,9 @@
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
 #include "device_movement_observer.h"
 #endif
+#ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
 #include "sched_telephony_observer.h"
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -57,12 +59,14 @@ public:
     void InitSysAbilityListener();
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
 
-    int32_t slotId_ = 0;
     pid_t pid_ = -1;
     std::map<int32_t, std::function<void(ObserverManager *)>> handleObserverMap_;
     std::map<int32_t, std::function<void(ObserverManager *)>> removeObserverMap_;
     std::shared_ptr<HiviewDFX::HiSysEventListener> cameraObserver_ = nullptr;
+#ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
+    int32_t slotId_ = 0;
     sptr<SchedTelephonyObserver> telephonyObserver_ = nullptr;
+#endif
     std::shared_ptr<AudioObserver> audioObserver_ = nullptr;
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
     sptr<DeviceMovementObserver> deviceMovementObserver_ = nullptr;

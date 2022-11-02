@@ -23,7 +23,6 @@
 #include "if_system_ability_manager.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
-#include "net_supplier_info.h"
 #include "system_ability_definition.h"
 
 #include "ressched_utils.h"

@@ -20,7 +20,9 @@
 #include "common_event_manager.h"
 #include "common_event_support.h"
 #include "res_sched_log.h"
+#ifdef RESSCHED_COMMUNICATION_NETMANAGER_BASE_ENABLE
 #include "net_supplier_info.h"
+#endif
 #include "want.h"
 
 #include "event_controller.h"
@@ -56,6 +58,7 @@ public:
  */
 HWTEST_F(EventControllerTest, connectivityChange_00100, testing::ext::TestSize.Level1)
 {
+#ifdef RESSCHED_COMMUNICATION_NETMANAGER_BASE_ENABLE
     AAFwk::Want want;
     EventFwk::CommonEventData data;
     want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_CONNECTIVITY_CHANGE);
@@ -68,6 +71,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00100, testing::ext::TestSize.L
     int64_t expectValue = 2;
     EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
     EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);
+#endif
 }
 
 /**
@@ -79,6 +83,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00100, testing::ext::TestSize.L
  */
 HWTEST_F(EventControllerTest, connectivityChange_00101, testing::ext::TestSize.Level1)
 {
+#ifdef RESSCHED_COMMUNICATION_NETMANAGER_BASE_ENABLE
     AAFwk::Want want;
     EventFwk::CommonEventData data;
     want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_CONNECTIVITY_CHANGE);
@@ -91,6 +96,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00101, testing::ext::TestSize.L
     int64_t expectValue = 3;
     EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
     EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);
+#endif
 }
 
 /**

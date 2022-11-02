@@ -19,8 +19,9 @@
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
 #include "res_sched_log.h"
+#ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
 #include "telephony_observer_client.h"
-#include "core_service_client.h"
+#endif
 #include "system_ability_definition.h"
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
 #include "movement_client.h"
@@ -159,6 +160,7 @@ void ObserverManager::DisableCameraObserver()
 
 void ObserverManager::InitTelephonyObserver()
 {
+#ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     RESSCHED_LOGI("Init telephony observer");
     if (!telephonyObserver_) {
         telephonyObserver_ = std::make_unique<SchedTelephonyObserver>().release();
@@ -171,10 +173,12 @@ void ObserverManager::InitTelephonyObserver()
     } else {
         RESSCHED_LOGW("ObserverManager init telephony observer failed");
     }
+#endif
 }
 
 void ObserverManager::DisableTelephonyObserver()
 {
+#ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     RESSCHED_LOGI("Disable telephony observer");
     if (!telephonyObserver_) {
         RESSCHED_LOGD("ObserverManager has been disable telephony observer");
@@ -184,6 +188,7 @@ void ObserverManager::DisableTelephonyObserver()
     Telephony::TelephonyObserverClient::GetInstance().RemoveStateObserver(
         slotId_, Telephony::TelephonyObserverBroker::OBSERVER_MASK_CALL_STATE);
     telephonyObserver_ = nullptr;
+#endif
 }
 
 void ObserverManager::InitAudioObserver()
