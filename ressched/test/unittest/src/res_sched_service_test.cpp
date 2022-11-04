@@ -126,8 +126,6 @@ HWTEST_F(ResSchedServiceTest, Report001, Function | MediumTest | Level0)
 HWTEST_F(ResSchedServiceTest, OnStart001, Function | MediumTest | Level0)
 {
     resSchedServiceAbility_->OnStart();
-    resSchedServiceAbility_->OnStop();
-    resSchedServiceAbility_->OnStart();
     EXPECT_TRUE(resSchedServiceAbility_->service_ != nullptr);
 }
 
