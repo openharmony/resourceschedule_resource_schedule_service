@@ -25,12 +25,9 @@ ohos_shared_library("sched_controller") {
     "observer/include",
     "//base/hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent_manager/include",
     "//foundation/bundlemanager/bundle_framework/interfaces/inner_api/appexecfwk_core/include/bundlemgr",
-    "//foundation/communication/netmanager_base/interfaces/innerkits/netconnclient/include",
     "//foundation/resourceschedule/device_scheduler/common/include",
     "//foundation/resourceschedule/resource_schedule_service/ressched/common/include",
     "//base/hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent/include",
-    "//base/telephony/core_service/interfaces/innerkits/include",
-    "//base/telephony/state_registry/frameworks/native/observer/include",
     "${cgroup_sched_framework}/process_group/include",
     "${cgroup_sched_framework}/sched_controller/include",
     "${cgroup_sched_framework}/utils/include",
@@ -46,10 +43,7 @@ ohos_shared_library("sched_controller") {
     "observer/src/audio_observer.cpp",
     "observer/src/camera_observer.cpp",
     "observer/src/observer_manager.cpp",
-    "observer/src/sched_telephony_observer.cpp",
   ]
-
-  deps = [ "//base/telephony/state_registry/frameworks/native/observer:tel_state_registry_api" ]
 
   external_deps = [
     "ability_base:want",
@@ -72,6 +66,16 @@ ohos_shared_library("sched_controller") {
     defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
     external_deps += [ "movement:movement_client" ]
     sources += [ "observer/src/device_movement_observer.cpp" ]
+  }
+
+  if (ressched_with_telephony_state_registry_enable) {
+    defines += [ "RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE" ]
+    include_dirs +=
+        [ "//base/telephony/state_registry/frameworks/native/observer/include" ]
+    include_dirs +=
+        [ "//base/telephony/core_service/interfaces/innerkits/include" ]
+    external_deps += [ "state_registry:tel_state_registry_api" ]
+    sources += [ "observer/src/sched_telephony_observer.cpp" ]
   }
 
   part_name = "resource_schedule_service"
