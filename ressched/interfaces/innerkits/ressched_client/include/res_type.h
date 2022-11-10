@@ -258,7 +258,7 @@ enum WindowMoveType : int64_t {
 };
 
 /**
- * @brief Window move type
+ * @brief Animation Change Type
  */
 enum AnimationChangeType : int64_t {
     ANIMATION_BEGIN = 0,
