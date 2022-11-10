@@ -140,7 +140,8 @@ static const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_WEB_GESTURE, "WEB_GESTURE" },
     { RES_TYPE_DEVICE_STILL_STATE_CHANGE, "DEVICE_STILL_STATE_CHANGE" },
     { RES_TYPE_RESIZE_WINDOW, "RES_TYPE_RESIZE_WINDOW" },
-    { RES_TYPE_MOVE_WINDOW, "RES_TYPE_MOVE_WINDOW" }
+    { RES_TYPE_MOVE_WINDOW, "RES_TYPE_MOVE_WINDOW" },
+    { RES_TYPE_ANIMATION_CHANGE, "RES_TYPE_ANIMATION_CHANGE" }
 };
 
 /**
@@ -254,6 +255,14 @@ enum WindowResizeType : int64_t {
 enum WindowMoveType : int64_t {
     WINDOW_MOVING = 0,
     WINDOW_MOVE_STOP = 1,
+};
+
+/**
+ * @brief Window move type
+ */
+enum AnimationChangeType : int64_t {
+    ANIMATION_BEGIN = 0,
+    ANIMATION_END = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
