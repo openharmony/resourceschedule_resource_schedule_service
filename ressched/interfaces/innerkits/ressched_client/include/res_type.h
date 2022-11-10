@@ -104,7 +104,7 @@ enum : uint32_t {
     // window move event; value 0: move window, value 1: stop moving window.
     RES_TYPE_MOVE_WINDOW = 32,
     // animation transition event; value 0: animation begin, value 1: animation end.
-    RES_TYPE_ANIMATION_CHANGE = 33,
+    RES_TYPE_SHOW_REMOTE_ANIMATION = 33,
 };
 
 static const std::map<uint32_t, std::string> resTypeToStr = {
@@ -141,7 +141,7 @@ static const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_DEVICE_STILL_STATE_CHANGE, "DEVICE_STILL_STATE_CHANGE" },
     { RES_TYPE_RESIZE_WINDOW, "RES_TYPE_RESIZE_WINDOW" },
     { RES_TYPE_MOVE_WINDOW, "RES_TYPE_MOVE_WINDOW" },
-    { RES_TYPE_ANIMATION_CHANGE, "RES_TYPE_ANIMATION_CHANGE" }
+    { RES_TYPE_SHOW_REMOTE_ANIMATION, "RES_TYPE_SHOW_REMOTE_ANIMATION" }
 };
 
 /**
@@ -258,9 +258,9 @@ enum WindowMoveType : int64_t {
 };
 
 /**
- * @brief Animation Change Type
+ * @brief Animation Change Status
  */
-enum AnimationChangeType : int64_t {
+enum ShowRemoteAnimationStatus : int64_t {
     ANIMATION_BEGIN = 0,
     ANIMATION_END = 1,
 };
