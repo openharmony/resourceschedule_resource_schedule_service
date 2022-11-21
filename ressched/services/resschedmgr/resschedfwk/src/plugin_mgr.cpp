@@ -360,7 +360,7 @@ void PluginMgr::RepairPlugin(TimePoint endTime, const std::string& pluginLib, Pl
             if (libInfo.onPluginDisableFunc_) {
                 libInfo.onPluginDisableFunc_();
             }
-            HiSysEvent::Write("RSS", "PLUGIN_DISABLE",
+            HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "PLUGIN_DISABLE",
                 HiSysEvent::EventType::FAULT, "plugin_name", pluginLib);
             pluginTimeoutTime_[pluginLib].clear();
             pluginMutex_.lock();
