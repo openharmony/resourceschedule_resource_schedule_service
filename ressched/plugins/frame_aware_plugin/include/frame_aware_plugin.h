@@ -22,9 +22,10 @@
 
 #include "nlohmann/json.hpp"
 
-#include "network_latency_controller.h"
 #include "plugin.h"
 #include "single_instance.h"
+
+#include "latency_control/network_latency_controller.h"
 
 namespace OHOS {
 namespace ResourceSchedule {

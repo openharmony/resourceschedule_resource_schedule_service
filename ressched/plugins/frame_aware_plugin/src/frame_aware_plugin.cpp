@@ -178,14 +178,23 @@ void FrameAwarePlugin::HandleNetworkLatencyRequest(const std::shared_ptr<ResData
         return;
     }
 
+    if (!data->payload.contains("clientPid") || !data->payload["clientPid"].is_string()) {
+        RESSCHED_LOGE("FrameAwarePlugin::HandleNetworkLatencyRequest payload does not contain clientPid");
+        return;
+    }
+
     if (!data->payload.contains("identity") || !data->payload["identity"].is_string()) {
-        RESSCHED_LOGI("FrameAwarePlugin::HandleNetworkLatencyRequest payload is not contains identity");
+        RESSCHED_LOGI("FrameAwarePlugin::HandleNetworkLatencyRequest payload does not contain identity");
         return;
     }
 
     long long value = data->value;
-    std::string identity = data->payload["identity"].get<std::string>();
-    netLatCtrl.HandleRequest(value, identity);
+    const std::string pid = data->payload["clientPid"].get<std::string>();
+    const std::string identity = data->payload["identity"].get<std::string>();
+
+    // add the pid prefix to distinguish identities between different apps
+    const std::string pid_identity = pid + ":" + identity;
+    netLatCtrl.HandleRequest(value, pid_identity);
 }
 
 void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
