@@ -62,7 +62,7 @@ ErrCode ResSchedClient::TryConnect()
         return GET_RES_SCHED_SERVICE_FAILED;
     }
 
-    remoteObject_ = systemManager->GetSystemAbility(RES_SCHED_SYS_ABILITY_ID);
+    remoteObject_ = systemManager->CheckSystemAbility(RES_SCHED_SYS_ABILITY_ID);
     if (!remoteObject_) {
         RESSCHED_LOGE("ResSchedClient::Fail to connect resource schedule service.");
         return GET_RES_SCHED_SERVICE_FAILED;
