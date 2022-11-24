@@ -103,6 +103,8 @@ enum : uint32_t {
     RES_TYPE_RESIZE_WINDOW = 31,
     // window move event; value 0: move window, value 1: stop moving window.
     RES_TYPE_MOVE_WINDOW = 32,
+    // animation transition event; value 0: animation begin, value 1: animation end.
+    RES_TYPE_SHOW_REMOTE_ANIMATION = 33,
 };
 
 static const std::map<uint32_t, std::string> resTypeToStr = {
@@ -138,7 +140,8 @@ static const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_WEB_GESTURE, "WEB_GESTURE" },
     { RES_TYPE_DEVICE_STILL_STATE_CHANGE, "DEVICE_STILL_STATE_CHANGE" },
     { RES_TYPE_RESIZE_WINDOW, "RES_TYPE_RESIZE_WINDOW" },
-    { RES_TYPE_MOVE_WINDOW, "RES_TYPE_MOVE_WINDOW" }
+    { RES_TYPE_MOVE_WINDOW, "RES_TYPE_MOVE_WINDOW" },
+    { RES_TYPE_SHOW_REMOTE_ANIMATION, "RES_TYPE_SHOW_REMOTE_ANIMATION" }
 };
 
 /**
@@ -252,6 +255,14 @@ enum WindowResizeType : int64_t {
 enum WindowMoveType : int64_t {
     WINDOW_MOVING = 0,
     WINDOW_MOVE_STOP = 1,
+};
+
+/**
+ * @brief Animation Change Status
+ */
+enum ShowRemoteAnimationStatus : int64_t {
+    ANIMATION_BEGIN = 0,
+    ANIMATION_END = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
