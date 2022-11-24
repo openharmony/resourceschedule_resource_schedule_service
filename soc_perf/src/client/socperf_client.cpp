@@ -37,7 +37,7 @@ bool SocPerfClient::CheckClientValid()
         return false;
     }
 
-    sptr<IRemoteObject> object = samgr->GetSystemAbility(SOC_PERF_SERVICE_SA_ID);
+    sptr<IRemoteObject> object = samgr->CheckSystemAbility(SOC_PERF_SERVICE_SA_ID);
     if (!object) {
         SOC_PERF_LOGE("%{public}s, Failed to get SystemAbility[1906].", __func__);
         return false;
