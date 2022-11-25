@@ -55,6 +55,7 @@ private:
 
 private:
     std::string GetRealConfigPath(const std::string configFile);
+    std::shared_ptr<SocPerfHandler> GetHandlerByResId(int32_t resId);
     bool LoadConfigXmlFile(std::string configFile);
     bool CreateHandlers();
     void InitHandlerThreads();

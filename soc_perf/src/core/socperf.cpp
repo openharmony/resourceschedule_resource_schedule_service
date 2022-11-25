@@ -171,6 +171,10 @@ void SocPerf::LimitRequest(int32_t clientId,
     }
     for (int32_t i = 0; i < (int32_t)tags.size(); i++) {
         int32_t resId = tags[i];
+        auto handler = GetHandlerByResId(resId);
+        if (!handler) {
+            continue;
+        }
         int64_t resValue = configs[i];
         auto iter = limitRequest[clientId].find(resId);
         if (iter != limitRequest[clientId].end()
@@ -178,13 +182,13 @@ void SocPerf::LimitRequest(int32_t clientId,
             auto resAction = std::make_shared<ResAction>(
                 limitRequest[clientId][resId], 0, clientId, EVENT_OFF);
             auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_DO_FREQ_ACTION, resAction, resId);
-            handlers[resId / RES_ID_NUMS_PER_TYPE - 1]->SendEvent(event);
+            handler->SendEvent(event);
             limitRequest[clientId].erase(iter);
         }
         if (resValue != INVALID_VALUE) {
             auto resAction = std::make_shared<ResAction>(resValue, 0, clientId, EVENT_ON);
             auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_DO_FREQ_ACTION, resAction, resId);
-            handlers[resId / RES_ID_NUMS_PER_TYPE - 1]->SendEvent(event);
+            handler->SendEvent(event);
             limitRequest[clientId].insert(std::pair<int32_t, int32_t>(resId, resValue));
         }
     }
@@ -195,9 +199,13 @@ void SocPerf::DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int
     for (auto iter = actions->actionList.begin(); iter != actions->actionList.end(); iter++) {
         std::shared_ptr<Action> action = *iter;
         for (int32_t i = 0; i < (int32_t)action->variable.size() - 1; i += RES_ID_AND_VALUE_PAIR) {
+            auto handler = GetHandlerByResId(action->variable[i]);
+            if (!handler) {
+                continue;
+            }
             auto resAction = std::make_shared<ResAction>(action->variable[i + 1], action->duration, actionType, onOff);
             auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_DO_FREQ_ACTION, resAction, action->variable[i]);
-            handlers[action->variable[i] / RES_ID_NUMS_PER_TYPE - 1]->SendEvent(event);
+            handler->SendEvent(event);
         }
     }
 }
@@ -213,6 +221,14 @@ std::string SocPerf::GetRealConfigPath(const std::string configFile)
         return "";
     }
     return std::string(tmpPath);
+}
+
+std::shared_ptr<SocPerfHandler> SocPerf::GetHandlerByResId(int32_t resId)
+{
+    if (!IsValidResId(resId)) {
+        return nullptr;
+    }
+    return handlers[resId / RES_ID_NUMS_PER_TYPE - 1];
 }
 
 bool SocPerf::LoadConfigXmlFile(std::string configFile)
@@ -289,13 +305,21 @@ void SocPerf::InitHandlerThreads()
 {
     for (auto iter = resNodeInfo.begin(); iter != resNodeInfo.end(); ++iter) {
         std::shared_ptr<ResNode> resNode = iter->second;
+        auto handler = GetHandlerByResId(resNode->id);
+        if (!handler) {
+            continue;
+        }
         auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_INIT_RES_NODE_INFO, resNode);
-        handlers[resNode->id / RES_ID_NUMS_PER_TYPE - 1]->SendEvent(event);
+        handler->SendEvent(event);
     }
     for (auto iter = govResNodeInfo.begin(); iter != govResNodeInfo.end(); ++iter) {
         std::shared_ptr<GovResNode> govResNode = iter->second;
+        auto handler = GetHandlerByResId(govResNode->id);
+        if (!handler) {
+            continue;
+        }
         auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_INIT_GOV_RES_NODE_INFO, govResNode);
-        handlers[govResNode->id / RES_ID_NUMS_PER_TYPE - 1]->SendEvent(event);
+        handler->SendEvent(event);
     }
 }
 
