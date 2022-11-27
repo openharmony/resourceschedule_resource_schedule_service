@@ -120,6 +120,8 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_CONNECTIVITY_CHANGE);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_PACKAGE_ADDED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_PACKAGE_CHANGED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_PACKAGE_REPLACED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_SCREEN_ON);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_SCREEN_OFF);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USER_SWITCHED);
@@ -142,14 +144,7 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
     RESSCHED_LOGD("Recieved common event:%{public}s", action.c_str());
 
     nlohmann::json payload = nlohmann::json::object();
-    if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED) {
-        HandlePkgAddRemove(want, payload);
-        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_UNINSTALL, payload);
-        return;
-    }
-    if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_ADDED) {
-        HandlePkgAddRemove(want, payload);
-        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_INSTALL, payload);
+    if (HandlePkgCommonEvent(action, want, payload)) {
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_SCREEN_ON) {
@@ -183,6 +178,31 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_LOCK, payload);
         return;
     }
+}
+
+bool EventController::HandlePkgCommonEvent(const std::string &action, Want &want, nlohmann::json &payload)
+{
+    if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED) {
+        HandlePkgAddRemove(want, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_UNINSTALL, payload);
+        return true;
+    }
+    if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_ADDED) {
+        HandlePkgAddRemove(want, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_INSTALL, payload);
+        return true;
+    }
+    if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_CHANGED) {
+        HandlePkgAddRemove(want, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_CHANGED, payload);
+        return true;
+    }
+    if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_REPLACED) {
+        HandlePkgAddRemove(want, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_REPLACED, payload);
+        return true;
+    }
+    return false;
 }
 
 void EventController::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(

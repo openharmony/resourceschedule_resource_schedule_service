@@ -57,6 +57,7 @@ private:
     void HandlePkgAddRemove(const EventFwk::Want &want, nlohmann::json &payload) const;
     int32_t GetUid(const int32_t &userId, const std::string &bundleName) const;
     void ReportDataInProcess(const uint32_t &resType, const int64_t &value, const nlohmann::json& payload);
+    bool HandlePkgCommonEvent(const std::string &action, EventFwk::Want &want, nlohmann::json &payload);
 
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
 };
