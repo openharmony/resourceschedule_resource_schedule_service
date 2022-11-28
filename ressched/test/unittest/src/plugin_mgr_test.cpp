@@ -197,6 +197,8 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_001, TestSize.Level1)
     nlohmann::json payload;
     auto data = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
         ResType::AppStartType::APP_COLD_START, payload);
+    /* Init */
+    SocPerfPlugin::GetInstance().Init();
     /* HandleAppAbilityStart */
     SocPerfPlugin::GetInstance().DispatchResource(data);
     data->value = ResType::AppStartType::APP_WARM_START;
@@ -251,6 +253,9 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_001, TestSize.Level1)
     SocPerfPlugin::GetInstance().DispatchResource(data);
     data->value = ResType::WindowMoveType::WINDOW_MOVE_STOP;
     SocPerfPlugin::GetInstance().DispatchResource(data);
+
+    /* DeInit */
+    SocPerfPlugin::GetInstance().Disable();
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
