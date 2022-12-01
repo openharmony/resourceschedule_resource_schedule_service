@@ -120,22 +120,6 @@ HWTEST_F(NetworkLatencyControllerTest, multiUser_002, testing::ext::TestSize.Lev
 }
 
 /**
- * @tc.name: errorEmptyIdentity_003
- * @tc.desc: test that empty identities are not accepted
- * @tc.type: FUNC
- * @tc.require: SR000H029E SR000GVT7U
- */
-HWTEST_F(NetworkLatencyControllerTest, errorEmptyIdentity_003, testing::ext::TestSize.Level1)
-{
-    const std::string empty;
-
-    // cannot create latency request with empty identity
-    ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_LOW, empty);
-    EXPECT_EQ(counter->onCount, 0);
-    EXPECT_EQ(counter->offCount, 0);
-}
-
-/**
  * @tc.name: errorDuplicateRequests_004
  * @tc.desc: test that duplicate requests are ignored
  * @tc.type: FUNC
