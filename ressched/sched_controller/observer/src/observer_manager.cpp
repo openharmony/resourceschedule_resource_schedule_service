@@ -18,6 +18,7 @@
 #include "hisysevent_manager.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
+#include "parameters.h"
 #include "res_sched_log.h"
 #include "telephony_observer_client.h"
 #include "core_service_client.h"
@@ -30,6 +31,8 @@
 namespace OHOS {
 namespace ResourceSchedule {
 const static int8_t OPERATION_SUCCESS = 0;
+const static bool DEVICE_MOVEMENT_OBSERVER_ENABLE =
+    system::GetBoolParameter("persist.sys.ressched_device_movement_observer_switch", false);
 IMPLEMENT_SINGLE_INSTANCE(ObserverManager)
 
 void ObserverManager::Init()
@@ -250,6 +253,11 @@ void ObserverManager::DisableAudioObserver()
 
 void ObserverManager::InitDeviceMovementObserver()
 {
+    if (!DEVICE_MOVEMENT_OBSERVER_ENABLE) {
+        RESSCHED_LOGI("Device movement observer is not enable");
+        return;
+    }
+
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
     RESSCHED_LOGI("InitDeviceMovementObserver");
     if (!deviceMovementObserver_) {
@@ -262,6 +270,11 @@ void ObserverManager::InitDeviceMovementObserver()
 
 void ObserverManager::DisableDeviceMovementObserver()
 {
+    if (!DEVICE_MOVEMENT_OBSERVER_ENABLE) {
+        RESSCHED_LOGI("Device movement observer is not enable");
+        return;
+    }
+
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
     RESSCHED_LOGI("DisableDeviceMovementObserver");
     if (!deviceMovementObserver_) {
