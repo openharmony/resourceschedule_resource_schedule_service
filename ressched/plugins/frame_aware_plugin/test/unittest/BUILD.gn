@@ -30,7 +30,29 @@ ohos_unittest("NetworkLatencyControllerTest") {
   ]
 }
 
+ohos_unittest("FrameAwarePluginTest") {
+  module_out_path = module_output_path
+
+  include_dirs = [
+    "../../include",
+    "${ressched_interfaces}/innerkits/ressched_client/include",
+    "${ressched_services}/resschedmgr/pluginbase/include",
+  ]
+
+  sources = [ "frame_aware_plugin_test.cpp" ]
+
+  deps = [
+    "${ressched_plugins}/frame_aware_plugin:frame_aware_plugin",
+    "//third_party/googletest:gtest_main",
+  ]
+
+  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+}
+
 group("unittest") {
   testonly = true
-  deps = [ ":NetworkLatencyControllerTest" ]
+  deps = [
+    ":FrameAwarePluginTest",
+    ":NetworkLatencyControllerTest",
+  ]
 }
