@@ -27,6 +27,7 @@ SocPerfClient& SocPerfClient::GetInstance()
 
 bool SocPerfClient::CheckClientValid()
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     if (client) {
         return true;
     }
@@ -60,6 +61,7 @@ bool SocPerfClient::CheckClientValid()
 
 void SocPerfClient::ResetClient()
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     if (client && client->AsObject()) {
         client->AsObject()->RemoveDeathRecipient(recipient_);
     }

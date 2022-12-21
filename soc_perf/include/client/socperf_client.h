@@ -56,6 +56,7 @@ private:
     };
 
 private:
+    std::mutex mutex_;
     sptr<ISocPerfService> client;
     sptr<SocPerfDeathRecipient> recipient_;
 };
