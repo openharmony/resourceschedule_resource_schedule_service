@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,39 +15,54 @@
 
 #include "socperf_fuzzer.h"
 
-#define private public
-#include "socperf_server.h"
-#include "socperf_stub.h"
+#include "iservice_registry.h"
+#include "system_ability_definition.h"
+
+#include "i_socperf_service.h"
+#include "socperf_log.h"
 
 namespace OHOS {
 namespace SOCPERF {
     constexpr int32_t MIN_LEN = 4;
-    static bool isInited = false;
+    std::mutex mutexLock;
+    sptr<IRemoteObject> remoteObj = nullptr;
+
+    bool DoInit()
+    {
+        std::lock_guard<std::mutex> lock(mutexLock);
+        if (remoteObj) {
+            return true;
+        }
+        auto samgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+        if (!samgr) {
+            return false;
+        }
+        remoteObj = samgr->GetSystemAbility(SOC_PERF_SERVICE_SA_ID);
+        if (!remoteObj) {
+            return false;
+        }
+        return true;
+    }
 
     int32_t onRemoteRequest(uint32_t code, MessageParcel& data)
     {
-        int32_t ret = -1;
+        if (!DoInit()) {
+            return -1;
+        }
         MessageParcel reply;
         MessageOption option;
-        if (!isInited) {
-            if (!DelayedSingleton<SocPerfServer>::GetInstance()->socPerf.Init()) {
-                return ret;
-            }
-            isInited = true;
-        }
-        ret = DelayedSingleton<SocPerfServer>::GetInstance()->OnRemoteRequest(code, data, reply, option);
-        return ret;
+        return remoteObj->SendRequest(code, data, reply, option);
     }
 
-    void DoSomethingInterestingWithMyAPI(const uint8_t* data, size_t size)
+    bool DoSomethingInterestingWithMyAPI(const uint8_t* data, size_t size)
     {
         if (size <= MIN_LEN) {
-            return;
+            return false;
         }
 
         MessageParcel dataMessageParcel;
-        if (!dataMessageParcel.WriteInterfaceToken(SocPerfStub::GetDescriptor())) {
-            return;
+        if (!dataMessageParcel.WriteInterfaceToken(IRemoteStub<ISocPerfService>::GetDescriptor())) {
+            return false;
         }
 
         uint32_t code = *(reinterpret_cast<const uint32_t*>(data));
@@ -56,7 +71,9 @@ namespace SOCPERF {
         dataMessageParcel.WriteBuffer(data + sizeof(uint32_t), size);
         dataMessageParcel.RewindRead(0);
 
+        SOC_PERF_LOGD("_______________");
         onRemoteRequest(code, dataMessageParcel);
+        return true;
     }
 } // namespace SOCPERF
 } // namespace OHOS

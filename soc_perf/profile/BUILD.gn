@@ -1,0 +1,36 @@
+# Copyright (c) 2023 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+
+ohos_prebuilt_etc("socperf_resource_config") {
+  source = "socperf_resource_config.xml"
+  install_enable = true
+  module_install_dir = "etc/soc_perf"
+  part_name = "soc_perf"
+  subsystem_name = "resourceschedule"
+}
+ohos_prebuilt_etc("socperf_boost_config") {
+  source = "socperf_boost_config.xml"
+  install_enable = true
+  module_install_dir = "etc/soc_perf"
+  part_name = "soc_perf"
+  subsystem_name = "resourceschedule"
+}
+
+group("socperf_config") {
+  deps = [
+    ":socperf_boost_config",
+    ":socperf_resource_config",
+  ]
+}

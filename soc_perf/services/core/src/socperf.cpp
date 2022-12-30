@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,8 +29,6 @@ SocPerf::~SocPerf()
 
 bool SocPerf::Init()
 {
-    debugLogEnabled = HiLogIsLoggable(LOG_TAG_DOMAIN_ID_SOC_PERF, LOG_TAG_SOC_PERF, LOG_DEBUG);
-
     if (!LoadConfigXmlFile(SOCPERF_RESOURCE_CONFIG_XML)) {
         SOC_PERF_LOGE("%{public}s, Failed to load %{public}s", __func__, SOCPERF_RESOURCE_CONFIG_XML.c_str());
         return false;
@@ -57,9 +55,7 @@ bool SocPerf::Init()
 
     enabled = true;
 
-    if (debugLogEnabled) {
-        SOC_PERF_LOGD("%{public}s, SocPerf Init SUCCESS!", __func__);
-    }
+    SOC_PERF_LOGD("%{public}s, SocPerf Init SUCCESS!", __func__);
 
     return true;
 }
@@ -74,9 +70,8 @@ void SocPerf::PerfRequest(int32_t cmdId, const std::string& msg)
         SOC_PERF_LOGE("%{public}s, Invalid PerfRequest cmdId[%{public}d]", __func__, cmdId);
         return;
     }
-    if (debugLogEnabled) {
-        SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]msg[%{public}s]", __func__, cmdId, msg.c_str());
-    }
+    SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]msg[%{public}s]", __func__, cmdId, msg.c_str());
+
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
@@ -95,10 +90,9 @@ void SocPerf::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg
         SOC_PERF_LOGE("%{public}s, Invalid PerfRequestEx cmdId[%{public}d]", __func__, cmdId);
         return;
     }
-    if (debugLogEnabled) {
-        SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
-            __func__, cmdId, onOffTag, msg.c_str());
-    }
+    SOC_PERF_LOGD("%{public}s, cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
+        __func__, cmdId, onOffTag, msg.c_str());
+
     std::string trace_str(__func__);
     trace_str.append(",cmdId[").append(std::to_string(cmdId)).append("]");
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
@@ -114,9 +108,8 @@ void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
         SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
         return;
     }
-    if (debugLogEnabled) {
-        SOC_PERF_LOGD("%{public}s, onOffTag[%{public}d]msg[%{public}s]", __func__, onOffTag, msg.c_str());
-    }
+    SOC_PERF_LOGD("%{public}s, onOffTag[%{public}d]msg[%{public}s]", __func__, onOffTag, msg.c_str());
+
     std::string trace_str(__func__);
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
@@ -134,9 +127,7 @@ void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
         SOC_PERF_LOGE("%{public}s, SocPerf disabled!", __func__);
         return;
     }
-    if (debugLogEnabled) {
-        SOC_PERF_LOGD("%{public}s, onOffTag[%{public}d]msg[%{public}s]", __func__, onOffTag, msg.c_str());
-    }
+    SOC_PERF_LOGD("%{public}s, onOffTag[%{public}d]msg[%{public}s]", __func__, onOffTag, msg.c_str());
     std::string trace_str(__func__);
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
@@ -163,11 +154,9 @@ void SocPerf::LimitRequest(int32_t clientId,
         SOC_PERF_LOGE("%{public}s, clientId must be between ACTION_TYPE_PERF and ACTION_TYPE_MAX!", __func__);
         return;
     }
-    if (debugLogEnabled) {
-        for (int32_t i = 0; i < (int32_t)tags.size(); i++) {
-            SOC_PERF_LOGD("%{public}s, clientId[%{public}d],tags[%{public}d],configs[%{public}lld],msg[%{public}s]",
-                __func__, clientId, tags[i], (long long)configs[i], msg.c_str());
-        }
+    for (int32_t i = 0; i < (int32_t)tags.size(); i++) {
+        SOC_PERF_LOGD("%{public}s, clientId[%{public}d],tags[%{public}d],configs[%{public}lld],msg[%{public}s]",
+            __func__, clientId, tags[i], (long long)configs[i], msg.c_str());
     }
     for (int32_t i = 0; i < (int32_t)tags.size(); i++) {
         int32_t resId = tags[i];
@@ -277,9 +266,7 @@ bool SocPerf::LoadConfigXmlFile(std::string configFile)
         return false;
     }
     xmlFreeDoc(file);
-    if (debugLogEnabled) {
-        SOC_PERF_LOGD("%{public}s, Success to Load %{public}s", __func__, configFile.c_str());
-    }
+    SOC_PERF_LOGD("%{public}s, Success to Load %{public}s", __func__, configFile.c_str());
     return true;
 }
 
@@ -295,9 +282,7 @@ bool SocPerf::CreateHandlers()
         }
         handlers[i] = std::make_shared<SocPerfHandler>(runner);
     }
-    if (debugLogEnabled) {
-        SOC_PERF_LOGD("%{public}s, Success to Create All Handler threads", __func__);
-    }
+    SOC_PERF_LOGD("%{public}s, Success to Create All Handler threads", __func__);
     return true;
 }
 
@@ -651,27 +636,25 @@ bool SocPerf::CheckActionResIdAndValueValid(std::string configFile)
 
 void SocPerf::PrintCachedInfo()
 {
-    if (debugLogEnabled) {
-        SOC_PERF_LOGD("------------------------------------");
-        SOC_PERF_LOGD("resNodeInfo(%{public}d)", (int32_t)resNodeInfo.size());
-        for (auto iter = resNodeInfo.begin(); iter != resNodeInfo.end(); ++iter) {
-            std::shared_ptr<ResNode> resNode = iter->second;
-            resNode->PrintString();
-        }
-        SOC_PERF_LOGD("------------------------------------");
-        SOC_PERF_LOGD("govResNodeInfo(%{public}d)", (int32_t)govResNodeInfo.size());
-        for (auto iter = govResNodeInfo.begin(); iter != govResNodeInfo.end(); ++iter) {
-            std::shared_ptr<GovResNode> govResNode = iter->second;
-            govResNode->PrintString();
-        }
-        SOC_PERF_LOGD("------------------------------------");
-        SOC_PERF_LOGD("perfActionsInfo(%{public}d)", (int32_t)perfActionsInfo.size());
-        for (auto iter = perfActionsInfo.begin(); iter != perfActionsInfo.end(); ++iter) {
-            std::shared_ptr<Actions> actions = iter->second;
-            actions->PrintString();
-        }
-        SOC_PERF_LOGD("------------------------------------");
+    SOC_PERF_LOGD("------------------------------------");
+    SOC_PERF_LOGD("resNodeInfo(%{public}d)", (int32_t)resNodeInfo.size());
+    for (auto iter = resNodeInfo.begin(); iter != resNodeInfo.end(); ++iter) {
+        std::shared_ptr<ResNode> resNode = iter->second;
+        resNode->PrintString();
     }
+    SOC_PERF_LOGD("------------------------------------");
+    SOC_PERF_LOGD("govResNodeInfo(%{public}d)", (int32_t)govResNodeInfo.size());
+    for (auto iter = govResNodeInfo.begin(); iter != govResNodeInfo.end(); ++iter) {
+        std::shared_ptr<GovResNode> govResNode = iter->second;
+        govResNode->PrintString();
+    }
+    SOC_PERF_LOGD("------------------------------------");
+    SOC_PERF_LOGD("perfActionsInfo(%{public}d)", (int32_t)perfActionsInfo.size());
+    for (auto iter = perfActionsInfo.begin(); iter != perfActionsInfo.end(); ++iter) {
+        std::shared_ptr<Actions> actions = iter->second;
+        actions->PrintString();
+    }
+    SOC_PERF_LOGD("------------------------------------");
 }
 } // namespace SOCPERF
 } // namespace OHOS
