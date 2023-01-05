@@ -59,7 +59,7 @@ private:
 };
 
 #define SOC_PERF_PRINT_LOG(Level, fmt, ...)                     \
-    OHOS::HiviewDFX::HiLog::Level(SOC_PERF_LOG_LABEL, fmt, ##__VA_ARGS__)
+    OHOS::HiviewDFX::HiLog::Level(SOC_PERF_LOG_LABEL, "[%{public}s]: " fmt, __FUNCTION__, ##__VA_ARGS__)
 
 #define SOC_PERF_LOGD(fmt, ...)                                 \
     if (SocPerfLog::IsDebugLogEnabled())                        \

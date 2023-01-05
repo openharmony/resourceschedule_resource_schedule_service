@@ -71,7 +71,6 @@ namespace SOCPERF {
         dataMessageParcel.WriteBuffer(data + sizeof(uint32_t), size);
         dataMessageParcel.RewindRead(0);
 
-        SOC_PERF_LOGD("_______________");
         onRemoteRequest(code, dataMessageParcel);
         return true;
     }

@@ -35,19 +35,19 @@ bool SocPerfClient::CheckClientValid()
 
     sptr<ISystemAbilityManager> samgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (!samgr) {
-        SOC_PERF_LOGE("%{public}s, Failed to get SystemAbilityManager.", __func__);
+        SOC_PERF_LOGE("Failed to get SystemAbilityManager.");
         return false;
     }
 
     sptr<IRemoteObject> object = samgr->CheckSystemAbility(SOC_PERF_SERVICE_SA_ID);
     if (!object) {
-        SOC_PERF_LOGE("%{public}s, Failed to get SystemAbility[1906].", __func__);
+        SOC_PERF_LOGE("Failed to get SystemAbility[1906].");
         return false;
     }
 
     client = iface_cast<ISocPerfService>(object);
     if (!client || !client->AsObject()) {
-        SOC_PERF_LOGE("%{public}s, Failed to get SocPerfClient.", __func__);
+        SOC_PERF_LOGE("Failed to get SocPerfClient.");
         return false;
     }
 
