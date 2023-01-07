@@ -40,6 +40,7 @@ ohos_shared_library("socperf_client") {
   ]
 
   innerapi_tags = [ "platformsdk" ]
+  version_script = "libsocperf_client.versionscript"
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
 }
