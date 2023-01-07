@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,13 +21,8 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-#ifdef __aarch64__
-    const std::string RES_SCHED_SERVICE_SO = "/system/lib64/libresschedsvc.z.so";
-    const std::string RES_SCHED_CG_EXT_SO = "/system/lib64/libcgroup_sched_ext.z.so";
-#else
-    const std::string RES_SCHED_SERVICE_SO = "/system/lib/libresschedsvc.z.so";
-    const std::string RES_SCHED_CG_EXT_SO = "/system/lib/libcgroup_sched_ext.z.so";
-#endif
+    const std::string RES_SCHED_SERVICE_SO = "libresschedsvc.z.so";
+    const std::string RES_SCHED_CG_EXT_SO = "libcgroup_sched_ext.z.so";
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "ResSchedUtils"};
 }
 
