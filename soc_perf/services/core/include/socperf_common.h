@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,66 +13,35 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_INCLUDE_SOCPERF_COMMON_H
-#define SOC_PERF_INCLUDE_SOCPERF_COMMON_H
+#ifndef SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_COMMON_H
+#define SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_COMMON_H
 
+#include <list>
 #include <string>
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
-#include "hilog/log.h"
+#include "socperf_log.h"
+#include "socperf_action_type.h"
 
 namespace OHOS {
 namespace SOCPERF {
-#define LOG_TAG_SOC_PERF "socperf"
-#define LOG_TAG_DOMAIN_ID_SOC_PERF 0xD001703
-
-static constexpr OHOS::HiviewDFX::HiLogLabel SOC_PERF_LOG_LABEL = {
-    LOG_CORE,
-    LOG_TAG_DOMAIN_ID_SOC_PERF,
-    LOG_TAG_SOC_PERF
-};
-
-#define SOC_PERF_LOGF(...) (void)OHOS::HiviewDFX::HiLog::Fatal(SOC_PERF_LOG_LABEL, __VA_ARGS__)
-#define SOC_PERF_LOGE(...) (void)OHOS::HiviewDFX::HiLog::Error(SOC_PERF_LOG_LABEL, __VA_ARGS__)
-#define SOC_PERF_LOGW(...) (void)OHOS::HiviewDFX::HiLog::Warn(SOC_PERF_LOG_LABEL, __VA_ARGS__)
-#define SOC_PERF_LOGI(...) (void)OHOS::HiviewDFX::HiLog::Info(SOC_PERF_LOG_LABEL, __VA_ARGS__)
-#define SOC_PERF_LOGD(...) (void)OHOS::HiviewDFX::HiLog::Debug(SOC_PERF_LOG_LABEL, __VA_ARGS__)
-
 enum EventType {
     EVENT_INVALID = -1,
     EVENT_OFF,
     EVENT_ON
 };
 
-enum ActionType {
-    ACTION_TYPE_PERF,
-    ACTION_TYPE_POWER,
-    ACTION_TYPE_THERMAL,
-    ACTION_TYPE_MAX
-};
-
-namespace {
-    const int32_t INNER_EVENT_ID_INIT_RES_NODE_INFO       = 0;
-    const int32_t INNER_EVENT_ID_INIT_GOV_RES_NODE_INFO   = 1;
-    const int32_t INNER_EVENT_ID_DO_FREQ_ACTION           = 2;
-    const int32_t INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED   = 3;
-    const int32_t INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ   = 4;
-    const int32_t INNER_EVENT_ID_THERMAL_LIMIT_BOOST_FREQ = 5;
-}
-
-namespace {
-    const std::string SOCPERF_RESOURCE_CONFIG_XML = "etc/soc_perf/socperf_resource_config.xml";
-    const std::string SOCPERF_BOOST_CONFIG_XML    = "etc/soc_perf/socperf_boost_config.xml";
-    const int64_t MAX_INT_VALUE                       = 0x7FFFFFFFFFFFFFFF;
-    const int64_t MIN_INT_VALUE                       = 0x8000000000000000;
-    const int32_t INVALID_VALUE                       = -1;
-    const int32_t MAX_HANDLER_THREADS                 = 5;
-    const int32_t MIN_RESOURCE_ID                     = 1000;
-    const int32_t MAX_RESOURCE_ID                     = 5999;
-    const int32_t RES_ID_AND_VALUE_PAIR               = 2;
-    const int32_t RES_ID_NUMS_PER_TYPE                = 1000;
-}
+const std::string SOCPERF_RESOURCE_CONFIG_XML = "etc/soc_perf/socperf_resource_config.xml";
+const std::string SOCPERF_BOOST_CONFIG_XML    = "etc/soc_perf/socperf_boost_config.xml";
+const int64_t MAX_INT_VALUE                       = 0x7FFFFFFFFFFFFFFF;
+const int64_t MIN_INT_VALUE                       = 0x8000000000000000;
+const int32_t INVALID_VALUE                       = -1;
+const int32_t MAX_HANDLER_THREADS                 = 5;
+const int32_t MIN_RESOURCE_ID                     = 1000;
+const int32_t MAX_RESOURCE_ID                     = 5999;
+const int32_t RES_ID_AND_VALUE_PAIR               = 2;
+const int32_t RES_ID_NUMS_PER_TYPE                = 1000;
 
 class ResNode {
 public:
@@ -372,4 +341,4 @@ static inline std::vector<std::string> Split(std::string str, std::string patter
 } // namespace SOCPERF
 } // namespace OHOS
 
-#endif // SOC_PERF_INCLUDE_SOCPERF_COMMON_H
+#endif // SOC_PERF_SERVICES_CORE_INCLUDE_COMMON_H

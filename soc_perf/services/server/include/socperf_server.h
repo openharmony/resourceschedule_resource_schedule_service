@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_INCLUDE_SERVER_SOCPERF_SERVER_H
-#define SOC_PERF_INCLUDE_SERVER_SOCPERF_SERVER_H
+#ifndef SOC_PERF_SERVICES_SERVER_INCLUDE_SOCPERF_SERVER_H
+#define SOC_PERF_SERVICES_SERVER_INCLUDE_SOCPERF_SERVER_H
 
 #include <file_ex.h>
 #include <string_ex.h>
@@ -53,4 +53,4 @@ private:
 } // namespace SOCPERF
 } // namespace OHOS
 
-#endif // SOC_PERF_INCLUDE_SERVER_SOCPERF_SERVER_H
+#endif // SOC_PERF_SERVICES_SERVER_INCLUDE_SOCPERF_SERVER_H

@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -14,52 +14,46 @@
 #####################hydra-fuzz###################
 import("//build/config/features.gni")
 import("//build/test.gni")
+import(
+    "//foundation/resourceschedule/resource_schedule_service/soc_perf/soc_perf.gni")
 module_output_path = "resource_schedule_service/soc_perf"
 
 ##############################fuzztest##########################################
 config("module_private_config") {
-  visibility = [ ":*" ]
-
   include_dirs = [
-    "//foundation/resourceschedule/resource_schedule_service/soc_perf/include/server",
-    "//foundation/resourceschedule/resource_schedule_service/soc_perf/include/core",
-    "//foundation/resourceschedule/resource_schedule_service/soc_perf/include",
+    "${socperf_common}/include",
+    "${socperf_interfaces}/inner_api/socperf_client/include",
+    "${socperf_services}/core/include",
+    "${socperf_services}/server/include",
   ]
 }
 
 ohos_fuzztest("LoadConfigXmlFileFuzzTest") {
   module_out_path = module_output_path
-  fuzz_config_file = "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/fuzztest/loadconfigxmlfile_fuzzer"
-
+  fuzz_config_file = "${socperf_test}/fuzztest/loadconfigxmlfile_fuzzer"
   configs = [ ":module_private_config" ]
-  include_dirs = []
+
   cflags = [
     "-g",
     "-O0",
     "-Wno-unused-variable",
     "-fno-omit-frame-pointer",
   ]
+
   sources = [ "loadconfigxmlfile_fuzzer.cpp" ]
 
-  deps = [
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
-    "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_server",
-    "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-    "//third_party/libxml2:xml2",
-  ]
+  deps = [ "${socperf_services}:socperf_server_static" ]
+
   external_deps = [
     "c_utils:utils",
-    "eventhandler:libeventhandler",
+    "hiviewdfx_hilog_native:libhilog",
   ]
 }
 
 ###############################################################################
 group("fuzztest") {
   testonly = true
-  deps = []
-  deps += [
+  deps = [
     # deps file
     ":LoadConfigXmlFileFuzzTest",
   ]

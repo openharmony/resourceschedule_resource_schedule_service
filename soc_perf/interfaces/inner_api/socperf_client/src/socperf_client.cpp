@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #include "socperf_client.h"
 #include <string>                // for basic_string, to_string
 #include <unistd.h>              // for getpid, gettid
+#include "socperf_log.h"
 
 namespace OHOS {
 namespace SOCPERF {
@@ -34,19 +35,19 @@ bool SocPerfClient::CheckClientValid()
 
     sptr<ISystemAbilityManager> samgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (!samgr) {
-        SOC_PERF_LOGE("%{public}s, Failed to get SystemAbilityManager.", __func__);
+        SOC_PERF_LOGE("Failed to get SystemAbilityManager.");
         return false;
     }
 
     sptr<IRemoteObject> object = samgr->CheckSystemAbility(SOC_PERF_SERVICE_SA_ID);
     if (!object) {
-        SOC_PERF_LOGE("%{public}s, Failed to get SystemAbility[1906].", __func__);
+        SOC_PERF_LOGE("Failed to get SystemAbility[1906].");
         return false;
     }
 
     client = iface_cast<ISocPerfService>(object);
     if (!client || !client->AsObject()) {
-        SOC_PERF_LOGE("%{public}s, Failed to get SocPerfClient.", __func__);
+        SOC_PERF_LOGE("Failed to get SocPerfClient.");
         return false;
     }
 

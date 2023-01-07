@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_INCLUDE_I_SOCPERF_SERVICE_H
-#define SOC_PERF_INCLUDE_I_SOCPERF_SERVICE_H
+#ifndef SOC_PERF_INTERFACES_INNER_API_SOCPERF_CLIENT_INCLUDE_I_SOCPERF_SERVICE_H
+#define SOC_PERF_INTERFACES_INNER_API_SOCPERF_CLIENT_INCLUDE_I_SOCPERF_SERVICE_H
 
 #include <string>
 #include "iremote_broker.h"
@@ -25,21 +25,53 @@
 #include "system_ability_definition.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
-#include "socperf_common.h"
+#include "socperf_action_type.h"
 
 namespace OHOS {
 namespace SOCPERF {
 class ISocPerfService : public IRemoteBroker {
 public:
-    ISocPerfService() = default;
-    ~ISocPerfService() override = default;
-    DISALLOW_COPY_AND_MOVE(ISocPerfService);
-
-public:
+    /**
+     * @brief Sending a performance request.
+     *
+     * @param cmdId scene id defined in config file.
+     * @param msg Additional string info, which is used for other extensions.
+     */
     virtual void PerfRequest(int32_t cmdId, const std::string& msg) = 0;
+
+    /**
+     * @brief Sending a performance request.
+     *
+     * @param cmdId Scene id defined in config file.
+     * @param onOffTag Indicates the start of end of a long-term frequency increase event.
+     * @param msg Additional string info, which is used for other extensions.
+     */
     virtual void PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg) = 0;
+
+    /**
+     * @brief Sending a power limit boost request.
+     *
+     * @param onOffTag Indicates the start of end of a power limit boost event.
+     * @param msg Additional string info, which is used for other extensions.
+     */
     virtual void PowerLimitBoost(bool onOffTag, const std::string& msg) = 0;
+
+    /**
+     * @brief Sending a thermal limit boost request.
+     *
+     * @param onOffTag Indicates the start of end of a thermal limit boost event.
+     * @param msg Additional string info, which is used for other extensions.
+     */
     virtual void ThermalLimitBoost(bool onOffTag, const std::string& msg) = 0;
+
+    /**
+     * @brief Sending a limit request.
+     *
+     * @param clientId Used to indentify the caller of frequency limiting, such as
+     * the thermal module or power consumption module.
+     * @param configs Indicates the specific value to be limited.
+     * @param msg Additional string info, which is used for other extensions.
+     */
     virtual void LimitRequest(int32_t clientId,
         const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg) = 0;
 
@@ -58,4 +90,4 @@ public:
 } // namespace SOCPERF
 } // namespace OHOS
 
-#endif // SOC_PERF_INCLUDE_I_SOCPERF_SERVICE_H
+#endif // SOC_PERF_INTERFACES_INNER_API_SOCPERF_CLIENT_INCLUDE_I_SOCPERF_SERVICE_H

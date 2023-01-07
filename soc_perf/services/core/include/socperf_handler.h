@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_INCLUDE_CORE_SOCPERF_HANDLER_H
-#define SOC_PERF_INCLUDE_CORE_SOCPERF_HANDLER_H
+#ifndef SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_HANDLER_H
+#define SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_HANDLER_H
 
-#include <cstdint>          // for int32_t
-#include <memory>           // for allocator
-#include <unordered_map>    // for unordered_map
-#include <iosfwd>           // for string
+
 #include <memory>           // for shared_ptr
+#include <string>           // for string
+#include <unordered_map>    // for unordered_map
+#include <stdint.h>         // for uint32_t
 #include "event_handler.h"  // for EventHandler
 #include "event_runner.h"
 #include "inner_event.h"    // for InnerEvent, InnerEvent::Pointer
@@ -31,6 +31,15 @@ namespace OHOS { namespace SOCPERF { class ResStatus; } }
 
 namespace OHOS {
 namespace SOCPERF {
+enum SocPerfInnerEvent : uint32_t {
+    INNER_EVENT_ID_INIT_RES_NODE_INFO = 0,
+    INNER_EVENT_ID_INIT_GOV_RES_NODE_INFO,
+    INNER_EVENT_ID_DO_FREQ_ACTION,
+    INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED,
+    INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ,
+    INNER_EVENT_ID_THERMAL_LIMIT_BOOST_FREQ,
+};
+
 class SocPerfHandler : public AppExecFwk::EventHandler {
 public:
     explicit SocPerfHandler(const std::shared_ptr<AppExecFwk::EventRunner>& runner);
@@ -63,4 +72,4 @@ private:
 } // namespace SOCPERF
 } // namespace OHOS
 
-#endif
+#endif // SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_HANDLER_H

@@ -39,21 +39,24 @@
     },
     "build": {
       "sub_component": [
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_client",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_server",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_sa_profile",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_config",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_test"
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf/profile:socperf_config",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf/sa_profile:socperf_sa_profile",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf/interfaces/inner_api/socperf_client:socperf_client",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf/services:socperf_server",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/unittest:socperf_test"
       ],
       "inner_kits": [
         {
           "header": {
-            "header_base": "//foundation/resourceschedule/resource_schedule_service/soc_perf/include/client",
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/soc_perf/interfaces/inner_api/socperf_client/include",
             "header_files": [
-              "socperf_client.h"
+              "i_socperf_service.h",
+              "socperf_action_type.h",
+              "socperf_client.h",
+              "socperf_proxy.h"
             ]
           },
-          "name": "//foundation/resourceschedule/resource_schedule_service/soc_perf:socperf_client"
+          "name": "//foundation/resourceschedule/resource_schedule_service/soc_perf/interfaces/inner_api/socperf_client:socperf_client"
         }
       ],
       "test": [

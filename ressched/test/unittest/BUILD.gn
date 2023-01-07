@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -17,17 +17,16 @@ import(
 
 group("unittest") {
   testonly = true
-  deps = [ 
+  deps = [
     ":resschedfwk_test",
-    ":resschedservice_test"
+    ":resschedservice_test",
   ]
 }
 
 config("ut_resschedfwk_config") {
   include_dirs = [
     "include",
-    "//foundation/resourceschedule/resource_schedule_service/soc_perf/include",
-    "//foundation/resourceschedule/resource_schedule_service/soc_perf/include/client",
+    "//foundation/resourceschedule/resource_schedule_service/soc_perf/interfaces/inner_api/socperf_client/include",
   ]
 }
 
@@ -39,7 +38,7 @@ module_output_path = "resource_schedule_service/ressched"
 
 private_external_deps = [
   "eventhandler:libeventhandler",
-  "ipc:ipc_core",
+  "ipc:ipc_single",
 ]
 
 private_deps = [
@@ -54,9 +53,7 @@ private_deps = [
 ohos_unittest("resschedservice_test") {
   module_out_path = module_output_path
 
-  sources = [
-    "src/res_sched_service_test.cpp",
-  ]
+  sources = [ "src/res_sched_service_test.cpp" ]
 
   configs = [
     ":ut_resschedservice_config",
@@ -64,13 +61,13 @@ ohos_unittest("resschedservice_test") {
   ]
 
   deps = [
-    "//third_party/googletest:gtest_main",
     "${ressched_services}:resschedsvc",
+    "//third_party/googletest:gtest_main",
   ]
 
   external_deps = [
-    "ipc:ipc_core",
     "c_utils:utils",
+    "ipc:ipc_single",
   ]
 }
 

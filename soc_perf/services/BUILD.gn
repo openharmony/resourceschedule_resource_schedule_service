@@ -11,65 +11,72 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//build/test.gni")
+import("//build/ohos.gni")
 import(
     "//foundation/resourceschedule/resource_schedule_service/soc_perf/soc_perf.gni")
 
-module_output_path = "soc_perf/socperftest"
-
-config("module_private_config") {
-  visibility = [ ":*" ]
-
+config("socperf_server_config") {
   include_dirs = [
+    "core/include",
+    "server/include",
     "${socperf_common}/include",
     "${socperf_interfaces}/inner_api/socperf_client/include",
-    "${socperf_services}/core/include",
   ]
 }
 
-ohos_unittest("SocPerfSubTest") {
-  module_out_path = module_output_path
+ohos_shared_library("socperf_server") {
+  configs = [ ":socperf_server_config" ]
 
-  sources = [ "socperf_sub_test.cpp" ]
-
-  configs = [ ":module_private_config" ]
-
-  deps = [
-    "${socperf_interfaces}/inner_api/socperf_client:socperf_client",
-    "//third_party/googletest:gtest_main",
-    "//third_party/libxml2:xml2",
+  sources = [
+    "${socperf_common}/src/socperf_log.cpp",
+    "core/src/socperf.cpp",
+    "core/src/socperf_handler.cpp",
+    "server/src/socperf_server.cpp",
+    "server/src/socperf_stub.cpp",
   ]
+
+  deps = [ "//third_party/libxml2:xml2" ]
 
   external_deps = [
     "c_utils:utils",
+    "config_policy:configpolicy_util",
     "eventhandler:libeventhandler",
-    "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_single",
-    "safwk:system_ability_fwk",
-    "samgr:samgr_proxy",
-  ]
-}
-
-ohos_executable("socperf_test") {
-  sources = [ "socperf_test.cpp" ]
-
-  deps = [ "${socperf_interfaces}/inner_api/socperf_client:socperf_client" ]
-
-  external_deps = [
-    "c_utils:utils",
-    "eventhandler:libeventhandler",
+    "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_single",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
 
-  install_enable = true
+  configs += [ "//build/config/gcc:symbol_visibility_hidden" ]
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
 }
 
-group("unittest") {
-  testonly = true
-  deps = [ ":SocPerfSubTest" ]
+ohos_static_library("socperf_server_static") {
+  configs = [ ":socperf_server_config" ]
+
+  sources = [
+    "${socperf_common}/src/socperf_log.cpp",
+    "core/src/socperf.cpp",
+    "core/src/socperf_handler.cpp",
+    "server/src/socperf_server.cpp",
+    "server/src/socperf_stub.cpp",
+  ]
+
+  deps = [ "//third_party/libxml2:xml2" ]
+
+  external_deps = [
+    "c_utils:utils",
+    "config_policy:configpolicy_util",
+    "eventhandler:libeventhandler",
+    "hitrace_native:hitrace_meter",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_single",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+  ]
+
+  part_name = "soc_perf"
+  subsystem_name = "resourceschedule"
 }

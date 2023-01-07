@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_INCLUDE_CORE_SOCPERF_H
-#define SOC_PERF_INCLUDE_CORE_SOCPERF_H
+#ifndef SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_H
+#define SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_H
 
 #include <string>
 #include <vector>
@@ -22,7 +22,6 @@
 #include <unistd.h>
 #include "libxml/parser.h"
 #include "libxml/tree.h"
-#include "i_socperf_service.h"
 #include "socperf_common.h"
 #include "socperf_handler.h"
 
@@ -46,7 +45,6 @@ private:
     std::unordered_map<int32_t, std::shared_ptr<Actions>> perfActionsInfo;
     std::vector<std::shared_ptr<SocPerfHandler>> handlers;
     bool enabled = false;
-    bool debugLogEnabled = false;
 
     std::unordered_map<int32_t, std::shared_ptr<ResNode>> resNodeInfo;
     std::unordered_map<int32_t, std::shared_ptr<GovResNode>> govResNodeInfo;
@@ -77,5 +75,4 @@ private:
 };
 } // namespace SOCPERF
 } // namespace OHOS
-
-#endif // SOC_PERF_INCLUDE_CORE_SOCPERF_H
+#endif // SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_H

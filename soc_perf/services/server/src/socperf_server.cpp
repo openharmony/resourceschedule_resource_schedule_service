@@ -31,11 +31,11 @@ SocPerfServer::~SocPerfServer()
 void SocPerfServer::OnStart()
 {
     if (!Publish(DelayedSingleton<SocPerfServer>::GetInstance().get())) {
-        SOC_PERF_LOGE("%{public}s, Register SystemAbility for SocPerf FAILED.", __func__);
+        SOC_PERF_LOGE("Register SystemAbility for SocPerf FAILED.");
         return;
     }
     if (!socPerf.Init()) {
-        SOC_PERF_LOGE("%{public}s, SocPerf Init FAILED", __func__);
+        SOC_PERF_LOGE("SocPerf Init FAILED");
         return;
     }
 }
@@ -59,7 +59,7 @@ int32_t SocPerfServer::Dump(int32_t fd, const std::vector<std::u16string>& args)
         .append("    -h: show the help.\n")
         .append("    -a: show all info.\n");
     if (!SaveStringToFd(fd, result)) {
-        SOC_PERF_LOGE("%{public}s, Dump FAILED", __func__);
+        SOC_PERF_LOGE("Dump FAILED");
     }
     return ERR_OK;
 }

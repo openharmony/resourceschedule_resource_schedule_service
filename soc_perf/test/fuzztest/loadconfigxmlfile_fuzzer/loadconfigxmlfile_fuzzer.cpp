@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,28 +22,41 @@ namespace OHOS {
 namespace SOCPERF {
     const std::string fuzzedFile = "myFuzzed.xml";
     const int32_t FILE_RETURN_SUCCESS = 1;
+    std::mutex mutexLock;
+    std::unique_ptr<SocPerf> socPerf = nullptr;
 
-    bool DoSomethingInterestingWithMyAPI(const uint8_t* data, size_t size)
+    bool DoInit()
     {
+        std::lock_guard<std::mutex> lock(mutexLock);
+        if (socPerf) {
+            return true;
+        }
+        socPerf = std::make_unique<SocPerf>();
+        return socPerf != nullptr;
+    }
+
+    void DoSomethingInterestingWithMyAPI(const uint8_t* data, size_t size)
+    {
+        if (!DoInit()) {
+            return;
+        }
+
         // generate fuzzed xml
         FILE *pFile = fopen(fuzzedFile.c_str(), "wb");
         if (!pFile) {
-            return false;
+            return;
         }
 
         int32_t retCode = fwrite(reinterpret_cast<const void*>(data), size, 1, pFile); // 1 means count=1
         if (retCode < FILE_RETURN_SUCCESS) {
             (void)fclose(pFile);
             pFile = nullptr;
-            return false;
+            return;
         }
 
         (void)fclose(pFile);
         pFile = nullptr;
-
-        std::shared_ptr<SocPerf> socPerf = std::make_shared<SocPerf>();
-        bool ret = socPerf->LoadConfigXmlFile(fuzzedFile);
-        return ret;
+        socPerf->LoadConfigXmlFile(fuzzedFile);
     }
 } // namespace SOCPERF
 } // namespace OHOS

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_INCLUDE_CLIENT_SOCPERF_CLIENT_H
-#define SOC_PERF_INCLUDE_CLIENT_SOCPERF_CLIENT_H
+#ifndef SOC_PERF_INTERFACES_INNER_API_SOCPERF_CLIENT_INCLUDE_SOCPERF_CLIENT_H
+#define SOC_PERF_INTERFACES_INNER_API_SOCPERF_CLIENT_INCLUDE_SOCPERF_CLIENT_H
 
 #include <cstdint>             // for int32_t
 #include <iosfwd>               // for string
@@ -25,13 +25,61 @@ namespace OHOS {
 namespace SOCPERF {
 class SocPerfClient {
 public:
+    /**
+     * @brief Get the Instance object
+     *
+     * @return SocPerfClient&
+     */
+    static SocPerfClient& GetInstance();
+
+    /**
+     * @brief Sending a performance request.
+     *
+     * @param cmdId Scene id defined in config file.
+     * @param msg Additional string info, which is used for other extensions.
+     */
     void PerfRequest(int32_t cmdId, const std::string& msg);
+
+    /**
+     * @brief Sending a performance request.
+     *
+     * @param cmdId Scene id defined in config file.
+     * @param onOffTag Indicates the start of end of a long-term frequency increase event.
+     * @param msg Additional string info, which is used for other extensions.
+     */
     void PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg);
+
+    /**
+     * @brief Sending a power limit boost request.
+     *
+     * @param onOffTag Indicates the start of end of a power limit boost event.
+     * @param msg Additional string info, which is used for other extensions.
+     */
     void PowerLimitBoost(bool onOffTag, const std::string& msg);
+
+    /**
+     * @brief Sending a thermal limit boost request.
+     *
+     * @param onOffTag Indicates the start of end of a thermal limit boost event.
+     * @param msg Additional string info, which is used for other extensions.
+     */
     void ThermalLimitBoost(bool onOffTag, const std::string& msg);
+
+    /**
+     * @brief Sending a limit request.
+     *
+     * @param clientId Used to indentify the caller of frequency limiting, such as
+     * the thermal module or power consumption module.
+     * @param configs Indicates the specific value to be limited.
+     * @param msg Additional string info, which is used for other extensions.
+     */
     void LimitRequest(int32_t clientId,
         const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg);
-    static SocPerfClient& GetInstance();
+    
+    /**
+     * @brief Reset SocperfClient
+     *
+     */
     void ResetClient();
 
 private:
@@ -63,4 +111,4 @@ private:
 } // namespace SOCPERF
 } // namespace OHOS
 
-#endif // SOC_PERF_INCLUDE_CLIENT_SOCPERF_CLIENT_H
+#endif // SOC_PERF_INTERFACES_INNER_API_SOCPERF_CLIENT_INCLUDE_SOCPERF_CLIENT_H
