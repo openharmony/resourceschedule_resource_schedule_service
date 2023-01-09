@@ -161,7 +161,7 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 void SocPerfPlugin::HandleEventWebGesture(const std::shared_ptr<ResData>& data)
 {
     RESSCHED_LOGI("SocPerfPlugin: socperf->WEB_GESTURE: %{public}lld", (long long)data->value);
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE, true, "");
 }
 
 void SocPerfPlugin::HandleResizeWindow(const std::shared_ptr<ResData>& data)
