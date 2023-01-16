@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,8 +15,8 @@
 
 #include "device_movement_observer.h"
 
-#include "ressched_utils.h"
 #include "res_sched_log.h"
+#include "res_sched_mgr.h"
 #include "res_type.h"
 
 namespace OHOS {
@@ -59,7 +59,7 @@ void DeviceMovementObserver::OnMovementChanged(const Msdp::MovementDataUtils::Mo
     nlohmann::json payload;
     payload["type"] = std::to_string(movementData.type);
     payload["value"] = std::to_string(movementData.value);
-    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_DEVICE_STILL_STATE_CHANGE,
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_DEVICE_STILL_STATE_CHANGE,
         movementData.value, payload);
 }
 }

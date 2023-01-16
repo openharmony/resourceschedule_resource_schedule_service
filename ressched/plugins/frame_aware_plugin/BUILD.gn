@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -12,38 +12,37 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
+import("//foundation/resourceschedule/frame_aware_sched/frameaware.gni")
 import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
 
 config("frame_aware_plugin_config") {
   include_dirs = [
     "include",
-    "//base/notification/eventhandler/interfaces/inner_api",
-    "//foundation/resourceschedule/frame_aware_sched/common/include",
-    "//foundation/resourceschedule/frame_aware_sched/interfaces/innerkits/frameintf",
-    "//commonlibrary/c_utils/base/include",
+    "${ressched_common}/include",
+    "${ressched_interfaces}/innerkits/ressched_client/include",
+    "${frame_aware_path}/common/include",
+    "${frame_aware_path}/interfaces/innerkits/frameintf",
   ]
 }
 
 ohos_shared_library("frame_aware_plugin") {
-  configs = [
-    ":frame_aware_plugin_config",
-    "${ressched_services}:ressched_config",
-    "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
-  ]
+  configs = [ ":frame_aware_plugin_config" ]
 
   sources = [
     "src/frame_aware_plugin.cpp",
     "src/network_latency_controller.cpp",
   ]
 
-  deps = [
-    "${ressched_services}:resschedsvc",
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//foundation/resourceschedule/frame_aware_sched/interfaces/innerkits/frameintf:frame_msg_intf",
-  ]
+  deps = [ "${ressched_services}:resschedsvc" ]
 
-  external_deps = [ "eventhandler:libeventhandler" ]
+  external_deps = [
+    "bluetooth:btframework",
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
+    "frame_aware_sched:frame_msg_intf",
+    "hiviewdfx_hilog_native:libhilog",
+  ]
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

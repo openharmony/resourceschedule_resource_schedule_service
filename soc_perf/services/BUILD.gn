@@ -48,7 +48,7 @@ ohos_shared_library("socperf_server") {
     "samgr:samgr_proxy",
   ]
 
-  configs += [ "//build/config/gcc:symbol_visibility_hidden" ]
+  shlib_type = "sa"
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
 }

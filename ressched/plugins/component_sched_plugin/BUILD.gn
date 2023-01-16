@@ -18,24 +18,24 @@ import(
 config("component_sched_plugin_config") {
   include_dirs = [
     "include",
-    "//base/notification/eventhandler/interfaces/inner_api",
-    "//commonlibrary/c_utils/base/include",
-    "//foundation/communication/bluetooth/interfaces/inner_api/include",
+    "${ressched_common}/include",
+    "${ressched_interfaces}/innerkits/ressched_client/include",
   ]
 }
 
 ohos_shared_library("component_sched_plugin") {
-  configs = [
-    ":component_sched_plugin_config",
-    "${ressched_services}:ressched_config",
-    "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
-  ]
+  configs = [ ":component_sched_plugin_config" ]
 
   sources = [ "src/component_sched_plugin.cpp" ]
 
   deps = [ "${ressched_services}:resschedsvc" ]
 
-  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+  external_deps = [
+    "bluetooth:btframework",
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
+    "hiviewdfx_hilog_native:libhilog",
+  ]
 
   defines = []
 

@@ -61,7 +61,6 @@
         "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_config",
         "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_switch",
         "//foundation/resourceschedule/resource_schedule_service/ressched/sa_profile:ressched_sa_profile",
-        "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller:sched_controller",
         "//foundation/resourceschedule/resource_schedule_service/ressched/etc/init:resource_schedule_service.cfg",
         "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework:cgroup_sched",
         "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/profiles:process_group_config",

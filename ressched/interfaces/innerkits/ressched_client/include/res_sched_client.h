@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,7 +23,6 @@
 #include "errors.h"              // for ErrCode
 #include "iremote_object.h"      // for IRemoteObject, IRemoteObject::DeathR...
 #include "ires_sched_service.h"  // for IResSchedService
-#include "nlohmann/json.hpp"          // for Value
 #include "nocopyable.h"          // for DISALLOW_COPY_AND_MOVE
 #include "refbase.h"             // for sptr, wptr
 
@@ -37,25 +36,25 @@ namespace ResourceSchedule {
 class ResSchedClient {
 public:
     /**
-     * Only need one client connect to ResSchedService, singleton pattern.
+     * @brief Get the Instance object.
      *
-     * @return Returns the only one implement of ResSchedClient.
+     * @return Returns ResSchedClient&.
      */
     static ResSchedClient& GetInstance();
 
+    /**
+     * @brief Report resource data to the resource schedule service through inter-process communication.
+     *
+     * @param resType Indicates the resource type, all of the type have listed in res_type.h.
+     * @param value Indicates the value of the resource type, defined by the developers.
+     * @param mapPayload Indicates the context info of the resource type event.
+     */
     void ReportData(uint32_t resType, int64_t value, const std::unordered_map<std::string, std::string>& mapPayload);
 
-    void StopRemoteObject();
-
     /**
-     * Report source data to resource schedule service in the same process.
-     *
-     * @param resType Resource type, all of the type have listed in res_type.h.
-     * @param value Value of resource type, defined by the developers.
-     * @param payload is empty is valid. The interface only used for In-Process call.
-     * ATTENTION: payload is empty is valid. The interface only used for In-Process call.
+     * @brief Stop remote Object, reset ResSchedClient.
      */
-    void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void StopRemoteObject();
 
 protected:
     ResSchedClient() = default;

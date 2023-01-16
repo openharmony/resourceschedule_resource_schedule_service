@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,11 +16,10 @@
 #include "ressched_fuzzer.h"
 
 #include "iservice_registry.h"
+#include "iremote_stub.h"
 #include "system_ability_definition.h"
 
-#include "res_sched_mgr.h"
-#include "res_sched_service.h"
-#include "res_sched_service_stub.h"
+#include "ires_sched_service.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -62,7 +61,7 @@ namespace ResourceSchedule {
         }
 
         MessageParcel dataMessageParcel;
-        if (!dataMessageParcel.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor())) {
+        if (!dataMessageParcel.WriteInterfaceToken(IRemoteStub<IResSchedService>::GetDescriptor())) {
             return false;
         }
 

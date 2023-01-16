@@ -17,27 +17,21 @@ import(
 
 config("socperf_plugin_config") {
   include_dirs = [
-    "include/",
-    "//base/notification/eventhandler/interfaces/inner_api",
-    "//commonlibrary/c_utils/base/include",
-    "//foundation/ability/ability_runtime/interfaces/inner_api/app_manager/include/appmgr",
-    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
-    "//foundation/systemabilitymgr/safwk/services/safwk/include",
+    "include",
+    "${ressched_common}/include",
+    "${ressched_interfaces}/innerkits/ressched_client/include",
   ]
 }
 
 ohos_shared_library("socperf_plugin") {
-  configs = [
-    ":socperf_plugin_config",
-    "${ressched_services}:ressched_config",
-    "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
-  ]
+  public_configs = [ ":socperf_plugin_config" ]
 
   sources = [ "src/socperf_plugin.cpp" ]
 
   deps = [ "${ressched_services}:resschedsvc" ]
 
   external_deps = [
+    "ability_runtime:app_manager",
     "hiviewdfx_hilog_native:libhilog",
     "soc_perf:socperf_client",
   ]

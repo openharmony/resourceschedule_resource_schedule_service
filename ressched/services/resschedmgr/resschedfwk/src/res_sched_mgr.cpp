@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -52,6 +52,8 @@ void ResSchedMgr::Stop()
 
 void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
+    RESSCHED_LOGD("%{public}s, receive resType = %{public}u, value = %{public}lld.", __func__,
+        resType, (long long)value);
     if (!mainHandler_) {
         return;
     }
@@ -75,8 +77,6 @@ void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const n
 
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    RESSCHED_LOGD("%{public}s,  receive resType = %{public}u, value = %{public}lld.", __func__,
-        resType, (long long)value);
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 } // namespace ResourceSchedule

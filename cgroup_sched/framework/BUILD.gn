@@ -15,7 +15,24 @@ import("//build/ohos.gni")
 import(
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
 
+config("cgroup_sched_public_config") {
+  include_dirs = [ "../interfaces/innerkits/include" ]
+}
+
+config("cgroup_sched_private_config") {
+  include_dirs = [
+    "../../ressched/interfaces/innerkits/ressched_client/include",
+    "../common/include",
+    "./sched_controller/include",
+    "./utils/include",
+  ]
+}
+
 ohos_shared_library("cgroup_sched") {
+  public_configs = [ ":cgroup_sched_public_config" ]
+
+  configs = [ ":cgroup_sched_private_config" ]
+
   sources = [
     "${cgroup_sched_common}/cgroup_sched_log.cpp",
     "sched_controller/app_state_observer.cpp",
@@ -26,16 +43,12 @@ ohos_shared_library("cgroup_sched") {
     "sched_controller/window_state_observer.cpp",
     "utils/ressched_utils.cpp",
   ]
-  configs = [ "//foundation/ability/ability_runtime/interfaces/inner_api/wantagent:wantagent_innerkits_public_config" ]
-  include_dirs = [
-    "../../ressched/interfaces/innerkits/ressched_client/include",
-    "../common/include",
-    "./sched_controller/include",
-    "./utils/include",
-  ]
+
   deps = [ "./process_group:libprocess_group" ]
+
   external_deps = [
     "ability_runtime:app_manager",
+    "ability_runtime:wantagent_innerkits",
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",

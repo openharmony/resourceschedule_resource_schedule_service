@@ -17,25 +17,15 @@ import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
 
 config("client_private_config") {
-  include_dirs = [
-    "//commonlibrary/c_utils/base/include",
-    "//utils/system/safwk/native/include",
-    "${ressched_common}/include",
-  ]
+  include_dirs = [ "${ressched_common}/include" ]
 }
 
 config("client_public_config") {
-  include_dirs = [
-    "include",
-    "//third_party/json/single_include",
-  ]
+  include_dirs = [ "include" ]
 }
 
 ohos_shared_library("ressched_client") {
-  configs = [
-    ":client_private_config",
-    "${ressched_services}:ressched_config",
-  ]
+  configs = [ ":client_private_config" ]
 
   public_configs = [ ":client_public_config" ]
 
@@ -44,14 +34,17 @@ ohos_shared_library("ressched_client") {
     "src/res_sched_service_proxy.cpp",
   ]
 
-  deps = [ "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog" ]
+  deps = [ "//third_party/json:nlohmann_json_static" ]
 
   external_deps = [
     "c_utils:utils",
+    "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_single",
     "samgr:samgr_proxy",
   ]
 
+  innerapi_tags = [ "platformsdk" ]
+  version_script = "libressched_client.versionscript"
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
 }
