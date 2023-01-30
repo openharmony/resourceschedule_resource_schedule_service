@@ -16,6 +16,7 @@
 #ifndef RESSCHED_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_SERVICE_STUB_H
 #define RESSCHED_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_SERVICE_STUB_H
 
+#include <cstdint>
 #include <map>
 #include "iremote_stub.h"
 #include "ires_sched_service.h"
@@ -32,6 +33,7 @@ public:
 
 private:
     int32_t ReportDataInner(MessageParcel& data, MessageParcel& reply);
+    int32_t KillProcessInner(MessageParcel& data, MessageParcel& reply);
     nlohmann::json StringToJsonObj(const std::string& str);
 
     void Init();

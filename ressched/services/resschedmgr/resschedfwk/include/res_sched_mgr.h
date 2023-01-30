@@ -47,6 +47,12 @@ public:
      */
     void ReportData(uint32_t resType, int64_t value = 0, const nlohmann::json& payload = nullptr);
 
+    /**
+     * Kill process by pid.
+     *
+     * @param payload process message.
+     */
+    void KillProcess(const nlohmann::json& payload = nullptr, std::string killerProcess = "");
 private:
     void DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload);
     // main handler, use for report data

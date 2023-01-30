@@ -36,6 +36,7 @@ public:
      */
     void ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload) override;
 
+    void KillProcess(const nlohmann::json& payload) override;
 public:
     /**
      * @brief Construct a new ResSchedServiceProxy object.

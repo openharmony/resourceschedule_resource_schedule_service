@@ -49,6 +49,19 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
     rss_->ReportData(resType, value, payload);
 }
 
+void ResSchedClient::KillProcess(const std::unordered_map<std::string, std::string>& mapPayload)
+{
+    RESSCHED_LOGD("ResSchedClient::KillProcess receive mission");
+    if (TryConnect() != ERR_OK) {
+        return;
+    }
+    nlohmann::json payload;
+    for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
+        payload[it->first] = it->second;
+    }
+    rss_->KillProcess(payload);
+}
+
 ErrCode ResSchedClient::TryConnect()
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -104,6 +117,11 @@ extern "C" void ReportData(uint32_t resType, int64_t value,
                            const std::unordered_map<std::string, std::string>& mapPayload)
 {
     ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
+}
+
+extern "C" void KillProcess(const std::unordered_map<std::string, std::string>& mapPayload)
+{
+    ResSchedClient::GetInstance().KillProcess(mapPayload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

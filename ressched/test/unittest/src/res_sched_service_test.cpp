@@ -150,6 +150,10 @@ public:
     void ReportData(uint32_t restype, int64_t value, const nlohmann::json& payload) override
     {
     }
+
+    void KillProcess(const nlohmann::json& payload) override
+    {
+    }
 };
 
 /**

@@ -51,6 +51,7 @@ public:
      */
     void ReportData(uint32_t resType, int64_t value, const std::unordered_map<std::string, std::string>& mapPayload);
 
+    void KillProcess(const std::unordered_map<std::string, std::string>& mapPayload);
     /**
      * @brief Stop remote Object, reset ResSchedClient.
      */

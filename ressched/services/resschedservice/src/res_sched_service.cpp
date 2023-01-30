@@ -16,12 +16,16 @@
 #include "res_sched_service.h"
 #include <file_ex.h>
 #include <string_ex.h>
+#include "accesstoken_kit.h"
+#include "ipc_skeleton.h"
 #include "plugin_mgr.h"
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
+#include "tokenid_kit.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
+using namespace OHOS::Security;
 namespace {
     constexpr int32_t DUMP_OPTION = 0;
     constexpr int32_t DUMP_PARAM_INDEX = 1;
@@ -32,6 +36,16 @@ void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann
     RESSCHED_LOGI("ResSchedService::ReportData from ipc receive data resType = %{public}u, value = %{public}lld.",
         resType, (long long)value);
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
+}
+
+void ResSchedService::KillProcess(const nlohmann::json& payload)
+{
+    uint32_t accessToken = IPCSkeleton::GetCallingTokenID();
+    AccessToken::NativeTokenInfo nativeTokenInfo;
+    int32_t result = AccessToken::AccessTokenKit::GetNativeTokenInfo(accessToken, nativeTokenInfo);
+    if (result == ERR_OK) {
+        ResSchedMgr::GetInstance().KillProcess(payload, nativeTokenInfo.processName);
+    }
 }
 
 int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& args)

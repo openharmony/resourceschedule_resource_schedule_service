@@ -58,6 +58,17 @@ int32_t ResSchedServiceStub::ReportDataInner(MessageParcel& data, [[maybe_unused
     return ERR_OK;
 }
 
+int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        return ERR_RES_SCHED_PARCEL_ERROR;
+    }
+    std::string payload;
+    READ_PARCEL(data, String, payload, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
+    KillProcess(StringToJsonObj(payload));
+    return ERR_OK;
+}
+
 int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
@@ -98,6 +109,8 @@ void ResSchedServiceStub::Init()
     funcMap_ = {
         { REPORT_DATA,
             [this](auto& data, auto& reply) {return ReportDataInner(data, reply); } },
+        { KILL_PROCESS,
+            [this](auto& data, auto& reply) {return KillProcessInner(data, reply); } }
     };
 }
 } // namespace ResourceSchedule

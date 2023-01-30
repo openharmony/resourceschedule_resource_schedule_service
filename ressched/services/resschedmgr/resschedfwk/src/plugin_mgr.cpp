@@ -16,12 +16,14 @@
 #include "plugin_mgr.h"
 #include <cinttypes>
 #include <algorithm>
+#include <cstdint>
 #include <dlfcn.h>
 #include <iostream>
 #include <string>
 #include "config_policy_utils.h"
 #include "event_runner.h"
 #include "hisysevent.h"
+#include "refbase.h"
 #include "res_sched_log.h"
 #include "hitrace_meter.h"
 
@@ -70,7 +72,10 @@ void PluginMgr::Init()
             RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
         }
     }
-
+    if (!killProcess_) {
+        killProcess_ = make_unique<KillProcess>();
+    }
+    killerInWhitelist_ = {"samgr"};
     LoadPlugin();
     RESSCHED_LOGI("PluginMgr::Init success!");
 }
@@ -459,6 +464,45 @@ void PluginMgr::CloseHandle(const DlHandle& handle)
     if (ret) {
         RESSCHED_LOGW("%{public}s, handle close failed!", __func__);
     }
+}
+
+void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string killerProcess)
+{
+    if (payload == nullptr) {
+        return;
+    }
+    if (!(payload.contains("pid") && payload["pid"].is_string())) {
+        return;
+    }
+
+    pid_t pid = static_cast<uint32_t>(atoi(payload["pid"].get<string>().c_str()));
+    if (pid == 0) {
+        return;
+    }
+
+    if (!VerificationProcessKillerInWhite(killerProcess)) {
+        RESSCHED_LOGE("kill process fail, %{public}s no permission", killerProcess.c_str());
+        return;
+    }
+
+    string processName = "unknown process";
+    if (payload.contains("processName") && payload["processName"].is_string()) {
+        processName = payload["processName"].get<string>();
+    }
+    RESSCHED_LOGI("kill process, killer is %{public}s, %{public}s to be killed, pid is %{public}d",
+        killerProcess.c_str(), processName.c_str(), pid);
+    if (killProcess_->KillProcessByPid(pid) < 0) {
+        RESSCHED_LOGE("kill process %{public}d failed", pid);
+    }
+}
+
+bool PluginMgr::VerificationProcessKillerInWhite(string bundleName)
+{
+    auto it = find(killerInWhitelist_.begin(), killerInWhitelist_.end(), bundleName);
+    if (it == killerInWhitelist_.end()) {
+        return false;
+    }
+    return true;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
