@@ -76,7 +76,7 @@ void ResSchedMgr::KillProcess(const nlohmann::json& payload, std::string killerP
         return;
     }
     std::lock_guard<std::mutex> autoLock(mainHandlerMutex_);
-    mainHandler_->PostTask([this, payload, killerProcess] {
+    mainHandler_->PostTask([payload, killerProcess] {
         PluginMgr::GetInstance().KillProcessByPid(payload, killerProcess);
     });
 }
