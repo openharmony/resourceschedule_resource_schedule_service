@@ -17,60 +17,169 @@ import(
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
 import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
-import(
-    "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/sched_controller.gni")
 
 config("ressched_config") {
   include_dirs = [
-    "resschedservice/include",
     "${ressched_common}/include",
     "resschedmgr/resschedfwk/include",
     "resschedmgr/pluginbase/include",
-    "${sched_controller_observer}/include",
-    "//utils/system/safwk/native/include",
-    "//commonlibrary/c_utils/base/include",
-    "//third_party/libxml2/include",
-    "${cgroup_sched_interfaces}/innerkits/include",
-    "${sched_controller_event}/include",
-    "//third_party/json/single_include",
-    "//base/customization/config_policy/interfaces/innerkits/include",
-    "//base//hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent/include",
-    "${ressched_interfaces}/innerkits/ressched_client/include",
+  ]
+}
+
+config("resschedsvc_public_config") {
+  include_dirs = [
+    "${ressched_common}/include",
+    "resschedmgr/resschedfwk/include",
+    "resschedmgr/pluginbase/include",
+  ]
+}
+
+config("resschedsvc_private_config") {
+  include_dirs = [
+    "resschedservice/include",
+    "../sched_controller/common_event/include",
+    "../sched_controller/observer/include",
   ]
 }
 
 ohos_shared_library("resschedsvc") {
-  configs = [
-    ":ressched_config",
-    "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
-  ]
+  configs = [ ":resschedsvc_private_config" ]
+
+  public_configs = [ ":resschedsvc_public_config" ]
+
+  defines = []
+  include_dirs = []
 
   sources = [
-    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/resschedfwk/src/config_reader.cpp",
-    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/resschedfwk/src/plugin_mgr.cpp",
-    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/resschedfwk/src/plugin_switch.cpp",
-    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
-    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedservice/src/res_sched_service.cpp",
-    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedservice/src/res_sched_service_ability.cpp",
-    "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedservice/src/res_sched_service_stub.cpp",
+    "../sched_controller/common_event/src/event_controller.cpp",
+    "../sched_controller/observer/src/audio_observer.cpp",
+    "../sched_controller/observer/src/camera_observer.cpp",
+    "../sched_controller/observer/src/observer_manager.cpp",
+    "resschedmgr/resschedfwk/src/config_reader.cpp",
+    "resschedmgr/resschedfwk/src/plugin_mgr.cpp",
+    "resschedmgr/resschedfwk/src/plugin_switch.cpp",
+    "resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
+    "resschedservice/src/res_sched_service.cpp",
+    "resschedservice/src/res_sched_service_ability.cpp",
+    "resschedservice/src/res_sched_service_stub.cpp",
   ]
 
   deps = [
     "${cgroup_sched_framework}:cgroup_sched",
-    "${sched_controller_path}:sched_controller",
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
+    "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
     "//third_party/libxml2:xml2",
   ]
 
   external_deps = [
+    "ability_base:want",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "c_utils:utils",
+    "common_event_service:cesfwk_innerkits",
     "config_policy:configpolicy_util",
     "eventhandler:libeventhandler",
     "hisysevent_native:libhisysevent",
+    "hisysevent_native:libhisyseventmanager",
     "hitrace_native:hitrace_meter",
+    "hiviewdfx_hilog_native:libhilog",
+    "init:libbegetutil",
     "ipc:ipc_single",
+    "multimedia_audio_framework:audio_client",
     "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
   ]
+
+  if (device_movement_perception_enable) {
+    defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
+    external_deps += [ "movement:movement_client" ]
+    sources +=
+        [ "../sched_controller/observer/src/device_movement_observer.cpp" ]
+  }
+
+  if (ressched_with_telephony_state_registry_enable) {
+    defines += [ "RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE" ]
+    external_deps += [
+      "core_service:tel_core_service_api",
+      "state_registry:tel_state_registry_api",
+    ]
+    sources +=
+        [ "../sched_controller/observer/src/sched_telephony_observer.cpp" ]
+  }
+
+  version_script = "libresschedsvc.versionscript"
+  shlib_type = "sa"
+  subsystem_name = "resourceschedule"
+  part_name = "resource_schedule_service"
+}
+
+# for unittest
+ohos_static_library("resschedsvc_static") {
+  configs = []
+
+  public_configs = [
+    ":resschedsvc_private_config",
+    ":resschedsvc_public_config",
+  ]
+
+  defines = []
+
+  include_dirs = []
+
+  sources = [
+    "../sched_controller/common_event/src/event_controller.cpp",
+    "../sched_controller/observer/src/audio_observer.cpp",
+    "../sched_controller/observer/src/camera_observer.cpp",
+    "../sched_controller/observer/src/observer_manager.cpp",
+    "resschedmgr/resschedfwk/src/config_reader.cpp",
+    "resschedmgr/resschedfwk/src/plugin_mgr.cpp",
+    "resschedmgr/resschedfwk/src/plugin_switch.cpp",
+    "resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
+    "resschedservice/src/res_sched_service.cpp",
+    "resschedservice/src/res_sched_service_ability.cpp",
+    "resschedservice/src/res_sched_service_stub.cpp",
+  ]
+
+  deps = [
+    "${cgroup_sched_framework}:cgroup_sched",
+    "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
+    "//third_party/libxml2:xml2",
+  ]
+
+  external_deps = [
+    "ability_base:want",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
+    "c_utils:utils",
+    "common_event_service:cesfwk_innerkits",
+    "config_policy:configpolicy_util",
+    "eventhandler:libeventhandler",
+    "hisysevent_native:libhisysevent",
+    "hisysevent_native:libhisyseventmanager",
+    "hitrace_native:hitrace_meter",
+    "hiviewdfx_hilog_native:libhilog",
+    "init:libbegetutil",
+    "ipc:ipc_single",
+    "multimedia_audio_framework:audio_client",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+  ]
+
+  if (device_movement_perception_enable) {
+    defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
+    external_deps += [ "movement:movement_client" ]
+    sources +=
+        [ "../sched_controller/observer/src/device_movement_observer.cpp" ]
+  }
+
+  if (ressched_with_telephony_state_registry_enable) {
+    defines += [ "RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE" ]
+    external_deps += [
+      "core_service:tel_core_service_api",
+      "state_registry:tel_state_registry_api",
+    ]
+    sources +=
+        [ "../sched_controller/observer/src/sched_telephony_observer.cpp" ]
+  }
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

@@ -32,15 +32,7 @@ ohos_fuzztest("LoadFromCustConfigFileFuzzTest") {
   ]
   sources = [ "loadfromcustconfigfile_fuzzer.cpp" ]
 
-  configs = [
-    "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
-    "${ressched_services}:ressched_config",
-  ]
-
-  deps = [
-    "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
-    "${ressched_services}:resschedsvc",
-  ]
+  deps = [ "${ressched_services}:resschedsvc_static" ]
 
   external_deps = [
     "c_utils:utils",

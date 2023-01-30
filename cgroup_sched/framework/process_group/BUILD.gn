@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -14,14 +14,12 @@
 import("//build/ohos.gni")
 
 config("libprocess_group_config") {
-  include_dirs = [
-    "./include",
-    "//base/customization/config_policy/interfaces/innerkits/include",
-    "//third_party/json/single_include",
-  ]
+  include_dirs = [ "./include" ]
 }
 
 ohos_shared_library("libprocess_group") {
+  public_configs = [ ":libprocess_group_config" ]
+
   sources = [
     "./src/cgroup_action.cpp",
     "./src/cgroup_controller.cpp",
@@ -30,13 +28,15 @@ ohos_shared_library("libprocess_group") {
     "./src/process_group_util.cpp",
     "./src/sched_policy.cpp",
   ]
-  include_dirs = [ "./include" ]
-  deps = [ "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog" ]
+
+  deps = [ "//third_party/json:nlohmann_json_static" ]
+
   external_deps = [
     "c_utils:utils",
     "config_policy:configpolicy_util",
+    "hiviewdfx_hilog_native:libhilog",
   ]
-  public_configs = [ ":libprocess_group_config" ]
+
   part_name = "resource_schedule_service"
   subsystem_name = "resourceschedule"
 }

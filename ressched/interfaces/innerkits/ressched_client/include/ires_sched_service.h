@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,17 +23,20 @@ namespace OHOS {
 namespace ResourceSchedule {
 class IResSchedService : public IRemoteBroker {
 public:
-    IResSchedService() = default;
-    ~IResSchedService() override = default;
-    DISALLOW_COPY_AND_MOVE(IResSchedService);
+    DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ResourceSchedule.ResSchedService");
+
+    /**
+     * @brief Report resource data to the resource schedule service through inter-process communication.
+     *
+     * @param resType Indicates the resource type, all of the type have listed in res_type.h.
+     * @param value Indicates the value of the resource type, defined by the developers.
+     * @param payload Indicates the context info of the resource type event.
+     */
+    virtual void ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload) = 0;
 
     enum : uint32_t {
         REPORT_DATA = 1,
     };
-
-    DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ResourceSchedule.ResSchedService");
-
-    virtual void ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload) = 0;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

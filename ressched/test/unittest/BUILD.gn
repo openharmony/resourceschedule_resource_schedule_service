@@ -23,45 +23,19 @@ group("unittest") {
   ]
 }
 
-config("ut_resschedfwk_config") {
-  include_dirs = [
-    "include",
-    "//foundation/resourceschedule/resource_schedule_service/soc_perf/interfaces/inner_api/socperf_client/include",
-  ]
-}
-
-config("ut_resschedservice_config") {
-  include_dirs = [ "resschedservice/include" ]
-}
-
 module_output_path = "resource_schedule_service/ressched"
-
-private_external_deps = [
-  "eventhandler:libeventhandler",
-  "ipc:ipc_single",
-]
-
-private_deps = [
-  "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
-  "${ressched_plugins}/socperf_plugin:socperf_plugin",
-  "${ressched_services}:resschedsvc",
-  "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-  "//commonlibrary/c_utils/base:utils",
-  "//third_party/googletest:gtest_main",
-]
 
 ohos_unittest("resschedservice_test") {
   module_out_path = module_output_path
+  include_dirs = [
+    "${ressched_common}/include",
+    "${ressched_interfaces}/innerkits/ressched_client/include",
+  ]
 
   sources = [ "src/res_sched_service_test.cpp" ]
 
-  configs = [
-    ":ut_resschedservice_config",
-    "${ressched_services}:ressched_config",
-  ]
-
   deps = [
-    "${ressched_services}:resschedsvc",
+    "${ressched_services}:resschedsvc_static",
     "//third_party/googletest:gtest_main",
   ]
 
@@ -73,21 +47,32 @@ ohos_unittest("resschedservice_test") {
 
 ohos_unittest("resschedfwk_test") {
   module_out_path = module_output_path
-  resource_config_file = "//foundation/resourceschedule/resource_schedule_service/ressched/test/resource/resschedfwk/ohos_test.xml"
+  resource_config_file = "${ressched_test}/resource/resschedfwk/ohos_test.xml"
+  include_dirs = [
+    "include",
+    "${ressched_common}/include",
+    "${ressched_interfaces}/innerkits/ressched_client/include",
+    "${ressched_plugins}/socperf_plugin/include",
+  ]
+
   sources = [
     "src/config_reader_test.cpp",
     "src/plugin_mgr_test.cpp",
     "src/plugin_switch_test.cpp",
     "src/res_sched_mgr_test.cpp",
   ]
-  configs = [
-    ":ut_resschedfwk_config",
-    "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
-    "${ressched_services}:ressched_config",
-    "${ressched_plugins}/socperf_plugin:socperf_plugin_config",
+
+  deps = [
+    "${ressched_plugins}/socperf_plugin:socperf_plugin",
+    "${ressched_services}:resschedsvc_static",
+    "//third_party/googletest:gtest_main",
   ]
 
-  deps = private_deps
-
-  external_deps = private_external_deps
+  external_deps = [
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_single",
+    "soc_perf:socperf_client",
+  ]
 }

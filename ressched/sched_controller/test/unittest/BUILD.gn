@@ -14,11 +14,7 @@
 import("//build/ohos.gni")
 import("//build/test.gni")
 import(
-    "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/cgroup_sched.gni")
-import(
     "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
-import(
-    "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/sched_controller.gni")
 
 module_output_path = "resource_schedule_service/ressched"
 
@@ -26,22 +22,14 @@ ohos_unittest("event_controller_test") {
   module_out_path = module_output_path
 
   include_dirs = [
-    "//foundation/resourceschedule/resource_schedule_service/ressched/common/include",
-    "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client/include",
-    "${cgroup_sched_common}/include",
-    "${cgroup_sched_framework}/process_group/include",
-    "${cgroup_sched_framework}/sched_controller/include",
-    "${cgroup_sched_framework}/utils/include",
-    "${sched_controller_event}/include",
+    "${ressched_common}/include",
+    "${ressched_interfaces}/innerkits/ressched_client/include",
   ]
 
-  sources = [
-    "${cgroup_sched_framework}/utils/ressched_utils.cpp",
-    "${sched_controller_path}/test/unittest/event_controller_test.cpp",
-  ]
+  sources = [ "event_controller_test.cpp" ]
 
   deps = [
-    "${sched_controller_path}:sched_controller",
+    "${ressched_services}:resschedsvc_static",
     "//third_party/googletest:gtest_main",
   ]
 

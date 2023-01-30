@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,9 +18,9 @@
 #include "plugin_mgr.h"
 #include "res_type.h"
 #include "plugin_mgr_test.h"
+#include "socperf_plugin.h"
 #undef private
 #include "mock_plugin_mgr.h"
-#include "socperf_plugin.h"
 #include "res_data.h"
 #include "res_type.h"
 

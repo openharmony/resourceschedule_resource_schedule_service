@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,8 +25,8 @@
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
 
-#include "ressched_utils.h"
 #include "res_sched_log.h"
+#include "res_sched_mgr.h"
 #include "res_type.h"
 
 using namespace OHOS::EventFwk;
@@ -98,7 +98,7 @@ void EventController::HandleConnectivityChange(
 
 void EventController::ReportDataInProcess(const uint32_t &resType, const int64_t &value, const nlohmann::json& payload)
 {
-    ResSchedUtils::GetInstance().ReportDataInProcess(resType, value, payload);
+    ResSchedMgr::GetInstance().ReportData(resType, value, payload);
     resType_ = resType;
     value_ = value;
     payload_ = payload;
