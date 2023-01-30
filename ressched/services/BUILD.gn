@@ -59,6 +59,7 @@ ohos_shared_library("resschedsvc") {
     "resschedmgr/resschedfwk/src/plugin_mgr.cpp",
     "resschedmgr/resschedfwk/src/plugin_switch.cpp",
     "resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
+    "resschedmgr/resschedfwk/src/kill_process.cpp",
     "resschedservice/src/res_sched_service.cpp",
     "resschedservice/src/res_sched_service_ability.cpp",
     "resschedservice/src/res_sched_service_stub.cpp",
@@ -89,7 +90,6 @@ ohos_shared_library("resschedsvc") {
     "multimedia_audio_framework:audio_client",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
-
   ]
 
   if (device_movement_perception_enable) {
