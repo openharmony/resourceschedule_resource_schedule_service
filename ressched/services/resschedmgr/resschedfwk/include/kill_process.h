@@ -23,6 +23,7 @@ class KillProcess {
 public:
     int32_t KillProcessByPid(const pid_t pid) const;
 };
-}
-}
+} // namespace ResourceSchedule
+} // namespace OHOS
+
 #endif //RESSCHED_SERVICES_RESSCHEDMGR_RESSCHEDFWK_INCLUDE_KILL_PROCESS_H

@@ -29,10 +29,10 @@ int32_t KillProcess::KillProcessByPid(const pid_t pid) const
 {
     int32_t ret = -1;
     if (pid > 0) {
-        RESSCHED_LOGI("kill pid %{public}d", pid);
         ret = kill(pid, SIGNAL_KILL);
+        RESSCHED_LOGI("kill pid %{public}d", pid);
     }
     return ret;
 }
-}
-}
+} // namespace ResourceSchedule
+} // namespace OHOS

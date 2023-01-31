@@ -119,7 +119,6 @@ private:
     void RepairPlugin(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo);
     void RemoveDisablePluginHandler();
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);
-    bool VerificationProcessKillerInWhite(std::string bundleName);
 
     using DlHandle = void*;
 
@@ -146,7 +145,7 @@ private:
     int32_t handlerNum_ = 0;
     std::map<std::string, std::list<TimePoint>> pluginTimeoutTime_;
     std::list<std::string> disablePlugins_;
-    std::vector<std::string> killerInWhitelist_;
+    std::vector<std::string> allowedKillers_ = {"samgr"};
     std::mutex disablePluginsMutex_;
 };
 } // namespace ResourceSchedule

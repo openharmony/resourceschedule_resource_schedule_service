@@ -75,7 +75,6 @@ void PluginMgr::Init()
     if (!killProcess_) {
         killProcess_ = make_unique<KillProcess>();
     }
-    killerInWhitelist_ = {"samgr"};
     LoadPlugin();
     RESSCHED_LOGI("PluginMgr::Init success!");
 }
@@ -468,10 +467,7 @@ void PluginMgr::CloseHandle(const DlHandle& handle)
 
 void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string killerProcess)
 {
-    if (payload == nullptr) {
-        return;
-    }
-    if (!(payload.contains("pid") && payload["pid"].is_string())) {
+    if ((payload == nullptr) || (!(payload.contains("pid") && payload["pid"].is_string()))) {
         return;
     }
 
@@ -479,8 +475,8 @@ void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string kill
     if (pid == 0) {
         return;
     }
-
-    if (!VerificationProcessKillerInWhite(killerProcess)) {
+    auto it = find(allowedKillers_.begin(), allowedKillers_.end(), bundleName);
+    if (it == allowedKillers_.end()) {
         RESSCHED_LOGE("kill process fail, %{public}s no permission", killerProcess.c_str());
         return;
     }
@@ -494,15 +490,6 @@ void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string kill
     if (killProcess_->KillProcessByPid(pid) < 0) {
         RESSCHED_LOGE("kill process %{public}d failed", pid);
     }
-}
-
-bool PluginMgr::VerificationProcessKillerInWhite(string bundleName)
-{
-    auto it = find(killerInWhitelist_.begin(), killerInWhitelist_.end(), bundleName);
-    if (it == killerInWhitelist_.end()) {
-        return false;
-    }
-    return true;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

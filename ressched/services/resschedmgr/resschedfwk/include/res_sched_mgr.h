@@ -50,7 +50,8 @@ public:
     /**
      * Kill process by pid.
      *
-     * @param payload process message.
+     * @param payload process message, {"pid": "", "processName": "", "uid": ""}
+     * @param killerProcess who want to kill other
      */
     void KillProcess(const nlohmann::json& payload = nullptr, std::string killerProcess = "");
 private:
