@@ -486,7 +486,7 @@ void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string kill
         processName = payload["processName"].get<string>();
     }
     RESSCHED_LOGI("kill process, killer is %{public}s, %{public}s to be killed, pid is %{public}d",
-                  killerProcess.c_str(), processName.c_str(), pid);
+        killerProcess.c_str(), processName.c_str(), pid);
     if (killProcess_->KillProcessByPid(pid) < 0) {
         RESSCHED_LOGE("kill process %{public}d failed", pid);
     }
