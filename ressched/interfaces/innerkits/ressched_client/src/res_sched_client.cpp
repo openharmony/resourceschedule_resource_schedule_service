@@ -36,11 +36,11 @@ ResSchedClient& ResSchedClient::GetInstance()
 void ResSchedClient::ReportData(uint32_t resType, int64_t value,
                                 const std::unordered_map<std::string, std::string>& mapPayload)
 {
-    RESSCHED_LOGD("ResSchedClient::ReportData receive resType = %{public}u, value = %{public}lld.",
-                  resType, (long long)value);
     if (TryConnect() != ERR_OK) {
         return;
     }
+    RESSCHED_LOGD("ResSchedClient::ReportData receive resType = %{public}u, value = %{public}lld.",
+        resType, (long long)value);
     nlohmann::json payload;
     payload["clientPid"] = std::to_string(getpid());
     for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
@@ -51,7 +51,6 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
 
 void ResSchedClient::KillProcess(const std::unordered_map<std::string, std::string>& mapPayload)
 {
-    RESSCHED_LOGD("ResSchedClient::KillProcess receive mission");
     if (TryConnect() != ERR_OK) {
         return;
     }
