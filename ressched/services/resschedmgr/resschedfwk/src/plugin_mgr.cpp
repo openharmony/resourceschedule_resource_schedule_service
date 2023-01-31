@@ -475,7 +475,7 @@ void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string kill
     if (pid == 0) {
         return;
     }
-    auto it = find(allowedKillers_.begin(), allowedKillers_.end(), bundleName);
+    auto it = find(allowedKillers_.begin(), allowedKillers_.end(), killerProcess);
     if (it == allowedKillers_.end()) {
         RESSCHED_LOGE("kill process fail, %{public}s no permission", killerProcess.c_str());
         return;
