@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -58,12 +58,23 @@ int32_t ResSchedServiceStub::ReportDataInner(MessageParcel& data, [[maybe_unused
     return ERR_OK;
 }
 
+int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        return ERR_RES_SCHED_PARCEL_ERROR;
+    }
+    std::string payload;
+    READ_PARCEL(data, String, payload, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
+    KillProcess(StringToJsonObj(payload));
+    return ERR_OK;
+}
+
 int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
     auto uid = IPCSkeleton::GetCallingUid();
     RESSCHED_LOGD("ResSchedServiceStub::OnRemoteRequest, code = %{public}u, flags = %{public}d,"
-        " uid = %{public}d", code, option.GetFlags(), uid);
+        " uid = %{public}d.", code, option.GetFlags(), uid);
 
     auto itFunc = funcMap_.find(code);
     if (itFunc != funcMap_.end()) {
@@ -83,11 +94,11 @@ nlohmann::json ResSchedServiceStub::StringToJsonObj(const std::string& payload)
     }
     nlohmann::json jsonTmp = nlohmann::json::parse(payload, nullptr, false);
     if (jsonTmp.is_discarded()) {
-        RESSCHED_LOGE("%{public}s parse payload to json failed: %{public}s", __func__, payload.c_str());
+        RESSCHED_LOGE("%{public}s parse payload to json failed: %{public}s.", __func__, payload.c_str());
         return jsonObj;
     }
     if (!jsonTmp.is_object()) {
-        RESSCHED_LOGE("%{public}s payload converted result is not a jsonObj: %{public}s", __func__, payload.c_str());
+        RESSCHED_LOGE("%{public}s payload converted result is not a jsonObj: %{public}s.", __func__, payload.c_str());
         return jsonObj;
     }
     return jsonTmp;
@@ -98,6 +109,8 @@ void ResSchedServiceStub::Init()
     funcMap_ = {
         { REPORT_DATA,
             [this](auto& data, auto& reply) {return ReportDataInner(data, reply); } },
+        { KILL_PROCESS,
+            [this](auto& data, auto& reply) {return KillProcessInner(data, reply); } }
     };
 }
 } // namespace ResourceSchedule

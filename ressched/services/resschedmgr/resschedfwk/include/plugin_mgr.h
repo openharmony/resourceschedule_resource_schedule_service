@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,9 +21,11 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <vector>
 #include "datetime_ex.h"
 #include "event_handler.h"
 #include "config_reader.h"
+#include "kill_process.h"
 #include "plugin_switch.h"
 #include "plugin.h"
 #include "nocopyable.h"
@@ -88,6 +90,13 @@ public:
      */
     void UnSubscribeResource(const std::string& pluginLib, uint32_t resType);
 
+    /**
+     * Kill process by pid.
+     *
+     * @param payload process message.
+     */
+    void KillProcessByPid(const nlohmann::json& payload, std::string killClientInitiator);
+
     void DumpAllPlugin(std::string &result);
 
     void DumpOnePlugin(std::string &result, std::string pluginName, std::vector<std::string>& args);
@@ -121,6 +130,7 @@ private:
     const int32_t DUMP_ONE_STRING_SIZE = 32;
     std::unique_ptr<ConfigReader> configReader_ = nullptr;
     std::unique_ptr<PluginSwitch> pluginSwitch_ = nullptr;
+    std::unique_ptr<KillProcess> killProcess_ = nullptr;
 
     std::mutex pluginMutex_;
     std::mutex dispatcherHandlerMutex_;
@@ -135,6 +145,7 @@ private:
     int32_t handlerNum_ = 0;
     std::map<std::string, std::list<TimePoint>> pluginTimeoutTime_;
     std::list<std::string> disablePlugins_;
+    std::vector<std::string> allowedClient_ = {"samgr"};
     std::mutex disablePluginsMutex_;
 };
 } // namespace ResourceSchedule

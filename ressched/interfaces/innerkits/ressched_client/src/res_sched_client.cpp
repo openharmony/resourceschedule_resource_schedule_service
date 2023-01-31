@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,17 +36,30 @@ ResSchedClient& ResSchedClient::GetInstance()
 void ResSchedClient::ReportData(uint32_t resType, int64_t value,
                                 const std::unordered_map<std::string, std::string>& mapPayload)
 {
-    RESSCHED_LOGD("ResSchedClient::ReportData receive resType = %{public}u, value = %{public}lld.",
-                  resType, (long long)value);
     if (TryConnect() != ERR_OK) {
         return;
     }
+    RESSCHED_LOGD("ResSchedClient::ReportData receive resType = %{public}u, value = %{public}lld.",
+        resType, (long long)value);
     nlohmann::json payload;
     payload["clientPid"] = std::to_string(getpid());
     for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
         payload[it->first] = it->second;
     }
     rss_->ReportData(resType, value, payload);
+}
+
+void ResSchedClient::KillProcess(const std::unordered_map<std::string, std::string>& mapPayload)
+{
+    if (TryConnect() != ERR_OK) {
+        return;
+    }
+    RESSCHED_LOGD("ResSchedClient::KillProcess receive mission.");
+    nlohmann::json payload;
+    for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
+        payload[it->first] = it->second;
+    }
+    rss_->KillProcess(payload);
 }
 
 ErrCode ResSchedClient::TryConnect()
@@ -104,6 +117,11 @@ extern "C" void ReportData(uint32_t resType, int64_t value,
                            const std::unordered_map<std::string, std::string>& mapPayload)
 {
     ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
+}
+
+extern "C" void KillProcess(const std::unordered_map<std::string, std::string>& mapPayload)
+{
+    ResSchedClient::GetInstance().KillProcess(mapPayload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

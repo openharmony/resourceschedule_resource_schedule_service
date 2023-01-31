@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #ifndef RESSCHED_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_SERVICE_STUB_H
 #define RESSCHED_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_SERVICE_STUB_H
 
+#include <cstdint>
 #include <map>
 #include "iremote_stub.h"
 #include "ires_sched_service.h"
@@ -32,6 +33,7 @@ public:
 
 private:
     int32_t ReportDataInner(MessageParcel& data, MessageParcel& reply);
+    int32_t KillProcessInner(MessageParcel& data, MessageParcel& reply);
     nlohmann::json StringToJsonObj(const std::string& str);
 
     void Init();

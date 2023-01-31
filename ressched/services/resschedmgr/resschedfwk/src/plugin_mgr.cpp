@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,12 +16,14 @@
 #include "plugin_mgr.h"
 #include <cinttypes>
 #include <algorithm>
+#include <cstdint>
 #include <dlfcn.h>
 #include <iostream>
 #include <string>
 #include "config_policy_utils.h"
 #include "event_runner.h"
 #include "hisysevent.h"
+#include "refbase.h"
 #include "res_sched_log.h"
 #include "hitrace_meter.h"
 
@@ -70,7 +72,9 @@ void PluginMgr::Init()
             RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
         }
     }
-
+    if (!killProcess_) {
+        killProcess_ = make_unique<KillProcess>();
+    }
     LoadPlugin();
     RESSCHED_LOGI("PluginMgr::Init success!");
 }
@@ -356,7 +360,7 @@ void PluginMgr::RepairPlugin(TimePoint endTime, const std::string& pluginLib, Pl
     if ((int32_t)pluginTimeoutTime_[pluginLib].size() >= MAX_PLUGIN_TIMEOUT_TIMES) {
         if (crash_time < DISABLE_PLUGIN_TIME) {
             // disable plugin forever
-            RESSCHED_LOGE("%{public}s, %{public}s disable it forever", __func__, pluginLib.c_str());
+            RESSCHED_LOGE("%{public}s, %{public}s disable it forever.", __func__, pluginLib.c_str());
             if (libInfo.onPluginDisableFunc_) {
                 libInfo.onPluginDisableFunc_();
             }
@@ -377,7 +381,7 @@ void PluginMgr::RepairPlugin(TimePoint endTime, const std::string& pluginLib, Pl
     }
 
     if (libInfo.onPluginDisableFunc_ && libInfo.onPluginInitFunc_) {
-        RESSCHED_LOGW("%{public}s, %{public}s disable and enable it", __func__, pluginLib.c_str());
+        RESSCHED_LOGW("%{public}s, %{public}s disable and enable it.", __func__, pluginLib.c_str());
         libInfo.onPluginDisableFunc_();
         libInfo.onPluginInitFunc_(pluginLib);
     }
@@ -458,6 +462,35 @@ void PluginMgr::CloseHandle(const DlHandle& handle)
     int32_t ret = dlclose(handle);
     if (ret) {
         RESSCHED_LOGW("%{public}s, handle close failed!", __func__);
+    }
+}
+
+void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string killClientInitiator)
+{
+    if ((payload == nullptr) || (!(payload.contains("pid") && payload["pid"].is_string()))) {
+        return;
+    }
+
+    pid_t pid = static_cast<uint32_t>(atoi(payload["pid"].get<string>().c_str()));
+    if (pid == 0) {
+        return;
+    }
+    auto it = find(allowedClient_.begin(), allowedClient_.end(), killClientInitiator);
+    if (it == allowedClient_.end()) {
+        RESSCHED_LOGE("kill process fail, %{public}s no permission.", killClientInitiator.c_str());
+        return;
+    }
+
+    string processName = "unknown process";
+    if (payload.contains("processName") && payload["processName"].is_string()) {
+        processName = payload["processName"].get<string>();
+    }
+
+    if (killProcess_->KillProcessByPid(pid) < 0) {
+        RESSCHED_LOGE("kill process %{public}d failed.", pid);
+    } else {
+        RESSCHED_LOGI("kill process, killer is %{public}s, %{public}s to be killed, pid is %{public}d.",
+            killClientInitiator.c_str(), processName.c_str(), pid);
     }
 }
 } // namespace ResourceSchedule
