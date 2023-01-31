@@ -140,11 +140,8 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     // OnDispatchResource is not necessary for plugin
     auto onDumpFunc = reinterpret_cast<OnDumpFunc>(dlsym(pluginHandle, "OnDump"));
 
-    // shared_ptr save handle pointer and ensure handle close correctly
-    shared_ptr<void> sharedPluginHandle(pluginHandle, CloseHandle);
-
     PluginLib libInfo;
-    libInfo.handle = sharedPluginHandle;
+    libInfo.handle = nullptr;
     libInfo.onPluginInitFunc_ = onPluginInitFunc;
     libInfo.onDispatchResourceFunc_ = onDispatchResourceFunc;
     libInfo.onDumpFunc_ = onDumpFunc;
