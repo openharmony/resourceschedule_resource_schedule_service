@@ -36,6 +36,11 @@ public:
      */
     void ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload) override;
 
+    /**
+     * @brief Kill process with pid.
+     *
+     * @param mapPayload Indicates the context info of the kill message.
+     */
     void KillProcess(const nlohmann::json& payload) override;
 public:
     /**
