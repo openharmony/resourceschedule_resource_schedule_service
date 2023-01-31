@@ -30,7 +30,7 @@ int32_t KillProcess::KillProcessByPid(const pid_t pid) const
     int32_t ret = -1;
     if (pid > 0) {
         ret = kill(pid, SIGNAL_KILL);
-        RESSCHED_LOGI("kill pid %{public}d", pid);
+        RESSCHED_LOGI("kill pid %{public}d.", pid);
     }
     return ret;
 }

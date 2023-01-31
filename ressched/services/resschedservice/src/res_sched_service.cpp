@@ -52,12 +52,12 @@ void ResSchedService::KillProcess(const nlohmann::json& payload)
 
 int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& args)
 {
-    RESSCHED_LOGI("%{public}s Dump service", __func__);
+    RESSCHED_LOGI("%{public}s Dump service.", __func__);
     std::vector<std::string> argsInStr;
     std::transform(args.begin(), args.end(), std::back_inserter(argsInStr),
         [](const std::u16string &arg) {
         std::string ret = Str16ToStr8(arg);
-        RESSCHED_LOGI("%{public}s arg: %{public}s", __func__, ret.c_str());
+        RESSCHED_LOGI("%{public}s arg: %{public}s.", __func__, ret.c_str());
         return ret;
     });
     std::string result;

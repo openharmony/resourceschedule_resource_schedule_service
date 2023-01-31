@@ -360,7 +360,7 @@ void PluginMgr::RepairPlugin(TimePoint endTime, const std::string& pluginLib, Pl
     if ((int32_t)pluginTimeoutTime_[pluginLib].size() >= MAX_PLUGIN_TIMEOUT_TIMES) {
         if (crash_time < DISABLE_PLUGIN_TIME) {
             // disable plugin forever
-            RESSCHED_LOGE("%{public}s, %{public}s disable it forever", __func__, pluginLib.c_str());
+            RESSCHED_LOGE("%{public}s, %{public}s disable it forever.", __func__, pluginLib.c_str());
             if (libInfo.onPluginDisableFunc_) {
                 libInfo.onPluginDisableFunc_();
             }
@@ -381,7 +381,7 @@ void PluginMgr::RepairPlugin(TimePoint endTime, const std::string& pluginLib, Pl
     }
 
     if (libInfo.onPluginDisableFunc_ && libInfo.onPluginInitFunc_) {
-        RESSCHED_LOGW("%{public}s, %{public}s disable and enable it", __func__, pluginLib.c_str());
+        RESSCHED_LOGW("%{public}s, %{public}s disable and enable it.", __func__, pluginLib.c_str());
         libInfo.onPluginDisableFunc_();
         libInfo.onPluginInitFunc_(pluginLib);
     }
@@ -477,7 +477,7 @@ void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string kill
     }
     auto it = find(allowedClient_.begin(), allowedClient_.end(), killClientInitiator);
     if (it == allowedClient_.end()) {
-        RESSCHED_LOGE("kill process fail, %{public}s no permission", killClientInitiator.c_str());
+        RESSCHED_LOGE("kill process fail, %{public}s no permission.", killClientInitiator.c_str());
         return;
     }
 
@@ -487,9 +487,9 @@ void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string kill
     }
 
     if (killProcess_->KillProcessByPid(pid) < 0) {
-        RESSCHED_LOGE("kill process %{public}d failed", pid);
+        RESSCHED_LOGE("kill process %{public}d failed.", pid);
     } else {
-        RESSCHED_LOGI("kill process, killer is %{public}s, %{public}s to be killed, pid is %{public}d",
+        RESSCHED_LOGI("kill process, killer is %{public}s, %{public}s to be killed, pid is %{public}d.",
             killClientInitiator.c_str(), processName.c_str(), pid);
     }
 }

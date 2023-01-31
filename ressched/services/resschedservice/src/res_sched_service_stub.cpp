@@ -74,7 +74,7 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
 {
     auto uid = IPCSkeleton::GetCallingUid();
     RESSCHED_LOGD("ResSchedServiceStub::OnRemoteRequest, code = %{public}u, flags = %{public}d,"
-        " uid = %{public}d", code, option.GetFlags(), uid);
+        " uid = %{public}d.", code, option.GetFlags(), uid);
 
     auto itFunc = funcMap_.find(code);
     if (itFunc != funcMap_.end()) {
@@ -94,11 +94,11 @@ nlohmann::json ResSchedServiceStub::StringToJsonObj(const std::string& payload)
     }
     nlohmann::json jsonTmp = nlohmann::json::parse(payload, nullptr, false);
     if (jsonTmp.is_discarded()) {
-        RESSCHED_LOGE("%{public}s parse payload to json failed: %{public}s", __func__, payload.c_str());
+        RESSCHED_LOGE("%{public}s parse payload to json failed: %{public}s.", __func__, payload.c_str());
         return jsonObj;
     }
     if (!jsonTmp.is_object()) {
-        RESSCHED_LOGE("%{public}s payload converted result is not a jsonObj: %{public}s", __func__, payload.c_str());
+        RESSCHED_LOGE("%{public}s payload converted result is not a jsonObj: %{public}s.", __func__, payload.c_str());
         return jsonObj;
     }
     return jsonTmp;
