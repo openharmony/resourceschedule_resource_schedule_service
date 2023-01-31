@@ -54,6 +54,7 @@ void ResSchedClient::KillProcess(const std::unordered_map<std::string, std::stri
     if (TryConnect() != ERR_OK) {
         return;
     }
+    RESSCHED_LOGD("ResSchedClient::KillProcess receive mission");
     nlohmann::json payload;
     for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
         payload[it->first] = it->second;
