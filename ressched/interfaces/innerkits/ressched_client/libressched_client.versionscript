@@ -16,9 +16,11 @@
     *IResSchedService*;
     *ResSchedClient*GetInstance*;
     *ResSchedClient*ReportData*;
+    *ResSchedClient*KillProcess*;
     *ResSchedClient*StopRemoteObject*;
     *ResSchedServiceProxy*;
     ReportData;
+    KillProcess;
   local:
     *;
 };

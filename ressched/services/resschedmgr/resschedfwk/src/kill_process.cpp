@@ -22,7 +22,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-constexpr int32_t SIGNAL_KILL = 9;
+    constexpr int32_t SIGNAL_KILL = 9;
 }
 
 int32_t KillProcess::KillProcessByPid(const pid_t pid) const
