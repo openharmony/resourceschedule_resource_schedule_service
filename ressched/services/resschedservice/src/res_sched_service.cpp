@@ -46,7 +46,7 @@ void ResSchedService::KillProcess(const nlohmann::json& payload)
     if (result == ERR_OK) {
         ResSchedMgr::GetInstance().KillProcess(payload, nativeTokenInfo.processName);
     } else {
-        RESSCHED_LOGE("Kill process get token info fail %{public}d", result);
+        RESSCHED_LOGE("Kill process get token info fail.");
     }
 }
 
