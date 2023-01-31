@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -45,6 +45,8 @@ void ResSchedService::KillProcess(const nlohmann::json& payload)
     int32_t result = AccessToken::AccessTokenKit::GetNativeTokenInfo(accessToken, nativeTokenInfo);
     if (result == ERR_OK) {
         ResSchedMgr::GetInstance().KillProcess(payload, nativeTokenInfo.processName);
+    } else {
+        RESSCHED_LOGE("Kill process get token info fail %{public}d", result);
     }
 }
 

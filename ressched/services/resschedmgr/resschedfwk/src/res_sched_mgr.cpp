@@ -70,14 +70,14 @@ void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::js
     FinishTrace(HITRACE_TAG_OHOS);
 }
 
-void ResSchedMgr::KillProcess(const nlohmann::json& payload, std::string killerProcess)
+void ResSchedMgr::KillProcess(const nlohmann::json& payload, std::string killClientInitiator)
 {
     if (!mainHandler_) {
         return;
     }
     std::lock_guard<std::mutex> autoLock(mainHandlerMutex_);
-    mainHandler_->PostTask([payload, killerProcess] {
-        PluginMgr::GetInstance().KillProcessByPid(payload, killerProcess);
+    mainHandler_->PostTask([payload, killClientInitiator] {
+        PluginMgr::GetInstance().KillProcessByPid(payload, killClientInitiator);
     });
 }
 

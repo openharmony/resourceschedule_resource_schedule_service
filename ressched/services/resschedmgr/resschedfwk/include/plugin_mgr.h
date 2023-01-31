@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -95,7 +95,7 @@ public:
      *
      * @param payload process message.
      */
-    void KillProcessByPid(const nlohmann::json& payload, std::string killerProcess);
+    void KillProcessByPid(const nlohmann::json& payload, std::string killClientInitiator);
 
     void DumpAllPlugin(std::string &result);
 
@@ -145,7 +145,7 @@ private:
     int32_t handlerNum_ = 0;
     std::map<std::string, std::list<TimePoint>> pluginTimeoutTime_;
     std::list<std::string> disablePlugins_;
-    std::vector<std::string> allowedKillers_ = {"samgr"};
+    std::vector<std::string> allowedClient_ = {"samgr"};
     std::mutex disablePluginsMutex_;
 };
 } // namespace ResourceSchedule

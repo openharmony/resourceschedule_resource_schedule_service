@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -465,7 +465,7 @@ void PluginMgr::CloseHandle(const DlHandle& handle)
     }
 }
 
-void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string killerProcess)
+void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string killClientInitiator)
 {
     if ((payload == nullptr) || (!(payload.contains("pid") && payload["pid"].is_string()))) {
         return;
@@ -475,9 +475,9 @@ void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string kill
     if (pid == 0) {
         return;
     }
-    auto it = find(allowedKillers_.begin(), allowedKillers_.end(), killerProcess);
-    if (it == allowedKillers_.end()) {
-        RESSCHED_LOGE("kill process fail, %{public}s no permission", killerProcess.c_str());
+    auto it = find(allowedClient_.begin(), allowedClient_.end(), killClientInitiator);
+    if (it == allowedClient_.end()) {
+        RESSCHED_LOGE("kill process fail, %{public}s no permission", killClientInitiator.c_str());
         return;
     }
 
@@ -485,11 +485,12 @@ void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string kill
     if (payload.contains("processName") && payload["processName"].is_string()) {
         processName = payload["processName"].get<string>();
     }
-    RESSCHED_LOGI("kill process, killer is %{public}s, %{public}s to be killed, pid is %{public}d",
-        killerProcess.c_str(), processName.c_str(), pid);
+
     if (killProcess_->KillProcessByPid(pid) < 0) {
         RESSCHED_LOGE("kill process %{public}d failed", pid);
     }
+    RESSCHED_LOGI("kill process, killer is %{public}s, %{public}s to be killed, pid is %{public}d",
+        killClientInitiator.c_str(), processName.c_str(), pid);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

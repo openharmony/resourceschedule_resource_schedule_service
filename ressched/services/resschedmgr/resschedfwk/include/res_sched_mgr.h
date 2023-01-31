@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,10 +50,10 @@ public:
     /**
      * Kill process by pid.
      *
-     * @param payload process message, {"pid": "", "processName": "", "uid": ""}
-     * @param killerProcess who want to kill other
+     * @param payload process message
+     * @param killClientInitiator who want to kill other
      */
-    void KillProcess(const nlohmann::json& payload = nullptr, std::string killerProcess = "");
+    void KillProcess(const nlohmann::json& payload = nullptr, std::string killClientInitiator = "");
 private:
     void DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload);
     // main handler, use for report data
