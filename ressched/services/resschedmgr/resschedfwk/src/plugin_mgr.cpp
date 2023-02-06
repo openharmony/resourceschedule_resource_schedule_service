@@ -449,19 +449,6 @@ void PluginMgr::OnDestroy()
     }
 }
 
-void PluginMgr::CloseHandle(const DlHandle& handle)
-{
-    if (!handle) {
-        RESSCHED_LOGW("%{public}s, nullptr handle!", __func__);
-        return;
-    }
-
-    int32_t ret = dlclose(handle);
-    if (ret) {
-        RESSCHED_LOGW("%{public}s, handle close failed!", __func__);
-    }
-}
-
 void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string killClientInitiator)
 {
     if ((payload == nullptr) || (!(payload.contains("pid") && payload["pid"].is_string()))) {
