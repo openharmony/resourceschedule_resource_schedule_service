@@ -37,7 +37,7 @@ public:
     /**
      * @brief Kill process with pid.
      *
-     * @param mapPayload Indicates the context info of the kill message.
+     * @param payload Indicates the context info of the kill message.
      */
     virtual void KillProcess(const nlohmann::json& payload) = 0;
     enum : uint32_t {

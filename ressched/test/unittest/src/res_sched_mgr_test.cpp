@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -59,6 +59,20 @@ HWTEST_F(ResSchedMgrTest, ReportData001, TestSize.Level1)
     EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ != nullptr);
     
     ResSchedMgr::GetInstance().DispatchResourceInner(0, 0, payload);
+}
+
+/**
+ * @tc.name: Init ressched KillProcess 001
+ * @tc.desc: Verify if killProcess is success
+ * @tc.type: FUNC
+ * @tc.require: SR000HPILA AR000HPJ9I
+ * @tc.author:qiunaiguang
+ */
+HWTEST_F(ResSchedMgrTest, KillProcess001, TestSize.Level1)
+{
+    nlohmann::json payload;
+    ResSchedMgr::GetInstance().killProcess(payload, "resource");
+    EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ != nullptr);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
