@@ -39,7 +39,7 @@ public:
     /**
      * @brief Kill process with pid.
      *
-     * @param mapPayload Indicates the context info of the kill message.
+     * @param payload Indicates the context info of the kill message.
      */
     void KillProcess(const nlohmann::json& payload) override;
 public:
