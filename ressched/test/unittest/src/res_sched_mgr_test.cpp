@@ -65,7 +65,7 @@ HWTEST_F(ResSchedMgrTest, ReportData001, TestSize.Level1)
  * @tc.name: Init ressched KillProcess 001
  * @tc.desc: Verify if killProcess is success
  * @tc.type: FUNC
- * @tc.require: SR000HPILA AR000HPJ9I
+ * @tc.require: issueI6D6BM
  * @tc.author:qiunaiguang
  */
 HWTEST_F(ResSchedMgrTest, KillProcess001, TestSize.Level1)

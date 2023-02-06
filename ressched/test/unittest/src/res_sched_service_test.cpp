@@ -197,7 +197,7 @@ HWTEST_F(ResSchedServiceTest, StringToJson001, Function | MediumTest | Level0)
  * @tc.name: ResSchedServicesStub RemoteRequest 001
  * @tc.desc: Verify if resschedstub RemoteRequest is success.
  * @tc.type: FUNC
- * @tc.require: issueI5WWV3
+ * @tc.require: issueI5WWV3 issueI6D6BM
  * @tc.author:lice
  */
 HWTEST_F(ResSchedServiceTest, RemoteRequest001, Function | MediumTest | Level0)

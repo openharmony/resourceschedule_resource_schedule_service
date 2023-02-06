@@ -262,7 +262,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_001, TestSize.Level1)
  * @tc.name: Plugin mgr test KillProcessByPid 001
  * @tc.desc: Verify if KillProcessByPid is success.
  * @tc.type: FUNC
- * @tc.require: SR000HPILA AR000HPJ9I
+ * @tc.require: issueI6D6BM
  * @tc.author:qiunaiguang
  */
 HWTEST_F(PluginMgrTest, KillProcessByPid001, TestSize.Level1)
