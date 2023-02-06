@@ -206,7 +206,9 @@ HWTEST_F(ResSchedServiceTest, RemoteRequest001, Function | MediumTest | Level0)
     MessageOption option;
     MessageParcel reply;
     int32_t res = resSchedServiceStub_->OnRemoteRequest(1, reply, reply, option);
+    EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(2, reply, reply, option);
+    EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(0, reply, reply, option);
     EXPECT_TRUE(res);
 }

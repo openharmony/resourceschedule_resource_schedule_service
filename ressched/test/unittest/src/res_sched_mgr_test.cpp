@@ -71,7 +71,7 @@ HWTEST_F(ResSchedMgrTest, ReportData001, TestSize.Level1)
 HWTEST_F(ResSchedMgrTest, KillProcess001, TestSize.Level1)
 {
     nlohmann::json payload;
-    ResSchedMgr::GetInstance().killProcess(payload, "resource");
+    ResSchedMgr::GetInstance().KillProcess(payload, "resource");
     EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ != nullptr);
 }
 } // namespace ResourceSchedule
