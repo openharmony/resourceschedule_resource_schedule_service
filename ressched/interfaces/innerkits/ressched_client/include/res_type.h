@@ -105,6 +105,8 @@ enum : uint32_t {
     RES_TYPE_MOVE_WINDOW = 32,
     // animation transition event; value 0: animation begin, value 1: animation end.
     RES_TYPE_SHOW_REMOTE_ANIMATION = 33,
+    // slide normal event; value 0: slide normal begin, value 1: slide normal end.
+    RES_TYPE_SLIDE_NORMAL = 34,
 };
 
 static const std::map<uint32_t, std::string> resTypeToStr = {
@@ -141,7 +143,8 @@ static const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_DEVICE_STILL_STATE_CHANGE, "DEVICE_STILL_STATE_CHANGE" },
     { RES_TYPE_RESIZE_WINDOW, "RES_TYPE_RESIZE_WINDOW" },
     { RES_TYPE_MOVE_WINDOW, "RES_TYPE_MOVE_WINDOW" },
-    { RES_TYPE_SHOW_REMOTE_ANIMATION, "RES_TYPE_SHOW_REMOTE_ANIMATION" }
+    { RES_TYPE_SHOW_REMOTE_ANIMATION, "RES_TYPE_SHOW_REMOTE_ANIMATION" },
+    { RES_TYPE_SLIDE_NORMAL, "RES_TYPE_SLIDE_NORMAL" }
 };
 
 /**
@@ -265,6 +268,14 @@ enum WindowMoveType : int64_t {
 enum ShowRemoteAnimationStatus : int64_t {
     ANIMATION_BEGIN = 0,
     ANIMATION_END = 1,
+};
+
+/**
+ * @brief Slide normal Status
+ */
+enum SlideNormalStatus : int64_t {
+    SLIDE_NORMAL_BEGIN = 0,
+    SLIDE_NORMAL_END = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
