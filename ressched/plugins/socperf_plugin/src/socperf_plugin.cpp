@@ -64,6 +64,8 @@ void SocPerfPlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleResizeWindow(data); } },
         { RES_TYPE_MOVE_WINDOW,
             [this](const std::shared_ptr<ResData>& data) { HandleMoveWindow(data); } },
+        { RES_TYPE_SLIDE_NORMAL,
+            [this](const std::shared_ptr<ResData>& data) { HandleSlideNormal(data); } },
     };
     resTypes = {
         RES_TYPE_WINDOW_FOCUS,
@@ -75,6 +77,7 @@ void SocPerfPlugin::Init()
         RES_TYPE_APP_ABILITY_START,
         RES_TYPE_RESIZE_WINDOW,
         RES_TYPE_MOVE_WINDOW,
+        RES_TYPE_SLIDE_NORMAL,
     };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
@@ -190,6 +193,19 @@ void SocPerfPlugin::HandleMoveWindow(const std::shared_ptr<ResData>& data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_MOVE_WINDOW, "");
     } else if (data->value == WindowMoveType::WINDOW_MOVE_STOP) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_MOVE_WINDOW, false, "");
+    }
+}
+
+void SocPerfPlugin::HandleSlideNormal(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    RESSCHED_LOGI("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
+    if (data->value == SlideNormalStatus::SLIDE_NORMAL_BEGIN) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER, "");
+    } else if (data->value == SlideNormalStatus::SLIDE_NORMAL_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER, false, "");
     }
 }
 
