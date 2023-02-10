@@ -111,10 +111,6 @@ private:
     void RemoveDisablePluginHandler();
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);
 
-    using DlHandle = void*;
-
-    static void CloseHandle(const DlHandle& handle);
-
     // plugin crash 3 times in 60s, will be disable forever
     const int32_t MAX_PLUGIN_TIMEOUT_TIMES = 3;
     const int32_t DISABLE_PLUGIN_TIME = 60000;
