@@ -33,7 +33,7 @@ public:
     static void TearDownTestCase(void);
     void SetUp();
     void TearDown();
-    MockProcess(std::string processName);
+    void MockProcess(std::string processName);
 };
 
 
