@@ -33,7 +33,7 @@ public:
     static void TearDownTestCase(void);
     void SetUp();
     void TearDown();
-    MockProcess(const char* processName);
+    MockProcess(std::string processName);
 };
 
 
@@ -45,7 +45,7 @@ void ResSchedClientTest::SetUp() {}
 
 void ResSchedClientTest::TearDown() {}
 
-void ResSchedClientTest::MockProcess(const std::string processName)
+void ResSchedClientTest::MockProcess(std::string processName)
 {
     static const char *PERMS[] = {
             "ohos.permission.DISTRIBUTED_DATASYNC"
@@ -58,7 +58,7 @@ void ResSchedClientTest::MockProcess(const std::string processName)
         .dcaps = nullptr,
         .perms = PERMS,
         .acls = nullptr,
-        .processName = processName,
+        .processName = processName.c_str(),
         .aplStr = "system_core",
     };
     tokenId = GetAccessTokenId(&infoInstance);
