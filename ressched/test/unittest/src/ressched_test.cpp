@@ -23,7 +23,6 @@
 const static int32_t PARAMETERS_NUM_MIN                      = 2;
 const static int32_t PARAMETERS_NUM_MIN_KILL_PROCESS         = 4;
 const static int32_t PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME = 5;
-const static int32_t PARAMETERS_STABLE_TIMES                 = 100;
 
 static void MockProcess(std::string processName)
 {
