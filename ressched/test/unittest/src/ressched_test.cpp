@@ -28,7 +28,7 @@ const static int32_t PARAMETERS_STABLE_TIMES                 = 100;
 static void MockProcess(td::string processName)
 {
     static const char *PERMS[] = {
-            "ohos.permission.DISTRIBUTED_DATASYNC"
+        "ohos.permission.DISTRIBUTED_DATASYNC"
     };
     uint64_t tokenId;
     NativeTokenInfoParams infoInstance = {

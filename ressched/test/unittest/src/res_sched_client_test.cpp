@@ -48,7 +48,7 @@ void ResSchedClientTest::TearDown() {}
 void ResSchedClientTest::MockProcess(std::string processName)
 {
     static const char *PERMS[] = {
-            "ohos.permission.DISTRIBUTED_DATASYNC"
+        "ohos.permission.DISTRIBUTED_DATASYNC"
     };
     uint64_t tokenId;
     NativeTokenInfoParams infoInstance = {
