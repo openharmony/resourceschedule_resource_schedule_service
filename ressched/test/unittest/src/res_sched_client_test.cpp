@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -45,30 +45,37 @@ void ResSchedClientTest::SetUp() {}
 
 void ResSchedClientTest::TearDown() {}
 
-void ResSchedClientTest::MockProcess(const char* processName)
+void ResSchedClientTest::MockProcess(const std::string processName)
 {
     static const char *PERMS[] = {
             "ohos.permission.DISTRIBUTED_DATASYNC"
     };
     uint64_t tokenId;
     NativeTokenInfoParams infoInstance = {
-            .dcapsNum = 0,
-            .permsNum = 1,
-            .aclsNum = 0,
-            .dcaps = nullptr,
-            .perms = PERMS,
-            .acls = nullptr,
-            .processName = processName,
-            .aplStr = "system_core",
+        .dcapsNum = 0,
+        .permsNum = 1,
+        .aclsNum = 0,
+        .dcaps = nullptr,
+        .perms = PERMS,
+        .acls = nullptr,
+        .processName = processName,
+        .aplStr = "system_core",
     };
     tokenId = GetAccessTokenId(&infoInstance);
     SetSelfTokenID(tokenId);
 }
 
+/**
+ * @tc.name: KillProcess001
+ * @tc.desc: kill process stable test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: qiunaiguang
+ */
 HWTEST_F(ResSchedClientTest, KillProcess001, Function | MediumTest | Level0)
 {
     std::string processName = "samgr";
-    MockProcess(processName.c_str());
+    MockProcess(processName);
     std::unordered_map<std::string, std::string> mapPayload;
     mapPayload["pid"] = "65535";
     mapPayload["processName"] = "test";
@@ -78,10 +85,17 @@ HWTEST_F(ResSchedClientTest, KillProcess001, Function | MediumTest | Level0)
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
 }
 
+/**
+ * @tc.name: KillProcess002
+ * @tc.desc: kill process error test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: qiunaiguang
+ */
 HWTEST_F(ResSchedClientTest, KillProcess002, Function | MediumTest | Level0)
 {
     std::string processName = "samgr";
-    MockProcess(processName.c_str());
+    MockProcess(processName);
     std::unordered_map<std::string, std::string> mapPayload;
     ResSchedClient::GetInstance().KillProcess(mapPayload);
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
@@ -96,7 +110,7 @@ HWTEST_F(ResSchedClientTest, KillProcess002, Function | MediumTest | Level0)
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
 
     processName = "resource_schedule_service";
-    MockProcess(processName.c_str());
+    MockProcess(processName);
     ResSchedClient::GetInstance().KillProcess(mapPayload);
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
 }

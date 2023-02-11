@@ -34,7 +34,7 @@ ohos_unittest("resschedservice_test") {
 
   sources = [
     "src/res_sched_service_test.cpp",
-    ""src/res_sched_client_test.cpp","
+    "src/res_sched_client_test.cpp",
   ]
 
   deps = [

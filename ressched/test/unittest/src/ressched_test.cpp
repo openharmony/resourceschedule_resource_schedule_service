@@ -25,21 +25,21 @@ const static int32_t PARAMETERS_NUM_MIN_KILL_PROCESS         = 4;
 const static int32_t PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME = 5;
 const static int32_t PARAMETERS_STABLE_TIMES                 = 100;
 
-static void MockProcess(const char* processName)
+static void MockProcess(const std::string processName)
 {
     static const char *PERMS[] = {
             "ohos.permission.DISTRIBUTED_DATASYNC"
     };
     uint64_t tokenId;
     NativeTokenInfoParams infoInstance = {
-            .dcapsNum = 0,
-            .permsNum = 1,
-            .aclsNum = 0,
-            .dcaps = nullptr,
-            .perms = PERMS,
-            .acls = nullptr,
-            .processName = processName,
-            .aplStr = "system_core",
+        .dcapsNum = 0,
+        .permsNum = 1,
+        .aclsNum = 0,
+        .dcaps = nullptr,
+        .perms = PERMS,
+        .acls = nullptr,
+        .processName = processName,
+        .aplStr = "system_core",
     };
     tokenId = GetAccessTokenId(&infoInstance);
     SetSelfTokenID(tokenId);
@@ -48,10 +48,10 @@ static void MockProcess(const char* processName)
 static void KillProcess(int32_t argc, char *argv[])
 {
     if (argc >= PARAMETERS_NUM_MIN_KILL_PROCESS) {
-        char* caller = argv[2];
+        std::string caller = argv[PARAMETERS_NUM_MIN];
         MockProcess(caller);
         std::unordered_map<std::string, std::string> mapPayload;
-        mapPayload["pid"] = argv[3];
+        mapPayload["pid"] = argv[PARAMETERS_NUM_MIN_KILL_PROCESS - 1];
         if (argc >= PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME) {
             mapPayload["processName"] = argv[PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME - 1];
         }
