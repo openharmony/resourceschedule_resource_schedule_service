@@ -100,4 +100,3 @@ ohos_unittest("resschedfwk_test") {
     "soc_perf:socperf_client",
   ]
 }
-
