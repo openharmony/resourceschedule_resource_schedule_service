@@ -62,12 +62,12 @@ static void KillProcess(int32_t argc, char *argv[])
 int32_t main(int32_t argc, char *argv[])
 {
     if (argc < PARAMETERS_NUM_MIN || argv) {
-        cout << "error parameters";
+        std::cout << "error parameters";
         return 0;
     }
     char* function = argv[1];
     if (strcmp(function, "KillProcess") == 0) {
-        KillProcess(argc, argv);
+        std::KillProcess(argc, argv);
     } else {
         cout << "error parameters";
     }
