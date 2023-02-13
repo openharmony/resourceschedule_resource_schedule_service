@@ -21,7 +21,6 @@ group("unittest") {
     ":resschedclient_test",
     ":resschedfwk_test",
     ":resschedservice_test",
-    ":resschedclient_test",
   ]
 }
 
