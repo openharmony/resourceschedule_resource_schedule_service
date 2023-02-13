@@ -62,7 +62,6 @@
         "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_switch",
         "//foundation/resourceschedule/resource_schedule_service/ressched/sa_profile:ressched_sa_profile",
         "//foundation/resourceschedule/resource_schedule_service/ressched/etc/init:resource_schedule_service.cfg",
-        "//foundation/resourceschedule/resource_schedule_service/ressched/test/unittest:ressched_test",
         "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework:cgroup_sched",
         "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/profiles:process_group_config",
         "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group:libprocess_group"
@@ -87,7 +86,8 @@
         "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/frame_aware_plugin/test/unittest:unittest",
-        "//foundation/resourceschedule/resource_schedule_service/ressched/test/fuzztest:fuzztest"
+        "//foundation/resourceschedule/resource_schedule_service/ressched/test/fuzztest:fuzztest",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/test/unittest:ressched_test"
       ]
     },
     "hisysevent_config": [

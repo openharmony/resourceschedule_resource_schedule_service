@@ -32,10 +32,27 @@ ohos_unittest("resschedservice_test") {
     "${ressched_interfaces}/innerkits/ressched_client/include",
   ]
 
-  sources = [
-    "src/res_sched_client_test.cpp",
-    "src/res_sched_service_test.cpp",
+  sources = [ "src/res_sched_service_test.cpp" ]
+
+  deps = [
+    "${ressched_services}:resschedsvc_static",
+    "//third_party/googletest:gtest_main",
   ]
+
+  external_deps = [
+    "c_utils:utils",
+    "ipc:ipc_single",
+  ]
+}
+
+ohos_unittest("resschedclient_test") {
+  module_out_path = module_output_path
+  include_dirs = [
+    "${ressched_common}/include",
+    "${ressched_interfaces}/innerkits/ressched_client/include",
+  ]
+
+  sources = [ "src/res_sched_client_test.cpp" ]
 
   deps = [
     "${ressched_services}:resschedsvc_static",

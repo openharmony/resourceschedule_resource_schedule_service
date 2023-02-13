@@ -46,25 +46,30 @@ static void MockProcess(std::string processName)
 
 static void KillProcess(int32_t argc, char *argv[])
 {
-    if (argc >= PARAMETERS_NUM_MIN_KILL_PROCESS) {
-        std::string caller = argv[PARAMETERS_NUM_MIN];
-        MockProcess(caller);
-        std::unordered_map<std::string, std::string> mapPayload;
-        mapPayload["pid"] = argv[PARAMETERS_NUM_MIN_KILL_PROCESS - 1];
-        if (argc >= PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME) {
-            mapPayload["processName"] = argv[PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME - 1];
-        }
-        OHOS::ResourceSchedule::ResSchedClient::GetInstance().KillProcess(mapPayload);
+    if (argc < PARAMETERS_NUM_MIN_KILL_PROCESS) {
+        return;
     }
+    std::string caller = argv[PARAMETERS_NUM_MIN];
+    MockProcess(caller);
+    std::unordered_map<std::string, std::string> mapPayload;
+    mapPayload["pid"] = argv[PARAMETERS_NUM_MIN_KILL_PROCESS - 1];
+    if (argc >= PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME) {
+        mapPayload["processName"] = argv[PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME - 1];
+    }
+    OHOS::ResourceSchedule::ResSchedClient::GetInstance().KillProcess(mapPayload);
 }
 
 int32_t main(int32_t argc, char *argv[])
 {
-    if (argc >= PARAMETERS_NUM_MIN && argv) {
-        char* function = argv[1];
-        if (strcmp(function, "KillProcess") == 0) {
-            KillProcess(argc, argv);
-        }
+    if (argc < PARAMETERS_NUM_MIN || argv) {
+        cout << "error parameters";
+        return 0;
+    }
+    char* function = argv[1];
+    if (strcmp(function, "KillProcess") == 0) {
+        KillProcess(argc, argv);
+    } else {
+        cout << "error parameters";
     }
     return 0;
 }
