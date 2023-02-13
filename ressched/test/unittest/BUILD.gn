@@ -20,6 +20,7 @@ group("unittest") {
   deps = [
     ":resschedfwk_test",
     ":resschedservice_test",
+    "resschedclient_test",
   ]
 }
 
