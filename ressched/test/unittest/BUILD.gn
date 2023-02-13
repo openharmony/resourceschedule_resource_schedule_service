@@ -18,6 +18,7 @@ import(
 group("unittest") {
   testonly = true
   deps = [
+    ":resschedclient_test",
     ":resschedfwk_test",
     ":resschedservice_test",
     ":resschedclient_test",
