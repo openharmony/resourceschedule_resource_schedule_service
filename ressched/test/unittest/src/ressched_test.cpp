@@ -67,9 +67,9 @@ int32_t main(int32_t argc, char *argv[])
     }
     char* function = argv[1];
     if (strcmp(function, "KillProcess") == 0) {
-        std::KillProcess(argc, argv);
+        KillProcess(argc, argv);
     } else {
-        cout << "error parameters";
+        std::cout << "error parameters";
     }
     return 0;
 }
