@@ -14,30 +14,10 @@
 import("//build/test.gni")
 import("../../soc_perf.gni")
 
-module_output_path = "soc_perf/socperftest"
+ohos_executable("socperf_test") {
+  sources = [ "socperf_test.cpp" ]
 
-config("module_private_config") {
-  visibility = [ ":*" ]
-
-  include_dirs = [
-    "${socperf_common}/include",
-    "${socperf_interfaces}/inner_api/socperf_client/include",
-    "${socperf_services}/core/include",
-  ]
-}
-
-ohos_unittest("SocPerfSubTest") {
-  module_out_path = module_output_path
-
-  sources = [ "socperf_sub_test.cpp" ]
-
-  configs = [ ":module_private_config" ]
-
-  deps = [
-    "${socperf_interfaces}/inner_api/socperf_client:socperf_client",
-    "//third_party/googletest:gtest_main",
-    "//third_party/libxml2:xml2",
-  ]
+  deps = [ "${socperf_interfaces}/inner_api/socperf_client:socperf_client" ]
 
   external_deps = [
     "c_utils:utils",
@@ -47,9 +27,7 @@ ohos_unittest("SocPerfSubTest") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
-}
 
-group("unittest") {
-  testonly = true
-  deps = [ ":SocPerfSubTest" ]
+  part_name = "soc_perf"
+  subsystem_name = "resourceschedule"
 }

@@ -61,7 +61,7 @@
       "test": [
         "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/fuzztest:fuzztest",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/unittest:socperf_test"
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/testutil:socperf_test"
       ]
     }
   }
