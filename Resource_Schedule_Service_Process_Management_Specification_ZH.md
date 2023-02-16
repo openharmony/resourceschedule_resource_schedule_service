@@ -229,7 +229,7 @@ A. 事件打点延时
 | ----------------- | ------------ | :----------------------------------------------------------- | ---------------------- | :------------------- | ------------------ | ------------ | --------------- | -------------- | ---------- |
 | soc_perf          | cpu提频      | RES_TYPE_APP_STATE_CHANGE; RES_TYPE_WINDOW_FOCUS; RES_TYPE_CLICK_RECOGNIZE；RES_TYPE_PUSH_PAGE;  RTS_TYPE_SLIDE_RECOGNIZE; | 常驻：5918  动态：5922 | 常驻:88      动态:88 | 无                 | 无           | socperf_service | 无             | HaoyangT   |
 | frame_aware_sched | 智能感知调度 | RES_TYPE_WINDOW_FOCUS;  RES_TYPE_PROCESS_STATE_CHANGE;  RES_TYPE_APP_STATE_CHANGE | 常驻：4537             | 常驻：109            |                    |              | 暂无            |                | rongkunshi |
-| component_sched | 外设调度 | RES_TYPE_SCREEN_STATUS；RES_TYPE_APP_STATE_CHANGE；RES_TYPE_ABILITY_STATE_CHANGE；RES_TYPE_EXTENSION_STATE_CHANGE；RES_TYPE_PROCESS_STATE_CHANGE；RES_TYPE_WINDOW_FOCUS; | 常驻：             | 常驻： 动态:            |                    |              | 暂无            |                | linyunxuan |
+| component_sched | 外设调度 | RES_TYPE_SCREEN_STATUS；RES_TYPE_APP_STATE_CHANGE；RES_TYPE_ABILITY_STATE_CHANGE；RES_TYPE_EXTENSION_STATE_CHANGE；RES_TYPE_PROCESS_STATE_CHANGE；RES_TYPE_WINDOW_FOCUS; RES_TYPE_DEVICE_STILL_STATE_CHANGE; | 常驻：             | 常驻： 动态:            |                    |              | 暂无            |                | linyunxuan |
 
 ### 2：事件Check_List
 
@@ -263,6 +263,7 @@ A. 事件打点延时
 | RES_TYPE_AUDIO_VOLUME_KEY_CHANGE    | 音量改变事件                     | value：音量大小             | {"volumeType"=?}         | - | - |
 | RES_TYPE_POP_PAGE    | ace pipeline_context.cpp::PopPage();          | 无             |{"pid"=?,"uid"=?,"bundleName"="?","abilityName"="?", "pageUrl"="?"} | - | - |
 | RES_TYPE_WEB_GESTURE                | web手势事件                     | 无                        |无     | -        | -       |
+| RES_TYPE_DEVICE_STILL_STATE_CHANGE             | 当前设备运动状态和静止状态转变事件             | -1： 无效值，0： 转变为运动状态，1：转变为静止状态                        |无     | -        | -       |
 
 
 
