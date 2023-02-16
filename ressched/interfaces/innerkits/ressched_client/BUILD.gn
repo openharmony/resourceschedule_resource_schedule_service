@@ -13,8 +13,7 @@
 
 import("//build/ohos.gni")
 import("//build/test.gni")
-import(
-    "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
+import("../../../ressched.gni")
 
 config("client_private_config") {
   include_dirs = [ "${ressched_common}/include" ]

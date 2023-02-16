@@ -23,14 +23,14 @@
     "ram": "10240KB",
     "deps": {
       "components": [
-        "safwk",
-        "eventhandler",
-        "ipc",
-        "libxml2",
         "c_utils",
         "config_policy",
+        "eventhandler",
         "hitrace_native",
-        "hilog_native",
+        "hiviewdfx_hilog_native",
+        "ipc",
+        "libxml2",
+        "safwk",
         "samgr"
       ],
       "third_party": [
@@ -42,8 +42,7 @@
         "//foundation/resourceschedule/resource_schedule_service/soc_perf/profile:socperf_config",
         "//foundation/resourceschedule/resource_schedule_service/soc_perf/sa_profile:socperf_sa_profile",
         "//foundation/resourceschedule/resource_schedule_service/soc_perf/interfaces/inner_api/socperf_client:socperf_client",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf/services:socperf_server",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/unittest:socperf_test"
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf/services:socperf_server"
       ],
       "inner_kits": [
         {
@@ -61,7 +60,8 @@
       ],
       "test": [
         "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/unittest:unittest",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/fuzztest:fuzztest"
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/fuzztest:fuzztest",
+        "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/unittest:socperf_test"
       ]
     }
   }

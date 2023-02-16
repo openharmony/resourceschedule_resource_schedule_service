@@ -12,8 +12,7 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import(
-    "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
+import("../../../../ressched.gni")
 
 module_output_path = "resource_schedule_service/ressched"
 

@@ -12,8 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import(
-    "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
+import("../../ressched.gni")
 
 config("socperf_plugin_config") {
   include_dirs = [

@@ -13,8 +13,7 @@
 
 import("//build/ohos.gni")
 import("//foundation/resourceschedule/frame_aware_sched/frameaware.gni")
-import(
-    "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
+import("../../ressched.gni")
 
 config("frame_aware_plugin_config") {
   include_dirs = [
