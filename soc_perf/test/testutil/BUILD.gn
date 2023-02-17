@@ -11,38 +11,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//build/ohos.gni")
-import("//foundation/resourceschedule/frame_aware_sched/frameaware.gni")
-import("../../ressched.gni")
+import("//build/test.gni")
+import("../../soc_perf.gni")
 
-config("frame_aware_plugin_config") {
-  include_dirs = [
-    "include",
-    "${ressched_common}/include",
-    "${ressched_interfaces}/innerkits/ressched_client/include",
-    "${frame_aware_path}/common/include",
-    "${frame_aware_path}/interfaces/innerkits/frameintf",
-  ]
-}
+ohos_executable("socperf_test") {
+  sources = [ "socperf_test.cpp" ]
 
-ohos_shared_library("frame_aware_plugin") {
-  configs = [ ":frame_aware_plugin_config" ]
-
-  sources = [
-    "src/frame_aware_plugin.cpp",
-    "src/network_latency_controller.cpp",
-  ]
-
-  deps = [ "${ressched_services}:resschedsvc" ]
+  deps = [ "${socperf_interfaces}/inner_api/socperf_client:socperf_client" ]
 
   external_deps = [
-    "bluetooth:btframework",
     "c_utils:utils",
     "eventhandler:libeventhandler",
-    "frame_aware_sched:frame_msg_intf",
     "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_single",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
   ]
 
+  part_name = "soc_perf"
   subsystem_name = "resourceschedule"
-  part_name = "resource_schedule_service"
 }

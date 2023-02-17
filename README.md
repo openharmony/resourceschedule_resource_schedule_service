@@ -51,35 +51,34 @@ Resource_schedule_service policy is mainly used to extend and schedule the syste
 |   │   └── innerkits                 # Interface APIs
 |   └── profiles                      # config files
 └── ressched
-|   ├── common                     # Common header file
+|   ├── common                        # Common header file
 |   ├── interfaces
-|   │   └── innerkits              # Interface APIs
-|   │       └── ressched_client    # Report data in process
-|   ├── plugins                    # Plugin code
-|   ├── profile                    # Plugin switch xml and plugin private xml
-|   ├── sa_profile                 # System ability xml
-|   ├── sched_controller           # event receive
-|   |   ├── common_event           # event receive common interface
-|   |   └── observer               # callback event receive
-|   |       ├── audio_observer     # audio framework event callback
-|   |       ├── camera_observer    # camera event callback
-|   |       └── telephony_observer # telephony event callback
+|   │   └── innerkits                 # Interface APIs
+|   │       └── ressched_client       # Report data in process
+|   ├── plugins                       # Plugin code
+|   ├── profile                       # Plugin switch xml and plugin private xml
+|   ├── sa_profile                    # System ability xml
+|   ├── sched_controller              # event receive
+|   |   ├── common_event              # event receive common interface
+|   |   └── observer                  # callback event receive
+|   |       ├── audio_observer        # audio framework event callback
+|   |       ├── camera_observer       # camera event callback
+|   |       └── telephony_observer    # telephony event callback
 |   └── services
 |       ├── resschedmgr
-|       │   ├── pluginbase         # Plugin struct definition
-|       │   └── resschedfwk        # Resource schedule framework
-|       └── resschedservice        # Resource schedule service
+|       │   ├── pluginbase            # Plugin struct definition
+|       │   └── resschedfwk           # Resource schedule framework
+|       └── resschedservice           # Resource schedule service
 └── soc_perf
-    ├── configs                     # socperf config file
-    ├── include
-    |       ├── client              # socperf client header files
-    |       ├── server              # socperf server header files
-    |       └── server              # socperf core code header files
-    ├── src
-    |    ├── client                 # socperf Client interfaces
-    |    ├── server                 # socperf Server codes
-    |    └── server                 # core code, arbitrate and take effects
-    └── sa_profile                  # System ability xml
+    ├── common                        # Common header file
+    ├── interfaces                    #
+    │   └── inner_api                 # Interface APIs
+    │       └── socperf_client        # SocPerf Client interfaces
+    ├── profile                       # SocPerf config file
+    ├── sa_profile                    # System ability xml
+    ├── services
+        ├── core                      # SocPerf core code, arbitrate and take effects
+        └── server                    # SocPerf server codes
 
 ```
 ## How to write a plugin<a name="section1312121216216"></a>

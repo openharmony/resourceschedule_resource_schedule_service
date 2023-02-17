@@ -14,8 +14,7 @@
 #####################hydra-fuzz###################
 import("//build/config/features.gni")
 import("//build/test.gni")
-import(
-    "//foundation/resourceschedule/resource_schedule_service/soc_perf/soc_perf.gni")
+import("../../../soc_perf.gni")
 module_output_path = "resource_schedule_service/soc_perf"
 
 ##############################fuzztest##########################################
