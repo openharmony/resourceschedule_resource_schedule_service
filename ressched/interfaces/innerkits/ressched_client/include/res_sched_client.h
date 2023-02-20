@@ -56,7 +56,7 @@ public:
      *
      * @param mapPayload Indicates the context info of the kill message.
      */
-    void KillProcess(const std::unordered_map<std::string, std::string>& mapPayload);
+    int32_t KillProcess(const std::unordered_map<std::string, std::string>& mapPayload);
 
     /**
      * @brief Stop remote Object, reset ResSchedClient.

@@ -41,7 +41,7 @@ public:
      *
      * @param payload Indicates the context info of the kill message.
      */
-    void KillProcess(const nlohmann::json& payload) override;
+    void KillProcess(int32_t& killRes, const nlohmann::json& payload) override;
 public:
     /**
      * @brief Construct a new ResSchedServiceProxy object.

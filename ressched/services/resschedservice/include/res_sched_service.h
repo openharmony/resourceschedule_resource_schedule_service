@@ -27,7 +27,7 @@ public:
 
     void ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload) override;
 
-    void KillProcess(const nlohmann::json& payload) override;
+    void KillProcess(int32_t& killRes, const nlohmann::json& payload) override;
 
     int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
 

@@ -257,26 +257,5 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_001, TestSize.Level1)
     /* DeInit */
     SocPerfPlugin::GetInstance().Disable();
 }
-
-/**
- * @tc.name: Plugin mgr test KillProcessByPid 001
- * @tc.desc: Verify if KillProcessByPid is success.
- * @tc.type: FUNC
- * @tc.require: issueI6D6BM
- * @tc.author:qiunaiguang
- */
-HWTEST_F(PluginMgrTest, KillProcessByPid001, TestSize.Level1)
-{
-    pluginMgr_->KillProcessByPid(nullptr, "");
-    nlohmann::json payload;
-    pluginMgr_->KillProcessByPid(payload, "");
-    payload["pid"] = 100000;
-    payload["processName"] = "test";
-    pluginMgr_->KillProcessByPid(payload, "");
-    pluginMgr_->KillProcessByPid(payload, "resource");
-    pluginMgr_->KillProcessByPid(payload, "samgr");
-
-    EXPECT_TRUE(pluginMgr_->killProcess_->KillProcessByPid(65535) < 0);
-}
 } // namespace ResourceSchedule
 } // namespace OHOS

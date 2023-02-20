@@ -49,17 +49,19 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
     rss_->ReportData(resType, value, payload);
 }
 
-void ResSchedClient::KillProcess(const std::unordered_map<std::string, std::string>& mapPayload)
+int32_t ResSchedClient::KillProcess(const std::unordered_map<std::string, std::string>& mapPayload)
 {
     if (TryConnect() != ERR_OK) {
-        return;
+        return RES_SCHED_CONNECT_FAIL;
     }
     RESSCHED_LOGD("ResSchedClient::KillProcess receive mission.");
     nlohmann::json payload;
     for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
         payload[it->first] = it->second;
     }
-    rss_->KillProcess(payload);
+    int32_t status = RES_SCHED_NONE;
+    rss_->KillProcess(status, payload);
+    return status;
 }
 
 ErrCode ResSchedClient::TryConnect()

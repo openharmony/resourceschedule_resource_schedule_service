@@ -19,6 +19,7 @@
 #include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
 #include "plugin_mgr.h"
+#include "res_sched_errors.h"
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "tokenid_kit.h"
@@ -38,15 +39,16 @@ void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 
-void ResSchedService::KillProcess(const nlohmann::json& payload)
+void ResSchedService::KillProcess(int32_t& killRes, const nlohmann::json& payload)
 {
     uint32_t accessToken = IPCSkeleton::GetCallingTokenID();
     AccessToken::NativeTokenInfo nativeTokenInfo;
     int32_t result = AccessToken::AccessTokenKit::GetNativeTokenInfo(accessToken, nativeTokenInfo);
     if (result == ERR_OK) {
-        ResSchedMgr::GetInstance().KillProcess(payload, nativeTokenInfo.processName);
+        killRes = ResSchedMgr::GetInstance().KillProcessByClient(payload, nativeTokenInfo.processName);
     } else {
         RESSCHED_LOGE("Kill process get token info fail.");
+        killRes = RES_SCHED_ACCESS_TOKEN_FAIL;
     }
 }
 
