@@ -49,7 +49,7 @@ enum : uint32_t {
     RES_TYPE_CLICK_RECOGNIZE = 9,
     // ace pipeline_context.cpp::PushPage(); value 0: push_page_start, 1: push_page_complete
     RES_TYPE_PUSH_PAGE = 10,
-    // ace slide event recognize; value 1: slide on; 0: slide off
+    // ace slide event recognize; value 1: list fling on; 0: list fling off; 3: slide normal begin, 4: slide normal end.
     RES_TYPE_SLIDE_RECOGNIZE = 11,
     // window visibility change, value 1: isVisible, 0: not isVisible, payload:pid,uid,windowId,windowType
     RES_TYPE_WINDOW_VISIBILITY_CHANGE = 12,
@@ -105,8 +105,6 @@ enum : uint32_t {
     RES_TYPE_MOVE_WINDOW = 32,
     // animation transition event; value 0: animation begin, value 1: animation end.
     RES_TYPE_SHOW_REMOTE_ANIMATION = 33,
-    // slide normal event; value 0: slide normal begin, value 1: slide normal end.
-    RES_TYPE_SLIDE_NORMAL = 34,
 };
 
 static const std::map<uint32_t, std::string> resTypeToStr = {
@@ -143,8 +141,7 @@ static const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_DEVICE_STILL_STATE_CHANGE, "DEVICE_STILL_STATE_CHANGE" },
     { RES_TYPE_RESIZE_WINDOW, "RES_TYPE_RESIZE_WINDOW" },
     { RES_TYPE_MOVE_WINDOW, "RES_TYPE_MOVE_WINDOW" },
-    { RES_TYPE_SHOW_REMOTE_ANIMATION, "RES_TYPE_SHOW_REMOTE_ANIMATION" },
-    { RES_TYPE_SLIDE_NORMAL, "RES_TYPE_SLIDE_NORMAL" }
+    { RES_TYPE_SHOW_REMOTE_ANIMATION, "RES_TYPE_SHOW_REMOTE_ANIMATION" }
 };
 
 /**
@@ -219,6 +216,8 @@ enum WindowVisibilityStatus : int64_t {
 enum SlideEventStatus : int64_t {
     SLIDE_EVENT_OFF = 0,
     SLIDE_EVENT_ON = 1,
+    SLIDE_NORMAL_BEGIN = 3,
+    SLIDE_NORMAL_END = 4,
 };
 
 /**
@@ -268,14 +267,6 @@ enum WindowMoveType : int64_t {
 enum ShowRemoteAnimationStatus : int64_t {
     ANIMATION_BEGIN = 0,
     ANIMATION_END = 1,
-};
-
-/**
- * @brief Slide normal Status
- */
-enum SlideNormalStatus : int64_t {
-    SLIDE_NORMAL_BEGIN = 0,
-    SLIDE_NORMAL_END = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
