@@ -59,9 +59,7 @@ int32_t ResSchedClient::KillProcess(const std::unordered_map<std::string, std::s
     for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
         payload[it->first] = it->second;
     }
-    int32_t status = RES_SCHED_NONE;
-    rss_->KillProcess(status, payload);
-    return status;
+    return rss_->KillProcess(payload);
 }
 
 ErrCode ResSchedClient::TryConnect()

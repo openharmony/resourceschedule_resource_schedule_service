@@ -42,22 +42,22 @@ void ResSchedServiceProxy::ReportData(uint32_t resType, int64_t value, const nlo
     RESSCHED_LOGD("%{public}s, success.", __func__);
 }
 
-void ResSchedServiceProxy::KillProcess(int32_t& killRes, const nlohmann::json& payload)
+int32_t ResSchedServiceProxy::KillProcess(const nlohmann::json& payload)
 {
     int32_t error;
     MessageParcel data;
     MessageParcel reply;
     MessageOption option = { MessageOption::TF_SYNC };
-    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), , ResSchedServiceProxy);
-    WRITE_PARCEL(data, String, payload.dump(), , ResSchedServiceProxy);
+    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), RES_SCHED_DATA_ERROR,
+        ResSchedServiceProxy);
+    WRITE_PARCEL(data, String, payload.dump(), RES_SCHED_DATA_ERROR, ResSchedServiceProxy);
     error = Remote()->SendRequest(IResSchedService::KILL_PROCESS, data, reply, option);
     if (error != NO_ERROR) {
         RESSCHED_LOGE("Send request error: %{public}d.", error);
-        killRes = RES_SCHED_REQUEST_FAIL;
-        return;
+        return RES_SCHED_REQUEST_FAIL;
     }
     RESSCHED_LOGD("%{public}s, success.", __func__);
-    killRes = reply.ReadInt32();
+    return reply.ReadInt32();
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -65,8 +65,7 @@ int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel
     }
     std::string payload;
     READ_PARCEL(data, String, payload, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
-    int32_t status = RES_SCHED_NONE;
-    KillProcess(status, StringToJsonObj(payload));
+    int32_t status = KillProcess(StringToJsonObj(payload));
     reply.WriteInt32(status);
     return ERR_OK;
 }

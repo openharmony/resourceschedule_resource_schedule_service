@@ -39,16 +39,16 @@ void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 
-void ResSchedService::KillProcess(int32_t& killRes, const nlohmann::json& payload)
+int32_t ResSchedService::KillProcess(const nlohmann::json& payload)
 {
     uint32_t accessToken = IPCSkeleton::GetCallingTokenID();
     AccessToken::NativeTokenInfo nativeTokenInfo;
     int32_t result = AccessToken::AccessTokenKit::GetNativeTokenInfo(accessToken, nativeTokenInfo);
     if (result == ERR_OK) {
-        killRes = ResSchedMgr::GetInstance().KillProcessByClient(payload, nativeTokenInfo.processName);
+        return ResSchedMgr::GetInstance().KillProcessByClient(payload, nativeTokenInfo.processName);
     } else {
         RESSCHED_LOGE("Kill process get token info fail.");
-        killRes = RES_SCHED_ACCESS_TOKEN_FAIL;
+        return RES_SCHED_ACCESS_TOKEN_FAIL;
     }
 }
 

@@ -75,12 +75,7 @@ void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::js
 
 int32_t ResSchedMgr::KillProcessByClient(const nlohmann::json& payload, std::string killClientInitiator)
 {
-    std::string trace_str(__func__);
-    trace_str.append(",kill process with ").append(killClientInitiator);
-    StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    int32_t killRes = killProcess_->KillProcessByPidWithClient(payload, killClientInitiator);
-    FinishTrace(HITRACE_TAG_OHOS);
-    return killRes;
+    return killProcess_->KillProcessByPidWithClient(payload, killClientInitiator);
 }
 
 void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload)

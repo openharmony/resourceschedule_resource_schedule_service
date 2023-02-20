@@ -52,7 +52,7 @@ int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload, s
         RESSCHED_LOGE("kill process %{public}d failed.", pid);
     } else {
         RESSCHED_LOGI("kill process, killer is %{public}s, %{public}s to be killed, pid is %{public}d.",
-                      killClientInitiator.c_str(), processName.c_str(), pid);
+            killClientInitiator.c_str(), processName.c_str(), pid);
     }
     return killRes;
 }
