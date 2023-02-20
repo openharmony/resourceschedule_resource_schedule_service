@@ -37,8 +37,8 @@ int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload, s
     if (pid == 0) {
         return RES_SCHED_Kill_PROCESS_FAIL;
     }
-    auto it = find(allowedClient_.begin(), allowedClient_.end(), killClientInitiator);
-    if (it == allowedClient_.end()) {
+    auto it = find(ALLOWED_CLIENT.begin(), ALLOWED_CLIENT.end(), killClientInitiator);
+    if (it == ALLOWED_CLIENT.end()) {
         RESSCHED_LOGE("kill process fail, %{public}s no permission.", killClientInitiator.c_str());
         return RES_SCHED_Kill_PROCESS_FAIL;
     }

@@ -25,7 +25,7 @@ class KillProcess {
 public:
     int32_t KillProcessByPidWithClient(const nlohmann::json& payload, std::string killClientInitiator);
 private:
-    const std::vector<std::string> allowedClient_ = {"samgr"};
+    const std::vector<std::string> ALLOWED_CLIENT = {"samgr"};
 
     int32_t KillProcessByPid(const pid_t pid) const;
 };
