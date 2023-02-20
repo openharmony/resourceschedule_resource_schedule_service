@@ -235,34 +235,36 @@ A. 事件打点延时
 
 更新2022年6月01日14:35:24
 
-| 事件type                        | 事件用途                             | 事件value                 | 事件payload格式                                              | 事件打点延时: | 订阅事件插件           |
-| ------------------------------- | ------------------------------------ | ------------------------- | ------------------------------------------------------------ | ------------- | ---------------------- |
-| RES_TYPE_SCREEN_STATUS          | 屏幕状态                             | 0：屏幕暗 1：屏幕亮       | 无需payload                                                  |               |                        |
-| RES_TYPE_APP_STATE_CHANGE       | APP状态改变事件                      | value : app state         | {"pid"=?,"uid"=?,"bundleName"="?"}                          | <10ms         | soc_perf;  frame_aware |
-| RES_TYPE_ABILITY_STATE_CHANGE   | ABILITY状态改变事件                  | value : ability state     | {"pid"=?,"uid"=?,"bundleName"="?"}                           |               |                        |
-| RES_TYPE_EXTENSION_STATE_CHANGE | EXTENSION状态改变事件                | value ：extension state   | {"pid"=?,"uid"=?,"bundleName"="?"}                           |               |                        |
-| RES_TYPE_PROCESS_STATE_CHANGE   | 进程状态事件                         | 0：创建 1：销毁           | {"pid"=?,"uid"=?,"bundleName"="?"}                           | <10ms         | frame_aware            |
-| RES_TYPE_WINDOW_FOCUS           | 窗口聚焦事件                         | 0：聚焦1：不聚焦          | {"pid"=?,"uid"=?,"bundleName"="?",  "windowId"=?,"windowType"=?,displayId=?} | <10ms         | soc_perf ; frame_aware |
-| RES_TYPE_TRANSIENT_TASK         | 瞬态任务事件                         | 0：开始  1：结束          | {"pid"=?,"uid"=?,"bundleName"="?"}                           |               |                        |
-| RES_TYPE_CONTINUOUS_TASK        | 长时任务事件                         | 0：开始  1：结束          | {"pid"=?,"uid"=?,"abilityName"="?"}                          |               |                        |
-| RES_TYPE_CGROUP_ADJUSTER        | cgroup改变事件                       | 0: 进程组分组变化  1: 线程分组变化 | {"pid"=?,"uid"=?,"name"="?","oldGroup"=?, "newGroup"=?}      |               |                        |
-| RES_TYPE_CLICK_RECOGNIZE        | ace手势点击识别器                    | 无                        | 无                                                           | <10ms         | soc_perf               |
-| RES_TYPE_PUSH_PAGE              | ace pipeline_context.cpp::PushPage() | 无                        | 无                                                           | <10ms         | soc_perf               |
-| RTS_TYPE_SLIDE_RECOGNIZE        | ace slide event recognize            | 1: slide on; 0: slide off | 无                                                           | <10ms         | soc_perf               |
-| RES_TYPE_WINDOW_VISIBILITY_CHANGE     | 窗口可见性状态变化事件          | 1: 可见, 0: 不可见     | 无                    | - | - |
-| RES_TYPE_REPORT_MMI_PROCESS           | 上报mmi_service线程ID          | mmi_service线程号     | {"uid"=?, "pid"=?}    | - | - |
-| RES_TYPE_REPORT_RENDER_THREAD         | 上报应用的RSRender线程ID       | RSRenderThread线程号   |  {"uid"=?, "pid"=?}   | - | - |
-| RES_TYPE_APP_INSTALL_UNINSTALL  | 应用安装和卸载事件                    | value 0: 卸载, 1: 安装  | {"uid"=?,"bundleName"="?} | - | - |
-| RES_TYPE_WIFI_CONNECT_STATE_CHANGE | wifi连接状态事件                  | 1:空闲, 2:连接中, 3:已连接, 4:断开中, 5:已断开   | 无需payload | - | - |
-| RES_TYPE_USER_SWITCH            | 用户切换事件                         | value: 切换到的目标用户id  | 无需payload         | - | - |
-| RES_TYPE_USER_REMOVE            | 用户删除事件                         | value: 删除的用户id        | 无需payload         | - | - |
-| RES_TYPE_SCREEN_LOCK            | 锁屏和解锁事件                       | 0：解锁 1：锁屏             | 无需payload         | - | - |
-| RES_TYPE_CALL_STATE_UPDATE          | 电话状态改变事件                 | value：电话状态             | 无需payload         | - | - |
-| RES_TYPE_AUDIO_RENDER_STATE_CHANGE  | 音频流状态改变事件               | value：音频流状态           | {"uid"=?,"sessionId"=?}          | - | - |
-| RES_TYPE_AUDIO_RING_MODE_CHANGE     | 声音模式改变事件                 | 0：响铃模式 1：静音模式     | 无需payload         | - | - |
-| RES_TYPE_AUDIO_VOLUME_KEY_CHANGE    | 音量改变事件                     | value：音量大小             | {"volumeType"=?}         | - | - |
-| RES_TYPE_POP_PAGE    | ace pipeline_context.cpp::PopPage();          | 无             |{"pid"=?,"uid"=?,"bundleName"="?","abilityName"="?", "pageUrl"="?"} | - | - |
-| RES_TYPE_WEB_GESTURE                | web手势事件                     | 无                        |无     | -        | -       |
+| 事件type                        | 事件用途                                 | 事件value                          | 事件payload格式                                              | 事件打点延时: | 订阅事件插件           |
+| ------------------------------- |--------------------------------------|----------------------------------| ------------------------------------------------------------ | ------------- | ---------------------- |
+| RES_TYPE_SCREEN_STATUS          | 屏幕状态                                 | 0：屏幕暗 1：屏幕亮                      | 无需payload                                                  |               |                        |
+| RES_TYPE_APP_STATE_CHANGE       | APP状态改变事件                            | value : app state                | {"pid"=?,"uid"=?,"bundleName"="?"}                          | <10ms         | soc_perf;  frame_aware |
+| RES_TYPE_ABILITY_STATE_CHANGE   | ABILITY状态改变事件                        | value : ability state            | {"pid"=?,"uid"=?,"bundleName"="?"}                           |               |                        |
+| RES_TYPE_EXTENSION_STATE_CHANGE | EXTENSION状态改变事件                      | value ：extension state           | {"pid"=?,"uid"=?,"bundleName"="?"}                           |               |                        |
+| RES_TYPE_PROCESS_STATE_CHANGE   | 进程状态事件                               | 0：创建 1：销毁                        | {"pid"=?,"uid"=?,"bundleName"="?"}                           | <10ms         | frame_aware            |
+| RES_TYPE_WINDOW_FOCUS           | 窗口聚焦事件                               | 0：聚焦1：不聚焦                        | {"pid"=?,"uid"=?,"bundleName"="?",  "windowId"=?,"windowType"=?,displayId=?} | <10ms         | soc_perf ; frame_aware |
+| RES_TYPE_TRANSIENT_TASK         | 瞬态任务事件                               | 0：开始  1：结束                       | {"pid"=?,"uid"=?,"bundleName"="?"}                           |               |                        |
+| RES_TYPE_CONTINUOUS_TASK        | 长时任务事件                               | 0：开始  1：结束                       | {"pid"=?,"uid"=?,"abilityName"="?"}                          |               |                        |
+| RES_TYPE_CGROUP_ADJUSTER        | cgroup改变事件                           | 0: 进程组分组变化  1: 线程分组变化            | {"pid"=?,"uid"=?,"name"="?","oldGroup"=?, "newGroup"=?}      |               |                        |
+| RES_TYPE_CLICK_RECOGNIZE        | ace手势点击识别器                           | 无                                | 无                                                           | <10ms         | soc_perf               |
+| RES_TYPE_PUSH_PAGE              | ace pipeline_context.cpp::PushPage() | 无                                | 无                                                           | <10ms         | soc_perf               |
+| RTS_TYPE_SLIDE_RECOGNIZE        | ace slide event recognize            | 1: slide on; 0: slide off        | 无                                                           | <10ms         | soc_perf               |
+| RES_TYPE_WINDOW_VISIBILITY_CHANGE     | 窗口可见性状态变化事件                          | 1: 可见, 0: 不可见                    | 无                    | - | - |
+| RES_TYPE_REPORT_MMI_PROCESS           | 上报mmi_service线程ID                    | mmi_service线程号                   | {"uid"=?, "pid"=?}    | - | - |
+| RES_TYPE_REPORT_RENDER_THREAD         | 上报应用的RSRender线程ID                    | RSRenderThread线程号                |  {"uid"=?, "pid"=?}   | - | - |
+| RES_TYPE_APP_INSTALL_UNINSTALL  | 应用安装和卸载事件                            | value 0: 卸载, 1: 安装               | {"uid"=?,"bundleName"="?} | - | - |
+| RES_TYPE_WIFI_CONNECT_STATE_CHANGE | wifi连接状态事件                           | 1:空闲, 2:连接中, 3:已连接, 4:断开中, 5:已断开 | 无需payload | - | - |
+| RES_TYPE_USER_SWITCH            | 用户切换事件                               | value: 切换到的目标用户id                | 无需payload         | - | - |
+| RES_TYPE_USER_REMOVE            | 用户删除事件                               | value: 删除的用户id                   | 无需payload         | - | - |
+| RES_TYPE_SCREEN_LOCK            | 锁屏和解锁事件                              | 0：解锁 1：锁屏                        | 无需payload         | - | - |
+| RES_TYPE_CALL_STATE_UPDATE          | 电话状态改变事件                             | value：电话状态                       | 无需payload         | - | - |
+| RES_TYPE_AUDIO_RENDER_STATE_CHANGE  | 音频流状态改变事件                            | value：音频流状态                      | {"uid"=?,"sessionId"=?}          | - | - |
+| RES_TYPE_AUDIO_RING_MODE_CHANGE     | 声音模式改变事件                             | 0：响铃模式 1：静音模式                    | 无需payload         | - | - |
+| RES_TYPE_AUDIO_VOLUME_KEY_CHANGE    | 音量改变事件                               | value：音量大小                       | {"volumeType"=?}         | - | - |
+| RES_TYPE_POP_PAGE    | ace pipeline_context.cpp::PopPage(); | 无                                |{"pid"=?,"uid"=?,"bundleName"="?","abilityName"="?", "pageUrl"="?"} | - | - |
+| RES_TYPE_WEB_GESTURE                | web手势事件                              | 无                                |无     | -        | -       |
+| RES_TYPE_SHOW_REMOTE_ANIMATION                | 动画开始事件                               | 0：动画开始 1：动画结束                    |无     | -        | -       |
+
 
 
 
