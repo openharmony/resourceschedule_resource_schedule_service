@@ -56,7 +56,8 @@ static void KillProcess(int32_t argc, char *argv[])
     if (argc >= PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME) {
         mapPayload["processName"] = argv[PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME - 1];
     }
-    OHOS::ResourceSchedule::ResSchedClient::GetInstance().KillProcess(mapPayload);
+    int32_t res = OHOS::ResourceSchedule::ResSchedClient::GetInstance().KillProcess(mapPayload);
+    std::cout << "kill result:" << res << std::endl;
 }
 
 int32_t main(int32_t argc, char *argv[])

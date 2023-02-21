@@ -16,11 +16,17 @@
 #define RESSCHED_SERVICES_RESSCHEDMGR_RESSCHEDFWK_INCLUDE_KILL_PROCESS_H
 
 #include <string>
+#include <vector>
+#include "nlohmann/json.hpp"
 
 namespace OHOS {
 namespace ResourceSchedule {
 class KillProcess {
 public:
+    int32_t KillProcessByPidWithClient(const nlohmann::json& payload, std::string killClientInitiator);
+private:
+    const std::vector<std::string> ALLOWED_CLIENT = {"samgr"};
+
     int32_t KillProcessByPid(const pid_t pid) const;
 };
 } // namespace ResourceSchedule

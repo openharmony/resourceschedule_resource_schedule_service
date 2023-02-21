@@ -39,7 +39,7 @@ public:
      *
      * @param payload Indicates the context info of the kill message.
      */
-    virtual void KillProcess(const nlohmann::json& payload) = 0;
+    virtual int32_t KillProcess(const nlohmann::json& payload) = 0;
     enum : uint32_t {
         REPORT_DATA = 1,
         KILL_PROCESS = 2,

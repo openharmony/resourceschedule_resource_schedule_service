@@ -19,6 +19,7 @@
 #include <sys/types.h>
 #include <string>
 #include "event_handler.h"
+#include "kill_process.h"
 #include "single_instance.h"
 #include "nlohmann/json.hpp"
 
@@ -53,11 +54,12 @@ public:
      * @param payload process message
      * @param killClientInitiator who want to kill other
      */
-    void KillProcess(const nlohmann::json& payload = nullptr, std::string killClientInitiator = "");
+    int32_t KillProcessByClient(const nlohmann::json& payload = nullptr, std::string killClientInitiator = "");
 private:
     void DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload);
     // main handler, use for report data
     std::shared_ptr<AppExecFwk::EventHandler> mainHandler_ = nullptr;
+    std::shared_ptr<KillProcess> killProcess_ = nullptr;
     std::mutex mainHandlerMutex_;
 };
 } // namespace ResourceSchedule

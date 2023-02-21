@@ -263,7 +263,7 @@ A. 事件打点延时
 | RES_TYPE_AUDIO_VOLUME_KEY_CHANGE    | 音量改变事件                     | value：音量大小             | {"volumeType"=?}         | - | - |
 | RES_TYPE_POP_PAGE    | ace pipeline_context.cpp::PopPage();          | 无             |{"pid"=?,"uid"=?,"bundleName"="?","abilityName"="?", "pageUrl"="?"} | - | - |
 | RES_TYPE_WEB_GESTURE                | web手势事件                     | 无                        |无     | -        | -       |
-
+| RES_TYPE_SHOW_REMOTE_ANIMATION      | 动画开始事件                     | 0：动画开始 1：动画结束     | {"srcPid"=?}     | -        | -       |
 
 
 
