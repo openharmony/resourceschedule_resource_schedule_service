@@ -43,14 +43,14 @@ int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload, s
         return RES_SCHED_KILL_PROCESS_FAIL;
     }
 
-    string processName = "unknown process";
-    if (payload.contains("processName") && payload["processName"].is_string()) {
-        processName = payload["processName"].get<string>();
-    }
     int32_t killRes = KillProcessByPid(pid);
     if (killRes < 0) {
         RESSCHED_LOGE("kill process %{public}d failed.", pid);
     } else {
+        string processName = "unknown process";
+        if (payload.contains("processName") && payload["processName"].is_string()) {
+            processName = payload["processName"].get<string>();
+        }
         RESSCHED_LOGI("kill process, killer is %{public}s, %{public}s to be killed, pid is %{public}d.",
             killClientInitiator.c_str(), processName.c_str(), pid);
     }
