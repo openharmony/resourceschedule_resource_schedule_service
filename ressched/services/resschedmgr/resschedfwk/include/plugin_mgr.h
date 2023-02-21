@@ -25,7 +25,6 @@
 #include "datetime_ex.h"
 #include "event_handler.h"
 #include "config_reader.h"
-#include "kill_process.h"
 #include "plugin_switch.h"
 #include "plugin.h"
 #include "nocopyable.h"
@@ -126,7 +125,6 @@ private:
     const int32_t DUMP_ONE_STRING_SIZE = 32;
     std::unique_ptr<ConfigReader> configReader_ = nullptr;
     std::unique_ptr<PluginSwitch> pluginSwitch_ = nullptr;
-    std::unique_ptr<KillProcess> killProcess_ = nullptr;
 
     std::mutex pluginMutex_;
     std::mutex dispatcherHandlerMutex_;
@@ -141,7 +139,6 @@ private:
     int32_t handlerNum_ = 0;
     std::map<std::string, std::list<TimePoint>> pluginTimeoutTime_;
     std::list<std::string> disablePlugins_;
-    std::vector<std::string> allowedClient_ = {"samgr"};
     std::mutex disablePluginsMutex_;
 };
 } // namespace ResourceSchedule

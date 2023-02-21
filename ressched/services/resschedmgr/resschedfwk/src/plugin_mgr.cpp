@@ -72,9 +72,6 @@ void PluginMgr::Init()
             RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
         }
     }
-    if (!killProcess_) {
-        killProcess_ = make_unique<KillProcess>();
-    }
     LoadPlugin();
     RESSCHED_LOGI("PluginMgr::Init success!");
 }
@@ -446,35 +443,6 @@ void PluginMgr::OnDestroy()
             iter->second = nullptr;
         }
         dispatcherHandlerMap_.erase(iter++);
-    }
-}
-
-void PluginMgr::KillProcessByPid(const nlohmann::json& payload, std::string killClientInitiator)
-{
-    if ((payload == nullptr) || (!(payload.contains("pid") && payload["pid"].is_string()))) {
-        return;
-    }
-
-    pid_t pid = static_cast<uint32_t>(atoi(payload["pid"].get<string>().c_str()));
-    if (pid == 0) {
-        return;
-    }
-    auto it = find(allowedClient_.begin(), allowedClient_.end(), killClientInitiator);
-    if (it == allowedClient_.end()) {
-        RESSCHED_LOGE("kill process fail, %{public}s no permission.", killClientInitiator.c_str());
-        return;
-    }
-
-    string processName = "unknown process";
-    if (payload.contains("processName") && payload["processName"].is_string()) {
-        processName = payload["processName"].get<string>();
-    }
-
-    if (killProcess_->KillProcessByPid(pid) < 0) {
-        RESSCHED_LOGE("kill process %{public}d failed.", pid);
-    } else {
-        RESSCHED_LOGI("kill process, killer is %{public}s, %{public}s to be killed, pid is %{public}d.",
-            killClientInitiator.c_str(), processName.c_str(), pid);
     }
 }
 } // namespace ResourceSchedule

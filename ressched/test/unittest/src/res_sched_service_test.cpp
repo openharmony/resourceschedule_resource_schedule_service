@@ -151,8 +151,9 @@ public:
     {
     }
 
-    void KillProcess(const nlohmann::json& payload) override
+    int32_t KillProcess(const nlohmann::json& payload) override
     {
+        return 0;
     }
 };
 

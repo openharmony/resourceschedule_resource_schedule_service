@@ -38,11 +38,14 @@ ohos_unittest("ProcessGroupSubTest") {
   configs = [ ":process_group_module_private_config" ]
 
   deps = [
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group:libprocess_group",
+    "../../framework/process_group:libprocess_group",
     "//third_party/googletest:gtest_main",
   ]
-  external_deps = [ "c_utils:utils" ]
+
+  external_deps = [
+    "c_utils:utils",
+    "hiviewdfx_hilog_native:libhilog",
+  ]
 }
 
 ohos_executable("process_proup_test") {
@@ -56,7 +59,7 @@ ohos_executable("process_proup_test") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
 
-  deps = [ "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group:libprocess_group" ]
+  deps = [ "../../framework/process_group:libprocess_group" ]
 
   install_enable = true
   part_name = "resource_schedule_service"

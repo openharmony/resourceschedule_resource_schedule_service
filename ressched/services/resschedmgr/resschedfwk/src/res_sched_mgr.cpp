@@ -37,6 +37,9 @@ void ResSchedMgr::Init()
     if (!mainHandler_) {
         mainHandler_ = std::make_shared<EventHandler>(EventRunner::Create(RSS_THREAD_NAME));
     }
+    if (!killProcess_) {
+        killProcess_ = std::make_shared<KillProcess>();
+    }
 }
 
 void ResSchedMgr::Stop()
@@ -70,15 +73,9 @@ void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::js
     FinishTrace(HITRACE_TAG_OHOS);
 }
 
-void ResSchedMgr::KillProcess(const nlohmann::json& payload, std::string killClientInitiator)
+int32_t ResSchedMgr::KillProcessByClient(const nlohmann::json& payload, std::string killClientInitiator)
 {
-    if (!mainHandler_) {
-        return;
-    }
-    std::lock_guard<std::mutex> autoLock(mainHandlerMutex_);
-    mainHandler_->PostTask([payload, killClientInitiator] {
-        PluginMgr::GetInstance().KillProcessByPid(payload, killClientInitiator);
-    });
+    return killProcess_->KillProcessByPidWithClient(payload, killClientInitiator);
 }
 
 void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload)
