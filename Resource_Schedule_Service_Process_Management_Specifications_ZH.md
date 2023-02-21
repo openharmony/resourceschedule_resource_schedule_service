@@ -227,7 +227,7 @@ A. 事件打点延时
 
 | 插件名            | 插件功能简介 | 插件订阅事件                                                 | 进程基线内存（KB）     | 插件内存基线(KB)     | 插件的事件执行效率 | 插件新增线程 | 插件关联进程    | 插件需要的权限 | 插件负责人 |
 | ----------------- | ------------ | :----------------------------------------------------------- | ---------------------- | :------------------- | ------------------ | ------------ | --------------- | -------------- | ---------- |
-| soc_perf          | cpu提频      | RES_TYPE_APP_STATE_CHANGE; RES_TYPE_WINDOW_FOCUS; RES_TYPE_CLICK_RECOGNIZE；RES_TYPE_PUSH_PAGE;  RTS_TYPE_SLIDE_RECOGNIZE; | 常驻：5918  动态：5922 | 常驻:88      动态:88 | 无                 | 无           | socperf_service | 无             | HaoyangT   |
+| soc_perf          | cpu提频      | RES_TYPE_APP_STATE_CHANGE; RES_TYPE_WINDOW_FOCUS; RES_TYPE_CLICK_RECOGNIZE；RES_TYPE_PUSH_PAGE;  RES_TYPE_SLIDE_RECOGNIZE; | 常驻：5918  动态：5922 | 常驻:88      动态:88 | 无                 | 无           | socperf_service | 无             | HaoyangT   |
 | frame_aware_sched | 智能感知调度 | RES_TYPE_WINDOW_FOCUS;  RES_TYPE_PROCESS_STATE_CHANGE;  RES_TYPE_APP_STATE_CHANGE | 常驻：4537             | 常驻：109            |                    |              | 暂无            |                | rongkunshi |
 | component_sched | 外设调度 | RES_TYPE_SCREEN_STATUS；RES_TYPE_APP_STATE_CHANGE；RES_TYPE_ABILITY_STATE_CHANGE；RES_TYPE_EXTENSION_STATE_CHANGE；RES_TYPE_PROCESS_STATE_CHANGE；RES_TYPE_WINDOW_FOCUS; RES_TYPE_DEVICE_STILL_STATE_CHANGE; | 常驻：             | 常驻： 动态:            |                    |              | 暂无            |                | linyunxuan |
 
