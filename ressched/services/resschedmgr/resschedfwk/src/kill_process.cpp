@@ -29,18 +29,18 @@ namespace {
 
 int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload, std::string killClientInitiator)
 {
-    if ((payload == nullptr) || (!(payload.contains("pid") && payload["pid"].is_string()))) {
-        return RES_SCHED_Kill_PROCESS_FAIL;
+    if ((payload == nullptr) || !(payload.contains("pid") && payload["pid"].is_string())) {
+        return RES_SCHED_KILL_PROCESS_FAIL;
     }
 
     pid_t pid = static_cast<uint32_t>(atoi(payload["pid"].get<string>().c_str()));
     if (pid == 0) {
-        return RES_SCHED_Kill_PROCESS_FAIL;
+        return RES_SCHED_KILL_PROCESS_FAIL;
     }
     auto it = find(ALLOWED_CLIENT.begin(), ALLOWED_CLIENT.end(), killClientInitiator);
     if (it == ALLOWED_CLIENT.end()) {
         RESSCHED_LOGE("kill process fail, %{public}s no permission.", killClientInitiator.c_str());
-        return RES_SCHED_Kill_PROCESS_FAIL;
+        return RES_SCHED_KILL_PROCESS_FAIL;
     }
 
     string processName = "unknown process";

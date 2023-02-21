@@ -26,7 +26,7 @@ enum {
 };
 
 enum : int32_t {
-    RES_SCHED_Kill_PROCESS_FAIL = -1,
+    RES_SCHED_KILL_PROCESS_FAIL = -1,
     RES_SCHED_CONNECT_FAIL = -2,
     RES_SCHED_ACCESS_TOKEN_FAIL = -3,
     RES_SCHED_REQUEST_FAIL = -4,
