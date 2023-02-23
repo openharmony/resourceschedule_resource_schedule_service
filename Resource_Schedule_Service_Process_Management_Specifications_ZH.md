@@ -227,9 +227,9 @@ A. 事件打点延时
 
 | 插件名            | 插件功能简介 | 插件订阅事件                                                 | 进程基线内存（KB）     | 插件内存基线(KB)     | 插件的事件执行效率 | 插件新增线程 | 插件关联进程    | 插件需要的权限 | 插件负责人 |
 | ----------------- | ------------ | :----------------------------------------------------------- | ---------------------- | :------------------- | ------------------ | ------------ | --------------- | -------------- | ---------- |
-| soc_perf          | cpu提频      | RES_TYPE_APP_STATE_CHANGE; RES_TYPE_WINDOW_FOCUS; RES_TYPE_CLICK_RECOGNIZE；RES_TYPE_PUSH_PAGE;  RTS_TYPE_SLIDE_RECOGNIZE; | 常驻：5918  动态：5922 | 常驻:88      动态:88 | 无                 | 无           | socperf_service | 无             | HaoyangT   |
+| soc_perf          | cpu提频      | RES_TYPE_APP_STATE_CHANGE; RES_TYPE_WINDOW_FOCUS; RES_TYPE_CLICK_RECOGNIZE；RES_TYPE_PUSH_PAGE;  RES_TYPE_SLIDE_RECOGNIZE; | 常驻：5918  动态：5922 | 常驻:88      动态:88 | 无                 | 无           | socperf_service | 无             | HaoyangT   |
 | frame_aware_sched | 智能感知调度 | RES_TYPE_WINDOW_FOCUS;  RES_TYPE_PROCESS_STATE_CHANGE;  RES_TYPE_APP_STATE_CHANGE | 常驻：4537             | 常驻：109            |                    |              | 暂无            |                | rongkunshi |
-| component_sched | 外设调度 | RES_TYPE_SCREEN_STATUS；RES_TYPE_APP_STATE_CHANGE；RES_TYPE_ABILITY_STATE_CHANGE；RES_TYPE_EXTENSION_STATE_CHANGE；RES_TYPE_PROCESS_STATE_CHANGE；RES_TYPE_WINDOW_FOCUS; | 常驻：             | 常驻： 动态:            |                    |              | 暂无            |                | linyunxuan |
+| component_sched | 外设调度 | RES_TYPE_SCREEN_STATUS；RES_TYPE_APP_STATE_CHANGE；RES_TYPE_ABILITY_STATE_CHANGE；RES_TYPE_EXTENSION_STATE_CHANGE；RES_TYPE_PROCESS_STATE_CHANGE；RES_TYPE_WINDOW_FOCUS; RES_TYPE_DEVICE_STILL_STATE_CHANGE; | 常驻：             | 常驻： 动态:            |                    |              | 暂无            |                | linyunxuan |
 
 ### 2：事件Check_List
 
@@ -248,7 +248,7 @@ A. 事件打点延时
 | RES_TYPE_CGROUP_ADJUSTER        | cgroup改变事件                       | 0: 进程组分组变化  1: 线程分组变化 | {"pid"=?,"uid"=?,"name"="?","oldGroup"=?, "newGroup"=?}      |               |                        |
 | RES_TYPE_CLICK_RECOGNIZE        | ace手势点击识别器                    | 无                        | 无                                                           | <10ms         | soc_perf               |
 | RES_TYPE_PUSH_PAGE              | ace pipeline_context.cpp::PushPage() | 无                        | 无                                                           | <10ms         | soc_perf               |
-| RTS_TYPE_SLIDE_RECOGNIZE        | ace slide event recognize            | 1: slide on; 0: slide off | 无                                                           | <10ms         | soc_perf               |
+| RES_TYPE_SLIDE_RECOGNIZE        | ace slide event recognize            | 1: list fling on; 0: list fling off; 3: slide normal begin, 4: slide normal end | 无                                                           | <10ms         | soc_perf               |
 | RES_TYPE_WINDOW_VISIBILITY_CHANGE     | 窗口可见性状态变化事件          | 1: 可见, 0: 不可见     | 无                    | - | - |
 | RES_TYPE_REPORT_MMI_PROCESS           | 上报mmi_service线程ID          | mmi_service线程号     | {"uid"=?, "pid"=?}    | - | - |
 | RES_TYPE_REPORT_RENDER_THREAD         | 上报应用的RSRender线程ID       | RSRenderThread线程号   |  {"uid"=?, "pid"=?}   | - | - |
@@ -264,6 +264,8 @@ A. 事件打点延时
 | RES_TYPE_POP_PAGE    | ace pipeline_context.cpp::PopPage();          | 无             |{"pid"=?,"uid"=?,"bundleName"="?","abilityName"="?", "pageUrl"="?"} | - | - |
 | RES_TYPE_WEB_GESTURE                | web手势事件                     | 无                        |无     | -        | -       |
 | RES_TYPE_SHOW_REMOTE_ANIMATION      | 动画开始事件                     | 0：动画开始 1：动画结束     | {"srcPid"=?}     | -        | -       |
+| RES_TYPE_DEVICE_STILL_STATE_CHANGE             | 当前设备运动状态和静止状态转变事件             | -1： 无效值，0： 转变为运动状态，1：转变为静止状态                        |无     | -        | -       |
+
 
 
 
