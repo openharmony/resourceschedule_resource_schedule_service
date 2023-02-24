@@ -38,12 +38,18 @@
       ]
     },
     "build": {
-      "sub_component": [
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf/profile:socperf_config",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf/sa_profile:socperf_sa_profile",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf/interfaces/inner_api/socperf_client:socperf_client",
-        "//foundation/resourceschedule/resource_schedule_service/soc_perf/services:socperf_server"
-      ],
+      "group_type": {
+        "base_group" : [
+          "//foundation/resourceschedule/resource_schedule_service/soc_perf/profile:socperf_config"
+        ],
+        "fwk_group" : [
+          "//foundation/resourceschedule/resource_schedule_service/soc_perf/interfaces/inner_api/socperf_client:socperf_client"
+        ],
+        "service_group" : [
+          "//foundation/resourceschedule/resource_schedule_service/soc_perf/sa_profile:socperf_sa_profile",
+          "//foundation/resourceschedule/resource_schedule_service/soc_perf/services:socperf_server"
+        ]
+      },
       "inner_kits": [
         {
           "header": {
