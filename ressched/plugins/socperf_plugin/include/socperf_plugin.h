@@ -46,6 +46,7 @@ private:
     void HandleAppAbilityStart(const std::shared_ptr<ResData>& data);
     void HandleResizeWindow(const std::shared_ptr<ResData>& data);
     void HandleMoveWindow(const std::shared_ptr<ResData>& data);
+    void HandleRemoteAnimation(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
