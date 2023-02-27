@@ -105,6 +105,8 @@ enum : uint32_t {
     RES_TYPE_MOVE_WINDOW = 32,
     // animation transition event; value 0: animation begin, value 1: animation end.
     RES_TYPE_SHOW_REMOTE_ANIMATION = 33,
+    // load page; value 0: load page begin, value 1: load page end.
+    RES_TYPE_LOAD_PAGE = 34,
 };
 
 static const std::map<uint32_t, std::string> resTypeToStr = {
@@ -141,7 +143,8 @@ static const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_DEVICE_STILL_STATE_CHANGE, "DEVICE_STILL_STATE_CHANGE" },
     { RES_TYPE_RESIZE_WINDOW, "RES_TYPE_RESIZE_WINDOW" },
     { RES_TYPE_MOVE_WINDOW, "RES_TYPE_MOVE_WINDOW" },
-    { RES_TYPE_SHOW_REMOTE_ANIMATION, "RES_TYPE_SHOW_REMOTE_ANIMATION" }
+    { RES_TYPE_SHOW_REMOTE_ANIMATION, "RES_TYPE_SHOW_REMOTE_ANIMATION" },
+    { RES_TYPE_LOAD_PAGE, "RES_TYPE_LOAD_PAGE" },
 };
 
 /**
@@ -267,6 +270,14 @@ enum WindowMoveType : int64_t {
 enum ShowRemoteAnimationStatus : int64_t {
     ANIMATION_BEGIN = 0,
     ANIMATION_END = 1,
+};
+
+/**
+ * @brief LoadPage event type
+ */
+enum LoadPageType : int64_t {
+    LOAD_PAGE_START = 0,
+    LOAD_PAGE_COMPLETE = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
