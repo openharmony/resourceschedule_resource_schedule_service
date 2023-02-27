@@ -39,7 +39,7 @@ private:
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
     void HandleWindowFocus(const std::shared_ptr<ResData>& data);
     void HandleEventClick(const std::shared_ptr<ResData>& data);
-    void HandlePushPage(const std::shared_ptr<ResData>& data);
+    void HandleLoadPage(const std::shared_ptr<ResData>& data);
     void HandlePopPage(const std::shared_ptr<ResData>& data);
     void HandleEventSlide(const std::shared_ptr<ResData>& data);
     void HandleEventWebGesture(const std::shared_ptr<ResData>& data);
