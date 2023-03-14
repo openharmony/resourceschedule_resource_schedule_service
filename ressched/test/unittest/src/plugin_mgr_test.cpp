@@ -299,5 +299,22 @@ HWTEST_F(SocPerfPluginTest, PluginMgrTest_DispatchResource_003, Function | Mediu
     /* DeInit */
     SocPerfPlugin::GetInstance().Disable();
 }
+
+/*
+ * @tc.name: SocPerfSubTest_DispatchResource_004
+ * @tc.desc: DispatchResource Plugin
+ * @tc.type FUNC
+ * @tc.author:qiunaiguang
+ * @tc.require: issueI6I9QS
+ */
+HWTEST_F(SocPerfPluginTest, PluginMgrTest_DispatchResource_004, Function | MediumTest | Level0)
+{
+    /* Init */
+    SocPerfPlugin::GetInstance().Init();
+    SocPerfPlugin::GetInstance().InitFeatureSwitch("socperf_on_demand");
+    SocPerfPlugin::GetInstance().InitFeatureSwitch("test");
+    /* DeInit */
+    SocPerfPlugin::GetInstance().Disable();
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

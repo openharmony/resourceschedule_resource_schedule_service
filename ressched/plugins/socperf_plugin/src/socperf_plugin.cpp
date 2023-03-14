@@ -113,8 +113,8 @@ void SocPerfPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 
 bool SocPerfPlugin::InitFeatureSwitch(std::string featureName)
 {
-    PluginConfig itemList = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_FEATURE_SWITCH);
-    for (const Item& item : ItemList.itemList) {
+    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_FEATURE_SWITCH);
+    for (const Item& item : itemLists.itemList) {
         for (SubItem sub : item.subItemList) {
             if (sub.name == featureName) {
                 return sub.value == "1";
