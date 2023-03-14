@@ -115,8 +115,10 @@ void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
     trace_str.append(",msg[").append(msg).append("]");
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
     for (auto handler : handlers) {
-        auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ, onOffTag ? 1 : 0);
-        handler->SendEvent(event);
+        if (handler) {
+            auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ, onOffTag ? 1 : 0);
+            handler->SendEvent(event);
+        }
     }
     FinishTrace(HITRACE_TAG_OHOS);
 }
@@ -133,8 +135,10 @@ void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
     trace_str.append(",msg[").append(msg).append("]");
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
     for (auto handler : handlers) {
-        auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_THERMAL_LIMIT_BOOST_FREQ, onOffTag ? 1 : 0);
-        handler->SendEvent(event);
+        if (handler) {
+            auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_THERMAL_LIMIT_BOOST_FREQ, onOffTag ? 1 : 0);
+            handler->SendEvent(event);
+        }
     }
     FinishTrace(HITRACE_TAG_OHOS);
 }
@@ -275,6 +279,10 @@ bool SocPerf::CreateHandlers()
     handlers = std::vector<std::shared_ptr<SocPerfHandler>>(MAX_HANDLER_THREADS);
     std::string threadName = "socperf_handler";
     for (int32_t i = 0; i < (int32_t)handlers.size(); i++) {
+        if (!handlerSwitch[i]) {
+            handlers[i] = nullptr;
+            continue;
+        }
         auto runner = AppExecFwk::EventRunner::Create(threadName);
         if (!runner) {
             SOC_PERF_LOGE("Failed to Create EventRunner");
@@ -347,6 +355,7 @@ bool SocPerf::LoadResource(xmlNode* child, std::string configFile)
 
             resStrToIdInfo.insert(std::pair<std::string, int32_t>(resNode->name, resNode->id));
             resNodeInfo.insert(std::pair<int32_t, std::shared_ptr<ResNode>>(resNode->id, resNode));
+            handlerSwitch[resNode->id / RES_ID_NUMS_PER_TYPE - 1] = true;
         }
     }
 
@@ -371,6 +380,7 @@ bool SocPerf::LoadGovResource(xmlNode* child, std::string configFile)
         }
         xmlNode* greatGrandson = grandson->children;
         std::shared_ptr<GovResNode> govResNode = std::make_shared<GovResNode>(atoi(id), name);
+        handlerSwitch[govResNode->id / RES_ID_NUMS_PER_TYPE - 1] = true;
         for (; greatGrandson; greatGrandson = greatGrandson->next) {
             if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("default"))) {
                 char* def = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));

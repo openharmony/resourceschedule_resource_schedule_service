@@ -79,7 +79,6 @@ HWTEST_F(PluginMgrTest, Stop001, TestSize.Level1)
     pluginMgr_->Stop();
     EXPECT_EQ(pluginMgr_->pluginLibMap_.size(), 0);
     EXPECT_EQ(pluginMgr_->resTypeLibMap_.size(), 0);
-    EXPECT_EQ(pluginMgr_->dispatcherHandlerMap_.size(), 0);
     EXPECT_TRUE(pluginMgr_->configReader_ == nullptr);
 }
 
@@ -94,6 +93,18 @@ HWTEST_F(PluginMgrTest, GetConfig001, TestSize.Level1)
 {
     PluginConfig config = pluginMgr_->GetConfig("", "");
     EXPECT_TRUE(config.itemList.empty());
+}
+
+/**
+ * @tc.name: Plugin mgr test GetRunner 001
+ * @tc.desc: Verify if can get runner.
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:liyi
+ */
+HWTEST_F(PluginMgrTest, GetRunner001, TestSize.Level1)
+{
+    EXPECT_TRUE(pluginMgr_->GetRunner() != nullptr);
 }
 
 /**
@@ -168,21 +179,6 @@ HWTEST_F(PluginMgrTest, UnSubscribeResource001, TestSize.Level1)
     pluginMgr_->UnSubscribeResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
     auto iter = pluginMgr_->resTypeLibMap_.find(ResType::RES_TYPE_SCREEN_STATUS);
     EXPECT_TRUE(iter == pluginMgr_->resTypeLibMap_.end());
-}
-
-/**
- * @tc.name: Plugin mgr test Remove 001
- * @tc.desc: Verify if RemoveDisablePluginHandler is success.
- * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
- */
-HWTEST_F(PluginMgrTest, Remove001, TestSize.Level1)
-{
-    pluginMgr_->RemoveDisablePluginHandler();
-    EXPECT_TRUE(!pluginMgr_->disablePlugins_.size());
-
-    pluginMgr_->LoadPlugin();
 }
 
 /*

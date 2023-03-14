@@ -42,6 +42,33 @@ using OnDispatchResourceFunc = void (*)(const std::shared_ptr<ResData>&);
 using OnDumpFunc = void (*)(const std::vector<std::string>&, std::string&);
 using OnPluginDisableFunc = void (*)();
 
+constexpr int32_t DISPATCH_TIME_OUT = 50; // ms
+constexpr int32_t DISPATCH_TIME_OUT_US = DISPATCH_TIME_OUT * 1000; // us
+constexpr int32_t PLUGIN_STAT_MAX_USE_COUNT = 1000;
+
+struct PluginStat {
+    uint64_t totalTime;
+    uint64_t useCount;
+    std::list<TimePoint> timeOutTime;
+
+    inline void Update(int32_t costTime)
+    {
+        if (costTime > 0 && costTime < DISPATCH_TIME_OUT_US) {
+            totalTime += costTime;
+            useCount += 1;
+            if (useCount >= PLUGIN_STAT_MAX_USE_COUNT) {
+                totalTime /= useCount;
+                useCount = 1;
+            }
+        }
+    }
+
+    inline uint64_t AverageTime()
+    {
+        return (useCount > 0) ? (totalTime / useCount) : 0;
+    }
+};
+
 struct PluginLib {
     std::shared_ptr<void> handle = nullptr;
     OnPluginInitFunc onPluginInitFunc_;
@@ -106,6 +133,8 @@ public:
 
     PluginConfig GetConfig(const std::string& pluginName, const std::string& configName);
 
+    const std::shared_ptr<AppExecFwk::EventRunner>& GetRunner();
+
 private:
     PluginMgr() = default;
     std::string GetRealConfigPath(const char* configName);
@@ -114,7 +143,7 @@ private:
     std::shared_ptr<PluginLib> LoadOnePlugin(const PluginInfo& info);
     void UnLoadPlugin();
     void ClearResource();
-    void deliverResourceToPlugin(const std::string& pluginLib, const std::shared_ptr<ResData>& resData);
+    void DeliverResourceToPlugin(const std::list<std::string>& pluginList, const std::shared_ptr<ResData>& resData);
     void RepairPlugin(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo);
     void RemoveDisablePluginHandler();
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);
@@ -127,19 +156,16 @@ private:
     std::unique_ptr<PluginSwitch> pluginSwitch_ = nullptr;
 
     std::mutex pluginMutex_;
-    std::mutex dispatcherHandlerMutex_;
     std::map<std::string, PluginLib> pluginLibMap_;
 
     // mutex for resTypeMap_
     std::mutex resTypeMutex_;
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
 
-    // handler map use for dispatch resource data
-    std::map<std::string, std::shared_ptr<OHOS::AppExecFwk::EventHandler>> dispatcherHandlerMap_;
-    int32_t handlerNum_ = 0;
-    std::map<std::string, std::list<TimePoint>> pluginTimeoutTime_;
-    std::list<std::string> disablePlugins_;
-    std::mutex disablePluginsMutex_;
+    std::mutex dispatcherHandlerMutex_;
+    std::shared_ptr<AppExecFwk::EventHandler> dispatcher_ = nullptr;
+    std::shared_ptr<AppExecFwk::EventRunner> asyncRunner_ = nullptr;
+    std::map<std::string, PluginStat> pluginStat_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
