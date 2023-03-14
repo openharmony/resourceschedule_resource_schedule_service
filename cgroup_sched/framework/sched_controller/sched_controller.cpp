@@ -150,8 +150,9 @@ std::string SchedController::GetBundleNameByUid(const int32_t uid)
         return bundleName;
     }
 
-    if (!iBundleMgr->GetBundleNameForUid(uid, bundleName)) {
-        CGS_LOGD("%{public}s get bundle name failed for %{public}d.", __func__, uid);
+    ErrCode ret = iBundleMgr->GetNameForUid(uid, bundleName);
+    if (ret != ERR_OK) {
+        CGS_LOGD("%{public}s get bundle name failed for %{public}d, err_code:%{public}d.", __func__, uid, ret);
     }
     return bundleName;
 }
