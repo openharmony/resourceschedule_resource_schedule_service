@@ -265,7 +265,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_001, TestSize.Level1)
  * @tc.author:qiunaiguang
  * @tc.require: issueI6I9QS
  */
-HWTEST_F(SocPerfPluginTest, PluginMgrTest_DispatchResource_002, Function | MediumTest | Level0)
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_002, Function | MediumTest | Level0)
 {
     /* Init */
     SocPerfPlugin::GetInstance().Init();
@@ -286,7 +286,7 @@ HWTEST_F(SocPerfPluginTest, PluginMgrTest_DispatchResource_002, Function | Mediu
  * @tc.author:qiunaiguang
  * @tc.require: issueI6I9QS
  */
-HWTEST_F(SocPerfPluginTest, PluginMgrTest_DispatchResource_003, Function | MediumTest | Level0)
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_003, Function | MediumTest | Level0)
 {
     /* Init */
     SocPerfPlugin::GetInstance().Init();
@@ -307,7 +307,7 @@ HWTEST_F(SocPerfPluginTest, PluginMgrTest_DispatchResource_003, Function | Mediu
  * @tc.author:qiunaiguang
  * @tc.require: issueI6I9QS
  */
-HWTEST_F(SocPerfPluginTest, PluginMgrTest_DispatchResource_004, Function | MediumTest | Level0)
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_004, Function | MediumTest | Level0)
 {
     /* Init */
     SocPerfPlugin::GetInstance().Init();
