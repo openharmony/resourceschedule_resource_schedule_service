@@ -265,7 +265,7 @@ A. 事件打点延时
 | RES_TYPE_WEB_GESTURE                | web手势事件                     | 无                        |无     | -        | -       |
 | RES_TYPE_SHOW_REMOTE_ANIMATION      | 动画开始事件                     | 0：动画开始 1：动画结束     | {"srcPid"=?}     | -        | -       |
 | RES_TYPE_DEVICE_STILL_STATE_CHANGE             | 当前设备运动状态和静止状态转变事件             | -1： 无效值，0： 转变为运动状态，1：转变为静止状态                        |无     | -        | -       |
-
+| RES_TYPE_LOAD_PAGE              | 页面加载事件             | 0： 页面加载开始，1：页面加载结束                        |无     | -        | -       |
 
 
 

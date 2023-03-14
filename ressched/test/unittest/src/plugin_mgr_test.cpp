@@ -257,5 +257,47 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_001, TestSize.Level1)
     /* DeInit */
     SocPerfPlugin::GetInstance().Disable();
 }
+
+/*
+ * @tc.name: SocPerfSubTest_DispatchResource_002
+ * @tc.desc: DispatchResource Plugin
+ * @tc.type FUNC
+ * @tc.author:qiunaiguang
+ * @tc.require: issueI6I9QS
+ */
+HWTEST_F(SocPerfPluginTest, PluginMgrTest_DispatchResource_002, Function | MediumTest | Level0)
+{
+    /* Init */
+    SocPerfPlugin::GetInstance().Init();
+    nlohmann::json payload;
+    shared_ptr<ResData> resData = share_ptr<ResData>(RES_TYPE_LOAD_PAGE, LoadPageType::LOAD_PAGE_START, payload);
+    SocPerfPlugin::GetInstance().HandleLoadPage(resData);
+
+    resData->value = LoadPageType::LOAD_PAGE_COMPLETE;
+    SocPerfPlugin::GetInstance().HandleLoadPage(resData);
+    /* DeInit */
+    SocPerfPlugin::GetInstance().Disable();
+}
+
+/*
+ * @tc.name: SocPerfSubTest_DispatchResource_003
+ * @tc.desc: DispatchResource Plugin
+ * @tc.type FUNC
+ * @tc.author:qiunaiguang
+ * @tc.require: issueI6I9QS
+ */
+HWTEST_F(SocPerfPluginTest, PluginMgrTest_DispatchResource_003, Function | MediumTest | Level0)
+{
+    /* Init */
+    SocPerfPlugin::GetInstance().Init();
+    nlohmann::json payload;
+    shared_ptr<ResData> resData =
+        share_ptr<ResData>(RES_TYPE_SHOW_REMOTE_ANIMATION, ShowRemoteAnimationStatus::ANIMATION_BEGIN, payload);
+    SocPerfPlugin::GetInstance().HandleRemoteAnimation(resData);
+    resData->value = ShowRemoteAnimationStatus::ANIMATION_END;
+    SocPerfPlugin::GetInstance().HandleRemoteAnimation(resData);
+    /* DeInit */
+    SocPerfPlugin::GetInstance().Disable();
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

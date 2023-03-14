@@ -88,7 +88,6 @@
         "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/frame_aware_plugin/test/unittest:unittest",
-        "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/socperf_plugin/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/test/fuzztest:fuzztest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/test/testutil:ressched_test"
       ]
