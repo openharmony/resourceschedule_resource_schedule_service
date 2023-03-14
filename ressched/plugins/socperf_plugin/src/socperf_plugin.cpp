@@ -128,7 +128,11 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 {
     if (data->value == AppStartType::APP_COLD_START) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_APP_START, true, "");
+        if (socperfOnDemandSwitch_) {
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_APP_START, true, "");
+        } else {
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+        }
     } else if (data->value == AppStartType::APP_WARM_START) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->APP_WARM_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WARM_START, "");
