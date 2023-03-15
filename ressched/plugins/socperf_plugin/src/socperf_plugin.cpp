@@ -43,7 +43,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_POP_PAGE              = 10016;
     const int32_t PERF_REQUEST_CMD_ID_RESIZE_WINDOW         = 10018;
     const int32_t PERF_REQUEST_CMD_ID_MOVE_WINDOW           = 10019;
-    const int32_t PERF_REQUEST_CMD_ID_REMOTE_ANIMATION      = 10020;
+    const int32_t PERF_REQUEST_CMD_ID_REMOTE_ANIMATION      = 10030;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
