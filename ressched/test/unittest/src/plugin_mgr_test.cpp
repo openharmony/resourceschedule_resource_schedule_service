@@ -270,8 +270,8 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_002, Function | MediumTes
     /* Init */
     SocPerfPlugin::GetInstance().Init();
     nlohmann::json payload;
-    shared_ptr<ResData> resData =
-        shared_ptr<ResData>(ResType::RES_TYPE_LOAD_PAGE, ResType::LoadPageType::LOAD_PAGE_START, payload);
+    std::shared_ptr<ResData> resData =
+        std::make_shared<ResData>(ResType::RES_TYPE_LOAD_PAGE, ResType::LoadPageType::LOAD_PAGE_START, payload);
     SocPerfPlugin::GetInstance().HandleLoadPage(resData);
 
     resData->value = ResType::LoadPageType::LOAD_PAGE_COMPLETE;
@@ -292,8 +292,8 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_003, Function | MediumTes
     /* Init */
     SocPerfPlugin::GetInstance().Init();
     nlohmann::json payload;
-    shared_ptr<ResData> resData =
-        shared_ptr<ResData>(ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
+    std::shared_ptr<ResData> resData =
+        std::make_shared<ResData>(ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
         ResType::ShowRemoteAnimationStatus::ANIMATION_BEGIN, payload);
     SocPerfPlugin::GetInstance().HandleRemoteAnimation(resData);
     resData->value = ResType::ShowRemoteAnimationStatus::ANIMATION_END;
