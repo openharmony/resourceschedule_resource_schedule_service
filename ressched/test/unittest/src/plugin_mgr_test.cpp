@@ -257,5 +257,66 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_001, TestSize.Level1)
     /* DeInit */
     SocPerfPlugin::GetInstance().Disable();
 }
+
+/*
+ * @tc.name: SocPerfSubTest_DispatchResource_002
+ * @tc.desc: DispatchResource Plugin
+ * @tc.type FUNC
+ * @tc.author:qiunaiguang
+ * @tc.require: issueI6I9QS
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_002, Function | MediumTest | Level0)
+{
+    /* Init */
+    SocPerfPlugin::GetInstance().Init();
+    nlohmann::json payload;
+    std::shared_ptr<ResData> resData =
+        std::make_shared<ResData>(ResType::RES_TYPE_LOAD_PAGE, ResType::LoadPageType::LOAD_PAGE_START, payload);
+    SocPerfPlugin::GetInstance().HandleLoadPage(resData);
+
+    resData->value = ResType::LoadPageType::LOAD_PAGE_COMPLETE;
+    SocPerfPlugin::GetInstance().HandleLoadPage(resData);
+    /* DeInit */
+    SocPerfPlugin::GetInstance().Disable();
+}
+
+/*
+ * @tc.name: SocPerfSubTest_DispatchResource_003
+ * @tc.desc: DispatchResource Plugin
+ * @tc.type FUNC
+ * @tc.author:qiunaiguang
+ * @tc.require: issueI6I9QS
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_003, Function | MediumTest | Level0)
+{
+    /* Init */
+    SocPerfPlugin::GetInstance().Init();
+    nlohmann::json payload;
+    std::shared_ptr<ResData> resData =
+        std::make_shared<ResData>(ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
+        ResType::ShowRemoteAnimationStatus::ANIMATION_BEGIN, payload);
+    SocPerfPlugin::GetInstance().HandleRemoteAnimation(resData);
+    resData->value = ResType::ShowRemoteAnimationStatus::ANIMATION_END;
+    SocPerfPlugin::GetInstance().HandleRemoteAnimation(resData);
+    /* DeInit */
+    SocPerfPlugin::GetInstance().Disable();
+}
+
+/*
+ * @tc.name: SocPerfSubTest_DispatchResource_004
+ * @tc.desc: DispatchResource Plugin
+ * @tc.type FUNC
+ * @tc.author:qiunaiguang
+ * @tc.require: issueI6I9QS
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_004, Function | MediumTest | Level0)
+{
+    /* Init */
+    SocPerfPlugin::GetInstance().Init();
+    SocPerfPlugin::GetInstance().InitFeatureSwitch("socperf_on_demand");
+    SocPerfPlugin::GetInstance().InitFeatureSwitch("test");
+    /* DeInit */
+    SocPerfPlugin::GetInstance().Disable();
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

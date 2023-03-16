@@ -27,19 +27,23 @@ namespace ResourceSchedule {
 using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libsocperf_plugin.z.so";
+    const std::string PLUGIN_NAME = "SOCPERF";
+    const std::string CONFIG_NAME_SOCPERF_FEATURE_SWITCH = "socperfFeatureSwitch";
+    const std::string SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND = "socperf_on_demand";
     const int32_t PERF_REQUEST_CMD_ID_APP_START             = 10000;
     const int32_t PERF_REQUEST_CMD_ID_WARM_START            = 10001;
     const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH         = 10002;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_CLICK           = 10006;
-    const int32_t PERF_REQUEST_CMD_ID_PUSH_PAGE_START       = 10007;
+    const int32_t PERF_REQUEST_CMD_ID_LOAD_PAGE_START       = 10007;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE           = 10008;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER      = 10009;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH           = 10010;
-    const int32_t PERF_REQUEST_CMD_ID_PUSH_PAGE_COMPLETE    = 10011;
+    const int32_t PERF_REQUEST_CMD_ID_LOAD_PAGE_COMPLETE    = 10011;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE     = 10012;
     const int32_t PERF_REQUEST_CMD_ID_POP_PAGE              = 10016;
     const int32_t PERF_REQUEST_CMD_ID_RESIZE_WINDOW         = 10018;
     const int32_t PERF_REQUEST_CMD_ID_MOVE_WINDOW           = 10019;
+    const int32_t PERF_REQUEST_CMD_ID_REMOTE_ANIMATION      = 10030;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -50,8 +54,8 @@ void SocPerfPlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleWindowFocus(data); } },
         { RES_TYPE_CLICK_RECOGNIZE,
             [this](const std::shared_ptr<ResData>& data) { HandleEventClick(data); } },
-        { RES_TYPE_PUSH_PAGE,
-            [this](const std::shared_ptr<ResData>& data) { HandlePushPage(data); } },
+        { RES_TYPE_LOAD_PAGE,
+            [this](const std::shared_ptr<ResData>& data) { HandleLoadPage(data); } },
         { RES_TYPE_SLIDE_RECOGNIZE,
             [this](const std::shared_ptr<ResData>& data) { HandleEventSlide(data); } },
         { RES_TYPE_WEB_GESTURE,
@@ -64,21 +68,25 @@ void SocPerfPlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleResizeWindow(data); } },
         { RES_TYPE_MOVE_WINDOW,
             [this](const std::shared_ptr<ResData>& data) { HandleMoveWindow(data); } },
+        { RES_TYPE_SHOW_REMOTE_ANIMATION,
+                [this](const std::shared_ptr<ResData>& data) { HandleRemoteAnimation(data); } },
     };
     resTypes = {
         RES_TYPE_WINDOW_FOCUS,
         RES_TYPE_CLICK_RECOGNIZE,
-        RES_TYPE_PUSH_PAGE,
+        RES_TYPE_LOAD_PAGE,
         RES_TYPE_SLIDE_RECOGNIZE,
         RES_TYPE_WEB_GESTURE,
         RES_TYPE_POP_PAGE,
         RES_TYPE_APP_ABILITY_START,
         RES_TYPE_RESIZE_WINDOW,
         RES_TYPE_MOVE_WINDOW,
+        RES_TYPE_SHOW_REMOTE_ANIMATION,
     };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
+    socperfOnDemandSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND);
     RESSCHED_LOGI("SocPerfPlugin::Init success");
 }
 
@@ -103,11 +111,28 @@ void SocPerfPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
     }
 }
 
+bool SocPerfPlugin::InitFeatureSwitch(std::string featureName)
+{
+    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_FEATURE_SWITCH);
+    for (const Item& item : itemLists.itemList) {
+        for (SubItem sub : item.subItemList) {
+            if (sub.name == featureName) {
+                return sub.value == "1";
+            }
+        }
+    }
+    return false;
+}
+
 void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 {
     if (data->value == AppStartType::APP_COLD_START) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+        if (socperfOnDemandSwitch_) {
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_APP_START, true, "");
+        } else {
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+        }
     } else if (data->value == AppStartType::APP_WARM_START) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->APP_WARM_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WARM_START, "");
@@ -132,15 +157,18 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
     }
 }
 
-void SocPerfPlugin::HandlePushPage(const std::shared_ptr<ResData>& data)
+void SocPerfPlugin::HandleLoadPage(const std::shared_ptr<ResData>& data)
 {
-    if (data->value == PUSH_PAGE_START) {
+    if (data->value == LOAD_PAGE_START) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->PUSH_PAGE_START");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_PUSH_PAGE_START, true, "");
-    } else if (data->value == PUSH_PAGE_COMPLETE) {
+        if (socperfOnDemandSwitch_) {
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_APP_START, false, "");
+        }
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LOAD_PAGE_START, true, "");
+    } else if (data->value == LOAD_PAGE_COMPLETE) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->PUSH_PAGE_COMPLETE");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_PUSH_PAGE_START, false, "");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_PUSH_PAGE_COMPLETE, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LOAD_PAGE_START, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_LOAD_PAGE_COMPLETE, "");
     }
 }
 
@@ -194,6 +222,20 @@ void SocPerfPlugin::HandleMoveWindow(const std::shared_ptr<ResData>& data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_MOVE_WINDOW, "");
     } else if (data->value == WindowMoveType::WINDOW_MOVE_STOP) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_MOVE_WINDOW, false, "");
+    }
+}
+
+void SocPerfPlugin::HandleRemoteAnimation(const std::shared_ptr<ResData>& data)
+{
+    if (!socperfOnDemandSwitch_) {
+        return;
+    }
+    if (data->value == ShowRemoteAnimationStatus::ANIMATION_BEGIN) {
+        RESSCHED_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, true, "");
+    } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
+        RESSCHED_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, false, "");
     }
 }
 
