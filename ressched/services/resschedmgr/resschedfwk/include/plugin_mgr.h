@@ -54,11 +54,12 @@ struct PluginStat {
     inline void Update(int32_t costTime)
     {
         if (costTime > 0 && costTime < DISPATCH_TIME_OUT_US) {
-            totalTime += costTime;
-            useCount += 1;
-            if (useCount >= PLUGIN_STAT_MAX_USE_COUNT) {
-                totalTime /= useCount;
+            if (totalTime + costTime < totalTime) {
+                totalTime = costTime;
                 useCount = 1;
+            } else {
+                totalTime += costTime;
+                useCount += 1;
             }
         }
     }
@@ -147,6 +148,7 @@ private:
     void RepairPlugin(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo);
     void RemoveDisablePluginHandler();
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);
+    bool GetPluginListByResType(uint32_t resType, std::list<std::string>& pluginList);
 
     // plugin crash 3 times in 60s, will be disable forever
     const int32_t MAX_PLUGIN_TIMEOUT_TIMES = 3;

@@ -51,7 +51,7 @@ public:
     /**
      * Report data inner, will report resource data async.
      *
-     * @param resType Resource type
+     * @param resType Resource type.
      * @param value bit64 content.
      * @param payload Extra content.
      */

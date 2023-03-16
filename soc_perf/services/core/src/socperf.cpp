@@ -189,17 +189,32 @@ void SocPerf::LimitRequest(int32_t clientId,
 
 void SocPerf::DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int32_t actionType)
 {
+    std::shared_ptr<ResActionItem> header[MAX_HANDLER_THREADS] = { nullptr };
+    std::shared_ptr<ResActionItem> curItem[MAX_HANDLER_THREADS] = { nullptr };
     for (auto iter = actions->actionList.begin(); iter != actions->actionList.end(); iter++) {
         std::shared_ptr<Action> action = *iter;
         for (int32_t i = 0; i < (int32_t)action->variable.size() - 1; i += RES_ID_AND_VALUE_PAIR) {
-            auto handler = GetHandlerByResId(action->variable[i]);
-            if (!handler) {
+            if (!IsValidResId(action->variable[i])) {
                 continue;
             }
-            auto resAction = std::make_shared<ResAction>(action->variable[i + 1], action->duration, actionType, onOff);
-            auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_DO_FREQ_ACTION, resAction, action->variable[i]);
-            handler->SendEvent(event);
+            auto resActionItem = std::make_shared<ResActionItem>(action->variable[i]);
+            resActionItem->resAction =
+                std::make_shared<ResAction>(action->variable[i + 1], action->duration, actionType, onOff);
+            int32_t id = action->variable[i] / RES_ID_NUMS_PER_TYPE - 1;
+            if (curItem[id]) {
+                curItem[id]->next = resActionItem;
+            } else {
+                header[id] = resActionItem;
+            }
+            curItem[id] = resActionItem;
         }
+    }
+    for (int32_t i = 0; i < MAX_HANDLER_THREADS; ++i) {
+        if (!handlers[i] || !header[i]) {
+            continue;
+        }
+        auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_DO_FREQ_ACTION_PACK, header[i]);
+        handlers[i]->SendEvent(event);
     }
 }
 
@@ -277,13 +292,13 @@ bool SocPerf::LoadConfigXmlFile(std::string configFile)
 bool SocPerf::CreateHandlers()
 {
     handlers = std::vector<std::shared_ptr<SocPerfHandler>>(MAX_HANDLER_THREADS);
-    std::string threadName = "socperf_handler";
+    std::string threadName = "socperf#";
     for (int32_t i = 0; i < (int32_t)handlers.size(); i++) {
         if (!handlerSwitch[i]) {
             handlers[i] = nullptr;
             continue;
         }
-        auto runner = AppExecFwk::EventRunner::Create(threadName);
+        auto runner = AppExecFwk::EventRunner::Create(threadName + std::to_string(i));
         if (!runner) {
             SOC_PERF_LOGE("Failed to Create EventRunner");
             return false;

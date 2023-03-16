@@ -99,7 +99,7 @@ HWTEST_F(PluginMgrTest, GetConfig001, TestSize.Level1)
  * @tc.name: Plugin mgr test GetRunner 001
  * @tc.desc: Verify if can get runner.
  * @tc.type: FUNC
- * @tc.require: issueI5WWV3
+ * @tc.require: issueI6NPEV
  * @tc.author:liyi
  */
 HWTEST_F(PluginMgrTest, GetRunner001, TestSize.Level1)

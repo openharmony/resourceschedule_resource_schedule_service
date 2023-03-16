@@ -77,6 +77,18 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
             }
             break;
         }
+        case INNER_EVENT_ID_DO_FREQ_ACTION_PACK: {
+            std::shared_ptr<ResActionItem> head = event->GetSharedObject<ResActionItem>();
+            while (head) {
+                if (IsValidResId(head->resId)) {
+                    UpdateResActionList(head->resId, head->resAction, false);
+                }
+                auto temp = head->next;
+                head->next = nullptr;
+                head = temp;
+            }
+            break;
+        }
         case INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED: {
             int32_t resId = event->GetParam();
             if (!IsValidResId(resId)) {

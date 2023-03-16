@@ -38,7 +38,7 @@ using OnPluginInitFunc = bool (*)(std::string);
 namespace {
     const int32_t DISPATCH_WARNING_TIME = 10; // ms
     const std::string RUNNER_NAME = "rssDispatcher";
-    const std::string ASYNC_RUNNER_NAME = "asyncRunner";
+    const std::string ASYNC_RUNNER_NAME = "rssAsyncRunner";
     const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
     const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
 }
@@ -177,6 +177,18 @@ void PluginMgr::Stop()
     OnDestroy();
 }
 
+bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>& pluginList)
+{
+    std::lock_guard<std::mutex> autoLock(resTypeMutex_);
+    auto iter = resTypeLibMap_.find(resType);
+    if (iter == resTypeLibMap_.end()) {
+        RESSCHED_LOGD("%{public}s, PluginMgr resType no lib register!", __func__);
+        return false;
+    }
+    pluginList = iter->second;
+    return true;
+}
+
 void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 {
     if (!resData) {
@@ -184,14 +196,8 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         return;
     }
     std::list<std::string> pluginList;
-    {
-        std::lock_guard<std::mutex> autoLock(resTypeMutex_);
-        auto iter = resTypeLibMap_.find(resData->resType);
-        if (iter == resTypeLibMap_.end()) {
-            RESSCHED_LOGD("%{public}s, PluginMgr resType no lib register!", __func__);
-            return;
-        }
-        pluginList = iter->second;
+    if (!GetPluginListByResType(resData->resType, pluginList)) {
+        return;
     }
     std::string libNameAll = "[";
     for (const auto& libName : pluginList) {
@@ -212,7 +218,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
                   resData->resType, (long long)resData->value, libNameAll.c_str());
     FinishTrace(HITRACE_TAG_OHOS);
 
-    std::lock_guard<std::mutex> autoLock2(dispatcherHandlerMutex_);
+    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) {
         dispatcher_->PostTask(
             [pluginList, resData, this] {
@@ -374,10 +380,11 @@ void PluginMgr::RepairPlugin(TimePoint endTime, const std::string& pluginLib, Pl
     }
 }
 
-void PluginMgr::DeliverResourceToPlugin(const std::list<std::string>& pluginList, const std::shared_ptr<ResData>& resData)
+void PluginMgr::DeliverResourceToPlugin(const std::list<std::string>& pluginList,
+    const std::shared_ptr<ResData>& resData)
 {
     auto sortPluginList = pluginList;
-    sortPluginList.sort([&](const std::string& a, const std::string& a) -> bool {
+    sortPluginList.sort([&](const std::string& a, const std::string& b) -> bool {
         if (pluginStat_.find(a) == pluginStat_.end() || pluginStat_.find(b) == pluginStat_.end()) {
             return false;
         }
@@ -412,20 +419,19 @@ void PluginMgr::DeliverResourceToPlugin(const std::list<std::string>& pluginList
         if (costTime > DISPATCH_TIME_OUT) {
             // dispatch resource use too long time, unload it
             RESSCHED_LOGE("%{public}s, ERROR :"
-                        "%{public}s plugin cost time(%{public}dms) over %{public}d ms! disable it.",
-                        __func__, pluginLib.c_str(), costTime, DISPATCH_TIME_OUT);
+                "%{public}s plugin cost time(%{public}dms) over %{public}d ms! disable it.",
+                __func__, pluginLib.c_str(), costTime, DISPATCH_TIME_OUT);
+            auto task = [endTime, pluginLib, libInfo, this] {
+                RepairPlugin(endTime, pluginLib, libInfo);
+            };
             std::lock_guard<std::mutex> autoLock2(dispatcherHandlerMutex_);
             if (dispatcher_) {
-                dispatcher_->PostTask(
-                    [endTime, pluginLib, libInfo, this] {
-                        RepairPlugin(endTime, pluginLib, libInfo);
-                    });
+                dispatcher_->PostTask(task);
             }
-            RepairPlugin(endTime, pluginLib, libInfo);
         } else if (costTime > DISPATCH_WARNING_TIME) {
             RESSCHED_LOGW("%{public}s, WARNING :"
-                        "%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
-                        __func__, pluginLib.c_str(), costTime, DISPATCH_WARNING_TIME);
+                "%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
+                __func__, pluginLib.c_str(), costTime, DISPATCH_WARNING_TIME);
         }
     }
 }
