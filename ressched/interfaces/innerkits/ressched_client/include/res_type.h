@@ -107,6 +107,11 @@ enum : uint32_t {
     RES_TYPE_SHOW_REMOTE_ANIMATION = 33,
     // load page; value 0: load page begin, value 1: load page end.
     RES_TYPE_LOAD_PAGE = 34,
+    // click animation event; value 0: animation start, value 1: animation normal, value 2: animation soon,
+    // value 3: animation boost, value 4: animation complete.
+    RES_TYPE_CLICK_ANIMATION = 35,
+    // after animation continue perf event; value 0: animation start, value 1: animation complete.
+    RES_TYPE_CONTINUE_ANIMATION = 36,
 };
 
 static const std::map<uint32_t, std::string> resTypeToStr = {
@@ -145,6 +150,8 @@ static const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_MOVE_WINDOW, "RES_TYPE_MOVE_WINDOW" },
     { RES_TYPE_SHOW_REMOTE_ANIMATION, "RES_TYPE_SHOW_REMOTE_ANIMATION" },
     { RES_TYPE_LOAD_PAGE, "RES_TYPE_LOAD_PAGE" },
+    { RES_TYPE_CLICK_ANIMATION, "RES_TYPE_CLICK_ANIMATION" },
+    { RES_TYPE_CONTINUE_ANIMATION, "RES_TYPE_CONTINUE_ANIMATION" }
 };
 
 /**
@@ -278,6 +285,25 @@ enum ShowRemoteAnimationStatus : int64_t {
 enum LoadPageType : int64_t {
     LOAD_PAGE_START = 0,
     LOAD_PAGE_COMPLETE = 1,
+};
+
+/**
+ * @brief Click animation type
+ */
+enum ClickAnimationType : int64_t {
+    CLICK_ANIMATION_START = 0,
+    CLICK_ANIMATION_NORMAL = 1,
+    CLICK_ANIMATION_SOON = 2,
+    CLICK_ANIMATION_BOOST = 3,
+    CLICK_ANIMATION_COMPLETE = 4,
+};
+
+/**
+ * @brief Animation change status
+ */
+enum ContinueAnimationStatus : int64_t {
+    ANIMATION_START = 0,
+    ANIMATION_COMPLETE = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
