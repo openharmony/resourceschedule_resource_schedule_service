@@ -16,6 +16,7 @@
 #include "socperf_plugin.h"
 
 #include "app_mgr_constants.h"
+#include "event_handler.h"
 
 #include "res_type.h"
 #include "res_sched_log.h"
@@ -41,9 +42,16 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_LOAD_PAGE_COMPLETE    = 10011;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE     = 10012;
     const int32_t PERF_REQUEST_CMD_ID_POP_PAGE              = 10016;
+    const int32_t PERF_REQUEST_CMD_ID_ANIMATION_REQUESTED   = 10017;
     const int32_t PERF_REQUEST_CMD_ID_RESIZE_WINDOW         = 10018;
     const int32_t PERF_REQUEST_CMD_ID_MOVE_WINDOW           = 10019;
     const int32_t PERF_REQUEST_CMD_ID_REMOTE_ANIMATION      = 10030;
+    const int32_t PERF_REQUEST_CMD_ID_FRAME_LOSS_DEFAULT    = 10031;
+    const int32_t PERF_REQUEST_CMD_ID_FRAME_LOSS_SOON       = 10032;
+    const int32_t PERF_REQUEST_CMD_ID_FRAME_LOSS_BOOST      = 10033;
+    const uint32_t ANIMATION_MAX_TIME = 500;
+    const std::string RUNNER_NAME = "SocperfPlugin";
+    std::shared_ptr<AppExecFwk::EventHandler> handler_ { nullptr };
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -70,6 +78,10 @@ void SocPerfPlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleMoveWindow(data); } },
         { RES_TYPE_SHOW_REMOTE_ANIMATION,
                 [this](const std::shared_ptr<ResData>& data) { HandleRemoteAnimation(data); } },
+        { RES_TYPE_CLICK_ANIMATION,
+            [this](const std::shared_ptr<ResData>& data) { HandleClickFrameLoss(data); } },
+        { RES_TYPE_CONTINUE_ANIMATION,
+            [this](const std::shared_ptr<ResData>& data) { HandleContinueAnimation(data); } },
     };
     resTypes = {
         RES_TYPE_WINDOW_FOCUS,
@@ -82,11 +94,14 @@ void SocPerfPlugin::Init()
         RES_TYPE_RESIZE_WINDOW,
         RES_TYPE_MOVE_WINDOW,
         RES_TYPE_SHOW_REMOTE_ANIMATION,
+        RES_TYPE_CLICK_ANIMATION,
+        RES_TYPE_CONTINUE_ANIMATION,
     };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
     socperfOnDemandSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND);
+    handler_ = std::make_shared<AppExecFwk::EventHandler>(AppExecFwk::EventRunner::Create(RUNNER_NAME));
     RESSCHED_LOGI("SocPerfPlugin::Init success");
 }
 
@@ -149,6 +164,7 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 {
+    preStatus_ = data->value;
     RESSCHED_LOGI("SocPerfPlugin: socperf->EVENT_CLICK: %{public}lld", (long long)data->value);
     if (data->value == ClickEventType::TOUCH_EVENT) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH, "");
@@ -168,7 +184,7 @@ void SocPerfPlugin::HandleLoadPage(const std::shared_ptr<ResData>& data)
     } else if (data->value == LOAD_PAGE_COMPLETE) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->PUSH_PAGE_COMPLETE");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LOAD_PAGE_START, false, "");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_LOAD_PAGE_COMPLETE, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LOAD_PAGE_COMPLETE, true, "");
     }
 }
 
@@ -236,6 +252,68 @@ void SocPerfPlugin::HandleRemoteAnimation(const std::shared_ptr<ResData>& data)
     } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, false, "");
+    }
+}
+
+void SocPerfPlugin::HandleClickFrameLoss(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    RESSCHED_LOGI("SocPerfPlugin: socperf animation boost: %{public}lld", (long long)data->value);
+    if (data->value == ClickAnimationType::CLICK_ANIMATION_START) {
+        RESSCHED_LOGI("SocPerfPlugin: socperf->CLICK_ANIMATION_START");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LOAD_PAGE_COMPLETE, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FRAME_LOSS_DEFAULT, true, "");
+        reportAnimateEvent_ = true;
+    } else if (data->value == ClickAnimationType::CLICK_ANIMATION_COMPLETE) {
+        RESSCHED_LOGI("SocPerfPlugin: socperf->CLICK_ANIMATION_COMPLETE");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FRAME_LOSS_DEFAULT, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FRAME_LOSS_SOON, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FRAME_LOSS_BOOST, false, "");
+        reportAnimateEvent_ = false;
+    } else if (data->value == ClickAnimationType::CLICK_ANIMATION_NORMAL && reportAnimateEvent_) {
+        RESSCHED_LOGI("SocPerfPlugin: socperf->CLICK_ANIMATION_NORMAL");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FRAME_LOSS_DEFAULT, true, "");
+    } else if (data->value == ClickAnimationType::CLICK_ANIMATION_SOON && reportAnimateEvent_) {
+        RESSCHED_LOGI("SocPerfPlugin: socperf->CLICK_ANIMATION_SOON");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FRAME_LOSS_SOON, true, "");
+    } else if (data->value == ClickAnimationType::CLICK_ANIMATION_BOOST && reportAnimateEvent_) {
+        RESSCHED_LOGI("SocPerfPlugin: socperf->CLICK_ANIMATION_BOOST");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FRAME_LOSS_BOOST, true, "");
+    }
+}
+
+void SocPerfPlugin::HandleContinueAnimation(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    RESSCHED_LOGI("SocPerfPlugin: socperf->CONTINUE_ANIMATION: %{public}lld, preStatus_: %{public}lld",
+        (long long)data->value, (long long)preStatus_);
+    if (data->value == ContinueAnimationStatus::ANIMATION_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_ANIMATION_REQUESTED, true, "");
+        if (preStatus_ == ClickEventType::CLICK_EVENT) {
+            RESSCHED_LOGI("SocPerfPlugin: socperf->CLICK_ANIMATION_START again");
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LOAD_PAGE_COMPLETE,
+                false, "");
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FRAME_LOSS_DEFAULT,
+                true, "");
+            preStatus_ = ClickEventType::INVALID_EVENT;
+            reportAnimateEvent_ = true;
+            handler_->PostTask([=]() {
+                OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FRAME_LOSS_DEFAULT,
+                    false, "");
+                OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FRAME_LOSS_SOON,
+                    false, "");
+                OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FRAME_LOSS_BOOST,
+                    false, "");
+                reportAnimateEvent_ = false;
+                RESSCHED_LOGI("SocPerfPlugin: click animation timeout, send complete event.");
+            }, ANIMATION_MAX_TIME, AppExecFwk::EventQueue::Priority::HIGH);
+        }
+    } else if (data->value == ContinueAnimationStatus::ANIMATION_COMPLETE) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_ANIMATION_REQUESTED, false, "");
     }
 }
 

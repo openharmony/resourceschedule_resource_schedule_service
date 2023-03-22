@@ -266,6 +266,8 @@ A. 事件打点延时
 | RES_TYPE_SHOW_REMOTE_ANIMATION      | 动画开始事件                     | 0：动画开始 1：动画结束     | {"srcPid"=?}     | -        | -       |
 | RES_TYPE_DEVICE_STILL_STATE_CHANGE             | 当前设备运动状态和静止状态转变事件             | -1： 无效值，0： 转变为运动状态，1：转变为静止状态                        |无     | -        | -       |
 | RES_TYPE_LOAD_PAGE              | 页面加载事件             | 0： 页面加载开始，1：页面加载结束                        |无     | -        | -       |
+| RES_TYPE_CLICK_ANIMATION        | 点击后的动画状态事件      | 0：动画开始， 1：无丢帧压力事件， 2：即将丢帧事件， 3：丢帧事件， 4：动画结束     |无     | -        | -       |
+| RES_TYPE_CONTINUE_ANIMATION     | 动画连续事件             | 0：连续动画的开始， 1：连续动画的结束                    |无     | -        | -       |
 
 
 

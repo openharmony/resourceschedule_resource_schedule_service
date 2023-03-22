@@ -31,6 +31,7 @@ ohos_shared_library("socperf_plugin") {
 
   external_deps = [
     "ability_runtime:app_manager",
+    "eventhandler:libeventhandler",
     "hiviewdfx_hilog_native:libhilog",
     "soc_perf:socperf_client",
   ]
