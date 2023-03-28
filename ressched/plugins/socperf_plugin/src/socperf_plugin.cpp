@@ -260,6 +260,9 @@ void SocPerfPlugin::HandleClickFrameLoss(const std::shared_ptr<ResData>& data)
     if (data == nullptr) {
         return;
     }
+    if (!socperfOnDemandSwitch_) {
+        return;
+    }
     RESSCHED_LOGI("SocPerfPlugin: socperf animation boost: %{public}lld", (long long)data->value);
     if (data->value == ClickAnimationType::CLICK_ANIMATION_START) {
         RESSCHED_LOGI("SocPerfPlugin: socperf->CLICK_ANIMATION_START");
@@ -293,7 +296,7 @@ void SocPerfPlugin::HandleContinueAnimation(const std::shared_ptr<ResData>& data
         (long long)data->value, (long long)preStatus_);
     if (data->value == ContinueAnimationStatus::ANIMATION_START) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_ANIMATION_REQUESTED, true, "");
-        if (preStatus_ == ClickEventType::CLICK_EVENT) {
+        if (socperfOnDemandSwitch_ && preStatus_ == ClickEventType::CLICK_EVENT) {
             RESSCHED_LOGI("SocPerfPlugin: socperf->CLICK_ANIMATION_START again");
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LOAD_PAGE_COMPLETE,
                 false, "");
@@ -309,8 +312,8 @@ void SocPerfPlugin::HandleContinueAnimation(const std::shared_ptr<ResData>& data
                 OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FRAME_LOSS_BOOST,
                     false, "");
                 reportAnimateEvent_ = false;
-                RESSCHED_LOGI("SocPerfPlugin: click animation timeout, send complete event.");
-            }, ANIMATION_MAX_TIME, AppExecFwk::EventQueue::Priority::HIGH);
+                RESSCHED_LOGI("SocPerfPlugin: click animation timeout, send complete event."); },
+                    ANIMATION_MAX_TIME, AppExecFwk::EventQueue::Priority::HIGH);
         }
     } else if (data->value == ContinueAnimationStatus::ANIMATION_COMPLETE) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_ANIMATION_REQUESTED, false, "");
