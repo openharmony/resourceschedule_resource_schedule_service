@@ -38,6 +38,12 @@ const std::string SOCPERF_BOOST_CONFIG_XML    = "etc/soc_perf/socperf_boost_conf
 const int64_t MAX_INT_VALUE                       = 0x7FFFFFFFFFFFFFFF;
 const int64_t MIN_INT_VALUE                       = 0x8000000000000000;
 const int32_t INVALID_VALUE                       = INT_MIN;
+/*
+ * Divide all resource id into five sections, resource of each section is processed in an individual handler thread.
+ * handlerId = resourceId / RES_ID_NUMS_PER_TYPE - 1
+ * Resource section:    [1000, 1999]   [2000, 2999]   [3000, 3999]   [4000, 4999]   [5000, 5999]
+ * Handler Thread:      handlers[0]    handlers[1]    handlers[2]    handlers[3]    handlers[4]
+ */
 const int32_t MAX_HANDLER_THREADS                 = 5;
 const int32_t MIN_RESOURCE_ID                     = 1000;
 const int32_t MAX_RESOURCE_ID                     = 5999;
@@ -216,6 +222,20 @@ public:
         }
         return false;
     }
+};
+
+class ResActionItem {
+public:
+    ResActionItem(int32_t id)
+    {
+        resId = id;
+    }
+
+    ~ResActionItem() = default;
+
+    int32_t resId;
+    std::shared_ptr<ResAction> resAction = nullptr;
+    std::shared_ptr<ResActionItem> next = nullptr;
 };
 
 class ResStatus {

@@ -24,6 +24,7 @@
 
 #include <unistd.h>
 
+#include "plugin_mgr.h"
 #include "res_sched_log.h"
 #include "event_handler.h"
 #include "event_runner.h"
@@ -58,7 +59,7 @@ void NetworkLatencyController::Init()
 void NetworkLatencyController::Init(std::unique_ptr<INetworkLatencySwitcher> sw)
 {
     handler = std::make_shared<AppExecFwk::EventHandler>(
-        AppExecFwk::EventRunner::Create(NET_LATENCY_TIMER_NAME)
+        PluginMgr::GetInstance().GetRunner()
     );
     if (!handler) {
         RESSCHED_LOGE("%{public}s: failed: cannot allocate event handler", __func__);

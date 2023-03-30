@@ -49,6 +49,15 @@ public:
     void ReportData(uint32_t resType, int64_t value = 0, const nlohmann::json& payload = nullptr);
 
     /**
+     * Report data inner, will report resource data async.
+     *
+     * @param resType Resource type.
+     * @param value bit64 content.
+     * @param payload Extra content.
+     */
+    void ReportDataInner(uint32_t resType, int64_t value = 0, const nlohmann::json& payload = nullptr);
+
+    /**
      * Kill process by pid.
      *
      * @param payload process message
@@ -57,10 +66,7 @@ public:
     int32_t KillProcessByClient(const nlohmann::json& payload = nullptr, std::string killClientInitiator = "");
 private:
     void DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload);
-    // main handler, use for report data
-    std::shared_ptr<AppExecFwk::EventHandler> mainHandler_ = nullptr;
     std::shared_ptr<KillProcess> killProcess_ = nullptr;
-    std::mutex mainHandlerMutex_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

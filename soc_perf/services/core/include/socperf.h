@@ -44,6 +44,7 @@ public:
 private:
     std::unordered_map<int32_t, std::shared_ptr<Actions>> perfActionsInfo;
     std::vector<std::shared_ptr<SocPerfHandler>> handlers;
+    bool handlerSwitch[MAX_HANDLER_THREADS] = { false };
     bool enabled = false;
 
     std::unordered_map<int32_t, std::shared_ptr<ResNode>> resNodeInfo;

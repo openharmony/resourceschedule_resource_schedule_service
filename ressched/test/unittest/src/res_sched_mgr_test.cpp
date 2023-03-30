@@ -42,7 +42,7 @@ void ResSchedMgrTest::TearDown() {}
 HWTEST_F(ResSchedMgrTest, Init001, TestSize.Level1)
 {
     ResSchedMgr::GetInstance().Init();
-    EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ != nullptr);
+    EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
 }
 
 /**
@@ -56,7 +56,7 @@ HWTEST_F(ResSchedMgrTest, ReportData001, TestSize.Level1)
 {
     nlohmann::json payload;
     ResSchedMgr::GetInstance().ReportData(0, 0, payload);
-    EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ != nullptr);
+    EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
     
     ResSchedMgr::GetInstance().DispatchResourceInner(0, 0, payload);
 }
@@ -73,7 +73,7 @@ HWTEST_F(ResSchedMgrTest, KillProcess001, TestSize.Level1)
     ResSchedMgr::GetInstance().KillProcessByClient(nullptr, "resource");
     nlohmann::json payload;
     ResSchedMgr::GetInstance().KillProcessByClient(payload, "resource");
-    EXPECT_TRUE(ResSchedMgr::GetInstance().mainHandler_ != nullptr);
+    EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
