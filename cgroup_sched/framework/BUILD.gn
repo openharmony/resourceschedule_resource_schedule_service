@@ -49,6 +49,7 @@ ohos_shared_library("cgroup_sched") {
     "ability_runtime:app_manager",
     "ability_runtime:wantagent_innerkits",
     "c_utils:utils",
+    "common_event_service:cesfwk_innerkits",
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
