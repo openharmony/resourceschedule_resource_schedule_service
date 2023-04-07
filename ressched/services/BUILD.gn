@@ -73,6 +73,7 @@ ohos_shared_library("resschedsvc") {
     "ability_base:want",
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
+    "audio_framework:audio_client",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
@@ -85,7 +86,6 @@ ohos_shared_library("resschedsvc") {
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_single",
-    "multimedia_audio_framework:audio_client",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
@@ -151,6 +151,7 @@ ohos_static_library("resschedsvc_static") {
     "ability_base:want",
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
+    "audio_framework:audio_client",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
@@ -163,7 +164,6 @@ ohos_static_library("resschedsvc_static") {
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_single",
-    "multimedia_audio_framework:audio_client",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
