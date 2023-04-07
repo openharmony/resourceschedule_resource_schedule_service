@@ -170,7 +170,7 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_InnerEventId_003, Function | MediumTest 
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_InnerEventId_004, Function | MediumTest | Level0)
 {
-    EXPECT_EQ(INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED, 3);
+    EXPECT_EQ(INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED, 4);
 }
 
 /*
@@ -181,7 +181,7 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_InnerEventId_004, Function | MediumTest 
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_InnerEventId_005, Function | MediumTest | Level0)
 {
-    EXPECT_EQ(INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ, 4);
+    EXPECT_EQ(INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ, 5);
 }
 
 /*
@@ -192,7 +192,7 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_InnerEventId_005, Function | MediumTest 
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_InnerEventId_006, Function | MediumTest | Level0)
 {
-    EXPECT_EQ(INNER_EVENT_ID_THERMAL_LIMIT_BOOST_FREQ, 5);
+    EXPECT_EQ(INNER_EVENT_ID_THERMAL_LIMIT_BOOST_FREQ, 6);
 }
 
 /*
