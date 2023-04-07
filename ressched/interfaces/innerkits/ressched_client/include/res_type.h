@@ -112,6 +112,8 @@ enum : uint32_t {
     RES_TYPE_CLICK_ANIMATION = 35,
     // after animation continue perf event; value 0: animation start, value 1: animation complete.
     RES_TYPE_CONTINUE_ANIMATION = 36,
+    // drag status bar event; value 0: start drag, value 1: stop drag.
+    RES_TYPE_DRAG_STATUS_BAR = 37,
 };
 
 static const std::map<uint32_t, std::string> resTypeToStr = {
@@ -151,7 +153,8 @@ static const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_SHOW_REMOTE_ANIMATION, "RES_TYPE_SHOW_REMOTE_ANIMATION" },
     { RES_TYPE_LOAD_PAGE, "RES_TYPE_LOAD_PAGE" },
     { RES_TYPE_CLICK_ANIMATION, "RES_TYPE_CLICK_ANIMATION" },
-    { RES_TYPE_CONTINUE_ANIMATION, "RES_TYPE_CONTINUE_ANIMATION" }
+    { RES_TYPE_CONTINUE_ANIMATION, "RES_TYPE_CONTINUE_ANIMATION" },
+    { RES_TYPE_DRAG_STATUS_BAR, "RES_TYPE_DRAG_STATUS_BAR" }
 };
 
 /**
@@ -304,6 +307,14 @@ enum ClickAnimationType : int64_t {
 enum ContinueAnimationStatus : int64_t {
     ANIMATION_START = 0,
     ANIMATION_COMPLETE = 1,
+};
+
+/**
+ * @brief Animation change status
+ */
+enum StatusBarDragStatus : int64_t {
+    DRAG_START = 0,
+    DRAG_END = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
