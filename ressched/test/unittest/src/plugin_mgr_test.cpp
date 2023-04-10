@@ -335,7 +335,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_004, Function | MediumTes
  * @tc.desc: HandleClickFrameLoss
  * @tc.type FUNC
  * @tc.author:lujunchao
- * @tc.require: issueI6I9QS
+ * @tc.require: issueI6U71L
  */
 HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_005, Function | MediumTest | Level0)
 {
@@ -386,7 +386,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_005, Function | MediumTes
  * @tc.desc: HandleContinueAnimation
  * @tc.type FUNC
  * @tc.author:lujunchao
- * @tc.require: issueI6I9QS
+ * @tc.require: issueI6U71L
  */
 HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_006, Function | MediumTest | Level0)
 {
