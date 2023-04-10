@@ -33,7 +33,7 @@ int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload, s
         return RES_SCHED_KILL_PROCESS_FAIL;
     }
 
-    pid_t pid = static_cast<uint32_t>(atoi(payload["pid"].get<string>().c_str()));
+    pid_t pid = static_cast<int32_t>(atoi(payload["pid"].get<string>().c_str()));
     if (pid == 0) {
         return RES_SCHED_KILL_PROCESS_FAIL;
     }

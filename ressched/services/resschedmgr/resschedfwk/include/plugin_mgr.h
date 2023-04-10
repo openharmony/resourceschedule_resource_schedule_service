@@ -55,7 +55,7 @@ struct PluginStat {
     {
         if (costTime > 0 && costTime < DISPATCH_TIME_OUT_US) {
             if (totalTime + costTime < totalTime) {
-                totalTime = costTime;
+                totalTime = (uint32_t)costTime;
                 useCount = 1;
             } else {
                 totalTime += costTime;
