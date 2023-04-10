@@ -401,13 +401,13 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_006, Function | MediumTes
         ResType::ContinueAnimationStatus::ANIMATION_START, payload);
 
     SocPerfPlugin::GetInstance().socperfOnDemandSwitch_ = true;
-    SocPerfPlugin::GetInstance().preStatus_ == ResType::ClickEventType::CLICK_EVENT;
+    SocPerfPlugin::GetInstance().preStatus_ = ResType::ClickEventType::CLICK_EVENT;
     SocPerfPlugin::GetInstance().HandleContinueAnimation(resData);
 
     SocPerfPlugin::GetInstance().socperfOnDemandSwitch_ = false;
     SocPerfPlugin::GetInstance().HandleContinueAnimation(resData); 
 
-    SocPerfPlugin::GetInstance().preStatus_ == ResType::ClickEventType::INVALID_EVENT;
+    SocPerfPlugin::GetInstance().preStatus_ = ResType::ClickEventType::INVALID_EVENT;
     SocPerfPlugin::GetInstance().HandleContinueAnimation(resData);
 
     SocPerfPlugin::GetInstance().socperfOnDemandSwitch_ = true;
