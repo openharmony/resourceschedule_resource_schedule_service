@@ -329,5 +329,94 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_004, Function | MediumTes
     /* DeInit */
     SocPerfPlugin::GetInstance().Disable();
 }
+
+/*
+ * @tc.name: SocPerfSubTest_DispatchResource_005
+ * @tc.desc: HandleClickFrameLoss
+ * @tc.type FUNC
+ * @tc.author:lujunchao
+ * @tc.require: issueI6U71L
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_005, Function | MediumTest | Level0)
+{
+    /* Init */
+    SocPerfPlugin::GetInstance().Init();
+    nlohmann::json payload;
+
+    std::shared_ptr<ResData> resData = nullptr;
+    SocPerfPlugin::GetInstance().HandleClickFrameLoss(resData);
+
+    resData = std::make_shared<ResData>(ResType::RES_TYPE_CLICK_ANIMATION,
+        ResType::ClickAnimationType::CLICK_ANIMATION_START, payload);
+
+    SocPerfPlugin::GetInstance().socperfOnDemandSwitch_ = false;
+    SocPerfPlugin::GetInstance().HandleClickFrameLoss(resData);
+
+    SocPerfPlugin::GetInstance().socperfOnDemandSwitch_ = true;
+    SocPerfPlugin::GetInstance().HandleClickFrameLoss(resData);
+
+    resData->value = ResType::ClickAnimationType::CLICK_ANIMATION_COMPLETE;
+    SocPerfPlugin::GetInstance().HandleClickFrameLoss(resData);
+
+    SocPerfPlugin::GetInstance().reportAnimateEvent_ = true;
+    resData->value = ResType::ClickAnimationType::CLICK_ANIMATION_NORMAL;
+    SocPerfPlugin::GetInstance().HandleClickFrameLoss(resData);
+
+    resData->value = ResType::ClickAnimationType::CLICK_ANIMATION_SOON;
+    SocPerfPlugin::GetInstance().HandleClickFrameLoss(resData);
+
+    resData->value = ResType::ClickAnimationType::CLICK_ANIMATION_BOOST;
+    SocPerfPlugin::GetInstance().HandleClickFrameLoss(resData);
+
+    SocPerfPlugin::GetInstance().reportAnimateEvent_ = false;
+    resData->value = ResType::ClickAnimationType::CLICK_ANIMATION_NORMAL;
+    SocPerfPlugin::GetInstance().HandleClickFrameLoss(resData);
+
+    resData->value = ResType::ClickAnimationType::CLICK_ANIMATION_SOON;
+    SocPerfPlugin::GetInstance().HandleClickFrameLoss(resData);
+
+    resData->value = ResType::ClickAnimationType::CLICK_ANIMATION_BOOST;
+    SocPerfPlugin::GetInstance().HandleClickFrameLoss(resData);
+    /* DeInit */
+    SocPerfPlugin::GetInstance().Disable();
+}
+
+/*
+ * @tc.name: SocPerfSubTest_DispatchResource_006
+ * @tc.desc: HandleContinueAnimation
+ * @tc.type FUNC
+ * @tc.author:lujunchao
+ * @tc.require: issueI6U71L
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_006, Function | MediumTest | Level0)
+{
+    /* Init */
+    SocPerfPlugin::GetInstance().Init();
+    nlohmann::json payload;
+
+    std::shared_ptr<ResData> resData = nullptr;
+    SocPerfPlugin::GetInstance().HandleContinueAnimation(resData);
+
+    resData = std::make_shared<ResData>(ResType::RES_TYPE_CONTINUE_ANIMATION,
+        ResType::ContinueAnimationStatus::ANIMATION_START, payload);
+
+    SocPerfPlugin::GetInstance().socperfOnDemandSwitch_ = true;
+    SocPerfPlugin::GetInstance().preStatus_ = ResType::ClickEventType::CLICK_EVENT;
+    SocPerfPlugin::GetInstance().HandleContinueAnimation(resData);
+
+    SocPerfPlugin::GetInstance().socperfOnDemandSwitch_ = false;
+    SocPerfPlugin::GetInstance().HandleContinueAnimation(resData); 
+
+    SocPerfPlugin::GetInstance().preStatus_ = ResType::ClickEventType::INVALID_EVENT;
+    SocPerfPlugin::GetInstance().HandleContinueAnimation(resData);
+
+    SocPerfPlugin::GetInstance().socperfOnDemandSwitch_ = true;
+    SocPerfPlugin::GetInstance().HandleContinueAnimation(resData);
+
+    resData->value = ResType::ClickAnimationType::CLICK_ANIMATION_COMPLETE;
+    SocPerfPlugin::GetInstance().HandleContinueAnimation(resData);
+    /* DeInit */
+    SocPerfPlugin::GetInstance().Disable();
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
