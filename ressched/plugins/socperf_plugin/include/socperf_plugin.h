@@ -53,6 +53,7 @@ private:
     bool InitFeatureSwitch(std::string featureName);
     void HandleClickFrameLoss(const std::shared_ptr<ResData>& data);
     void HandleContinueAnimation(const std::shared_ptr<ResData>& data);
+    void HandleDragStatusBar(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

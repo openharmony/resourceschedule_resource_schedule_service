@@ -49,6 +49,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_FRAME_LOSS_DEFAULT    = 10031;
     const int32_t PERF_REQUEST_CMD_ID_FRAME_LOSS_SOON       = 10032;
     const int32_t PERF_REQUEST_CMD_ID_FRAME_LOSS_BOOST      = 10033;
+    const int32_t PERF_REQUEST_CMD_ID_DRAG_STATUS_BAR       = 10034;
     const uint32_t ANIMATION_MAX_TIME = 500;
     const std::string RUNNER_NAME = "SocperfPlugin";
     std::shared_ptr<AppExecFwk::EventHandler> handler_ { nullptr };
@@ -82,6 +83,8 @@ void SocPerfPlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleClickFrameLoss(data); } },
         { RES_TYPE_CONTINUE_ANIMATION,
             [this](const std::shared_ptr<ResData>& data) { HandleContinueAnimation(data); } },
+        { RES_TYPE_DRAG_STATUS_BAR,
+            [this](const std::shared_ptr<ResData>& data) { HandleDragStatusBar(data); } },
     };
     resTypes = {
         RES_TYPE_WINDOW_FOCUS,
@@ -96,6 +99,7 @@ void SocPerfPlugin::Init()
         RES_TYPE_SHOW_REMOTE_ANIMATION,
         RES_TYPE_CLICK_ANIMATION,
         RES_TYPE_CONTINUE_ANIMATION,
+        RES_TYPE_DRAG_STATUS_BAR,
     };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
@@ -317,6 +321,19 @@ void SocPerfPlugin::HandleContinueAnimation(const std::shared_ptr<ResData>& data
         }
     } else if (data->value == ContinueAnimationStatus::ANIMATION_COMPLETE) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_ANIMATION_REQUESTED, false, "");
+    }
+}
+
+void SocPerfPlugin::HandleDragStatusBar(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    RESSCHED_LOGI("SocPerfPlugin: socperf->DRAG_STATUS_BAR: %{public}lld", (long long)data->value);
+    if (data->value == StatusBarDragStatus::DRAG_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_DRAG_STATUS_BAR, "");
+    } else if (data->value == StatusBarDragStatus::DRAG_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DRAG_STATUS_BAR, false, "");
     }
 }
 
