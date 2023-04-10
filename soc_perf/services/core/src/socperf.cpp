@@ -154,7 +154,7 @@ void SocPerf::LimitRequest(int32_t clientId,
         SOC_PERF_LOGE("tags'size and configs' size must be the same!");
         return;
     }
-    if (clientId <= ACTION_TYPE_PERF || clientId >= ACTION_TYPE_MAX) {
+    if (clientId <= (int32_t)ACTION_TYPE_PERF || clientId >= (int32_t)ACTION_TYPE_MAX) {
         SOC_PERF_LOGE("clientId must be between ACTION_TYPE_PERF and ACTION_TYPE_MAX!");
         return;
     }
