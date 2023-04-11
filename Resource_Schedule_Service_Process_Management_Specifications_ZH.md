@@ -265,9 +265,12 @@ A. 事件打点延时
 | RES_TYPE_WEB_GESTURE                | web手势事件                     | 无                        |无     | -        | -       |
 | RES_TYPE_SHOW_REMOTE_ANIMATION      | 动画开始事件                     | 0：动画开始 1：动画结束     | {"srcPid"=?}     | -        | -       |
 | RES_TYPE_DEVICE_STILL_STATE_CHANGE             | 当前设备运动状态和静止状态转变事件             | -1： 无效值，0： 转变为运动状态，1：转变为静止状态                        |无     | -        | -       |
+| RES_TYPE_RESIZE_WINDOW            | 窗口缩放事件                               | 0： 窗口缩放开始，1：窗口缩放结束                                                              |无     | -        | -       |
+| RES_TYPE_MOVE_WINDOW             | 窗口拖拽事件                             | 0： 窗口拖拽开始，1：窗口拖拽结束                                                              |无     | -        | -       |
 | RES_TYPE_LOAD_PAGE              | 页面加载事件             | 0： 页面加载开始，1：页面加载结束                        |无     | -        | -       |
 | RES_TYPE_CLICK_ANIMATION        | 点击后的动画状态事件      | 0：动画开始， 1：无丢帧压力事件， 2：即将丢帧事件， 3：丢帧事件， 4：动画结束     |无     | -        | -       |
 | RES_TYPE_CONTINUE_ANIMATION     | 动画连续事件             | 0：连续动画的开始， 1：连续动画的结束                    |无     | -        | -       |
+| RES_TYPE_DRAG_STATUS_BAR     | 状态栏下拉事件                              | 0：状态栏下拉开始， 1：状态栏下拉结束                                                            |无     | -        | -       |
 
 
 
