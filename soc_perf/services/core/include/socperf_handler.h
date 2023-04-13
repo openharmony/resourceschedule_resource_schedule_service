@@ -39,6 +39,7 @@ enum SocPerfInnerEvent : uint32_t {
     INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED,
     INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ,
     INNER_EVENT_ID_THERMAL_LIMIT_BOOST_FREQ,
+    INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL,
 };
 
 class SocPerfHandler : public AppExecFwk::EventHandler {
@@ -56,6 +57,8 @@ private:
     bool thermalLimitBoost = false;
 
 private:
+    void HandleDoFreqActionLevel(int32_t resId, std::shared_ptr<ResAction> resAction);
+    bool GetResValueByLevel(int32_t resId, int32_t level, int64_t& resValue);
     void UpdateResActionList(int32_t resId, std::shared_ptr<ResAction> resAction, bool delayed);
     void UpdateCandidatesValue(int32_t resId, int32_t type);
     void ArbitrateCandidate(int32_t resId);

@@ -73,6 +73,11 @@ private:
     bool CheckActionResIdAndValueValid(std::string configFile);
     void DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int32_t actionType);
     void PrintCachedInfo();
+    void SendLimitRequestEvent(int32_t clientId, int32_t resId, int64_t resValue);
+    void SendLimitRequestEventOff(std::shared_ptr<SocPerfHandler> handler,
+        int32_t clientId, int32_t resId, int32_t eventId);
+    void SendLimitRequestEventOn(std::shared_ptr<SocPerfHandler> handler,
+        int32_t clientId, int32_t resId, int64_t resValue, int32_t eventId);
 };
 } // namespace SOCPERF
 } // namespace OHOS
