@@ -143,6 +143,54 @@ void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
     FinishTrace(HITRACE_TAG_OHOS);
 }
 
+void SocPerf::SendLimitRequestEventOff(std::shared_ptr<SocPerfHandler> handler,
+    int32_t clientId, int32_t resId, int32_t eventId)
+{
+    auto iter = limitRequest[clientId].find(resId);
+    if (iter != limitRequest[clientId].end()
+        && limitRequest[clientId][resId] != INVALID_VALUE) {
+        auto resAction = std::make_shared<ResAction>(
+            limitRequest[clientId][resId], 0, clientId, EVENT_OFF);
+        auto event = AppExecFwk::InnerEvent::Get(eventId, resAction, resId);
+        handler->SendEvent(event);
+        limitRequest[clientId].erase(iter);
+    }
+
+}
+
+void SocPerf::SendLimitRequestEventOn(std::shared_ptr<SocPerfHandler> handler,
+    int32_t clientId, int32_t resId, int64_t resValue, int32_t eventId)
+{
+    if (resValue != INVALID_VALUE && resValue != RESET_VALUE) {
+        auto resAction = std::make_shared<ResAction>(resValue, 0, clientId, EVENT_ON);
+        auto event = AppExecFwk::InnerEvent::Get(eventId, resAction, resId);
+        handler->SendEvent(event);
+        limitRequest[clientId].insert(std::pair<int32_t, int32_t>(resId, resValue));
+    }
+}
+
+void SocPerf::SendLimitRequestEvent(int32_t clientId, int32_t resId, int64_t resValue)
+{
+    int32_t eventId, realResId, levelResId;
+    if (resId > RES_ID_ADDITION) {
+        realResId = resId - RES_ID_ADDITION;
+        levelResId = resId;
+        eventId = INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL;
+    } else {
+        realResId = resId;
+        levelResId = resId + RES_ID_ADDITION;
+        eventId = INNER_EVENT_ID_DO_FREQ_ACTION;
+    }
+
+    auto handler = GetHandlerByResId(realResId);
+    if (!handler) {
+        return;
+    }
+    SendLimitRequestEventOff(handler, clientId, realResId, INNER_EVENT_ID_DO_FREQ_ACTION);
+    SendLimitRequestEventOff(handler, clientId, levelResId, INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL);
+    SendLimitRequestEventOn(handler, clientId, resId, resValue, eventId);
+}
+
 void SocPerf::LimitRequest(int32_t clientId,
     const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg)
 {
@@ -161,29 +209,7 @@ void SocPerf::LimitRequest(int32_t clientId,
     for (int32_t i = 0; i < (int32_t)tags.size(); i++) {
         SOC_PERF_LOGD("clientId[%{public}d],tags[%{public}d],configs[%{public}lld],msg[%{public}s]",
             clientId, tags[i], (long long)configs[i], msg.c_str());
-    }
-    for (int32_t i = 0; i < (int32_t)tags.size(); i++) {
-        int32_t resId = tags[i];
-        auto handler = GetHandlerByResId(resId);
-        if (!handler) {
-            continue;
-        }
-        int64_t resValue = configs[i];
-        auto iter = limitRequest[clientId].find(resId);
-        if (iter != limitRequest[clientId].end()
-            && limitRequest[clientId][resId] != INVALID_VALUE) {
-            auto resAction = std::make_shared<ResAction>(
-                limitRequest[clientId][resId], 0, clientId, EVENT_OFF);
-            auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_DO_FREQ_ACTION, resAction, resId);
-            handler->SendEvent(event);
-            limitRequest[clientId].erase(iter);
-        }
-        if (resValue != INVALID_VALUE) {
-            auto resAction = std::make_shared<ResAction>(resValue, 0, clientId, EVENT_ON);
-            auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_DO_FREQ_ACTION, resAction, resId);
-            handler->SendEvent(event);
-            limitRequest[clientId].insert(std::pair<int32_t, int32_t>(resId, resValue));
-        }
+        SendLimitRequestEvent(clientId, tags[i], configs[i]);
     }
 }
 
@@ -540,7 +566,7 @@ bool SocPerf::CheckPairResIdValid()
         int32_t resId = iter->first;
         std::shared_ptr<ResNode> resNode = iter->second;
         int32_t pairResId = resNode->pair;
-        if (resNodeInfo.find(pairResId) == resNodeInfo.end()) {
+        if (pairResId != INVALID_VALUE && resNodeInfo.find(pairResId) == resNodeInfo.end()) {
             SOC_PERF_LOGE("resId[%{public}d]'s pairResId[%{public}d] is not valid", resId, pairResId);
             return false;
         }
@@ -630,7 +656,8 @@ bool SocPerf::CheckActionResIdAndValueValid(std::string configFile)
                 int32_t resId = action->variable[i];
                 int64_t resValue = action->variable[i + 1];
                 if (resNodeInfo.find(resId) != resNodeInfo.end()) {
-                    if (resNodeInfo[resId]->available.find(resValue) == resNodeInfo[resId]->available.end()) {
+                    if (!resNodeInfo[resId]->available.empty()
+                        && resNodeInfo[resId]->available.find(resValue) == resNodeInfo[resId]->available.end()) {
                         SOC_PERF_LOGE("action[%{public}d]'s resValue[%{public}lld] is not valid",
                             actionId, (long long)resValue);
                         return false;

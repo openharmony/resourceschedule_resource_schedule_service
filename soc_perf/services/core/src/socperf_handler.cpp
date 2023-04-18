@@ -19,6 +19,7 @@
 #include <list>              // for list, __list_iterator, operator!=
 #include <new>               // for operator delete, operator new
 #include <cstdlib>           // for realpath
+#include <set>               // for set
 #include <string>            // for basic_string, to_string
 #include <unordered_map>     // for unordered_map, operator==, operator!=
 #include <utility>           // for pair
@@ -114,10 +115,51 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
             }
             break;
         }
+        case INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL: {
+            HandleDoFreqActionLevel(event->GetParam(), event->GetSharedObject<ResAction>());
+            break;
+        }
         default: {
             break;
         }
     }
+}
+
+void SocPerfHandler::HandleDoFreqActionLevel(int32_t resId, std::shared_ptr<ResAction> resAction)
+{
+    int32_t realResId = resId - RES_ID_ADDITION;
+    if (!IsValidResId(realResId) || !resAction) {
+        return;
+    }
+    int32_t level = (int32_t)resAction->value;
+    if (!GetResValueByLevel(realResId, level, resAction->value)) {
+        return;
+    }
+    UpdateResActionList(realResId, resAction, false);
+}
+
+bool SocPerfHandler::GetResValueByLevel(int32_t resId, int32_t level, int64_t& resValue)
+{
+    if (resNodeInfo.find(resId) == resNodeInfo.end()
+        || resNodeInfo[resId]->available.empty()) {
+        SOC_PERF_LOGE("resId[%{public}d] is not valid.", resId);
+        return false;
+    }
+    if (level < 0) {
+        return false;
+    }
+
+    std::set<int64_t> available;
+    for (auto a : resNodeInfo[resId]->available) {
+        available.insert(a);
+    }
+    int32_t len = available.size();
+    auto iter = available.begin();
+    if (level < len) {
+        std::advance(iter, len - 1 - level);
+    }
+    resValue = *iter;
+    return true;
 }
 
 void SocPerfHandler::UpdateResActionList(int32_t resId, std::shared_ptr<ResAction> resAction, bool delayed)
