@@ -35,8 +35,12 @@ namespace {
 void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     RESSCHED_LOGI("ResSchedService::ReportData from ipc receive data resType = %{public}u, value = %{public}lld.",
-        resType, (long long)value);
-    ResSchedMgr::GetInstance().ReportData(resType, value, payload);
+                  resType, (long long)value);
+    const nlohmann::json* payloadP = &payload;
+    uint32_t callingUid = IPCSkeleton::GetCallingUid();
+    nlohmann::json* payloadM = const_cast<nlohmann::json*>(payloadP);
+    (*payloadM)["callingUid"] = std::to_string(callingUid);
+    ResSchedMgr::GetInstance().ReportData(resType, value, *payloadM);
 }
 
 int32_t ResSchedService::KillProcess(const nlohmann::json& payload)
