@@ -155,7 +155,6 @@ void SocPerf::SendLimitRequestEventOff(std::shared_ptr<SocPerfHandler> handler,
         handler->SendEvent(event);
         limitRequest[clientId].erase(iter);
     }
-
 }
 
 void SocPerf::SendLimitRequestEventOn(std::shared_ptr<SocPerfHandler> handler,
