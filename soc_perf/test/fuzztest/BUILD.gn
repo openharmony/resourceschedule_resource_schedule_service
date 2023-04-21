@@ -16,6 +16,7 @@ group("fuzztest") {
 
   deps = [
     "loadconfigxmlfile_fuzzer:fuzztest",
+    "perfrequest_fuzzer:fuzztest",
     "socperf_fuzzer:fuzztest",
   ]
 }
