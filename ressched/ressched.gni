@@ -11,23 +11,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resourceschedule_path = 
-    "//foundation/resourceschedule/resource_schedule_service/ressched"
+resourceschedule_path = "//foundation/resourceschedule"
 
 ressched_services =
-    "${resourceschedule_path}/services"
+    "${resourceschedule_path}/resource_schedule_service/ressched/services"
 
 ressched_common =
-    "${resourceschedule_path}/common"
+    "${resourceschedule_path}/resource_schedule_service/ressched/common"
 
 ressched_interfaces =
-    "${resourceschedule_path}/interfaces"
+    "${resourceschedule_path}/resource_schedule_service/ressched/interfaces"
 
 ressched_plugins =
-    "${resourceschedule_path}/plugins"
+    "${resourceschedule_path}/resource_schedule_service/ressched/plugins"
 
 ressched_test =
-    "${resourceschedule_path}/test"
+    "${resourceschedule_path}/resource_schedule_service/ressched/test"
 
 declare_args() {
   component_sched_enable = true
