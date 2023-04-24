@@ -42,7 +42,7 @@
         "init",
         "ipc",
         "movement",
-        "multimedia_audio_framework",
+        "audio_framework",
         "samgr",
         "safwk",
         "state_registry",
