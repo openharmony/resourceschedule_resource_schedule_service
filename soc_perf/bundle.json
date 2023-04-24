@@ -30,12 +30,12 @@
         "hiviewdfx_hilog_native",
         "ipc",
         "libxml2",
+        "multimodalinput",
         "safwk",
-        "samgr"
+        "samgr",
+        "soc_perf"
       ],
-      "third_party": [
-        "xml2"
-      ]
+      "third_party": []
     },
     "build": {
       "group_type": {
