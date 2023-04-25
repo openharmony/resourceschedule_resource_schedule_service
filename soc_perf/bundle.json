@@ -1,5 +1,5 @@
 {
-  "name": "@ohos/resource_schedule_service",
+  "name": "@ohos/soc_perf",
   "description": "resource schedule service",
   "version": "3.1",
   "license": "Apache License 2.0",
