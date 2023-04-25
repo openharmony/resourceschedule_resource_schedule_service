@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/resourceschedule/frame_aware_sched/frameaware.gni")
+import("../../../../frame_aware_sched/frameaware.gni")
 import("../../ressched.gni")
 
 config("frame_aware_plugin_config") {
