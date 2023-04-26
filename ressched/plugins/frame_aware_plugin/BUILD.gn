@@ -36,12 +36,18 @@ ohos_shared_library("frame_aware_plugin") {
   deps = [ "${ressched_services}:resschedsvc" ]
 
   external_deps = [
-    "bluetooth:btframework",
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "frame_aware_sched:frame_msg_intf",
     "hiviewdfx_hilog_native:libhilog",
   ]
+
+  defines = []
+
+  if (ressched_with_communication_bluetooth_enable) {
+    external_deps += [ "bluetooth:btframework" ]
+    defines += [ "RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE" ]
+  }
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

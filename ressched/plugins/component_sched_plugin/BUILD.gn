@@ -30,7 +30,6 @@ ohos_shared_library("component_sched_plugin") {
   deps = [ "${ressched_services}:resschedsvc" ]
 
   external_deps = [
-    "bluetooth:btframework",
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "hiviewdfx_hilog_native:libhilog",
@@ -44,6 +43,11 @@ ohos_shared_library("component_sched_plugin") {
       "ipc:ipc_single",
     ]
     defines += [ "COMPONENT_SCHED_ENABLE" ]
+  }
+
+  if (ressched_with_communication_bluetooth_enable) {
+    external_deps += [ "bluetooth:btframework" ]
+    defines += [ "RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE" ]
   }
 
   subsystem_name = "resourceschedule"

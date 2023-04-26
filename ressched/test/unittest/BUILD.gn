@@ -96,6 +96,12 @@ ohos_unittest("resschedfwk_test") {
     "eventhandler:libeventhandler",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_single",
-    "soc_perf:socperf_client",
   ]
+
+  defines = []
+
+  if (ressched_with_resourceschedule_soc_perf_enable) {
+    external_deps += [ "soc_perf:socperf_client" ]
+    defines += [ "RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE" ]
+  }
 }
