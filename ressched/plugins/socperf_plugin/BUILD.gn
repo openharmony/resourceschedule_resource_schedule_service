@@ -34,14 +34,11 @@ ohos_shared_library("socperf_plugin") {
     "eventhandler:libeventhandler",
     "hiviewdfx_hilog_native:libhilog",
   ]
-
   defines = []
-
   if (ressched_with_resourceschedule_soc_perf_enable) {
     external_deps += [ "soc_perf:socperf_client" ]
     defines += [ "RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE" ]
   }
-
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
 }
