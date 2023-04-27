@@ -15,9 +15,6 @@
 
 #include "component_sched_plugin.h"
 
-#ifdef RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE
-#include "bluetooth_def.h"
-#endif // RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE
 #ifdef COMPONENT_SCHED_ENABLE
 #include "component_sched_client.h"
 #endif
