@@ -107,11 +107,12 @@ ohos_shared_library("resschedsvc") {
   }
 
   if (ressched_with_customization_config_policy_enable) {
-    external_deps += [ "config_policy:configpolicy_util" ]
+    external_deps += [
+      "config_policy:configpolicy_util"
+      ]
     defines += [ "RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE" ]
   }
   
-
   version_script = "libresschedsvc.versionscript"
   shlib_type = "sa"
   subsystem_name = "resourceschedule"
