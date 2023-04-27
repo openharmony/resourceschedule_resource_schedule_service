@@ -45,11 +45,6 @@ ohos_shared_library("component_sched_plugin") {
     defines += [ "COMPONENT_SCHED_ENABLE" ]
   }
 
-  if (ressched_with_communication_bluetooth_enable) {
-    external_deps += [ "bluetooth:btframework" ]
-    defines += [ "RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE" ]
-  }
-
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
 }
