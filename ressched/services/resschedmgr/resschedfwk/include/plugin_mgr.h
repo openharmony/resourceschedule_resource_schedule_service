@@ -58,7 +58,7 @@ struct PluginStat {
                 totalTime = (uint32_t)costTime;
                 useCount = 1;
             } else {
-                totalTime += costTime;
+                totalTime += (uint32_t)costTime;
                 useCount += 1;
             }
         }

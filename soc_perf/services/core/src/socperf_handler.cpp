@@ -153,7 +153,7 @@ bool SocPerfHandler::GetResValueByLevel(int32_t resId, int32_t level, int64_t& r
     for (auto a : resNodeInfo[resId]->available) {
         available.insert(a);
     }
-    int32_t len = available.size();
+    int32_t len = (int32_t)available.size();
     auto iter = available.begin();
     if (level < len) {
         std::advance(iter, len - 1 - level);
