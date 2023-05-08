@@ -83,11 +83,11 @@ static constexpr OHOS::HiviewDFX::HiLogLabel PGCGS_LOG_LABEL = {
         } \
     } while (0)
 
-#define PGCGS_LOGF(...) PGCGS_PRINT_LOG(LOG_DEBUG, Debug, __VA_ARGS__)
-#define PGCGS_LOGE(...) PGCGS_PRINT_LOG(LOG_INFO, Info, __VA_ARGS__)
+#define PGCGS_LOGD(...) PGCGS_PRINT_LOG(LOG_DEBUG, Debug, __VA_ARGS__)
+#define PGCGS_LOGI(...) PGCGS_PRINT_LOG(LOG_INFO, Info, __VA_ARGS__)
 #define PGCGS_LOGW(...) PGCGS_PRINT_LOG(LOG_WARN, Warn, __VA_ARGS__)
-#define PGCGS_LOGI(...) PGCGS_PRINT_LOG(LOG_ERROR, Error, __VA_ARGS__)
-#define PGCGS_LOGD(...) PGCGS_PRINT_LOG(LOG_FATAL, Fatal, __VA_ARGS__)
+#define PGCGS_LOGE(...) PGCGS_PRINT_LOG(LOG_ERROR, Error, __VA_ARGS__)
+#define PGCGS_LOGF(...) PGCGS_PRINT_LOG(LOG_FATAL, Fatal, __VA_ARGS__)
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

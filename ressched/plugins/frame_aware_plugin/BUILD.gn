@@ -12,7 +12,6 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("../../../../frame_aware_sched/frameaware.gni")
 import("../../ressched.gni")
 
 config("frame_aware_plugin_config") {
@@ -20,8 +19,6 @@ config("frame_aware_plugin_config") {
     "include",
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
-    "${frame_aware_path}/common/include",
-    "${frame_aware_path}/interfaces/innerkits/frameintf",
   ]
 }
 
