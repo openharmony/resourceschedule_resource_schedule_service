@@ -52,4 +52,16 @@ declare_args() {
       !defined(global_parts_info.communication_netmanager_base)) {
     ressched_with_communication_netmanager_base_enable = false
   }
+
+  ressched_with_customization_config_policy_enable = true
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.customization_config_policy)) {
+    ressched_with_customization_config_policy_enable = false
+  }
+
+  ressched_with_resourceschedule_soc_perf_enable = true
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.resourceschedule_soc_perf)) {
+    ressched_with_resourceschedule_soc_perf_enable = false
+  }
 }

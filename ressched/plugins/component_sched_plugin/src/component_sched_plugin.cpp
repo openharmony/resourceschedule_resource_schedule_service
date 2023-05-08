@@ -15,7 +15,6 @@
 
 #include "component_sched_plugin.h"
 
-#include "bluetooth_def.h"
 #ifdef COMPONENT_SCHED_ENABLE
 #include "component_sched_client.h"
 #endif

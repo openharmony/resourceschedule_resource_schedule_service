@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#ifdef RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE
 #include "socperf_plugin.h"
 
 #include "app_mgr_constants.h"
@@ -357,3 +358,4 @@ extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& data)
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif // RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE

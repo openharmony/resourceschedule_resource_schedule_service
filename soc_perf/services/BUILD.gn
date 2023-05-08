@@ -38,7 +38,6 @@ ohos_shared_library("socperf_server") {
 
   external_deps = [
     "c_utils:utils",
-    "config_policy:configpolicy_util",
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
@@ -46,6 +45,12 @@ ohos_shared_library("socperf_server") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
+
+  defines = []
+  if (customization_config_policy_enable) {
+    external_deps += [ "config_policy:configpolicy_util" ]
+    defines += [ "CUSTOMIZATION_CONFIG_POLICY_ENABLE" ]
+  }
 
   shlib_type = "sa"
   part_name = "soc_perf"
@@ -67,7 +72,6 @@ ohos_static_library("socperf_server_static") {
 
   external_deps = [
     "c_utils:utils",
-    "config_policy:configpolicy_util",
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
@@ -75,6 +79,12 @@ ohos_static_library("socperf_server_static") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
+
+  defines = []
+  if (customization_config_policy_enable) {
+    external_deps += [ "config_policy:configpolicy_util" ]
+    defines += [ "CUSTOMIZATION_CONFIG_POLICY_ENABLE" ]
+  }
 
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"

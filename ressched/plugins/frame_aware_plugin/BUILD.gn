@@ -33,7 +33,6 @@ ohos_shared_library("frame_aware_plugin") {
   deps = [ "${ressched_services}:resschedsvc" ]
 
   external_deps = [
-    "bluetooth:btframework",
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "frame_aware_sched:frame_msg_intf",

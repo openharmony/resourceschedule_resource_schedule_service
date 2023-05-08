@@ -78,7 +78,6 @@ ohos_shared_library("resschedsvc") {
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
-    "config_policy:configpolicy_util",
     "eventhandler:libeventhandler",
     "hisysevent_native:libhisysevent",
     "hisysevent_native:libhisyseventmanager",
@@ -96,7 +95,6 @@ ohos_shared_library("resschedsvc") {
     sources +=
         [ "../sched_controller/observer/src/device_movement_observer.cpp" ]
   }
-
   if (ressched_with_telephony_state_registry_enable) {
     defines += [ "RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE" ]
     external_deps += [
@@ -106,7 +104,10 @@ ohos_shared_library("resschedsvc") {
     sources +=
         [ "../sched_controller/observer/src/sched_telephony_observer.cpp" ]
   }
-
+  if (ressched_with_customization_config_policy_enable) {
+    defines += [ "RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE" ]
+    external_deps += [ "config_policy:configpolicy_util" ]
+  }
   version_script = "libresschedsvc.versionscript"
   shlib_type = "sa"
   subsystem_name = "resourceschedule"
@@ -156,7 +157,6 @@ ohos_static_library("resschedsvc_static") {
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
-    "config_policy:configpolicy_util",
     "eventhandler:libeventhandler",
     "hisysevent_native:libhisysevent",
     "hisysevent_native:libhisyseventmanager",
@@ -174,7 +174,6 @@ ohos_static_library("resschedsvc_static") {
     sources +=
         [ "../sched_controller/observer/src/device_movement_observer.cpp" ]
   }
-
   if (ressched_with_telephony_state_registry_enable) {
     defines += [ "RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE" ]
     external_deps += [
@@ -183,6 +182,10 @@ ohos_static_library("resschedsvc_static") {
     ]
     sources +=
         [ "../sched_controller/observer/src/sched_telephony_observer.cpp" ]
+  }
+  if (ressched_with_customization_config_policy_enable) {
+    defines += [ "RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE" ]
+    external_deps += [ "config_policy:configpolicy_util" ]
   }
 
   subsystem_name = "resourceschedule"

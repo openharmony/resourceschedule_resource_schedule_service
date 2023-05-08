@@ -13,8 +13,13 @@
  * limitations under the License.
  */
 
+
 #include "socperf.h"
+
+#ifdef CUSTOMIZATION_CONFIG_POLICY_ENABLE
 #include "config_policy_utils.h"
+#endif // CUSTOMIZATION_CONFIG_POLICY_ENABLE
+
 #include "hitrace_meter.h"
 
 namespace OHOS {
@@ -29,6 +34,7 @@ SocPerf::~SocPerf()
 
 bool SocPerf::Init()
 {
+#ifdef CUSTOMIZATION_CONFIG_POLICY_ENABLE
     if (!LoadConfigXmlFile(SOCPERF_RESOURCE_CONFIG_XML)) {
         SOC_PERF_LOGE("Failed to load %{public}s", SOCPERF_RESOURCE_CONFIG_XML.c_str());
         return false;
@@ -38,6 +44,7 @@ bool SocPerf::Init()
         SOC_PERF_LOGE("Failed to load %{public}s", SOCPERF_BOOST_CONFIG_XML.c_str());
         return false;
     }
+#endif // CUSTOMIZATION_CONFIG_POLICY_ENABLE
 
     PrintCachedInfo();
 
@@ -243,6 +250,7 @@ void SocPerf::DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int
     }
 }
 
+#ifdef CUSTOMIZATION_CONFIG_POLICY_ENABLE
 std::string SocPerf::GetRealConfigPath(const std::string configFile)
 {
     char buf[PATH_MAX + 1];
@@ -255,6 +263,7 @@ std::string SocPerf::GetRealConfigPath(const std::string configFile)
     }
     return std::string(tmpPath);
 }
+#endif // CUSTOMIZATION_CONFIG_POLICY_ENABLE
 
 std::shared_ptr<SocPerfHandler> SocPerf::GetHandlerByResId(int32_t resId)
 {
@@ -264,6 +273,7 @@ std::shared_ptr<SocPerfHandler> SocPerf::GetHandlerByResId(int32_t resId)
     return handlers[resId / RES_ID_NUMS_PER_TYPE - 1];
 }
 
+#ifdef CUSTOMIZATION_CONFIG_POLICY_ENABLE
 bool SocPerf::LoadConfigXmlFile(std::string configFile)
 {
     std::string realConfigFile = GetRealConfigPath(configFile);
@@ -313,6 +323,7 @@ bool SocPerf::LoadConfigXmlFile(std::string configFile)
     SOC_PERF_LOGD("Success to Load %{public}s", configFile.c_str());
     return true;
 }
+#endif // CUSTOMIZATION_CONFIG_POLICY_ENABLE
 
 bool SocPerf::CreateHandlers()
 {
