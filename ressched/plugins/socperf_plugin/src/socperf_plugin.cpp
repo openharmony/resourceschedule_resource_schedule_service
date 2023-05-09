@@ -316,8 +316,8 @@ void SocPerfPlugin::HandleContinueAnimation(const std::shared_ptr<ResData>& data
                 OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FRAME_LOSS_BOOST,
                     false, "");
                 reportAnimateEvent_ = false;
-                RESSCHED_LOGI("SocPerfPlugin: click animation timeout, send complete event."); },
-                    ANIMATION_MAX_TIME, AppExecFwk::EventQueue::Priority::HIGH);
+                RESSCHED_LOGI("SocPerfPlugin: click animation timeout, send complete event.");
+                }, ANIMATION_MAX_TIME, AppExecFwk::EventQueue::Priority::HIGH);
         }
     } else if (data->value == ContinueAnimationStatus::ANIMATION_COMPLETE) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_ANIMATION_REQUESTED, false, "");

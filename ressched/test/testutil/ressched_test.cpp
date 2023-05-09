@@ -26,7 +26,7 @@ const static int32_t PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME = 5;
 
 static void MockProcess(std::string processName)
 {
-    static const char *PERMS[] = {
+    static const char *perms[] = {
         "ohos.permission.DISTRIBUTED_DATASYNC"
     };
     uint64_t tokenId;
@@ -35,7 +35,7 @@ static void MockProcess(std::string processName)
         .permsNum = 1,
         .aclsNum = 0,
         .dcaps = nullptr,
-        .perms = PERMS,
+        .perms = perms,
         .acls = nullptr,
         .processName = processName.c_str(),
         .aplStr = "system_core",
