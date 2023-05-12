@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+#ifndef PERFREQUEST_FUZZER_H
+#define PERFREQUEST_FUZZER_H
+
 #include <cstdint>
 #include <unistd.h>
 #include <climits>
@@ -21,3 +24,5 @@
 #include <fcntl.h>
 
 #define FUZZ_PROJECT_NAME "perfrequest_fuzzer"
+
+#endif

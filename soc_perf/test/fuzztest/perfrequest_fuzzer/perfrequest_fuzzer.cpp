@@ -16,11 +16,10 @@
 #include "perfrequest_fuzzer.h"
 #include "socperf_client.h"
 
-#include <cstdint>
 #include <securec.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
 
 #ifndef errno_t
 typedef int errno_t;
@@ -61,7 +60,7 @@ namespace SOCPERF {
     */
     std::string GetStringFromData(int strlen)
     {
-        if (strlen <= 0){
+        if (strlen <= 0) {
             return "";
         }
         char cstr[strlen];
@@ -156,7 +155,7 @@ namespace SOCPERF {
         OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(onOffTag, msg);
 
         return true;
-    }    
+    }
 
     bool LimitRequestFuzzTest(const uint8_t* data, size_t size)
     {
@@ -173,12 +172,12 @@ namespace SOCPERF {
         std::vector<int32_t> tags;
         std::vector<int64_t> configs;
         std::string msg;
-        int32_t tags_number = GetData<int32_t>();
-        int64_t configs_number = GetData<int64_t>();
+        int32_t tagsNumber = GetData<int32_t>();
+        int64_t configsNumber = GetData<int64_t>();
         int32_t clientId = GetData<int32_t>();
-        tags.push_back(tags_number);
-        configs.push_back(configs_number);
-        msg = GetStringFromData(int(size) - 2 * sizeof(int32_t) - sizeof(int64_t));
+        tags.push_back(tagsNumber);
+        configs.push_back(configsNumber);
+        msg = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(int64_t));
         OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(clientId, tags, configs, msg);
 
         return true;
