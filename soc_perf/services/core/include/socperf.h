@@ -53,6 +53,7 @@ private:
     std::vector<std::unordered_map<int32_t, int32_t>> limitRequest;
 
 private:
+    std::mutex mutex_;
     std::string GetRealConfigPath(const std::string configFile);
     std::shared_ptr<SocPerfHandler> GetHandlerByResId(int32_t resId);
     bool LoadConfigXmlFile(std::string configFile);
