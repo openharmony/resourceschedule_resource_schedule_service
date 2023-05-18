@@ -192,6 +192,7 @@ void SocPerf::SendLimitRequestEvent(int32_t clientId, int32_t resId, int64_t res
     if (!handler) {
         return;
     }
+    std::lock_guard<std::mutex> lock(mutex_);
     SendLimitRequestEventOff(handler, clientId, realResId, INNER_EVENT_ID_DO_FREQ_ACTION);
     SendLimitRequestEventOff(handler, clientId, levelResId, INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL);
     SendLimitRequestEventOn(handler, clientId, resId, resValue, eventId);
