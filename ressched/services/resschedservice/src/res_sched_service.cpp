@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include <cstdint>
 #include "res_sched_service.h"
 #include <file_ex.h>
 #include <string_ex.h>
