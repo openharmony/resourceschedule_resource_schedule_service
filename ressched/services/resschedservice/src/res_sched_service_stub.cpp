@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include <cstdint>
 #include "res_sched_service_stub.h"
 #include "res_sched_log.h"
 #include "res_sched_errors.h"
@@ -22,6 +23,8 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
+    constexpr int32_t PAYLOAD_MAX_SIZE = 4096;
+
     bool IsValidToken(MessageParcel& data)
     {
         std::u16string descriptor = ResSchedServiceStub::GetDescriptor();
@@ -54,7 +57,11 @@ int32_t ResSchedServiceStub::ReportDataInner(MessageParcel& data, [[maybe_unused
     std::string payload;
     READ_PARCEL(data, String, payload, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
 
-    ReportData(type, value, StringToJsonObj(payload));
+    if (payload.size() <= PAYLOAD_MAX_SIZE) {
+        ReportData(type, value, StringToJsonObj(payload));
+    } else {
+        RESSCHED_LOGE("The payload is too long. DoS.");
+    }
     return ERR_OK;
 }
 
@@ -65,8 +72,13 @@ int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel
     }
     std::string payload;
     READ_PARCEL(data, String, payload, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
-    int32_t status = KillProcess(StringToJsonObj(payload));
-    reply.WriteInt32(status);
+    if (payload.size() <= PAYLOAD_MAX_SIZE) {
+        int32_t status = KillProcess(StringToJsonObj(payload));
+        reply.WriteInt32(status);
+    } else {
+        reply.WriteInt32(RES_SCHED_DATA_ERROR);
+        RESSCHED_LOGE("The payload is too long. DoS.");
+    }
     return ERR_OK;
 }
 
