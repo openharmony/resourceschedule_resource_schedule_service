@@ -14,7 +14,7 @@
 import("//build/ohos/sa_profile/sa_profile.gni")
 
 ohos_sa_profile("ressched_sa_profile") {
-  sources = [ "1901.xml" ]
+  sources = [ "1901.json" ]
 
   part_name = "resource_schedule_service"
 }
