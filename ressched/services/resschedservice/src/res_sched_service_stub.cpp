@@ -59,6 +59,7 @@ int32_t ResSchedServiceStub::ReportDataInner(MessageParcel& data, [[maybe_unused
 
     if (payload.size() <= PAYLOAD_MAX_SIZE) {
         ReportData(type, value, StringToJsonObj(payload));
+        RESSCHED_LOGE("The payload is too long.DoS");
     }
     return ERR_OK;
 }
@@ -76,6 +77,7 @@ int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel
     }
     else {
         reply.WriteInt32(RES_SCHED_DATA_ERROR);
+        RESSCHED_LOGE("The payload is too long.DoS");
     }
     return ERR_OK;
 }
