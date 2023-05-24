@@ -23,7 +23,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    constexpr int32_t PAYLOAD_MAX_SIZE = 4096;
+    #define PAYLOAD_MAX_SIZE 4096
 
     bool IsValidToken(MessageParcel& data)
     {
