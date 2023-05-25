@@ -1,0 +1,12 @@
+{
+    "process": "resource_schedule_service",
+    "systemability": [
+        {
+            "name": 1906,
+            "libpath": "libsocperf_server.z.so",
+            "run-on-create": true,
+            "distributed": false,
+            "dump_level": 1
+        }
+    ]
+}
