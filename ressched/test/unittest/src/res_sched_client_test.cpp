@@ -119,7 +119,7 @@ HWTEST_F(ResSchedClientTest, KillProcess002, Function | MediumTest | Level0)
  * @tc.name: StopRemoteObject
  * @tc.desc: Stop Remote Object
  * @tc.type: FUNC
- * @tc.require: I78O06
+ * @tc.require: I78O6Y
  * @tc.author: lujunchao
  */
 HWTEST_F(ResSchedClientTest, StopRemoteObject, Function | MediumTest | Level0)
