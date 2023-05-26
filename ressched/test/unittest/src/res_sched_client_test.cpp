@@ -114,6 +114,20 @@ HWTEST_F(ResSchedClientTest, KillProcess002, Function | MediumTest | Level0)
     ResSchedClient::GetInstance().KillProcess(mapPayload);
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
 }
+
+/**
+ * @tc.name: StopRemoteObject
+ * @tc.desc: Stop Remote Object
+ * @tc.type: FUNC
+ * @tc.require: I78O06
+ * @tc.author: lujunchao
+ */
+HWTEST_F(ResSchedClientTest, StopRemoteObject, Function | MediumTest | Level0)
+{
+    ResSchedClient::GetInstance().StopRemoteObject();
+    EXPECT_TRUE(nullptr == ResSchedClient::GetInstance().rss_);
+}
+
 #undef private
 #undef protected
 } // namespace ResourceSchedule
