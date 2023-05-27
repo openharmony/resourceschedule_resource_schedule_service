@@ -56,7 +56,7 @@ void SocPerfSubTest::TearDown(void)
  * @tc.name: SocPerfSubTest_PerfRequest_001
  * @tc.desc: PerfRequest
  * @tc.type FUNC
- * @tc.require SR000GGTLG AR000GH381 AR000GH382 AR000GH389 AR000GH37U
+ * @tc.require: issueI78T3V
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_001, Function | MediumTest | Level0)
 {
@@ -68,7 +68,7 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_001, Function | MediumTest |
  * @tc.name: SocPerfSubTest_PerfRequest_002
  * @tc.desc: PerfRequestEx ON
  * @tc.type FUNC
- * @tc.require SR000GGTLG AR000GH381 AR000GH382 AR000GH389 AR000GH37U
+ * @tc.require: issueI78T3V
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_002, Function | MediumTest | Level0)
 {
@@ -80,7 +80,7 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_002, Function | MediumTest |
  * @tc.name: SocPerfSubTest_PerfRequest_003
  * @tc.desc: PerfRequestEx OFF
  * @tc.type FUNC
- * @tc.require SR000GGTLG AR000GH381 AR000GH382 AR000GH389 AR000GH37U
+ * @tc.require: issueI78T3V
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_003, Function | MediumTest | Level0)
 {
@@ -92,7 +92,7 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_003, Function | MediumTest |
  * @tc.name: SocPerfSubTest_PowerLimitBoost_001
  * @tc.desc: PowerLimitBoost ON
  * @tc.type FUNC
- * @tc.require SR000GGTLG AR000GH381 AR000GH382 AR000GH389 AR000GH37U
+ * @tc.require: issueI78T3V
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_PowerLimitBoost_001, Function | MediumTest | Level0)
 {
@@ -104,7 +104,7 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_PowerLimitBoost_001, Function | MediumTe
  * @tc.name: SocPerfSubTest_PowerLimitBoost_001
  * @tc.desc: PowerLimitBoost OFF
  * @tc.type FUNC
- * @tc.require SR000GGTLG AR000GH381 AR000GH382 AR000GH389 AR000GH37U
+ * @tc.require: issueI78T3V
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_PowerLimitBoost_002, Function | MediumTest | Level0)
 {
@@ -116,7 +116,7 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_PowerLimitBoost_002, Function | MediumTe
  * @tc.name: SocPerfSubTest_ThermalLimitBoost_001
  * @tc.desc: ThermalLimitBoost ON
  * @tc.type FUNC
- * @tc.require SR000GGTLG AR000GH381 AR000GH382 AR000GH389 AR000GH37U
+ * @tc.require: issueI78T3V
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_ThermalLimitBoost_001, Function | MediumTest | Level0)
 {
@@ -128,7 +128,7 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_ThermalLimitBoost_001, Function | Medium
  * @tc.name: SocPerfSubTest_ThermalLimitBoost_002
  * @tc.desc: ThermalLimitBoost OFF
  * @tc.type FUNC
- * @tc.require SR000GGTLG AR000GH381 AR000GH382 AR000GH389 AR000GH37U
+ * @tc.require: issueI78T3V
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_ThermalLimitBoost_002, Function | MediumTest | Level0)
 {
