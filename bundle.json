@@ -5,7 +5,7 @@
   "license": "Apache License 2.0",
   "publishAs": "code-segment",
   "segment": {
-    "destPath": "foundation/resourceschedule/resource_schedule_service/ressched"
+    "destPath": "foundation/resourceschedule/resource_schedule_service"
   },
   "dirs": {},
   "scripts": {},
@@ -34,6 +34,7 @@
         "common_event_service",
         "config_policy",
         "core_service",
+        "efficiency_manager",
         "eventhandler",
         "frame_aware_sched",
         "hiviewdfx_hilog_native",
@@ -42,6 +43,7 @@
         "init",
         "ipc",
         "libxml2",
+        "movement",
         "multimodalinput",
         "samgr",
         "safwk",
@@ -49,7 +51,10 @@
         "state_registry",
         "window_manager"
       ],
-      "third_party": []
+      "third_party": [
+        "libxml2",
+        "thirdparty_json"
+      ]
     },
     "build": {
       "group_type": {
@@ -85,6 +90,38 @@
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"
+        },
+        {
+          "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/pluginbase/include",
+            "header_files": [
+              "config_info.h",
+              "plugin.h",
+              "res_data.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc"
+        },
+        {
+          "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/sched_controller/include",
+            "header_files": [
+              "cgroup_adjuster.h",
+              "cgroup_event_handler.h",
+              "sched_controller.h",
+              "supervisor.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework:cgroup_sched"
+        },
+        {
+          "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group/include",
+            "header_files": [
+              "sched_policy.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group:libprocess_group"
         }
       ],
       "test": [
