@@ -56,7 +56,7 @@ bool ConfigReaderTest::ParseConfigFile(const string& fileName)
  * @tc.name: Load Config File 001
  * @tc.desc: Verify if can load not exist file.
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH1JQ
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(ConfigReaderTest, LoadConfigFile001, TestSize.Level1)
@@ -73,7 +73,7 @@ HWTEST_F(ConfigReaderTest, LoadConfigFile001, TestSize.Level1)
  * @tc.name: Load Config File 002
  * @tc.desc: Verify if can load invalid format config file.
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH1JQ
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(ConfigReaderTest, LoadConfigFile002, TestSize.Level1)
@@ -86,7 +86,7 @@ HWTEST_F(ConfigReaderTest, LoadConfigFile002, TestSize.Level1)
  * @tc.name: Load Config File 003
  * @tc.desc: Verify if can load wrong root element config file.
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH1JQ
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(ConfigReaderTest, LoadConfigFile003, TestSize.Level1)
@@ -99,7 +99,7 @@ HWTEST_F(ConfigReaderTest, LoadConfigFile003, TestSize.Level1)
  * @tc.name: Load Config File 004
  * @tc.desc: Verify if can load wrong plugin tag config file.
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH1JQ
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(ConfigReaderTest, LoadConfigFile004, TestSize.Level1)
@@ -112,7 +112,7 @@ HWTEST_F(ConfigReaderTest, LoadConfigFile004, TestSize.Level1)
  * @tc.name: Load Config File 005
  * @tc.desc: Verify if can load config file with comment.
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH1JQ
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(ConfigReaderTest, LoadConfigFile005, TestSize.Level1)
