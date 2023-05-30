@@ -36,7 +36,7 @@ void ResSchedMgrTest::TearDown() {}
  * @tc.name: Init ressched mgr 001
  * @tc.desc: Verify if can Init the plugin correctly
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH00L
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(ResSchedMgrTest, Init001, TestSize.Level1)

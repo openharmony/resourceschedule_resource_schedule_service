@@ -57,7 +57,7 @@ void PluginMgrTest::TearDown()
  * @tc.name: Plugin mgr test Init 001
  * @tc.desc: Verify if can init success.
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH37C AR000GH37D AR000GH37E AR000GH37F AR000GH37G AR000GH1JU AR000GH1JO
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(PluginMgrTest, Init001, TestSize.Level1)
@@ -71,7 +71,7 @@ HWTEST_F(PluginMgrTest, Init001, TestSize.Level1)
  * @tc.name: Plugin mgr test Stop 001
  * @tc.desc: Verify if can stop success.
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH37C AR000GH37D AR000GH37E AR000GH37F AR000GH37G AR000GH1JU AR000GH1JO
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(PluginMgrTest, Stop001, TestSize.Level1)
@@ -111,7 +111,7 @@ HWTEST_F(PluginMgrTest, GetRunner001, TestSize.Level1)
  * @tc.name: Plugin mgr test SubscribeResource 001
  * @tc.desc: Verify if can stop success.
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH1JP AR000GH1JR AR000GH1JS AR000GH1JT AR000GH1JV AR000GH1K0
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(PluginMgrTest, SubscribeResource001, TestSize.Level1)
@@ -171,7 +171,7 @@ HWTEST_F(PluginMgrTest, RepairPlugin001, TestSize.Level1)
  * @tc.name: Plugin mgr test UnSubscribeResource 001
  * @tc.desc: Verify if can stop success.
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH1JP AR000GH1JR AR000GH1JS AR000GH1JT AR000GH1JV AR000GH1K0
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(PluginMgrTest, UnSubscribeResource001, TestSize.Level1)

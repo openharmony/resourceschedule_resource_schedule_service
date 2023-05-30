@@ -46,7 +46,7 @@ void PluginSwitchTest::TearDown()
  * @tc.name: Init plugin Switch LoadConfig001
  * @tc.desc: Verify if can Init the plugin correctly
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH1JN
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(PluginSwitchTest, LoadConfig001, TestSize.Level1)
@@ -60,7 +60,7 @@ HWTEST_F(PluginSwitchTest, LoadConfig001, TestSize.Level1)
  * @tc.name: Init plugin Switch LoadConfig002
  * @tc.desc: Verify if can load file while xml does not have pluginlist node
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH1JN
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(PluginSwitchTest, LoadConfig002, TestSize.Level1)
@@ -74,7 +74,7 @@ HWTEST_F(PluginSwitchTest, LoadConfig002, TestSize.Level1)
  * @tc.name: Init plugin Switch LoadConfig003
  * @tc.desc: Verify if can load file invalid format config file
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH1JN
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(PluginSwitchTest, LoadConfig003, TestSize.Level1)
@@ -87,7 +87,7 @@ HWTEST_F(PluginSwitchTest, LoadConfig003, TestSize.Level1)
  * @tc.name: Init plugin Switch LoadConfig004
  * @tc.desc: Verify if can load wrong root element config
  * @tc.type: FUNC
- * @tc.require: SR000GGUUN AR000GH1JN
+ * @tc.require: issueI798UT
  * @tc.author:xukuan
  */
 HWTEST_F(PluginSwitchTest, LoadConfig004, TestSize.Level1)
