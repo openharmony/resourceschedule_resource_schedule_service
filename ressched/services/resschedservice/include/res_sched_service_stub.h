@@ -20,13 +20,12 @@
 #include <map>
 #include "iremote_stub.h"
 #include "ires_sched_service.h"
+#include "res_sched_ipc_interface_code.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 class ResSchedServiceStub : public IRemoteStub<IResSchedService> {
 public:
-    ResSchedServiceStub();
-    ~ResSchedServiceStub();
     DISALLOW_COPY_AND_MOVE(ResSchedServiceStub);
     int32_t OnRemoteRequest(
         uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
@@ -36,10 +35,7 @@ private:
     int32_t KillProcessInner(MessageParcel& data, MessageParcel& reply);
     nlohmann::json StringToJsonObj(const std::string& str);
 
-    void Init();
-
     using RequestFuncType = std::function<int32_t (MessageParcel& data, MessageParcel& reply)>;
-    std::map<uint32_t, RequestFuncType> funcMap_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

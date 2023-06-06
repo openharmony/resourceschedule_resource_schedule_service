@@ -33,16 +33,6 @@ namespace {
     }
 }
 
-ResSchedServiceStub::ResSchedServiceStub()
-{
-    Init();
-}
-
-ResSchedServiceStub::~ResSchedServiceStub()
-{
-    funcMap_.clear();
-}
-
 int32_t ResSchedServiceStub::ReportDataInner(MessageParcel& data, [[maybe_unused]] MessageParcel& reply)
 {
     if (!IsValidToken(data)) {
@@ -89,14 +79,17 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     RESSCHED_LOGD("ResSchedServiceStub::OnRemoteRequest, code = %{public}u, flags = %{public}d,"
         " uid = %{public}d.", code, option.GetFlags(), uid);
 
-    auto itFunc = funcMap_.find(code);
-    if (itFunc != funcMap_.end()) {
-        auto requestFunc = itFunc->second;
-        if (requestFunc) {
-            return requestFunc(data, reply);
-        }
+    switch (code) {
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA):
+            ReportDataInner(data, reply);
+            break;
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::KILL_PROCESS):
+            KillProcessInner(data, reply);
+            break;
+        default:
+            return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
+    return ERR_OK;
 }
 
 nlohmann::json ResSchedServiceStub::StringToJsonObj(const std::string& payload)
@@ -115,16 +108,6 @@ nlohmann::json ResSchedServiceStub::StringToJsonObj(const std::string& payload)
         return jsonObj;
     }
     return jsonTmp;
-}
-
-void ResSchedServiceStub::Init()
-{
-    funcMap_ = {
-        { REPORT_DATA,
-            [this](auto& data, auto& reply) {return ReportDataInner(data, reply); } },
-        { KILL_PROCESS,
-            [this](auto& data, auto& reply) {return KillProcessInner(data, reply); } }
-    };
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

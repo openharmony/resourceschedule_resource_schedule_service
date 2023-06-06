@@ -30,32 +30,32 @@ int32_t SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
         return ERR_INVALID_STATE;
     }
     switch (code) {
-        case TRANS_IPC_ID_PERF_REQUEST: {
+        case static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_PERF_REQUEST): {
             int32_t cmdId = data.ReadInt32();
             std::string msg = data.ReadString();
             PerfRequest(cmdId, msg);
-            return 0;
+            break;
         }
-        case TRANS_IPC_ID_PERF_REQUEST_EX: {
+        case static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_PERF_REQUEST_EX): {
             int32_t cmdId = data.ReadInt32();
             bool onOffTag = data.ReadBool();
             std::string msg = data.ReadString();
             PerfRequestEx(cmdId, onOffTag, msg);
-            return 0;
+            break;
         }
-        case TRANS_IPC_ID_POWER_LIMIT_BOOST_FREQ: {
+        case static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_POWER_LIMIT_BOOST_FREQ): {
             bool onOffTag = data.ReadBool();
             std::string msg = data.ReadString();
             PowerLimitBoost(onOffTag, msg);
-            return 0;
+            break;
         }
-        case TRANS_IPC_ID_THERMAL_LIMIT_BOOST_FREQ: {
+        case static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_THERMAL_LIMIT_BOOST_FREQ): {
             bool onOffTag = data.ReadBool();
             std::string msg = data.ReadString();
             ThermalLimitBoost(onOffTag, msg);
-            return 0;
+            break;
         }
-        case TRANS_IPC_ID_LIMIT_REQUEST: {
+        case static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_LIMIT_REQUEST): {
             int32_t clientId = data.ReadInt32();
             std::vector<int32_t> tags;
             data.ReadInt32Vector(&tags);
@@ -63,11 +63,12 @@ int32_t SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
             data.ReadInt64Vector(&configs);
             std::string msg = data.ReadString();
             LimitRequest(clientId, tags, configs, msg);
-            return 0;
+            break;
         }
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
+    return ERR_OK;
 }
 } // namespace SOCPERF
 } // namespace OHOS

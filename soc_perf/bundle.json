@@ -56,7 +56,8 @@
               "i_socperf_service.h",
               "socperf_action_type.h",
               "socperf_client.h",
-              "socperf_proxy.h"
+              "socperf_proxy.h",
+              "socperf_ipc_interface_code.h"
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/soc_perf/interfaces/inner_api/socperf_client:socperf_client"

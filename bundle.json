@@ -86,7 +86,8 @@
               "res_sched_client.h",
               "res_sched_errors.h",
               "res_sched_service_proxy.h",
-              "res_type.h"
+              "res_type.h",
+              "res_sched_ipc_interface_code.h"
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"
