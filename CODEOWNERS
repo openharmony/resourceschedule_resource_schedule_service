@@ -13,6 +13,5 @@
 
 # any change to xxx_ipc_interface_code.h needs to be reviewed by @leonchan5
 
-
 foundation\resourceschedule\resource_schedule_service\ressched\interfaces\innerkits\ressched_client\include\res_sched_ipc_interface_code.h @leonchan5
 foundation\resourceschedule\resource_schedule_service\soc_perf\interfaces\inner_api\socperf_client\include\socperf_ipc_interface_code.h @leonchan5
