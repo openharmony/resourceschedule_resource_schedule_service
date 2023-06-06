@@ -33,6 +33,15 @@ namespace {
     }
 }
 
+ResSchedServiceStub::ResSchedServiceStub()
+{
+    Init();
+}
+
+ResSchedServiceStub::~ResSchedServiceStub()
+{
+}
+
 int32_t ResSchedServiceStub::ReportDataInner(MessageParcel& data, [[maybe_unused]] MessageParcel& reply)
 {
     if (!IsValidToken(data)) {
@@ -108,6 +117,10 @@ nlohmann::json ResSchedServiceStub::StringToJsonObj(const std::string& payload)
         return jsonObj;
     }
     return jsonTmp;
+}
+
+void ResSchedServiceStub::Init()
+{
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
