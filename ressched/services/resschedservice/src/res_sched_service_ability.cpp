@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "hisysevent.h"
 #include "res_sched_service_ability.h"
 #include "observer_manager_intf.h"
 #include "res_sched_log.h"
@@ -43,14 +44,37 @@ void ResSchedServiceAbility::OnStart()
     }
     if (service_ == nullptr) {
         RESSCHED_LOGE("ResSchedServiceAbility:: New ResSchedService failed.");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "others",
+                        "ERR_MSG", "New ResSchedService object failed!");
     }
     if (!Publish(service_)) {
         RESSCHED_LOGE("ResSchedServiceAbility:: Register service failed.");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register ResSchedService failed.");
     }
     CgroupSchedInit();
-    AddSystemAbilityListener(APP_MGR_SERVICE_ID);
-    AddSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID);
-    AddSystemAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID);
+    if (!AddSystemAbilityListener(APP_MGR_SERVICE_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of app manager service failed.");
+    }
+    if (!AddSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of window manager service failed.");
+    }
+    if (!AddSystemAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of background task manager service failed.");
+    }
     EventControllerInit();
     ObserverManagerInit();
     RESSCHED_LOGI("ResSchedServiceAbility ::OnStart.");

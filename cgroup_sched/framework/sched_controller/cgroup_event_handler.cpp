@@ -19,6 +19,7 @@
 #include "cgroup_adjuster.h"
 #include "cgroup_sched_common.h"
 #include "cgroup_sched_log.h"
+#include "hisysevent.h"
 #include "ressched_utils.h"
 #include "res_type.h"
 #include "sched_controller.h"
@@ -61,6 +62,12 @@ void CgroupEventHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer& eve
                     retry < MAX_RETRY_TIMES) {
                     auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_APP_STATE_OBSERVER, retry + 1);
                     this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
+                    if(retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
+                        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Subscribe app status change observer failed.");
+                    }
                 }
                 break;
             }
@@ -70,6 +77,12 @@ void CgroupEventHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer& eve
                     retry < MAX_RETRY_TIMES) {
                     auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_BGTASK_OBSERVER, retry + 1);
                     this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
+                    if(retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
+                        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Subscribe background task observer failed.");
+                    }
                 }
                 break;
             }

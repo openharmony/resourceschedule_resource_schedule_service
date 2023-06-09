@@ -13,8 +13,11 @@
  * limitations under the License.
  */
 
+#include <string>
+
 #include "observer_manager.h"
 
+#include "hisysevent.h"
 #include "hisysevent_manager.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
@@ -96,6 +99,10 @@ inline void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId
     if (systemAbilityManager->SubscribeSystemAbility(systemAbilityId, sysAbilityListener_) != ERR_OK) {
         sysAbilityListener_ = nullptr;
         RESSCHED_LOGE("%{public}s: subscribe system ability id: %{public}d failed", __func__, systemAbilityId);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a staus change listener of the " + std::to_string(systemAbilityId) + " SA failed!");
     }
 }
 
@@ -142,6 +149,10 @@ void ObserverManager::InitCameraObserver()
         RESSCHED_LOGD("ObserverManager init camera observer successfully");
     } else {
         RESSCHED_LOGW("ObserverManager init camera observer failed");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a camera observer failed!");
     }
 }
 
@@ -175,6 +186,10 @@ void ObserverManager::InitTelephonyObserver()
         RESSCHED_LOGD("ObserverManager init telephony observer successfully");
     } else {
         RESSCHED_LOGW("ObserverManager init telephony observer failed");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a telephony observer failed!");
     }
 #endif
 }
@@ -208,6 +223,10 @@ void ObserverManager::InitAudioObserver()
         RESSCHED_LOGD("ObserverManager init audioRenderStateObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager init audioRenderStateObserver failed");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a audio observer failed!");
     }
 
     res = AudioStandard::AudioSystemManager::GetInstance()->SetRingerModeCallback(pid_, audioObserver_);
@@ -268,8 +287,13 @@ void ObserverManager::InitDeviceMovementObserver()
     if (!deviceMovementObserver_) {
         deviceMovementObserver_ = sptr<DeviceMovementObserver>(new DeviceMovementObserver());
     }
-    Msdp::MovementClient::GetInstance().SubscribeCallback(
-        Msdp::MovementDataUtils::MovementType::TYPE_STILL, deviceMovementObserver_);
+    if (Msdp::MovementClient::GetInstance().SubscribeCallback(
+        Msdp::MovementDataUtils::MovementType::TYPE_STILL, deviceMovementObserver_) != ERR_OK) {
+            HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a device movement observer failed!");
+        }
 #endif
 }
 

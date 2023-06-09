@@ -20,6 +20,7 @@
 #include "bundle_mgr_interface.h"
 #include "common_event_manager.h"
 #include "common_event_support.h"
+#include "hisysevent.h"
 #include "if_system_ability_manager.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
@@ -42,18 +43,30 @@ void EventController::Init()
     sysAbilityListener_ = new (std::nothrow) SystemAbilityStatusChangeListener();
     if (sysAbilityListener_ == nullptr) {
         RESSCHED_LOGE("Failed to create statusChangeListener due to no memory.");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "others",
+                        "ERR_MSG", "EventController new statusChangeListener object failed!");
         return;
     }
     sptr<ISystemAbilityManager> systemAbilityManager
         = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (systemAbilityManager == nullptr) {
         RESSCHED_LOGE("systemAbilityManager is null");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "EventController get system ability manager failed!");
         sysAbilityListener_ = nullptr;
         return;
     }
     int32_t ret = systemAbilityManager->SubscribeSystemAbility(COMMON_EVENT_SERVICE_ID, sysAbilityListener_);
     if (ret != ERR_OK) {
         RESSCHED_LOGE("subscribe system ability id: %{public}d failed", COMMON_EVENT_SERVICE_ID);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "EventController subscribe the event service SA failed!");
         sysAbilityListener_ = nullptr;
     }
 }
@@ -133,6 +146,10 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
         RESSCHED_LOGD("SubscribeCommonEvent ok");
     } else {
         RESSCHED_LOGW("SubscribeCommonEvent fail");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "EventController subscribe common events failed!");
     }
 }
 
