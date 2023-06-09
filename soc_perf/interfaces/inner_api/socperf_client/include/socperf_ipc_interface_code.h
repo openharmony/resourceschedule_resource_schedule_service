@@ -25,6 +25,5 @@ namespace SOCPERF {
         TRANS_IPC_ID_THERMAL_LIMIT_BOOST_FREQ = 0x0008,
         TRANS_IPC_ID_LIMIT_REQUEST            = 0x0009,
     };
-
 } // namespace SOCPERF
 } // namespace OHOS
