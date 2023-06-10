@@ -39,9 +39,10 @@ void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateD
         auto uid = appStateData.uid;
         auto bundleName = appStateData.bundleName;
         auto state = appStateData.state;
+        auto pid = appStateData.pid;
 
-        cgHandler->PostTask([cgHandler, uid, bundleName, state] {
-            cgHandler->HandleForegroundApplicationChanged(uid, bundleName, state);
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName, state] {
+            cgHandler->HandleForegroundApplicationChanged(uid, pid, bundleName, state);
         });
     }
 
@@ -123,15 +124,17 @@ void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processDat
         auto uid = processData.uid;
         auto pid = processData.pid;
         auto bundleName = processData.bundleName;
+        auto renderUid = processData.renderUid;
 
-        cgHandler->PostTask([cgHandler, uid, pid, bundleName] {
-            cgHandler->HandleProcessCreated(uid, pid, bundleName);
+        cgHandler->PostTask([cgHandler, uid, pid, renderUid, bundleName] {
+            cgHandler->HandleProcessCreated(uid, pid, renderUid, bundleName);
         });
     }
 
     nlohmann::json payload;
     payload["pid"] = std::to_string(processData.pid);
     payload["uid"] = std::to_string(processData.uid);
+    payload["renderUid"] = std::to_string(processData.renderUid);
     payload["bundleName"] = processData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_PROCESS_STATE_CHANGE, ResType::ProcessStatus::PROCESS_CREATED, payload);
@@ -172,11 +175,12 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHandler) {
         auto uid = appStateData.uid;
+        auto pid = appStateData.pid;
         auto bundleName = appStateData.bundleName;
         auto state = appStateData.state;
 
-        cgHandler->PostTask([cgHandler, uid, bundleName, state] {
-            cgHandler->HandleApplicationStateChanged(uid, bundleName, state);
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName, state] {
+            cgHandler->HandleApplicationStateChanged(uid, pid, bundleName, state);
         });
     }
 

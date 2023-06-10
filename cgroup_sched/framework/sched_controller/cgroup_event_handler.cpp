@@ -33,6 +33,7 @@ namespace {
     constexpr uint32_t EVENT_ID_REG_BGTASK_OBSERVER = 2;
     constexpr uint32_t DELAYED_RETRY_REGISTER_DURATION = 100;
     constexpr uint32_t MAX_RETRY_TIMES = 100;
+    constexpr int32_t INVALID_UID = -1;
 
     const std::string MMI_SERVICE_NAME = "mmi_service";
 }
@@ -127,7 +128,7 @@ void CgroupEventHandler::HandleAbilityRemoved(int32_t saId, const std::string& d
     }
 }
 
-void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, std::string bundleName, int32_t state)
+void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, pid_t pid, std::string bundleName, int32_t state)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -138,10 +139,11 @@ void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, std::stri
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     app->name_ = bundleName;
     app->state_ = state;
+    app->mainProcess_ = app->GetProcessRecord(pid);
     CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FG_APP_CHANGE);
 }
 
-void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, std::string bundleName, int32_t state)
+void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid, std::string bundleName, int32_t state)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -157,6 +159,7 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, std::string bu
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     app->name_ = bundleName;
     app->state_ = state;
+    app->mainProcess_ = app->GetProcessRecord(pid);
 }
 
 void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName,
@@ -225,7 +228,7 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
         AdjustSource::ADJS_EXTENSION_STATE);
 }
 
-void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, std::string bundleName)
+void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t renderUid, std::string bundleName)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -234,8 +237,19 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, std::string 
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, bundleName.c_str());
     ChronoScope cs("HandleProcessCreated");
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
-    app->name_ = bundleName;
     std::shared_ptr<ProcessRecord> procRecord = std::make_shared<ProcessRecord>(uid, pid);
+    app->name_ = bundleName;
+    if (!app->mainProcess_) {
+        app->mainProcess_ = procRecord;
+    }
+
+    /*
+     * When renderUid is a invalid value(-1), it's a normal process. When 1000000<=renderUid<=1099999,
+     * it's a render process; The renderUid range of render process is defined by bundle manager.
+     */
+    if (renderUid != INVALID_UID) {
+        procRecord->isRenderProcess_ = true;
+    }
     app->AddProcessRecord(procRecord);
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_CREATE);
