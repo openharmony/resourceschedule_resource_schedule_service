@@ -16,6 +16,7 @@
 
 #include <dlfcn.h>
 #include "cgroup_sched_log.h"
+#include "hisysevent.h"
 #include "nlohmann/json.hpp"
 
 namespace OHOS {
@@ -37,12 +38,20 @@ void ResSchedUtils::LoadUtils()
     auto handle = dlopen(RES_SCHED_SERVICE_SO.c_str(), RTLD_NOW);
     if (!handle) {
         CGS_LOGW("%{public}s load %{public}s failed!", __func__, RES_SCHED_SERVICE_SO.c_str());
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
+                        "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "ResSchedUtils dlopen " + RES_SCHED_SERVICE_SO + " failed!");
         return;
     }
 
     reportFunc_ = reinterpret_cast<ReportDataFunc>(dlsym(handle, "ReportDataInProcess"));
     if (!reportFunc_) {
         CGS_LOGW("%{public}s load function:ReportDataInProcess failed!", __func__);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
+                        "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "ResSchedUtils don't found dlsym " + RES_SCHED_SERVICE_SO + "!");
         dlclose(handle);
         return;
     }
@@ -53,6 +62,10 @@ void ResSchedUtils::LoadUtilsExtra()
     auto handle = dlopen(RES_SCHED_CG_EXT_SO.c_str(), RTLD_NOW);
     if (!handle) {
         CGS_LOGD("%{public}s load %{public}s failed! errno:%{public}d", __func__, RES_SCHED_CG_EXT_SO.c_str(), errno);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
+                        "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "ResSchedUtils dlopen " + RES_SCHED_SERVICE_SO + " failed!");
         return;
     }
 
@@ -60,6 +73,10 @@ void ResSchedUtils::LoadUtilsExtra()
         reinterpret_cast<ReportArbitrationResultFunc>(dlsym(handle, "ReportArbitrationResult"));
     if (!reportArbitrationResultFunc_) {
         CGS_LOGD("%{public}s load function:ReportArbitrationResult failed! errno:%{public}d", __func__, errno);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
+                        "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "ResSchedUtils don't found dlsym " + RES_SCHED_SERVICE_SO + "!");
         dlclose(handle);
         return;
     }

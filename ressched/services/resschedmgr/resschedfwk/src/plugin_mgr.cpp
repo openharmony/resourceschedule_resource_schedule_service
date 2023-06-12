@@ -67,6 +67,10 @@ void PluginMgr::Init()
         std::string realPath = GetRealConfigPath(PLUGIN_SWITCH_FILE_NAME);
         if (realPath.empty() || !pluginSwitch_->LoadFromConfigFile(realPath)) {
             RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
+            HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "configure error",
+                        "ERR_MSG", "PluginMgr load switch config file failed!");
         }
     }
 
@@ -75,6 +79,10 @@ void PluginMgr::Init()
         std::string realPath = GetRealConfigPath(CONFIG_FILE_NAME);
         if (realPath.empty() || !configReader_->LoadFromCustConfigFile(realPath)) {
             RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
+            HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "configure error",
+                        "ERR_MSG", "PluginMgr load parameter config file failed!");
         }
     }
 #endif // RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE
@@ -120,12 +128,20 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     auto pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
     if (!pluginHandle) {
         RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", info.libPath,
+                        "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "PluginMgr dlopen " + info.libPath + " failed!");
         return nullptr;
     }
 
     auto onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(pluginHandle, "OnPluginInit"));
     if (!onPluginInitFunc) {
         RESSCHED_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", info.libPath,
+                        "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "PluginMgr don't found dlsym " + info.libPath + "!");
         dlclose(pluginHandle);
         return nullptr;
     }
@@ -133,12 +149,20 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     auto onPluginDisableFunc = reinterpret_cast<OnPluginDisableFunc>(dlsym(pluginHandle, "OnPluginDisable"));
     if (!onPluginDisableFunc) {
         RESSCHED_LOGE("%{public}s, dlsym OnPluginDisable failed!", __func__);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", info.libPath,
+                        "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "PluginMgr don't found dlsym " + info.libPath + "!");
         dlclose(pluginHandle);
         return nullptr;
     }
 
     if (!onPluginInitFunc(info.libPath)) {
         RESSCHED_LOGE("%{public}s, %{public}s init failed!", __func__, info.libPath.c_str());
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", info.libPath,
+                        "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "Plugin " + info.libPath + " init failed!");
         dlclose(pluginHandle);
         return nullptr;
     }

@@ -16,3 +16,9 @@ domain: RSS
 PLUGIN_DISABLE:
   __BASE: {type: FAULT, level: MINOR, desc: sched plugin disable}
   PLUGIN_NAME: {type: STRING, desc: plugin name}
+
+INIT_FAULT:
+  __BASE: {type: FAULT, level: CRITICAL, desc: acritical error during initlization}
+  COMPONENT_NAME: {type: STRING, desc: the name of component}
+  ERR_TYPE: {type: STRING, desc: the type of error}
+  ERR_MSG: {type: STRING, desc: error information}
