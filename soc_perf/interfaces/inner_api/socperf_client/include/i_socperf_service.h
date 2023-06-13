@@ -76,15 +76,6 @@ public:
         const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg) = 0;
 
 public:
-    enum {
-        TRANS_IPC_ID_PERF_REQUEST             = 0x0001,
-        TRANS_IPC_ID_PERF_REQUEST_EX          = 0x0002,
-        TRANS_IPC_ID_POWER_LIMIT_BOOST_FREQ   = 0x0005,
-        TRANS_IPC_ID_THERMAL_LIMIT_BOOST_FREQ = 0x0008,
-        TRANS_IPC_ID_LIMIT_REQUEST            = 0x0009,
-    };
-
-public:
     DECLARE_INTERFACE_DESCRIPTOR(u"Resourceschedule.ISocPerfService");
 };
 } // namespace SOCPERF

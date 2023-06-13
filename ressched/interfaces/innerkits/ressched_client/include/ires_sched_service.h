@@ -40,10 +40,6 @@ public:
      * @param payload Indicates the context info of the kill message.
      */
     virtual int32_t KillProcess(const nlohmann::json& payload) = 0;
-    enum : uint32_t {
-        REPORT_DATA = 1,
-        KILL_PROCESS = 2,
-    };
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

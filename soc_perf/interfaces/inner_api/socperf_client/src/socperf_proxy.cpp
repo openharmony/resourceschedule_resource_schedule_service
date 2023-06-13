@@ -27,7 +27,8 @@ void SocPerfProxy::PerfRequest(int32_t cmdId, const std::string& msg)
     }
     data.WriteInt32(cmdId);
     data.WriteString(msg);
-    Remote()->SendRequest(TRANS_IPC_ID_PERF_REQUEST, data, reply, option);
+    Remote()->SendRequest(static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_PERF_REQUEST),
+        data, reply, option);
 }
 
 void SocPerfProxy::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
@@ -41,7 +42,8 @@ void SocPerfProxy::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string
     data.WriteInt32(cmdId);
     data.WriteBool(onOffTag);
     data.WriteString(msg);
-    Remote()->SendRequest(TRANS_IPC_ID_PERF_REQUEST_EX, data, reply, option);
+    Remote()->SendRequest(static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_PERF_REQUEST_EX),
+        data, reply, option);
 }
 
 void SocPerfProxy::PowerLimitBoost(bool onOffTag, const std::string& msg)
@@ -54,7 +56,8 @@ void SocPerfProxy::PowerLimitBoost(bool onOffTag, const std::string& msg)
     }
     data.WriteBool(onOffTag);
     data.WriteString(msg);
-    Remote()->SendRequest(TRANS_IPC_ID_POWER_LIMIT_BOOST_FREQ, data, reply, option);
+    Remote()->SendRequest(static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_POWER_LIMIT_BOOST_FREQ),
+        data, reply, option);
 }
 
 void SocPerfProxy::ThermalLimitBoost(bool onOffTag, const std::string& msg)
@@ -67,7 +70,8 @@ void SocPerfProxy::ThermalLimitBoost(bool onOffTag, const std::string& msg)
     }
     data.WriteBool(onOffTag);
     data.WriteString(msg);
-    Remote()->SendRequest(TRANS_IPC_ID_THERMAL_LIMIT_BOOST_FREQ, data, reply, option);
+    Remote()->SendRequest(static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_THERMAL_LIMIT_BOOST_FREQ),
+        data, reply, option);
 }
 
 void SocPerfProxy::LimitRequest(int32_t clientId,
@@ -83,7 +87,8 @@ void SocPerfProxy::LimitRequest(int32_t clientId,
     data.WriteInt32Vector(tags);
     data.WriteInt64Vector(configs);
     data.WriteString(msg);
-    Remote()->SendRequest(TRANS_IPC_ID_LIMIT_REQUEST, data, reply, option);
+    Remote()->SendRequest(static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_LIMIT_REQUEST),
+        data, reply, option);
 }
 } // namespace SOCPERF
 } // namespace OHOS

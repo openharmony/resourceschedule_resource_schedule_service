@@ -35,7 +35,8 @@ void ResSchedServiceProxy::ReportData(uint32_t resType, int64_t value, const nlo
     WRITE_PARCEL(data, Int64, value, , ResSchedServiceProxy);
     WRITE_PARCEL(data, String, payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace), ,
         ResSchedServiceProxy);
-    error = Remote()->SendRequest(IResSchedService::REPORT_DATA, data, reply, option);
+    error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA),
+        data, reply, option);
     if (error != NO_ERROR) {
         RESSCHED_LOGE("Send request error: %{public}d.", error);
         return;
@@ -53,7 +54,8 @@ int32_t ResSchedServiceProxy::KillProcess(const nlohmann::json& payload)
         ResSchedServiceProxy);
     WRITE_PARCEL(data, String, payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace),
         RES_SCHED_DATA_ERROR, ResSchedServiceProxy);
-    error = Remote()->SendRequest(IResSchedService::KILL_PROCESS, data, reply, option);
+    error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::KILL_PROCESS),
+        data, reply, option);
     if (error != NO_ERROR) {
         RESSCHED_LOGE("Send request error: %{public}d.", error);
         return RES_SCHED_REQUEST_FAIL;

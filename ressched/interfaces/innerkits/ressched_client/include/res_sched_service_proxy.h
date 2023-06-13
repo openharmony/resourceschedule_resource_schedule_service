@@ -21,6 +21,7 @@
 #include "ires_sched_service.h"  // for IResSchedService
 #include "nlohmann/json.hpp"     // for Value
 #include "nocopyable.h"          // for DISALLOW_COPY_AND_MOVE
+#include "res_sched_ipc_interface_code.h"    // for ResourceScheduleInterfaceCode
 namespace OHOS { class IRemoteObject; }
 
 namespace OHOS {
