@@ -93,6 +93,7 @@ public:
     SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
+    bool isRenderProcess_ = false;
     bool runningTransientTask_ = false;
     uint32_t continuousTaskFlag_ = 0;
     int32_t renderTid_ = 0;
@@ -117,6 +118,7 @@ public:
     std::shared_ptr<ProcessRecord> GetProcessRecordNonNull(pid_t pid);
     std::shared_ptr<ProcessRecord> FindProcessRecordByToken(uintptr_t token);
     std::shared_ptr<ProcessRecord> FindProcessRecordByWindowId(uint32_t windowId);
+    std::shared_ptr<ProcessRecord> GetMainProcessRecord();
 
     inline uid_t GetUid() const
     {
@@ -131,6 +133,7 @@ public:
     int32_t state_ = -1;
     std::string name_;
     std::shared_ptr<ProcessRecord> focusedProcess_ = nullptr;
+    std::shared_ptr<ProcessRecord> mainProcess_ = nullptr;
     SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;

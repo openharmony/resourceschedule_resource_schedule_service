@@ -139,6 +139,18 @@ std::shared_ptr<ProcessRecord> Application::FindProcessRecordByToken(uintptr_t t
     return nullptr;
 }
 
+std::shared_ptr<ProcessRecord> Application::GetMainProcessRecord()
+{
+    /* When the main process of application not set, the first process is regarded
+     * as main process. In general, we can receive the creation event of the process,
+     * so this action is not aften triggered.
+     */
+    if (!mainProcess_ && !pidsMap_.empty()) {
+        mainProcess_ = pidsMap_.begin()->second;
+    }
+    return mainProcess_;
+}
+
 std::shared_ptr<ProcessRecord> Application::FindProcessRecordByWindowId(uint32_t windowId)
 {
     for (auto iter = pidsMap_.begin(); iter != pidsMap_.end(); iter++) {
