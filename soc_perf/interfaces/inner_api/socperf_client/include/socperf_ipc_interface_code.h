@@ -15,6 +15,9 @@
  * any change to socperf_ipc_interface_code.h needs to be reviewed by @leonchan5
  */
 
+#ifndef SOC_PERF_INTERFACES_INNER_API_SOCPERF_CLIENT_INCLUDE_SOCPERF_IPC_INTERFACE_CODE_H
+#define SOC_PERF_INTERFACES_INNER_API_SOCPERF_CLIENT_INCLUDE_SOCPERF_IPC_INTERFACE_CODE_H
+
 /* SAID:1906 */
 namespace OHOS {
 namespace SOCPERF {
@@ -27,3 +30,5 @@ namespace SOCPERF {
     };
 } // namespace SOCPERF
 } // namespace OHOS
+
+#endif // SOC_PERF_INTERFACES_INNER_API_SOCPERF_CLIENT_INCLUDE_SOCPERF_IPC_INTERFACE_CODE_H

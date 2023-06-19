@@ -15,6 +15,9 @@
  * any change to res_sched_ipc_interface_code.h needs to be reviewed by @leonchan5
  */
 
+#ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_IPC_INTERFACE_CODE_H
+#define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_IPC_INTERFACE_CODE_H
+
 /* SAID:1901 */
 namespace OHOS {
 namespace ResourceSchedule {
@@ -24,3 +27,5 @@ namespace ResourceSchedule {
     };
 } // namespace ResourceSchedule
 } // namespace OHOS
+
+#endif // RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_IPC_INTERFACE_CODE_H
