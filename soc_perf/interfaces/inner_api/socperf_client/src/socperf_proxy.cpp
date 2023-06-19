@@ -14,6 +14,7 @@
  */
 
 #include "socperf_proxy.h"
+#include "socperf_ipc_interface_code.h"
 
 namespace OHOS {
 namespace SOCPERF {

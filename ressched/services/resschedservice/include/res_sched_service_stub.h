@@ -20,7 +20,6 @@
 #include <map>
 #include "iremote_stub.h"
 #include "ires_sched_service.h"
-#include "res_sched_ipc_interface_code.h"
 
 namespace OHOS {
 namespace ResourceSchedule {

@@ -17,7 +17,6 @@
 #define SOC_PERF_INTERFACES_INNER_API_SOCPERF_CLIENT_INCLUDE_SOCPERF_PROXY_H
 
 #include "i_socperf_service.h"
-#include "socperf_ipc_interface_code.h"
 
 namespace OHOS {
 namespace SOCPERF {
