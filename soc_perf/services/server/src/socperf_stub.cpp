@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include "socperf_stub.h"
 #include "socperf_ipc_interface_code.h"
+#include "socperf_stub.h"
 #include <cstdint>              // for int32_t
 #include <iosfwd>               // for string
 #include <string>               // for basic_string, operator!=, u16string
