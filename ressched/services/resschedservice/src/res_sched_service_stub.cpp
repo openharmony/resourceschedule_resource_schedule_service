@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 
-#include <cstdint>
 #include "res_sched_service_stub.h"
-#include "res_sched_log.h"
+#include <cstdint>
 #include "res_sched_errors.h"
+#include "res_sched_log.h"
+#include "res_sched_ipc_interface_code.h"
 #include "ipc_skeleton.h"
 #include "ipc_util.h"
 

@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "socperf_ipc_interface_code.h"
 #include "socperf_proxy.h"
 
 namespace OHOS {

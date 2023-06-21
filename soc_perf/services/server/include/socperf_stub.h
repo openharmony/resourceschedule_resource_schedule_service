@@ -18,7 +18,6 @@
 
 #include <cstdint>              // for int32_t, uint32_t
 #include "i_socperf_service.h"
-#include "socperf_ipc_interface_code.h"
 
 namespace OHOS {
 namespace SOCPERF {

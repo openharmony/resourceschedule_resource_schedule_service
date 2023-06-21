@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
+#include "socperf_ipc_interface_code.h"
 #include "socperf_stub.h"
 #include <cstdint>              // for int32_t
 #include <iosfwd>               // for string
 #include <string>               // for basic_string, operator!=, u16string
 #include <vector>               // for vector
-
 
 namespace OHOS {
 namespace SOCPERF {
