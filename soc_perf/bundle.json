@@ -31,7 +31,9 @@
         "safwk",
         "samgr"
       ],
-      "third_party": []
+      "third_party": [
+        "libxml2"
+      ]
     },
     "build": {
       "group_type": {

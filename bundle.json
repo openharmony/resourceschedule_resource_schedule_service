@@ -50,6 +50,7 @@
         "window_manager"
       ],
       "third_party": [
+        "json",
         "libxml2",
         "thirdparty_json"
       ]
