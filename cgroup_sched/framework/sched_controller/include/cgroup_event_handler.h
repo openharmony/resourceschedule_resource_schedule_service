@@ -36,18 +36,18 @@ public:
     void SetSupervisor(std::shared_ptr<Supervisor> supervisor);
     void HandleAbilityAdded(int32_t saId, const std::string& deviceId);
     void HandleAbilityRemoved(int32_t saId, const std::string& deviceId);
-    void HandleForegroundApplicationChanged(uid_t uid, pid_t pid, std::string bundleName, int32_t state);
-    void HandleApplicationStateChanged(uid_t uid, pid_t pid, std::string bundleName, int32_t state);
-    void HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName, std::string abilityName,
-        uintptr_t token, int32_t abilityState, int32_t abilityType);
-    void HandleExtensionStateChanged(uid_t uid, pid_t pid, std::string bundleName, std::string abilityName,
-        uintptr_t token, int32_t extensionState, int32_t abilityType);
-    void HandleProcessCreated(uid_t uid, pid_t pid, int32_t renderUid, std::string bundleName);
-    void HandleProcessDied(uid_t uid, pid_t pid, std::string bundleName);
-    void HandleTransientTaskStart(uid_t uid, pid_t pid, std::string packageName);
-    void HandleTransientTaskEnd(uid_t uid, pid_t pid, std::string packageName);
-    void HandleContinuousTaskStart(uid_t uid, pid_t pid, int32_t typeId, std::string abilityName);
-    void HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId, std::string abilityName);
+    void HandleForegroundApplicationChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
+    void HandleApplicationStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
+    void HandleAbilityStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
+        const std::string& abilityName, uintptr_t token, int32_t abilityState, int32_t abilityType);
+    void HandleExtensionStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
+        const std::string& abilityName, uintptr_t token, int32_t extensionState, int32_t abilityType);
+    void HandleProcessCreated(uid_t uid, pid_t pid, int32_t renderUid, const std::string& bundleName);
+    void HandleProcessDied(uid_t uid, pid_t pid, const std::string& bundleName);
+    void HandleTransientTaskStart(uid_t uid, pid_t pid, const std::string& packageName);
+    void HandleTransientTaskEnd(uid_t uid, pid_t pid, const std::string& packageName);
+    void HandleContinuousTaskStart(uid_t uid, pid_t pid, int32_t typeId, const std::string& abilityName);
+    void HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId, const std::string& abilityName);
     void HandleFocusedWindow(uint32_t windowId, uintptr_t abilityToken,
         WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
     void HandleUnfocusedWindow(uint32_t windowId, uintptr_t abilityToken,

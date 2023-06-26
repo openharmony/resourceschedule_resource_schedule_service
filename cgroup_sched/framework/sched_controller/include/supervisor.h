@@ -118,7 +118,8 @@ public:
     std::shared_ptr<ProcessRecord> GetProcessRecordNonNull(pid_t pid);
     std::shared_ptr<ProcessRecord> FindProcessRecordByToken(uintptr_t token);
     std::shared_ptr<ProcessRecord> FindProcessRecordByWindowId(uint32_t windowId);
-    std::shared_ptr<ProcessRecord> GetMainProcessRecord();
+    void SetName(const std::string& name);
+    void SetMainProcess(std::shared_ptr<ProcessRecord> pr);
 
     inline uid_t GetUid() const
     {
@@ -130,16 +131,26 @@ public:
         return pidsMap_;
     }
 
+    std::shared_ptr<ProcessRecord> GetMainProcessRecord() const
+    {
+        return mainProcess_;
+    }
+
+    const std::string& GetName() const
+    {
+        return name_;
+    }
+
     int32_t state_ = -1;
-    std::string name_;
     std::shared_ptr<ProcessRecord> focusedProcess_ = nullptr;
-    std::shared_ptr<ProcessRecord> mainProcess_ = nullptr;
     SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
 
 private:
     uid_t uid_;
+    std::string name_;
+    std::shared_ptr<ProcessRecord> mainProcess_ = nullptr;
     std::map<pid_t, std::shared_ptr<ProcessRecord>> pidsMap_;
 };
 
