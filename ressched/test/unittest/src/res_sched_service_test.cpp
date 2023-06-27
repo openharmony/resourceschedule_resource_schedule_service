@@ -14,6 +14,7 @@
  */
 
 #include "gtest/gtest.h"
+#include "gtest/hwext/gtest-multithread.h"
 
 #define private public
 #define protected public
@@ -26,6 +27,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace std;
 using namespace testing::ext;
+using namespace testing::mt;
 class ResSchedServiceTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -116,6 +118,27 @@ HWTEST_F(ResSchedServiceTest, Report001, Function | MediumTest | Level0)
     resSchedService_->ReportData(0, 0, payload);
 }
 
+static void ReportTask()
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    nlohmann::json payload;
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    resSchedService_->ReportData(0, 0, payload);
+}
+
+/**
+ * @tc.name: Ressched service ReportData 002
+ * @tc.desc: Test Ressched service ReportData in multithreading.
+ * @tc.type: FUNC
+ * @tc.require: issueI7G8VT
+ * @tc.author: nizihao
+ */
+HWTEST_F(ResSchedServiceTest, Report002, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(ReportTask);
+}
+
 /**
  * @tc.name: Start ResSchedServiceAbility 001
  * @tc.desc: Verify if ResSchedServiceAbility OnStart is success.
@@ -127,6 +150,26 @@ HWTEST_F(ResSchedServiceTest, OnStart001, Function | MediumTest | Level0)
 {
     resSchedServiceAbility_->OnStart();
     EXPECT_TRUE(resSchedServiceAbility_->service_ != nullptr);
+}
+
+static void OnStartTask()
+{
+    std::shared_ptr<ResSchedServiceAbility> resSchedServiceAbility_ = make_shared<ResSchedServiceAbility>();
+    resSchedServiceAbility_->OnStart();
+    EXPECT_TRUE(resSchedServiceAbility_->service_ != nullptr);
+}
+
+/**
+ * @tc.name: Start ResSchedServiceAbility 002
+ * @tc.desc: Test ResSchedServiceAbility OnStart in multithreading.
+ * @tc.type: FUNC
+ * @tc.require: issueI7G8VT
+ * @tc.author: nizihao
+ */
+HWTEST_F(ResSchedServiceTest, OnStart002, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(OnStartTask);
 }
 
 /**
@@ -141,6 +184,27 @@ HWTEST_F(ResSchedServiceTest, ChangeAbility001, Function | MediumTest | Level0)
     std::string deviceId;
     resSchedServiceAbility_->OnAddSystemAbility(-1, deviceId);
     resSchedServiceAbility_->OnRemoveSystemAbility(-1, deviceId);
+}
+
+static void ChangeAbilityTask()
+{
+    std::shared_ptr<ResSchedServiceAbility> resSchedServiceAbility_ = make_shared<ResSchedServiceAbility>();
+    std::string deviceId;
+    resSchedServiceAbility_->OnAddSystemAbility(-1, deviceId);
+    resSchedServiceAbility_->OnRemoveSystemAbility(-1, deviceId);
+}
+
+/**
+ * @tc.name: ResSchedServiceAbility ChangeAbility 002
+ * @tc.desc: Test add and remove system ability in multithreading.
+ * @tc.type: FUNC
+ * @tc.require: issueI7G8VT
+ * @tc.author: nizihao
+ */
+HWTEST_F(ResSchedServiceTest, ChangeAbility002, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(ChangeAbilityTask);
 }
 
 class TestResSchedServiceStub : public ResSchedServiceStub {
@@ -180,6 +244,35 @@ HWTEST_F(ResSchedServiceTest, ReportDataInner001, Function | MediumTest | Level0
     EXPECT_TRUE(!resSchedServiceStub_->ReportDataInner(reportData, reply));
 }
 
+static void ReportDataInnerTask()
+{
+    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
+    resSchedServiceStub_->Init();
+    MessageParcel reply;
+    MessageParcel emptyData;
+    EXPECT_TRUE(resSchedServiceStub_->ReportDataInner(emptyData, reply));
+
+    MessageParcel reportData;
+    reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
+    reportData.WriteUint32(1);
+    reportData.WriteInt64(1);
+    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
+    EXPECT_TRUE(!resSchedServiceStub_->ReportDataInner(reportData, reply));
+}
+
+/**
+ * @tc.name: ResSchedServicesStub ReportDataInner 002
+ * @tc.desc: Test resschedstub reportdatainner in multithreading.
+ * @tc.type: FUNC
+ * @tc.require: issueI7G8VT
+ * @tc.author: nizihao
+ */
+HWTEST_F(ResSchedServiceTest, ReportDataInner002, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(ReportDataInnerTask);
+}
+
 /**
  * @tc.name: ResSchedServicesStub StringToJson 001
  * @tc.desc: Verify if resschedstub StringToJson is success.
@@ -192,6 +285,26 @@ HWTEST_F(ResSchedServiceTest, StringToJson001, Function | MediumTest | Level0)
     auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
     nlohmann::json res = resSchedServiceStub_->StringToJsonObj("");
     EXPECT_TRUE(!res.dump().empty());
+}
+
+static void StringToJsonTask()
+{
+    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
+    nlohmann::json res = resSchedServiceStub_->StringToJsonObj("");
+    EXPECT_TRUE(!res.dump().empty());
+}
+
+/**
+ * @tc.name: ResSchedServicesStub StringToJson 002
+ * @tc.desc: Test resschedstub StringToJson in multithreading.
+ * @tc.type: FUNC
+ * @tc.require: issueI7G8VT
+ * @tc.author: nizihao
+ */
+HWTEST_F(ResSchedServiceTest, StringToJson002, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(StringToJsonTask);
 }
 
 /**
@@ -212,6 +325,32 @@ HWTEST_F(ResSchedServiceTest, RemoteRequest001, Function | MediumTest | Level0)
     EXPECT_FALSE(res);
     res = resSchedServiceStub_->OnRemoteRequest(0, reply, reply, option);
     EXPECT_TRUE(res);
+}
+
+static void RemoteRequestTask()
+{
+    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
+    MessageOption option;
+    MessageParcel reply;
+    int32_t res = resSchedServiceStub_->OnRemoteRequest(1, reply, reply, option);
+    EXPECT_FALSE(res);
+    res = resSchedServiceStub_->OnRemoteRequest(2, reply, reply, option);
+    EXPECT_FALSE(res);
+    res = resSchedServiceStub_->OnRemoteRequest(0, reply, reply, option);
+    EXPECT_TRUE(res);
+}
+
+/**
+ * @tc.name: ResSchedServicesStub RemoteRequest 002
+ * @tc.desc: Test resschedstub RemoteRequest in multithreading.
+ * @tc.type: FUNC
+ * @tc.require: issueI7G8VT
+ * @tc.author: nizihao
+ */
+HWTEST_F(ResSchedServiceTest, RemoteRequest002, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(RemoteRequestTask);
 }
 #undef private
 #undef protected

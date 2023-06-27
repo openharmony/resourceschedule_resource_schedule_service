@@ -19,12 +19,14 @@
 #undef protected
 
 #include <gtest/gtest.h>
+#include <gtest/hwext/gtest-multithread.h>
 #include "socperf_client.h"
 #include "socperf.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
 
 using namespace testing::ext;
+using namespace testing::mt;
 
 namespace OHOS {
 namespace SOCPERF {
@@ -225,6 +227,30 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_GetService_002, Function | MediumTest | 
     EXPECT_NE(object, nullptr);
 }
 
+static void SocPerfSubTestGetServiceTask()
+{
+    sptr<ISystemAbilityManager> samgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    EXPECT_NE(samgr, nullptr);
+
+    sptr<IRemoteObject> object = samgr->GetSystemAbility(SOC_PERF_SERVICE_SA_ID);
+    EXPECT_NE(object, nullptr);
+
+    object = samgr->GetSystemAbility(RES_SCHED_SYS_ABILITY_ID);
+    EXPECT_NE(object, nullptr);
+}
+
+/*
+ * @tc.name: SocPerfSubTest_GetService_003
+ * @tc.desc: Test get socperf service in multithreading
+ * @tc.type FUNC
+ * @tc.require: issueI7G8VT
+ */
+HWTEST_F(SocPerfSubTest, SocPerfSubTest_GetService_003, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(SocPerfSubTestGetServiceTask);
+}
+
 /*
  * @tc.name: SocPerfSubTest_PerfRequest_001
  * @tc.desc: PerfRequest
@@ -340,6 +366,30 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_LimitRequest_002, Function | MediumTest 
     OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(clientId_thermal, tags, configs, "");
 }
 
+static void SocPerfSubTestLimitRequestTask()
+{
+    int32_t clientId_power = ACTION_TYPE_POWER;
+    std::vector<int32_t> tags;
+    tags.push_back(1000);
+    std::vector<int64_t> configs;
+    EXPECT_NE(tags.size(), configs.size());
+    configs.push_back(1608000);
+    EXPECT_EQ(tags.size(), configs.size());
+    OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(clientId_power, tags, configs, "");
+}
+
+/*
+ * @tc.name: SocPerfSubTest_LimitRequest_003
+ * @tc.desc: Test LimitRequest thermal in multithreading
+ * @tc.type FUNC
+ * @tc.require: issueI7G8VT
+ */
+HWTEST_F(SocPerfSubTest, SocPerfSubTest_LimitRequest_003, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(SocPerfSubTestLimitRequestTask);
+}
+
 /*
  * @tc.name: SocPerfSubTest_ResetClient_001
  * @tc.desc: ResetClient
@@ -356,6 +406,30 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_ResetClient_001, Function | MediumTest |
     OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(true, "");
     OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(false, "");
     OHOS::SOCPERF::SocPerfClient::GetInstance().ResetClient();
+}
+
+static void SocPerfSubTestResetClientTask()
+{
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(10000, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(10000, true, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(10000, false, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(true, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(false, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(true, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(false, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().ResetClient();
+}
+
+/*
+ * @tc.name: SocPerfSubTest_ResetClient_002
+ * @tc.desc: Test ResetClient in multithreading
+ * @tc.type FUNC
+ * @tc.require: issueI7G8VT
+ */
+HWTEST_F(SocPerfSubTest, SocPerfSubTest_ResetClient_002, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(SocPerfSubTestResetClientTask);
 }
 } // namespace SOCPERF
 } // namespace OHOS
