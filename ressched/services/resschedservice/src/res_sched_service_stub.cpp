@@ -91,15 +91,12 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
 
     switch (code) {
         case static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA):
-            ReportDataInner(data, reply);
-            break;
+            return ReportDataInner(data, reply);
         case static_cast<uint32_t>(ResourceScheduleInterfaceCode::KILL_PROCESS):
-            KillProcessInner(data, reply);
-            break;
+            return KillProcessInner(data, reply);
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    return ERR_OK;
 }
 
 nlohmann::json ResSchedServiceStub::StringToJsonObj(const std::string& payload)
