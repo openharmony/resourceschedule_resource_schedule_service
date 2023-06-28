@@ -36,7 +36,7 @@ ohos_shared_library("frame_aware_plugin") {
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "frame_aware_sched:frame_msg_intf",
-    "hiviewdfx_hilog_native:libhilog",
+    "hilog:libhilog",
   ]
 
   subsystem_name = "resourceschedule"
