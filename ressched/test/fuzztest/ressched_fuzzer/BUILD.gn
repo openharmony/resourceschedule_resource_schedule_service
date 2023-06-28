@@ -22,6 +22,11 @@ ohos_fuzztest("ResSchedFuzzTest") {
   module_out_path = module_output_path
   fuzz_config_file = "${ressched_test}/fuzztest/ressched_fuzzer"
 
+  include_dirs = [
+    "${ressched_common}/include",
+    "${ressched_interfaces}/innerkits/ressched_client/include",
+  ]
+
   cflags = [
     "-g",
     "-O0",
@@ -33,6 +38,7 @@ ohos_fuzztest("ResSchedFuzzTest") {
 
   deps = [
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
+    "${ressched_services}:resschedsvc_static",
     "//third_party/libxml2:xml2",
   ]
 
