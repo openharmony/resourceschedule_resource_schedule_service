@@ -34,7 +34,6 @@ namespace {
     constexpr uint32_t EVENT_ID_REG_BGTASK_OBSERVER = 2;
     constexpr uint32_t DELAYED_RETRY_REGISTER_DURATION = 100;
     constexpr uint32_t MAX_RETRY_TIMES = 100;
-    constexpr int32_t INVALID_UID = -1;
 
     const std::string MMI_SERVICE_NAME = "mmi_service";
 }
@@ -42,6 +41,7 @@ namespace {
 using OHOS::AppExecFwk::ApplicationState;
 using OHOS::AppExecFwk::AbilityState;
 using OHOS::AppExecFwk::ExtensionState;
+using OHOS::AppExecFwk::ProcessType;
 
 CgroupEventHandler::CgroupEventHandler(const std::shared_ptr<EventRunner> &runner)
     : EventHandler(runner)
@@ -141,7 +141,8 @@ void CgroupEventHandler::HandleAbilityRemoved(int32_t saId, const std::string& d
     }
 }
 
-void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, pid_t pid, std::string bundleName, int32_t state)
+void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, pid_t pid,
+    const std::string& bundleName, int32_t state)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -150,13 +151,15 @@ void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, pid_t pid
     CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
     ChronoScope cs("HandleForegroundApplicationChanged");
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
-    app->name_ = bundleName;
+    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
+    app->SetName(bundleName);
     app->state_ = state;
-    app->mainProcess_ = app->GetProcessRecord(pid);
+    app->SetMainProcess(procRecord);
     CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FG_APP_CHANGE);
 }
 
-void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid, std::string bundleName, int32_t state)
+void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
+    const std::string& bundleName, int32_t state)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -170,13 +173,14 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid, std
         return;
     }
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
-    app->name_ = bundleName;
+    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
+    app->SetName(bundleName);
     app->state_ = state;
-    app->mainProcess_ = app->GetProcessRecord(pid);
+    app->SetMainProcess(procRecord);
 }
 
-void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::string bundleName,
-    std::string abilityName, uintptr_t token, int32_t abilityState, int32_t abilityType)
+void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
+    const std::string& abilityName, uintptr_t token, int32_t abilityState, int32_t abilityType)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -198,7 +202,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
         return;
     }
     auto app = supervisor_->GetAppRecordNonNull(uid);
-    app->name_ = bundleName;
+    app->SetName(bundleName);
     auto procRecord = app->GetProcessRecordNonNull(pid);
     auto abiInfo = procRecord->GetAbilityInfoNonNull(token);
     abiInfo->name_ = abilityName;
@@ -208,8 +212,8 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, std::st
         AdjustSource::ADJS_ABILITY_STATE);
 }
 
-void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::string bundleName,
-    std::string abilityName, uintptr_t token, int32_t extensionState, int32_t abilityType)
+void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
+    const std::string& abilityName, uintptr_t token, int32_t extensionState, int32_t abilityType)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -231,7 +235,7 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
         return;
     }
     auto app = supervisor_->GetAppRecordNonNull(uid);
-    app->name_ = bundleName;
+    app->SetName(bundleName);
     auto procRecord = app->GetProcessRecordNonNull(pid);
     auto abiInfo = procRecord->GetAbilityInfoNonNull(token);
     abiInfo->name_ = abilityName;
@@ -241,7 +245,8 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, std::
         AdjustSource::ADJS_EXTENSION_STATE);
 }
 
-void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t renderUid, std::string bundleName)
+void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t processType,
+    const std::string& bundleName)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -250,25 +255,18 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t rend
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, bundleName.c_str());
     ChronoScope cs("HandleProcessCreated");
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
-    std::shared_ptr<ProcessRecord> procRecord = std::make_shared<ProcessRecord>(uid, pid);
-    app->name_ = bundleName;
-    if (!app->mainProcess_) {
-        app->mainProcess_ = procRecord;
-    }
-
-    /*
-     * When renderUid is a invalid value(-1), it's a normal process. When 1000000<=renderUid<=1099999,
-     * it's a render process; The renderUid range of render process is defined by bundle manager.
-     */
-    if (renderUid != INVALID_UID) {
+    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
+    app->SetName(bundleName);
+    if (processType == static_cast<int32_t>(ProcessType::NORMAL)) {
+        app->SetMainProcess(procRecord);
+    } else if (processType == static_cast<int32_t>(ProcessType::RENDER)) {
         procRecord->isRenderProcess_ = true;
     }
-    app->AddProcessRecord(procRecord);
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_CREATE);
 }
 
-void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, std::string bundleName)
+void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, const std::string& bundleName)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -287,7 +285,7 @@ void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, std::string bun
     }
 }
 
-void CgroupEventHandler::HandleTransientTaskStart(uid_t uid, pid_t pid, std::string packageName)
+void CgroupEventHandler::HandleTransientTaskStart(uid_t uid, pid_t pid, const std::string& packageName)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -295,7 +293,7 @@ void CgroupEventHandler::HandleTransientTaskStart(uid_t uid, pid_t pid, std::str
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, packageName.c_str());
     auto app = supervisor_->GetAppRecordNonNull(uid);
-    app->name_ = packageName;
+    app->SetName(packageName);
     auto procRecord = app->GetProcessRecord(pid);
     if (!procRecord) {
         return;
@@ -303,7 +301,7 @@ void CgroupEventHandler::HandleTransientTaskStart(uid_t uid, pid_t pid, std::str
     procRecord->runningTransientTask_ = true;
 }
 
-void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, std::string packageName)
+void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, const std::string& packageName)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -311,7 +309,7 @@ void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, std::strin
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, packageName.c_str());
     auto app = supervisor_->GetAppRecordNonNull(uid);
-    app->name_ = packageName;
+    app->SetName(packageName);
     auto procRecord = app->GetProcessRecord(pid);
     if (!procRecord) {
         return;
@@ -319,7 +317,8 @@ void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, std::strin
     procRecord->runningTransientTask_ = false;
 }
 
-void CgroupEventHandler::HandleContinuousTaskStart(uid_t uid, pid_t pid, int32_t typeId, std::string abilityName)
+void CgroupEventHandler::HandleContinuousTaskStart(uid_t uid, pid_t pid, int32_t typeId,
+    const std::string& abilityName)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -335,7 +334,8 @@ void CgroupEventHandler::HandleContinuousTaskStart(uid_t uid, pid_t pid, int32_t
         AdjustSource::ADJS_CONTINUOUS_BEGIN);
 }
 
-void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId, std::string abilityName)
+void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId,
+    const std::string& abilityName)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -399,10 +399,10 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
         supervisor_->focusedApp_ = app;
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FOCUSED_WINDOW);
     }
-    if (app->name_.empty()) {
-        app->name_ = SchedController::GetInstance().GetBundleNameByUid(uid);
+    if (app->GetName().empty()) {
+        app->SetName(SchedController::GetInstance().GetBundleNameByUid(uid));
     }
-    payload["bundleName"] = app->name_;
+    payload["bundleName"] = app->GetName();
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_FOCUS, payload);
 }
@@ -453,10 +453,10 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
         }
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_UNFOCUSED_WINDOW);
     }
-    if (app->name_.empty()) {
-        app->name_ = SchedController::GetInstance().GetBundleNameByUid(uid);
+    if (app->GetName().empty()) {
+        app->SetName(SchedController::GetInstance().GetBundleNameByUid(uid));
     }
-    payload["bundleName"] = app->name_;
+    payload["bundleName"] = app->GetName();
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
 }
@@ -515,7 +515,7 @@ void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value,
     }
 
     auto app = supervisor_->GetAppRecordNonNull(uid);
-    app->name_ = MMI_SERVICE_NAME;
+    app->SetName(MMI_SERVICE_NAME);
     auto procRecord = app->GetProcessRecordNonNull(mmi_service);
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_MMI_SERVICE_THREAD);

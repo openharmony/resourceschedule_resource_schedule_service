@@ -106,26 +106,31 @@ void Application::RemoveProcessRecord(pid_t pid)
         if (focusedProcess_ == iter->second) {
             focusedProcess_ = nullptr;
         }
+        if (mainProcess_ == iter->second) {
+            mainProcess_ = nullptr;
+        }
         pidsMap_.erase(iter);
     }
 }
 
 std::shared_ptr<ProcessRecord> Application::GetProcessRecord(pid_t pid)
 {
-    if (pidsMap_.find(pid) == pidsMap_.end()) {
-        return nullptr;
+    auto iter = pidsMap_.find(pid);
+    if (iter != pidsMap_.end()) {
+        return iter->second;
     }
-    return pidsMap_[pid];
+    return nullptr;
 }
 
 std::shared_ptr<ProcessRecord> Application::GetProcessRecordNonNull(pid_t pid)
 {
-    if (pidsMap_.find(pid) == pidsMap_.end()) {
-        auto pr = std::make_shared<ProcessRecord>(this->GetUid(), pid);
-        this->AddProcessRecord(pr);
-        return pr;
+    auto iter = pidsMap_.find(pid);
+    if (iter != pidsMap_.end()) {
+        return iter->second;
     }
-    return pidsMap_[pid];
+    auto pr = std::make_shared<ProcessRecord>(this->GetUid(), pid);
+    pidsMap_[pid] = pr;
+    return pr;
 }
 
 std::shared_ptr<ProcessRecord> Application::FindProcessRecordByToken(uintptr_t token)
@@ -139,16 +144,18 @@ std::shared_ptr<ProcessRecord> Application::FindProcessRecordByToken(uintptr_t t
     return nullptr;
 }
 
-std::shared_ptr<ProcessRecord> Application::GetMainProcessRecord()
+void Application::SetName(const std::string& name)
 {
-    /* When the main process of application not set, the first process is regarded
-     * as main process. In general, we can receive the creation event of the process,
-     * so this action is not aften triggered.
-     */
-    if (!mainProcess_ && !pidsMap_.empty()) {
-        mainProcess_ = pidsMap_.begin()->second;
+    if (name_.empty()) {
+        name_ = name;
     }
-    return mainProcess_;
+}
+
+void Application::SetMainProcess(std::shared_ptr<ProcessRecord> pr)
+{
+    if (!mainProcess_) {
+        mainProcess_ = pr;
+    }
 }
 
 std::shared_ptr<ProcessRecord> Application::FindProcessRecordByWindowId(uint32_t windowId)
@@ -167,20 +174,22 @@ std::shared_ptr<ProcessRecord> Application::FindProcessRecordByWindowId(uint32_t
 
 std::shared_ptr<Application> Supervisor::GetAppRecord(int32_t uid)
 {
-    if (uidsMap_.find(uid) == uidsMap_.end()) {
-        return nullptr;
+    auto iter = uidsMap_.find(uid);
+    if (iter != uidsMap_.end()) {
+        return iter->second;
     }
-    return uidsMap_[uid];
+    return nullptr;
 }
 
 std::shared_ptr<Application> Supervisor::GetAppRecordNonNull(int32_t uid)
 {
-    if (uidsMap_.find(uid) == uidsMap_.end()) {
-        auto app = std::make_shared<Application>(uid);
-        uidsMap_[uid] = app;
-        return app;
+    auto iter = uidsMap_.find(uid);
+    if (iter != uidsMap_.end()) {
+        return iter->second;
     }
-    return uidsMap_[uid];
+    auto app = std::make_shared<Application>(uid);
+    uidsMap_[uid] = app;
+    return app;
 }
 
 std::shared_ptr<ProcessRecord> Supervisor::FindProcessRecord(pid_t pid)

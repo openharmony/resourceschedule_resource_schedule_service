@@ -64,8 +64,8 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
 
     auto mainProcRecord = app.GetMainProcessRecord();
     if (!mainProcRecord) {
-        CGS_LOGI("%{public}s mainProcRecord is null %s{public}s %{public}d", __func__,
-            app.name_.c_str(), app.GetUid());
+        CGS_LOGI("%{public}s mainProcRecord is null %{public}s %{public}d", __func__,
+            app.GetName().c_str(), app.GetUid());
         return;
     }
     if (mainProcRecord->GetPid() != pr.GetPid()) {
@@ -74,7 +74,7 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
 
     /* Let the sched group of render process follow the sched group of main process */
     for (auto &iter : app.GetPidsMap()) {
-        auto &procRecord = iter.second;
+        const auto &procRecord = iter.second;
         if (procRecord && procRecord->isRenderProcess_) {
             CGS_LOGI("%{public}s for %{public}d, source : %{public}d", __func__, procRecord->GetPid(), source);
             procRecord->setSchedGroup_ = mainProcRecord->curSchedGroup_;
@@ -169,7 +169,7 @@ void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
         nlohmann::json payload;
         payload["pid"] = std::to_string(pr.GetPid());
         payload["uid"] = std::to_string(pr.GetUid());
-        payload["name"] = app.name_;
+        payload["name"] = app.GetName();
         payload["oldGroup"] = std::to_string((int32_t)(pr.lastSchedGroup_));
         payload["newGroup"] = std::to_string((int32_t)(pr.curSchedGroup_));
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CGROUP_ADJUSTER, 0, payload);
