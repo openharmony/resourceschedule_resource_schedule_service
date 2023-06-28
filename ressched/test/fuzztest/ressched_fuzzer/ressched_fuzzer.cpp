@@ -51,9 +51,9 @@ namespace ResourceSchedule {
     size_t g_pos;
 
     /**
-    * describe: get data from outside untrusted data(g_data) which size is according to sizeof(T)
-    * tips: only support basic type
-    */
+     * describe: get data from outside untrusted data(g_data) which size is according to sizeof(T)
+     * tips: only support basic type
+     */
     template<class T>
     T GetData()
     {
@@ -156,4 +156,3 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::OnRemoteRequest(data, size);
     return 0;
 }
-
