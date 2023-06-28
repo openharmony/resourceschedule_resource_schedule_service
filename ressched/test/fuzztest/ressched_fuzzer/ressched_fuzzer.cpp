@@ -14,19 +14,20 @@
  */
 
 #include "ressched_fuzzer.h"
-#include "iremote_stub.h"
-#include "ires_sched_service.h"
-#include "iservice_registry.h"
-#include "res_sched_service.h"
-#include "plugin_mgr.h"
-#include "singleton.h"
-#include "system_ability_definition.h"
 
-#include <vector>
-#include <securec.h>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
+#include <securec.h>
+#include <vector>
+
+#include "iremote_stub.h"
+#include "ires_sched_service.h"
+#include "iservice_registry.h"
+#include "plugin_mgr.h"
+#include "res_sched_service.h"
+#include "singleton.h"
+#include "system_ability_definition.h"
 
 #define private public
 #define protected public
@@ -49,7 +50,7 @@ namespace ResourceSchedule {
     size_t g_size = 0;
     size_t g_pos;
 
-    /*
+    /**
     * describe: get data from outside untrusted data(g_data) which size is according to sizeof(T)
     * tips: only support basic type
     */
@@ -117,9 +118,13 @@ namespace ResourceSchedule {
         return true;
     }
 
-    bool Onremoterequest(const uint8_t* data, size_t size)
+    bool OnRemoteRequest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= MIN_LEN) {
             return false;
         }
 
@@ -132,7 +137,7 @@ namespace ResourceSchedule {
         uint32_t fuzzCode = GetData<uint32_t>();
         MessageParcel fuzzData;
         fuzzData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
-        fuzzData.WriteBuffer(data, size);
+        fuzzData.WriteBuffer(g_data + g_pos, g_size - g_pos);
         fuzzData.RewindRead(0);
         MessageParcel fuzzReply;
         MessageOption fuzzOption;
@@ -148,7 +153,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     /* Run your code on data */
     OHOS::ResourceSchedule::DoSomethingInterestingWithMyAPI(data, size);
-    OHOS::ResourceSchedule::Onremoterequest(data, size);
+    OHOS::ResourceSchedule::OnRemoteRequest(data, size);
     return 0;
 }
 
