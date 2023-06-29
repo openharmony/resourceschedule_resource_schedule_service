@@ -34,7 +34,7 @@ ohos_shared_library("libprocess_group") {
   external_deps = [
     "c_utils:utils",
     "config_policy:configpolicy_util",
-    "hiviewdfx_hilog_native:libhilog",
+    "hilog:libhilog",
   ]
 
   part_name = "resource_schedule_service"

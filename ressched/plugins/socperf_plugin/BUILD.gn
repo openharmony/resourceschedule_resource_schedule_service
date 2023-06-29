@@ -32,7 +32,7 @@ ohos_shared_library("socperf_plugin") {
   external_deps = [
     "ability_runtime:app_manager",
     "eventhandler:libeventhandler",
-    "hiviewdfx_hilog_native:libhilog",
+    "hilog:libhilog",
   ]
   defines = []
   if (ressched_with_resourceschedule_soc_perf_enable) {

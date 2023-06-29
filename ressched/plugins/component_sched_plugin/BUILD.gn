@@ -32,7 +32,7 @@ ohos_shared_library("component_sched_plugin") {
   external_deps = [
     "c_utils:utils",
     "eventhandler:libeventhandler",
-    "hiviewdfx_hilog_native:libhilog",
+    "hilog:libhilog",
   ]
 
   defines = []
