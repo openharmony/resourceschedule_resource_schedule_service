@@ -15,17 +15,60 @@
 
 #include "ressched_fuzzer.h"
 
-#include "iservice_registry.h"
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <securec.h>
+#include <vector>
+
 #include "iremote_stub.h"
+#include "ires_sched_service.h"
+#include "iservice_registry.h"
+#include "plugin_mgr.h"
+#include "res_sched_service.h"
+#include "singleton.h"
 #include "system_ability_definition.h"
 
-#include "ires_sched_service.h"
+#define private public
+#define protected public
+
+#ifndef errno_t
+typedef int errno_t;
+#endif
+
+#ifndef EOK
+#define EOK 0
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {
+    constexpr int32_t MAX_CODE = 5;
     constexpr int32_t MIN_LEN = 4;
     std::mutex mutexLock;
     sptr<IRemoteObject> remoteObj;
+    const uint8_t* g_data = nullptr;
+    size_t g_size = 0;
+    size_t g_pos;
+
+    /**
+     * describe: get data from outside untrusted data(g_data) which size is according to sizeof(T)
+     * tips: only support basic type
+     */
+    template<class T>
+    T GetData()
+    {
+        T object {};
+        size_t objectSize = sizeof(object);
+        if (g_data == nullptr || objectSize > g_size - g_pos) {
+            return object;
+        }
+        errno_t ret = memcpy_s(&object, objectSize, g_data + g_pos, objectSize);
+        if (ret != EOK) {
+            return {};
+        }
+        g_pos += objectSize;
+        return object;
+    }
 
     bool DoInit()
     {
@@ -74,6 +117,34 @@ namespace ResourceSchedule {
         onRemoteRequest(code, dataMessageParcel);
         return true;
     }
+
+    bool OnRemoteRequest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= MIN_LEN) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uint32_t fuzzCode = GetData<uint32_t>();
+        MessageParcel fuzzData;
+        fuzzData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
+        fuzzData.WriteBuffer(g_data + g_pos, g_size - g_pos);
+        fuzzData.RewindRead(0);
+        MessageParcel fuzzReply;
+        MessageOption fuzzOption;
+        DelayedSingleton<ResSchedService>::GetInstance()->OnRemoteRequest(fuzzCode % MAX_CODE,
+            fuzzData, fuzzReply, fuzzOption);
+        return true;
+    }
 } // namespace ResourceSchedule
 } // namespace OHOS
 
@@ -82,6 +153,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     /* Run your code on data */
     OHOS::ResourceSchedule::DoSomethingInterestingWithMyAPI(data, size);
+    OHOS::ResourceSchedule::OnRemoteRequest(data, size);
     return 0;
 }
-
