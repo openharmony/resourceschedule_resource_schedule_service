@@ -40,9 +40,8 @@
         "hitrace",
         "init",
         "ipc",
-        "libxml2",
         "movement",
-        "multimodalinput",
+        "input",
         "samgr",
         "safwk",
         "soc_perf",
@@ -51,8 +50,7 @@
       ],
       "third_party": [
         "json",
-        "libxml2",
-        "thirdparty_json"
+        "libxml2"
       ]
     },
     "build": {
