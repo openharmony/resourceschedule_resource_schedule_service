@@ -114,6 +114,8 @@ enum : uint32_t {
     RES_TYPE_CONTINUE_ANIMATION = 36,
     // drag status bar event; value 0: start drag, value 1: stop drag.
     RES_TYPE_DRAG_STATUS_BAR = 37,
+    // report SceneBoard service, value pid; payload:uid, main_tid, bundleName
+    RES_TYPE_REPORT_SCENE_BOARD = 38,
 };
 
 static const std::map<uint32_t, std::string> resTypeToStr = {
