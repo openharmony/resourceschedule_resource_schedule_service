@@ -271,7 +271,7 @@ A. 事件打点延时
 | RES_TYPE_CLICK_ANIMATION        | 点击后的动画状态事件      | 0：动画开始， 1：无丢帧压力事件， 2：即将丢帧事件， 3：丢帧事件， 4：动画结束     |无     | -        | -       |
 | RES_TYPE_CONTINUE_ANIMATION     | 动画连续事件             | 0：连续动画的开始， 1：连续动画的结束                    |无     | -        | -       |
 | RES_TYPE_DRAG_STATUS_BAR     | 状态栏下拉事件                              | 0：状态栏下拉开始， 1：状态栏下拉结束                                                            |无     | -        | -       |
-
+| RES_TYPE_REPORT_SCENE_BOARD        | 报告sceneBoard进程信息      | 进程PID     |{"uid"=?, "mainTid"=?, "bundleName"=?}     | -        | -       |
 
 
 
