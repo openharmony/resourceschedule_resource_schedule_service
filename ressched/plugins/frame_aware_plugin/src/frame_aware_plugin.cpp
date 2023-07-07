@@ -19,12 +19,15 @@
 #include "res_sched_log.h"
 #include "plugin_mgr.h"
 #include "config_info.h"
+#include "parameters.h"
+#include "sched_policy.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libframe_aware_plugin.z.so";
+    const std::string SLIDE_INTERVAL_NAME = "ffrt.interval.slide";
 }
 IMPLEMENT_SINGLE_INSTANCE(FrameAwarePlugin)
 
@@ -44,6 +47,12 @@ void FrameAwarePlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleReportRender(data); } },
         { RES_TYPE_NETWORK_LATENCY_REQUEST,
             [this](const std::shared_ptr<ResData>& data) { HandleNetworkLatencyRequest(data); } },
+        { RES_TYPE_SLIDE_RECOGNIZE,
+            [this](const std::shared_ptr<ResData>& data) { HandleEventSlide(data); } },
+        { RES_TYPE_SCREEN_LOCK,
+            [this](const std::shared_ptr<ResData>& data) { HandleScreenLock(data); } },
+        { RES_TYPE_SCREEN_STATUS,
+            [this](const std::shared_ptr<ResData>& data) { HandleScreenStatus(data); } },
     };
     resTypes = {
         RES_TYPE_APP_STATE_CHANGE,
@@ -52,6 +61,18 @@ void FrameAwarePlugin::Init()
         RES_TYPE_WINDOW_FOCUS,
         RES_TYPE_REPORT_RENDER_THREAD,
         RES_TYPE_NETWORK_LATENCY_REQUEST,
+        RES_TYPE_SLIDE_RECOGNIZE,
+        RES_TYPE_SCREEN_LOCK,
+        RES_TYPE_SCREEN_STATUS,
+    };
+    unsupportApp = {
+        "com.ohos.launcher",
+        "com.ohos.systemui",
+        "com.ohos.screenlock",
+        "com.ohos.wallpaper",
+        "resource_schedu",
+        "distributeddata",
+        "foundation"
     };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
@@ -128,13 +149,35 @@ void FrameAwarePlugin::HandleCgroupAdjuster(const std::shared_ptr<ResData>& data
         RESSCHED_LOGI("FrameAwarePlugin::HandleCgroupAdjuster payload is not contains oldGroup or newGroup");
         return;
     }
-
     int pid = atoi(data->payload["pid"].get<std::string>().c_str());
     int uid = atoi(data->payload["uid"].get<std::string>().c_str());
     int oldGroup = atoi(data->payload["oldGroup"].get<std::string>().c_str());
     int newGroup = atoi(data->payload["newGroup"].get<std::string>().c_str());
     if (!data->value) {
         RME::FrameMsgIntf::GetInstance().ReportCgroupChange(pid, uid, oldGroup, newGroup);
+        if (!data->payload.contains("name") || !data->payload["name"].is_string()) {
+            return;
+        }
+        newGroup = ((newGroup == CgroupSetting::SP_FOREGROUND) || (newGroup == CgroupSetting::SP_TOP_APP)) ?
+            CgroupSetting::SP_FOREGROUND : CgroupSetting::SP_BACKGROUND;
+        oldGroup = ((oldGroup == CgroupSetting::SP_FOREGROUND) || (oldGroup == CgroupSetting::SP_TOP_APP)) ?
+            CgroupSetting::SP_FOREGROUND : CgroupSetting::SP_BACKGROUND;
+        if (newGroup == oldGroup) {
+            return;
+        }
+        std::string bundleName = data->payload["name"].get<std::string>().c_str();
+        if (unsupportApp.find(bundleName) != unsupportApp.end()) {
+            return;
+        }
+        if (newGroup == CgroupSetting::SP_FOREGROUND) {
+            curForeAppCount++;
+            RESSCHED_LOGI("add curForeAppCount uid is %{public}d, pid is %{public}d, bundleName is %{public}s",
+                uid, pid, bundleName.c_str());
+        } else if (newGroup == CgroupSetting::SP_BACKGROUND) {
+            curForeAppCount--;
+            RESSCHED_LOGI("add curForeAppCount uid is %{public}d, pid is %{public}d, bundleName is %{public}s",
+                uid, pid, bundleName.c_str());
+        }
     }
 }
 
@@ -195,6 +238,46 @@ void FrameAwarePlugin::HandleNetworkLatencyRequest(const std::shared_ptr<ResData
     // add the pid prefix to distinguish identities between different apps
     const std::string pid_identity = pid + ":" + identity;
     netLatCtrl.HandleRequest(value, pid_identity);
+}
+
+void FrameAwarePlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
+{
+    if (data->value == SlideEventStatus::SLIDE_EVENT_ON) {
+        if (rtgCount < curForeAppCount) {
+            rtgCount++;
+            OHOS::system::SetParameter(SLIDE_INTERVAL_NAME, "true");
+        }
+        RESSCHED_LOGI("handle slide on curForeAppCount is %{public}d.", curForeAppCount);
+    } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
+        rtgCount--;
+        RESSCHED_LOGI("handle slide off curForeAppCount is %{public}d.", curForeAppCount);
+        if (rtgCount <= 0) {
+            rtgCount = 0;
+            OHOS::system::SetParameter(SLIDE_INTERVAL_NAME, "false");
+        }
+    }
+}
+
+void FrameAwarePlugin::HandleScreenLock(const std::shared_ptr<ResData>& data)
+{
+    if (!data->payload.is_object()) {
+        return;
+    }
+    if (!data->value) {
+        OHOS::system::SetParameter(SLIDE_INTERVAL_NAME, "false");
+        RESSCHED_LOGI("Screen Lock Report");
+    }
+}
+
+void FrameAwarePlugin::HandleScreenStatus(const std::shared_ptr<ResData>& data)
+{
+    if (!data->payload.is_object()) {
+        return;
+    }
+    if (data->value) {
+        RESSCHED_LOGI("Screen Bright Report");
+        OHOS::system::SetParameter(SLIDE_INTERVAL_NAME, "true");
+    }
 }
 
 void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
