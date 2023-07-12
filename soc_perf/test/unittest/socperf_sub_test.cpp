@@ -408,7 +408,7 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_ResetClient_001, Function | MediumTest |
     OHOS::SOCPERF::SocPerfClient::GetInstance().ResetClient();
 }
 
-static void SocPerfSubTestResetClientTask()
+static void SocPerfSubTestMultithreadingTask()
 {
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(10000, "");
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(10000, true, "");
@@ -417,19 +417,18 @@ static void SocPerfSubTestResetClientTask()
     OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(false, "");
     OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(true, "");
     OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(false, "");
-    OHOS::SOCPERF::SocPerfClient::GetInstance().ResetClient();
 }
 
 /*
- * @tc.name: SocPerfSubTest_ResetClient_002
- * @tc.desc: Test ResetClient in multithreading
+ * @tc.name: SocPerfSubTest_Multithreading_001
+ * @tc.desc: Test the service above in multithreading
  * @tc.type FUNC
  * @tc.require: issueI7G8VT
  */
-HWTEST_F(SocPerfSubTest, SocPerfSubTest_ResetClient_002, Function | MediumTest | Level0)
+HWTEST_F(SocPerfSubTest, SocPerfSubTest_Multithreading_001, Function | MediumTest | Level0)
 {
     SET_THREAD_NUM(10);
-    GTEST_RUN_TASK(SocPerfSubTestResetClientTask);
+    GTEST_RUN_TASK(SocPerfSubTestMultithreadingTask);
 }
 } // namespace SOCPERF
 } // namespace OHOS
