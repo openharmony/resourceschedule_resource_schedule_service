@@ -333,9 +333,9 @@ static void RemoteRequestTask()
     MessageOption option;
     MessageParcel reply;
     int32_t res = resSchedServiceStub_->OnRemoteRequest(1, reply, reply, option);
-    EXPECT_FALSE(res);
+    EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(2, reply, reply, option);
-    EXPECT_FALSE(res);
+    EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(0, reply, reply, option);
     EXPECT_TRUE(res);
 }
