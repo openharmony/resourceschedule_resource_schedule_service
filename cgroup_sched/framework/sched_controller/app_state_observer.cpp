@@ -134,7 +134,7 @@ void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processDat
     nlohmann::json payload;
     payload["pid"] = std::to_string(processData.pid);
     payload["uid"] = std::to_string(processData.uid);
-    payload["processType"] = std::to_string(processData.processType);
+    payload["processType"] = std::to_string(static_cast<int32_t>(processData.processType));
     payload["renderUid"] = std::to_string(processData.renderUid);
     payload["bundleName"] = processData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(
