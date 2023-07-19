@@ -73,7 +73,7 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
     }
 
     /* Let the sched group of render process follow the sched group of main process */
-    for (auto &iter : app.GetPidsMap()) {
+    for (const auto &iter : app.GetPidsMap()) {
         const auto &procRecord = iter.second;
         if (procRecord && procRecord->isRenderProcess_) {
             CGS_LOGI("%{public}s for %{public}d, source : %{public}d", __func__, procRecord->GetPid(), source);
@@ -86,7 +86,7 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
 void CgroupAdjuster::AdjustAllProcessGroup(Application &app, AdjustSource source)
 {
     for (auto &iter : app.GetPidsMap()) {
-        auto &procRecord = iter.second;
+        const auto &procRecord = iter.second;
         if (procRecord && !procRecord->isRenderProcess_) {
             AdjustProcessGroup(app, *procRecord, source);
         }
