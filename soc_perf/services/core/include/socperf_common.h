@@ -193,14 +193,17 @@ public:
     int32_t duration;
     int32_t type;
     int32_t onOff;
+    int32_t cmdId;
 
 public:
-    ResAction(int64_t resActionValue, int32_t resActionDuration, int32_t resActionType, int32_t resActionOnOff)
+    ResAction(int64_t resActionValue, int32_t resActionDuration, int32_t resActionType,
+        int32_t resActionOnOff, int32_t resActionCmdId)
     {
         value = resActionValue;
         duration = resActionDuration;
         type = resActionType;
         onOff = resActionOnOff;
+        cmdId = resActionCmdId;
     }
     ~ResAction() {}
 
@@ -209,7 +212,8 @@ public:
         if (value == resAction->value
             && duration == resAction->duration
             && type == resAction->type
-            && onOff == resAction->onOff) {
+            && onOff == resAction->onOff
+            && cmdId == resAction->cmdId) {
             return true;
         }
         return false;
@@ -219,7 +223,8 @@ public:
     {
         if (value == resAction->value
             && duration == resAction->duration
-            && type == resAction->type) {
+            && type == resAction->type
+            && cmdId == resAction->cmdId) {
             return true;
         }
         return false;
