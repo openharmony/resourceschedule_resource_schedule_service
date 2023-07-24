@@ -116,6 +116,10 @@ enum : uint32_t {
     RES_TYPE_DRAG_STATUS_BAR = 37,
     // report SceneBoard service, value pid; payload:uid, main_tid, bundleName
     RES_TYPE_REPORT_SCENE_BOARD = 38,
+    // report key thread for render, value 0 add key Thread, 1 remove key thread, payload: uid, pid, tid, role
+    RES_TYPE_REPORT_KEY_THREAD = 39,
+    // report window state, value 0 add 1 remove, payload: uid, pid, windowId, serialNum state: 0 active 1 inactive
+    RES_TYPE_REPORT_WINDOW_STATE = 40,
 };
 
 static const std::map<uint32_t, std::string> resTypeToStr = {
@@ -157,7 +161,9 @@ static const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_CLICK_ANIMATION, "RES_TYPE_CLICK_ANIMATION" },
     { RES_TYPE_CONTINUE_ANIMATION, "RES_TYPE_CONTINUE_ANIMATION" },
     { RES_TYPE_DRAG_STATUS_BAR, "RES_TYPE_DRAG_STATUS_BAR" },
-    { RES_TYPE_REPORT_SCENE_BOARD, "RES_TYPE_REPORT_SCENE_BOARD" }
+    { RES_TYPE_REPORT_SCENE_BOARD, "RES_TYPE_REPORT_SCENE_BOARD" },
+    { RES_TYPE_REPORT_KEY_THREAD, "RES_TYPE_REPORT_KEY_THREAD" },
+    { RES_TYPE_REPORT_WINDOW_STATE, "RES_TYPE_REPORT_WINDOW_STATE" }
 };
 
 /**
@@ -318,6 +324,22 @@ enum ContinueAnimationStatus : int64_t {
 enum StatusBarDragStatus : int64_t {
     DRAG_START = 0,
     DRAG_END = 1,
+};
+
+/**
+ * @brief Report change status
+ */
+enum ReportChangeStatus : int64_t {
+    CREATE = 0,
+    REMOVE = 1,
+};
+
+/**
+ * @brief Window State
+ */
+enum WindowStates : int64_t {
+    ACTIVE = 0,
+    INACTIVE = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
