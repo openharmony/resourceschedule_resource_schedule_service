@@ -272,6 +272,8 @@ A. 事件打点延时
 | RES_TYPE_CONTINUE_ANIMATION     | 动画连续事件             | 0：连续动画的开始， 1：连续动画的结束                    |无     | -        | -       |
 | RES_TYPE_DRAG_STATUS_BAR     | 状态栏下拉事件                              | 0：状态栏下拉开始， 1：状态栏下拉结束                                                            |无     | -        | -       |
 | RES_TYPE_REPORT_SCENE_BOARD        | 报告sceneBoard进程信息      | 进程PID     |{"uid"=?, "mainTid"=?, "bundleName"=?}     | -        | -       |
+| RES_TYPE_REPORT_KEY_THREAD         | 报告关键线程                | 0：新增，1：删除     | {"uid"=?, "pid"=?, "tid"=?, "role"=?}     | -        | -        
+| RES_TYPE_REPORT_WINDOW_STATE       | 报告窗口状态                | 0：新增，1：删除     | {"uid"=?, "pid"=?, "windowId"=?, "serialNum"=?, "state"=0 active 1 inactive}     | -        | -        
 
 
 
