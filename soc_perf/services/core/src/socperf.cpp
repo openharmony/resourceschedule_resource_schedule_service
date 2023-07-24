@@ -157,7 +157,7 @@ void SocPerf::SendLimitRequestEventOff(std::shared_ptr<SocPerfHandler> handler,
     if (iter != limitRequest[clientId].end()
         && limitRequest[clientId][resId] != INVALID_VALUE) {
         auto resAction = std::make_shared<ResAction>(
-            limitRequest[clientId][resId], 0, clientId, EVENT_OFF);
+            limitRequest[clientId][resId], 0, clientId, EVENT_OFF, -1);
         auto event = AppExecFwk::InnerEvent::Get(eventId, resAction, resId);
         handler->SendEvent(event);
         limitRequest[clientId].erase(iter);
@@ -168,7 +168,7 @@ void SocPerf::SendLimitRequestEventOn(std::shared_ptr<SocPerfHandler> handler,
     int32_t clientId, int32_t resId, int64_t resValue, int32_t eventId)
 {
     if (resValue != INVALID_VALUE && resValue != RESET_VALUE) {
-        auto resAction = std::make_shared<ResAction>(resValue, 0, clientId, EVENT_ON);
+        auto resAction = std::make_shared<ResAction>(resValue, 0, clientId, EVENT_ON, -1);
         auto event = AppExecFwk::InnerEvent::Get(eventId, resAction, resId);
         handler->SendEvent(event);
         limitRequest[clientId].insert(std::pair<int32_t, int32_t>(resId, resValue));
@@ -232,7 +232,7 @@ void SocPerf::DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int
             }
             auto resActionItem = std::make_shared<ResActionItem>(action->variable[i]);
             resActionItem->resAction =
-                std::make_shared<ResAction>(action->variable[i + 1], action->duration, actionType, onOff);
+                std::make_shared<ResAction>(action->variable[i + 1], action->duration, actionType, onOff, actions->id);
             int32_t id = action->variable[i] / RES_ID_NUMS_PER_TYPE - 1;
             if (curItem[id]) {
                 curItem[id]->next = resActionItem;
