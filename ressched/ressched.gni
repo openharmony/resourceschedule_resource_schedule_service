@@ -28,6 +28,8 @@ ressched_plugins =
 ressched_test =
     "${resourceschedule_path}/resource_schedule_service/ressched/test"
 
+ressched_sched_controller = "${resourceschedule_path}/resource_schedule_service/ressched/sched_controller"
+
 declare_args() {
   component_sched_enable = true
   device_movement_perception_enable = true
