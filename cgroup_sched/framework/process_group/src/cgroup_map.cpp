@@ -57,26 +57,46 @@ void CgroupMap::AddCgroupController(const std::string& name, CgroupController& c
     controllers_.insert(std::make_pair(name, std::move(controller)));
 }
 
+bool CgroupMap::CheckCgroupConfigFormat(const nlohmann::json& cgroupObj)
+{
+    if (!cgroupObj.is_object()) {
+        PGCGS_LOGE("%{public}s cgroup config format error!", __func__);
+        return false;
+    }
+    if (!cgroupObj.contains(JSON_KEY_CONTROLLER) || !cgroupObj.at(JSON_KEY_CONTROLLER).is_string()) {
+        PGCGS_LOGE("%{public}s cgroup controller is not properly configured!", __func__);
+        return false;
+    }
+    if (!cgroupObj.contains(JSON_KEY_PATH) || !cgroupObj.at(JSON_KEY_PATH).is_string()) {
+        PGCGS_LOGE("%{public}s cgroup path is not properly configured!", __func__);
+        return false;
+    }
+    if (!cgroupObj.contains(JSON_KEY_SCHED_POLICY) || !cgroupObj.at(JSON_KEY_SCHED_POLICY).is_object()) {
+        PGCGS_LOGE("%{public}s cgroup policy is not properly configured!", __func__);
+        return false;
+    }
+    return true;
+}
+
 bool CgroupMap::LoadConfigFromJsonObj(const nlohmann::json& jsonObj)
 {
-    const nlohmann::json& jsonArrObj = jsonObj[JSON_KEY_CGROUPS];
     // check json format
-    if (!jsonArrObj.is_array()) {
+    if (!jsonObj.is_object() || !jsonObj.contains(JSON_KEY_CGROUPS)
+        || !jsonObj.at(JSON_KEY_CGROUPS).is_array()) {
         PGCGS_LOGE("%{public}s json config format error, CgroupMap: disabled!", __func__);
         return false;
     }
+    const nlohmann::json& jsonArrObj = jsonObj[JSON_KEY_CGROUPS];
     int count = 0;
     int32_t objSize = static_cast<int32_t>(jsonArrObj.size());
     for (int32_t i = 0; i < objSize; ++i) {
         const nlohmann::json& cgroupObj = jsonArrObj[i];
-        const nlohmann::json& nameObj = cgroupObj[JSON_KEY_CONTROLLER];
-        const nlohmann::json& pathObj = cgroupObj[JSON_KEY_PATH];
-        if (!nameObj.is_string() || !pathObj.is_string()) {
-            PGCGS_LOGE("%{public}s invalid controller config.", __func__);
+        if (!CheckCgroupConfigFormat(cgroupObj)) {
             continue;
         }
-        std::string name = nameObj.get<std::string>();
-        std::string rootPath = pathObj.get<std::string>();
+
+        std::string name = cgroupObj[JSON_KEY_CONTROLLER].get<std::string>();
+        std::string rootPath = cgroupObj[JSON_KEY_PATH].get<std::string>();
         if (name.empty() || rootPath.empty()) {
             PGCGS_LOGE("%{public}s empty controller config.", __func__);
             continue;
@@ -113,12 +133,11 @@ bool CgroupMap::LoadSchedPolicyConfig(CgroupController& controller, const nlohma
         if (!keyString || !strcmp(keyString, "error")) {
             continue;
         }
-        const nlohmann::json& obj = policyObj[keyString];
-        if (!obj.is_string()) {
+        if (!policyObj.contains(keyString) || !policyObj.at(keyString).is_string()) {
             PGCGS_LOGE("%{public}s %s is not properly configed.", __func__, keyString);
             continue;
         }
-        if (controller.AddSchedPolicy(policy, obj.get<std::string>())) {
+        if (controller.AddSchedPolicy(policy, policyObj[keyString].get<std::string>())) {
             count++;
         }
     }
