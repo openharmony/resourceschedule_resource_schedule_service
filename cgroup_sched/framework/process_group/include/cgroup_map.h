@@ -46,6 +46,7 @@ private:
 
     std::map<std::string, CgroupController> controllers_;
 
+    bool CheckCgroupConfigFormat(const nlohmann::json& cgroupObj);
     void AddCgroupController(const std::string& name, CgroupController& controller);
     bool LoadSchedPolicyConfig(CgroupController& controller, const nlohmann::json& policyObj);
 };
