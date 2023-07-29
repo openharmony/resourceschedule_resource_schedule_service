@@ -115,6 +115,8 @@ enum : uint32_t {
     RES_TYPE_REPORT_KEY_THREAD = 39,
     // report window state, value 0 add 1 remove, payload: uid, pid, windowId, serialNum state: 0 active 1 inactive
     RES_TYPE_REPORT_WINDOW_STATE = 40,
+    // report scene sched, value 0 scene on 1 scene off, payload: uid, sceneId
+    RES_TYPE_REPORT_SCENE_SCHED = 41,
 };
 
 static const std::map<uint32_t, std::string> resTypeToStr = {
@@ -156,7 +158,8 @@ static const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_DRAG_STATUS_BAR, "RES_TYPE_DRAG_STATUS_BAR" },
     { RES_TYPE_REPORT_SCENE_BOARD, "RES_TYPE_REPORT_SCENE_BOARD" },
     { RES_TYPE_REPORT_KEY_THREAD, "RES_TYPE_REPORT_KEY_THREAD" },
-    { RES_TYPE_REPORT_WINDOW_STATE, "RES_TYPE_REPORT_WINDOW_STATE" }
+    { RES_TYPE_REPORT_WINDOW_STATE, "RES_TYPE_REPORT_WINDOW_STATE" },
+    { RES_TYPE_REPORT_SCENE_SCHED, "RES_TYPE_REPORT_SCENE_SCHED" }
 };
 
 /**
@@ -314,6 +317,25 @@ enum ReportChangeStatus : int64_t {
 enum WindowStates : int64_t {
     ACTIVE = 0,
     INACTIVE = 1,
+};
+
+/**
+ * @brief Thread role
+*/
+enum ThreadRole : int64_t {
+    USER_INTERACT = 0,
+    NORMAL_DISPLAY = 1,
+    IMPORTANT_DISPLAY = 2,
+    NORMAL_AUDIO = 3,
+    IMPORTANT_AUDIO = 4,
+};
+
+/**
+ * @brief scene control
+*/
+enum SceneControl : int64_t {
+    SCENE_IN = 0,
+    SCENE_OUT = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
