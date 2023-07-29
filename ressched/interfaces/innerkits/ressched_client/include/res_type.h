@@ -119,7 +119,7 @@ enum : uint32_t {
     RES_TYPE_REPORT_SCENE_SCHED = 41,
 };
 
-static const std::map<uint32_t, std::string> resTypeToStr = {
+inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_SCREEN_STATUS, "SCREEN_STATUS" },
     { RES_TYPE_APP_STATE_CHANGE, "APP_STATE_CHANGE" },
     { RES_TYPE_ABILITY_STATE_CHANGE, "ABILITY_STATE_CHANGE" },
