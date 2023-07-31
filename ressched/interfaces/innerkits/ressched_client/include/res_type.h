@@ -117,6 +117,7 @@ enum : uint32_t {
     RES_TYPE_REPORT_WINDOW_STATE = 40,
     // report scene sched, value 0 scene on 1 scene off, payload: uid, sceneId
     RES_TYPE_REPORT_SCENE_SCHED = 41,
+    // load url, value 0
 };
 
 inline const std::map<uint32_t, std::string> resTypeToStr = {
@@ -321,7 +322,7 @@ enum WindowStates : int64_t {
 
 /**
  * @brief Thread role
-*/
+ */
 enum ThreadRole : int64_t {
     USER_INTERACT = 0,
     NORMAL_DISPLAY = 1,
@@ -332,10 +333,21 @@ enum ThreadRole : int64_t {
 
 /**
  * @brief scene control
-*/
+ */
 enum SceneControl : int64_t {
     SCENE_IN = 0,
     SCENE_OUT = 1,
+};
+
+/**
+ * @brief web scene
+ */
+enum WebScene : int64_t {
+    LOAD_URL = 1001,
+    CLICK = 1002,
+    SLIDE = 1003,
+    RESIZE = 1004,
+    VISIBLE = 1005,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
