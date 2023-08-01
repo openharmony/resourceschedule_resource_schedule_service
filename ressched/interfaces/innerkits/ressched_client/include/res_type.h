@@ -321,7 +321,7 @@ enum WindowStates : int64_t {
 
 /**
  * @brief Thread role
-*/
+ */
 enum ThreadRole : int64_t {
     USER_INTERACT = 0,
     NORMAL_DISPLAY = 1,
@@ -332,10 +332,21 @@ enum ThreadRole : int64_t {
 
 /**
  * @brief scene control
-*/
+ */
 enum SceneControl : int64_t {
     SCENE_IN = 0,
     SCENE_OUT = 1,
+};
+
+/**
+ * @brief web scene
+ */
+enum WebScene : int64_t {
+    WEB_SCENE_LOAD_URL = 1001,
+    WEB_SCENE_CLICK = 1002,
+    WEB_SCENE_SLIDE = 1003,
+    WEB_SCENE_RESIZE = 1004,
+    WEB_SCENE_VISIBLE = 1005,
 };
 } // namespace ResType
 } // namespace ResourceSchedule

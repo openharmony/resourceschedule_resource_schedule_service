@@ -270,9 +270,9 @@ A. 事件打点延时
 | RES_TYPE_LOAD_PAGE              | 页面加载事件             | 0： 页面加载开始，1：页面加载结束                        |无     | -        | -       |
 | RES_TYPE_DRAG_STATUS_BAR     | 状态栏下拉事件                              | 0：状态栏下拉开始， 1：状态栏下拉结束                                                            |无     | -        | -       |
 | RES_TYPE_REPORT_SCENE_BOARD        | 报告sceneBoard进程信息      | 进程PID     |{"uid"=?, "mainTid"=?, "bundleName"=?}     | -        | -       |
-| RES_TYPE_REPORT_KEY_THREAD         | 报告关键线程                | 0：新增，1：删除     | {"uid"=?, "pid"=?, "tid"=?, "role"=?}     | -        | -        
-| RES_TYPE_REPORT_WINDOW_STATE       | 报告窗口状态                | 0：新增，1：删除     | {"uid"=?, "pid"=?, "windowId"=?, "serialNum"=?, "state"=0 active 1 inactive}     | -        | -        
-| RES_TYPE_REPORT_SCENE_SCHED        | 报告场景状态                | 0：场景进入，1：场景退出   | {"uid"=?, "sceneId"=?,}   | -        | -       
+| RES_TYPE_REPORT_KEY_THREAD         | 报告关键线程                | 0：新增，1：删除     | {"uid"=?, "pid"=?, "tid"=?, "role"=?}     | -        | -       |
+| RES_TYPE_REPORT_WINDOW_STATE       | 报告窗口状态                | 0：新增，1：删除     | {"uid"=?, "pid"=?, "windowId"=?, "serialNum"=?, "state"=0 active 1 inactive}     | -        | -       |
+| RES_TYPE_REPORT_SCENE_SCHED        | 报告场景状态                | 0：场景进入，1：场景退出   | {"uid"=?, "sceneId"=?,}   | -        | -       |
 
 
 
