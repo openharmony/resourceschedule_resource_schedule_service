@@ -343,11 +343,11 @@ enum SceneControl : int64_t {
  * @brief web scene
  */
 enum WebScene : int64_t {
-    LOAD_URL = 1001,
-    CLICK = 1002,
-    SLIDE = 1003,
-    RESIZE = 1004,
-    VISIBLE = 1005,
+    WEB_SCENE_LOAD_URL = 1001,
+    WEB_SCENE_CLICK = 1002,
+    WEB_SCENE_SLIDE = 1003,
+    WEB_SCENE_RESIZE = 1004,
+    WEB_SCENE_VISIBLE = 1005,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
