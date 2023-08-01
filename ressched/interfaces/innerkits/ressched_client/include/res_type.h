@@ -117,7 +117,6 @@ enum : uint32_t {
     RES_TYPE_REPORT_WINDOW_STATE = 40,
     // report scene sched, value 0 scene on 1 scene off, payload: uid, sceneId
     RES_TYPE_REPORT_SCENE_SCHED = 41,
-    // load url, value 0
 };
 
 inline const std::map<uint32_t, std::string> resTypeToStr = {
