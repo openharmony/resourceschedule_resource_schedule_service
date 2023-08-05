@@ -25,8 +25,12 @@ namespace OHOS {
 namespace ResourceSchedule {
 void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo)
 {
+    if (!focusChangeInfo) {
+        return;
+    }
+
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHandler && focusChangeInfo) {
+    if (cgHandler) {
         auto windowId = focusChangeInfo->windowId_;
         auto token = reinterpret_cast<uintptr_t>(focusChangeInfo->abilityToken_.GetRefPtr());
         auto windowType = focusChangeInfo->windowType_;
@@ -38,12 +42,25 @@ void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo
             cgHandler->HandleFocusedWindow(windowId, token, windowType, displayId, pid, uid);
         });
     }
+
+    nlohmann::json payload;
+    payload["pid"] = std::to_string(focusChangeInfo->pid_);
+    payload["uid"] = std::to_string(focusChangeInfo->uid_);
+    payload["windowId"] = std::to_string(focusChangeInfo->windowId_);
+    payload["windowType"] = std::to_string((int32_t)(focusChangeInfo->windowType_));
+    payload["displayId"] = std::to_string(focusChangeInfo->displayId_);
+    ResSchedUtils::GetInstance().ReportDataInProcess(
+        ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_FOCUS, payload);
 }
 
 void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeInfo)
 {
+    if (!focusChangeInfo) {
+        return;
+    }
+
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHandler && focusChangeInfo) {
+    if (cgHandler) {
         auto windowId = focusChangeInfo->windowId_;
         auto token = reinterpret_cast<uintptr_t>(focusChangeInfo->abilityToken_.GetRefPtr());
         auto windowType = focusChangeInfo->windowType_;
@@ -55,6 +72,15 @@ void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeIn
             cgHandler->HandleUnfocusedWindow(windowId, token, windowType, displayId, pid, uid);
         });
     }
+
+    nlohmann::json payload;
+    payload["pid"] = std::to_string(focusChangeInfo->pid_);
+    payload["uid"] = std::to_string(focusChangeInfo->uid_);
+    payload["windowId"] = std::to_string(focusChangeInfo->windowId_);
+    payload["windowType"] = std::to_string((int32_t)(focusChangeInfo->windowType_));
+    payload["displayId"] = std::to_string(focusChangeInfo->displayId_);
+    ResSchedUtils::GetInstance().ReportDataInProcess(
+        ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
 }
 
 void WindowVisibilityObserver::OnWindowVisibilityChanged(
