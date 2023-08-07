@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+#define private public
+
 #include "resschedobserver_fuzzer.h"
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
 #include "sched_telephony_observer.h"
@@ -141,6 +143,29 @@ namespace ResourceSchedule {
 
         return true;
     }
+
+    bool OnReceiveDeviceMovementEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        MessageParcel fuzzData;
+
+        fuzzData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
+        fuzzData.WriteBuffer(g_data + g_pos, g_size - g_pos);
+        fuzzData.RewindRead(0);
+        auto deviceMovementObserver = std::make_unique<DeviceMovementObserver>();
+        deviceMovementObserver->OnReceiveDeviceMovementEvent(fuzzData);
+
+        return true;
+    }
 #endif // DEVICE_MOVEMENT_PERCEPTION_ENABLE
 } // namespace ResourceSchedule
 } // namespace OHOS
@@ -154,6 +179,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 #endif
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
     OHOS::ResourceSchedule::OnRemoteRequestFuzzTest(data, size);
+    OHOS::ResourceSchedule::OnReceiveDeviceMovementEventFuzzTest(data, size);
 #endif
     return 0;
 }
