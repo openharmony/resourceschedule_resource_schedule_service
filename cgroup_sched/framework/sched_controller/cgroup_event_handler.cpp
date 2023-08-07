@@ -357,18 +357,8 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_
 void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
-    nlohmann::json payload;
-    payload["pid"] = std::to_string(pid);
-    payload["uid"] = std::to_string(uid);
-    payload["windowId"] = std::to_string(windowId);
-    payload["windowType"] = std::to_string((int32_t)(windowType));
-    payload["displayId"] = std::to_string(displayId);
-
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        payload["bundleName"] = SchedController::GetInstance().GetBundleNameByUid(uid);
-        ResSchedUtils::GetInstance().ReportDataInProcess(
-            ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_FOCUS, payload);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
@@ -402,26 +392,13 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
     if (app->GetName().empty()) {
         app->SetName(SchedController::GetInstance().GetBundleNameByUid(uid));
     }
-    payload["bundleName"] = app->GetName();
-    ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_FOCUS, payload);
 }
 
 void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {
-    nlohmann::json payload;
-    payload["pid"] = std::to_string(pid);
-    payload["uid"] = std::to_string(uid);
-    payload["windowId"] = std::to_string(windowId);
-    payload["windowType"] = std::to_string((int32_t)(windowType));
-    payload["displayId"] = std::to_string(displayId);
-
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        payload["bundleName"] = SchedController::GetInstance().GetBundleNameByUid(uid);
-        ResSchedUtils::GetInstance().ReportDataInProcess(
-            ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
@@ -436,9 +413,6 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
         app = supervisor_->GetAppRecord(uid);
         procRecord = app ? app->GetProcessRecord(pid) : nullptr;
         if (!app || !procRecord) {
-            payload["bundleName"] = SchedController::GetInstance().GetBundleNameByUid(uid);
-            ResSchedUtils::GetInstance().ReportDataInProcess(
-                ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
             return;
         }
         auto win = procRecord->GetWindowInfoNonNull(windowId);
@@ -456,9 +430,6 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
     if (app->GetName().empty()) {
         app->SetName(SchedController::GetInstance().GetBundleNameByUid(uid));
     }
-    payload["bundleName"] = app->GetName();
-    ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
 }
 
 void CgroupEventHandler::HandleWindowVisibilityChanged(
