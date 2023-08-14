@@ -28,6 +28,7 @@ using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libframe_aware_plugin.z.so";
     const std::string SLIDE_INTERVAL_NAME = "ffrt.interval.slide";
+    constexpr int DEFAULT_FOREAPP = 1;
 }
 IMPLEMENT_SINGLE_INSTANCE(FrameAwarePlugin)
 
@@ -243,7 +244,7 @@ void FrameAwarePlugin::HandleNetworkLatencyRequest(const std::shared_ptr<ResData
 void FrameAwarePlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
     if (data->value == SlideEventStatus::SLIDE_EVENT_ON) {
-        if (rtgCount < curForeAppCount) {
+        if ((rtgCount + DEFAULT_FOREAPP) < curForeAppCount) {
             rtgCount++;
             OHOS::system::SetParameter(SLIDE_INTERVAL_NAME, "true");
         }
