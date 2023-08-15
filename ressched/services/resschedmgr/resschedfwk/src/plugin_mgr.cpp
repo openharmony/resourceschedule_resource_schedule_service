@@ -486,6 +486,7 @@ void PluginMgr::OnDestroy()
 {
     UnLoadPlugin();
     configReader_ = nullptr;
+    pluginSwitch_ = nullptr;
     ClearResource();
     std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) {
