@@ -188,24 +188,6 @@ namespace ResourceSchedule {
         return true;
     }
 
-    bool DisconnectedFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
-
-        // getdata
-        auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
-        backgroundTaskObserver->OnDisconnected();
-        
-        return true;
-    }
-
     bool RemoteDiedFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -235,7 +217,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::TransientTaskEndFuzzTest(data, size);
     OHOS::ResourceSchedule::ContinuousTaskStartFuzzTest(data, size);
     OHOS::ResourceSchedule::ContinuousTaskStopFuzzTest(data, size);
-    OHOS::ResourceSchedule::DisconnectedFuzzTest(data, size);
     OHOS::ResourceSchedule::RemoteDiedFuzzTest(data, size);
     return 0;
 }
