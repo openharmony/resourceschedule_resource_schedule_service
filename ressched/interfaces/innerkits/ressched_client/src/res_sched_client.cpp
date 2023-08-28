@@ -46,6 +46,11 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
     for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
         payload[it->first] = it->second;
     }
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (rss_ == nullptr) {
+        RESSCHED_LOGD("ResSchedClient::ReportData fail to get resource schedule service.");
+        return;
+    }
     rss_->ReportData(resType, value, payload);
 }
 
@@ -58,6 +63,11 @@ int32_t ResSchedClient::KillProcess(const std::unordered_map<std::string, std::s
     nlohmann::json payload;
     for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
         payload[it->first] = it->second;
+    }
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (rss_ == nullptr) {
+        RESSCHED_LOGD("ResSchedClient::KillProcess fail to get resource schedule service.");
+        return RES_SCHED_KILL_PROCESS_FAIL;
     }
     return rss_->KillProcess(payload);
 }
@@ -97,6 +107,7 @@ ErrCode ResSchedClient::TryConnect()
 
 void ResSchedClient::StopRemoteObject()
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     if (rss_ && rss_->AsObject()) {
         rss_->AsObject()->RemoveDeathRecipient(recipient_);
     }
