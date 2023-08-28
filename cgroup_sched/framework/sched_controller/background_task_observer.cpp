@@ -28,16 +28,6 @@ namespace {
     constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "BackgroundTaskObserver"};
 }
 
-void BackgroundTaskObserver::OnConnected()
-{
-    CGS_LOGI("%{public}s.", __func__);
-}
-
-void BackgroundTaskObserver::OnDisconnected()
-{
-    CGS_LOGI("%{public}s.", __func__);
-}
-
 void BackgroundTaskObserver::OnTransientTaskStart(const std::shared_ptr<TransientTaskAppInfo>& info)
 {
     if (!ValidateTaskInfo(info)) {
