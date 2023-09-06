@@ -220,16 +220,18 @@ void SchedController::UnsubscribeAppState()
 bool SchedController::SubscribeBackgroundTask()
 {
 #ifdef CONFIG_BGTASK_MGR
-    if (backgroundTaskObserver_) {
+    if (isBgtaskSubscribed_) {
         return true;
     }
-    backgroundTaskObserver_ = std::make_shared<BackgroundTaskObserver>();
+    if (!backgroundTaskObserver_) {
+        backgroundTaskObserver_ = std::make_shared<BackgroundTaskObserver>();
+    }
     int ret = BackgroundTaskMgrHelper::SubscribeBackgroundTask(*backgroundTaskObserver_);
     if (ret != 0) {
-        backgroundTaskObserver_ = nullptr;
         CGS_LOGE("%{public}s failed, err:%{public}d.", __func__, ret);
         return false;
     }
+    isBgtaskSubscribed_ = true;
     CGS_LOGI("%{public}s success.", __func__);
 #endif
     return true;
@@ -238,7 +240,7 @@ bool SchedController::SubscribeBackgroundTask()
 void SchedController::UnsubscribeBackgroundTask()
 {
 #ifdef CONFIG_BGTASK_MGR
-    if (!backgroundTaskObserver_) {
+    if (!isBgtaskSubscribed_ || !backgroundTaskObserver_) {
         return;
     }
     int32_t ret = BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*backgroundTaskObserver_);
@@ -247,7 +249,7 @@ void SchedController::UnsubscribeBackgroundTask()
     } else {
         CGS_LOGE("%{public}s failed. ret:%{public}d", __func__, ret);
     }
-    backgroundTaskObserver_ = nullptr;
+    isBgtaskSubscribed_ = false;
 #endif
 }
 

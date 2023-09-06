@@ -76,6 +76,7 @@ private:
     std::shared_ptr<Supervisor> supervisor_;
     sptr<RmsApplicationStateObserver> appStateObserver_;
 #ifdef CONFIG_BGTASK_MGR
+    bool isBgtaskSubscribed_ {false};
     std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_;
 #endif
     sptr<WindowStateObserver> windowStateObserver_;
