@@ -20,7 +20,7 @@ if (has_bg_task_mgr) {
   import("//foundation/resourceschedule/background_task_mgr/bgtaskmgr.gni")
 }
 
-module_output_path = "resource_schedule_service/cgroup_sched"
+module_output_path = "resource_schedule_service/resource_schedule_service"
 
 ##############################fuzztest##########################################
 ohos_fuzztest("CgroupSchedFuzzTest") {

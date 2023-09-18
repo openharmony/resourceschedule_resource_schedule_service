@@ -18,7 +18,7 @@ import("../../../soc_perf.gni")
 
 ##############################fuzztest##########################################
 ohos_fuzztest("PerfRequestFuzzTest") {
-  module_out_path = "soc_perf/socperftest"
+  module_out_path = "resource_schedule_service/resource_schedule_service"
   fuzz_config_file = "${socperf_test}/fuzztest/perfrequest_fuzzer"
 
   include_dirs = [
