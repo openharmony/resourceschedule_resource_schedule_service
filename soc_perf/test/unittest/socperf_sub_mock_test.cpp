@@ -60,8 +60,12 @@ void SocPerfSubTest::TearDown(void)
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_001, Function | MediumTest | Level0)
 {
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(10000, "");
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(10000, "123");
+    std::string msg = "";
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(10000, msg);
+    EXPECT_EQ(msg, "");
+    msg.assign("123");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(10000, msg);
+    EXPECT_EQ(msg, "123");
 }
 
 /*
@@ -72,8 +76,12 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_001, Function | MediumTest |
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_002, Function | MediumTest | Level0)
 {
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(10000, true, "");
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(10000, true, "123");
+    std::string msg = "";
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(10000, true, msg);
+    EXPECT_EQ(msg, "");
+    msg.assign("123");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(10000, true, msg);
+    EXPECT_EQ(msg, "123");
 }
 
 /*
@@ -84,8 +92,12 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_002, Function | MediumTest |
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_003, Function | MediumTest | Level0)
 {
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(10000, false, "");
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(10000, false, "123");
+    std::string msg = "";
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(10000, false, msg);
+    EXPECT_EQ(msg, "");
+    msg.assign("123");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(10000, false, msg);
+    EXPECT_EQ(msg, "123");
 }
 
 /*
@@ -96,8 +108,12 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_003, Function | MediumTest |
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_PowerLimitBoost_001, Function | MediumTest | Level0)
 {
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(true, "");
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(true, "123");
+    std::string msg = "";
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(true, msg);
+    EXPECT_EQ(msg, "");
+    msg.assign("123");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(true, msg);
+    EXPECT_EQ(msg, "123");
 }
 
 /*
@@ -108,8 +124,12 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_PowerLimitBoost_001, Function | MediumTe
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_PowerLimitBoost_002, Function | MediumTest | Level0)
 {
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(false, "");
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(false, "123");
+    std::string msg = "";
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(false, msg);
+    EXPECT_EQ(msg, "");
+    msg.assign("123");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(false, msg);
+    EXPECT_EQ(msg, "123");
 }
 
 /*
@@ -120,8 +140,12 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_PowerLimitBoost_002, Function | MediumTe
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_ThermalLimitBoost_001, Function | MediumTest | Level0)
 {
-    OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(true, "");
-    OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(true, "123");
+    std::string msg = "";
+    OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(true, msg);
+    EXPECT_EQ(msg, "");
+    msg.assign("123");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(true, msg);
+    EXPECT_EQ(msg, "123");
 }
 
 /*
@@ -132,8 +156,12 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_ThermalLimitBoost_001, Function | Medium
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_ThermalLimitBoost_002, Function | MediumTest | Level0)
 {
-    OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(false, "");
-    OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(false, "123");
+    std::string msg = "";
+    OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(false, msg);
+    EXPECT_EQ(msg, "");
+    msg.assign("123");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(false, msg);
+    EXPECT_EQ(msg, "123");
 }
 } // namespace SOCPERF
 } // namespace OHOS
