@@ -67,17 +67,20 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
             }
             break;
         }
-        case INNER_EVENT_ID_DO_FREQ_ACTION: {
-            int32_t resId = event->GetParam();
-            if (!IsValidResId(resId)) {
-                return;
-            }
-            std::shared_ptr<ResAction> resAction = event->GetSharedObject<ResAction>();
-            if (resAction != nullptr) {
-                UpdateResActionList(resId, resAction, false);
-            }
+        default: {
+            ProcessBoostEvent(event);
+            ProcessLimitEvent(event);
             break;
         }
+    }
+}
+
+void SocPerfHandler::ProcessBoostEvent(const AppExecFwk::InnerEvent::Pointer& event)
+{
+    if (event == nullptr) {
+        return;
+    }
+    switch (event->GetInnerEventId()) {
         case INNER_EVENT_ID_DO_FREQ_ACTION_PACK: {
             std::shared_ptr<ResActionItem> head = event->GetSharedObject<ResActionItem>();
             while (head) {
@@ -98,6 +101,29 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
             std::shared_ptr<ResAction> resAction = event->GetSharedObject<ResAction>();
             if (resAction != nullptr) {
                 UpdateResActionList(resId, resAction, true);
+            }
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+}
+
+void SocPerfHandler::ProcessLimitEvent(const AppExecFwk::InnerEvent::Pointer& event)
+{
+    if (event == nullptr) {
+        return;
+    }
+    switch (event->GetInnerEventId()) {
+        case INNER_EVENT_ID_DO_FREQ_ACTION: {
+            int32_t resId = event->GetParam();
+            if (!IsValidResId(resId)) {
+                return;
+            }
+            std::shared_ptr<ResAction> resAction = event->GetSharedObject<ResAction>();
+            if (resAction != nullptr) {
+                UpdateResActionList(resId, resAction, false);
             }
             break;
         }
