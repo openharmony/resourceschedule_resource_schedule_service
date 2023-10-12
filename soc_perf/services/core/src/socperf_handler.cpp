@@ -67,17 +67,19 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
             }
             break;
         }
-        case INNER_EVENT_ID_DO_FREQ_ACTION: {
-            int32_t resId = event->GetParam();
-            if (!IsValidResId(resId)) {
-                return;
-            }
-            std::shared_ptr<ResAction> resAction = event->GetSharedObject<ResAction>();
-            if (resAction != nullptr) {
-                UpdateResActionList(resId, resAction, false);
+        default: {
+            if(ProcessBoostEvent(event) || ProcessLimitEvent(event)) {
+                break;
             }
             break;
         }
+    }
+}
+
+bool SocPerfHandler::IsProcessBoostEvent(const AppExecFwk::InnerEvent::Pointer& event)
+{
+    bool isBoostEvent = true;
+    switch (event->GetInnerEventId()) {
         case INNER_EVENT_ID_DO_FREQ_ACTION_PACK: {
             std::shared_ptr<ResActionItem> head = event->GetSharedObject<ResActionItem>();
             while (head) {
@@ -93,11 +95,34 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
         case INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED: {
             int32_t resId = event->GetParam();
             if (!IsValidResId(resId)) {
-                return;
+                return true;
             }
             std::shared_ptr<ResAction> resAction = event->GetSharedObject<ResAction>();
             if (resAction != nullptr) {
                 UpdateResActionList(resId, resAction, true);
+            }
+            break;
+        }
+        default: {
+            isBoostEvent = false;
+            break;
+        }
+    }
+    return isBoostEvent;
+}
+
+bool SocPerfHandler::IsProcessLimitEvent(const AppExecFwk::InnerEvent::Pointer& event)
+{
+    bool isLimitEvent = true;
+    switch (event->GetInnerEventId()) {
+        case INNER_EVENT_ID_DO_FREQ_ACTION: {
+            int32_t resId = event->GetParam();
+            if (!IsValidResId(resId)) {
+                return true;
+            }
+            std::shared_ptr<ResAction> resAction = event->GetSharedObject<ResAction>();
+            if (resAction != nullptr) {
+                UpdateResActionList(resId, resAction, false);
             }
             break;
         }
@@ -120,9 +145,11 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
             break;
         }
         default: {
+            isLimitEvent = false;
             break;
         }
     }
+    return isLimitEvent;
 }
 
 void SocPerfHandler::HandleDoFreqActionLevel(int32_t resId, std::shared_ptr<ResAction> resAction)
