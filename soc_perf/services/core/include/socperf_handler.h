@@ -57,8 +57,8 @@ private:
     bool thermalLimitBoost = false;
 
 private:
-    bool IsProcessBoostEvent(const AppExecFwk::InnerEvent::Pointer& event);
-    bool IsProcessLimitEvent(const AppExecFwk::InnerEvent::Pointer& event);
+    bool ProcessBoostEvent(const AppExecFwk::InnerEvent::Pointer& event);
+    void ProcessLimitEvent(const AppExecFwk::InnerEvent::Pointer& event);
     void HandleDoFreqActionLevel(int32_t resId, std::shared_ptr<ResAction> resAction);
     bool GetResValueByLevel(int32_t resId, int32_t level, int64_t& resValue);
     void UpdateResActionList(int32_t resId, std::shared_ptr<ResAction> resAction, bool delayed);

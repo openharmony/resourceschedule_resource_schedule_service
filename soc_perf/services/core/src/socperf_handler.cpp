@@ -68,15 +68,16 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
             break;
         }
         default: {
-            if(IsProcessBoostEvent(event) || IsProcessLimitEvent(event)) {
+            if(ProcessBoostEvent(event)) {
                 break;
             }
+            ProcessLimitEvent(event);
             break;
         }
     }
 }
 
-bool SocPerfHandler::IsProcessBoostEvent(const AppExecFwk::InnerEvent::Pointer& event)
+bool SocPerfHandler::ProcessBoostEvent(const AppExecFwk::InnerEvent::Pointer& event)
 {
     bool isBoostEvent = true;
     switch (event->GetInnerEventId()) {
@@ -111,14 +112,13 @@ bool SocPerfHandler::IsProcessBoostEvent(const AppExecFwk::InnerEvent::Pointer& 
     return isBoostEvent;
 }
 
-bool SocPerfHandler::IsProcessLimitEvent(const AppExecFwk::InnerEvent::Pointer& event)
+void SocPerfHandler::ProcessLimitEvent(const AppExecFwk::InnerEvent::Pointer& event)
 {
-    bool isLimitEvent = true;
     switch (event->GetInnerEventId()) {
         case INNER_EVENT_ID_DO_FREQ_ACTION: {
             int32_t resId = event->GetParam();
             if (!IsValidResId(resId)) {
-                return true;
+                return;
             }
             std::shared_ptr<ResAction> resAction = event->GetSharedObject<ResAction>();
             if (resAction != nullptr) {
@@ -145,11 +145,9 @@ bool SocPerfHandler::IsProcessLimitEvent(const AppExecFwk::InnerEvent::Pointer& 
             break;
         }
         default: {
-            isLimitEvent = false;
             break;
         }
     }
-    return isLimitEvent;
 }
 
 void SocPerfHandler::HandleDoFreqActionLevel(int32_t resId, std::shared_ptr<ResAction> resAction)
