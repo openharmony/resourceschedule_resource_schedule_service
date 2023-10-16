@@ -68,7 +68,7 @@ void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
             break;
         }
         default: {
-            if(ProcessBoostEvent(event) || ProcessLimitEvent(event)) {
+            if(IsProcessBoostEvent(event) || IsProcessLimitEvent(event)) {
                 break;
             }
             break;
