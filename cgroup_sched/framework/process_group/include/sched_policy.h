@@ -61,7 +61,7 @@ int SetThreadGroupSchedPolicy(int pid, int policy);
  * @param policy variable to accept return value.
  * @return Return value: 0 for success, or -errno for error.
  */
-int SetThreadSchedPolicy(int pid, int policy);
+int SetThreadSchedPolicy(int tid, int policy);
 
 /**
  * Return the policy associated with the cgroup of thread tid via policy pointer.
