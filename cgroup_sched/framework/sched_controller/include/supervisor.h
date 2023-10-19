@@ -106,17 +106,17 @@ public:
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
     bool isRenderProcess_ = false;
     bool runningTransientTask_ = false;
+    bool isActive_ {false};
     uint32_t continuousTaskFlag_ = 0;
     int32_t renderTid_ = 0;
     int32_t maliTid_ = 0;
+    int32_t linkedWindowId_ {-1};
+    int32_t serialNum_ {-1};
 
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
     std::vector<std::shared_ptr<WindowInfo>> windows_;
 
-    std::map<int32_t, int32_t> keyThreadRoleMap_ {};
-    bool isActive_ {false};
-    int32_t linkedWindowId_ {-1};
-    int32_t serialNum_ {-1};
+    std::map<int32_t, int32_t> keyThreadRoleMap_ {}; // items in keyThreadMap_ is (tid, role)
 private:
     uid_t uid_;
     pid_t pid_;
@@ -161,6 +161,7 @@ public:
     SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
+
 private:
     uid_t uid_;
     std::string name_;

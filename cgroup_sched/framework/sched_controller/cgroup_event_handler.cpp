@@ -423,7 +423,6 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
         win->displayId_ = displayId;
         win->ability_ = abi;
 
-        app->focusedWindowId_ = -1;
         if (app->focusedProcess_ == procRecord) {
             app->focusedProcess_ = nullptr;
         }
@@ -529,6 +528,11 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
     int32_t keyTid = 0;
     int32_t role = 0;
 
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
         !ParseValue(keyTid, "tid", payload) || !ParseValue(role, "role", payload)) {
         return;
@@ -557,7 +561,7 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     int32_t uid = 0;
     int32_t pid = 0;
     int32_t windowId = -1;
-    int32_t state = -1;
+    int32_t state = 0;
     int32_t nowSerialNum = -1;
 
     if (!supervisor_) {
@@ -565,19 +569,19 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
         return;
     }
 
-    CGS_LOGD("%{public}s : render process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
-        __func__, app->GetName().c_str(), uid, pid, state);
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
         !ParseValue(windowId, "windowId", payload) || !ParseValue(state, "state", payload) ||
         !ParseValue(nowSerialNum, "serialNum", payload)) {
         return;
     }
-        if (uid <= 0 || pid <= 0) {
+    if (uid <= 0 || pid <= 0) {
         return;
     }
 
     auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecordNonNull(pid);
+    CGS_LOGD("%{public}s : render process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+        __func__, app->GetName().c_str(), uid, pid, state);
     if (nowSerialNum <= procRecord->serialNum_ && (procRecord->serialNum_ - nowSerialNum <= MAX_SPAN_SERIAL)) {
         return;
     }

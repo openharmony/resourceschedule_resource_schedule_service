@@ -76,7 +76,7 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
     for (const auto &iter : app.GetPidsMap()) {
         const auto &procRecord = iter.second;
         if (procRecord && procRecord->isRenderProcess_) {
-            CGS_LOGD("%{public}s for %{public}d, source : %{public}d for render process",
+            CGS_LOGI("%{public}s for %{public}d, source : %{public}d for render process",
                 __func__, procRecord->GetPid(), source);
             procRecord->setSchedGroup_ = mainProcRecord->curSchedGroup_;
             ResSchedUtils::GetInstance().ReportArbitrationResult(app, *(procRecord.get()),

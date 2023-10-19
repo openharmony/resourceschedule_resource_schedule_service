@@ -93,7 +93,7 @@ bool ProcessRecord::IsVisible() const
 
 std::set<int32_t> ProcessRecord::GetKeyTidSetByRole(int64_t role)
 {
-    std::set<int32_t> tids;
+    std::set<int32_t> tids {};
     for (const auto [tid, tidRole] : keyThreadRoleMap_) {
         if (tidRole != role) {
             continue;

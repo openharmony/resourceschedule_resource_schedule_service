@@ -57,8 +57,40 @@ HWTEST_F(ResSchedMgrTest, ReportData001, TestSize.Level1)
     nlohmann::json payload;
     ResSchedMgr::GetInstance().ReportData(0, 0, payload);
     EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
-    
+
     ResSchedMgr::GetInstance().DispatchResourceInner(0, 0, payload);
+}
+
+/**
+ * @tc.name: Init ressched ReportData 003
+ * @tc.desc: Verify if ReportData is success
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
+ */
+HWTEST_F(ResSchedMgrTest, ReportData001, TestSize.Level1)
+{
+    nlohmann::json payload;
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_REPORT_KEY_THREAD, 0, payload);
+    EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
+
+    ResSchedMgr::GetInstance().DispatchResourceInner(ResType::RES_TYPE_REPORT_KEY_THREAD, 0, payload);
+}
+
+/**
+ * @tc.name: Init ressched ReportData 004
+ * @tc.desc: Verify if ReportData is success
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
+ */
+HWTEST_F(ResSchedMgrTest, ReportData001, TestSize.Level1)
+{
+    nlohmann::json payload;
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
+    EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
+
+    ResSchedMgr::GetInstance().DispatchResourceInner(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
 }
 
 /**
