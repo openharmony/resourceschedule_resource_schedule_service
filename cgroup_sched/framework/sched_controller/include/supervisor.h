@@ -21,6 +21,8 @@
 #include <sys/types.h>
 #include <string>
 #include <vector>
+#include <set>
+#include <map>
 
 #include "sched_policy.h"
 
@@ -79,6 +81,15 @@ public:
     bool HasAbility(uintptr_t token) const;
     bool HasServiceExtension() const;
     bool IsVisible() const;
+    std::set<int32_t> GetKeyTidSetByRole(int64_t role);
+
+    inline void SetIsWindowActive(bool isActive) {
+        isActive_ = isActive;
+    }
+
+    inline bool IsWindowActive(bool isActive) {
+        return isActive_;
+    }
 
     inline pid_t GetPid() const
     {
@@ -102,6 +113,10 @@ public:
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
     std::vector<std::shared_ptr<WindowInfo>> windows_;
 
+    std::map<int32_t, int32_t> keyThreadRoleMap_ {};
+    bool isActive_ {false};
+    int32_t linkedWindowId_ {-1};
+    int32_t serialNum_ {-1};
 private:
     uid_t uid_;
     pid_t pid_;
@@ -146,7 +161,6 @@ public:
     SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
-
 private:
     uid_t uid_;
     std::string name_;

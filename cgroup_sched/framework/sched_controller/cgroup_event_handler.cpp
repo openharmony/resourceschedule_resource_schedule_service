@@ -34,6 +34,7 @@ namespace {
     constexpr uint32_t EVENT_ID_REG_BGTASK_OBSERVER = 2;
     constexpr uint32_t DELAYED_RETRY_REGISTER_DURATION = 100;
     constexpr uint32_t MAX_RETRY_TIMES = 100;
+    constexpr uint32_t MAX_SPAN_SERIAL = 99;
 
     const std::string MMI_SERVICE_NAME = "mmi_service";
 }
@@ -422,6 +423,7 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
         win->displayId_ = displayId;
         win->ability_ = abi;
 
+        app->focusedWindowId_ = -1;
         if (app->focusedProcess_ == procRecord) {
             app->focusedProcess_ = nullptr;
         }
@@ -520,6 +522,79 @@ void CgroupEventHandler::HandleReportRenderThread(uint32_t resType, int64_t valu
         AdjustSource::ADJS_REPORT_RENDER_THREAD);
 }
 
+void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+    int32_t keyTid = 0;
+    int32_t role = 0;
+
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
+        !ParseValue(keyTid, "tid", payload) || !ParseValue(role, "role", payload)) {
+        return;
+    }
+
+    if (uid <= 0 || pid <= 0) {
+        return;
+    }
+
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    auto procRecord = app->GetProcessRecordNonNull(pid);
+    if (value == ResType::ReportChangeStatus::CREATE) {
+        procRecord->keyThreadRoleMap_.emplace(keyTid, role);
+    } else {
+        procRecord->keyThreadRoleMap_.erase(keyTid);
+    }
+
+    // if role of thread is important display, adjust it
+    auto mainProcRecord = app->GetMainProcessRecord();
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
+        AdjustSource::ADJS_REPORT_IMPORTANT_DISPLAY_THREAD);
+}
+
+void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+    int32_t windowId = -1;
+    int32_t state = -1;
+    int32_t nowSerialNum = -1;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+
+    CGS_LOGD("%{public}s : render process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+        __func__, app->GetName().c_str(), uid, pid, state);
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
+        !ParseValue(windowId, "windowId", payload) || !ParseValue(state, "state", payload) ||
+        !ParseValue(nowSerialNum, "serialNum", payload)) {
+        return;
+    }
+        if (uid <= 0 || pid <= 0) {
+        return;
+    }
+
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    auto procRecord = app->GetProcessRecordNonNull(pid);
+    if (nowSerialNum <= procRecord->serialNum_ && (procRecord->serialNum_ - nowSerialNum <= MAX_SPAN_SERIAL)) {
+        return;
+    }
+    procRecord->serialNum_ = nowSerialNum;
+
+    if (state == ResType::WindowStates::ACTIVE) {
+        procRecord->linkedWindowId_ = windowId;
+        procRecord->SetIsWindowActive(true);
+    } else {
+        procRecord->linkedWindowId_ = -1;
+        procRecord->SetIsWindowActive(false);
+    }
+    auto mainProcRecord = app->GetMainProcessRecord();
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
+        AdjustSource::ADJS_REPORT_WINDOW_STATE_CHANGED);
+}
+
 bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,
     int64_t value, const nlohmann::json& payload)
 {
@@ -532,6 +607,16 @@ bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,
     }
     tid = static_cast<int32_t>(value);
     return true;
+}
+
+bool CgroupEventHandler::ParseValue(int32_t& value, const char* name,
+    const nlohmann::json& payload)
+{
+    if (payload.contains(name) && payload.at(name).is_string()) {
+        value = atoi(payload[name].get<std::string>().c_str());
+        return true;
+    }
+    return false;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

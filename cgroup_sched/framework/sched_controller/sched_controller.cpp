@@ -131,6 +131,14 @@ void SchedController::DispatchResource(uint32_t resType, int64_t value, const nl
                 handler->HandleReportRenderThread(resType, value, payload);
                 break;
             }
+            case ResType::RES_TYPE_REPORT_KEY_THREAD: {
+                handler->HandleReportKeyThread(resType, value, payload);
+                break;
+            }
+            case ResType::RES_TYPE_REPORT_WINDOW_STATE: {
+                handler->HandleReportWindowState(resType, value, payload);
+                break;
+            }
             default: {
                 break;
             }
