@@ -246,7 +246,7 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, const
 }
 
 void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t processType,
-    const std::string& bundleName)
+    const std::string& bundleName, int32_t extensionType)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -261,6 +261,9 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t proc
         app->SetMainProcess(procRecord);
     } else if (processType == static_cast<int32_t>(ProcessType::RENDER)) {
         procRecord->isRenderProcess_ = true;
+    } else if (processType == static_cast<int32_t>(ProcessType::EXTENSION)) {
+        procRecord->isExtensionProcess_ = true;
+        procRecord->extensionType_ = extensionType;
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_CREATE);
