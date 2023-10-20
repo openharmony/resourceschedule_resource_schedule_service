@@ -44,12 +44,27 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_POP_PAGE              = 10016;
     const int32_t PERF_REQUEST_CMD_ID_RESIZE_WINDOW         = 10018;
     const int32_t PERF_REQUEST_CMD_ID_MOVE_WINDOW           = 10019;
+    const int32_t PERF_REQUEST_CMD_ID_WEB_GESTURE_MOVE      = 10020;
+    const int32_t PERF_REQUEST_CMD_ID_WEB_SLIDE_NORMAL      = 10025;
     const int32_t PERF_REQUEST_CMD_ID_REMOTE_ANIMATION      = 10030;
     const int32_t PERF_REQUEST_CMD_ID_DRAG_STATUS_BAR       = 10034;
+    const int32_t PERF_REQUEST_CMD_ID_LOAD_URL              = 10070;
+    const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
 void SocPerfPlugin::Init()
+{
+    InitFunctionMap();
+    InitResTypes();
+    for (auto resType : resTypes) {
+        PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
+    }
+    socperfOnDemandSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND);
+    RESSCHED_LOGI("SocPerfPlugin::Init success");
+}
+
+void SocPerfPlugin::InitFunctionMap()
 {
     functionMap = {
         { RES_TYPE_WINDOW_FOCUS,
@@ -74,7 +89,19 @@ void SocPerfPlugin::Init()
                 [this](const std::shared_ptr<ResData>& data) { HandleRemoteAnimation(data); } },
         { RES_TYPE_DRAG_STATUS_BAR,
             [this](const std::shared_ptr<ResData>& data) { HandleDragStatusBar(data); } },
+        { RES_TYPE_WEB_GESTURE_MOVE,
+            [this](const std::shared_ptr<ResData>& data) { HandleWebGestureMove(data); } },
+        { RES_TYPE_WEB_SLIDE_NORMAL,
+            [this](const std::shared_ptr<ResData>& data) { HandleWebSlideNormal(data); } },
+        { RES_TYPE_LOAD_URL,
+                [this](const std::shared_ptr<ResData>& data) { HandleLoadUrl(data); } },
+        { RES_TYPE_MOUSEWHEEL,
+            [this](const std::shared_ptr<ResData>& data) { HandleMousewheel(data); } },
     };
+}
+
+void SocPerfPlugin::InitResTypes()
+{
     resTypes = {
         RES_TYPE_WINDOW_FOCUS,
         RES_TYPE_CLICK_RECOGNIZE,
@@ -87,12 +114,11 @@ void SocPerfPlugin::Init()
         RES_TYPE_MOVE_WINDOW,
         RES_TYPE_SHOW_REMOTE_ANIMATION,
         RES_TYPE_DRAG_STATUS_BAR,
+        RES_TYPE_WEB_GESTURE_MOVE,
+        RES_TYPE_WEB_SLIDE_NORMAL,
+        RES_TYPE_LOAD_URL,
+        RES_TYPE_MOUSEWHEEL,
     };
-    for (auto resType : resTypes) {
-        PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
-    }
-    socperfOnDemandSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND);
-    RESSCHED_LOGI("SocPerfPlugin::Init success");
 }
 
 void SocPerfPlugin::Disable()
@@ -199,8 +225,15 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleEventWebGesture(const std::shared_ptr<ResData>& data)
 {
+    if (data == nullptr) {
+        return;
+    }
     RESSCHED_LOGI("SocPerfPlugin: socperf->WEB_GESTURE: %{public}lld", (long long)data->value);
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE, true, "");
+    if (data->value == WebGesture::WEB_GESTURE_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE, true, "");
+    } else if (data->value == WebGesture::WEB_GESTURE_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE, false, "");
+    }
 }
 
 void SocPerfPlugin::HandleResizeWindow(const std::shared_ptr<ResData>& data)
@@ -254,6 +287,50 @@ void SocPerfPlugin::HandleDragStatusBar(const std::shared_ptr<ResData>& data)
     } else if (data->value == StatusBarDragStatus::DRAG_END) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DRAG_STATUS_BAR, false, "");
     }
+}
+
+void SocPerfPlugin::HandleWebGestureMove(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    RESSCHED_LOGI("SocPerfPlugin: socperf->WEB_GESTURE_MOVE: %{public}lld", (long long)data->value);
+    if (data->value == WebGestureMove::WEB_GESTURE_MOVE_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_GESTURE_MOVE, true, "");
+    } else if (data->value == WebGestureMove::WEB_GESTURE_MOVE_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_GESTURE_MOVE, false, "");
+    }
+}
+
+void SocPerfPlugin::HandleWebSlideNormal(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    RESSCHED_LOGI("SocPerfPlugin: socperf->WEB_SLIDE_NORMAL: %{public}lld", (long long)data->value);
+    if (data->value == WebSlideNormal::WEB_SLIDE_NORMAL_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_SLIDE_NORMAL, true, "");
+    } else if (data->value == WebSlideNormal::WEB_SLIDE_NORMAL_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_SLIDE_NORMAL, false, "");
+    }
+}
+
+void SocPerfPlugin::HandleLoadUrl(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    RESSCHED_LOGI("SocPerfPlugin: socperf->LOAD_URL");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_LOAD_URL, "");
+}
+
+void SocPerfPlugin::HandleMousewheel(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    RESSCHED_LOGI("SocPerfPlugin: socperf->MOUSEWHEEL");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_MOUSEWHEEL, "");
 }
 
 extern "C" bool OnPluginInit(std::string& libName)

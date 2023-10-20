@@ -38,6 +38,8 @@ private:
     bool socperfOnDemandSwitch_ = false;
     std::set<uint32_t> resTypes;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
+    void InitFunctionMap();
+    void InitResTypes();
     void HandleWindowFocus(const std::shared_ptr<ResData>& data);
     void HandleEventClick(const std::shared_ptr<ResData>& data);
     void HandleLoadPage(const std::shared_ptr<ResData>& data);
@@ -50,6 +52,10 @@ private:
     void HandleRemoteAnimation(const std::shared_ptr<ResData>& data);
     bool InitFeatureSwitch(std::string featureName);
     void HandleDragStatusBar(const std::shared_ptr<ResData>& data);
+    void HandleWebGestureMove(const std::shared_ptr<ResData>& data);
+    void HandleWebSlideNormal(const std::shared_ptr<ResData>& data);
+    void HandleLoadUrl(const std::shared_ptr<ResData>& data);
+    void HandleMousewheel(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

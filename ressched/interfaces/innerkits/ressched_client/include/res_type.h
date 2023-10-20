@@ -117,6 +117,14 @@ enum : uint32_t {
     RES_TYPE_REPORT_WINDOW_STATE = 40,
     // report scene sched, value 0 scene on 1 scene off, payload: uid, sceneId
     RES_TYPE_REPORT_SCENE_SCHED = 41,
+    // web gesture move event; value 0: web gesture move start, value 1: web gesture move end.
+    RES_TYPE_WEB_GESTURE_MOVE = 42,
+    // web slide normal event; value 0: web slide normal start, value 1: web slide normal end.
+    RES_TYPE_WEB_SLIDE_NORMAL = 43,
+    // load url event; value means nothing.
+    RES_TYPE_LOAD_URL = 44,
+    // mousewheel event; value means nothing.
+    RES_TYPE_MOUSEWHEEL = 45,
 };
 
 inline const std::map<uint32_t, std::string> resTypeToStr = {
@@ -159,7 +167,11 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_REPORT_SCENE_BOARD, "RES_TYPE_REPORT_SCENE_BOARD" },
     { RES_TYPE_REPORT_KEY_THREAD, "RES_TYPE_REPORT_KEY_THREAD" },
     { RES_TYPE_REPORT_WINDOW_STATE, "RES_TYPE_REPORT_WINDOW_STATE" },
-    { RES_TYPE_REPORT_SCENE_SCHED, "RES_TYPE_REPORT_SCENE_SCHED" }
+    { RES_TYPE_REPORT_SCENE_SCHED, "RES_TYPE_REPORT_SCENE_SCHED" },
+    { RES_TYPE_WEB_GESTURE_MOVE, "RES_TYPE_WEB_GESTURE_MOVE" },
+    { RES_TYPE_WEB_SLIDE_NORMAL, "RES_TYPE_WEB_SLIDE_NORMAL" },
+    { RES_TYPE_LOAD_URL, "RES_TYPE_LOAD_URL" },
+    { RES_TYPE_MOUSEWHEEL, "RES_TYPE_MOUSEWHEEL" }
 };
 
 /**
@@ -348,6 +360,31 @@ enum WebScene : int64_t {
     WEB_SCENE_RESIZE = 1004,
     WEB_SCENE_VISIBLE = 1005,
 };
+
+/**
+ * @brief Web gesture status
+ */
+enum WebGesture : int64_t {
+    WEB_GESTURE_START = 0,
+    WEB_GESTURE_END = 1,
+};
+
+/**
+ * @brief Web gesture move status
+ */
+enum WebGestureMove : int64_t {
+    WEB_GESTURE_MOVE_START = 0,
+    WEB_GESTURE_MOVE_END = 1,
+};
+
+/**
+ * @brief Web slide normal status
+ */
+enum WebSlideNormal : int64_t {
+    WEB_SLIDE_NORMAL_START = 0,
+    WEB_SLIDE_NORMAL_END = 1,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
