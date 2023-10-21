@@ -46,7 +46,7 @@ HWTEST_F(ResSchedMgrTest, Init001, TestSize.Level1)
 }
 
 /**
- * @tc.name: Init ressched ReportData 002
+ * @tc.name: Init ressched ReportData 001
  * @tc.desc: Verify if ReportData is success
  * @tc.type: FUNC
  * @tc.require: issueI5WWV3
@@ -62,13 +62,12 @@ HWTEST_F(ResSchedMgrTest, ReportData001, TestSize.Level1)
 }
 
 /**
- * @tc.name: Init ressched ReportData 003
+ * @tc.name: Init ressched ReportData 002
  * @tc.desc: Verify if ReportData is success
  * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
+ * @tc.require: issueI897BM
  */
-HWTEST_F(ResSchedMgrTest, ReportData001, TestSize.Level1)
+HWTEST_F(ResSchedMgrTest, ReportData002, TestSize.Level1)
 {
     nlohmann::json payload;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_REPORT_KEY_THREAD, 0, payload);
@@ -78,13 +77,12 @@ HWTEST_F(ResSchedMgrTest, ReportData001, TestSize.Level1)
 }
 
 /**
- * @tc.name: Init ressched ReportData 004
+ * @tc.name: Init ressched ReportData 003
  * @tc.desc: Verify if ReportData is success
  * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
+ * @tc.require: issueI897BM
  */
-HWTEST_F(ResSchedMgrTest, ReportData001, TestSize.Level1)
+HWTEST_F(ResSchedMgrTest, ReportData003, TestSize.Level1)
 {
     nlohmann::json payload;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
