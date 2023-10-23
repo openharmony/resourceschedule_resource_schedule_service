@@ -21,6 +21,7 @@
     "ram": "10240KB",
     "deps": {
       "components": [
+        "access_token"
         "c_utils",
         "config_policy",
         "eventhandler",
@@ -28,8 +29,7 @@
         "hilog",
         "ipc",
         "safwk",
-        "samgr",
-        "access_token"
+        "samgr"
       ],
       "third_party": [
         "libxml2"
