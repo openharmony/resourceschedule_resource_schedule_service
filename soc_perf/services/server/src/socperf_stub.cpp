@@ -84,7 +84,7 @@ bool SocPerfStub::HasPerfPermission()
         if (!Security::AccessToken::TokenIdKit::IsSystemAppByFullTokenID(fullTokenId)) {
             SOC_PERF_LOGE("Invalid Permission to SocPerf, token[%{public}u] tokenType[%{public}d]",
                 accessToken, (int)tokenType);
-                return false;
+            return false;
         }
     }
     return true;
