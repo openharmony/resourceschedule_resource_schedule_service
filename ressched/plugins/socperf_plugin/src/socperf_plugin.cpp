@@ -94,7 +94,7 @@ void SocPerfPlugin::InitFunctionMap()
         { RES_TYPE_WEB_SLIDE_NORMAL,
             [this](const std::shared_ptr<ResData>& data) { HandleWebSlideNormal(data); } },
         { RES_TYPE_LOAD_URL,
-                [this](const std::shared_ptr<ResData>& data) { HandleLoadUrl(data); } },
+            [this](const std::shared_ptr<ResData>& data) { HandleLoadUrl(data); } },
         { RES_TYPE_MOUSEWHEEL,
             [this](const std::shared_ptr<ResData>& data) { HandleMousewheel(data); } },
     };
