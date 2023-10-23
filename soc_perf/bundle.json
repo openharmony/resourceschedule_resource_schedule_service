@@ -28,7 +28,8 @@
         "hilog",
         "ipc",
         "safwk",
-        "samgr"
+        "samgr",
+        "access_token"
       ],
       "third_party": [
         "libxml2"
