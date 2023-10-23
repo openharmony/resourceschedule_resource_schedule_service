@@ -13,6 +13,10 @@
  * limitations under the License.
  */
 
+#include "ipc_skeleton.h"
+#include "accesstoken_kit.h"
+#include "tokenid_kit.h"
+#include "socperf_log.h"
 #include "socperf_ipc_interface_code.h"
 #include "socperf_stub.h"
 #include <cstdint>              // for int32_t
@@ -26,7 +30,7 @@ int32_t SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
     auto remoteDescriptor = data.ReadInterfaceToken();
-    if (GetDescriptor() != remoteDescriptor) {
+    if (GetDescriptor() != remoteDescriptor || !HasPerfPermission()) {
         return ERR_INVALID_STATE;
     }
     switch (code) {
@@ -69,6 +73,21 @@ int32_t SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
     return ERR_OK;
+}
+
+bool SocPerfStub::HasPerfPermission()
+{
+    uint32_t accessToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(accessToken);
+    if (int(tokenType) == OHOS::Security::AccessToken::AtokenTypeEnum::TOKEN_HAP) {
+        uint64_t fullTokenId = IPCSkeleton::GetCallingFullTokenID();
+        if (!Security::AccessToken::TokenIdKit::IsSystemAppByFullTokenId(fullTokenId)) {
+            SOC_PERF_LOGE("Invalid Permission to SocPerf, token[%{public}u] tokenType[%{public}d]",
+                accessToken, (int)tokenType);
+                return false;
+        }
+    }
+    return true;
 }
 } // namespace SOCPERF
 } // namespace OHOS
