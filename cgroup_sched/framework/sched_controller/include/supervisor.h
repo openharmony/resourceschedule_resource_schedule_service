@@ -83,14 +83,6 @@ public:
     bool IsVisible() const;
     std::set<int32_t> GetKeyTidSetByRole(int64_t role);
 
-    inline void SetActive(bool isActive) {
-        isActive_ = isActive;
-    }
-
-    inline bool IsActive() {
-        return isActive_;
-    }
-
     inline pid_t GetPid() const
     {
         return pid_;
