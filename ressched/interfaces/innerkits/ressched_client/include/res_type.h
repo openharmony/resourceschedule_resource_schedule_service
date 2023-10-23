@@ -384,7 +384,6 @@ enum WebSlideNormal : int64_t {
     WEB_SLIDE_NORMAL_START = 0,
     WEB_SLIDE_NORMAL_END = 1,
 };
-
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
