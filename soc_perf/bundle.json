@@ -21,7 +21,7 @@
     "ram": "10240KB",
     "deps": {
       "components": [
-        "access_token"
+        "access_token",
         "c_utils",
         "config_policy",
         "eventhandler",
