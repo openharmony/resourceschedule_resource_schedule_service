@@ -317,18 +317,12 @@ void SocPerfPlugin::HandleWebSlideNormal(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleLoadUrl(const std::shared_ptr<ResData>& data)
 {
-    if (data == nullptr) {
-        return;
-    }
     RESSCHED_LOGI("SocPerfPlugin: socperf->LOAD_URL");
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_LOAD_URL, "");
 }
 
 void SocPerfPlugin::HandleMousewheel(const std::shared_ptr<ResData>& data)
 {
-    if (data == nullptr) {
-        return;
-    }
     RESSCHED_LOGI("SocPerfPlugin: socperf->MOUSEWHEEL");
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_MOUSEWHEEL, "");
 }
