@@ -79,9 +79,15 @@ bool SocPerfStub::HasPerfPermission()
 {
     uint32_t accessToken = IPCSkeleton::GetCallingTokenID();
     auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(accessToken);
+<<<<<<< HEAD
     if (int(tokenType) == OHOS::Security::AccessToken::ATokenTypeEnum::TOKEN_HAP) {
         uint64_t fullTokenId = IPCSkeleton::GetCallingFullTokenID();
         if (!Security::AccessToken::TokenIdKit::IsSystemAppByFullTokenID(fullTokenId)) {
+=======
+    if (int(tokenType) == OHOS::Security::AccessToken::AtokenTypeEnum::TOKEN_HAP) {
+        uint64_t fullTokenId = IPCSkeleton::GetCallingFullTokenID();
+        if (!Security::AccessToken::TokenIdKit::IsSystemAppByFullTokenId(fullTokenId)) {
+>>>>>>> e98ac5558752f161f1c9851ab1f124de72aa8983
             SOC_PERF_LOGE("Invalid Permission to SocPerf, token[%{public}u] tokenType[%{public}d]",
                 accessToken, (int)tokenType);
                 return false;
