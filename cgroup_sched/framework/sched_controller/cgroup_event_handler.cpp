@@ -592,7 +592,7 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
         procRecord->isActive_ = true;
     } else {
         procRecord->linkedWindowId_ = -1;
-        procRecord->isActive_ = false;;
+        procRecord->isActive_ = false;
     }
     auto mainProcRecord = app->GetMainProcessRecord();
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
