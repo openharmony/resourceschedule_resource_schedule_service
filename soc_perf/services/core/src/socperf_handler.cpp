@@ -193,70 +193,58 @@ void SocPerfHandler::UpdateResActionList(int32_t resId, std::shared_ptr<ResActio
     int32_t type = resAction->type;
 
     if (delayed) {
-        UpdateResActionListByDelayedMsg(resId, type, resAction, resStatus);
-    } else {
-        UpdateResActionListByInstantMsg(resId, type, resAction, resStatus);
-    }
-}
-
-void UpdateResActionListByDelayedMsg(int32_t resId, int32_t type,
-    std::shared_ptr<ResAction> resAction, std::shared_ptr<ResAction> resStatus)
-{
-    for (auto iter = resStatus->resActionList[type].begin();
-        iter != resStatus->resActionList[type].end(); ++iter) {
-        if (resAction == *iter) {
-            resStatus->resActionList[type].erase(iter);
-            UpdateCandidatesValue(resId, type);
-            break;
-        }
-    }
-}
-
-void UpdateResActionListByInstantMsg(int32_t resId, int32_t type,
-    std::shared_ptr<ResAction> resAction, std::shared_ptr<ResAction> resStatus)
-{
-    switch (resAction->onOff) {
-        case EVENT_INVALID: {
-            resStatus->resActionList[type].push_back(resAction);
-            UpdateCandidatesValue(resId, type);
-            auto event = AppExecFwk::InnerEvent::Get(
-                INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED, resAction, resId);
-            this->SendEvent(event, resAction->duration);
-            break;
-        }
-        case EVENT_ON: {
-            if (resAction->duration == 0) {
-                for (auto iter = resStatus->resActionList[type].begin();
-                    iter != resStatus->resActionList[type].end(); ++iter) {
-                    if (resAction->TotalSame(*iter)) {
-                        resStatus->resActionList[type].erase(iter);
-                        break;
-                    }
-                }
-                resStatus->resActionList[type].push_back(resAction);
+        for (auto iter = resStatus->resActionList[type].begin();
+            iter != resStatus->resActionList[type].end(); ++iter) {
+            if (resAction == *iter) {
+                resStatus->resActionList[type].erase(iter);
                 UpdateCandidatesValue(resId, type);
-            } else {
+                break;
+            }
+        }
+    } else {
+        switch (resAction->onOff) {
+            case EVENT_INVALID: {
                 resStatus->resActionList[type].push_back(resAction);
                 UpdateCandidatesValue(resId, type);
                 auto event = AppExecFwk::InnerEvent::Get(
                     INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED, resAction, resId);
                 this->SendEvent(event, resAction->duration);
+                break;
             }
-            break;
-        }
-        case EVENT_OFF: {
-            for (auto iter = resStatus->resActionList[type].begin();
-                iter != resStatus->resActionList[type].end(); ++iter) {
-                if (resAction->PartSame(*iter) && (*iter)->onOff == EVENT_ON) {
-                    resStatus->resActionList[type].erase(iter);
+            case EVENT_ON: {
+                if (resAction->duration == 0) {
+                    for (auto iter = resStatus->resActionList[type].begin();
+                        iter != resStatus->resActionList[type].end(); ++iter) {
+                        if (resAction->TotalSame(*iter)) {
+                            resStatus->resActionList[type].erase(iter);
+                            break;
+                        }
+                    }
+                    resStatus->resActionList[type].push_back(resAction);
                     UpdateCandidatesValue(resId, type);
-                    break;
+                } else {
+                    resStatus->resActionList[type].push_back(resAction);
+                    UpdateCandidatesValue(resId, type);
+                    auto event = AppExecFwk::InnerEvent::Get(
+                        INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED, resAction, resId);
+                    this->SendEvent(event, resAction->duration);
                 }
+                break;
             }
-            break;
-        }
-        default: {
-            break;
+            case EVENT_OFF: {
+                for (auto iter = resStatus->resActionList[type].begin();
+                    iter != resStatus->resActionList[type].end(); ++iter) {
+                    if (resAction->PartSame(*iter) && (*iter)->onOff == EVENT_ON) {
+                        resStatus->resActionList[type].erase(iter);
+                        UpdateCandidatesValue(resId, type);
+                        break;
+                    }
+                }
+                break;
+            }
+            default: {
+                break;
+            }
         }
     }
 }

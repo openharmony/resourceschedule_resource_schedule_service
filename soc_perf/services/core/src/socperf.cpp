@@ -373,9 +373,59 @@ bool SocPerf::LoadResource(xmlNode* child, std::string configFile)
     xmlNode* grandson = child->children;
     for (; grandson; grandson = grandson->next) {
         if (!xmlStrcmp(grandson->name, reinterpret_cast<const xmlChar*>("res"))) {
-            if (!TraversalFreqResource(grandson, configFile)) {
+            char* id = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("id")));
+            char* name = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("name")));
+            char* pair = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("pair")));
+            char* mode = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("mode")));
+            if (!CheckResourceTag(id, name, pair, mode, configFile)) {
+                xmlFree(id);
+                xmlFree(name);
+                xmlFree(pair);
+                xmlFree(mode);
                 return false;
             }
+            xmlNode* greatGrandson = grandson->children;
+            std::shared_ptr<ResNode> resNode = std::make_shared<ResNode>(
+                atoi(id), name, mode ? atoi(mode) : 0, pair ? atoi(pair) : INVALID_VALUE);
+            xmlFree(id);
+            xmlFree(name);
+            xmlFree(pair);
+            xmlFree(mode);
+            char *def = nullptr;
+            char *path  = nullptr;
+            char *node  = nullptr;
+            for (; greatGrandson; greatGrandson = greatGrandson->next) {
+                if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("default"))) {
+                    xmlFree(def);
+                    def = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
+                } else if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("path"))) {
+                    xmlFree(path);
+                    path = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
+                } else if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("node"))) {
+                    xmlFree(node);
+                    node = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
+                }
+            }
+            if (!CheckResourceTag(def, path, configFile)) {
+                xmlFree(def);
+                xmlFree(path);
+                xmlFree(node);
+                return false;
+            }
+            resNode->def = atoll(def);
+            resNode->path = path;
+            xmlFree(def);
+            xmlFree(path);
+            if (node && !LoadResourceAvailable(resNode, node)) {
+                SOC_PERF_LOGE("Invalid resource node for %{public}s", configFile.c_str());
+                xmlFree(node);
+                return false;
+            }
+            xmlFree(node);
+
+            resStrToIdInfo.insert(std::pair<std::string, int32_t>(resNode->name, resNode->id));
+            resNodeInfo.insert(std::pair<int32_t, std::shared_ptr<ResNode>>(resNode->id, resNode));
+            handlerSwitch[resNode->id / RES_ID_NUMS_PER_TYPE - 1] = true;
         }
     }
 
@@ -383,72 +433,6 @@ bool SocPerf::LoadResource(xmlNode* child, std::string configFile)
         return false;
     }
 
-    return true;
-}
-
-bool SocPerf::TraversalFreqResource(xmlNode* grandson, std::string& configFile)
-{
-    char* id = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("id")));
-    char* name = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("name")));
-    char* pair = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("pair")));
-    char* mode = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("mode")));
-    if (!CheckResourceTag(id, name, pair, mode, configFile)) {
-        xmlFree(id);
-        xmlFree(name);
-        xmlFree(pair);
-        xmlFree(mode);
-        return false;
-    }
-    xmlNode* greatGrandson = grandson->children;
-    std::shared_ptr<ResNode> resNode = std::make_shared<ResNode>(
-        atoi(id), name, mode ? atoi(mode) : 0, pair ? atoi(pair) : INVALID_VALUE);
-    xmlFree(id);
-    xmlFree(name);
-    xmlFree(pair);
-    xmlFree(mode);
-    if (!LoadFreqResourceContent(greatGrandson, configFile, resNode)) {
-        return false;
-    }
-    return true;
-}
-
-bool SocPerf::LoadFreqResourceContent(xmlNode* greatGrandson, std::string& configFile, std::shared_ptr<ResNode> resNode)
-{
-    char *def = nullptr;
-    char *path  = nullptr;
-    char *node  = nullptr;
-    for (; greatGrandson; greatGrandson = greatGrandson->next) {
-        if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("default"))) {
-            xmlFree(def);
-            def = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
-        } else if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("path"))) {
-            xmlFree(path);
-            path = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
-        } else if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("node"))) {
-            xmlFree(node);
-            node = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
-        }
-    }
-    if (!CheckResourceTag(def, path, configFile)) {
-        xmlFree(def);
-        xmlFree(path);
-        xmlFree(node);
-        return false;
-    }
-    resNode->def = atoll(def);
-    resNode->path = path;
-    xmlFree(def);
-    xmlFree(path);
-    if (node && !LoadResourceAvailable(resNode, node)) {
-        SOC_PERF_LOGE("Invalid resource node for %{public}s", configFile.c_str());
-        xmlFree(node);
-        return false;
-    }
-    xmlFree(node);
-
-    resStrToIdInfo.insert(std::pair<std::string, int32_t>(resNode->name, resNode->id));
-    resNodeInfo.insert(std::pair<int32_t, std::shared_ptr<ResNode>>(resNode->id, resNode));
-    handlerSwitch[resNode->id / RES_ID_NUMS_PER_TYPE - 1] = true;
     return true;
 }
 
@@ -471,9 +455,40 @@ bool SocPerf::LoadGovResource(xmlNode* child, std::string configFile)
         xmlFree(id);
         xmlFree(name);
         handlerSwitch[govResNode->id / RES_ID_NUMS_PER_TYPE - 1] = true;
-        if (!TraversalGovResource(greatGrandson, configFile, govResNode)) {
-            return false;
+        for (; greatGrandson; greatGrandson = greatGrandson->next) {
+            if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("default"))) {
+                char* def = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
+                if (!def || !IsNumber(def)) {
+                    SOC_PERF_LOGE("Invalid governor resource default for %{public}s", configFile.c_str());
+                    xmlFree(def);
+                    return false;
+                }
+                govResNode->def = atoll(def);
+                xmlFree(def);
+            } else if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("path"))) {
+                char* path = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
+                if (!path) {
+                    SOC_PERF_LOGE("Invalid governor resource path for %{public}s", configFile.c_str());
+                    return false;
+                }
+                govResNode->paths.push_back(path);
+                xmlFree(path);
+            } else if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("node"))) {
+                char* level = reinterpret_cast<char*>(
+                    xmlGetProp(greatGrandson, reinterpret_cast<const xmlChar*>("level")));
+                char* node = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
+                if (!level || !IsNumber(level) || !node
+                    || !LoadGovResourceAvailable(govResNode, level, node)) {
+                    SOC_PERF_LOGE("Invalid governor resource node for %{public}s", configFile.c_str());
+                    xmlFree(level);
+                    xmlFree(node);
+                    return false;
+                }
+                xmlFree(level);
+                xmlFree(node);
+            }
         }
+
         resStrToIdInfo.insert(std::pair<std::string, int32_t>(govResNode->name, govResNode->id));
         govResNodeInfo.insert(std::pair<int32_t, std::shared_ptr<GovResNode>>(govResNode->id, govResNode));
     }
@@ -482,45 +497,6 @@ bool SocPerf::LoadGovResource(xmlNode* child, std::string configFile)
         return false;
     }
 
-    return true;
-}
-
-bool SocPerf::TraversalGovResource(xmlNode* greatGrandson, std::string& configFile,
-    std::shared_ptr<GovResNode> govResNode)
-{
-    for (; greatGrandson; greatGrandson = greatGrandson->next) {
-        if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("default"))) {
-            char* def = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
-            if (!def || !IsNumber(def)) {
-                SOC_PERF_LOGE("Invalid governor resource default for %{public}s", configFile.c_str());
-                xmlFree(def);
-                return false;
-            }
-            govResNode->def = atoll(def);
-            xmlFree(def);
-        } else if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("path"))) {
-            char* path = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
-            if (!path) {
-                SOC_PERF_LOGE("Invalid governor resource path for %{public}s", configFile.c_str());
-                return false;
-            }
-            govResNode->paths.push_back(path);
-            xmlFree(path);
-        } else if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("node"))) {
-            char* level = reinterpret_cast<char*>(
-                xmlGetProp(greatGrandson, reinterpret_cast<const xmlChar*>("level")));
-            char* node = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
-            if (!level || !IsNumber(level) || !node
-                || !LoadGovResourceAvailable(govResNode, level, node)) {
-                SOC_PERF_LOGE("Invalid governor resource node for %{public}s", configFile.c_str());
-                xmlFree(level);
-                xmlFree(node);
-                return false;
-            }
-            xmlFree(level);
-            xmlFree(node);
-        }
-    }
     return true;
 }
 
@@ -542,9 +518,36 @@ bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
         std::shared_ptr<Actions> actions = std::make_shared<Actions>(atoi(id), name);
         xmlFree(id);
         xmlFree(name);
-        if (!TraversalBoostResource(grandson, configFile, actions)) {
-            return false;
+        for (; grandson; grandson = grandson->next) { // Iterate all Action
+            std::shared_ptr<Action> action = std::make_shared<Action>();
+            xmlNode* greatGrandson = grandson->children;
+            for (; greatGrandson; greatGrandson = greatGrandson->next) { // Iterate duration and all res
+                if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("duration"))) {
+                    char* duration = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
+                    if (!duration || !IsNumber(duration)) {
+                        SOC_PERF_LOGE("Invalid cmd duration for %{public}s", configFile.c_str());
+                        xmlFree(duration);
+                        return false;
+                    }
+                    action->duration = atoi(duration);
+                    xmlFree(duration);
+                } else {
+                    char* resStr = reinterpret_cast<char*>(const_cast<xmlChar*>(greatGrandson->name));
+                    char* resValue = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
+                    if (!resStr || resStrToIdInfo.find(resStr) == resStrToIdInfo.end()
+                        || !resValue || !IsNumber(resValue)) {
+                        SOC_PERF_LOGE("Invalid cmd resource(%{public}s) for %{public}s", resStr, configFile.c_str());
+                        xmlFree(resValue);
+                        return false;
+                    }
+                    action->variable.push_back(resStrToIdInfo[resStr]);
+                    action->variable.push_back(atoll(resValue));
+                    xmlFree(resValue);
+                }
+            }
+            actions->actionList.push_back(action);
         }
+
         if (configFile.find(SOCPERF_BOOST_CONFIG_XML) != std::string::npos) {
             perfActionsInfo.insert(std::pair<int32_t, std::shared_ptr<Actions>>(actions->id, actions));
         }
@@ -554,40 +557,6 @@ bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
         return false;
     }
 
-    return true;
-}
-
-bool SocPerf::TraversalBoostResource(xmlNode* grandson, std::string& configFile, std::shared_ptr<Actions> actions)
-{
-    for (; grandson; grandson = grandson->next) { // Iterate all Action
-        std::shared_ptr<Action> action = std::make_shared<Action>();
-        xmlNode* greatGrandson = grandson->children;
-        for (; greatGrandson; greatGrandson = greatGrandson->next) { // Iterate duration and all res
-            if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("duration"))) {
-                char* duration = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
-                if (!duration || !IsNumber(duration)) {
-                    SOC_PERF_LOGE("Invalid cmd duration for %{public}s", configFile.c_str());
-                    xmlFree(duration);
-                    return false;
-                }
-                action->duration = atoi(duration);
-                xmlFree(duration);
-            } else {
-                char* resStr = reinterpret_cast<char*>(const_cast<xmlChar*>(greatGrandson->name));
-                char* resValue = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
-                if (!resStr || resStrToIdInfo.find(resStr) == resStrToIdInfo.end()
-                    || !resValue || !IsNumber(resValue)) {
-                    SOC_PERF_LOGE("Invalid cmd resource(%{public}s) for %{public}s", resStr, configFile.c_str());
-                    xmlFree(resValue);
-                    return false;
-                }
-                action->variable.push_back(resStrToIdInfo[resStr]);
-                action->variable.push_back(atoll(resValue));
-                xmlFree(resValue);
-            }
-        }
-        actions->actionList.push_back(action);
-    }
     return true;
 }
 
