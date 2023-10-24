@@ -21,7 +21,7 @@
 #include "single_instance.h"
 
 #include "audio_observer.h"
-#include "camera_observer.h"
+#include "hisysevent_observer.h"
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
 #include "device_movement_observer.h"
 #endif
@@ -48,8 +48,8 @@ public:
     virtual void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
 };
 
-    void InitCameraObserver();
-    void DisableCameraObserver();
+    void InitHiSysEventObserver();
+    void DisableHiSysEventObserver();
     void InitTelephonyObserver();
     void DisableTelephonyObserver();
     void InitAudioObserver();
@@ -62,7 +62,7 @@ public:
     pid_t pid_ = -1;
     std::map<int32_t, std::function<void(ObserverManager *)>> handleObserverMap_;
     std::map<int32_t, std::function<void(ObserverManager *)>> removeObserverMap_;
-    std::shared_ptr<HiviewDFX::HiSysEventListener> cameraObserver_ = nullptr;
+    std::shared_ptr<HiviewDFX::HiSysEventListener> hiSysEventObserver_ = nullptr;
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     int32_t slotId_ = 0;
     sptr<SchedTelephonyObserver> telephonyObserver_ = nullptr;

@@ -98,6 +98,7 @@ public:
     uint32_t continuousTaskFlag_ = 0;
     int32_t renderTid_ = 0;
     int32_t maliTid_ = 0;
+    int32_t processState_ = 0;
 
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
     std::vector<std::shared_ptr<WindowInfo>> windows_;
