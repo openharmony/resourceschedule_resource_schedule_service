@@ -247,7 +247,7 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, const
 }
 
 void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t processType,
-    const std::string& bundleName)
+    const std::string& bundleName, int32_t extensionType)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -262,6 +262,9 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t proc
         app->SetMainProcess(procRecord);
     } else if (processType == static_cast<int32_t>(ProcessType::RENDER)) {
         procRecord->isRenderProcess_ = true;
+    } else if (processType == static_cast<int32_t>(ProcessType::EXTENSION)) {
+        procRecord->isExtensionProcess_ = true;
+        procRecord->extensionType_ = extensionType;
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_CREATE);
@@ -552,6 +555,9 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
 
     // if role of thread is important display, adjust it
     auto mainProcRecord = app->GetMainProcessRecord();
+    if (!mainProcRecord) {
+        return;
+    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
         AdjustSource::ADJS_REPORT_IMPORTANT_DISPLAY_THREAD);
 }
@@ -595,6 +601,9 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
         procRecord->isActive_ = false;
     }
     auto mainProcRecord = app->GetMainProcessRecord();
+    if (!mainProcRecord) {
+        return;
+    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
         AdjustSource::ADJS_REPORT_WINDOW_STATE_CHANGED);
 }

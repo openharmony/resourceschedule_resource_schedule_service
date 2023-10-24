@@ -99,11 +99,13 @@ public:
     bool isRenderProcess_ = false;
     bool runningTransientTask_ = false;
     bool isActive_ {false};
+    bool isExtensionProcess_ = false;
     uint32_t continuousTaskFlag_ = 0;
     int32_t renderTid_ = 0;
     int32_t maliTid_ = 0;
     int32_t linkedWindowId_ {-1};
     int32_t serialNum_ {-1};
+    int32_t extensionType_ = -1;
 
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
     std::vector<std::shared_ptr<WindowInfo>> windows_;
