@@ -95,10 +95,12 @@ public:
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
     bool isRenderProcess_ = false;
     bool runningTransientTask_ = false;
+    bool isExtensionProcess_ = false;
     uint32_t continuousTaskFlag_ = 0;
     int32_t renderTid_ = 0;
     int32_t maliTid_ = 0;
     int32_t processState_ = 0;
+    int32_t extensionType_ = -1;
 
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
     std::vector<std::shared_ptr<WindowInfo>> windows_;

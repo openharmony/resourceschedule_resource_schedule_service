@@ -43,7 +43,8 @@ public:
         const std::string& abilityName, uintptr_t token, int32_t abilityState, int32_t abilityType);
     void HandleExtensionStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
         const std::string& abilityName, uintptr_t token, int32_t extensionState, int32_t abilityType);
-    void HandleProcessCreated(uid_t uid, pid_t pid, int32_t renderUid, const std::string& bundleName);
+    void HandleProcessCreated(uid_t uid, pid_t pid, int32_t processType, const std::string& bundleName,
+        int32_t extensionType);
     void HandleProcessDied(uid_t uid, pid_t pid, const std::string& bundleName);
     void HandleTransientTaskStart(uid_t uid, pid_t pid, const std::string& packageName);
     void HandleTransientTaskEnd(uid_t uid, pid_t pid, const std::string& packageName);

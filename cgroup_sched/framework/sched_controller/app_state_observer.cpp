@@ -125,9 +125,9 @@ void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processDat
         auto pid = processData.pid;
         auto bundleName = processData.bundleName;
         auto processType = static_cast<int32_t>(processData.processType);
-
-        cgHandler->PostTask([cgHandler, uid, pid, processType, bundleName] {
-            cgHandler->HandleProcessCreated(uid, pid, processType, bundleName);
+        auto extensionType = static_cast<int32_t>(processData.extensionType);
+        cgHandler->PostTask([cgHandler, uid, pid, processType, bundleName, extensionType] {
+            cgHandler->HandleProcessCreated(uid, pid, processType, bundleName, extensionType);
         });
     }
 
