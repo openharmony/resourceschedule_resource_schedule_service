@@ -62,6 +62,10 @@ private:
     void HandleDoFreqActionLevel(int32_t resId, std::shared_ptr<ResAction> resAction);
     bool GetResValueByLevel(int32_t resId, int32_t level, int64_t& resValue);
     void UpdateResActionList(int32_t resId, std::shared_ptr<ResAction> resAction, bool delayed);
+    void UpdateResActionListByDelayedMsg(int32_t resId, int32_t type,
+        std::shared_ptr<ResAction> resAction, std::shared_ptr<ResAction> resStatus);
+    void UpdateResActionListByInstantMsg(int32_t resId, int32_t type,
+        std::shared_ptr<ResAction> resAction, std::shared_ptr<ResAction> resStatus);
     void UpdateCandidatesValue(int32_t resId, int32_t type);
     void ArbitrateCandidate(int32_t resId);
     void ArbitratePairRes(int32_t resId);
