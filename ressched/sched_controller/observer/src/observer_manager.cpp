@@ -74,14 +74,16 @@ void ObserverManager::InitSysAbilityListener()
     }
 
     handleObserverMap_ = {
-        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::InitHiSysEventObserver, std::placeholders::_1) },
+        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::InitHiSysEventObserver,
+            std::placeholders::_1) },
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
             std::bind(&ObserverManager::InitTelephonyObserver, std::placeholders::_1) },
         { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1) },
         { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::InitDeviceMovementObserver, std::placeholders::_1) }
     };
     removeObserverMap_ = {
-        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::DisableHiSysEventObserver, std::placeholders::_1) },
+        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::DisableHiSysEventObserver,
+            std::placeholders::_1) },
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
             std::bind(&ObserverManager::DisableTelephonyObserver, std::placeholders::_1) },
         { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1) },
