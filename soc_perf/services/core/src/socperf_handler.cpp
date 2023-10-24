@@ -199,7 +199,7 @@ void SocPerfHandler::UpdateResActionList(int32_t resId, std::shared_ptr<ResActio
     }
 }
 
-void UpdateResActionListByDelayedMsg(int32_t resId, int32_t type,
+void SocPerfHandler::UpdateResActionListByDelayedMsg(int32_t resId, int32_t type,
     std::shared_ptr<ResAction> resAction, std::shared_ptr<ResStatus> resStatus)
 {
     for (auto iter = resStatus->resActionList[type].begin();
@@ -212,7 +212,7 @@ void UpdateResActionListByDelayedMsg(int32_t resId, int32_t type,
     }
 }
 
-void UpdateResActionListByInstantMsg(int32_t resId, int32_t type,
+void SocPerfHandler::UpdateResActionListByInstantMsg(int32_t resId, int32_t type,
     std::shared_ptr<ResAction> resAction, std::shared_ptr<ResStatus> resStatus)
 {
     switch (resAction->onOff) {
