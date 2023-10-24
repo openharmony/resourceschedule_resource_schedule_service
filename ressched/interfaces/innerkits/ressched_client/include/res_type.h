@@ -107,6 +107,11 @@ enum : uint32_t {
     RES_TYPE_SHOW_REMOTE_ANIMATION = 33,
     // load page; value 0: load page begin, value 1: load page end.
     RES_TYPE_LOAD_PAGE = 34,
+    // report camera state, value 0: camera connect; value 1: camera disconnect
+    RES_TYPE_REPORT_CAMERA_STATE = 35,
+    // report runningLock state, value 0: runningLock disable; value 1: runningLock enable;
+    // value 2: runningLock is proxied; value 3: runningLock is not proxied
+    RES_TYPE_RUNNINGLOCK_STATE = 36,
     // drag status bar event; value 0: start drag, value 1: stop drag.
     RES_TYPE_DRAG_STATUS_BAR = 37,
     // report SceneBoard service, value pid; payload:uid, main_tid, bundleName
@@ -125,11 +130,6 @@ enum : uint32_t {
     RES_TYPE_LOAD_URL = 44,
     // mousewheel event; value means nothing.
     RES_TYPE_MOUSEWHEEL = 45,
-    // report camera state, value 0: camera connect; value 1: camera disconnect
-    RES_TYPE_REPORT_CAMERA_STATE = 46,
-    // report runningLock state, value 0: runningLock disable; value 1: runningLock enable;
-    // value 2: runningLock is proxied; value 3: runningLock is not proxied
-    RES_TYPE_RUNNINGLOCK_STATE = 47,
 };
 
 inline const std::map<uint32_t, std::string> resTypeToStr = {
@@ -168,6 +168,8 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_MOVE_WINDOW, "RES_TYPE_MOVE_WINDOW" },
     { RES_TYPE_SHOW_REMOTE_ANIMATION, "RES_TYPE_SHOW_REMOTE_ANIMATION" },
     { RES_TYPE_LOAD_PAGE, "RES_TYPE_LOAD_PAGE" },
+    { RES_TYPE_REPORT_CAMERA_STATE, "RES_TYPE_REPORT_CAMERA_STATE" },
+    { RES_TYPE_RUNNINGLOCK_STATE, "RES_TYPE_RUNNINGLOCK_STATE" },
     { RES_TYPE_DRAG_STATUS_BAR, "RES_TYPE_DRAG_STATUS_BAR" },
     { RES_TYPE_REPORT_SCENE_BOARD, "RES_TYPE_REPORT_SCENE_BOARD" },
     { RES_TYPE_REPORT_KEY_THREAD, "RES_TYPE_REPORT_KEY_THREAD" },
@@ -176,9 +178,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_WEB_GESTURE_MOVE, "RES_TYPE_WEB_GESTURE_MOVE" },
     { RES_TYPE_WEB_SLIDE_NORMAL, "RES_TYPE_WEB_SLIDE_NORMAL" },
     { RES_TYPE_LOAD_URL, "RES_TYPE_LOAD_URL" },
-    { RES_TYPE_MOUSEWHEEL, "RES_TYPE_MOUSEWHEEL" },
-    { RES_TYPE_REPORT_CAMERA_STATE, "RES_TYPE_REPORT_CAMERA_STATE" },
-    { RES_TYPE_RUNNINGLOCK_STATE, "RES_TYPE_RUNNINGLOCK_STATE" }
+    { RES_TYPE_MOUSEWHEEL, "RES_TYPE_MOUSEWHEEL" }
 };
 
 /**
