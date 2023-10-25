@@ -40,6 +40,8 @@ void FrameAwarePlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
         { RES_TYPE_PROCESS_STATE_CHANGE,
             [this](const std::shared_ptr<ResData>& data) { HandleProcessStateChange(data); } },
+        { RES_TYPE_CONTINUOUS_TASK,
+            [this](const std::shared_ptr<ResData>& data) { HandleContinuousTask(data); } },
         { RES_TYPE_CGROUP_ADJUSTER,
             [this](const std::shared_ptr<ResData>& data) { HandleCgroupAdjuster(data); } },
         { RES_TYPE_WINDOW_FOCUS,
@@ -58,6 +60,7 @@ void FrameAwarePlugin::Init()
     resTypes = {
         RES_TYPE_APP_STATE_CHANGE,
         RES_TYPE_PROCESS_STATE_CHANGE,
+        RES_TYPE_CONTINUOUS_TASK,
         RES_TYPE_CGROUP_ADJUSTER,
         RES_TYPE_WINDOW_FOCUS,
         RES_TYPE_REPORT_RENDER_THREAD,
@@ -131,6 +134,22 @@ void FrameAwarePlugin::HandleProcessStateChange(const std::shared_ptr<ResData>& 
     std::string bundleName = data->payload["bundleName"].get<std::string>().c_str();
     RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
     RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, uid, bundleName, state);
+}
+
+void FrameAwarePlugin::HandleContinuousTask(const std::shared_ptr<ResData>& data)
+{
+    if (!data->payload.is_object()) {
+        return;
+    }
+    if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
+        !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
+        RESSCHED_LOGI("FrameAwarePlugin::HandleContinuousTask payload is not contains pid or uid");
+        return;
+    }
+
+    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
+    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
+    RME::FrameMsgIntf::GetInstance().ReportContinuousTask(pid, uid, data->value);
 }
 
 void FrameAwarePlugin::HandleCgroupAdjuster(const std::shared_ptr<ResData>& data)
