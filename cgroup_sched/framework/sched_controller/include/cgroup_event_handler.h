@@ -57,9 +57,12 @@ public:
         WindowType windowType, int32_t pid, int32_t uid);
     void HandleReportMMIProcess(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportRenderThread(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleReportKeyThread(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleReportWindowState(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
     bool ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid, int64_t value, const nlohmann::json& payload);
+    bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
     std::shared_ptr<Supervisor> supervisor_;
 };
 } // namespace ResourceSchedule

@@ -91,6 +91,18 @@ bool ProcessRecord::IsVisible() const
     });
 }
 
+std::set<int32_t> ProcessRecord::GetKeyTidSetByRole(int64_t role)
+{
+    std::set<int32_t> tids {};
+    for (const auto [tid, tidRole] : keyThreadRoleMap_) {
+        if (tidRole != role) {
+            continue;
+        }
+        tids.insert(tid);
+    }
+    return tids;
+}
+
 std::shared_ptr<ProcessRecord> Application::AddProcessRecord(std::shared_ptr<ProcessRecord> pr)
 {
     if (pr) {
