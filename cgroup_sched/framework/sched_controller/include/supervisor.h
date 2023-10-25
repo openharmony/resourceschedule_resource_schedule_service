@@ -21,6 +21,8 @@
 #include <sys/types.h>
 #include <string>
 #include <vector>
+#include <set>
+#include <map>
 
 #include "sched_policy.h"
 
@@ -79,6 +81,7 @@ public:
     bool HasAbility(uintptr_t token) const;
     bool HasServiceExtension() const;
     bool IsVisible() const;
+    std::set<int32_t> GetKeyTidSetByRole(int64_t role);
 
     inline pid_t GetPid() const
     {
@@ -95,16 +98,20 @@ public:
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
     bool isRenderProcess_ = false;
     bool runningTransientTask_ = false;
+    bool isActive_ {false};
     bool isExtensionProcess_ = false;
     uint32_t continuousTaskFlag_ = 0;
     int32_t renderTid_ = 0;
     int32_t maliTid_ = 0;
     int32_t processState_ = 0;
+    int32_t linkedWindowId_ {-1};
+    int32_t serialNum_ {-1};
     int32_t extensionType_ = -1;
 
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
     std::vector<std::shared_ptr<WindowInfo>> windows_;
 
+    std::map<int32_t, int32_t> keyThreadRoleMap_ {}; // items in keyThreadMap_ is (tid, role)
 private:
     uid_t uid_;
     pid_t pid_;
