@@ -166,7 +166,7 @@ void RmsApplicationStateObserver::OnProcessDied(const ProcessData &processData)
         ResType::RES_TYPE_PROCESS_STATE_CHANGE, ResType::ProcessStatus::PROCESS_DIED, payload);
 }
 
-void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &appStateData)
+void RmsApplicationStateObserver::OnAppStateChanged(const AppStateData &appStateData)
 {
     if (!ValidateAppStateData(appStateData)) {
         CGS_LOGE("%{public}s : validate app state data failed!", __func__);
@@ -181,7 +181,7 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
         auto state = appStateData.state;
 
         cgHandler->PostTask([cgHandler, uid, pid, bundleName, state] {
-            cgHandler->HandleApplicationStateChanged(uid, pid, bundleName, state);
+            cgHandler->HandleAppStateChanged(uid, pid, bundleName, state);
         });
     }
 
@@ -190,6 +190,32 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     payload["uid"] = std::to_string(appStateData.uid);
     payload["bundleName"] = appStateData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);
+}
+
+void RmsApplicationStateObserver::OnProcessStateChanged(const ProcessData &processData)
+{
+    if (!ValidateProcessData(processData)) {
+        CGS_LOGE("%{public}s : validate process data failed!", __func__);
+        return;
+    }
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler) {
+        auto uid = processData.uid;
+        auto pid = processData.pid;
+        auto bundleName = processData.bundleName;
+        auto state = static_cast<int32_t>(processData.state);
+
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName, state] {
+            cgHandler->HandleProcessStateChanged(uid, pid, bundleName, state);
+        });
+    }
+
+    nlohmann::json payload;
+    payload["pid"] = std::to_string(processData.pid);
+    payload["uid"] = std::to_string(processData.uid);
+    payload["bundleName"] = processData.bundleName;
+    ResSchedUtils::GetInstance().ReportDataInProcess(
+        ResType::RES_TYPE_PROCESS_STATE_CHANGE, static_cast<int32_t>(processData.state), payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

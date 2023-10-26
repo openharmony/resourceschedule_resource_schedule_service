@@ -37,7 +37,8 @@ public:
     void HandleAbilityAdded(int32_t saId, const std::string& deviceId);
     void HandleAbilityRemoved(int32_t saId, const std::string& deviceId);
     void HandleForegroundApplicationChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
-    void HandleApplicationStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
+    void HandleAppStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
+    void HandleProcessStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
     void HandleAbilityStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
         const std::string& abilityName, uintptr_t token, int32_t abilityState, int32_t abilityType);
     void HandleExtensionStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,

@@ -51,7 +51,7 @@ ohos_shared_library("resschedsvc") {
   sources = [
     "../sched_controller/common_event/src/event_controller.cpp",
     "../sched_controller/observer/src/audio_observer.cpp",
-    "../sched_controller/observer/src/camera_observer.cpp",
+    "../sched_controller/observer/src/hisysevent_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
     "resschedmgr/resschedfwk/src/config_reader.cpp",
     "resschedmgr/resschedfwk/src/kill_process.cpp",
@@ -74,6 +74,7 @@ ohos_shared_library("resschedsvc") {
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
     "audio_framework:audio_client",
+    "bluetooth:btframework",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
@@ -130,7 +131,7 @@ ohos_static_library("resschedsvc_static") {
   sources = [
     "../sched_controller/common_event/src/event_controller.cpp",
     "../sched_controller/observer/src/audio_observer.cpp",
-    "../sched_controller/observer/src/camera_observer.cpp",
+    "../sched_controller/observer/src/hisysevent_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
     "resschedmgr/resschedfwk/src/config_reader.cpp",
     "resschedmgr/resschedfwk/src/kill_process.cpp",
@@ -153,6 +154,7 @@ ohos_static_library("resschedsvc_static") {
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
     "audio_framework:audio_client",
+    "bluetooth:btframework",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",

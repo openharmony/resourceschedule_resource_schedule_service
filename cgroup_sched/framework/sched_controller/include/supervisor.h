@@ -103,6 +103,7 @@ public:
     uint32_t continuousTaskFlag_ = 0;
     int32_t renderTid_ = 0;
     int32_t maliTid_ = 0;
+    int32_t processState_ = 0;
     int32_t linkedWindowId_ {-1};
     int32_t serialNum_ {-1};
     int32_t extensionType_ = -1;

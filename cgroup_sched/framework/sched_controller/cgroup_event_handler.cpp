@@ -159,7 +159,7 @@ void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, pid_t pid
     CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FG_APP_CHANGE);
 }
 
-void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
+void CgroupEventHandler::HandleAppStateChanged(uid_t uid, pid_t pid,
     const std::string& bundleName, int32_t state)
 {
     if (!supervisor_) {
@@ -167,7 +167,7 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
-    ChronoScope cs("HandleApplicationStateChanged");
+    ChronoScope cs("HandleAppStateChanged");
     // remove terminated application
     if (state == (int32_t)(ApplicationState::APP_STATE_TERMINATED)) {
         supervisor_->RemoveApplication(uid);
@@ -178,6 +178,20 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
     app->SetName(bundleName);
     app->state_ = state;
     app->SetMainProcess(procRecord);
+}
+
+void CgroupEventHandler::HandleProcessStateChanged(uid_t uid, pid_t pid,
+    const std::string& bundleName, int32_t state)
+{
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+    CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
+    ChronoScope cs("HandleProcessStateChanged");
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
+    procRecord->processState_ = state;
 }
 
 void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,

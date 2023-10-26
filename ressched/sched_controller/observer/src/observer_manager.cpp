@@ -48,7 +48,7 @@ void ObserverManager::Disable()
 {
     handleObserverMap_.clear();
     removeObserverMap_.clear();
-    DisableCameraObserver();
+    DisableHiSysEventObserver();
     DisableTelephonyObserver();
     sysAbilityListener_ = nullptr;
 }
@@ -74,14 +74,16 @@ void ObserverManager::InitSysAbilityListener()
     }
 
     handleObserverMap_ = {
-        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::InitCameraObserver, std::placeholders::_1) },
+        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::InitHiSysEventObserver,
+            std::placeholders::_1) },
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
             std::bind(&ObserverManager::InitTelephonyObserver, std::placeholders::_1) },
         { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1) },
         { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::InitDeviceMovementObserver, std::placeholders::_1) }
     };
     removeObserverMap_ = {
-        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::DisableCameraObserver, std::placeholders::_1) },
+        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::DisableHiSysEventObserver,
+            std::placeholders::_1) },
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
             std::bind(&ObserverManager::DisableTelephonyObserver, std::placeholders::_1) },
         { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1) },
@@ -132,44 +134,42 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     }
 }
 
-void ObserverManager::InitCameraObserver()
+void ObserverManager::InitHiSysEventObserver()
 {
-    RESSCHED_LOGI("Init camera observer");
-    if (!cameraObserver_) {
-        cameraObserver_ = std::make_shared<ResourceSchedule::CameraObserver>();
+    RESSCHED_LOGI("Init hisysevent observer");
+    if (!hiSysEventObserver_) {
+        hiSysEventObserver_ = std::make_shared<ResourceSchedule::HiSysEventObserver>();
     }
 
-    HiviewDFX::ListenerRule cameraStateRule("CAMERA", "CAMERA_STATE");
-    HiviewDFX::ListenerRule cameraStatisticRule("CAMERA", "CAMERA_STATISTIC");
+    HiviewDFX::ListenerRule statsRule("PowerStats");
     std::vector<HiviewDFX::ListenerRule> sysRules;
-    sysRules.push_back(cameraStateRule);
-    sysRules.push_back(cameraStatisticRule);
-    auto res = HiviewDFX::HiSysEventManager::AddListener(cameraObserver_, sysRules);
+    sysRules.push_back(statsRule);
+    auto res = HiviewDFX::HiSysEventManager::AddListener(hiSysEventObserver_, sysRules);
     if (res == 0) {
-        RESSCHED_LOGD("ObserverManager init camera observer successfully");
+        RESSCHED_LOGD("ObserverManager init hisysevent observer successfully");
     } else {
-        RESSCHED_LOGW("ObserverManager init camera observer failed");
+        RESSCHED_LOGW("ObserverManager init hisysevent observer failed");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a camera observer failed!");
+                        "ERR_MSG", "Register a hisysevent observer failed!");
     }
 }
 
-void ObserverManager::DisableCameraObserver()
+void ObserverManager::DisableHiSysEventObserver()
 {
-    RESSCHED_LOGI("Disable camera observer");
-    if (cameraObserver_ == nullptr) {
+    RESSCHED_LOGI("Disable hisysevent observer");
+    if (hiSysEventObserver_ == nullptr) {
         return;
     }
 
-    auto res = HiviewDFX::HiSysEventManager::RemoveListener(cameraObserver_);
+    auto res = HiviewDFX::HiSysEventManager::RemoveListener(hiSysEventObserver_);
     if (res == 0) {
-        RESSCHED_LOGD("ObserverManager disable camera observer successfully");
+        RESSCHED_LOGD("ObserverManager disable hisysevent observer successfully");
     } else {
-        RESSCHED_LOGW("ObserverManager disable camera observer failed");
+        RESSCHED_LOGW("ObserverManager disable hisysevent observer failed");
     }
-    cameraObserver_ = nullptr;
+    hiSysEventObserver_ = nullptr;
 }
 
 void ObserverManager::InitTelephonyObserver()
