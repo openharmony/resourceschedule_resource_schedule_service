@@ -60,8 +60,12 @@ private:
     bool CreateHandlers();
     void InitHandlerThreads();
     bool LoadResource(xmlNode* rootNode, std::string configFile);
+    bool TraversalFreqResource(xmlNode* grandson, std::string& configFile);
+    bool LoadFreqResourceContent(xmlNode* greatGrandson, std::string& configFile, std::shared_ptr<ResNode> resNode);
     bool LoadGovResource(xmlNode* rootNode, std::string configFile);
+    bool TraversalGovResource(xmlNode* greatGrandson, std::string& configFile, std::shared_ptr<GovResNode> govResNode);
     bool LoadCmd(xmlNode* rootNode, std::string configFile);
+    bool TraversalBoostResource(xmlNode* grandson, std::string& configFile, std::shared_ptr<Actions> actions);
     bool CheckResourceTag(char* id, char* name, char* pair, char* mode, std::string configFile);
     bool CheckResourceTag(char* def, char* path, std::string configFile);
     bool LoadResourceAvailable(std::shared_ptr<ResNode> resNode, char* node);
