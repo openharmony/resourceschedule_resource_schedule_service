@@ -29,6 +29,8 @@ public:
 
     int32_t OnRemoteRequest(uint32_t code, MessageParcel &data,
         MessageParcel &reply, MessageOption &option) override;
+private:
+    bool HasPerfPermission();
 };
 } // namespace SOCPERF
 } // namespace OHOS
