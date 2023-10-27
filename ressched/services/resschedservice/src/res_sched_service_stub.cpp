@@ -18,6 +18,7 @@
 #include "res_sched_errors.h"
 #include "res_sched_log.h"
 #include "res_sched_ipc_interface_code.h"
+#include "res_type.h"
 #include "ipc_skeleton.h"
 #include "ipc_util.h"
 
@@ -25,6 +26,9 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     #define PAYLOAD_MAX_SIZE 4096
+    constexpr int32_t FOUNDATION_UID = 5523;
+    constexpr int32_t INPUT_UID = 5523;
+    constexpr int32_t DHARDWARE_UID = 5523;
 
     bool IsValidToken(MessageParcel& data)
     {
@@ -119,6 +123,33 @@ nlohmann::json ResSchedServiceStub::StringToJsonObj(const std::string& payload)
 
 void ResSchedServiceStub::Init()
 {
+    resource_in_process = {
+        ResType::RES_TYPE_CGROUP_ADJUSTER,
+        ResType::RES_TYPE_APP_STATE_CHANGE,
+        ResType::RES_TYPE_ABILITY_STATE_CHANGE,
+        ResType::RES_TYPE_EXTENSION_STATE_CHANGE,
+        ResType::RES_TYPE_PROCESS_STATE_CHANGE,
+        ResType::RES_TYPE_WINDOW_FOCUS,
+        ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
+        ResType::RES_TYPE_TRANSIENT_TASK,
+        ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
+        ResType::RES_TYPE_SCREEN_STATUS,
+        ResType::RES_TYPE_SCREEN_LOCK,
+        ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+        ResType::RES_TYPE_USER_SWITCH,
+        ResType::RES_TYPE_USER_REMOVE,
+        ResType::RES_TYPE_CALL_STATE_UPDATE,
+        ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
+        ResType::RES_TYPE_AUDIO_RING_MODE_CHANGE,
+        ResType::RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
+        ResType::RES_TYPE_DEVICE_STILL_STATE_CHANGE,
+        ResType::RES_TYPE_CONTINUOUS_TASK,
+    };
+    resource_uid_other_process = {
+        { ResType::RES_TYPE_APP_ABILITY_START, FOUNDATION_UID },
+        { ResType::RES_TYPE_REPORT_MMI_PROCESS, INPUT_UID },
+        { ResType::RES_TYPE_NETWORK_LATENCY_REQUEST, DHARDWARE_UID},
+    };
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
