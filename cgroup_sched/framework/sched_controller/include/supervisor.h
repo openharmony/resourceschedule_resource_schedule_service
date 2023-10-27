@@ -99,7 +99,9 @@ public:
     bool isRenderProcess_ = false;
     bool runningTransientTask_ = false;
     bool isActive_ {false};
+    bool inSelfRenderCgroup_ = false;
     bool isExtensionProcess_ = false;
+
     uint32_t continuousTaskFlag_ = 0;
     int32_t renderTid_ = 0;
     int32_t maliTid_ = 0;
