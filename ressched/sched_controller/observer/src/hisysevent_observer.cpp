@@ -31,8 +31,6 @@ namespace {
     constexpr int32_t WIFIDISCONNECTED          = 5;
     constexpr int32_t CAMERACONNECT             = 0;
     constexpr int32_t CAMERADISCONNECT          = 1;
-    constexpr int32_t RENDERERRUNNING           = 2;
-    constexpr int32_t RENDERERSTOPPED           = 3;
     constexpr int32_t RUNNINGLOCK_DISABLE       = 0;
     constexpr int32_t RUNNINGLOCK_ENABLE        = 1;
     constexpr int32_t RUNNINGLOCK_PROXIED       = 2;
@@ -186,13 +184,13 @@ void HiSysEventObserver::ProcessAudioEvent(const nlohmann::json& root, const std
         switch (audioState) {
             case AudioState::AUDIO_STATE_RUNNING:
                 ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
-                    RENDERERRUNNING, payload);
+                    ResType::AudioStatus::RENDERERRUNNING, payload);
                 break;
             case AudioState::AUDIO_STATE_STOPPED:
             case AudioState::AUDIO_STATE_RELEASED:
             case AudioState::AUDIO_STATE_PAUSED:
                 ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
-                    RENDERERSTOPPED, payload);
+                    ResType::AudioStatus::RENDERERSTOPPED, payload);
                 break;
             default:
                 break;

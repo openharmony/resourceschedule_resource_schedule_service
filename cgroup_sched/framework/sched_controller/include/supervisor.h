@@ -103,6 +103,7 @@ public:
     bool isExtensionProcess_ = false;
 
     uint32_t continuousTaskFlag_ = 0;
+    int32_t audioState_ = -1;
     int32_t renderTid_ = 0;
     int32_t maliTid_ = 0;
     int32_t processState_ = 0;
