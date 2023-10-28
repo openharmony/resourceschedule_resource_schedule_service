@@ -166,7 +166,7 @@ void RmsApplicationStateObserver::OnProcessDied(const ProcessData &processData)
         ResType::RES_TYPE_PROCESS_STATE_CHANGE, ResType::ProcessStatus::PROCESS_DIED, payload);
 }
 
-void RmsApplicationStateObserver::OnAppStateChanged(const AppStateData &appStateData)
+void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &appStateData)
 {
     if (!ValidateAppStateData(appStateData)) {
         CGS_LOGE("%{public}s : validate app state data failed!", __func__);
@@ -181,7 +181,7 @@ void RmsApplicationStateObserver::OnAppStateChanged(const AppStateData &appState
         auto state = appStateData.state;
 
         cgHandler->PostTask([cgHandler, uid, pid, bundleName, state] {
-            cgHandler->HandleAppStateChanged(uid, pid, bundleName, state);
+            cgHandler->HandleApplicationStateChanged(uid, pid, bundleName, state);
         });
     }
 

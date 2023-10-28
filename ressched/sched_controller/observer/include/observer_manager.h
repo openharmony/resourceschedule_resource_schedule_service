@@ -28,6 +28,7 @@
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
 #include "sched_telephony_observer.h"
 #endif
+#include "mmi_observer.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -56,6 +57,8 @@ public:
     void DisableAudioObserver();
     void InitDeviceMovementObserver();
     void DisableDeviceMovementObserver();
+    void InitMMiEventObserver();
+    void DisableMMiEventObserver();
     void InitSysAbilityListener();
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
 
@@ -72,6 +75,7 @@ public:
     sptr<DeviceMovementObserver> deviceMovementObserver_ = nullptr;
 #endif
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
+    std::shared_ptr<MmiObserver> mmiEventObserver_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
