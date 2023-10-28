@@ -604,8 +604,55 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     if (!mainProcRecord) {
         return;
     }
+    if (CheckVisibilityForRenderProcess(*(app.get()), *(procRecord.get())) {
+        CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d is not visible but active",
+            __func__, app->GetName().c_str(), uid, pid, state);
+    })
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
         AdjustSource::ADJS_REPORT_WINDOW_STATE_CHANGED);
+}
+
+void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+    int32_t tid = 0;
+    int32_t state = 0;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
+        !ParseValue(tid, "tid", payload) || !ParseValue(state, "state", payload)) {
+        return;
+    }
+    if (uid <= 0 || pid <= 0 || tid <= 0) {
+        return;
+    }
+
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    auto procRecord = app->GetProcessRecordNonNull(pid);
+    CGS_LOGD("%{public}s : render process name: %{public}s, uid: %{public}d, pid: %{public}d, tid: %{public}d, "\
+        " state: %{public}d", __func__, app->GetName().c_str(), uid, pid, state);
+
+    if (state == ResType::AudioStatus::START) {
+        procRecord->isPlayingAudio_ = true;
+    } else {
+        procRecord->isPlayingAudio_ = false;
+    }
+    auto mainProcRecord = app->GetMainProcessRecord();
+    if (!mainProcRecord) {
+        return;
+    }
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
+        AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
+}
+
+bool CgroupEventHandler::CheckVisibilityForRenderProcess(Application &app, ProcessRecord &pr)
+{
+    return pr.isRenderProcess_ && pr.isActive_ && !pr.IsVisible();
 }
 
 bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,
