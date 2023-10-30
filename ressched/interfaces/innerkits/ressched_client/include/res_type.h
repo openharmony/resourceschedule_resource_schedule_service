@@ -132,6 +132,8 @@ enum : uint32_t {
     RES_TYPE_MOUSEWHEEL = 45,
     // report webview audio status, value 0 start 1 stop, payload: uid, pid, tid
     RES_TYPE_AUDIO_STATUS_CHANGE = 46,
+    // report entering the multimodalinput state, value means subscribed multimodalinput state.
+    RES_TYPE_MMI_INPUT_STATE = 47,
 };
 
 inline const std::map<uint32_t, std::string> resTypeToStr = {
@@ -182,6 +184,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_LOAD_URL, "RES_TYPE_LOAD_URL" },
     { RES_TYPE_MOUSEWHEEL, "RES_TYPE_MOUSEWHEEL" },
     { RES_TYPE_AUDIO_STATUS_CHANGE, "RES_TYPE_AUDIO_STATUS_CHANGE" },
+    { RES_TYPE_MMI_INPUT_STATE, "RES_TYPE_MMI_INPUT_STATE" }
 };
 
 /**

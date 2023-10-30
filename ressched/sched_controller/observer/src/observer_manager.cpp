@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,6 +31,7 @@
 #include "movement_client.h"
 #include "movement_data_utils.h"
 #endif
+#include "input_manager.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -79,7 +80,8 @@ void ObserverManager::InitSysAbilityListener()
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
             std::bind(&ObserverManager::InitTelephonyObserver, std::placeholders::_1) },
         { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1) },
-        { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::InitDeviceMovementObserver, std::placeholders::_1) }
+        { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::InitDeviceMovementObserver, std::placeholders::_1) },
+        { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::InitMMiEventObserver, std::placeholders::_1) }
     };
     removeObserverMap_ = {
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::DisableHiSysEventObserver,
@@ -87,12 +89,14 @@ void ObserverManager::InitSysAbilityListener()
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
             std::bind(&ObserverManager::DisableTelephonyObserver, std::placeholders::_1) },
         { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1) },
-        { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::DisableDeviceMovementObserver, std::placeholders::_1) }
+        { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::DisableDeviceMovementObserver, std::placeholders::_1) },
+        { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::DisableMMiEventObserver, std::placeholders::_1) }
     };
     AddItemToSysAbilityListener(DFX_SYS_EVENT_SERVICE_ABILITY_ID, systemAbilityManager);
     AddItemToSysAbilityListener(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, systemAbilityManager);
     AddItemToSysAbilityListener(AUDIO_POLICY_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(MSDP_MOVEMENT_SERVICE_ID, systemAbilityManager);
+    AddItemToSysAbilityListener(MULTIMODAL_INPUT_SERVICE_ID, systemAbilityManager);
 }
 
 inline void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId,
@@ -314,6 +318,42 @@ void ObserverManager::DisableDeviceMovementObserver()
         Msdp::MovementDataUtils::MovementType::TYPE_STILL, deviceMovementObserver_);
     deviceMovementObserver_ = nullptr;
 #endif
+}
+
+void ObserverManager::InitMMiEventObserver()
+{
+    RESSCHED_LOGI("ObserverManager Init mmi observer.");
+    if (!mmiEventObserver_) {
+        mmiEventObserver_ = std::make_shared<MmiObserver>();
+    }
+
+    auto res = MMI::InputManager::GetInstance()->AddInputEventObserver(mmiEventObserver_);
+    if (res == OPERATION_SUCCESS) {
+        RESSCHED_LOGD("ObserverManager init mmiEventObserver successfully");
+    } else {
+        RESSCHED_LOGE("ObserverManager init mmiEventObserver failed");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a mmi observer failed!");
+    }
+}
+
+void ObserverManager::DisableMMiEventObserver()
+{
+    RESSCHED_LOGI("Disable mmi observer");
+    if (!mmiEventObserver_) {
+        RESSCHED_LOGD("ObserverManager has been disable mmiEventObserver");
+        return;
+    }
+
+    auto res = MMI::InputManager::GetInstance()->RemoveInputEventObserver(mmiEventObserver_);
+    if (res == OPERATION_SUCCESS) {
+        RESSCHED_LOGD("ObserverManager disable mmiEventObserver successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager disable mmiEventObserver failed");
+    }
+    mmiEventObserver_ = nullptr;
 }
 
 extern "C" void ObserverManagerInit()

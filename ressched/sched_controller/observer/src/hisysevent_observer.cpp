@@ -119,6 +119,7 @@ void HiSysEventObserver::ProcessHiSysEvent(const std::string& eventName, const n
 void HiSysEventObserver::ProcessRunningLockEvent(const nlohmann::json& root, const std::string& eventName)
 {
     std::string str = root.dump();
+    RESSCHED_LOGD("Process runninglock event, event root:%{public}s", str.c_str());
     nlohmann::json payload;
     if (root.contains("UID") && root.at("UID").is_number_integer()) {
         payload["uid"] = root.at("UID").get<std::int32_t>();

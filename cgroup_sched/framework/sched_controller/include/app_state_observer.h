@@ -32,7 +32,7 @@ public:
     void OnExtensionStateChanged(const AbilityStateData &abilityStateData) override;
     void OnProcessCreated(const ProcessData &processData) override;
     void OnProcessDied(const ProcessData &processData) override;
-    void OnAppStateChanged(const AppStateData &appStateData) override;
+    void OnApplicationStateChanged(const AppStateData &appStateData) override;
     void OnProcessStateChanged(const ProcessData &processData) override;
 
 private:
