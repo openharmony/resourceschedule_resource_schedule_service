@@ -645,14 +645,10 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
         __func__, app->GetName().c_str(), uid, pid, value);
 
     app.audioState_ = static_cast<int32_t>(value);
-    if (resType == ResType::RES_TYPE_AUDIO_STATUS_CHANGE) 
-    {
-        CgroupAdjuster::GetInstance::AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-        AdjustSource::ADJS_REPORT_WEBVIEW_STATE_CHANGED);
-    } else {
-        CgroupAdjuster::GetInstance::AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-        AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
-    }
+    AdjustSource adjustSource = resType == ResType::RES_TYPE_AUDIO_STATUS_CHANGE ?
+        AdjustSource::ADJS_REPORT_WEBVIEW_STATE_CHANGED :
+        AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED;
+    CgroupAdjuster::GetInstance::AdjustProcessGroup(*(app.get()), *(procRecord.get()), adjustSource);
 }
 
 bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,
