@@ -647,10 +647,10 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
     app.audioState_ = static_cast<int32_t>(value);
     if (resType == ResType::RES_TYPE_AUDIO_STATUS_CHANGE) 
     {
-        CgroupAdjuster::GetInstance::AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
+        CgroupAdjuster::GetInstance::AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_WEBVIEW_STATE_CHANGED);
     } else {
-        CgroupAdjuster::GetInstance::AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
+        CgroupAdjuster::GetInstance::AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
     }
 }
