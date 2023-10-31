@@ -101,6 +101,7 @@ public:
     bool isActive_ {false};
     bool inSelfRenderCgroup_ = false;
     bool isExtensionProcess_ = false;
+    bool isSubscribedMmiEvent_ = false;
 
     uint32_t continuousTaskFlag_ = 0;
     int32_t renderTid_ = 0;

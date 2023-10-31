@@ -32,10 +32,15 @@
 #include "movement_data_utils.h"
 #endif
 #include "input_manager.h"
+#include "sched_controller.h"
+#include "supervisor.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 const static int8_t OPERATION_SUCCESS = 0;
+const static int32_t TUPLE_PID = 0;
+const static int32_t TUPLE_UID = 1;
+const static int32_t TUPLE_NAME = 2;
 const static bool DEVICE_MOVEMENT_OBSERVER_ENABLE =
     system::GetBoolParameter("persist.sys.ressched_device_movement_observer_switch", false);
 IMPLEMENT_SINGLE_INSTANCE(ObserverManager)
@@ -337,6 +342,8 @@ void ObserverManager::InitMMiEventObserver()
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a mmi observer failed!");
     }
+    // Get all events registered in multimodal input.
+    GetAllMmiStatusData();
 }
 
 void ObserverManager::DisableMMiEventObserver()
@@ -354,6 +361,33 @@ void ObserverManager::DisableMMiEventObserver()
         RESSCHED_LOGW("ObserverManager disable mmiEventObserver failed");
     }
     mmiEventObserver_ = nullptr;
+}
+
+void ObserverManager::GetAllMmiStatusData()
+{
+    RESSCHED_LOGI("get all mmi subscribed events.");
+    MMI::InputManager::GetInstance()->GetAllMmiSubscribedEvents(mmiStatusData_);
+    if (mmiStatusData_.empty()) {
+        RESSCHED_LOGI("get mmi subscribed events is null.");
+        return;
+    }
+    auto supervisor = SchedController::GetInstance().GetSupervisor();
+    if (supervisor == nullptr) {
+        RESSCHED_LOGE("get supervisor is null.");
+        return;
+    }
+
+    for (const auto& data : mmiStatusData_) {
+        int32_t pid = std::get<TUPLE_PID>(data);
+        int32_t uid = std::get<TUPLE_UID>(data);
+        std::string bundleName = std::get<TUPLE_NAME>(data);
+        RESSCHED_LOGD("get mmi subscribed events, pid:%{public}d, uid:%{public}d, bundleName:%{public}s.",
+            pid, uid, bundleName.c_str());
+        auto app = supervisor->GetAppRecordNonNull(uid);
+        auto procRecord = app->GetProcessRecordNonNull(pid);
+        app->SetName(bundleName);
+        procRecord->isSubscribedMmiEvent_ = true;
+    }
 }
 
 extern "C" void ObserverManagerInit()
