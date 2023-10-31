@@ -372,6 +372,8 @@ enum SceneControl : int64_t {
 enum AudioStatus : int64_t {
     START = 0,
     STOP = 1,
+    RENDERERRUNNING  = 2,
+    RENDERERSTOPPED  = 3,
 };
 
 /**

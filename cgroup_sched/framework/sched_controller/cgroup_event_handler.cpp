@@ -622,6 +622,35 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
         AdjustSource::ADJS_REPORT_WINDOW_STATE_CHANGED);
 }
 
+void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+        return;
+    }
+    if (uid <= 0 || pid <= 0) {
+        return;
+    }
+
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    auto procRecord = app->GetProcessRecordNonNull(pid);
+    procRecord->audioState_ = static_cast<int32_t>(value);
+    CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+        __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
+
+    AdjustSource adjustSource = resType == ResType::RES_TYPE_AUDIO_STATUS_CHANGE ?
+        AdjustSource::ADJS_REPORT_WEBVIEW_STATE_CHANGED :
+        AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED;
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), adjustSource);
+}
+
 bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,
     int64_t value, const nlohmann::json& payload)
 {
