@@ -26,12 +26,10 @@
 #include <vector>            // for vector
 #include <unistd.h>          // for open, write
 #include <fcntl.h>           // for O_RDWR, O_CLOEXEC
-#include "socperf_common.h"  // for ResStatus, ResAction, ResNode, INVALID_V...
 
 namespace OHOS {
 namespace SOCPERF {
-SocPerfHandler::SocPerfHandler(
-    const std::shared_ptr<AppExecFwk::EventRunner>& runner) : AppExecFwk::EventHandler(runner)
+SocPerfHandler::SocPerfHandler()
 {
 }
 
@@ -39,118 +37,115 @@ SocPerfHandler::~SocPerfHandler()
 {
 }
 
-void SocPerfHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event)
+void SocPerfHandler::InitQueue(const std::string& queueName)
 {
-    if (event == nullptr) {
+    queue = std::make_shared<ffrt::queue>(queueName.c_str());
+    if (queue == nullptr) {
+        SOC_PERF_LOGE("create ffrt queue failed");
+    }
+}
+
+void SocPerfHandler::InitResNodeInfo(std::shared_ptr<ResNode> resNode)
+{
+    if (resNode == nullptr || queue == nullptr) {
         return;
     }
-    switch (event->GetInnerEventId()) {
-        case INNER_EVENT_ID_INIT_RES_NODE_INFO: {
-            auto resNode = event->GetSharedObject<ResNode>();
-            if (resNode != nullptr) {
-                resNodeInfo.insert(std::pair<int32_t, std::shared_ptr<ResNode>>(resNode->id, resNode));
-                WriteNode(resNode->path, std::to_string(resNode->def));
-                auto resStatus = std::make_shared<ResStatus>(resNode->def);
-                resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(resNode->id, resStatus));
-            }
-            break;
-        }
-        case INNER_EVENT_ID_INIT_GOV_RES_NODE_INFO: {
-            auto govResNode = event->GetSharedObject<GovResNode>();
-            if (govResNode != nullptr) {
-                govResNodeInfo.insert(std::pair<int32_t, std::shared_ptr<GovResNode>>(govResNode->id, govResNode));
-                for (int32_t i = 0; i < (int32_t)govResNode->paths.size(); i++) {
-                    WriteNode(govResNode->paths[i], govResNode->levelToStr[govResNode->def][i]);
-                }
-                auto resStatus = std::make_shared<ResStatus>(govResNode->def);
-                resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(govResNode->id, resStatus));
-            }
-            break;
-        }
-        default: {
-            if (ProcessBoostEvent(event)) {
-                break;
-            }
-            ProcessLimitEvent(event);
-            break;
-        }
-    }
+    std::function<void()>&& initResNodeInfoFunc = [this, resNode]() {
+        resNodeInfo.insert(std::pair<int32_t, std::shared_ptr<ResNode>>(resNode->id, resNode));
+        WriteNode(resNode->path, std::to_string(resNode->def));
+        auto resStatus = std::make_shared<ResStatus>(resNode->def);
+        resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(resNode->id, resStatus));
+    };
+    queue->submit(initResNodeInfoFunc);
 }
 
-bool SocPerfHandler::ProcessBoostEvent(const AppExecFwk::InnerEvent::Pointer& event)
+void SocPerfHandler::InitGovResNodeInfo(std::shared_ptr<GovResNode> govResNode)
 {
-    bool isBoostEvent = true;
-    switch (event->GetInnerEventId()) {
-        case INNER_EVENT_ID_DO_FREQ_ACTION_PACK: {
-            std::shared_ptr<ResActionItem> head = event->GetSharedObject<ResActionItem>();
-            while (head) {
-                if (IsValidResId(head->resId)) {
-                    UpdateResActionList(head->resId, head->resAction, false);
-                }
-                auto temp = head->next;
-                head->next = nullptr;
-                head = temp;
-            }
-            break;
-        }
-        case INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED: {
-            int32_t resId = event->GetParam();
-            if (!IsValidResId(resId)) {
-                return true;
-            }
-            std::shared_ptr<ResAction> resAction = event->GetSharedObject<ResAction>();
-            if (resAction != nullptr) {
-                UpdateResActionList(resId, resAction, true);
-            }
-            break;
-        }
-        default: {
-            isBoostEvent = false;
-            break;
-        }
+    if (govResNode == nullptr || queue == nullptr) {
+        return;
     }
-    return isBoostEvent;
+    std::function<void()>&& initGovResNodeInfoFunc = [this, govResNode]() {
+        govResNodeInfo.insert(std::pair<int32_t, std::shared_ptr<GovResNode>>(govResNode->id, govResNode));
+        for (int32_t i = 0; i < (int32_t)govResNode->paths.size(); i++) {
+            WriteNode(govResNode->paths[i], govResNode->levelToStr[govResNode->def][i]);
+        }
+        auto resStatus = std::make_shared<ResStatus>(govResNode->def);
+        resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(govResNode->id, resStatus));
+    };
+    queue->submit(initGovResNodeInfoFunc);
 }
 
-void SocPerfHandler::ProcessLimitEvent(const AppExecFwk::InnerEvent::Pointer& event)
+void SocPerfHandler::DoFreqActionPack(std::shared_ptr<ResActionItem> head)
 {
-    switch (event->GetInnerEventId()) {
-        case INNER_EVENT_ID_DO_FREQ_ACTION: {
-            int32_t resId = event->GetParam();
-            if (!IsValidResId(resId)) {
-                return;
-            }
-            std::shared_ptr<ResAction> resAction = event->GetSharedObject<ResAction>();
-            if (resAction != nullptr) {
-                UpdateResActionList(resId, resAction, false);
-            }
-            break;
-        }
-        case INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ: {
-            powerLimitBoost = event->GetParam() == 1;
-            for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
-                ArbitrateCandidate(iter->first);
-            }
-            break;
-        }
-        case INNER_EVENT_ID_THERMAL_LIMIT_BOOST_FREQ: {
-            thermalLimitBoost = event->GetParam() == 1;
-            for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
-                ArbitrateCandidate(iter->first);
-            }
-            break;
-        }
-        case INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL: {
-            HandleDoFreqActionLevel(event->GetParam(), event->GetSharedObject<ResAction>());
-            break;
-        }
-        default: {
-            break;
-        }
+    if (head == nullptr || queue == nullptr) {
+        return;
     }
+    std::function<void()>&& doFreqActionPackFunc = [this, head]() {
+        std::shared_ptr<ResActionItem> queueHead = head;
+        while (queueHead) {
+            if (IsValidResId(queueHead->resId)) {
+                UpdateResActionList(queueHead->resId, queueHead->resAction, false);
+            }
+            auto temp = queueHead->next;
+            queueHead->next = nullptr;
+            queueHead = temp;
+        }
+    };
+    queue->submit(doFreqActionPackFunc);
 }
 
-void SocPerfHandler::HandleDoFreqActionLevel(int32_t resId, std::shared_ptr<ResAction> resAction)
+void SocPerfHandler::UpdatePowerLimitBoostFreq(bool powerLimitBoost)
+{
+    if (queue == nullptr) {
+        return;
+    }
+    std::function<void()>&& updatePowerLimitBoostFreqFunc = [this, powerLimitBoost]() {
+        this->powerLimitBoost = powerLimitBoost;
+        for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
+            ArbitrateCandidate(iter->first);
+        }
+    };
+    queue->submit(updatePowerLimitBoostFreqFunc);
+}
+
+void SocPerfHandler::UpdateThermalLimitBoostFreq(bool thermalLimitBoost)
+{
+    if (queue == nullptr) {
+        return;
+    }
+    std::function<void()>&& updateThermalLimitBoostFreqFunc = [this, thermalLimitBoost]() {
+        this->thermalLimitBoost = thermalLimitBoost;
+        for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
+            ArbitrateCandidate(iter->first);
+        }
+    };
+    queue->submit(updateThermalLimitBoostFreqFunc);
+}
+
+void SocPerfHandler::UpdateLimitStatus(int32_t eventId, std::shared_ptr<ResAction> resAction, int32_t resId)
+{
+    if (resAction == nullptr || queue == nullptr) {
+        return;
+    }
+    std::function<void()>&& updateLimitStatusFunc = [this, eventId, resId, resAction]() {
+        if (eventId == INNER_EVENT_ID_DO_FREQ_ACTION) {
+            DoFreqAction(resId, resAction);
+        } else if (eventId == INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL) {
+            DoFreqActionLevel(resId, resAction);
+        }
+    };
+    queue->submit(updateLimitStatusFunc);
+}
+
+void SocPerfHandler::DoFreqAction(int32_t resId, std::shared_ptr<ResAction> resAction)
+{
+    if (!IsValidResId(resId) || resAction == nullptr) {
+        return;
+    }
+    UpdateResActionList(resId, resAction, false);
+}
+
+void SocPerfHandler::DoFreqActionLevel(int32_t resId, std::shared_ptr<ResAction> resAction)
 {
     int32_t realResId = resId - RES_ID_ADDITION;
     if (!IsValidResId(realResId) || !resAction) {
@@ -161,6 +156,19 @@ void SocPerfHandler::HandleDoFreqActionLevel(int32_t resId, std::shared_ptr<ResA
         return;
     }
     UpdateResActionList(realResId, resAction, false);
+}
+
+void SocPerfHandler::PostDelayTask(int32_t resId, std::shared_ptr<ResAction> resAction)
+{
+    if (!IsValidResId(resId) || queue == nullptr || resAction == nullptr) {
+        return;
+    }
+    ffrt::task_attr taskAttr;
+    taskAttr.delay(resAction->duration * SCALES_OF_MILLISECONDS_TO_MICROSECONDS);
+    std::function<void()>&& postDelayTaskFunc = [this, resId, resAction]() {
+        UpdateResActionList(resId, resAction, true);
+    };
+    queue->submit(postDelayTaskFunc, taskAttr);
 }
 
 bool SocPerfHandler::GetResValueByLevel(int32_t resId, int32_t level, int64_t& resValue)
@@ -219,9 +227,7 @@ void SocPerfHandler::UpdateResActionListByInstantMsg(int32_t resId, int32_t type
         case EVENT_INVALID: {
             resStatus->resActionList[type].push_back(resAction);
             UpdateCandidatesValue(resId, type);
-            auto event = AppExecFwk::InnerEvent::Get(
-                INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED, resAction, resId);
-            this->SendEvent(event, resAction->duration);
+            PostDelayTask(resId, resAction);
             break;
         }
         case EVENT_ON: {
@@ -238,9 +244,7 @@ void SocPerfHandler::UpdateResActionListByInstantMsg(int32_t resId, int32_t type
             } else {
                 resStatus->resActionList[type].push_back(resAction);
                 UpdateCandidatesValue(resId, type);
-                auto event = AppExecFwk::InnerEvent::Get(
-                    INNER_EVENT_ID_DO_FREQ_ACTION_DELAYED, resAction, resId);
-                this->SendEvent(event, resAction->duration);
+                PostDelayTask(resId, resAction);
             }
             break;
         }

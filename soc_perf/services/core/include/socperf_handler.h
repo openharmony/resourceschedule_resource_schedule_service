@@ -23,7 +23,9 @@
 #include <stdint.h>         // for uint32_t
 #include "event_handler.h"  // for EventHandler
 #include "event_runner.h"
+#include "ffrt.h"
 #include "inner_event.h"    // for InnerEvent, InnerEvent::Pointer
+#include "socperf_common.h"
 namespace OHOS { namespace SOCPERF { class GovResNode; } }
 namespace OHOS { namespace SOCPERF { class ResAction; } }
 namespace OHOS { namespace SOCPERF { class ResNode; } }
@@ -42,24 +44,29 @@ enum SocPerfInnerEvent : uint32_t {
     INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL,
 };
 
-class SocPerfHandler : public AppExecFwk::EventHandler {
+class SocPerfHandler {
 public:
-    explicit SocPerfHandler(const std::shared_ptr<AppExecFwk::EventRunner>& runner);
-    ~SocPerfHandler() override;
-    void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
+    explicit SocPerfHandler();
+    ~SocPerfHandler();
+    void InitQueue(const std::string& queueName);
+    void InitResNodeInfo(std::shared_ptr<ResNode> resNode);
+    void InitGovResNodeInfo(std::shared_ptr<GovResNode> govResNode);
+    void DoFreqActionPack(std::shared_ptr<ResActionItem> head);
+    void UpdatePowerLimitBoostFreq(bool powerLimitBoost);
+    void UpdateThermalLimitBoostFreq(bool thermalLimitBoost);
+    void UpdateLimitStatus(int32_t eventId, std::shared_ptr<ResAction> resAction, int32_t resId);
 
 private:
+    static const int32_t SCALES_OF_MILLISECONDS_TO_MICROSECONDS = 1000;
     std::unordered_map<int32_t, std::shared_ptr<ResNode>> resNodeInfo;
     std::unordered_map<int32_t, std::shared_ptr<GovResNode>> govResNodeInfo;
     std::unordered_map<int32_t, std::shared_ptr<ResStatus>> resStatusInfo;
     std::unordered_map<std::string, int32_t> fdInfo;
+    std::shared_ptr<ffrt::queue> queue = nullptr;
     bool powerLimitBoost = false;
     bool thermalLimitBoost = false;
 
 private:
-    bool ProcessBoostEvent(const AppExecFwk::InnerEvent::Pointer& event);
-    void ProcessLimitEvent(const AppExecFwk::InnerEvent::Pointer& event);
-    void HandleDoFreqActionLevel(int32_t resId, std::shared_ptr<ResAction> resAction);
     bool GetResValueByLevel(int32_t resId, int32_t level, int64_t& resValue);
     void UpdateResActionList(int32_t resId, std::shared_ptr<ResAction> resAction, bool delayed);
     void UpdateResActionListByDelayedMsg(int32_t resId, int32_t type,
@@ -78,6 +85,9 @@ private:
     bool IsResId(int32_t resId);
     bool IsValidResId(int32_t resId);
     int32_t GetFdForFilePath(std::string filePath);
+    void DoFreqAction(int32_t resId, std::shared_ptr<ResAction> resAction);
+    void DoFreqActionLevel(int32_t resId, std::shared_ptr<ResAction> resAction);
+    void PostDelayTask(int32_t resId, std::shared_ptr<ResAction> resAction);
 };
 } // namespace SOCPERF
 } // namespace OHOS

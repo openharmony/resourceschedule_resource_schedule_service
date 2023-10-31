@@ -123,8 +123,7 @@ void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
     for (auto handler : handlers) {
         if (handler) {
-            auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ, onOffTag ? 1 : 0);
-            handler->SendEvent(event);
+            handler->UpdatePowerLimitBoostFreq(onOffTag);
         }
     }
     FinishTrace(HITRACE_TAG_OHOS);
@@ -143,8 +142,7 @@ void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
     for (auto handler : handlers) {
         if (handler) {
-            auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_THERMAL_LIMIT_BOOST_FREQ, onOffTag ? 1 : 0);
-            handler->SendEvent(event);
+            handler->UpdateThermalLimitBoostFreq(onOffTag);
         }
     }
     FinishTrace(HITRACE_TAG_OHOS);
@@ -158,8 +156,7 @@ void SocPerf::SendLimitRequestEventOff(std::shared_ptr<SocPerfHandler> handler,
         && limitRequest[clientId][resId] != INVALID_VALUE) {
         auto resAction = std::make_shared<ResAction>(
             limitRequest[clientId][resId], 0, clientId, EVENT_OFF, -1);
-        auto event = AppExecFwk::InnerEvent::Get(eventId, resAction, resId);
-        handler->SendEvent(event);
+        handler->UpdateLimitStatus(eventId, resAction, resId);
         limitRequest[clientId].erase(iter);
     }
 }
@@ -169,8 +166,7 @@ void SocPerf::SendLimitRequestEventOn(std::shared_ptr<SocPerfHandler> handler,
 {
     if (resValue != INVALID_VALUE && resValue != RESET_VALUE) {
         auto resAction = std::make_shared<ResAction>(resValue, 0, clientId, EVENT_ON, -1);
-        auto event = AppExecFwk::InnerEvent::Get(eventId, resAction, resId);
-        handler->SendEvent(event);
+        handler->UpdateLimitStatus(eventId, resAction, resId);
         limitRequest[clientId].insert(std::pair<int32_t, int32_t>(resId, resValue));
     }
 }
@@ -246,8 +242,7 @@ void SocPerf::DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int
         if (!handlers[i] || !header[i]) {
             continue;
         }
-        auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_DO_FREQ_ACTION_PACK, header[i]);
-        handlers[i]->SendEvent(event);
+        handlers[i]->DoFreqActionPack(header[i]);
     }
 }
 
@@ -335,12 +330,13 @@ bool SocPerf::CreateHandlers()
             handlers[i] = nullptr;
             continue;
         }
-        auto runner = AppExecFwk::EventRunner::Create(threadName + std::to_string(i));
-        if (!runner) {
-            SOC_PERF_LOGE("Failed to Create EventRunner");
+        auto socPerfHandler = std::make_shared<SocPerfHandler>();
+        if (!socPerfHandler) {
+            SOC_PERF_LOGE("Failed to Create socPerfHandler");
             return false;
         }
-        handlers[i] = std::make_shared<SocPerfHandler>(runner);
+        socPerfHandler->InitQueue(threadName.append(std::to_string(i)));
+        handlers[i] = socPerfHandler;
     }
     SOC_PERF_LOGD("Success to Create All Handler threads");
     return true;
@@ -354,8 +350,7 @@ void SocPerf::InitHandlerThreads()
         if (!handler) {
             continue;
         }
-        auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_INIT_RES_NODE_INFO, resNode);
-        handler->SendEvent(event);
+        handler->InitResNodeInfo(resNode);
     }
     for (auto iter = govResNodeInfo.begin(); iter != govResNodeInfo.end(); ++iter) {
         std::shared_ptr<GovResNode> govResNode = iter->second;
@@ -363,8 +358,7 @@ void SocPerf::InitHandlerThreads()
         if (!handler) {
             continue;
         }
-        auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_INIT_GOV_RES_NODE_INFO, govResNode);
-        handler->SendEvent(event);
+        handler->InitGovResNodeInfo(govResNode);
     }
 }
 

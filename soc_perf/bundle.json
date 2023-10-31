@@ -25,6 +25,7 @@
         "c_utils",
         "config_policy",
         "eventhandler",
+        "ffrt",
         "hitrace",
         "hilog",
         "ipc",
