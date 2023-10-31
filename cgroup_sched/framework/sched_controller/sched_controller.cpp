@@ -139,7 +139,7 @@ void SchedController::DispatchResource(uint32_t resType, int64_t value, const nl
                 handler->HandleReportWindowState(resType, value, payload);
                 break;
             }
-            case ResType::RES_TYPE_REPORT_AUDIO_STATUS_CHANGE: {
+            case ResType::RES_TYPE_AUDIO_STATUS_CHANGE: {
                 handler->HandleReportAudioState(resType, value, payload);
                 break;
             }

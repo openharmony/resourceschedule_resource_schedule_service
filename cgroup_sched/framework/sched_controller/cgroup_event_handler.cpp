@@ -604,7 +604,7 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     if (!mainProcRecord) {
         return;
     }
-    if (CheckVisibilityForRenderProcess(*(app.get()), *(procRecord.get())) {
+    if (CheckVisibilityForRenderProcess(*(app.get()), *(procRecord.get()))) {
         CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d is not visible but active",
             __func__, app->GetName().c_str(), uid, pid, state);
     })
@@ -635,7 +635,7 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
     auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecordNonNull(pid);
     CGS_LOGD("%{public}s : render process name: %{public}s, uid: %{public}d, pid: %{public}d, tid: %{public}d, "\
-        " state: %{public}d", __func__, app->GetName().c_str(), uid, pid, state);
+        " state: %{public}d", __func__, app->GetName().c_str(), uid, pid, tid, state);
 
     if (state == ResType::AudioStatus::START) {
         procRecord->isPlayingAudio_ = true;
