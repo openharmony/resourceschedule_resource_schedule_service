@@ -27,8 +27,8 @@ namespace ResourceSchedule {
 namespace {
     #define PAYLOAD_MAX_SIZE 4096
     constexpr int32_t FOUNDATION_UID = 5523;
-    constexpr int32_t INPUT_UID = 5523;
-    constexpr int32_t DHARDWARE_UID = 5523;
+    constexpr int32_t INPUT_UID = 6696;
+    constexpr int32_t DHARDWARE_UID = 3056;
 
     bool IsValidToken(MessageParcel& data)
     {
@@ -148,7 +148,7 @@ void ResSchedServiceStub::Init()
     resource_uid_other_process = {
         { ResType::RES_TYPE_APP_ABILITY_START, FOUNDATION_UID },
         { ResType::RES_TYPE_REPORT_MMI_PROCESS, INPUT_UID },
-        { ResType::RES_TYPE_NETWORK_LATENCY_REQUEST, DHARDWARE_UID},
+        { ResType::RES_TYPE_NETWORK_LATENCY_REQUEST, DHARDWARE_UID },
     };
 }
 } // namespace ResourceSchedule
