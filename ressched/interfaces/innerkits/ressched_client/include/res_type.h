@@ -134,6 +134,8 @@ enum : uint32_t {
     RES_TYPE_AUDIO_STATUS_CHANGE = 46,
     // report entering the multimodalinput state, value means subscribed multimodalinput state.
     RES_TYPE_MMI_INPUT_STATE = 47,
+    // report anco load protect file config
+    RES_TYPE_ANCO_CUST = 48,
 };
 
 inline const std::map<uint32_t, std::string> resTypeToStr = {
@@ -184,7 +186,8 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_LOAD_URL, "RES_TYPE_LOAD_URL" },
     { RES_TYPE_MOUSEWHEEL, "RES_TYPE_MOUSEWHEEL" },
     { RES_TYPE_AUDIO_STATUS_CHANGE, "RES_TYPE_AUDIO_STATUS_CHANGE" },
-    { RES_TYPE_MMI_INPUT_STATE, "RES_TYPE_MMI_INPUT_STATE" }
+    { RES_TYPE_MMI_INPUT_STATE, "RES_TYPE_MMI_INPUT_STATE" },
+    { RES_TYPE_ANCO_CUST, "RES_TYPE_ANCO_CUST" }
 };
 
 /**
@@ -427,6 +430,14 @@ enum RunninglockState : int64_t {
     RUNNINGLOCK_STATE_ENABLE = 1,
     RUNNINGLOCK_STATE_PROXIED = 2,
     RUNNINGLOCK_STATE_UNPROXIED_RESTORE = 3,
+};
+
+/**
+ * @brief anco cust config
+*/
+enum AncoConfig : int64_t {
+    PROTECT_LRU = 0,
+    DEFAULT = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
