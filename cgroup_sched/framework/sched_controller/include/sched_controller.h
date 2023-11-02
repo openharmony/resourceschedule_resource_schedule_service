@@ -49,6 +49,7 @@ public:
     void UnsubscribeWindowState();
     void UnregisterStateObservers();
     int GetProcessGroup(pid_t pid);
+    void GetRunningLockState();
     void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status);
     void DispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload);
     std::string GetBundleNameByUid(const int32_t uid);

@@ -31,6 +31,8 @@ public:
 
     int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
 
+    void DumpProcessRunningLock(std::string& result);
+
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedService);
 
