@@ -25,6 +25,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+using namespace OHOS::Security;
 namespace {
     #define PAYLOAD_MAX_SIZE 4096
     constexpr int32_t FOUNDATION_UID = 5523;
