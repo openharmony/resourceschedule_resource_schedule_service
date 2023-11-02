@@ -31,7 +31,6 @@ using namespace OHOS::Security;
 namespace {
     constexpr int32_t DUMP_OPTION = 0;
     constexpr int32_t DUMP_PARAM_INDEX = 1;
-    constexpr int32_t SAMGR_UID = 5555;
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
 }
 
@@ -68,21 +67,8 @@ void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann
 
 int32_t ResSchedService::KillProcess(const nlohmann::json& payload)
 {
-    uint32_t accessToken = IPCSkeleton::GetCallingTokenID();
-    int32_t uid = IPCSkeleton::GetCallingUid();
-    AccessToken::ATokenTypeEnum tokenTypeFlag = AccessToken::AccessTokenKit::GetTokenTypeFlag(accessToken);
-    if (uid != SAMGR_UID || tokenTypeFlag != AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
-        RESSCHED_LOGE("no permission， kill process fail");
-        return RES_SCHED_KILL_PROCESS_FAIL;
-    }
-    AccessToken::NativeTokenInfo nativeTokenInfo;
-    int32_t result = AccessToken::AccessTokenKit::GetNativeTokenInfo(accessToken, nativeTokenInfo);
-    if (result == ERR_OK) {
-        return ResSchedMgr::GetInstance().KillProcessByClient(payload, nativeTokenInfo.processName);
-    } else {
-        RESSCHED_LOGE("Kill process get token info fail.");
-        return RES_SCHED_ACCESS_TOKEN_FAIL;
-    }
+    return ResSchedMgr::GetInstance().KillProcessByClient(payload);
+
 }
 
 int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& args)

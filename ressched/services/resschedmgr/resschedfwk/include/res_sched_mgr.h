@@ -63,7 +63,7 @@ public:
      * @param payload process message
      * @param killClientInitiator who want to kill other
      */
-    int32_t KillProcessByClient(const nlohmann::json& payload = nullptr, std::string killClientInitiator = "");
+    int32_t KillProcessByClient(const nlohmann::json& payload = nullptr);
 private:
     void DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload);
     std::shared_ptr<KillProcess> killProcess_ = nullptr;
