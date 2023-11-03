@@ -76,6 +76,7 @@ int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel
     if (!IsValidToken(data)) {
         return ERR_RES_SCHED_PARCEL_ERROR;
     }
+    uint32_t accessToken = IPCSkeleton::GetCallingTokenID();
     int32_t uid = IPCSkeleton::GetCallingUid();
     Security::AccessToken::ATokenTypeEnum tokenTypeFlag = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(accessToken);
     if (uid != SAMGR_UID || tokenTypeFlag != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
