@@ -143,12 +143,8 @@ void ResSchedService::DumpProcessRunningLock(std::string &result)
                 bool lockState = lockIt->second;
                 result.append("uid:").append(ToString(uid))
                     .append(", pid:").append(ToString(pid))
-                    .append(", lockType:").append(ToString(lockType));
-                if (lockState) {
-                    result.append(", lockState:").append("true").append("\n");
-                } else {
-                    result.append(", lockState:").append("false").append("\n");
-                }
+                    .append(", lockType:").append(ToString(lockType))
+                    .append(", lockState:").append(ToString(lockState)).append("\n");
             }
         }
     }

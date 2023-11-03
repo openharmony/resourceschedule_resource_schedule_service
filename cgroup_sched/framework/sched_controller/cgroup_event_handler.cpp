@@ -682,8 +682,8 @@ void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t 
         type = payload["type"].get<std::uint32_t>();
     }
     state = static_cast<int32_t>(value);
-    CGS_LOGD("report running lock event, uid is %{public}d, pid is %{public}d, lockType is %{public}d, state is %{public}d",
-            uid, pid, type, state);
+    CGS_LOGD("report running lock event, uid:%{public}d, pid:%{public}d, lockType:%{public}d, state:%{public}d",
+        uid, pid, type, state);
     if (type == static_cast<uint32_t>(RunningLockType::RUNNINGLOCK_SCREEN) ||
         type == static_cast<uint32_t>(RunningLockType::RUNNINGLOCK_BACKGROUND)) {
         std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
