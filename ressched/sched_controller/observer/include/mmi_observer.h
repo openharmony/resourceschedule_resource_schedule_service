@@ -30,8 +30,9 @@ public:
      * @param pid the pid.
      * @param uid the uid.
      * @param bundleName the bundleName.
+     * @param syncStatus the sync status.
     */
-    void SyncBundleName(int32_t pid, int32_t uid, std::string bundleName) override;
+    void SyncBundleName(int32_t pid, int32_t uid, std::string bundleName, int32_t syncStatus) override;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
