@@ -136,7 +136,7 @@ enum : uint32_t {
     RES_TYPE_MMI_INPUT_STATE = 47,
     // report anco load protect file config
     RES_TYPE_ANCO_CUST = 48,
-    // report anco app is front, value 0: anco front from background taskbar, value 1: anco front because click icon
+    // report anco app is front
     RES_TYPE_ANCO_APP_FRONT = 49,
 };
 
