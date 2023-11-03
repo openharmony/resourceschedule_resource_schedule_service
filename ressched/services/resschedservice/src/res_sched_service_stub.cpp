@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-using namespace OHOS::Security;
 namespace {
     #define PAYLOAD_MAX_SIZE 4096
     constexpr int32_t FOUNDATION_UID = 5523;
@@ -78,8 +77,8 @@ int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel
         return ERR_RES_SCHED_PARCEL_ERROR;
     }
     int32_t uid = IPCSkeleton::GetCallingUid();
-    AccessToken::ATokenTypeEnum tokenTypeFlag = AccessToken::AccessTokenKit::GetTokenTypeFlag(accessToken);
-    if (uid != SAMGR_UID || tokenTypeFlag != AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
+    Security::AccessToken::ATokenTypeEnum tokenTypeFlag = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(accessToken);
+    if (uid != SAMGR_UID || tokenTypeFlag != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
         RESSCHED_LOGE("no permission， kill process fail");
         return RES_SCHED_KILL_PROCESS_FAIL;
     }
