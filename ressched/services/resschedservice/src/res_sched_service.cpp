@@ -24,6 +24,8 @@
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "tokenid_kit.h"
+#include "sched_controller.h"
+#include "supervisor.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -100,6 +102,8 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
             DumpAllInfo(result);
         } else if (argsInStr[DUMP_OPTION] == "-p") {
             PluginMgr::GetInstance().DumpAllPlugin(result);
+        } else if (argsInStr[DUMP_OPTION] == "getRunningLockInfo") {
+            DumpProcessRunningLock(result);
         } else {
             result.append("Error params.");
         }
@@ -116,6 +120,40 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
     }
     return ERR_OK;
 }
+
+void ResSchedService::DumpProcessRunningLock(std::string &result)
+{
+    auto supervisor = SchedController::GetInstance().GetSupervisor();
+    if (supervisor == nullptr) {
+        result.append("get supervisor failed");
+        return;
+    }
+
+    std::map<int32_t, std::shared_ptr<Application>> uidMap = supervisor->GetUidsMap();
+    for (auto it = uidMap.begin(); it != uidMap.end(); it++) {
+        int32_t uid = it->first;
+        std::shared_ptr<Application> app = it->second;
+        std::map<pid_t, std::shared_ptr<ProcessRecord>> pidMap = app->GetPidsMap();
+        for (auto pidIt = pidMap.begin(); pidIt != pidMap.end(); pidIt++) {
+            int32_t pid = pidIt->first;
+            std::shared_ptr<ProcessRecord> process = pidIt->second;
+            for (auto lockIt = process->runningLockState_.begin();
+                lockIt != process->runningLockState_.end(); lockIt++) {
+                uint32_t lockType = lockIt->first;
+                bool lockState = lockIt->second;
+                result.append("uid:").append(ToString(uid))
+                    .append(", pid:").append(ToString(pid))
+                    .append(", lockType:").append(ToString(lockType));
+                if (lockState) {
+                    result.append(", lockState:").append("true").append("\n");
+                } else {
+                    result.append(", lockState:").append("false").append("\n");
+                }
+            }
+        }
+    }
+}
+
 void ResSchedService::DumpUsage(std::string &result)
 {
     result.append("usage: resource schedule service dump [<options>]\n")

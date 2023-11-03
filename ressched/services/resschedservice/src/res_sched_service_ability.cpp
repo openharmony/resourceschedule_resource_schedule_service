@@ -75,6 +75,12 @@ void ResSchedServiceAbility::OnStart()
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of background task manager service failed.");
     }
+    if (!AddSystemAbilityListener(POWER_MANAGER_SERVICE_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of power manager service failed.");
+    }
     EventControllerInit();
     ObserverManagerInit();
     RESSCHED_LOGI("ResSchedServiceAbility ::OnStart.");
@@ -87,6 +93,7 @@ void ResSchedServiceAbility::OnStop()
     RemoveSystemAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID);
     RemoveSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID);
     RemoveSystemAbilityListener(APP_MGR_SERVICE_ID);
+    RemoveSystemAbilityListener(POWER_MANAGER_SERVICE_ID);
     ResSchedMgr::GetInstance().Stop();
     CgroupSchedDeinit();
     RESSCHED_LOGI("ResSchedServiceAbility::OnStop!");

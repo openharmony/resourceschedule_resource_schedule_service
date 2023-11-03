@@ -46,7 +46,10 @@ ohos_shared_library("resschedsvc") {
   public_configs = [ ":resschedsvc_public_config" ]
 
   defines = []
-  include_dirs = []
+  include_dirs = [
+    "${cgroup_sched_framework}/sched_controller/include",
+    "${cgroup_sched_framework}/process_group/include",
+  ]
 
   sources = [
     "../sched_controller/common_event/src/event_controller.cpp",

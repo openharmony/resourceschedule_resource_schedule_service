@@ -131,6 +131,12 @@ void HiSysEventObserver::ProcessRunningLockEvent(const nlohmann::json& root, con
         RESSCHED_LOGE("running lock event pid format error!");
         return;
     }
+    if (root.contains("TYPE") && root.at("TYPE").is_number_integer()) {
+        payload["type"] = root.at("TYPE").get<std::uint32_t>();
+    } else {
+        RESSCHED_LOGE("running lock event lock type format error!");
+        return;
+    }
 
     if (root.contains("STATE") && root.at("STATE").is_number_integer()) {
         RunningLockState lockState = RunningLockState(root.at("STATE").get<std::int32_t>());

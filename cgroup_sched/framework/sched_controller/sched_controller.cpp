@@ -34,6 +34,7 @@
 #include "res_type.h"
 #include "supervisor.h"
 #include "window_state_observer.h"
+#include "power_mgr_client.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -45,6 +46,7 @@ namespace {
 #ifdef CONFIG_BGTASK_MGR
 using OHOS::BackgroundTaskMgr::BackgroundTaskMgrHelper;
 #endif
+using namespace PowerMgr;
 
 OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
 {
@@ -142,6 +144,10 @@ void SchedController::DispatchResource(uint32_t resType, int64_t value, const nl
             case ResType::RES_TYPE_AUDIO_STATUS_CHANGE:
             case ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE: {
                 handler->HandleReportAudioState(resType, value, payload);
+                break;
+            }
+            case ResType::RES_TYPE_RUNNINGLOCK_STATE: {
+                handler->HandleReportRunningLockEvent(resType, value, payload);
                 break;
             }
             default: {
@@ -304,6 +310,28 @@ void SchedController::UnsubscribeWindowState()
     if (windowVisibilityObserver_) {
         OHOS::Rosen::WindowManager::GetInstance().UnregisterVisibilityChangedListener(windowVisibilityObserver_);
         windowVisibilityObserver_ = nullptr;
+    }
+}
+
+void SchedController::GetRunningLockState()
+{
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s, supervisor nullptr.", __func__);
+        return;
+    }
+    std::map<std::string, RunningLockInfo> runningLockLists;
+    bool ret = PowerMgrClient::GetInstance().QueryRunningLockLists(runningLockLists);
+    if (!ret) {
+        CGS_LOGE("%{public}s get running lock list failed.", __func__);
+        return;
+    }
+    for (auto it = runningLockLists.begin(); it != runningLockLists.end(); it++) {
+        std::string bundleName = it->first;
+        RunningLockInfo lockInfo = it->second;
+        std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(lockInfo.uid);
+        std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(lockInfo.pid);
+        uint32_t key = static_cast<uint32_t>(lockInfo.type);
+        procRecord->runningLockState_[key] = true;
     }
 }
 

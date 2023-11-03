@@ -25,6 +25,7 @@
 #include "sched_controller.h"
 #include "sched_policy.h"
 #include "system_ability_definition.h"
+#include "power_mgr_client.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -38,6 +39,8 @@ namespace {
 
     const std::string MMI_SERVICE_NAME = "mmi_service";
 }
+
+using namespace PowerMgr;
 
 using OHOS::AppExecFwk::ApplicationState;
 using OHOS::AppExecFwk::AbilityState;
@@ -117,6 +120,9 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
                 auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_BGTASK_OBSERVER, 0);
                 this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
             }
+            break;
+        case POWER_MANAGER_SERVICE_ID:
+            SchedController::GetInstance().GetRunningLockState();
             break;
         default:
             break;
@@ -649,6 +655,41 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
         AdjustSource::ADJS_REPORT_WEBVIEW_STATE_CHANGED :
         AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED;
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), adjustSource);
+}
+
+void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+    uint32_t type = -1;
+    int32_t state = -1;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr.", __func__);
+        return;
+    }
+
+    if (payload.contains("uid") && payload.at("uid").is_number_integer()) {
+        uid = payload["uid"].get<std::int32_t>();
+    }
+    if (payload.contains("pid") && payload.at("pid").is_number_integer()) {
+        pid = payload["pid"].get<std::int32_t>();
+    }
+    if (uid <= 0 || pid <= 0) {
+        return;
+    }
+    if (payload.contains("type") && payload.at("type").is_number_integer()) {
+        type = payload["type"].get<std::uint32_t>();
+    }
+    state = static_cast<int32_t>(value);
+    CGS_LOGD("report running lock event, uid is %{public}d, pid is %{public}d, lockType is %{public}d, state is %{public}d",
+            uid, pid, type, state);
+    if (type == static_cast<uint32_t>(RunningLockType::RUNNINGLOCK_SCREEN) ||
+        type == static_cast<uint32_t>(RunningLockType::RUNNINGLOCK_BACKGROUND)) {
+        std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
+        std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
+        procRecord->runningLockState_[type] = (state == ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE);
+    }
 }
 
 bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,

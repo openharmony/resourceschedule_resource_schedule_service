@@ -112,6 +112,7 @@ public:
     int32_t serialNum_ {-1};
     int32_t extensionType_ = -1;
 
+    std::map<uint32_t, bool> runningLockState_;
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
     std::vector<std::shared_ptr<WindowInfo>> windows_;
 
@@ -180,6 +181,11 @@ public:
         uint32_t windowId);
 
     std::shared_ptr<Application> focusedApp_ = nullptr;
+
+    inline std::map<int32_t, std::shared_ptr<Application>> GetUidsMap() const
+    {
+        return uidsMap_;
+    }
 
 private:
     std::map<int32_t, std::shared_ptr<Application>> uidsMap_;
