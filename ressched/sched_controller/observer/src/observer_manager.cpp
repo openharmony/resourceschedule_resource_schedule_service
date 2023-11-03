@@ -377,16 +377,18 @@ void ObserverManager::GetAllMmiStatusData()
         return;
     }
 
-    for (const auto& data : mmiStatusData_) {
-        int32_t pid = std::get<TUPLE_PID>(data);
-        int32_t uid = std::get<TUPLE_UID>(data);
-        std::string bundleName = std::get<TUPLE_NAME>(data);
-        RESSCHED_LOGD("get mmi subscribed events, pid:%{public}d, uid:%{public}d, bundleName:%{public}s.",
-            pid, uid, bundleName.c_str());
+    for (auto data = mmiStatusData_.begin(); data != mmiStatusData_.end(); ++data) {
+        int32_t pid = std::get<TUPLE_PID>(data->first);
+        int32_t uid = std::get<TUPLE_UID>(data->first);
+        std::string bundleName = std::get<TUPLE_NAME>(data->first);
+        int32_t status = data->second;
+        RESSCHED_LOGD(
+            "get mmi subscribed events, pid:%{public}d, uid:%{public}d, bundleName:%{public}s, status:%{public}d.",
+            pid, uid, bundleName.c_str(), status);
         auto app = supervisor->GetAppRecordNonNull(uid);
         auto procRecord = app->GetProcessRecordNonNull(pid);
         app->SetName(bundleName);
-        procRecord->isSubscribedMmiEvent_ = true;
+        procRecord->mmiStatus_ = status;
     }
 }
 

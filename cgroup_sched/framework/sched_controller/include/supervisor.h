@@ -101,7 +101,6 @@ public:
     bool isActive_ {false};
     bool inSelfRenderCgroup_ = false;
     bool isExtensionProcess_ = false;
-    bool isSubscribedMmiEvent_ = false;
 
     uint32_t continuousTaskFlag_ = 0;
     int32_t audioState_ = -1;
@@ -111,6 +110,7 @@ public:
     int32_t linkedWindowId_ {-1};
     int32_t serialNum_ {-1};
     int32_t extensionType_ = -1;
+    int32_t mmiStatus_ {-1};
 
     std::map<uint32_t, bool> runningLockState_;
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
