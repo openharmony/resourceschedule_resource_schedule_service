@@ -61,7 +61,6 @@ public:
      * Kill process by pid.
      *
      * @param payload process message
-     * @param killClientInitiator who want to kill other
      */
     int32_t KillProcessByClient(const nlohmann::json& payload = nullptr);
 private:
