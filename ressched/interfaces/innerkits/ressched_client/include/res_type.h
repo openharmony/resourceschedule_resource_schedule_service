@@ -136,6 +136,8 @@ enum : uint32_t {
     RES_TYPE_MMI_INPUT_STATE = 47,
     // report anco load protect file config
     RES_TYPE_ANCO_CUST = 48,
+    // report anco app is front
+    RES_TYPE_ANCO_APP_FRONT = 49,
 };
 
 inline const std::map<uint32_t, std::string> resTypeToStr = {
@@ -187,7 +189,8 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_MOUSEWHEEL, "RES_TYPE_MOUSEWHEEL" },
     { RES_TYPE_AUDIO_STATUS_CHANGE, "RES_TYPE_AUDIO_STATUS_CHANGE" },
     { RES_TYPE_MMI_INPUT_STATE, "RES_TYPE_MMI_INPUT_STATE" },
-    { RES_TYPE_ANCO_CUST, "RES_TYPE_ANCO_CUST" }
+    { RES_TYPE_ANCO_CUST, "RES_TYPE_ANCO_CUST" },
+    { RES_TYPE_ANCO_APP_FRONT, "RES_TYPE_ANCO_APP_FRONT" }
 };
 
 /**
