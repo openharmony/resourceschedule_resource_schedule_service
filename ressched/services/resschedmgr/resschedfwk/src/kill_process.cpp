@@ -27,7 +27,7 @@ namespace {
     constexpr int32_t SIGNAL_KILL = 9;
 }
 
-int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload, std::string killClientInitiator)
+int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload)
 {
     if ((payload == nullptr) || !(payload.contains("pid") && payload["pid"].is_string())) {
         return RES_SCHED_KILL_PROCESS_FAIL;
@@ -37,12 +37,6 @@ int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload, s
     if (pid == 0) {
         return RES_SCHED_KILL_PROCESS_FAIL;
     }
-    auto it = find(ALLOWED_CLIENT.begin(), ALLOWED_CLIENT.end(), killClientInitiator);
-    if (it == ALLOWED_CLIENT.end()) {
-        RESSCHED_LOGE("kill process fail, %{public}s no permission.", killClientInitiator.c_str());
-        return RES_SCHED_KILL_PROCESS_FAIL;
-    }
-
     int32_t killRes = KillProcessByPid(pid);
     if (killRes < 0) {
         RESSCHED_LOGE("kill process %{public}d failed.", pid);
@@ -51,8 +45,8 @@ int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload, s
         if (payload.contains("processName") && payload["processName"].is_string()) {
             processName = payload["processName"].get<string>();
         }
-        RESSCHED_LOGI("kill process, killer is %{public}s, %{public}s to be killed, pid is %{public}d.",
-            killClientInitiator.c_str(), processName.c_str(), pid);
+        RESSCHED_LOGI("kill process, killer is %{public}s to be killed, pid is %{public}d.",
+            processName.c_str(), pid);
     }
     return killRes;
 }

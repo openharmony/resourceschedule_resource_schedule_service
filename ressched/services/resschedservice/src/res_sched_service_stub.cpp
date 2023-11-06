@@ -19,6 +19,7 @@
 #include "res_sched_log.h"
 #include "res_sched_ipc_interface_code.h"
 #include "res_type.h"
+#include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
 #include "ipc_util.h"
 
@@ -29,6 +30,7 @@ namespace {
     constexpr int32_t FOUNDATION_UID = 5523;
     constexpr int32_t INPUT_UID = 6696;
     constexpr int32_t DHARDWARE_UID = 3056;
+    constexpr int32_t SAMGR_UID = 5555;
 
     bool IsValidToken(MessageParcel& data)
     {
@@ -73,6 +75,13 @@ int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel
 {
     if (!IsValidToken(data)) {
         return ERR_RES_SCHED_PARCEL_ERROR;
+    }
+    uint32_t accessToken = IPCSkeleton::GetCallingTokenID();
+    int32_t uid = IPCSkeleton::GetCallingUid();
+    Security::AccessToken::ATokenTypeEnum tokenTypeFlag = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(accessToken);
+    if (uid != SAMGR_UID || tokenTypeFlag != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
+        RESSCHED_LOGE("no permission， kill process fail");
+        return RES_SCHED_KILL_PROCESS_FAIL;
     }
     std::string payload;
     READ_PARCEL(data, String, payload, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);

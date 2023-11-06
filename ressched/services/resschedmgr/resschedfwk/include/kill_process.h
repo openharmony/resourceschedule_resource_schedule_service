@@ -23,9 +23,8 @@ namespace OHOS {
 namespace ResourceSchedule {
 class KillProcess {
 public:
-    int32_t KillProcessByPidWithClient(const nlohmann::json& payload, std::string killClientInitiator);
+    int32_t KillProcessByPidWithClient(const nlohmann::json& payload);
 private:
-    const std::vector<std::string> ALLOWED_CLIENT = {"samgr"};
 
     int32_t KillProcessByPid(const pid_t pid) const;
 };

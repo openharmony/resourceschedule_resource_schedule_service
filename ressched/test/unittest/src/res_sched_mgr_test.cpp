@@ -100,16 +100,15 @@ HWTEST_F(ResSchedMgrTest, ReportData003, TestSize.Level1)
  */
 HWTEST_F(ResSchedMgrTest, KillProcess001, TestSize.Level1)
 {
-    ResSchedMgr::GetInstance().KillProcessByClient(nullptr, "resource");
+    ResSchedMgr::GetInstance().KillProcessByClient(nullptr);
     nlohmann::json payload;
-    ResSchedMgr::GetInstance().KillProcessByClient(payload, "resource");
+    ResSchedMgr::GetInstance().KillProcessByClient(payload);
     payload["pid"] = 1234567;
-    ResSchedMgr::GetInstance().KillProcessByClient(payload, "resource");
+    ResSchedMgr::GetInstance().KillProcessByClient(payload);
     payload["pid"] = "0";
-    ResSchedMgr::GetInstance().KillProcessByClient(payload, "resource");
+    ResSchedMgr::GetInstance().KillProcessByClient(payload);
     payload["pid"] = "1234567";
-    ResSchedMgr::GetInstance().KillProcessByClient(payload, "resource");
-    ResSchedMgr::GetInstance().KillProcessByClient(payload, "samgr");
+    ResSchedMgr::GetInstance().KillProcessByClient(payload);
     EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
 }
 } // namespace ResourceSchedule

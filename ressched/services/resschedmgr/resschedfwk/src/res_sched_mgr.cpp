@@ -58,9 +58,9 @@ void ResSchedMgr::ReportDataInner(uint32_t resType, int64_t value, const nlohman
     FinishTrace(HITRACE_TAG_OHOS);
 }
 
-int32_t ResSchedMgr::KillProcessByClient(const nlohmann::json& payload, std::string killClientInitiator)
+int32_t ResSchedMgr::KillProcessByClient(const nlohmann::json& payload)
 {
-    return killProcess_->KillProcessByPidWithClient(payload, killClientInitiator);
+    return killProcess_->KillProcessByPidWithClient(payload);
 }
 
 void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload)

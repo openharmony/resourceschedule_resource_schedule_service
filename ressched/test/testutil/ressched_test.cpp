@@ -16,6 +16,7 @@
 #include <cstring>
 #include <iostream>
 #include <unordered_map>
+#include <unistd.h>
 #include "nativetoken_kit.h"
 #include "res_sched_client.h"
 #include "token_setproc.h"
@@ -24,7 +25,7 @@ const static int32_t PARAMETERS_NUM_MIN                      = 2;
 const static int32_t PARAMETERS_NUM_MIN_KILL_PROCESS         = 4;
 const static int32_t PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME = 5;
 
-static void MockProcess(std::string processName)
+static void MockProcess(int32_t uid)
 {
     static const char *perms[] = {
         "ohos.permission.DISTRIBUTED_DATASYNC"
@@ -37,11 +38,12 @@ static void MockProcess(std::string processName)
         .dcaps = nullptr,
         .perms = perms,
         .acls = nullptr,
-        .processName = processName.c_str(),
+        .processName = "samgr",
         .aplStr = "system_core",
     };
     tokenId = GetAccessTokenId(&infoInstance);
     SetSelfTokenID(tokenId);
+    setuid(uid);
 }
 
 static void KillProcess(int32_t argc, char *argv[])
@@ -49,8 +51,8 @@ static void KillProcess(int32_t argc, char *argv[])
     if (argc < PARAMETERS_NUM_MIN_KILL_PROCESS) {
         return;
     }
-    std::string caller = argv[PARAMETERS_NUM_MIN];
-    MockProcess(caller);
+    int32_t uid = atoi(argv[PARAMETERS_NUM_MIN]);
+    MockProcess(uid);
     std::unordered_map<std::string, std::string> mapPayload;
     mapPayload["pid"] = argv[PARAMETERS_NUM_MIN_KILL_PROCESS - 1];
     if (argc >= PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME) {
