@@ -42,4 +42,11 @@ ohos_shared_library("socperf_client") {
   version_script = "libsocperf_client.versionscript"
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
+  branch_protector_ret = "pac_ret"
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = true
+  }
 }
