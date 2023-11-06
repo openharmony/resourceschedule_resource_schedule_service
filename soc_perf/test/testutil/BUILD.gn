@@ -30,4 +30,11 @@ ohos_executable("socperf_test") {
 
   part_name = "soc_perf"
   subsystem_name = "resourceschedule"
+  branch_protector_ret = "pac_ret"
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
 }
