@@ -624,7 +624,7 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     if (!mainProcRecord) {
         return;
     }
-    if (CheckVisibilityForRenderProcess(*(app.get()), *(procRecord.get()))) {
+    if (CheckVisibilityForRenderProcess(*(procRecord.get()))) {
         CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d is not visible but active",
             __func__, app->GetName().c_str(), uid, pid);
     }
@@ -726,6 +726,11 @@ void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t 
         std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
         procRecord->runningLockState_[type] = (state == ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE);
     }
+}
+
+bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr)
+{
+    return pr.isRenderProcess_ && pr.isActive_ && !pr.IsVisible();
 }
 
 bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,
