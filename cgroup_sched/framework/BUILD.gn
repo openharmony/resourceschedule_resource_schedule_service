@@ -15,14 +15,17 @@ import("//build/ohos.gni")
 import("../cgroup_sched.gni")
 
 config("cgroup_sched_public_config") {
-  include_dirs = [ "../interfaces/innerkits/include" ]
+  include_dirs = [
+    "../interfaces/innerkits/include",
+    "sched_controller/include",
+    "process_group/include",
+  ]
 }
 
 config("cgroup_sched_private_config") {
   include_dirs = [
     "../../ressched/interfaces/innerkits/ressched_client/include",
     "../common/include",
-    "./sched_controller/include",
     "./utils/include",
   ]
 }
@@ -55,6 +58,7 @@ ohos_shared_library("cgroup_sched") {
     "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",
     "ipc:ipc_single",
+    "power_manager:powermgr_client",
     "samgr:samgr_proxy",
     "window_manager:libwm",
   ]

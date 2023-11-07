@@ -27,8 +27,6 @@ namespace ResourceSchedule {
 using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libframe_aware_plugin.z.so";
-    const std::string SLIDE_INTERVAL_NAME = "ffrt.interval.slide";
-    constexpr int DEFAULT_FOREAPP = 1;
 }
 IMPLEMENT_SINGLE_INSTANCE(FrameAwarePlugin)
 
@@ -40,6 +38,8 @@ void FrameAwarePlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
         { RES_TYPE_PROCESS_STATE_CHANGE,
             [this](const std::shared_ptr<ResData>& data) { HandleProcessStateChange(data); } },
+        { RES_TYPE_CONTINUOUS_TASK,
+            [this](const std::shared_ptr<ResData>& data) { HandleContinuousTask(data); } },
         { RES_TYPE_CGROUP_ADJUSTER,
             [this](const std::shared_ptr<ResData>& data) { HandleCgroupAdjuster(data); } },
         { RES_TYPE_WINDOW_FOCUS,
@@ -58,6 +58,7 @@ void FrameAwarePlugin::Init()
     resTypes = {
         RES_TYPE_APP_STATE_CHANGE,
         RES_TYPE_PROCESS_STATE_CHANGE,
+        RES_TYPE_CONTINUOUS_TASK,
         RES_TYPE_CGROUP_ADJUSTER,
         RES_TYPE_WINDOW_FOCUS,
         RES_TYPE_REPORT_RENDER_THREAD,
@@ -65,15 +66,6 @@ void FrameAwarePlugin::Init()
         RES_TYPE_SLIDE_RECOGNIZE,
         RES_TYPE_SCREEN_LOCK,
         RES_TYPE_SCREEN_STATUS,
-    };
-    unsupportApp = {
-        "com.ohos.launcher",
-        "com.ohos.systemui",
-        "com.ohos.screenlock",
-        "com.ohos.wallpaper",
-        "resource_schedu",
-        "distributeddata",
-        "foundation"
     };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
@@ -133,6 +125,22 @@ void FrameAwarePlugin::HandleProcessStateChange(const std::shared_ptr<ResData>& 
     RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, uid, bundleName, state);
 }
 
+void FrameAwarePlugin::HandleContinuousTask(const std::shared_ptr<ResData>& data)
+{
+    if (!data->payload.is_object()) {
+        return;
+    }
+    if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
+        !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
+        RESSCHED_LOGI("FrameAwarePlugin::HandleContinuousTask payload is not contains pid or uid");
+        return;
+    }
+
+    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
+    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
+    RME::FrameMsgIntf::GetInstance().ReportContinuousTask(pid, uid, data->value);
+}
+
 void FrameAwarePlugin::HandleCgroupAdjuster(const std::shared_ptr<ResData>& data)
 {
     if (!data->payload.is_object()) {
@@ -156,29 +164,6 @@ void FrameAwarePlugin::HandleCgroupAdjuster(const std::shared_ptr<ResData>& data
     int newGroup = atoi(data->payload["newGroup"].get<std::string>().c_str());
     if (!data->value) {
         RME::FrameMsgIntf::GetInstance().ReportCgroupChange(pid, uid, oldGroup, newGroup);
-        if (!data->payload.contains("name") || !data->payload["name"].is_string()) {
-            return;
-        }
-        newGroup = ((newGroup == CgroupSetting::SP_FOREGROUND) || (newGroup == CgroupSetting::SP_TOP_APP)) ?
-            CgroupSetting::SP_FOREGROUND : CgroupSetting::SP_BACKGROUND;
-        oldGroup = ((oldGroup == CgroupSetting::SP_FOREGROUND) || (oldGroup == CgroupSetting::SP_TOP_APP)) ?
-            CgroupSetting::SP_FOREGROUND : CgroupSetting::SP_BACKGROUND;
-        if (newGroup == oldGroup) {
-            return;
-        }
-        std::string bundleName = data->payload["name"].get<std::string>().c_str();
-        if (unsupportApp.find(bundleName) != unsupportApp.end()) {
-            return;
-        }
-        if (newGroup == CgroupSetting::SP_FOREGROUND) {
-            curForeAppCount++;
-            RESSCHED_LOGI("add curForeAppCount uid is %{public}d, pid is %{public}d, bundleName is %{public}s",
-                uid, pid, bundleName.c_str());
-        } else if (newGroup == CgroupSetting::SP_BACKGROUND) {
-            curForeAppCount--;
-            RESSCHED_LOGI("add curForeAppCount uid is %{public}d, pid is %{public}d, bundleName is %{public}s",
-                uid, pid, bundleName.c_str());
-        }
     }
 }
 
@@ -243,20 +228,19 @@ void FrameAwarePlugin::HandleNetworkLatencyRequest(const std::shared_ptr<ResData
 
 void FrameAwarePlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
-    if (data->value == SlideEventStatus::SLIDE_EVENT_ON) {
-        if ((rtgCount + DEFAULT_FOREAPP) < curForeAppCount) {
-            rtgCount++;
-            OHOS::system::SetParameter(SLIDE_INTERVAL_NAME, "true");
-        }
-        RESSCHED_LOGI("handle slide on curForeAppCount is %{public}d.", curForeAppCount);
-    } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
-        rtgCount--;
-        RESSCHED_LOGI("handle slide off curForeAppCount is %{public}d.", curForeAppCount);
-        if (rtgCount <= 0) {
-            rtgCount = 0;
-            OHOS::system::SetParameter(SLIDE_INTERVAL_NAME, "false");
-        }
+    if (!data->payload.is_object()) {
+        return;
     }
+
+    if (!data->payload.contains("clientPid") || !data->payload.contains("callingUid") ||
+        !data->payload["clientPid"].is_string() || !data->payload["callingUid"].is_string()) {
+        RESSCHED_LOGI("FrameAwarePlugin::HandleEventSlide payload is not contains pid or uid");
+        return;
+    }
+
+    int pid = atoi(data->payload["clientPid"].get<std::string>().c_str());
+    int uid = atoi(data->payload["callingUid"].get<std::string>().c_str());
+    RME::FrameMsgIntf::GetInstance().ReportSlideEvent(pid, uid, data->value);
 }
 
 void FrameAwarePlugin::HandleScreenLock(const std::shared_ptr<ResData>& data)
@@ -265,7 +249,6 @@ void FrameAwarePlugin::HandleScreenLock(const std::shared_ptr<ResData>& data)
         return;
     }
     if (!data->value) {
-        OHOS::system::SetParameter(SLIDE_INTERVAL_NAME, "false");
         RESSCHED_LOGI("Screen Lock Report");
     }
 }
@@ -277,7 +260,6 @@ void FrameAwarePlugin::HandleScreenStatus(const std::shared_ptr<ResData>& data)
     }
     if (data->value) {
         RESSCHED_LOGI("Screen Bright Report");
-        OHOS::system::SetParameter(SLIDE_INTERVAL_NAME, "true");
     }
 }
 

@@ -104,12 +104,16 @@ public:
     bool isPlayingAudio_ = false;
 
     uint32_t continuousTaskFlag_ = 0;
+    int32_t audioState_ = -1;
     int32_t renderTid_ = 0;
     int32_t maliTid_ = 0;
+    int32_t processState_ = 0;
     int32_t linkedWindowId_ {-1};
     int32_t serialNum_ {-1};
     int32_t extensionType_ = -1;
+    int32_t mmiStatus_ {-1};
 
+    std::map<uint32_t, bool> runningLockState_;
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
     std::vector<std::shared_ptr<WindowInfo>> windows_;
 
@@ -178,6 +182,11 @@ public:
         uint32_t windowId);
 
     std::shared_ptr<Application> focusedApp_ = nullptr;
+
+    inline std::map<int32_t, std::shared_ptr<Application>> GetUidsMap() const
+    {
+        return uidsMap_;
+    }
 
 private:
     std::map<int32_t, std::shared_ptr<Application>> uidsMap_;

@@ -46,7 +46,8 @@
         "safwk",
         "soc_perf",
         "state_registry",
-        "window_manager"
+        "window_manager",
+        "power_manager"
       ],
       "third_party": [
         "json",

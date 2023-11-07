@@ -33,7 +33,7 @@ public:
     static void TearDownTestCase(void);
     void SetUp();
     void TearDown();
-    void MockProcess(std::string processName);
+    void MockProcess(int32_t uid);
 };
 
 
@@ -45,7 +45,7 @@ void ResSchedClientTest::SetUp() {}
 
 void ResSchedClientTest::TearDown() {}
 
-void ResSchedClientTest::MockProcess(std::string processName)
+void ResSchedClientTest::MockProcess(int32_t uid)
 {
     static const char *perms[] = {
         "ohos.permission.DISTRIBUTED_DATASYNC"
@@ -58,11 +58,12 @@ void ResSchedClientTest::MockProcess(std::string processName)
         .dcaps = nullptr,
         .perms = perms,
         .acls = nullptr,
-        .processName = processName.c_str(),
+        .processName = "samgr",
         .aplStr = "system_core",
     };
     tokenId = GetAccessTokenId(&infoInstance);
     SetSelfTokenID(tokenId);
+    setuid(uid);
 }
 
 /**
@@ -74,8 +75,8 @@ void ResSchedClientTest::MockProcess(std::string processName)
  */
 HWTEST_F(ResSchedClientTest, KillProcess001, Function | MediumTest | Level0)
 {
-    std::string processName = "samgr";
-    MockProcess(processName);
+    int32_t uid = 5555;
+    MockProcess(uid);
     std::unordered_map<std::string, std::string> mapPayload;
     mapPayload["pid"] = "65535";
     mapPayload["processName"] = "test";
@@ -94,8 +95,8 @@ HWTEST_F(ResSchedClientTest, KillProcess001, Function | MediumTest | Level0)
  */
 HWTEST_F(ResSchedClientTest, KillProcess002, Function | MediumTest | Level0)
 {
-    std::string processName = "samgr";
-    MockProcess(processName);
+    int32_t uid = 5555;
+    MockProcess(uid);
     std::unordered_map<std::string, std::string> mapPayload;
     ResSchedClient::GetInstance().KillProcess(mapPayload);
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
@@ -109,8 +110,8 @@ HWTEST_F(ResSchedClientTest, KillProcess002, Function | MediumTest | Level0)
     ResSchedClient::GetInstance().KillProcess(mapPayload);
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
 
-    processName = "resource_schedule_service";
-    MockProcess(processName);
+    uid = 6666;
+    MockProcess(uid);
     ResSchedClient::GetInstance().KillProcess(mapPayload);
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
 }

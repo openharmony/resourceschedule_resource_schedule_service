@@ -211,6 +211,40 @@ HWTEST_F(FrameAwarePluginTest, HandleWindowsFocusTest, TestSize.Level1)
 }
 
 /**
+ * @tc.name: HandleContinuousTest
+ * @tc.desc: Test whether HandleContinuous interface is normal
+ * @tc.type: FUNC
+ */
+HWTEST_F(FrameAwarePluginTest, HandleContinuousTest, TestSize.Level1)
+{
+    uint32_t type = 0;
+    int64_t value = 0;
+    nlohmann::json payload;
+    nlohmann::json payloadarray;
+    payload["test"] = false;
+    payloadarray[0] = false;
+    std::shared_ptr<ResData> data = std::make_shared<ResData>(type, value, payload);
+    std::shared_ptr<ResData> data1 = std::make_shared<ResData>(type, value, payloadarray);
+    data->resType = RES_TYPE_CONTINUOUS_TASK;
+    data->value = 0;
+    data1->resType = RES_TYPE_CONTINUOUS_TASK;
+    data1->value = 0;
+
+    FrameAwarePlugin::GetInstance().DispatchResource(data1); // not object
+    FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain pid
+    data->payload.clear();
+    data->value = 0;
+    data->payload["pid"] = true;
+    FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain uid
+    data->payload["uid"] = true;
+    FrameAwarePlugin::GetInstance().DispatchResource(data); // pid is not string
+    data->payload["pid"] = "12345";
+    FrameAwarePlugin::GetInstance().DispatchResource(data); // uid is not string
+    data->payload["uid"] = "12345";
+    FrameAwarePlugin::GetInstance().DispatchResource(data); // all right
+}
+
+/**
  * @tc.name: HandleReportRenderTest
  * @tc.desc: Test whether HandleReportRender interface is normal
  * @tc.type: FUNC

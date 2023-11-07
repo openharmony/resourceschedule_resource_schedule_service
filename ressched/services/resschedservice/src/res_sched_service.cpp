@@ -24,6 +24,8 @@
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "tokenid_kit.h"
+#include "sched_controller.h"
+#include "supervisor.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -31,6 +33,7 @@ using namespace OHOS::Security;
 namespace {
     constexpr int32_t DUMP_OPTION = 0;
     constexpr int32_t DUMP_PARAM_INDEX = 1;
+    const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
 }
 
 void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -39,6 +42,26 @@ void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann
                   resType, (long long)value);
     const nlohmann::json* payloadP = &payload;
     int32_t callingUid = IPCSkeleton::GetCallingUid();
+    if (resource_uid_other_process.find(resType) != resource_uid_other_process.end()) {
+        if (callingUid != resource_uid_other_process[resType]) {
+            RESSCHED_LOGW("resType = %{public}u, value = %{public}lld.not allow uid:%{public}d report",
+                resType, (long long)value, callingUid);
+            return;
+        }
+    } else if (resource_in_process.find(resType) != resource_in_process.end()) {
+        RESSCHED_LOGW("resType = %{public}u, value = %{public}lld.not allow other process report",
+            resType, (long long)value);
+        return;
+    } else if (resType == ResType::RES_TYPE_REPORT_SCENE_BOARD) {
+        AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
+        AccessToken::HapTokenInfo callingTokenInfo;
+        AccessToken::AccessTokenKit::GetHapTokenInfo(tokenId, callingTokenInfo);
+        if (callingTokenInfo.bundleName != SCENEBOARD_BUNDLE_NAME) {
+            RESSCHED_LOGW("resType = %{public}u, value = %{public}lld.only allow sceneboard report",
+                resType, (long long)value);
+            return;
+        }
+    }
     nlohmann::json* payloadM = const_cast<nlohmann::json*>(payloadP);
     (*payloadM)["callingUid"] = std::to_string(callingUid);
     ResSchedMgr::GetInstance().ReportData(resType, value, *payloadM);
@@ -46,15 +69,8 @@ void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann
 
 int32_t ResSchedService::KillProcess(const nlohmann::json& payload)
 {
-    uint32_t accessToken = IPCSkeleton::GetCallingTokenID();
-    AccessToken::NativeTokenInfo nativeTokenInfo;
-    int32_t result = AccessToken::AccessTokenKit::GetNativeTokenInfo(accessToken, nativeTokenInfo);
-    if (result == ERR_OK) {
-        return ResSchedMgr::GetInstance().KillProcessByClient(payload, nativeTokenInfo.processName);
-    } else {
-        RESSCHED_LOGE("Kill process get token info fail.");
-        return RES_SCHED_ACCESS_TOKEN_FAIL;
-    }
+    return ResSchedMgr::GetInstance().KillProcessByClient(payload);
+
 }
 
 int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& args)
@@ -79,6 +95,8 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
             DumpAllInfo(result);
         } else if (argsInStr[DUMP_OPTION] == "-p") {
             PluginMgr::GetInstance().DumpAllPlugin(result);
+        } else if (argsInStr[DUMP_OPTION] == "getRunningLockInfo") {
+            DumpProcessRunningLock(result);
         } else {
             result.append("Error params.");
         }
@@ -95,6 +113,36 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
     }
     return ERR_OK;
 }
+
+void ResSchedService::DumpProcessRunningLock(std::string &result)
+{
+    auto supervisor = SchedController::GetInstance().GetSupervisor();
+    if (supervisor == nullptr) {
+        result.append("get supervisor failed");
+        return;
+    }
+
+    std::map<int32_t, std::shared_ptr<Application>> uidMap = supervisor->GetUidsMap();
+    for (auto it = uidMap.begin(); it != uidMap.end(); it++) {
+        int32_t uid = it->first;
+        std::shared_ptr<Application> app = it->second;
+        std::map<pid_t, std::shared_ptr<ProcessRecord>> pidMap = app->GetPidsMap();
+        for (auto pidIt = pidMap.begin(); pidIt != pidMap.end(); pidIt++) {
+            int32_t pid = pidIt->first;
+            std::shared_ptr<ProcessRecord> process = pidIt->second;
+            for (auto lockIt = process->runningLockState_.begin();
+                lockIt != process->runningLockState_.end(); lockIt++) {
+                uint32_t lockType = lockIt->first;
+                bool lockState = lockIt->second;
+                result.append("uid:").append(ToString(uid))
+                    .append(", pid:").append(ToString(pid))
+                    .append(", lockType:").append(ToString(lockType))
+                    .append(", lockState:").append(ToString(lockState)).append("\n");
+            }
+        }
+    }
+}
+
 void ResSchedService::DumpUsage(std::string &result)
 {
     result.append("usage: resource schedule service dump [<options>]\n")

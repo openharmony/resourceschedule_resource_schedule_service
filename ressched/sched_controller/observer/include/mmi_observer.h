@@ -12,23 +12,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef RESSCHED_SERVICES_RESSCHEDMGR_RESSCHEDFWK_INCLUDE_KILL_PROCESS_H
-#define RESSCHED_SERVICES_RESSCHEDMGR_RESSCHEDFWK_INCLUDE_KILL_PROCESS_H
+
+#ifndef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_MMIEVENT_OBSERVER_H
+#define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_MMIEVENT_OBSERVER_H
 
 #include <string>
-#include <vector>
-#include "nlohmann/json.hpp"
+
+#include "mmi_event_observer.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-class KillProcess {
+class MmiObserver : public MMI::MMIEventObserver {
 public:
-    int32_t KillProcessByPidWithClient(const nlohmann::json& payload);
-private:
-
-    int32_t KillProcessByPid(const pid_t pid) const;
+    /**
+     * @brief Called back when mmi state changed, sync bundlename to nap.
+     *
+     * @param pid the pid.
+     * @param uid the uid.
+     * @param bundleName the bundleName.
+     * @param syncStatus the sync status.
+    */
+    void SyncBundleName(int32_t pid, int32_t uid, std::string bundleName, int32_t syncStatus) override;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-
-#endif // RESSCHED_SERVICES_RESSCHEDMGR_RESSCHEDFWK_INCLUDE_KILL_PROCESS_H
+#endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_MMIEVENT_OBSERVER_H

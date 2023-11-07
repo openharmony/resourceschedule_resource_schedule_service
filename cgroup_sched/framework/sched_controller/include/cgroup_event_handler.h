@@ -38,6 +38,7 @@ public:
     void HandleAbilityRemoved(int32_t saId, const std::string& deviceId);
     void HandleForegroundApplicationChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
     void HandleApplicationStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
+    void HandleProcessStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
     void HandleAbilityStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
         const std::string& abilityName, uintptr_t token, int32_t abilityState, int32_t abilityType);
     void HandleExtensionStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
@@ -60,8 +61,9 @@ public:
     void HandleReportKeyThread(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportWindowState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload);
-    bool CheckVisibilityForRenderProcess(Application &app, ProcessRecord &pr);
+    void HandleReportRunningLockEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
+    bool CheckVisibilityForRenderProcess(Application &app, ProcessRecord &pr);
 private:
     bool ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid, int64_t value, const nlohmann::json& payload);
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);

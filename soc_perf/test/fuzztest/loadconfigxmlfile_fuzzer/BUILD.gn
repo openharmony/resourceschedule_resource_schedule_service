@@ -45,6 +45,7 @@ ohos_fuzztest("LoadConfigXmlFileFuzzTest") {
 
   external_deps = [
     "c_utils:utils",
+    "ffrt:libffrt",
     "hilog:libhilog",
   ]
 }

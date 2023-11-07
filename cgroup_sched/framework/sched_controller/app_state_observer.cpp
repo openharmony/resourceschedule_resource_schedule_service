@@ -191,5 +191,31 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     payload["bundleName"] = appStateData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);
 }
+
+void RmsApplicationStateObserver::OnProcessStateChanged(const ProcessData &processData)
+{
+    if (!ValidateProcessData(processData)) {
+        CGS_LOGE("%{public}s : validate process data failed!", __func__);
+        return;
+    }
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler) {
+        auto uid = processData.uid;
+        auto pid = processData.pid;
+        auto bundleName = processData.bundleName;
+        auto state = static_cast<int32_t>(processData.state);
+
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName, state] {
+            cgHandler->HandleProcessStateChanged(uid, pid, bundleName, state);
+        });
+    }
+
+    nlohmann::json payload;
+    payload["pid"] = std::to_string(processData.pid);
+    payload["uid"] = std::to_string(processData.uid);
+    payload["bundleName"] = processData.bundleName;
+    ResSchedUtils::GetInstance().ReportDataInProcess(
+        ResType::RES_TYPE_PROCESS_STATE_CHANGE, static_cast<int32_t>(processData.state), payload);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -40,12 +40,11 @@ public:
 private:
     std::set<uint32_t> resTypes;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData> data)>> functionMap;
-    int rtgCount = 0;
-    int curForeAppCount = 0;
     std::set<std::string> unsupportApp = {};
     NetworkLatencyController netLatCtrl;
     void HandleAppStateChange(const std::shared_ptr<ResData>& data);
     void HandleProcessStateChange(const std::shared_ptr<ResData>& data);
+    void HandleContinuousTask(const std::shared_ptr<ResData>& data);
     void HandleCgroupAdjuster(const std::shared_ptr<ResData>& data);
     void HandleWindowsFocus(const std::shared_ptr<ResData>& data);
     void HandleReportRender(const std::shared_ptr<ResData>& data);

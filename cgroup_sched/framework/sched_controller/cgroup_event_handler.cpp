@@ -25,6 +25,7 @@
 #include "sched_controller.h"
 #include "sched_policy.h"
 #include "system_ability_definition.h"
+#include "power_mgr_client.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -38,6 +39,8 @@ namespace {
 
     const std::string MMI_SERVICE_NAME = "mmi_service";
 }
+
+using namespace PowerMgr;
 
 using OHOS::AppExecFwk::ApplicationState;
 using OHOS::AppExecFwk::AbilityState;
@@ -118,6 +121,9 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
                 this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
             }
             break;
+        case POWER_MANAGER_SERVICE_ID:
+            SchedController::GetInstance().GetRunningLockState();
+            break;
         default:
             break;
     }
@@ -178,6 +184,20 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
     app->SetName(bundleName);
     app->state_ = state;
     app->SetMainProcess(procRecord);
+}
+
+void CgroupEventHandler::HandleProcessStateChanged(uid_t uid, pid_t pid,
+    const std::string& bundleName, int32_t state)
+{
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+    CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
+    ChronoScope cs("HandleProcessStateChanged");
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
+    procRecord->processState_ = state;
 }
 
 void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
@@ -616,43 +636,64 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
 {
     int32_t uid = 0;
     int32_t pid = 0;
-    int32_t tid = 0;
-    int32_t state = 0;
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
 
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
-        !ParseValue(tid, "tid", payload) || !ParseValue(state, "state", payload)) {
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
         return;
     }
-    if (uid <= 0 || pid <= 0 || tid <= 0) {
+    if (uid <= 0 || pid <= 0) {
         return;
     }
 
     auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecordNonNull(pid);
-    CGS_LOGD("%{public}s : render process name: %{public}s, uid: %{public}d, pid: %{public}d, tid: %{public}d, "\
-        " state: %{public}d", __func__, app->GetName().c_str(), uid, pid, tid, state);
+    procRecord->audioState_ = static_cast<int32_t>(value);
+    CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+        __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
 
-    if (state == ResType::AudioStatus::START) {
-        procRecord->isPlayingAudio_ = true;
-    } else {
-        procRecord->isPlayingAudio_ = false;
-    }
-    auto mainProcRecord = app->GetMainProcessRecord();
-    if (!mainProcRecord) {
-        return;
-    }
-    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
-        AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
+    AdjustSource adjustSource = resType == ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE ?
+        AdjustSource::ADJS_REPORT_WEBVIEW_STATE_CHANGED :
+        AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED;
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), adjustSource);
 }
 
-bool CgroupEventHandler::CheckVisibilityForRenderProcess(Application &app, ProcessRecord &pr)
+void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    return pr.isRenderProcess_ && pr.isActive_ && !pr.IsVisible();
+    int32_t uid = 0;
+    int32_t pid = 0;
+    uint32_t type = -1;
+    int32_t state = -1;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr.", __func__);
+        return;
+    }
+
+    if (payload.contains("uid") && payload.at("uid").is_number_integer()) {
+        uid = payload["uid"].get<std::int32_t>();
+    }
+    if (payload.contains("pid") && payload.at("pid").is_number_integer()) {
+        pid = payload["pid"].get<std::int32_t>();
+    }
+    if (uid <= 0 || pid <= 0) {
+        return;
+    }
+    if (payload.contains("type") && payload.at("type").is_number_integer()) {
+        type = payload["type"].get<std::uint32_t>();
+    }
+    state = static_cast<int32_t>(value);
+    CGS_LOGD("report running lock event, uid:%{public}d, pid:%{public}d, lockType:%{public}d, state:%{public}d",
+        uid, pid, type, state);
+    if (type == static_cast<uint32_t>(RunningLockType::RUNNINGLOCK_SCREEN) ||
+        type == static_cast<uint32_t>(RunningLockType::RUNNINGLOCK_BACKGROUND)) {
+        std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
+        std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
+        procRecord->runningLockState_[type] = (state == ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE);
+    }
 }
 
 bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,

@@ -107,6 +107,11 @@ enum : uint32_t {
     RES_TYPE_SHOW_REMOTE_ANIMATION = 33,
     // load page; value 0: load page begin, value 1: load page end.
     RES_TYPE_LOAD_PAGE = 34,
+    // report camera state, value 0: camera connect; value 1: camera disconnect
+    RES_TYPE_REPORT_CAMERA_STATE = 35,
+    // report runningLock state, value 0: runningLock disable; value 1: runningLock enable;
+    // value 2: runningLock is proxied; value 3: runningLock is not proxied
+    RES_TYPE_RUNNINGLOCK_STATE = 36,
     // drag status bar event; value 0: start drag, value 1: stop drag.
     RES_TYPE_DRAG_STATUS_BAR = 37,
     // report SceneBoard service, value pid; payload:uid, main_tid, bundleName
@@ -126,7 +131,13 @@ enum : uint32_t {
     // mousewheel event; value means nothing.
     RES_TYPE_MOUSEWHEEL = 45,
     // report webview audio status, value 0 start 1 stop, payload: uid, pid, tid
-    RES_TYPE_AUDIO_STATUS_CHANGE = 46,
+    RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE = 46,
+    // report entering the multimodalinput state, value means subscribed multimodalinput state.
+    RES_TYPE_MMI_INPUT_STATE = 47,
+    // report anco load protect file config
+    RES_TYPE_ANCO_CUST = 48,
+    // report anco app is front
+    RES_TYPE_ANCO_APP_FRONT = 49,
 };
 
 inline const std::map<uint32_t, std::string> resTypeToStr = {
@@ -165,6 +176,8 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_MOVE_WINDOW, "RES_TYPE_MOVE_WINDOW" },
     { RES_TYPE_SHOW_REMOTE_ANIMATION, "RES_TYPE_SHOW_REMOTE_ANIMATION" },
     { RES_TYPE_LOAD_PAGE, "RES_TYPE_LOAD_PAGE" },
+    { RES_TYPE_REPORT_CAMERA_STATE, "RES_TYPE_REPORT_CAMERA_STATE" },
+    { RES_TYPE_RUNNINGLOCK_STATE, "RES_TYPE_RUNNINGLOCK_STATE" },
     { RES_TYPE_DRAG_STATUS_BAR, "RES_TYPE_DRAG_STATUS_BAR" },
     { RES_TYPE_REPORT_SCENE_BOARD, "RES_TYPE_REPORT_SCENE_BOARD" },
     { RES_TYPE_REPORT_KEY_THREAD, "RES_TYPE_REPORT_KEY_THREAD" },
@@ -174,7 +187,10 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_WEB_SLIDE_NORMAL, "RES_TYPE_WEB_SLIDE_NORMAL" },
     { RES_TYPE_LOAD_URL, "RES_TYPE_LOAD_URL" },
     { RES_TYPE_MOUSEWHEEL, "RES_TYPE_MOUSEWHEEL" },
-    { RES_TYPE_AUDIO_STATUS_CHANGE, "RES_TYPE_AUDIO_STATUS_CHANGE" },
+    { RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, "RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE" },
+    { RES_TYPE_MMI_INPUT_STATE, "RES_TYPE_MMI_INPUT_STATE" },
+    { RES_TYPE_ANCO_CUST, "RES_TYPE_ANCO_CUST" },
+    { RES_TYPE_ANCO_APP_FRONT, "RES_TYPE_ANCO_APP_FRONT" }
 };
 
 /**
@@ -209,6 +225,9 @@ enum ScreenLockStatus : int64_t {
 enum ProcessStatus : int64_t {
     PROCESS_CREATED = 0,
     PROCESS_DIED = 1,
+    PROCESS_READY = 2,
+    PROCESS_FOREGROUND = 3,
+    PROCESS_BACKGROUND = 4,
 };
 
 /**
@@ -359,6 +378,8 @@ enum SceneControl : int64_t {
 enum AudioStatus : int64_t {
     START = 0,
     STOP = 1,
+    RENDERERRUNNING  = 2,
+    RENDERERSTOPPED  = 3,
 };
 
 /**
@@ -394,6 +415,32 @@ enum WebGestureMove : int64_t {
 enum WebSlideNormal : int64_t {
     WEB_SLIDE_NORMAL_START = 0,
     WEB_SLIDE_NORMAL_END = 1,
+};
+
+/**
+ * @brief camera state
+ */
+enum CameraState : int64_t {
+    CAMERA_CONNECT = 0,
+    CAMERA_DISCONNECT = 1,
+};
+
+/**
+ * @brief Runninglock State
+ */
+enum RunninglockState : int64_t {
+    RUNNINGLOCK_STATE_DISABLE = 0,
+    RUNNINGLOCK_STATE_ENABLE = 1,
+    RUNNINGLOCK_STATE_PROXIED = 2,
+    RUNNINGLOCK_STATE_UNPROXIED_RESTORE = 3,
+};
+
+/**
+ * @brief anco cust config
+*/
+enum AncoConfig : int64_t {
+    PROTECT_LRU = 0,
+    DEFAULT = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
