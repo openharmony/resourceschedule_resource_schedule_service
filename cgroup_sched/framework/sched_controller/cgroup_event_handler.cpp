@@ -655,10 +655,42 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
     CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
 
-    AdjustSource adjustSource = resType == ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE ?
-        AdjustSource::ADJS_REPORT_WEBVIEW_STATE_CHANGED :
-        AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED;
-    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), adjustSource);
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
+}
+
+void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+        return;
+    }
+    if (uid <= 0 || pid <= 0) {
+        return;
+    }
+
+    std::shared_ptr<Application> app = nullptr;
+    std::shared_ptr<ProcessRecord> procRecord = nullptr;
+
+    procRecord = supervisor_->FindProcessRecord(pid);
+    if (!procRecord) {
+        return;
+    }
+
+    app = supervisor_->GetAppRecordNonNull(procRecord->GetUid());
+    procRecord->audioState_ = static_cast<int32_t>(value);
+    CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+        __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
+
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_REPORT_WEBVIEW_STATE_CHANGED);
 }
 
 void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
