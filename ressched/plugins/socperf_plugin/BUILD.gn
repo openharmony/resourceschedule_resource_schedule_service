@@ -40,4 +40,11 @@ ohos_shared_library("socperf_plugin") {
   }
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
+  branch_protector_ret = "pac_ret"
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
 }
