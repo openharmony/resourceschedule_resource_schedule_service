@@ -626,8 +626,8 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     }
     if (CheckVisibilityForRenderProcess(*(app.get()), *(procRecord.get()))) {
         CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d is not visible but active",
-            __func__, app->GetName().c_str(), uid, pid, state);
-    })
+            __func__, app->GetName().c_str(), uid, pid);
+    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
         AdjustSource::ADJS_REPORT_WINDOW_STATE_CHANGED);
 }
