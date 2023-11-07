@@ -49,7 +49,8 @@
         "soc_perf",
         "state_registry",
         "window_manager",
-        "power_manager"
+        "power_manager",
+        "av_session"
       ],
       "third_party": [
         "json",

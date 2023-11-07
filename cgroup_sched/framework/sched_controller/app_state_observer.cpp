@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -113,6 +113,17 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
         abilityStateData.abilityState, payload);
 }
 
+void RmsApplicationStateObserver::MarshallingProcessData(const ProcessData &processData, nlohmann::json &payload)
+{
+    payload["pid"] = std::to_string(processData.pid);
+    payload["uid"] = std::to_string(processData.uid);
+    payload["processType"] = std::to_string(static_cast<int32_t>(processData.processType));
+    payload["renderUid"] = std::to_string(processData.renderUid);
+    payload["bundleName"] = processData.bundleName;
+    payload["state"] = static_cast<uint32_t>(processData.state);
+    payload["extensionType"] = static_cast<uint32_t>(processData.extensionType);
+}
+
 void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processData)
 {
     if (!ValidateProcessData(processData)) {
@@ -132,11 +143,7 @@ void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processDat
     }
 
     nlohmann::json payload;
-    payload["pid"] = std::to_string(processData.pid);
-    payload["uid"] = std::to_string(processData.uid);
-    payload["processType"] = std::to_string(static_cast<int32_t>(processData.processType));
-    payload["renderUid"] = std::to_string(processData.renderUid);
-    payload["bundleName"] = processData.bundleName;
+    MarshallingProcessData(processData, payload);
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_PROCESS_STATE_CHANGE, ResType::ProcessStatus::PROCESS_CREATED, payload);
 }
@@ -159,9 +166,7 @@ void RmsApplicationStateObserver::OnProcessDied(const ProcessData &processData)
     }
 
     nlohmann::json payload;
-    payload["pid"] = std::to_string(processData.pid);
-    payload["uid"] = std::to_string(processData.uid);
-    payload["bundleName"] = processData.bundleName;
+    MarshallingProcessData(processData, payload);
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_PROCESS_STATE_CHANGE, ResType::ProcessStatus::PROCESS_DIED, payload);
 }
@@ -192,6 +197,28 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);
 }
 
+void RmsApplicationStateObserver::MarshallingAppStateData(const AppStateData &appStateData, nlohmann::json &payload)
+{
+    payload["pid"] = appStateData.pid;
+    payload["uid"] = appStateData.uid;
+    payload["bundleName"] = appStateData.bundleName;
+    payload["state"] = static_cast<uint32_t>(appStateData.state);
+    payload["extensionType"] = static_cast<uint32_t>(appStateData.extensionType);
+}
+
+void RmsApplicationStateObserver::OnAppStateChanged(const AppStateData &appStateData)
+{
+    if (!ValidateAppStateData(appStateData)) {
+        CGS_LOGE("%{public}s : validate app state data failed!", __func__);
+        return;
+    }
+
+    nlohmann::json payload;
+    MarshallingAppStateData(appStateData, payload);
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_ON_APP_STATE_CHANGED, appStateData.state,
+        payload);
+}
+
 void RmsApplicationStateObserver::OnProcessStateChanged(const ProcessData &processData)
 {
     if (!ValidateProcessData(processData)) {
@@ -211,9 +238,7 @@ void RmsApplicationStateObserver::OnProcessStateChanged(const ProcessData &proce
     }
 
     nlohmann::json payload;
-    payload["pid"] = std::to_string(processData.pid);
-    payload["uid"] = std::to_string(processData.uid);
-    payload["bundleName"] = processData.bundleName;
+    MarshallingProcessData(processData, payload);
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_PROCESS_STATE_CHANGE, static_cast<int32_t>(processData.state), payload);
 }
