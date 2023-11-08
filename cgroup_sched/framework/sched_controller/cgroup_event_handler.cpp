@@ -26,6 +26,7 @@
 #include "sched_policy.h"
 #include "system_ability_definition.h"
 #include "power_mgr_client.h"
+#include "window_manager.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -457,14 +458,15 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
 }
 
 void CgroupEventHandler::HandleWindowVisibilityChanged(
-    uint32_t windowId, bool isVisible, WindowType windowType, int32_t pid, int32_t uid)
+    uint32_t windowId, uint32_t visibilityState, WindowType windowType, int32_t pid, int32_t uid)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
+    bool isVisible = visibilityState < Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
-        isVisible, (int32_t)windowType, pid, uid);
+        visibilityState, (int32_t)windowType, pid, uid);
 
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
@@ -481,6 +483,7 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(
         return;
     }
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
+    windowInfo->visibilityState_ = visibilityState;
     windowInfo->isVisible_ = isVisible;
     windowInfo->windowType_ = (int32_t)windowType;
 
