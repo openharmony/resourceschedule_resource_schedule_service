@@ -194,7 +194,7 @@ void ResSchedServiceStub::Init()
         ResType::RES_TYPE_LOAD_URL,
         ResType::RES_TYPE_MOUSEWHEEL,
         ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
-    }
+    }；
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
