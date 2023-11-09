@@ -676,15 +676,12 @@ void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t
         return;
     }
 
-    std::shared_ptr<Application> app = nullptr;
-    std::shared_ptr<ProcessRecord> procRecord = nullptr;
-
-    procRecord = supervisor_->FindProcessRecord(pid);
+    std::shared_ptr<ProcessRecord> procRecord = supervisor_->FindProcessRecord(pid);
     if (!procRecord) {
         return;
     }
 
-    app = supervisor_->GetAppRecordNonNull(procRecord->GetUid());
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(procRecord->GetUid());
     procRecord->audioState_ = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
