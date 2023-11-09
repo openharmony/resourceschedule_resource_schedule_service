@@ -42,7 +42,7 @@ namespace {
 
     bool IsHasPermission() {
         AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
-        auto tokenType = Security::AccessTokenKit::GetTokenFlag(tokenId);
+        auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenFlag(tokenId);
         if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
             RESSCHED_LOGE("not native sa");
             return false;
@@ -73,7 +73,7 @@ namespace {
         AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
         AccessToken::HapTokenInfo callingTokenInfo;
         AccessToken::AccessTokenKit::GetHapTokenInfo(tokenId, callingTokenInfo);
-        if (callingTokenInfo.bundleName != SCENEBOARD_BUNDLE_NAME) {
+        if (callingTokenInfo.bundleName == SCENEBOARD_BUNDLE_NAME) {
             return true;
         }
         RESSCHED_LOGE("%{public}s is not sceneboard bundle name", callingTokenInfo.bundleName.c_str());
@@ -194,7 +194,7 @@ void ResSchedServiceStub::Init()
         ResType::RES_TYPE_LOAD_URL,
         ResType::RES_TYPE_MOUSEWHEEL,
         ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
-    }；
+    };
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
