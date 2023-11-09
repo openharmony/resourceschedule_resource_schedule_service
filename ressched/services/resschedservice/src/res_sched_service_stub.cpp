@@ -42,7 +42,7 @@ namespace {
 
     bool IsHasPermission() {
         AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
-        auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenFlag(tokenId);
+        auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
         if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
             RESSCHED_LOGE("not native sa");
             return false;
