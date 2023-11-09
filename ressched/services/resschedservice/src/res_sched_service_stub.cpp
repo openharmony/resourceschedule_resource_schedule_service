@@ -101,7 +101,7 @@ int32_t ResSchedServiceStub::ReportDataInner(MessageParcel& data, [[maybe_unused
         RESSCHED_LOGE("type:%{public}d is invalid", type);
         return ERR_RES_SCHED_PARCEL_ERROR;
     }
-    if (!IsSBDResType(type) && !IsThirdPartType(type, thirdPartRes_) && !isHasPermission()) {
+    if (!IsSBDResType(type) && !IsThirdPartType(type, thirdPartRes_) && !IsHasPermission()) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
     int64_t value = 0;
