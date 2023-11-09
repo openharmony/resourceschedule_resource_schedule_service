@@ -18,7 +18,6 @@
 
 #include <cstdint>
 #include <map>
-#include <unordered_map>
 #include <unordered_set>
 
 #include "iremote_stub.h"
@@ -33,9 +32,6 @@ public:
     DISALLOW_COPY_AND_MOVE(ResSchedServiceStub);
     int32_t OnRemoteRequest(
         uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
-    
-    std::unordered_set<uint32_t> resource_in_process;
-    std::unordered_map<uint32_t, int32_t> resource_uid_other_process;
 
 private:
     int32_t ReportDataInner(MessageParcel& data, MessageParcel& reply);
@@ -46,6 +42,7 @@ private:
 
     using RequestFuncType = std::function<int32_t (MessageParcel& data, MessageParcel& reply)>;
     std::map<uint32_t, RequestFuncType> funcMap_;
+    std::unordered_set<uint32_t> thirdPartRes_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

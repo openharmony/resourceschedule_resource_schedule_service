@@ -24,8 +24,10 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace ResType {
 enum : uint32_t {
+    //first resType
+    RES_TYPE_FIRST = 0,
     // screen status, value 0 means screen off, value 1 means screen on, else are invalid.
-    RES_TYPE_SCREEN_STATUS = 0,
+    RES_TYPE_SCREEN_STATUS = RES_TYPE_FIRST,
     // app state change event; value means app state; payload:pid,uid,bundleName
     RES_TYPE_APP_STATE_CHANGE = 1,
     // ability state change event; value means ability state; payload:pid,uid,bundleName
@@ -138,6 +140,8 @@ enum : uint32_t {
     RES_TYPE_ANCO_CUST = 48,
     // report anco app is front
     RES_TYPE_ANCO_APP_FRONT = 49,
+    //last resType
+    RES_TYPE_LAST,
 };
 
 inline const std::map<uint32_t, std::string> resTypeToStr = {
