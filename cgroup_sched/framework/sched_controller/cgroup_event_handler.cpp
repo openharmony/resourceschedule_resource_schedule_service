@@ -642,8 +642,11 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
         return;
     }
 
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
-        return;
+    if (payload.contains("uid") && payload.at("uid").is_number_integer()) {
+        uid = payload["uid"].get<std::int32_t>();
+    }
+    if (payload.contains("pid") && payload.at("pid").is_number_integer()) {
+        pid = payload["pid"].get<std::int32_t>();
     }
     if (uid <= 0 || pid <= 0) {
         return;
