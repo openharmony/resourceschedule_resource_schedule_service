@@ -54,7 +54,7 @@ public:
         WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
     void HandleUnfocusedWindow(uint32_t windowId, uintptr_t abilityToken,
         WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
-    void HandleWindowVisibilityChanged(uint32_t windowId, bool isVisible,
+    void HandleWindowVisibilityChanged(uint32_t windowId, uint32_t visibilityState,
         WindowType windowType, int32_t pid, int32_t uid);
     void HandleReportMMIProcess(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportRenderThread(uint32_t resType, int64_t value, const nlohmann::json& payload);

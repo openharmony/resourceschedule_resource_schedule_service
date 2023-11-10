@@ -46,6 +46,7 @@ public:
     }
 
     uint32_t windowId_;
+    uint32_t visibilityState_ = 0;
     bool isVisible_ = false;
     bool isFocused_ = false;
     int32_t windowType_ = 0;
