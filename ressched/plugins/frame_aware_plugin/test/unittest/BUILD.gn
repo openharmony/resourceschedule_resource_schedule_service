@@ -27,6 +27,8 @@ ohos_unittest("NetworkLatencyControllerTest") {
     "${ressched_plugins}/frame_aware_plugin:frame_aware_plugin",
     "//third_party/googletest:gtest_main",
   ]
+
+  external_deps = [ "ffrt:libffrt" ]
 }
 
 ohos_unittest("FrameAwarePluginTest") {
