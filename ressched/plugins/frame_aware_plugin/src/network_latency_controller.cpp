@@ -105,8 +105,9 @@ void NetworkLatencyController::HandleAddRequest(const std::string &identity)
     // set up the auto disable timer
     taskHandlerMap_[identity] = ffrtQueue_->submit_h(
         [this, identity] { AutoDisableTask(identity); },
-        ffrt::task_attr().delay(std::chrono::duration_cast<std::chrono::milliseconds>(TIME
-        OUT).count() * switchToFfrt)
+        ffrt::task_attr().delay(
+            std::chrono::duration_cast<std::chrono::milliseconds>(TIMEOUT).count() * switchToFfrt_
+            )
     );
 }
 
