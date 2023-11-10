@@ -40,7 +40,6 @@ using OnPluginInitFunc = bool (*)(std::string);
 namespace {
     const int32_t DISPATCH_WARNING_TIME = 10; // ms
     const std::string RUNNER_NAME = "rssDispatcher";
-    const std::string ASYNC_RUNNER_NAME = "rssAsyncRunner";
 #ifdef RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE
     const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
     const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
@@ -90,10 +89,11 @@ void PluginMgr::Init()
     {
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         if (!dispatcher_) {
-            dispatcher_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
+            dispatcher_ = std::make_shared<ffrt::queue>(RUNNER_NAME.c_str(),
+                ffrt::queue_attr().qos(ffrt::qos_user_initiated));
         }
-        if (!asyncRunner_) {
-            asyncRunner_ = EventRunner::Create(ASYNC_RUNNER_NAME);
+        if (!dispatcher_) {
+            RESSCHED_LOGI("create dispatcher failed");
         }
     }
     LoadPlugin();
@@ -193,14 +193,7 @@ PluginConfig PluginMgr::GetConfig(const std::string& pluginName, const std::stri
     return configReader_->GetConfig(pluginName, configName);
 }
 
-const std::shared_ptr<AppExecFwk::EventRunner>& PluginMgr::GetRunner()
-{
-    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
-    if (!asyncRunner_) {
-        asyncRunner_ = EventRunner::Create(ASYNC_RUNNER_NAME);
-    }
-    return asyncRunner_;
-}
+
 
 void PluginMgr::Stop()
 {
@@ -250,7 +243,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 
     std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) {
-        dispatcher_->PostTask(
+        dispatcher_->submit(
             [pluginList, resData, this] {
                 DeliverResourceToPlugin(pluginList, resData);
             });
@@ -458,7 +451,7 @@ void PluginMgr::DeliverResourceToPlugin(const std::list<std::string>& pluginList
             };
             std::lock_guard<std::mutex> autoLock2(dispatcherHandlerMutex_);
             if (dispatcher_) {
-                dispatcher_->PostTask(task);
+                dispatcher_->submit(task);
             }
         } else if (costTime > DISPATCH_WARNING_TIME) {
             RESSCHED_LOGW("%{public}s, WARNING :"
@@ -490,11 +483,7 @@ void PluginMgr::OnDestroy()
     ClearResource();
     std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) {
-        dispatcher_->RemoveAllEvents();
-        dispatcher_ = nullptr;
-    }
-    if (asyncRunner_) {
-        asyncRunner_ = nullptr;
+        dispatcher_.reset();
     }
 }
 } // namespace ResourceSchedule
