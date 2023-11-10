@@ -26,7 +26,6 @@
 
 #include "plugin_mgr.h"
 #include "res_sched_log.h"
-#include "event_handler.h"
 #include "event_runner.h"
 
 #include "latency_control/inetwork_latency_switcher.h"
@@ -91,7 +90,6 @@ void NetworkLatencyController::HandleRequest(long long value, const std::string 
 void NetworkLatencyController::HandleAddRequest(const std::string &identity)
 {
     // cancel auto disable task first
-    //handler->RemoveTask(identity);
     std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
     for (auto iter = taskHandlerMap_.begin(); iter != taskHandlerMap_.end(); iter++) {
         if (iter->first == identity) {
@@ -116,7 +114,6 @@ void NetworkLatencyController::HandleDelRequest(const std::string &identity)
 {
     // cancel auto disable task first
     std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
-    //handler->RemoveTask(identity);
     for (auto iter = taskHandlerMap_.begin(); iter != taskHandlerMap_.end(); iter++) {
         if (iter->first == identity) {
             ffrtQueue_->cancel(iter->second);

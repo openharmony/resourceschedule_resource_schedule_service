@@ -35,7 +35,7 @@ ohos_shared_library("frame_aware_plugin") {
 
   external_deps = [
     "c_utils:utils",
-    "eventhandler:libeventhandler",
+    "ffrt:libffrt",
     "frame_aware_sched:frame_msg_intf",
     "hilog:libhilog",
     "init:libbegetutil",

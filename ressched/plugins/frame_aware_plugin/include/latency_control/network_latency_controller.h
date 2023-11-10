@@ -25,7 +25,6 @@
 
 #include "inner_event.h"
 #include "ffrt.h"
-#include "event_handler.h"
 
 #include "inetwork_latency_switcher.h"
 
@@ -47,7 +46,6 @@ private:
     void AutoDisableTask(const std::string &identity);
 
     std::mutex mtx;
-    //std::shared_ptr<AppExecFwk::EventHandler> handler;
     std::shared_ptr<ffrt::queue> ffrtQueue_{nullptr};
     ffrt::mutex latencyFfrtMutex_;
     int32_t switchToFfrt_ = 1000;
