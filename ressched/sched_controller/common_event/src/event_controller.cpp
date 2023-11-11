@@ -76,9 +76,8 @@ void EventController::HandlePkgAddRemove(const EventFwk::Want &want, nlohmann::j
     AppExecFwk::ElementName ele = want.GetElement();
     std::string bundleName = ele.GetBundleName();
     int32_t uid = want.GetIntParam(AppExecFwk::Constants::UID, -1);
-    std::string uid_str = std::to_string(uid);
     payload["bundleName"] = bundleName;
-    payload["uid"] = uid_str;
+    payload["uid"] = uid;
 }
 
 int32_t EventController::GetUid(const int32_t &userId, const std::string &bundleName) const
