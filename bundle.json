@@ -34,6 +34,7 @@
         "core_service",
         "efficiency_manager",
         "eventhandler",
+        "ffrt",
         "frame_aware_sched",
         "hilog",
         "hisysevent",

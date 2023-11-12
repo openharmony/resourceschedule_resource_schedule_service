@@ -24,7 +24,7 @@
 #include <unordered_set>
 
 #include "inner_event.h"
-#include "event_handler.h"
+#include "ffrt.h"
 
 #include "inetwork_latency_switcher.h"
 
@@ -46,9 +46,12 @@ private:
     void AutoDisableTask(const std::string &identity);
 
     std::mutex mtx;
-    std::shared_ptr<AppExecFwk::EventHandler> handler;
+    std::shared_ptr<ffrt::queue> ffrtQueue_{nullptr};
+    ffrt::mutex latencyFfrtMutex_;
+    int32_t switchToFfrt_ = 1000;
     std::unique_ptr<INetworkLatencySwitcher> switcher;
     std::unordered_set<std::string> requests;
+    std::unordered_map<std::string, ffrt::task_handle> taskHandlerMap_;
 };
 } // namespace OHOS::ResourceSchedule
 

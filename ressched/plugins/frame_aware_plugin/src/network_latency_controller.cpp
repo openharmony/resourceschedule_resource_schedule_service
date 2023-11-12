@@ -26,7 +26,6 @@
 
 #include "plugin_mgr.h"
 #include "res_sched_log.h"
-#include "event_handler.h"
 #include "event_runner.h"
 
 #include "latency_control/inetwork_latency_switcher.h"
@@ -58,10 +57,9 @@ void NetworkLatencyController::Init()
 
 void NetworkLatencyController::Init(std::unique_ptr<INetworkLatencySwitcher> sw)
 {
-    handler = std::make_shared<AppExecFwk::EventHandler>(
-        PluginMgr::GetInstance().GetRunner()
-    );
-    if (!handler) {
+    ffrtQueue_ = std::make_shared<ffrt::queue>("network_manager_ffrtQueue",
+        ffrt::queue_attr().qos(ffrt::qos_background));
+    if (ffrtQueue_ == nullptr) {
         RESSCHED_LOGE("%{public}s: failed: cannot allocate event handler", __func__);
         return;
     }
@@ -71,7 +69,7 @@ void NetworkLatencyController::Init(std::unique_ptr<INetworkLatencySwitcher> sw)
 
 void NetworkLatencyController::HandleRequest(long long value, const std::string &identity)
 {
-    if (!switcher || !handler) {
+    if (!switcher || ffrtQueue_ == nullptr) {
         RESSCHED_LOGE("%{public}s: controller is not initialized", __func__);
         return;
     }
@@ -92,24 +90,37 @@ void NetworkLatencyController::HandleRequest(long long value, const std::string 
 void NetworkLatencyController::HandleAddRequest(const std::string &identity)
 {
     // cancel auto disable task first
-    handler->RemoveTask(identity);
+    std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
+    for (auto iter = taskHandlerMap_.begin(); iter != taskHandlerMap_.end(); iter++) {
+        if (iter->first == identity) {
+            ffrtQueue_->cancel(iter->second);
+            taskHandlerMap_.erase(iter->first);
+        }
+    }
     std::unique_lock<std::mutex> lk(mtx);
 
     RESSCHED_LOGD("%{public}s: add new request from %{public}s", __func__, identity.c_str());
     AddRequest(identity);
 
     // set up the auto disable timer
-    handler->PostTask(
+    taskHandlerMap_[identity] = ffrtQueue_->submit_h(
         [this, identity] { AutoDisableTask(identity); },
-        identity, // use the identity as a key to manage this task
-        std::chrono::duration_cast<std::chrono::milliseconds>(TIMEOUT).count()
+        ffrt::task_attr().delay(
+            std::chrono::duration_cast<std::chrono::milliseconds>(TIMEOUT).count() * switchToFfrt_
+            )
     );
 }
 
 void NetworkLatencyController::HandleDelRequest(const std::string &identity)
 {
     // cancel auto disable task first
-    handler->RemoveTask(identity);
+    std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
+    for (auto iter = taskHandlerMap_.begin(); iter != taskHandlerMap_.end(); iter++) {
+        if (iter->first == identity) {
+            ffrtQueue_->cancel(iter->second);
+            taskHandlerMap_.erase(iter->first);
+        }
+    }
     std::unique_lock<std::mutex> lk(mtx);
 
     RESSCHED_LOGD("%{public}s: delete request from %{public}s", __func__, identity.c_str());
