@@ -40,7 +40,11 @@ namespace {
         return descriptor == remoteDescriptor;
     }
 
-    bool IsHasPermission() {
+    bool IsHasPermission(uint32_t type, std::unordered_set<uint32_t> saRes) {
+        if (saRes.find(type) == saRes.end()) {
+            RESSCHED_LOGE("resType:%{public}d not sa report", type);
+            return false
+        }
         AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
         auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
         if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
@@ -60,10 +64,18 @@ namespace {
     }
 
     bool IsThirdPartType(uint32_t type, std::unordered_set<uint32_t> thirdPartRes) {
-        if (thirdPartRes.find(type) != thirdPartRes.end()) {
-            return true;
+        if (thirdPartRes.find(type) == thirdPartRes.end()) {
+            RESSCHED_LOGE("resType:%{public}d not hap app report", type);
+            return false;
         }
-        return false;
+        AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
+        auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
+        if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_HAP) {
+            RESSCHED_LOGE("not hap app");
+            return false;
+        }
+
+        return true;
     }
 
     bool IsSBDResType(uint32_t type) {
@@ -101,7 +113,7 @@ int32_t ResSchedServiceStub::ReportDataInner(MessageParcel& data, [[maybe_unused
         RESSCHED_LOGE("type:%{public}d is invalid", type);
         return ERR_RES_SCHED_PARCEL_ERROR;
     }
-    if (!IsSBDResType(type) && !IsThirdPartType(type, thirdPartRes_) && !IsHasPermission()) {
+    if (!IsSBDResType(type) && !IsThirdPartType(type, thirdPartRes_) && !IsHasPermission(type, saRes_)) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
     int64_t value = 0;
@@ -194,6 +206,45 @@ void ResSchedServiceStub::Init()
         ResType::RES_TYPE_LOAD_URL,
         ResType::RES_TYPE_MOUSEWHEEL,
         ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
+    };
+    saRes_ = {
+        ResType::RES_TYPE_SCREEN_STATUS,
+        ResType::RES_TYPE_APP_STATE_CHANGE,
+        ResType::RES_TYPE_ABILITY_STATE_CHANGE,
+        ResType::RES_TYPE_EXTENSION_STATE_CHANGE,
+        ResType::RES_TYPE_PROCESS_STATE_CHANGE,
+        ResType::RES_TYPE_WINDOW_FOCUS,
+        ResType::RES_TYPE_TRANSIENT_TASK,
+        ResType::RES_TYPE_CONTINUOUS_TASK,
+        ResType::RES_TYPE_CGROUP_ADJUSTER,
+        ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
+        ResType::RES_TYPE_REPORT_MMI_PROCESS,
+        ResType::RES_TYPE_REPORT_RENDER_THREAD,
+        ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+        ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
+        ResType::RES_TYPE_USER_SWITCH,
+        ResType::RES_TYPE_USER_REMOVE,
+        ResType::RES_TYPE_SCREEN_LOCK,
+        ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE,
+        ResType::RES_TYPE_NETWORK_LATENCY_REQUEST,
+        ResType::RES_TYPE_CALL_STATE_UPDATE,
+        ResType::RES_TYPE_THREAD_QOS_CHANGE,
+        ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
+        ResType::RES_TYPE_AUDIO_RING_MODE_CHANGE,
+        ResType::RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
+        ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::RES_TYPE_DEVICE_STILL_STATE_CHANGE,
+        ResType::RES_TYPE_RESIZE_WINDOW,
+        ResType::RES_TYPE_MOVE_WINDOW,
+        ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
+        ResType::RES_TYPE_REPORT_CAMERA_STATE,
+        ResType::RES_TYPE_RUNNINGLOCK_STATE,
+        ResType::RES_TYPE_DRAG_STATUS_BAR,
+        ResType::RES_TYPE_REPORT_SCENE_BOARD,
+        ResType::RES_TYPE_MMI_INPUT_STATE,
+        ResType::RES_TYPE_ANCO_CUST,
+        ResType::RES_TYPE_ANCO_APP_FRONT,
+        ResType::RES_TYPE_TIMEZONE_CHANGED,
     };
 }
 } // namespace ResourceSchedule

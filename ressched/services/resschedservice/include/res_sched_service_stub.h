@@ -43,6 +43,7 @@ private:
     using RequestFuncType = std::function<int32_t (MessageParcel& data, MessageParcel& reply)>;
     std::map<uint32_t, RequestFuncType> funcMap_;
     std::unordered_set<uint32_t> thirdPartRes_;
+    std::unordered_set<uint32_t> saRes_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
