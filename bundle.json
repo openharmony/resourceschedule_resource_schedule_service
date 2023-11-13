@@ -36,6 +36,7 @@
         "eventhandler",
         "ffrt",
         "frame_aware_sched",
+        "ffrt",
         "hilog",
         "hisysevent",
         "hitrace",
