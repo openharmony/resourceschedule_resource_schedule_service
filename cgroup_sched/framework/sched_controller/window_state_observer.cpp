@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -83,6 +83,16 @@ void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeIn
         ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
 }
 
+void WindowVisibilityObserver::MarshallingWindowVisibilityInfo(const sptr<WindowVisibilityInfo>& info,
+    nlohmann::json& payload)
+{
+    payload["pid"] = std::to_string(info->pid_);
+    payload["uid"] = std::to_string(info->uid_);
+    payload["windowId"] = std::to_string(info->windowId_);
+    payload["windowType"] = std::to_string((int32_t)info->windowType_);
+    payload["visibilityState"] = std::to_string(info->visibilityState_);
+}
+
 void WindowVisibilityObserver::OnWindowVisibilityChanged(
     const std::vector<sptr<WindowVisibilityInfo>>& windowVisibilityInfo)
 {
@@ -103,11 +113,7 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
             cgHandler->HandleWindowVisibilityChanged(windowId, visibilityState, windowType, pid, uid);
         });
         nlohmann::json payload;
-        payload["pid"] = std::to_string(pid);
-        payload["uid"] = std::to_string(uid);
-        payload["windowId"] = std::to_string(windowId);
-        payload["windowType"] = std::to_string((int32_t)windowType);
-        payload["visibilityState"] = std::to_string(visibilityState);
+        MarshallingWindowVisibilityInfo(info, payload);
         bool isVisible = visibilityState < Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
             isVisible ? ResType::WindowVisibilityStatus::VISIBLE : ResType::WindowVisibilityStatus::INVISIBLE, payload);

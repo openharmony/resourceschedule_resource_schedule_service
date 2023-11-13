@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -39,6 +39,22 @@ public:
     void OnContinuousTaskStart(const std::shared_ptr<ContinuousTaskCallbackInfo> &continuousTaskCallbackInfo) override;
     void OnContinuousTaskStop(const std::shared_ptr<ContinuousTaskCallbackInfo> &continuousTaskCallbackInfo) override;
     void OnRemoteDied(const wptr<IRemoteObject> &object) override;
+    virtual void OnAppEfficiencyResourcesApply(
+        const std::shared_ptr<BackgroundTaskMgr::ResourceCallbackInfo> &resourceInfo) override;
+    virtual void OnAppEfficiencyResourcesReset(
+        const std::shared_ptr<BackgroundTaskMgr::ResourceCallbackInfo> &resourceInfo) override;
+    virtual void OnProcEfficiencyResourcesApply(
+        const std::shared_ptr<BackgroundTaskMgr::ResourceCallbackInfo> &resourceInfo) override;
+    virtual void OnProcEfficiencyResourcesReset(
+        const std::shared_ptr<BackgroundTaskMgr::ResourceCallbackInfo> &resourceInfo) override;
+
+private:
+    void MarshallingTransientTaskAppInfo(
+        const std::shared_ptr<TransientTaskAppInfo>& info, nlohmann::json& payload);
+    void MarshallingContinuousTaskCallbackInfo(
+        const std::shared_ptr<ContinuousTaskCallbackInfo>& continuousTaskCallbackInfo, nlohmann::json& payload);
+    void MarshallingResourceInfo(
+        const std::shared_ptr<BackgroundTaskMgr::ResourceCallbackInfo> &resourceInfo, nlohmann::json &payload);
 
 private:
     inline bool ValidateTaskInfo(const std::shared_ptr<TransientTaskAppInfo>& info) const

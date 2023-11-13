@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +22,7 @@
 
 #include "audio_observer.h"
 #include "hisysevent_observer.h"
+#include "connection_subscriber.h"
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
 #include "device_movement_observer.h"
 #endif
@@ -29,6 +30,9 @@
 #include "sched_telephony_observer.h"
 #endif
 #include "mmi_observer.h"
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
+#include "av_session_state_listener.h"
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -62,6 +66,13 @@ public:
     void InitSysAbilityListener();
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
     void GetAllMmiStatusData();
+    void InitConnectionSubscriber();
+    void DisableConnectionSubscriber();
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
+    void InitAVSessionStateChangeListener();
+    void DisableAVSessionStateChangeListener();
+    std::shared_ptr<AvSessionStateListener> avSessionStateListener_ = nullptr;
+#endif
 
     pid_t pid_ = -1;
     std::map<int32_t, std::function<void(ObserverManager *)>> handleObserverMap_;
@@ -78,6 +89,7 @@ public:
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
     std::shared_ptr<MmiObserver> mmiEventObserver_ = nullptr;
     std::map<std::tuple<int32_t, int32_t, std::string>, int32_t> mmiStatusData_;
+    std::shared_ptr<ConnectionSubscriber> connectionSubscriber_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
