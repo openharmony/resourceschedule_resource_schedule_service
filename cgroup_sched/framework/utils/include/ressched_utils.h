@@ -57,7 +57,7 @@ private:
 
     ReportDataFunc reportFunc_ = nullptr;
     ReportArbitrationResultFunc reportArbitrationResultFunc_ = nullptr;
-    ReportSysEvent reportSysEventFunc_ = nullptr;
+    ReportSysEventFunc reportSysEventFunc_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
