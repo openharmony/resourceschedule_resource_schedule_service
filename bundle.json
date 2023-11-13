@@ -48,8 +48,7 @@
         "soc_perf",
         "state_registry",
         "window_manager",
-        "power_manager",
-        "ffrt"
+        "power_manager"
       ],
       "third_party": [
         "json",
