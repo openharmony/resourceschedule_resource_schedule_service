@@ -37,6 +37,8 @@ namespace {
     constexpr uint32_t DELAYED_RETRY_REGISTER_DURATION = 100;
     constexpr uint32_t MAX_RETRY_TIMES = 100;
     constexpr uint32_t MAX_SPAN_SERIAL = 99;
+    constexpr uint32_t DELAY_SUBMIT = 0;
+    constexpr uint32_t DELAY_SUBMITH = 0;
 
     const std::string MMI_SERVICE_NAME = "mmi_service";
 }
@@ -48,47 +50,60 @@ using OHOS::AppExecFwk::AbilityState;
 using OHOS::AppExecFwk::ExtensionState;
 using OHOS::AppExecFwk::ProcessType;
 
-CgroupEventHandler::CgroupEventHandler(const std::shared_ptr<EventRunner> &runner)
-    : EventHandler(runner)
-{}
+CgroupEventHandler::CgroupEventHandler()
+{
+    queue = std::make_shared<ffrt::queue>("cgroup_event_queue",
+    ffrt::queue_attr().qos(ffrt::qos_defult));
+    if(!queue) {
+        CGS_LOGE("create queue failed!");
+    }
+}
 
 CgroupEventHandler::~CgroupEventHandler()
 {
     supervisor_ = nullptr;
 }
 
-void CgroupEventHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event)
+void CgroupEventHandler::ProcessEvent(int32_t eventId, int32_t retryTimes)
 {
     CGS_LOGD("%{public}s : eventId:%{public}d param:%{public}" PRIu64,
-        __func__, event->GetInnerEventId(), event->GetParam());
-    switch (event->GetInnerEventId()) {
+        __func__, eventId, retryTimes);
+    switch (eventId) {
         case EVENT_ID_REG_APP_STATE_OBSERVER: {
-                int64_t retry = event->GetParam();
-                if (!SchedController::GetInstance().SubscribeAppState() &&
-                    retry < MAX_RETRY_TIMES) {
-                    auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_APP_STATE_OBSERVER, retry + 1);
-                    this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
-                    if(retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
-                        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                if (!SchedController::GetInstance().SubscribeAppState()) {
+                    if(retryTimes < MAX_RETRY_TIMES) {
+                        this->SubmitH([this, eventId,retryTimes](){
+                            this->ProcessEvent(EVENT_ID_REG_APP_STATE_OBSERVER, retryTimes + 1);
+                        }, EVENT_ID_REG_APP_STATE_OBSERVER, DELAYED_RETRY_REGISTER_DURATION);
+                    }
+                    else {
+                        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", 
+                        HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Subscribe app status change observer failed.");
                     }
-                }
+                } else {
+                    RemoveEvent(EVENT_ID_REG_APP_STATE_OBSERVER);
+                    }
                 break;
             }
         case EVENT_ID_REG_BGTASK_OBSERVER: {
-                int64_t retry = event->GetParam();
-                if (!SchedController::GetInstance().SubscribeBackgroundTask() &&
-                    retry < MAX_RETRY_TIMES) {
-                    auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_BGTASK_OBSERVER, retry + 1);
-                    this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
-                    if(retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
-                        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                if (!SchedController::GetInstance().SubscribeBackgroundTask()) {
+                    if(retryTimes < MAX_RETRY_TIMES) {
+                        this->SubmitH([this, eventId,retryTimes](){
+                            this->ProcessEvent(EVENT_ID_REG_BGTASK_OBSERVER, retryTimes + 1);
+                        }, EVENT_ID_REG_BGTASK_OBSERVER, DELAYED_RETRY_REGISTER_DURATION);
+                    }
+                    else {
+                        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", 
+                        HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Subscribe background task observer failed.");
                     }
+                } else {
+                    RemoveEvent(EVENT_ID_REG_BGTASK_OBSERVER);
                 }
                 break;
             }
@@ -102,14 +117,31 @@ void CgroupEventHandler::SetSupervisor(std::shared_ptr<Supervisor> supervisor)
     supervisor_ = supervisor;
 }
 
+void CgroupEventHandler::RemoveAllEvents()
+{
+    queue.reset();
+    eventMap.clear();
+}
+
+void CgroupEventHandler::RemoveEvent(uint32_t eventId)
+{
+    if(eventMap.find(eventId) != eventMap.end()) {
+        for(size_t i = 0; i < eventMap[eventId].size(); i++) {
+            queue->cancel(eventMap[eventId][i]);
+        }
+        eventMap.erase(eventId);
+    }
+}
+
 void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& deviceId)
 {
     switch (saId) {
         case APP_MGR_SERVICE_ID:
             this->RemoveEvent(EVENT_ID_REG_APP_STATE_OBSERVER);
             if (!SchedController::GetInstance().SubscribeAppState()) {
-                auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_APP_STATE_OBSERVER, 0);
-                this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
+                this->SubmitH([this]() {
+                    this->ProcessEvent(EVENT_ID_REG_APP_STATE_OBSERVER, 1);
+                }, EVENT_ID_REG_APP_STATE_OBSERVER, DELAYED_RETRY_REGISTER_DURATION);
             }
             break;
         case WINDOW_MANAGER_SERVICE_ID:
@@ -118,8 +150,9 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
         case BACKGROUND_TASK_MANAGER_SERVICE_ID:
             this->RemoveEvent(EVENT_ID_REG_BGTASK_OBSERVER);
             if (!SchedController::GetInstance().SubscribeBackgroundTask()) {
-                auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_BGTASK_OBSERVER, 0);
-                this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
+                this->SubmitH([this]() {
+                    this->ProcessEvent(EVENT_ID_REG_BGTASK_OBSERVER, 1);
+                }, EVENT_ID_REG_BGTASK_OBSERVER, DELAYED_RETRY_REGISTER_DURATION);
             }
             break;
         case POWER_MANAGER_SERVICE_ID:
@@ -758,6 +791,36 @@ bool CgroupEventHandler::ParseValue(int32_t& value, const char* name,
         return true;
     }
     return false;
+}
+
+void CgroupEventHandler::Submit(std::function<void()>&& func, uint32_t delay)
+{
+    ffrt::task_attr taskAttr;
+    taskAttr.delay(delay * 1000);
+    queue->Submit(func, taskAttr);
+}
+
+void CgroupEventHandler::SubmitH(std::function<void()>&& func, uint32_t eventId, uint32_t delay)
+{
+    ffrt::task_attr taskAttr;
+    taskAttr.delay(delay * 1000);
+    ffrt::task_handle syncTask = queue->submit_h(func, taskAttr);
+    eventMap[eventId].emplace_back(std::move(syncTask));
+}
+
+void CgroupEventHandler::CheckQueuePtr(const std::string& caller) 
+{
+    if(queue == nullptr) {
+        CGS_LOGE("%{public}s, queue is nullptr retry create", caller.c_str());
+        queue = std::make_shared<ffrt::queue>("cgroup_event_queue",
+        ffrt::queue_attr().qos(ffrt::qos_defult));
+        if(!queue) {
+            CGS_LOGE("%{public}s, create queue failed! return",caller.c_str());
+            return  false;
+        }
+        return true;
+    }
+    return true;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

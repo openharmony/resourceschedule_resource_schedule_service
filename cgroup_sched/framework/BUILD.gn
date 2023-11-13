@@ -61,6 +61,7 @@ ohos_shared_library("cgroup_sched") {
     "power_manager:powermgr_client",
     "samgr:samgr_proxy",
     "window_manager:libwm",
+    "ffrt::libffrt",
   ]
 
   if (has_bg_task_mgr) {

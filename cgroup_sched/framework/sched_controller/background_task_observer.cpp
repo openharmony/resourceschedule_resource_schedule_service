@@ -40,7 +40,7 @@ void BackgroundTaskObserver::OnTransientTaskStart(const std::shared_ptr<Transien
         auto pid = info->GetPid();
         auto pkgName = info->GetPackageName();
 
-        cgHandler->PostTask([cgHandler, uid, pid, pkgName] {
+        cgHandler->Submit([cgHandler, uid, pid, pkgName] {
             cgHandler->HandleTransientTaskStart(uid, pid, pkgName);
         });
     }
@@ -65,7 +65,7 @@ void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientT
         auto pid = info->GetPid();
         auto pkgName = info->GetPackageName();
 
-        cgHandler->PostTask([cgHandler, uid, pid, pkgName] {
+        cgHandler->Submit([cgHandler, uid, pid, pkgName] {
             cgHandler->HandleTransientTaskEnd(uid, pid, pkgName);
         });
     }
@@ -92,7 +92,7 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
         auto typeId = continuousTaskCallbackInfo->GetTypeId();
         auto abilityName = continuousTaskCallbackInfo->GetAbilityName();
 
-        cgHandler->PostTask([cgHandler, uid, pid, typeId, abilityName] {
+        cgHandler->Submit([cgHandler, uid, pid, typeId, abilityName] {
             cgHandler->HandleContinuousTaskStart(uid, pid, typeId, abilityName);
         });
     }
@@ -120,7 +120,7 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
         auto typeId = continuousTaskCallbackInfo->GetTypeId();
         auto abilityName = continuousTaskCallbackInfo->GetAbilityName();
 
-        cgHandler->PostTask([cgHandler, uid, pid, typeId, abilityName] {
+        cgHandler->Submit([cgHandler, uid, pid, typeId, abilityName] {
             cgHandler->HandleContinuousTaskCancel(uid, pid, typeId, abilityName);
         });
     }
