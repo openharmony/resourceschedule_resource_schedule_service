@@ -413,6 +413,8 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
         }
         supervisor_->focusedApp_ = app;
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FOCUSED_WINDOW);
+        ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), ResType::RES_TYPE_WINDOW_FOCUS,
+            ResType::WindowFocusStatus::WINDOW_FOCUS);
     }
     if (app->GetName().empty()) {
         app->SetName(SchedController::GetInstance().GetBundleNameByUid(uid));
@@ -451,6 +453,8 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
             app->focusedProcess_ = nullptr;
         }
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_UNFOCUSED_WINDOW);
+        ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), ResType::RES_TYPE_WINDOW_FOCUS,
+            ResType::WindowFocusStatus::WINDOW_UNFOCUS);
     }
     if (app->GetName().empty()) {
         app->SetName(SchedController::GetInstance().GetBundleNameByUid(uid));
@@ -693,6 +697,49 @@ void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t 
         std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
         procRecord->runningLockState_[type] = (state == ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE);
     }
+}
+
+void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr.", __func__);
+        return;
+    }
+
+    if (payload.contains("uid") && payload.at("uid").is_number_integer()) {
+        uid = payload["uid"].get<std::int32_t>();
+    }
+    if (payload.contains("pid") && payload.at("pid").is_number_integer()) {
+        pid = payload["pid"].get<std::int32_t>();
+    }
+    if (uid <= 0 || pid <= 0) {
+        return;
+    }
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
+
+    switch (resType) {
+        case ResType::RES_TYPE_REPORT_CAMERA_STATE: {
+            procRecord->cameraState_ = static_cast<int32_t>(value);
+            break;
+        }
+        case ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE: {
+            procRecord->bluetoothState_ = static_cast<int32_t>(value);
+            break;
+        }
+        case ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE: {
+            procRecord->wifiState_ = static_cast<int32_t>(value);
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+        resType, static_cast<int32_t>(value));
 }
 
 bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,

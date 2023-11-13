@@ -26,12 +26,14 @@ namespace OHOS {
 namespace ResourceSchedule {
 using ReportDataFunc = void (*)(uint32_t resType, int64_t value, const nlohmann::json& payload);
 using ReportArbitrationResultFunc = void (*)(Application &app, ProcessRecord &pr, AdjustSource source);
+using ReportSysEventFunc = void (*)(Application &app, ProcessRecord &pr, uint32_t resType, int32_t state);
 
 class ResSchedUtils {
 public:
     static ResSchedUtils& GetInstance();
     void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void ReportArbitrationResult(Application &app, ProcessRecord &pr, AdjustSource source);
+    void ReportSysEvent(Application &app, ProcessRecord &pr, uint32_t resType, int32_t state);
 
 private:
     ResSchedUtils()
@@ -43,6 +45,7 @@ private:
     {
         reportFunc_ = nullptr;
         reportArbitrationResultFunc_ = nullptr;
+        reportSysEventFunc_ = nullptr;
     }
     void LoadUtils();
     void LoadUtilsExtra();
@@ -54,6 +57,7 @@ private:
 
     ReportDataFunc reportFunc_ = nullptr;
     ReportArbitrationResultFunc reportArbitrationResultFunc_ = nullptr;
+    ReportSysEvent reportSysEventFunc_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

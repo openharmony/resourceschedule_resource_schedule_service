@@ -62,6 +62,7 @@ public:
     void HandleReportWindowState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportRunningLockEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
     bool ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid, int64_t value, const nlohmann::json& payload);
