@@ -95,18 +95,20 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
             continue;
         }
         auto windowId = info->windowId_;
-        auto isVisible = info->isVisible_;
+        auto visibilityState = info->visibilityState_;
         auto windowType = info->windowType_;
         auto pid = info->pid_;
         auto uid = info->uid_;
-        cgHandler->PostTask([cgHandler, windowId, isVisible, windowType, pid, uid] {
-            cgHandler->HandleWindowVisibilityChanged(windowId, isVisible, windowType, pid, uid);
+        cgHandler->PostTask([cgHandler, windowId, visibilityState, windowType, pid, uid] {
+            cgHandler->HandleWindowVisibilityChanged(windowId, visibilityState, windowType, pid, uid);
         });
         nlohmann::json payload;
         payload["pid"] = std::to_string(pid);
         payload["uid"] = std::to_string(uid);
         payload["windowId"] = std::to_string(windowId);
         payload["windowType"] = std::to_string((int32_t)windowType);
+        payload["visibilityState"] = std::to_string(visibilityState);
+        bool isVisible = visibilityState < Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
             isVisible ? ResType::WindowVisibilityStatus::VISIBLE : ResType::WindowVisibilityStatus::INVISIBLE, payload);
     }

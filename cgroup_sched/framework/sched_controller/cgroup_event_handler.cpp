@@ -26,6 +26,7 @@
 #include "sched_policy.h"
 #include "system_ability_definition.h"
 #include "power_mgr_client.h"
+#include "window_manager.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -457,14 +458,15 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
 }
 
 void CgroupEventHandler::HandleWindowVisibilityChanged(
-    uint32_t windowId, bool isVisible, WindowType windowType, int32_t pid, int32_t uid)
+    uint32_t windowId, uint32_t visibilityState, WindowType windowType, int32_t pid, int32_t uid)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
+    bool isVisible = visibilityState < Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
-        isVisible, (int32_t)windowType, pid, uid);
+        visibilityState, (int32_t)windowType, pid, uid);
 
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
@@ -481,6 +483,7 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(
         return;
     }
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
+    windowInfo->visibilityState_ = visibilityState;
     windowInfo->isVisible_ = isVisible;
     windowInfo->windowType_ = (int32_t)windowType;
 
@@ -624,11 +627,45 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     if (!mainProcRecord) {
         return;
     }
+    if (CheckVisibilityForRenderProcess(*(procRecord.get()))) {
+        CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d is not visible but active",
+            __func__, app->GetName().c_str(), uid, pid);
+    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
         AdjustSource::ADJS_REPORT_WINDOW_STATE_CHANGED);
 }
 
 void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+
+    if (payload.contains("uid") && payload.at("uid").is_number_integer()) {
+        uid = payload["uid"].get<std::int32_t>();
+    }
+    if (payload.contains("pid") && payload.at("pid").is_number_integer()) {
+        pid = payload["pid"].get<std::int32_t>();
+    }
+    if (uid <= 0 || pid <= 0) {
+        return;
+    }
+
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    auto procRecord = app->GetProcessRecordNonNull(pid);
+    procRecord->audioState_ = static_cast<int32_t>(value);
+    CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+        __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
+
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
+}
+
+void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     int32_t uid = 0;
     int32_t pid = 0;
@@ -645,16 +682,18 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
         return;
     }
 
-    auto app = supervisor_->GetAppRecordNonNull(uid);
-    auto procRecord = app->GetProcessRecordNonNull(pid);
+    std::shared_ptr<ProcessRecord> procRecord = supervisor_->FindProcessRecord(pid);
+    if (!procRecord) {
+        return;
+    }
+
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(procRecord->GetUid());
     procRecord->audioState_ = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
 
-    AdjustSource adjustSource = resType == ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE ?
-        AdjustSource::ADJS_REPORT_WEBVIEW_STATE_CHANGED :
-        AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED;
-    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), adjustSource);
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_REPORT_WEBVIEW_STATE_CHANGED);
 }
 
 void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -690,6 +729,11 @@ void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t 
         std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
         procRecord->runningLockState_[type] = (state == ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE);
     }
+}
+
+bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr)
+{
+    return pr.isRenderProcess_ && pr.isActive_ && !pr.IsVisible();
 }
 
 bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,
