@@ -193,8 +193,6 @@ PluginConfig PluginMgr::GetConfig(const std::string& pluginName, const std::stri
     return configReader_->GetConfig(pluginName, configName);
 }
 
-
-
 void PluginMgr::Stop()
 {
     OnDestroy();
