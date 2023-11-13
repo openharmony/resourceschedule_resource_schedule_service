@@ -66,4 +66,10 @@ declare_args() {
       !defined(global_parts_info.resourceschedule_soc_perf)) {
     ressched_with_resourceschedule_soc_perf_enable = false
   }
+
+  communication_bluetooth_perception_enable = true
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.communication_bluetooth)) {
+    communication_bluetooth_perception_enable = false
+  }
 }

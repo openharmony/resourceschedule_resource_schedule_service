@@ -25,18 +25,20 @@ namespace ResourceSchedule {
 namespace {
     constexpr int32_t MMI_STATE = 0;
 }
-void MmiObserver::SyncBundleName(int32_t pid, int32_t uid, std::string bundleName)
+void MmiObserver::SyncBundleName(int32_t pid, int32_t uid, std::string bundleName, int32_t syncStatus)
 {
     if (bundleName.size() == 0) {
         RESSCHED_LOGE("mmi sync bundleName error!");
         return;
     }
-    RESSCHED_LOGI("mmi sync bundleName, pid:%{public}d, uid:%{public}d, bundleName:%{public}s", pid, uid,
-        bundleName.c_str());
+    // mmi status, value -1: unsubscribe, value 0: nap status, value 1: subscribe, value 2: send a event.
+    RESSCHED_LOGI("mmi sync bundleName, pid:%{public}d, uid:%{public}d, bundleName:%{public}s, status:%{public}d",
+        pid, uid, bundleName.c_str(), syncStatus);
     nlohmann::json payload;
     payload["pid"] = pid;
     payload["uid"] = uid;
     payload["bundleName"] = bundleName;
+    payload["syncStatus"] = syncStatus;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_MMI_INPUT_STATE, MMI_STATE, payload);
 }
 } // namespace ResourceSchedule

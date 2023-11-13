@@ -32,6 +32,7 @@ ohos_shared_library("component_sched_plugin") {
   external_deps = [
     "c_utils:utils",
     "eventhandler:libeventhandler",
+    "ffrt:libffrt",
     "hilog:libhilog",
   ]
 

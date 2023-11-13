@@ -69,15 +69,8 @@ void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann
 
 int32_t ResSchedService::KillProcess(const nlohmann::json& payload)
 {
-    uint32_t accessToken = IPCSkeleton::GetCallingTokenID();
-    AccessToken::NativeTokenInfo nativeTokenInfo;
-    int32_t result = AccessToken::AccessTokenKit::GetNativeTokenInfo(accessToken, nativeTokenInfo);
-    if (result == ERR_OK) {
-        return ResSchedMgr::GetInstance().KillProcessByClient(payload, nativeTokenInfo.processName);
-    } else {
-        RESSCHED_LOGE("Kill process get token info fail.");
-        return RES_SCHED_ACCESS_TOKEN_FAIL;
-    }
+    return ResSchedMgr::GetInstance().KillProcessByClient(payload);
+
 }
 
 int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& args)

@@ -61,6 +61,7 @@ public:
     void DisableMMiEventObserver();
     void InitSysAbilityListener();
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
+    void GetAllMmiStatusData();
 
     pid_t pid_ = -1;
     std::map<int32_t, std::function<void(ObserverManager *)>> handleObserverMap_;
@@ -76,6 +77,7 @@ public:
 #endif
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
     std::shared_ptr<MmiObserver> mmiEventObserver_ = nullptr;
+    std::map<std::tuple<int32_t, int32_t, std::string>, int32_t> mmiStatusData_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -138,6 +138,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_SCREEN_OFF);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USER_SWITCHED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USER_REMOVED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_TIMEZONE_CHANGED);
     matchingSkills.AddEvent("common.event.UNLOCK_SCREEN");
     matchingSkills.AddEvent("common.event.LOCK_SCREEN");
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
@@ -192,6 +193,11 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
     }
     if (action == "common.event.LOCK_SCREEN") {
         ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_LOCK, payload);
+        return;
+    }
+
+    if (action == CommonEventSupport::COMMON_EVENT_TIMEZONE_CHANGED) {
+        ReportDataInProcess(ResType::RES_TYPE_TIMEZONE_CHANGED, ResType::RES_TYPE_TIMEZONE_CHANGED, payload);
         return;
     }
 }

@@ -31,6 +31,7 @@ ohos_shared_library("socperf_plugin") {
 
   external_deps = [
     "ability_runtime:app_manager",
+    "ffrt:libffrt",
     "hilog:libhilog",
   ]
   defines = []
@@ -40,4 +41,11 @@ ohos_shared_library("socperf_plugin") {
   }
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
+  branch_protector_ret = "pac_ret"
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
 }
