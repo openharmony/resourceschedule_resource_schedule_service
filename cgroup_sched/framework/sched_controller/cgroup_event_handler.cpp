@@ -667,6 +667,8 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+        resType, static_cast<int32_t>(value));
 }
 
 void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload)
