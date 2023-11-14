@@ -38,7 +38,7 @@ void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo
         auto pid = focusChangeInfo->pid_;
         auto uid = focusChangeInfo->uid_;
 
-        cgHandler->PostTask([cgHandler, windowId, token, windowType, displayId, pid, uid] {
+        cgHandler->Submit([cgHandler, windowId, token, windowType, displayId, pid, uid] {
             cgHandler->HandleFocusedWindow(windowId, token, windowType, displayId, pid, uid);
         });
     }
@@ -68,7 +68,7 @@ void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeIn
         auto pid = focusChangeInfo->pid_;
         auto uid = focusChangeInfo->uid_;
 
-        cgHandler->PostTask([cgHandler, windowId, token, windowType, displayId, pid, uid] {
+        cgHandler->Submit([cgHandler, windowId, token, windowType, displayId, pid, uid] {
             cgHandler->HandleUnfocusedWindow(windowId, token, windowType, displayId, pid, uid);
         });
     }
@@ -109,7 +109,7 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
         auto windowType = info->windowType_;
         auto pid = info->pid_;
         auto uid = info->uid_;
-        cgHandler->PostTask([cgHandler, windowId, visibilityState, windowType, pid, uid] {
+        cgHandler->Submit([cgHandler, windowId, visibilityState, windowType, pid, uid] {
             cgHandler->HandleWindowVisibilityChanged(windowId, visibilityState, windowType, pid, uid);
         });
         nlohmann::json payload;

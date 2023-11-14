@@ -108,7 +108,7 @@ void SchedController::ReportAbilityStatus(int32_t saId, const std::string& devic
     if (!handler) {
         return;
     }
-    handler->PostTask([handler, saId, deviceId, status] {
+    handler->Submit([handler, saId, deviceId, status] {
         if (status > 0) {
             handler->HandleAbilityAdded(saId, deviceId);
         } else {
@@ -123,7 +123,7 @@ void SchedController::DispatchResource(uint32_t resType, int64_t value, const nl
     if (!handler) {
         return;
     }
-    handler->PostTask([handler, resType, value, payload] {
+    handler->Submit([handler, resType, value, payload] {
         switch (resType) {
             case ResType::RES_TYPE_REPORT_MMI_PROCESS: {
                 handler->HandleReportMMIProcess(resType, value, payload);
@@ -188,7 +188,7 @@ std::string SchedController::GetBundleNameByUid(const int32_t uid)
 
 inline void SchedController::InitCgroupHandler()
 {
-    cgHandler_ = std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create(CG_HANDLER_THREAD));
+    cgHandler_ = std::make_shared<CgroupEventHandler>();
     cgHandler_->SetSupervisor(supervisor_);
 }
 

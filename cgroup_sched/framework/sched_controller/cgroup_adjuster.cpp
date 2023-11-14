@@ -49,7 +49,7 @@ void CgroupAdjuster::InitAdjuster()
     (void)ResSchedUtils::GetInstance();
     auto handler = SchedController::GetInstance().GetCgroupEventHandler();
     if (handler) {
-        handler->PostTask([this] {
+        handler->Submit([this] {
             this->AdjustSelfProcessGroup();
         });
     }
