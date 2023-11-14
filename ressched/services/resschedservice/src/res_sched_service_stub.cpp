@@ -81,7 +81,8 @@ namespace {
         return true;
     }
 
-    bool IsSBDResType(uint32_t type) {
+    bool IsSBDResType(uint32_t type)
+    {
         if (type != ResType::RES_TYPE_REPORT_SCENE_BOARD) {
             return false;
         }
