@@ -49,6 +49,7 @@ protected:
 
 private:
     SocPerf socPerf;
+    bool AllowDump();
 };
 } // namespace SOCPERF
 } // namespace OHOS
