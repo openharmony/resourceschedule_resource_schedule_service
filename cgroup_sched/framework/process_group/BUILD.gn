@@ -37,6 +37,13 @@ ohos_shared_library("libprocess_group") {
     "hilog:libhilog",
   ]
 
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  branch_protector_ret = "pac_ret"
+
   part_name = "resource_schedule_service"
   subsystem_name = "resourceschedule"
 }
