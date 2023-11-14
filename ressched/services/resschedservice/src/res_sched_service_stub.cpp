@@ -22,21 +22,78 @@
 #include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
 #include "ipc_util.h"
+#include "accesstoken_kit.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
+using namespace OHOS::Security;
 namespace {
     #define PAYLOAD_MAX_SIZE 4096
-    constexpr int32_t FOUNDATION_UID = 5523;
-    constexpr int32_t INPUT_UID = 6696;
-    constexpr int32_t DHARDWARE_UID = 3056;
     constexpr int32_t SAMGR_UID = 5555;
+    const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
+    const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
 
     bool IsValidToken(MessageParcel& data)
     {
         std::u16string descriptor = ResSchedServiceStub::GetDescriptor();
         std::u16string remoteDescriptor = data.ReadInterfaceToken();
         return descriptor == remoteDescriptor;
+    }
+
+    bool IsHasPermission(uint32_t type, std::unordered_set<uint32_t> saRes)
+    {
+        if (saRes.find(type) == saRes.end()) {
+            RESSCHED_LOGE("resType:%{public}d not sa report", type);
+            return false;
+        }
+        AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
+        auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
+        if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
+            RESSCHED_LOGE("not native sa");
+            return false;
+        }
+        int32_t hasPermission = AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, NEEDED_PERMISSION);
+        if (hasPermission != 0) {
+            RESSCHED_LOGE("not have permission");
+            return false;
+        }
+        return true;
+    }
+
+    bool IsTypeVaild(uint32_t type)
+    {
+        return type >= ResType::RES_TYPE_FIRST && type < ResType::RES_TYPE_LAST;
+    }
+
+    bool IsThirdPartType(uint32_t type, std::unordered_set<uint32_t> thirdPartRes)
+    {
+        if (thirdPartRes.find(type) == thirdPartRes.end()) {
+            RESSCHED_LOGE("resType:%{public}d not hap app report", type);
+            return false;
+        }
+        AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
+        auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
+        if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_HAP) {
+            RESSCHED_LOGE("not hap app");
+            return false;
+        }
+
+        return true;
+    }
+
+    bool IsSBDResType(uint32_t type)
+    {
+        if (type != ResType::RES_TYPE_REPORT_SCENE_BOARD) {
+            return false;
+        }
+        AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
+        AccessToken::HapTokenInfo callingTokenInfo;
+        AccessToken::AccessTokenKit::GetHapTokenInfo(tokenId, callingTokenInfo);
+        if (callingTokenInfo.bundleName == SCENEBOARD_BUNDLE_NAME) {
+            return true;
+        }
+        RESSCHED_LOGE("%{public}s is not sceneboard bundle name", callingTokenInfo.bundleName.c_str());
+        return false;
     }
 }
 
@@ -56,7 +113,13 @@ int32_t ResSchedServiceStub::ReportDataInner(MessageParcel& data, [[maybe_unused
     }
     uint32_t type = 0;
     READ_PARCEL(data, Uint32, type, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
-
+    if (!IsTypeVaild(type)) {
+        RESSCHED_LOGE("type:%{public}d is invalid", type);
+        return ERR_RES_SCHED_PARCEL_ERROR;
+    }
+    if (!IsSBDResType(type) && !IsThirdPartType(type, thirdPartRes_) && !IsHasPermission(type, saRes_)) {
+        return ERR_RES_SCHED_PERMISSION_DENIED;
+    }
     int64_t value = 0;
     READ_PARCEL(data, Int64, value, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
 
@@ -132,33 +195,6 @@ nlohmann::json ResSchedServiceStub::StringToJsonObj(const std::string& payload)
 
 void ResSchedServiceStub::Init()
 {
-    resource_in_process = {
-        ResType::RES_TYPE_CGROUP_ADJUSTER,
-        ResType::RES_TYPE_APP_STATE_CHANGE,
-        ResType::RES_TYPE_ABILITY_STATE_CHANGE,
-        ResType::RES_TYPE_EXTENSION_STATE_CHANGE,
-        ResType::RES_TYPE_PROCESS_STATE_CHANGE,
-        ResType::RES_TYPE_WINDOW_FOCUS,
-        ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
-        ResType::RES_TYPE_TRANSIENT_TASK,
-        ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
-        ResType::RES_TYPE_SCREEN_STATUS,
-        ResType::RES_TYPE_SCREEN_LOCK,
-        ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
-        ResType::RES_TYPE_USER_SWITCH,
-        ResType::RES_TYPE_USER_REMOVE,
-        ResType::RES_TYPE_CALL_STATE_UPDATE,
-        ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
-        ResType::RES_TYPE_AUDIO_RING_MODE_CHANGE,
-        ResType::RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
-        ResType::RES_TYPE_DEVICE_STILL_STATE_CHANGE,
-        ResType::RES_TYPE_CONTINUOUS_TASK,
-    };
-    resource_uid_other_process = {
-        { ResType::RES_TYPE_APP_ABILITY_START, FOUNDATION_UID },
-        { ResType::RES_TYPE_REPORT_MMI_PROCESS, INPUT_UID },
-        { ResType::RES_TYPE_NETWORK_LATENCY_REQUEST, DHARDWARE_UID },
-    };
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

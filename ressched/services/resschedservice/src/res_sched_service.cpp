@@ -33,7 +33,6 @@ using namespace OHOS::Security;
 namespace {
     constexpr int32_t DUMP_OPTION = 0;
     constexpr int32_t DUMP_PARAM_INDEX = 1;
-    const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
 }
 
 void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -42,26 +41,6 @@ void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann
                   resType, (long long)value);
     const nlohmann::json* payloadP = &payload;
     int32_t callingUid = IPCSkeleton::GetCallingUid();
-    if (resource_uid_other_process.find(resType) != resource_uid_other_process.end()) {
-        if (callingUid != resource_uid_other_process[resType]) {
-            RESSCHED_LOGW("resType = %{public}u, value = %{public}lld.not allow uid:%{public}d report",
-                resType, (long long)value, callingUid);
-            return;
-        }
-    } else if (resource_in_process.find(resType) != resource_in_process.end()) {
-        RESSCHED_LOGW("resType = %{public}u, value = %{public}lld.not allow other process report",
-            resType, (long long)value);
-        return;
-    } else if (resType == ResType::RES_TYPE_REPORT_SCENE_BOARD) {
-        AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
-        AccessToken::HapTokenInfo callingTokenInfo;
-        AccessToken::AccessTokenKit::GetHapTokenInfo(tokenId, callingTokenInfo);
-        if (callingTokenInfo.bundleName != SCENEBOARD_BUNDLE_NAME) {
-            RESSCHED_LOGW("resType = %{public}u, value = %{public}lld.only allow sceneboard report",
-                resType, (long long)value);
-            return;
-        }
-    }
     nlohmann::json* payloadM = const_cast<nlohmann::json*>(payloadP);
     (*payloadM)["callingUid"] = std::to_string(callingUid);
     ResSchedMgr::GetInstance().ReportData(resType, value, *payloadM);
