@@ -63,6 +63,7 @@ public:
     void HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportWebviewAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportRunningLockEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
     bool CheckVisibilityForRenderProcess(ProcessRecord &pr);

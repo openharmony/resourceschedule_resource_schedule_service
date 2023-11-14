@@ -15,7 +15,9 @@
 
 #include "hisysevent_observer.h"
 
+#ifdef RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE
 #include "bluetooth_def.h"
+#endif
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "res_type.h"
@@ -237,6 +239,7 @@ void HiSysEventObserver::ProcessBluetoothEvent(const nlohmann::json& root, const
 {
     std::string str = root.dump();
     RESSCHED_LOGD("Process bluetooth event, event root :%{public}s", str.c_str());
+#ifdef RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE
     if (root.contains("STATE") && root.at("STATE").is_number_integer()) {
         const nlohmann::json payload = nlohmann::json::object();
         RESSCHED_LOGD("Process bluetooth event, event type is:%{public}d", root.at("STATE").get<std::int32_t>());
@@ -251,6 +254,7 @@ void HiSysEventObserver::ProcessBluetoothEvent(const nlohmann::json& root, const
         RESSCHED_LOGE("Bluetooth event type not support!");
         return;
     }
+#endif
 }
 
 void HiSysEventObserver::ProcessWifiEvent(const nlohmann::json& root, const std::string& eventName)

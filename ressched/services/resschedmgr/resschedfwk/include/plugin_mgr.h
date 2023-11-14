@@ -32,6 +32,7 @@
 #include "res_type.h"
 #include "single_instance.h"
 #include "config_info.h"
+#include "ffrt.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -134,8 +135,6 @@ public:
 
     PluginConfig GetConfig(const std::string& pluginName, const std::string& configName);
 
-    const std::shared_ptr<AppExecFwk::EventRunner>& GetRunner();
-
 private:
     PluginMgr() = default;
     std::string GetRealConfigPath(const char* configName);
@@ -165,8 +164,7 @@ private:
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
 
     std::mutex dispatcherHandlerMutex_;
-    std::shared_ptr<AppExecFwk::EventHandler> dispatcher_ = nullptr;
-    std::shared_ptr<AppExecFwk::EventRunner> asyncRunner_ = nullptr;
+    std::shared_ptr<ffrt::queue> dispatcher_ = nullptr;
     std::map<std::string, PluginStat> pluginStat_;
 };
 } // namespace ResourceSchedule

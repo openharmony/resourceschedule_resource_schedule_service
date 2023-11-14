@@ -80,6 +80,18 @@ void ResSchedUtils::LoadUtilsExtra()
         dlclose(handle);
         return;
     }
+
+    reportSysEventFunc_ =
+        reinterpret_cast<ReportSysEventFunc>(dlsym(handle, "ReportSysEvent"));
+    if (!reportSysEventFunc_) {
+        CGS_LOGD("%{public}s load function:ReportSysEvent failed! errno:%{public}d", __func__, errno);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
+                        "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "ResSchedUtils don't found ReportSysEvent in " + RES_SCHED_SERVICE_SO + "!");
+        dlclose(handle);
+        return;
+    }
 }
 
 void ResSchedUtils::ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -98,6 +110,15 @@ void ResSchedUtils::ReportArbitrationResult(Application &app, ProcessRecord &pr,
         return;
     }
     reportArbitrationResultFunc_(app, pr, source);
+}
+
+void ResSchedUtils::ReportSysEvent(Application &app, ProcessRecord &pr, uint32_t resType, int32_t state)
+{
+    if (!reportSysEventFunc_) {
+        CGS_LOGD("%{public}s failed, function nullptr.", __func__);
+        return;
+    }
+    reportSysEventFunc_(app, pr, resType, state);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -142,6 +142,18 @@ enum : uint32_t {
     RES_TYPE_ANCO_APP_FRONT = 49,
     // report time zone changed
     RES_TYPE_TIMEZONE_CHANGED = 50,
+    // report connection status
+    RES_TYPE_CONNECTION_OBSERVER = 51,
+    // report av session create event
+    RES_TYPE_AV_SESSION_ON_SESSION_CREATE = 52,
+    // report av session release event
+    RES_TYPE_AV_SESSION_ON_SESSION_RELEASE = 53,
+    // report av session change event
+    RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE = 54,
+    // report OnAppStateChanged event
+    RES_TYPE_ON_APP_STATE_CHANGED = 55,
+    // report efficiency resources event
+    RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED = 56,
     //last resType
     RES_TYPE_LAST,
 };
@@ -197,7 +209,13 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_MMI_INPUT_STATE, "RES_TYPE_MMI_INPUT_STATE" },
     { RES_TYPE_ANCO_CUST, "RES_TYPE_ANCO_CUST" },
     { RES_TYPE_ANCO_APP_FRONT, "RES_TYPE_ANCO_APP_FRONT" },
-    { RES_TYPE_TIMEZONE_CHANGED, "RES_TYPE_TIMEZONE_CHANGED" }
+    { RES_TYPE_TIMEZONE_CHANGED, "RES_TYPE_TIMEZONE_CHANGED" },
+    { RES_TYPE_CONNECTION_OBSERVER, "RES_TYPE_CONNECTION_OBSERVER" },
+    { RES_TYPE_AV_SESSION_ON_SESSION_CREATE, "RES_TYPE_AV_SESSION_ON_SESSION_CREATE" },
+    { RES_TYPE_AV_SESSION_ON_SESSION_RELEASE, "RES_TYPE_AV_SESSION_ON_SESSION_RELEASE" },
+    { RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE, "RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE" },
+    { RES_TYPE_ON_APP_STATE_CHANGED, "RES_TYPE_ON_APP_STATE_CHANGED" },
+    { RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED, "RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED" },
 };
 
 /**
@@ -251,6 +269,16 @@ enum TransientTaskStatus : int64_t {
 enum ContinuousTaskStatus : int64_t {
     CONTINUOUS_TASK_START = 0,
     CONTINUOUS_TASK_END = 1,
+};
+
+/**
+ * @brief efficiency resources status
+ */
+enum EfficiencyResourcesStatus : int64_t {
+    APP_EFFICIENCY_RESOURCES_APPLY,
+    APP_EFFICIENCY_RESOURCES_RESET,
+    PROC_EFFICIENCY_RESOURCES_APPLY,
+    PROC_EFFICIENCY_RESOURCES_RESET,
 };
 
 /**
@@ -448,6 +476,16 @@ enum RunninglockState : int64_t {
 enum AncoConfig : int64_t {
     PROTECT_LRU = 0,
     DEFAULT = 1,
+};
+
+/**
+ * @brief connection State
+ */
+enum ConnectionObserverStatus : int64_t {
+    EXTENSION_CONNECTED = 0,
+    EXTENSION_DISCONNECTED,
+    DLP_ABILITY_OPENED,
+    DLP_ABILITY_CLOSED,
 };
 } // namespace ResType
 } // namespace ResourceSchedule

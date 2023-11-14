@@ -153,6 +153,12 @@ void SchedController::DispatchResource(uint32_t resType, int64_t value, const nl
                 handler->HandleReportRunningLockEvent(resType, value, payload);
                 break;
             }
+            case ResType::RES_TYPE_REPORT_CAMERA_STATE:
+            case ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE:
+            case ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE: {
+                handler->HandleReportHisysEvent(resType, value, payload);
+                break;
+            }
             default: {
                 break;
             }

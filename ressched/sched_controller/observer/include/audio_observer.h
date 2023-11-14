@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +18,7 @@
 
 #include <string>
 
+#include "nlohmann/json.hpp"
 #include "audio_stream_manager.h"
 #include "audio_system_manager.h"
 
@@ -32,6 +33,9 @@ public:
     void OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent) override;
 private:
     int32_t mode_ = -1;
+    void MarshallingAudioRendererChangeInfo(
+        const std::unique_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo,
+        nlohmann::json &payload);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -20,6 +20,10 @@
     *PluginMgr*UnSubscribeResource*;
     *PluginMgr*GetRunner*;
     ReportDataInProcess;
+    *Marshalling*;
+    *Subscrib*;
+    *Observer*;
+    *Listener*;
   local:
     *;
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,7 @@
 #include "iremote_object.h"
 #include "window_manager.h"
 #include "wm_common.h"
+#include "nlohmann/json.hpp"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -38,6 +39,9 @@ public:
 class WindowVisibilityObserver : public IVisibilityChangedListener {
 public:
     void OnWindowVisibilityChanged(const std::vector<sptr<WindowVisibilityInfo>>& windowVisibilityInfo) override;
+
+private:
+    void MarshallingWindowVisibilityInfo(const sptr<WindowVisibilityInfo>& info, nlohmann::json& payload);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
