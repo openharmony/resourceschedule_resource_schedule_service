@@ -14,11 +14,13 @@
  */
 
 #include "socperf_server.h"
+#include "parameters.h"
 
 namespace OHOS {
 namespace SOCPERF {
 const bool REGISTER_RESULT =
     SystemAbility::MakeAndRegisterAbility(DelayedSingleton<SocPerfServer>::GetInstance().get());
+const int32_t DEBUG_MODE = OHOS::system::GetIntParameter("const.debuggable", 0)
 
 SocPerfServer::SocPerfServer() : SystemAbility(SOC_PERF_SERVICE_SA_ID, true)
 {
@@ -46,22 +48,25 @@ void SocPerfServer::OnStop()
 
 int32_t SocPerfServer::Dump(int32_t fd, const std::vector<std::u16string>& args)
 {
-    std::vector<std::string> argsInStr;
-    std::transform(args.begin(), args.end(), std::back_inserter(argsInStr),
-        [](const std::u16string &arg) {
-        return Str16ToStr8(arg);
-    });
-    std::string result;
-    result.append("usage: soc_perf service dump [<options>]\n")
-        .append("    1. PerfRequest(cmdId, msg)\n")
-        .append("    2. PerfRequestEx(cmdId, onOffTag, msg)\n")
-        .append("    3. LimitRequest(clientId, tags, configs, msg)\n")
-        .append("    -h: show the help.\n")
-        .append("    -a: show all info.\n");
-    if (!SaveStringToFd(fd, result)) {
-        SOC_PERF_LOGE("Dump FAILED");
+    if (DEBUG_MODE == 1) {
+        std::vector<std::string> argsInStr;
+        std::transform(args.begin(), args.end(), std::back_inserter(argsInStr),
+            [](const std::u16string &arg) {
+            return Str16ToStr8(arg);
+        });
+        std::string result;
+        result.append("usage: soc_perf service dump [<options>]\n")
+            .append("    1. PerfRequest(cmdId, msg)\n")
+            .append("    2. PerfRequestEx(cmdId, onOffTag, msg)\n")
+            .append("    3. LimitRequest(clientId, tags, configs, msg)\n")
+            .append("    -h: show the help.\n")
+            .append("    -a: show all info.\n");
+        if (!SaveStringToFd(fd, result)) {
+            SOC_PERF_LOGE("Dump FAILED");
+        }
+        return ERR_OK;
     }
-    return ERR_OK;
+    return ERR_INVALID_VALUE;
 }
 
 void SocPerfServer::PerfRequest(int32_t cmdId, const std::string& msg)

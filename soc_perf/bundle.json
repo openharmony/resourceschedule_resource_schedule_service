@@ -29,6 +29,7 @@
         "hitrace",
         "hilog",
         "ipc",
+        "init",
         "safwk",
         "samgr"
       ],
