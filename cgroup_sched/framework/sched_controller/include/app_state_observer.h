@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #ifndef CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_APP_STATE_OBSERVER_H_
 #define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_APP_STATE_OBSERVER_H_
 
+#include "nlohmann/json.hpp"
 #include "application_state_observer_stub.h"
 
 namespace OHOS {
@@ -34,6 +35,7 @@ public:
     void OnProcessDied(const ProcessData &processData) override;
     void OnApplicationStateChanged(const AppStateData &appStateData) override;
     void OnProcessStateChanged(const ProcessData &processData) override;
+    void OnAppStateChanged(const AppStateData &appStateData) override;
 
 private:
     inline bool ValidateAppStateData(const AppStateData &appStateData) const
@@ -55,6 +57,8 @@ private:
         return processData.uid > 0 && processData.pid >= 0
             && processData.bundleName.size() > 0;
     }
+    void MarshallingProcessData(const ProcessData &processData, nlohmann::json &payload);
+    void MarshallingAppStateData(const AppStateData &appStateData, nlohmann::json &payload);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -49,11 +49,14 @@ ohos_shared_library("resschedsvc") {
   include_dirs = [
     "${cgroup_sched_framework}/sched_controller/include",
     "${cgroup_sched_framework}/process_group/include",
+    "//foundation/ability/ability_runtime/interfaces/inner_api/connectionobs_manager/include/",
+    "${cgroup_sched_framework}/utils/include/",
   ]
 
   sources = [
     "../sched_controller/common_event/src/event_controller.cpp",
     "../sched_controller/observer/src/audio_observer.cpp",
+    "../sched_controller/observer/src/connection_subscriber.cpp",
     "../sched_controller/observer/src/hisysevent_observer.cpp",
     "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
@@ -75,15 +78,18 @@ ohos_shared_library("resschedsvc") {
 
   external_deps = [
     "ability_base:want",
+    "ability_runtime:app_manager",
+    "ability_runtime:connection_obs_manager",
+    "ability_runtime:wantagent_innerkits",
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
     "audio_framework:audio_client",
-    "bluetooth:btframework",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
     "eventhandler:libeventhandler",
+    "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "hisysevent:libhisyseventmanager",
@@ -114,6 +120,16 @@ ohos_shared_library("resschedsvc") {
     defines += [ "RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE" ]
     external_deps += [ "config_policy:configpolicy_util" ]
   }
+  if (communication_bluetooth_perception_enable) {
+    defines += [ "RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE" ]
+    external_deps += [ "bluetooth:btframework" ]
+  }
+  if (ressched_with_resourceschedule_multimedia_av_session_enable) {
+    sources +=
+        [ "../sched_controller/observer/src/av_session_state_listener.cpp" ]
+    external_deps += [ "av_session:avsession_client" ]
+  }
+
   version_script = "libresschedsvc.versionscript"
   shlib_type = "sa"
   subsystem_name = "resourceschedule"
@@ -131,11 +147,17 @@ ohos_static_library("resschedsvc_static") {
 
   defines = []
 
-  include_dirs = []
+  include_dirs = [
+    "//foundation/ability/ability_runtime/interfaces/inner_api/connectionobs_manager/include/",
+    "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/utils/include/",
+    "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/sched_controller/include/",
+    "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group/include/",
+  ]
 
   sources = [
     "../sched_controller/common_event/src/event_controller.cpp",
     "../sched_controller/observer/src/audio_observer.cpp",
+    "../sched_controller/observer/src/connection_subscriber.cpp",
     "../sched_controller/observer/src/hisysevent_observer.cpp",
     "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
@@ -157,15 +179,18 @@ ohos_static_library("resschedsvc_static") {
 
   external_deps = [
     "ability_base:want",
+    "ability_runtime:app_manager",
+    "ability_runtime:connection_obs_manager",
+    "ability_runtime:wantagent_innerkits",
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
     "audio_framework:audio_client",
-    "bluetooth:btframework",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
     "eventhandler:libeventhandler",
+    "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "hisysevent:libhisyseventmanager",
@@ -195,6 +220,16 @@ ohos_static_library("resschedsvc_static") {
   if (ressched_with_customization_config_policy_enable) {
     defines += [ "RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE" ]
     external_deps += [ "config_policy:configpolicy_util" ]
+  }
+  if (communication_bluetooth_perception_enable) {
+    defines += [ "RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE" ]
+    external_deps += [ "bluetooth:btframework" ]
+  }
+  if (ressched_with_resourceschedule_multimedia_av_session_enable) {
+    defines += [ "RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE" ]
+    sources +=
+        [ "../sched_controller/observer/src/av_session_state_listener.cpp" ]
+    external_deps += [ "av_session:avsession_client" ]
   }
 
   subsystem_name = "resourceschedule"

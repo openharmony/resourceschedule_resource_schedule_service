@@ -67,6 +67,7 @@ public:
     void Submit(std::function<void()>&& func, uint32_t delay = 0);
     void SubmitH(std::function<void()>&& func, uint32_t eventId, uint32_t delay);
     bool CheckQueuePtr();
+    void (uHandleReportHisysEventint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
     bool CheckVisibilityForRenderProcess(ProcessRecord &pr);

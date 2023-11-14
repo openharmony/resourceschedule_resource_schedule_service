@@ -20,6 +20,18 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+void AudioObserver::MarshallingAudioRendererChangeInfo(
+    const std::unique_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo, nlohmann::json &payload)
+{
+    payload["uid"] = std::to_string(audioRendererChangeInfo->clientUID);
+    payload["sessionId"] = std::to_string(audioRendererChangeInfo->sessionId);
+    payload["rendererState"] = static_cast<int32_t>(audioRendererChangeInfo->rendererState);
+
+    /* struct AudioRendererInfo */
+    payload["rendererInfo.contentType"] = static_cast<int32_t>(audioRendererChangeInfo->rendererInfo.contentType);
+    payload["rendererInfo.streamUsage"] = static_cast<int32_t>(audioRendererChangeInfo->rendererInfo.streamUsage);
+}
+
 void AudioObserver::OnRendererStateChange(
     const std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos)
 {
@@ -27,8 +39,8 @@ void AudioObserver::OnRendererStateChange(
         RESSCHED_LOGD("enter AudioRenderStateObserver::OnRendererStateChange, state: %{public}d",
             audioRendererChangeInfo->rendererState);
         nlohmann::json payload;
-        payload["uid"] = std::to_string(audioRendererChangeInfo->clientUID);
-        payload["sessionId"] = std::to_string(audioRendererChangeInfo->sessionId);
+        MarshallingAudioRendererChangeInfo(audioRendererChangeInfo, payload);
+
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
             audioRendererChangeInfo->rendererState, payload);
     }

@@ -95,17 +95,6 @@ HWTEST_F(PluginMgrTest, GetConfig001, TestSize.Level1)
     EXPECT_TRUE(config.itemList.empty());
 }
 
-/**
- * @tc.name: Plugin mgr test GetRunner 001
- * @tc.desc: Verify if can get runner.
- * @tc.type: FUNC
- * @tc.require: issueI6NPEV
- * @tc.author:liyi
- */
-HWTEST_F(PluginMgrTest, GetRunner001, TestSize.Level1)
-{
-    EXPECT_TRUE(pluginMgr_->GetRunner() != nullptr);
-}
 
 /**
  * @tc.name: Plugin mgr test SubscribeResource 001

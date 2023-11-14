@@ -23,6 +23,7 @@
 #include "iservice_registry.h"
 #include "parameters.h"
 #include "res_sched_log.h"
+#include "connection_observer_client.h"
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
 #include "telephony_observer_client.h"
 #endif
@@ -34,6 +35,9 @@
 #include "input_manager.h"
 #include "sched_controller.h"
 #include "supervisor.h"
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
+#include "avsession_manager.h"
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -86,7 +90,11 @@ void ObserverManager::InitSysAbilityListener()
             std::bind(&ObserverManager::InitTelephonyObserver, std::placeholders::_1) },
         { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1) },
         { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::InitDeviceMovementObserver, std::placeholders::_1) },
-        { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::InitMMiEventObserver, std::placeholders::_1) }
+        { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::InitMMiEventObserver, std::placeholders::_1) },
+        { ABILITY_MST_SERVICE_ID, std::bind(&ObserverManager::InitConnectionSubscriber, std::placeholders::_1) },
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
+        { AVSESSION_SERVICE_ID, std::bind(&ObserverManager::InitAVSessionStateChangeListener, std::placeholders::_1) },
+#endif
     };
     removeObserverMap_ = {
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::DisableHiSysEventObserver,
@@ -95,13 +103,22 @@ void ObserverManager::InitSysAbilityListener()
             std::bind(&ObserverManager::DisableTelephonyObserver, std::placeholders::_1) },
         { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1) },
         { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::DisableDeviceMovementObserver, std::placeholders::_1) },
-        { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::DisableMMiEventObserver, std::placeholders::_1) }
+        { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::DisableMMiEventObserver, std::placeholders::_1) },
+        { ABILITY_MST_SERVICE_ID, std::bind(&ObserverManager::DisableConnectionSubscriber, std::placeholders::_1) },
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
+        { AVSESSION_SERVICE_ID,
+          std::bind(&ObserverManager::DisableAVSessionStateChangeListener, std::placeholders::_1) },
+#endif
     };
     AddItemToSysAbilityListener(DFX_SYS_EVENT_SERVICE_ABILITY_ID, systemAbilityManager);
     AddItemToSysAbilityListener(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, systemAbilityManager);
     AddItemToSysAbilityListener(AUDIO_POLICY_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(MSDP_MOVEMENT_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(MULTIMODAL_INPUT_SERVICE_ID, systemAbilityManager);
+    AddItemToSysAbilityListener(ABILITY_MST_SERVICE_ID, systemAbilityManager);
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
+    AddItemToSysAbilityListener(AVSESSION_SERVICE_ID, systemAbilityManager);
+#endif
 }
 
 inline void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId,
@@ -391,6 +408,68 @@ void ObserverManager::GetAllMmiStatusData()
         procRecord->mmiStatus_ = status;
     }
 }
+
+void ObserverManager::InitConnectionSubscriber()
+{
+    if (!connectionSubscriber_) {
+        connectionSubscriber_ = std::make_shared<ConnectionSubscriber>();
+    }
+
+    auto res = AbilityRuntime::ConnectionObserverClient::GetInstance().RegisterObserver(connectionSubscriber_);
+    if (res == OPERATION_SUCCESS) {
+        RESSCHED_LOGD("ObserverManager init connectionSubscriber successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager init connectionSubscriber failed");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a connect subscriber failed!");
+    }
+}
+
+void ObserverManager::DisableConnectionSubscriber()
+{
+    RESSCHED_LOGI("Disable connect subscriber state listener");
+    if (!connectionSubscriber_) {
+        RESSCHED_LOGD("ObserverManager has been disable connect subscriber state listener");
+        return;
+    }
+
+    auto res = AbilityRuntime::ConnectionObserverClient::GetInstance().UnregisterObserver(connectionSubscriber_);
+    if (res == OPERATION_SUCCESS) {
+        RESSCHED_LOGD("ObserverManager disable connect subscriber state listener successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager disable connect subscriber state listener failed");
+    }
+
+    connectionSubscriber_ = nullptr;
+}
+
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
+void ObserverManager::InitAVSessionStateChangeListener()
+{
+    if (!avSessionStateListener_) {
+        avSessionStateListener_ = std::make_shared<AvSessionStateListener>();
+    }
+
+    auto res = AVSession::AVSessionManager::GetInstance().RegisterSessionListener(avSessionStateListener_);
+    if (res == OPERATION_SUCCESS) {
+        RESSCHED_LOGI("ObserverManager init session state listener successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager init session state listener failed");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a session state listener failed!");
+    }
+}
+
+void ObserverManager::DisableAVSessionStateChangeListener()
+{
+    RESSCHED_LOGI("Disable session state listener");
+    avSessionStateListener_ = nullptr;
+}
+#endif
 
 extern "C" void ObserverManagerInit()
 {

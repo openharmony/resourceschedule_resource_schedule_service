@@ -36,6 +36,7 @@
         "eventhandler",
         "ffrt",
         "frame_aware_sched",
+        "ffrt",
         "hilog",
         "hisysevent",
         "hitrace",
@@ -48,7 +49,8 @@
         "soc_perf",
         "state_registry",
         "window_manager",
-        "power_manager"
+        "power_manager",
+        "av_session"
       ],
       "third_party": [
         "json",
