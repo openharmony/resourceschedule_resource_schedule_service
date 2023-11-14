@@ -50,11 +50,11 @@ void SocPerfServer::OnStop()
 
 bool SocPerfServer::AllowDump()
 {
-    Security::AccessToken::AccessTokenID tokenId = IPCSkeleton::GetFirstTokenID();
     if (ENG_MODE == 0) {
         SOC_PERF_LOGE("Not allow to dump SocPerfServer, mode:%{public}d", ENG_MODE);
         return false;
     }
+    Security::AccessToken::AccessTokenID tokenId = IPCSkeleton::GetFirstTokenID();
     int32_t res = Security::AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, "ohos.permission.DUMP");
     if (res != Security::AccessToken::PermissionState::PERMISSION_GRANTED) {
         SOC_PERF_LOGE("Not allow to dump SocPerfServer, permission state:%{public}d", res);
