@@ -22,6 +22,7 @@
 
 #include "iremote_stub.h"
 #include "ires_sched_service.h"
+#include "res_type.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
