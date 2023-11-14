@@ -44,7 +44,7 @@ namespace {
     {
         if (saRes.find(type) == saRes.end()) {
             RESSCHED_LOGE("resType:%{public}d not sa report", type);
-            return false
+            return false;
         }
         AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
         auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
