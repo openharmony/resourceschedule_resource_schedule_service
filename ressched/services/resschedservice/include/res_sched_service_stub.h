@@ -97,6 +97,12 @@ private:
         ResType::RES_TYPE_ANCO_CUST,
         ResType::RES_TYPE_ANCO_APP_FRONT,
         ResType::RES_TYPE_TIMEZONE_CHANGED,
+        ResType::RES_TYPE_CONNECTION_OBSERVER,
+        ResType::RES_TYPE_AV_SESSION_ON_SESSION_CREATE,
+        ResType::RES_TYPE_AV_SESSION_ON_SESSION_RELEASE,
+        ResType::RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE,
+        ResType::RES_TYPE_ON_APP_STATE_CHANGED,
+        ResType::RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED,
     };
 };
 } // namespace ResourceSchedule
