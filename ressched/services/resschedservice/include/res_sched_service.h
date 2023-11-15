@@ -38,6 +38,7 @@ private:
 
     void DumpAllInfo(std::string &result);
     void DumpUsage(std::string &result);
+    bool AllowDump();
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

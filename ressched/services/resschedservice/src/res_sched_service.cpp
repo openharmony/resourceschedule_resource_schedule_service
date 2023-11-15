@@ -16,6 +16,7 @@
 #include <cstdint>
 #include "res_sched_service.h"
 #include <file_ex.h>
+#include <parameters.h>
 #include <string_ex.h>
 #include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
@@ -33,6 +34,7 @@ using namespace OHOS::Security;
 namespace {
     constexpr int32_t DUMP_OPTION = 0;
     constexpr int32_t DUMP_PARAM_INDEX = 1;
+    const int32_t ENG_MODE = OHOS::system::GetIntParameter("const.debuggable", 0);
 }
 
 void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -52,8 +54,26 @@ int32_t ResSchedService::KillProcess(const nlohmann::json& payload)
 
 }
 
+bool ResSchedService::AllowDump()
+{
+    if (ENG_MODE == 0) {
+        RESSCHED_LOGE("Not eng mode");
+        return false;
+    }
+    Security::AccessToken::AccessTokenID tokenId = IPCSkeleton::GetFirstTokenID();
+    int32_t ret = Security::AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, "ohos.permission.DUMP");
+    if (ret != Security::AccessToken::PermissionState::PERMISSION_GRANTED) {
+        RESSCHED_LOGE("CheckPermission failed");
+        return false;
+    }
+    return true;
+}
+
 int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& args)
 {
+    if (!AllowDump()) {
+        return ERR_RES_SCHED_PERMISSION_DENIED;
+    }
     RESSCHED_LOGI("%{public}s Dump service.", __func__);
     std::vector<std::string> argsInStr;
     std::transform(args.begin(), args.end(), std::back_inserter(argsInStr),
