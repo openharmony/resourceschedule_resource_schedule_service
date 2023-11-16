@@ -14,11 +14,15 @@
  */
 
 #include "socperf_server.h"
+#include "accesstoken_kit.h"
+#include "ipc_skeleton.h"
+#include "parameters.h"
 
 namespace OHOS {
 namespace SOCPERF {
 const bool REGISTER_RESULT =
     SystemAbility::MakeAndRegisterAbility(DelayedSingleton<SocPerfServer>::GetInstance().get());
+const int32_t ENG_MODE = OHOS::system::GetIntParameter("const.debuggable", 0);
 
 SocPerfServer::SocPerfServer() : SystemAbility(SOC_PERF_SERVICE_SA_ID, true)
 {
@@ -44,8 +48,26 @@ void SocPerfServer::OnStop()
 {
 }
 
+bool SocPerfServer::AllowDump()
+{
+    if (ENG_MODE == 0) {
+        SOC_PERF_LOGE("Not allow to dump SocPerfServer, mode:%{public}d", ENG_MODE);
+        return false;
+    }
+    Security::AccessToken::AccessTokenID tokenId = IPCSkeleton::GetFirstTokenID();
+    int32_t res = Security::AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, "ohos.permission.DUMP");
+    if (res != Security::AccessToken::PermissionState::PERMISSION_GRANTED) {
+        SOC_PERF_LOGE("Not allow to dump SocPerfServer, permission state:%{public}d", res);
+        return false;
+    }
+    return true;
+}
+
 int32_t SocPerfServer::Dump(int32_t fd, const std::vector<std::u16string>& args)
 {
+    if (!AllowDump()) {
+        return ERR_PERMISSION_DENIED;
+    }
     std::vector<std::string> argsInStr;
     std::transform(args.begin(), args.end(), std::back_inserter(argsInStr),
         [](const std::u16string &arg) {
