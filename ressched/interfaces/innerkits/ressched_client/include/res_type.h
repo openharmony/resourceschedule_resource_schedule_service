@@ -154,6 +154,8 @@ enum : uint32_t {
     RES_TYPE_ON_APP_STATE_CHANGED = 55,
     // report efficiency resources event
     RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED = 56,
+    // report av_codec state, value 0:codec start info, value 1:codec stop info.
+    RES_TYPE_AV_CODEC_STATE = 57,
     //last resType
     RES_TYPE_LAST,
 };
@@ -216,6 +218,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE, "RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE" },
     { RES_TYPE_ON_APP_STATE_CHANGED, "RES_TYPE_ON_APP_STATE_CHANGED" },
     { RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED, "RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED" },
+    { RES_TYPE_AV_CODEC_STATE, "RES_TYPE_AV_CODEC_STATE" }
 };
 
 /**
@@ -486,6 +489,14 @@ enum ConnectionObserverStatus : int64_t {
     EXTENSION_DISCONNECTED,
     DLP_ABILITY_OPENED,
     DLP_ABILITY_CLOSED,
+};
+
+/**
+ * @brief av_codec state
+*/
+enum AvCodecState : int64_t {
+    CODEC_START_INFO = 0,
+    CODEC_STOP_INFO = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule

@@ -34,6 +34,7 @@ public:
     ~HiSysEventObserver();
 
 private:
+    void ProcessAvCodecEvent(const nlohmann::json& root, const std::string& eventName);
     void ProcessRunningLockEvent(const nlohmann::json& root, const std::string& eventName);
     void ProcessAudioEvent(const nlohmann::json& root, const std::string& eventName);
     void ProcessCameraEvent(const nlohmann::json& root, const std::string& eventName);
