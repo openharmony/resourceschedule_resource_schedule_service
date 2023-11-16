@@ -13,16 +13,16 @@
  * limitations under the License.
  */
 
-#include "ipc_skeleton.h"
-#include "accesstoken_kit.h"
-#include "tokenid_kit.h"
-#include "socperf_log.h"
-#include "socperf_ipc_interface_code.h"
 #include "socperf_stub.h"
 #include <cstdint>              // for int32_t
 #include <iosfwd>               // for string
 #include <string>               // for basic_string, operator!=, u16string
 #include <vector>               // for vector
+#include "accesstoken_kit.h"
+#include "ipc_skeleton.h"
+#include "tokenid_kit.h"
+#include "socperf_ipc_interface_code.h"
+#include "socperf_log.h"
 
 namespace OHOS {
 namespace SOCPERF {
