@@ -337,6 +337,11 @@ void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, const std::stri
         CGS_LOGE("%{public}s : application %{public}s not exist!", __func__, bundleName.c_str());
         return;
     }
+    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecord(pid);
+    if (procRecord) {
+        ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+            ResType::RES_TYPE_PROCESS_STATE_CHANGE, ResType::ProcessStatus::PROCESS_DIED);
+    }
     app->RemoveProcessRecord(pid);
     // if all processes died, remove current app
     if (app->GetPidsMap().size() == 0) {
@@ -768,6 +773,7 @@ void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t 
         std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
         std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
         procRecord->runningLockState_[type] = (state == ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE);
+        ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType, state);
     }
 }
 
@@ -781,11 +787,8 @@ void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value,
         return;
     }
 
-    if (payload.contains("uid") && payload.at("uid").is_number_integer()) {
-        uid = payload["uid"].get<std::int32_t>();
-    }
-    if (payload.contains("pid") && payload.at("pid").is_number_integer()) {
-        pid = payload["pid"].get<std::int32_t>();
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+        return;
     }
     if (uid <= 0 || pid <= 0) {
         return;

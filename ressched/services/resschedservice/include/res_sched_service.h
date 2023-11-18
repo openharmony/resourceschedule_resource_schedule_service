@@ -33,6 +33,10 @@ public:
 
     void DumpProcessRunningLock(std::string& result);
 
+    void DumpProcessWindowInfo(std::string &result);
+
+    void DumpProcessEventState(std::string &result);
+
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedService);
 
