@@ -168,8 +168,12 @@ void ObserverManager::InitHiSysEventObserver()
     }
 
     HiviewDFX::ListenerRule statsRule("PowerStats");
+    HiviewDFX::ListenerRule avCodecStartState("AV_CODEC", "CODEC_START_INFO");
+    HiviewDFX::ListenerRule avCodecStopState("AV_CODEC", "CODEC_STOP_INFO");
     std::vector<HiviewDFX::ListenerRule> sysRules;
     sysRules.push_back(statsRule);
+    sysRules.push_back(avCodecStartState);
+    sysRules.push_back(avCodecStopState);
     auto res = HiviewDFX::HiSysEventManager::AddListener(hiSysEventObserver_, sysRules);
     if (res == 0) {
         RESSCHED_LOGD("ObserverManager init hisysevent observer successfully");

@@ -25,7 +25,10 @@ ohos_unittest("event_controller_test") {
     "${ressched_interfaces}/innerkits/ressched_client/include",
   ]
 
-  sources = [ "event_controller_test.cpp" ]
+  sources = [
+    "event_controller_test.cpp",
+    "observer_event_test.cpp",
+  ]
 
   deps = [
     "${ressched_services}:resschedsvc_static",
@@ -40,6 +43,8 @@ ohos_unittest("event_controller_test") {
     "bundle_framework:appexecfwk_base",
     "common_event_service:cesfwk_innerkits",
     "hilog:libhilog",
+    "hisysevent:libhisysevent",
+    "hisysevent:libhisyseventmanager",
     "ipc:ipc_single",
     "samgr:samgr_proxy",
   ]
