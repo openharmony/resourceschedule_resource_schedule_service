@@ -1,0 +1,1 @@
+src:*foundation/resourceschedule/resourceschedule_resource_schedule_service/ressched/plugins/socperf_plugin/src/socperf_plugin.cpp
