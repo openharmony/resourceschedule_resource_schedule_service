@@ -48,12 +48,12 @@ bool SocPerf::Init()
 
     PrintCachedInfo();
 
-    if (!CreateHandlers()) {
-        SOC_PERF_LOGE("Failed to create handler threads");
+    if (!CreateThreadWraps()) {
+        SOC_PERF_LOGE("Failed to create threadwraps threads");
         return false;
     }
 
-    InitHandlerThreads();
+    InitThreadWraps();
 
     resNodeInfo.clear();
     govResNodeInfo.clear();
@@ -121,9 +121,9 @@ void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    for (auto handler : handlers) {
-        if (handler) {
-            handler->UpdatePowerLimitBoostFreq(onOffTag);
+    for (auto threadWrap : socperfThreadWraps) {
+        if (threadWrap) {
+            threadWrap->UpdatePowerLimitBoostFreq(onOffTag);
         }
     }
     FinishTrace(HITRACE_TAG_OHOS);
@@ -140,15 +140,15 @@ void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    for (auto handler : handlers) {
-        if (handler) {
-            handler->UpdateThermalLimitBoostFreq(onOffTag);
+    for (auto threadWrap : socperfThreadWraps) {
+        if (threadWrap) {
+            threadWrap->UpdateThermalLimitBoostFreq(onOffTag);
         }
     }
     FinishTrace(HITRACE_TAG_OHOS);
 }
 
-void SocPerf::SendLimitRequestEventOff(std::shared_ptr<SocPerfHandler> handler,
+void SocPerf::SendLimitRequestEventOff(std::shared_ptr<SocPerfThreadWrap> threadWrap,
     int32_t clientId, int32_t resId, int32_t eventId)
 {
     auto iter = limitRequest[clientId].find(resId);
@@ -156,17 +156,17 @@ void SocPerf::SendLimitRequestEventOff(std::shared_ptr<SocPerfHandler> handler,
         && limitRequest[clientId][resId] != INVALID_VALUE) {
         auto resAction = std::make_shared<ResAction>(
             limitRequest[clientId][resId], 0, clientId, EVENT_OFF, -1);
-        handler->UpdateLimitStatus(eventId, resAction, resId);
+        threadWrap->UpdateLimitStatus(eventId, resAction, resId);
         limitRequest[clientId].erase(iter);
     }
 }
 
-void SocPerf::SendLimitRequestEventOn(std::shared_ptr<SocPerfHandler> handler,
+void SocPerf::SendLimitRequestEventOn(std::shared_ptr<SocPerfThreadWrap> threadWrap,
     int32_t clientId, int32_t resId, int64_t resValue, int32_t eventId)
 {
     if (resValue != INVALID_VALUE && resValue != RESET_VALUE) {
         auto resAction = std::make_shared<ResAction>(resValue, 0, clientId, EVENT_ON, -1);
-        handler->UpdateLimitStatus(eventId, resAction, resId);
+        threadWrap->UpdateLimitStatus(eventId, resAction, resId);
         limitRequest[clientId].insert(std::pair<int32_t, int32_t>(resId, resValue));
     }
 }
@@ -184,14 +184,14 @@ void SocPerf::SendLimitRequestEvent(int32_t clientId, int32_t resId, int64_t res
         eventId = INNER_EVENT_ID_DO_FREQ_ACTION;
     }
 
-    auto handler = GetHandlerByResId(realResId);
-    if (!handler) {
+    auto threadWrap = GetThreadWrapByResId(realResId);
+    if (!threadWrap) {
         return;
     }
     std::lock_guard<std::mutex> lock(mutex_);
-    SendLimitRequestEventOff(handler, clientId, realResId, INNER_EVENT_ID_DO_FREQ_ACTION);
-    SendLimitRequestEventOff(handler, clientId, levelResId, INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL);
-    SendLimitRequestEventOn(handler, clientId, resId, resValue, eventId);
+    SendLimitRequestEventOff(threadWrap, clientId, realResId, INNER_EVENT_ID_DO_FREQ_ACTION);
+    SendLimitRequestEventOff(threadWrap, clientId, levelResId, INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL);
+    SendLimitRequestEventOn(threadWrap, clientId, resId, resValue, eventId);
 }
 
 void SocPerf::LimitRequest(int32_t clientId,
@@ -218,8 +218,8 @@ void SocPerf::LimitRequest(int32_t clientId,
 
 void SocPerf::DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int32_t actionType)
 {
-    std::shared_ptr<ResActionItem> header[MAX_HANDLER_THREADS] = { nullptr };
-    std::shared_ptr<ResActionItem> curItem[MAX_HANDLER_THREADS] = { nullptr };
+    std::shared_ptr<ResActionItem> header[MAX_QUEUE_NUM] = { nullptr };
+    std::shared_ptr<ResActionItem> curItem[MAX_QUEUE_NUM] = { nullptr };
     for (auto iter = actions->actionList.begin(); iter != actions->actionList.end(); iter++) {
         std::shared_ptr<Action> action = *iter;
         for (int32_t i = 0; i < (int32_t)action->variable.size() - 1; i += RES_ID_AND_VALUE_PAIR) {
@@ -238,16 +238,16 @@ void SocPerf::DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int
             curItem[id] = resActionItem;
         }
     }
-    for (int32_t i = 0; i < MAX_HANDLER_THREADS; ++i) {
-        if (!handlers[i] || !header[i]) {
+    for (int32_t i = 0; i < MAX_QUEUE_NUM; ++i) {
+        if (!socperfThreadWraps[i] || !header[i]) {
             continue;
         }
-        handlers[i]->DoFreqActionPack(header[i]);
+        socperfThreadWraps[i]->DoFreqActionPack(header[i]);
     }
 }
 
 #ifdef CUSTOMIZATION_CONFIG_POLICY_ENABLE
-std::string SocPerf::GetRealConfigPath(const std::string configFile)
+std::string SocPerf::GetRealConfigPath(const std::string& configFile)
 {
     char buf[PATH_MAX + 1];
     char* configFilePath = GetOneCfgFile(configFile.c_str(), buf, PATH_MAX + 1);
@@ -261,16 +261,16 @@ std::string SocPerf::GetRealConfigPath(const std::string configFile)
 }
 #endif // CUSTOMIZATION_CONFIG_POLICY_ENABLE
 
-std::shared_ptr<SocPerfHandler> SocPerf::GetHandlerByResId(int32_t resId)
+std::shared_ptr<SocPerfThreadWrap> SocPerf::GetThreadWrapByResId(int32_t resId) const
 {
     if (!IsValidResId(resId)) {
         return nullptr;
     }
-    return handlers[resId / RES_ID_NUMS_PER_TYPE - 1];
+    return socperfThreadWraps[resId / RES_ID_NUMS_PER_TYPE - 1];
 }
 
 #ifdef CUSTOMIZATION_CONFIG_POLICY_ENABLE
-bool SocPerf::LoadConfigXmlFile(std::string configFile)
+bool SocPerf::LoadConfigXmlFile(const std::string& configFile)
 {
     std::string realConfigFile = GetRealConfigPath(configFile);
     if (realConfigFile.size() <= 0) {
@@ -290,23 +290,13 @@ bool SocPerf::LoadConfigXmlFile(std::string configFile)
     }
     if (!xmlStrcmp(rootNode->name, reinterpret_cast<const xmlChar*>("Configs"))) {
         if (realConfigFile.find(SOCPERF_RESOURCE_CONFIG_XML) != std::string::npos) {
-            xmlNode* child = rootNode->children;
-            for (; child; child = child->next) {
-                if (!xmlStrcmp(child->name, reinterpret_cast<const xmlChar*>("Resource"))) {
-                    if (!LoadResource(child, realConfigFile)) {
-                        xmlFreeDoc(file);
-                        return false;
-                    }
-                } else if (!xmlStrcmp(child->name, reinterpret_cast<const xmlChar*>("GovResource"))) {
-                    if (!LoadGovResource(child, realConfigFile)) {
-                        xmlFreeDoc(file);
-                        return false;
-                    }
-                }
+            bool ret = ParseResourceXmlFile(rootNode, realConfigFile, file);
+            if (!ret) {
+                return false;
             }
         } else {
-            if (!LoadCmd(rootNode, realConfigFile)) {
-                xmlFreeDoc(file);
+            bool ret = ParseBoostXmlFile(rootNode, realConfigFile, file);
+            if (!ret) {
                 return false;
             }
         }
@@ -319,50 +309,78 @@ bool SocPerf::LoadConfigXmlFile(std::string configFile)
     SOC_PERF_LOGD("Success to Load %{public}s", configFile.c_str());
     return true;
 }
-#endif // CUSTOMIZATION_CONFIG_POLICY_ENABLE
 
-bool SocPerf::CreateHandlers()
+bool SocPerf::ParseBoostXmlFile(const xmlNode* rootNode, const std::string& realConfigFile, xmlDoc* file)
 {
-    handlers = std::vector<std::shared_ptr<SocPerfHandler>>(MAX_HANDLER_THREADS);
-    std::string threadName = "socperf#";
-    for (int32_t i = 0; i < (int32_t)handlers.size(); i++) {
-        if (!handlerSwitch[i]) {
-            handlers[i] = nullptr;
-            continue;
-        }
-        auto socPerfHandler = std::make_shared<SocPerfHandler>();
-        if (!socPerfHandler) {
-            SOC_PERF_LOGE("Failed to Create socPerfHandler");
-            return false;
-        }
-        socPerfHandler->InitQueue(threadName.append(std::to_string(i)));
-        handlers[i] = socPerfHandler;
+    if (!LoadCmd(rootNode, realConfigFile)) {
+        xmlFreeDoc(file);
+        return false;
     }
-    SOC_PERF_LOGD("Success to Create All Handler threads");
     return true;
 }
 
-void SocPerf::InitHandlerThreads()
+bool SocPerf::ParseResourceXmlFile(const xmlNode* rootNode, const std::string& realConfigFile, xmlDoc* file)
+{
+    xmlNode* child = rootNode->children;
+    for (; child; child = child->next) {
+        if (!xmlStrcmp(child->name, reinterpret_cast<const xmlChar*>("Resource"))) {
+            if (!LoadResource(child, realConfigFile)) {
+                xmlFreeDoc(file);
+                return false;
+            }
+        } else if (!xmlStrcmp(child->name, reinterpret_cast<const xmlChar*>("GovResource"))) {
+            if (!LoadGovResource(child, realConfigFile)) {
+                xmlFreeDoc(file);
+                return false;
+            }
+        }
+    }
+    return true;
+}
+#endif // CUSTOMIZATION_CONFIG_POLICY_ENABLE
+
+bool SocPerf::CreateThreadWraps()
+{
+    socperfThreadWraps = std::vector<std::shared_ptr<SocPerfThreadWrap>>(MAX_QUEUE_NUM);
+    std::string threadName = "socperf#";
+    for (int32_t i = 0; i < (int32_t)socperfThreadWraps.size(); i++) {
+        if (!wrapSwitch[i]) {
+            socperfThreadWraps[i] = nullptr;
+            continue;
+        }
+        auto socPerfThreadWrap = std::make_shared<SocPerfThreadWrap>();
+        if (!socPerfThreadWrap) {
+            SOC_PERF_LOGE("Failed to Create socPerfThreadWrap");
+            return false;
+        }
+        socPerfThreadWrap->InitQueue(threadName.append(std::to_string(i)));
+        socperfThreadWraps[i] = socPerfThreadWrap;
+    }
+    SOC_PERF_LOGD("Success to Create All threadWrap threads");
+    return true;
+}
+
+void SocPerf::InitThreadWraps()
 {
     for (auto iter = resNodeInfo.begin(); iter != resNodeInfo.end(); ++iter) {
         std::shared_ptr<ResNode> resNode = iter->second;
-        auto handler = GetHandlerByResId(resNode->id);
-        if (!handler) {
+        auto threadWrap = GetThreadWrapByResId(resNode->id);
+        if (!threadWrap) {
             continue;
         }
-        handler->InitResNodeInfo(resNode);
+        threadWrap->InitResNodeInfo(resNode);
     }
     for (auto iter = govResNodeInfo.begin(); iter != govResNodeInfo.end(); ++iter) {
         std::shared_ptr<GovResNode> govResNode = iter->second;
-        auto handler = GetHandlerByResId(govResNode->id);
-        if (!handler) {
+        auto threadWrap = GetThreadWrapByResId(govResNode->id);
+        if (!threadWrap) {
             continue;
         }
-        handler->InitGovResNodeInfo(govResNode);
+        threadWrap->InitGovResNodeInfo(govResNode);
     }
 }
 
-bool SocPerf::LoadResource(xmlNode* child, std::string configFile)
+bool SocPerf::LoadResource(xmlNode* child, const std::string& configFile)
 {
     xmlNode* grandson = child->children;
     for (; grandson; grandson = grandson->next) {
@@ -380,7 +398,7 @@ bool SocPerf::LoadResource(xmlNode* child, std::string configFile)
     return true;
 }
 
-bool SocPerf::TraversalFreqResource(xmlNode* grandson, std::string& configFile)
+bool SocPerf::TraversalFreqResource(xmlNode* grandson, const std::string& configFile)
 {
     char* id = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("id")));
     char* name = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("name")));
@@ -406,7 +424,8 @@ bool SocPerf::TraversalFreqResource(xmlNode* grandson, std::string& configFile)
     return true;
 }
 
-bool SocPerf::LoadFreqResourceContent(xmlNode* greatGrandson, std::string& configFile, std::shared_ptr<ResNode> resNode)
+bool SocPerf::LoadFreqResourceContent(xmlNode* greatGrandson, const std::string& configFile,
+    std::shared_ptr<ResNode> resNode)
 {
     char *def = nullptr;
     char *path  = nullptr;
@@ -442,11 +461,11 @@ bool SocPerf::LoadFreqResourceContent(xmlNode* greatGrandson, std::string& confi
 
     resStrToIdInfo.insert(std::pair<std::string, int32_t>(resNode->name, resNode->id));
     resNodeInfo.insert(std::pair<int32_t, std::shared_ptr<ResNode>>(resNode->id, resNode));
-    handlerSwitch[resNode->id / RES_ID_NUMS_PER_TYPE - 1] = true;
+    wrapSwitch[resNode->id / RES_ID_NUMS_PER_TYPE - 1] = true;
     return true;
 }
 
-bool SocPerf::LoadGovResource(xmlNode* child, std::string configFile)
+bool SocPerf::LoadGovResource(xmlNode* child, const std::string& configFile)
 {
     xmlNode* grandson = child->children;
     for (; grandson; grandson = grandson->next) {
@@ -464,7 +483,7 @@ bool SocPerf::LoadGovResource(xmlNode* child, std::string configFile)
         std::shared_ptr<GovResNode> govResNode = std::make_shared<GovResNode>(atoi(id), name);
         xmlFree(id);
         xmlFree(name);
-        handlerSwitch[govResNode->id / RES_ID_NUMS_PER_TYPE - 1] = true;
+        wrapSwitch[govResNode->id / RES_ID_NUMS_PER_TYPE - 1] = true;
         if (!TraversalGovResource(greatGrandson, configFile, govResNode)) {
             return false;
         }
@@ -479,7 +498,7 @@ bool SocPerf::LoadGovResource(xmlNode* child, std::string configFile)
     return true;
 }
 
-bool SocPerf::TraversalGovResource(xmlNode* greatGrandson, std::string& configFile,
+bool SocPerf::TraversalGovResource(xmlNode* greatGrandson, const std::string& configFile,
     std::shared_ptr<GovResNode> govResNode)
 {
     for (; greatGrandson; greatGrandson = greatGrandson->next) {
@@ -518,7 +537,7 @@ bool SocPerf::TraversalGovResource(xmlNode* greatGrandson, std::string& configFi
     return true;
 }
 
-bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
+bool SocPerf::LoadCmd(const xmlNode* rootNode, const std::string& configFile)
 {
     xmlNode* child = rootNode->children;
     for (; child; child = child->next) { // Iterate all cmdID
@@ -551,33 +570,55 @@ bool SocPerf::LoadCmd(xmlNode* rootNode, std::string configFile)
     return true;
 }
 
-bool SocPerf::TraversalBoostResource(xmlNode* grandson, std::string& configFile, std::shared_ptr<Actions> actions)
+bool SocPerf::ParseDuration(xmlNode *greatGrandson, const std::string& configFile, std::shared_ptr<Action> action) const
+{
+    if (xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("duration"))) {
+        return true;
+    }
+    char* duration = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
+    if (!duration || !IsNumber(duration)) {
+        SOC_PERF_LOGE("Invalid cmd duration for %{public}s", configFile.c_str());
+        xmlFree(duration);
+        return false;
+    }
+    action->duration = atoi(duration);
+    xmlFree(duration);
+    return true;
+}
+
+bool SocPerf::ParseResValue(xmlNode* greatGrandson, const std::string& configFile, std::shared_ptr<Action> action)
+{
+    if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("duration"))) {
+        return true;
+    }
+    char* resStr = reinterpret_cast<char*>(const_cast<xmlChar*>(greatGrandson->name));
+    char* resValue = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
+    if (!resStr || resStrToIdInfo.find(resStr) == resStrToIdInfo.end()
+        || !resValue || !IsNumber(resValue)) {
+        SOC_PERF_LOGE("Invalid cmd resource(%{public}s) for %{public}s", resStr, configFile.c_str());
+        xmlFree(resValue);
+        return false;
+    }
+    action->variable.push_back(resStrToIdInfo[resStr]);
+    action->variable.push_back(atoll(resValue));
+    xmlFree(resValue);
+    return true;
+}
+
+bool SocPerf::TraversalBoostResource(xmlNode* grandson, const std::string& configFile, std::shared_ptr<Actions> actions)
 {
     for (; grandson; grandson = grandson->next) { // Iterate all Action
         std::shared_ptr<Action> action = std::make_shared<Action>();
         xmlNode* greatGrandson = grandson->children;
+        bool ret = true;
         for (; greatGrandson; greatGrandson = greatGrandson->next) { // Iterate duration and all res
-            if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("duration"))) {
-                char* duration = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
-                if (!duration || !IsNumber(duration)) {
-                    SOC_PERF_LOGE("Invalid cmd duration for %{public}s", configFile.c_str());
-                    xmlFree(duration);
-                    return false;
-                }
-                action->duration = atoi(duration);
-                xmlFree(duration);
-            } else {
-                char* resStr = reinterpret_cast<char*>(const_cast<xmlChar*>(greatGrandson->name));
-                char* resValue = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
-                if (!resStr || resStrToIdInfo.find(resStr) == resStrToIdInfo.end()
-                    || !resValue || !IsNumber(resValue)) {
-                    SOC_PERF_LOGE("Invalid cmd resource(%{public}s) for %{public}s", resStr, configFile.c_str());
-                    xmlFree(resValue);
-                    return false;
-                }
-                action->variable.push_back(resStrToIdInfo[resStr]);
-                action->variable.push_back(atoll(resValue));
-                xmlFree(resValue);
+            ret = ParseDuration(greatGrandson, configFile, action);
+            if (!ret) {
+                return false;
+            }
+            ret = ParseResValue(greatGrandson, configFile, action);
+            if (!ret) {
+                return false;
             }
         }
         actions->actionList.push_back(action);
@@ -585,7 +626,8 @@ bool SocPerf::TraversalBoostResource(xmlNode* grandson, std::string& configFile,
     return true;
 }
 
-bool SocPerf::CheckResourceTag(char* id, char* name, char* pair, char* mode, std::string configFile)
+bool SocPerf::CheckResourceTag(const char* id, const char* name, const char* pair, const char* mode,
+    const std::string& configFile) const
 {
     if (!id || !IsNumber(id) || !IsValidResId(atoi(id))) {
         SOC_PERF_LOGE("Invalid resource id for %{public}s", configFile.c_str());
@@ -606,7 +648,7 @@ bool SocPerf::CheckResourceTag(char* id, char* name, char* pair, char* mode, std
     return true;
 }
 
-bool SocPerf::CheckResourceTag(char* def, char* path, std::string configFile)
+bool SocPerf::CheckResourceTag(const char* def, const char* path, const std::string& configFile) const
 {
     if (!def || !IsNumber(def)) {
         SOC_PERF_LOGE("Invalid resource default for %{public}s", configFile.c_str());
@@ -619,7 +661,7 @@ bool SocPerf::CheckResourceTag(char* def, char* path, std::string configFile)
     return true;
 }
 
-bool SocPerf::LoadResourceAvailable(std::shared_ptr<ResNode> resNode, char* node)
+bool SocPerf::LoadResourceAvailable(std::shared_ptr<ResNode> resNode, const char* node)
 {
     std::string nodeStr = node;
     std::vector<std::string> result = Split(nodeStr, " ");
@@ -633,7 +675,7 @@ bool SocPerf::LoadResourceAvailable(std::shared_ptr<ResNode> resNode, char* node
     return true;
 }
 
-bool SocPerf::CheckPairResIdValid()
+bool SocPerf::CheckPairResIdValid() const
 {
     for (auto iter = resNodeInfo.begin(); iter != resNodeInfo.end(); ++iter) {
         int32_t resId = iter->first;
@@ -647,7 +689,7 @@ bool SocPerf::CheckPairResIdValid()
     return true;
 }
 
-bool SocPerf::CheckResDefValid()
+bool SocPerf::CheckResDefValid() const
 {
     for (auto iter = resNodeInfo.begin(); iter != resNodeInfo.end(); ++iter) {
         int32_t resId = iter->first;
@@ -661,7 +703,7 @@ bool SocPerf::CheckResDefValid()
     return true;
 }
 
-bool SocPerf::CheckGovResourceTag(char* id, char* name, std::string configFile)
+bool SocPerf::CheckGovResourceTag(const char* id, const char* name, const std::string& configFile) const
 {
     if (!id || !IsNumber(id) || !IsValidResId(atoi(id))) {
         SOC_PERF_LOGE("Invalid governor resource id for %{public}s", configFile.c_str());
@@ -674,7 +716,7 @@ bool SocPerf::CheckGovResourceTag(char* id, char* name, std::string configFile)
     return true;
 }
 
-bool SocPerf::LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResNode, char* level, char* node)
+bool SocPerf::LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResNode, const char* level, const char* node)
 {
     govResNode->available.insert(atoll(level));
     std::string nodeStr = node;
@@ -687,7 +729,7 @@ bool SocPerf::LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResNode, c
     return true;
 }
 
-bool SocPerf::CheckGovResDefValid()
+bool SocPerf::CheckGovResDefValid() const
 {
     for (auto iter = govResNodeInfo.begin(); iter != govResNodeInfo.end(); ++iter) {
         int32_t govResId = iter->first;
@@ -701,7 +743,7 @@ bool SocPerf::CheckGovResDefValid()
     return true;
 }
 
-bool SocPerf::CheckCmdTag(char* id, char* name, std::string configFile)
+bool SocPerf::CheckCmdTag(const char* id, const char* name, const std::string& configFile) const
 {
     if (!id || !IsNumber(id)) {
         SOC_PERF_LOGE("Invalid cmd id for %{public}s", configFile.c_str());
@@ -714,7 +756,33 @@ bool SocPerf::CheckCmdTag(char* id, char* name, std::string configFile)
     return true;
 }
 
-bool SocPerf::CheckActionResIdAndValueValid(std::string configFile)
+bool SocPerf::TraversalActions(std::shared_ptr<Action> action, int32_t actionId)
+{
+    for (int32_t i = 0; i < (int32_t)action->variable.size() - 1; i += RES_ID_AND_VALUE_PAIR) {
+        int32_t resId = action->variable[i];
+        int64_t resValue = action->variable[i + 1];
+        if (resNodeInfo.find(resId) != resNodeInfo.end()) {
+            if (!resNodeInfo[resId]->available.empty()
+                && resNodeInfo[resId]->available.find(resValue) == resNodeInfo[resId]->available.end()) {
+                SOC_PERF_LOGE("action[%{public}d]'s resValue[%{public}lld] is not valid",
+                              actionId, (long long)resValue);
+                return false;
+            }
+        } else if (govResNodeInfo.find(resId) != govResNodeInfo.end()) {
+            if (govResNodeInfo[resId]->available.find(resValue) == govResNodeInfo[resId]->available.end()) {
+                SOC_PERF_LOGE("action[%{public}d]'s resValue[%{public}lld] is not valid",
+                              actionId, (long long)resValue);
+                return false;
+            }
+        } else {
+            SOC_PERF_LOGE("action[%{public}d]'s resId[%{public}d] is not valid", actionId, resId);
+            return false;
+        }
+    }
+    return true;
+}
+
+bool SocPerf::CheckActionResIdAndValueValid(const std::string& configFile)
 {
     std::unordered_map<int32_t, std::shared_ptr<Actions>> actionsInfo;
     if (configFile.find(SOCPERF_BOOST_CONFIG_XML) != std::string::npos) {
@@ -724,34 +792,16 @@ bool SocPerf::CheckActionResIdAndValueValid(std::string configFile)
         int32_t actionId = actionsIter->first;
         std::shared_ptr<Actions> actions = actionsIter->second;
         for (auto actionIter = actions->actionList.begin(); actionIter != actions->actionList.end(); ++actionIter) {
-            std::shared_ptr<Action> action = *actionIter;
-            for (int32_t i = 0; i < (int32_t)action->variable.size() - 1; i += RES_ID_AND_VALUE_PAIR) {
-                int32_t resId = action->variable[i];
-                int64_t resValue = action->variable[i + 1];
-                if (resNodeInfo.find(resId) != resNodeInfo.end()) {
-                    if (!resNodeInfo[resId]->available.empty()
-                        && resNodeInfo[resId]->available.find(resValue) == resNodeInfo[resId]->available.end()) {
-                        SOC_PERF_LOGE("action[%{public}d]'s resValue[%{public}lld] is not valid",
-                            actionId, (long long)resValue);
-                        return false;
-                    }
-                } else if (govResNodeInfo.find(resId) != govResNodeInfo.end()) {
-                    if (govResNodeInfo[resId]->available.find(resValue) == govResNodeInfo[resId]->available.end()) {
-                        SOC_PERF_LOGE("action[%{public}d]'s resValue[%{public}lld] is not valid",
-                            actionId, (long long)resValue);
-                        return false;
-                    }
-                } else {
-                    SOC_PERF_LOGE("action[%{public}d]'s resId[%{public}d] is not valid", actionId, resId);
-                    return false;
-                }
+            bool ret = TraversalActions(*actionIter, actionId);
+            if (!ret) {
+                return false;
             }
         }
     }
     return true;
 }
 
-void SocPerf::PrintCachedInfo()
+void SocPerf::PrintCachedInfo() const
 {
     SOC_PERF_LOGD("------------------------------------");
     SOC_PERF_LOGD("resNodeInfo(%{public}d)", (int32_t)resNodeInfo.size());
