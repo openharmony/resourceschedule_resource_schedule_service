@@ -28,9 +28,9 @@ class SocPerfPlugin : public Plugin {
     DECLARE_SINGLE_INSTANCE(SocPerfPlugin)
 
 public:
-    void Init() override _attribute_((no_sanitize("cfi")));
+    void Init() override __attribute__((no_sanitize("cfi")));
 
-    void Disable() override _attribute_((no_sanitize("cfi")));
+    void Disable() override __attribute__((no_sanitize("cfi")));
 
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
 
@@ -50,7 +50,7 @@ private:
     void HandleResizeWindow(const std::shared_ptr<ResData>& data);
     void HandleMoveWindow(const std::shared_ptr<ResData>& data);
     void HandleRemoteAnimation(const std::shared_ptr<ResData>& data);
-    bool InitFeatureSwitch(std::string featureName) _attribute_((no_sanitize("cfi")));
+    bool InitFeatureSwitch(std::string featureName) __attribute__((no_sanitize("cfi")));
     void HandleDragStatusBar(const std::shared_ptr<ResData>& data);
     void HandleWebGestureMove(const std::shared_ptr<ResData>& data);
     void HandleWebSlideNormal(const std::shared_ptr<ResData>& data);
