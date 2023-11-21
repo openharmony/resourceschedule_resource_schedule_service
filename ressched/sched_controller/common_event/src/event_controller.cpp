@@ -139,6 +139,17 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USER_SWITCHED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USER_REMOVED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_TIMEZONE_CHANGED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BUNDLE_REMOVED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_PACKAGE_FULLY_REMOVED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_TIME_CHANGED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_NITZ_TIME_CHANGED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_NITZ_TIMEZONE_CHANGED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_CHARGING);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USB_DEVICE_ATTACHED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_DISCHARGING);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USB_DEVICE_DETACHED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_CALL_STATE_CHANGED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_WIFI_P2P_STATE_CHANGED);
     matchingSkills.AddEvent("common.event.UNLOCK_SCREEN");
     matchingSkills.AddEvent("common.event.LOCK_SCREEN");
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
@@ -196,8 +207,51 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         return;
     }
 
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_CALL_STATE_CHANGED) {
+        int32_t state = want.GetIntParam("state", -1);
+        payload["state"] = state;
+        ReportDataInProcess(ResType::RES_TYPE_CALL_STATE_CHANGED, static_cast<int64_t>(data.GetCode()), payload);
+        return;
+    }
+    handleEvent(data.GetCode(), action, payload);
+}
+
+void EventController::handleEvent(int32_t userId, const std::string &action, nlohmann::json &payload)
+{
     if (action == CommonEventSupport::COMMON_EVENT_TIMEZONE_CHANGED) {
         ReportDataInProcess(ResType::RES_TYPE_TIMEZONE_CHANGED, ResType::RES_TYPE_TIMEZONE_CHANGED, payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_TIME_CHANGED) {
+        ReportDataInProcess(ResType::RES_TYPE_TIME_CHANGED, static_cast<int64_t>(userId), payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_NITZ_TIME_CHANGED) {
+        ReportDataInProcess(ResType::RES_TYPE_NITZ_TIME_CHANGED, static_cast<int64_t>(userId), payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_NITZ_TIMEZONE_CHANGED) {
+        ReportDataInProcess(ResType::RES_TYPE_NITZ_TIMEZONE_CHANGED, static_cast<int64_t>(userId), payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_CHARGING) {
+        ReportDataInProcess(ResType::RES_TYPE_CHARGING_DISCHARGING, ResType::ChargeStatus::EVENT_CHARGING, payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_DISCHARGING) {
+        ReportDataInProcess(ResType::RES_TYPE_CHARGING_DISCHARGING, ResType::ChargeStatus::EVENT_DISCHARGING, payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USB_DEVICE_ATTACHED) {
+        ReportDataInProcess(ResType::RES_TYPE_USB_DEVICE, ResType::UsbDeviceStatus::USB_DEVICE_ATTACHED, payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USB_DEVICE_DETACHED) {
+        ReportDataInProcess(ResType::RES_TYPE_USB_DEVICE, ResType::UsbDeviceStatus::USB_DEVICE_DETACHED, payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_WIFI_P2P_STATE_CHANGED) {
+        ReportDataInProcess(ResType::RES_TYPE_WIFI_P2P_STATE_CHANGED, static_cast<int64_t>(userId), payload);
         return;
     }
 }
@@ -222,6 +276,18 @@ bool EventController::HandlePkgCommonEvent(const std::string &action, Want &want
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_REPLACED) {
         HandlePkgAddRemove(want, payload);
         ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_REPLACED, payload);
+        return true;
+    }
+    if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_FULLY_REMOVED) {
+        HandlePkgAddRemove(want, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+                            ResType::AppInstallStatus::APP_FULLY_REMOVED, payload);
+        return true;
+    }
+    if (action == CommonEventSupport::COMMON_EVENT_BUNDLE_REMOVED) {
+        HandlePkgAddRemove(want, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+                            ResType::AppInstallStatus::BUNDLE_REMOVED, payload);
         return true;
     }
     return false;

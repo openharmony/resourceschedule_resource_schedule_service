@@ -24,7 +24,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace ResType {
 enum : uint32_t {
-    //first resType
+    // first resType
     RES_TYPE_FIRST = 0,
     // screen status, value 0 means screen off, value 1 means screen on, else are invalid.
     RES_TYPE_SCREEN_STATUS = RES_TYPE_FIRST,
@@ -85,11 +85,6 @@ enum : uint32_t {
     // audio ring mode change; value 0 : RINGER_MODE_NORMAL, value 1 : RINGER_MODE_SILENT
     // value 2 : RINGER_MODE_VIBRATE
     RES_TYPE_AUDIO_RING_MODE_CHANGE = 25,
-    // audio volume key change; value volume, payload volumeType eg.
-    // type -1 : STREAM_DEFAULT, type 0 : STREAM_VOICE_CALL, type 1 : STREAM_MUSIC, type 2 : STREAM_RING,
-    // type 3 : STREAM_MEDIA, type 4 : STREAM_VOICE_ASSISTANT,  type 5 : STREAM_SYSTEM, type 6 : STREAM_ALARM,
-    // type 7 : STREAM_NOTIFICATION, type 8 : STREAM_BLUETOOTH_SCO, type 9 : STREAM_ENFORCED_AUDIBLE,
-    // type 10 : STREAM_DTMF, type 11 : STREAM_TTS, type 12 : STREAM_ACCESSIBILITY, type 13 : STREAM_RECORDING
     RES_TYPE_AUDIO_VOLUME_KEY_CHANGE = 26,
     // app_ability_start_event : a very early app startup stub, when the app process has not been pulled up.
     // stub position : ability_runtime ability_manager_service.cpp::StartAbilityInner().
@@ -156,7 +151,16 @@ enum : uint32_t {
     RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED = 56,
     // report av_codec state, value 0:codec start info, value 1:codec stop info.
     RES_TYPE_AV_CODEC_STATE = 57,
-    //last resType
+    // 58-64 value do not change
+    RES_TYPE_NITZ_TIME_CHANGED = 58,
+    RES_TYPE_TIME_CHANGED = 59,
+    RES_TYPE_NITZ_TIMEZONE_CHANGED = 60,
+    RES_TYPE_CHARGING_DISCHARGING = 61,
+    RES_TYPE_USB_DEVICE = 62,
+    RES_TYPE_CALL_STATE_CHANGED = 63,
+    RES_TYPE_WIFI_P2P_STATE_CHANGED = 64,
+  
+    // last resType
     RES_TYPE_LAST,
 };
 
@@ -212,6 +216,13 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_ANCO_CUST, "RES_TYPE_ANCO_CUST" },
     { RES_TYPE_ANCO_APP_FRONT, "RES_TYPE_ANCO_APP_FRONT" },
     { RES_TYPE_TIMEZONE_CHANGED, "RES_TYPE_TIMEZONE_CHANGED" },
+    { RES_TYPE_TIME_CHANGED, "RES_TYPE_TIME_CHANGED" },
+    { RES_TYPE_NITZ_TIME_CHANGED, "RES_TYPE_NITZ_TIME_CHANGED" },
+    { RES_TYPE_NITZ_TIMEZONE_CHANGED, "RES_TYPE_NITZ_TIMEZONE_CHANGED" },
+    { RES_TYPE_CHARGING_DISCHARGING, "RES_TYPE_CHARGING_DISCHARGING" },
+    { RES_TYPE_USB_DEVICE, "RES_TYPE_USB_DEVICE" },
+    { RES_TYPE_CALL_STATE_CHANGED, "RES_TYPE_CALL_STATE_CHANGED" },
+    { RES_TYPE_WIFI_P2P_STATE_CHANGED, "RES_TYPE_WIFI_P2P_STATE_CHANGED" },
     { RES_TYPE_CONNECTION_OBSERVER, "RES_TYPE_CONNECTION_OBSERVER" },
     { RES_TYPE_AV_SESSION_ON_SESSION_CREATE, "RES_TYPE_AV_SESSION_ON_SESSION_CREATE" },
     { RES_TYPE_AV_SESSION_ON_SESSION_RELEASE, "RES_TYPE_AV_SESSION_ON_SESSION_RELEASE" },
@@ -237,6 +248,8 @@ enum AppInstallStatus : int64_t {
     APP_INSTALL = 1,
     APP_CHANGED = 2,
     APP_REPLACED = 3,
+    APP_FULLY_REMOVED = 4,
+    BUNDLE_REMOVED = 5
 };
 
 /**
@@ -489,6 +502,23 @@ enum ConnectionObserverStatus : int64_t {
     EXTENSION_DISCONNECTED,
     DLP_ABILITY_OPENED,
     DLP_ABILITY_CLOSED,
+};
+
+
+/**
+ * @brief charge status
+ */
+enum ChargeStatus : int64_t {
+    EVENT_CHARGING = 0,
+    EVENT_DISCHARGING = 1,
+};
+
+/**
+ * @brief Screen lock status
+ */
+enum UsbDeviceStatus : int64_t {
+    USB_DEVICE_ATTACHED = 0,
+    USB_DEVICE_DETACHED = 1,
 };
 
 /**
