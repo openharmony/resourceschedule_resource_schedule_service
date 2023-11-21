@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_HANDLER_H
-#define SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_HANDLER_H
+#ifndef SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_THREAD_WRAP_H
+#define SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_THREAD_WRAP_H
 
 
 #include <memory>           // for shared_ptr
@@ -44,10 +44,10 @@ enum SocPerfInnerEvent : uint32_t {
     INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL,
 };
 
-class SocPerfHandler {
+class SocPerfThreadWrap {
 public:
-    explicit SocPerfHandler();
-    ~SocPerfHandler();
+    explicit SocPerfThreadWrap();
+    ~SocPerfThreadWrap();
     void InitQueue(const std::string& queueName);
     void InitResNodeInfo(std::shared_ptr<ResNode> resNode);
     void InitGovResNodeInfo(std::shared_ptr<GovResNode> govResNode);
@@ -78,18 +78,22 @@ private:
     void ArbitratePairRes(int32_t resId);
     void UpdatePairResValue(int32_t minResId, int64_t minResValue, int32_t maxResId, int64_t maxResValue);
     void UpdateCurrentValue(int32_t resId, int64_t value);
-    void WriteNode(std::string path, std::string value);
+    void WriteNode(const std::string& path, const std::string& value);
     bool ExistNoCandidate(
         int32_t resId, std::shared_ptr<ResStatus> resStatus, int64_t perf, int64_t power, int64_t thermal);
     bool IsGovResId(int32_t resId);
     bool IsResId(int32_t resId);
     bool IsValidResId(int32_t resId);
-    int32_t GetFdForFilePath(std::string filePath);
+    int32_t GetFdForFilePath(const std::string& filePath);
     void DoFreqAction(int32_t resId, std::shared_ptr<ResAction> resAction);
     void DoFreqActionLevel(int32_t resId, std::shared_ptr<ResAction> resAction);
     void PostDelayTask(int32_t resId, std::shared_ptr<ResAction> resAction);
+    void HandleLongTimeResAction(int32_t resId, int32_t type,
+        std::shared_ptr<ResAction> resAction, std::shared_ptr<ResStatus> resStatus);
+    void HandleShortTimeResAction(int32_t resId, int32_t type,
+        std::shared_ptr<ResAction> resAction, std::shared_ptr<ResStatus> resStatus);
 };
 } // namespace SOCPERF
 } // namespace OHOS
 
-#endif // SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_HANDLER_H
+#endif // SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_THREAD_WRAP_H

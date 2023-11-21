@@ -23,7 +23,7 @@
 #include "libxml/parser.h"
 #include "libxml/tree.h"
 #include "socperf_common.h"
-#include "socperf_handler.h"
+#include "socperf_thread_wrap.h"
 
 namespace OHOS {
 namespace SOCPERF {
@@ -43,8 +43,8 @@ public:
 
 private:
     std::unordered_map<int32_t, std::shared_ptr<Actions>> perfActionsInfo;
-    std::vector<std::shared_ptr<SocPerfHandler>> handlers;
-    bool handlerSwitch[MAX_HANDLER_THREADS] = { false };
+    std::vector<std::shared_ptr<SocPerfThreadWrap>> socperfThreadWraps;
+    bool wrapSwitch[MAX_QUEUE_NUM] = {false };
     bool enabled = false;
 
     std::unordered_map<int32_t, std::shared_ptr<ResNode>> resNodeInfo;
@@ -54,34 +54,42 @@ private:
 
 private:
     std::mutex mutex_;
-    std::string GetRealConfigPath(const std::string configFile);
-    std::shared_ptr<SocPerfHandler> GetHandlerByResId(int32_t resId);
-    bool LoadConfigXmlFile(std::string configFile);
-    bool CreateHandlers();
-    void InitHandlerThreads();
-    bool LoadResource(xmlNode* rootNode, std::string configFile);
-    bool TraversalFreqResource(xmlNode* grandson, std::string& configFile);
-    bool LoadFreqResourceContent(xmlNode* greatGrandson, std::string& configFile, std::shared_ptr<ResNode> resNode);
-    bool LoadGovResource(xmlNode* rootNode, std::string configFile);
-    bool TraversalGovResource(xmlNode* greatGrandson, std::string& configFile, std::shared_ptr<GovResNode> govResNode);
-    bool LoadCmd(xmlNode* rootNode, std::string configFile);
-    bool TraversalBoostResource(xmlNode* grandson, std::string& configFile, std::shared_ptr<Actions> actions);
-    bool CheckResourceTag(char* id, char* name, char* pair, char* mode, std::string configFile);
-    bool CheckResourceTag(char* def, char* path, std::string configFile);
-    bool LoadResourceAvailable(std::shared_ptr<ResNode> resNode, char* node);
-    bool CheckPairResIdValid();
-    bool CheckResDefValid();
-    bool CheckGovResourceTag(char* id, char* name, std::string configFile);
-    bool LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResNode, char* level, char* node);
-    bool CheckGovResDefValid();
-    bool CheckCmdTag(char* id, char* name, std::string configFile);
-    bool CheckActionResIdAndValueValid(std::string configFile);
+    std::string GetRealConfigPath(const std::string& configFile);
+    std::shared_ptr<SocPerfThreadWrap> GetThreadWrapByResId(int32_t resId) const;
+    bool LoadConfigXmlFile(const std::string& configFile);
+    bool ParseBoostXmlFile(const xmlNode* rootNode, const std::string& realConfigFile, xmlDoc* file);
+    bool ParseResourceXmlFile(const xmlNode* rootNode, const std::string& realConfigFile, xmlDoc* file);
+    bool CreateThreadWraps();
+    void InitThreadWraps();
+    bool LoadResource(xmlNode* rootNode, const std::string& configFile);
+    bool TraversalFreqResource(xmlNode* grandson, const std::string& configFile);
+    bool LoadFreqResourceContent(xmlNode* greatGrandson, const std::string& configFile,
+        std::shared_ptr<ResNode> resNode);
+    bool LoadGovResource(xmlNode* rootNode, const std::string& configFile);
+    bool TraversalGovResource(xmlNode* greatGrandson, const std::string& configFile,
+        std::shared_ptr<GovResNode> govResNode);
+    bool LoadCmd(const xmlNode* rootNode, const std::string& configFile);
+    bool TraversalBoostResource(xmlNode* grandson, const std::string& configFile, std::shared_ptr<Actions> actions);
+    bool ParseDuration(xmlNode* greatGrandson, const std::string& configFile, std::shared_ptr<Action> action) const;
+    bool ParseResValue(xmlNode* greatGrandson, const std::string& configFile, std::shared_ptr<Action> action);
+    bool CheckResourceTag(const char* id, const char* name, const char* pair, const char* mode,
+        const std::string& configFile) const;
+    bool CheckResourceTag(const char* def, const char* path, const std::string& configFile) const;
+    bool LoadResourceAvailable(std::shared_ptr<ResNode> resNode, const char* node);
+    bool CheckPairResIdValid() const;
+    bool CheckResDefValid() const;
+    bool CheckGovResourceTag(const char* id, const char* name, const std::string& configFile) const;
+    bool LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResNode, const char* level, const char* node);
+    bool CheckGovResDefValid() const;
+    bool CheckCmdTag(const char* id, const char* name, const std::string& configFile) const;
+    bool CheckActionResIdAndValueValid(const std::string& configFile);
+    bool TraversalActions(std::shared_ptr<Action> action, int32_t actionId);
     void DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int32_t actionType);
-    void PrintCachedInfo();
+    void PrintCachedInfo() const;
     void SendLimitRequestEvent(int32_t clientId, int32_t resId, int64_t resValue);
-    void SendLimitRequestEventOff(std::shared_ptr<SocPerfHandler> handler,
+    void SendLimitRequestEventOff(std::shared_ptr<SocPerfThreadWrap> threadWrap,
         int32_t clientId, int32_t resId, int32_t eventId);
-    void SendLimitRequestEventOn(std::shared_ptr<SocPerfHandler> handler,
+    void SendLimitRequestEventOn(std::shared_ptr<SocPerfThreadWrap> threadWrap,
         int32_t clientId, int32_t resId, int64_t resValue, int32_t eventId);
 };
 } // namespace SOCPERF

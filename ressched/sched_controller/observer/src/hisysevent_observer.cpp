@@ -107,12 +107,50 @@ void HiSysEventObserver::OnEvent(std::shared_ptr<HiviewDFX::HiSysEventRecord> sy
 
 void HiSysEventObserver::ProcessHiSysEvent(const std::string& eventName, const nlohmann::json& root)
 {
+    if (root.at("domain_").get<std::string>() == "AV_CODEC") {
+        ProcessAvCodecEvent(root, eventName);
+        return;
+    }
+
     auto funcIter = handleObserverMap_.find(eventName.c_str());
     if (funcIter != handleObserverMap_.end()) {
         auto function = funcIter->second;
         if (function) {
             function(this, root, eventName);
         }
+    }
+}
+
+void HiSysEventObserver::ProcessAvCodecEvent(const nlohmann::json& root, const std::string& eventName)
+{
+    std::string str = root.dump();
+    RESSCHED_LOGD("Process av_codec event, event root:%{public}s", str.c_str());
+    nlohmann::json payload;
+    if (root.contains("CLIENT_UID") && root.at("CLIENT_UID").is_number_integer()) {
+        payload["uid"] = std::to_string(root.at("CLIENT_UID").get<std::int32_t>());
+    } else {
+        RESSCHED_LOGE("av_codec event uid format error!");
+        return;
+    }
+    if (root.contains("CLIENT_PID") && root.at("CLIENT_PID").is_number_integer()) {
+        payload["pid"] = std::to_string(root.at("CLIENT_PID").get<std::int32_t>());
+    } else {
+        RESSCHED_LOGE("av_codec event pid format error!");
+        return;
+    }
+    if (root.contains("CODEC_INSTANCE_ID") && root.at("CODEC_INSTANCE_ID").is_number_integer()) {
+        payload["instanceId"] = std::to_string(root.at("CODEC_INSTANCE_ID").get<std::int32_t>());
+    } else {
+        RESSCHED_LOGE("av_codec event instanceId format error!");
+        return;
+    }
+
+    if (eventName == "CODEC_START_INFO") {
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AV_CODEC_STATE,
+            ResType::AvCodecState::CODEC_START_INFO, payload);
+    } else if (eventName == "CODEC_STOP_INFO") {
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AV_CODEC_STATE,
+            ResType::AvCodecState::CODEC_STOP_INFO, payload);
     }
 }
 
@@ -216,13 +254,13 @@ void HiSysEventObserver::ProcessCameraEvent(const nlohmann::json& root, const st
     RESSCHED_LOGD("Process camera event, event root:%{public}s, eventName:%{public}s", str.c_str(), eventName.c_str());
     nlohmann::json payload;
     if (root.contains("UID") && root.at("UID").is_number_integer()) {
-        payload["uid"] = root.at("UID").get<std::int32_t>();
+        payload["uid"] = std::to_string(root.at("UID").get<std::int32_t>());
     } else {
         RESSCHED_LOGE("camera event uid format error!");
         return;
     }
     if (root.contains("PID") && root.at("PID").is_number_integer()) {
-        payload["pid"] = root.at("PID").get<std::int32_t>();
+        payload["pid"] = std::to_string(root.at("PID").get<std::int32_t>());
     } else {
         RESSCHED_LOGE("camera event pid format error!");
         return;
@@ -239,9 +277,22 @@ void HiSysEventObserver::ProcessBluetoothEvent(const nlohmann::json& root, const
 {
     std::string str = root.dump();
     RESSCHED_LOGD("Process bluetooth event, event root :%{public}s", str.c_str());
+    nlohmann::json payload;
+    if (root.contains("UID") && root.at("UID").is_number_integer()) {
+        payload["uid"] = std::to_string(root.at("UID").get<std::int32_t>());
+    } else {
+        RESSCHED_LOGE("bluetooth event uid format error!");
+        return;
+    }
+    if (root.contains("PID") && root.at("PID").is_number_integer()) {
+        payload["pid"] = std::to_string(root.at("PID").get<std::int32_t>());
+    } else {
+        RESSCHED_LOGE("bluetooth event pid format error!");
+        return;
+    }
+
 #ifdef RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE
     if (root.contains("STATE") && root.at("STATE").is_number_integer()) {
-        const nlohmann::json payload = nlohmann::json::object();
         RESSCHED_LOGD("Process bluetooth event, event type is:%{public}d", root.at("STATE").get<std::int32_t>());
         if (root.at("STATE").get<std::int32_t>() == Bluetooth::BTStateID::STATE_TURN_ON) {
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE,
@@ -263,13 +314,13 @@ void HiSysEventObserver::ProcessWifiEvent(const nlohmann::json& root, const std:
     RESSCHED_LOGD("Process wifi event, event root :%{public}s, eventName:%{public}s", str.c_str(), eventName.c_str());
     nlohmann::json payload;
     if (root.contains("uid_") && root.at("uid_").is_number_integer()) {
-        payload["uid"] = root.at("uid_").get<std::int32_t>();
+        payload["uid"] = std::to_string(root.at("uid_").get<std::int32_t>());
     } else {
         RESSCHED_LOGE("Wifi event uid format error!");
         return;
     }
     if (root.contains("pid_") && root.at("pid_").is_number_integer()) {
-        payload["pid"] = root.at("pid_").get<std::int32_t>();
+        payload["pid"] = std::to_string(root.at("pid_").get<std::int32_t>());
     } else {
         RESSCHED_LOGE("Wifi event pid format error!");
         return;

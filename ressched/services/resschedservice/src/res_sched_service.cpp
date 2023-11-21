@@ -96,6 +96,10 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
             PluginMgr::GetInstance().DumpAllPlugin(result);
         } else if (argsInStr[DUMP_OPTION] == "getRunningLockInfo") {
             DumpProcessRunningLock(result);
+        } else if (argsInStr[DUMP_OPTION] == "getProcessEventInfo") {
+            DumpProcessEventState(result);
+        } else if (argsInStr[DUMP_OPTION] == "getProcessWindowInfo") {
+            DumpProcessWindowInfo(result);
         } else {
             result.append("Error params.");
         }
@@ -138,6 +142,65 @@ void ResSchedService::DumpProcessRunningLock(std::string &result)
                     .append(", lockType:").append(ToString(lockType))
                     .append(", lockState:").append(ToString(lockState)).append("\n");
             }
+        }
+    }
+}
+
+void ResSchedService::DumpProcessWindowInfo(std::string &result)
+{
+    auto supervisor = SchedController::GetInstance().GetSupervisor();
+    if (supervisor == nullptr) {
+        result.append("get supervisor failed");
+        return;
+    }
+
+    std::map<int32_t, std::shared_ptr<Application>> uidMap = supervisor->GetUidsMap();
+    for (auto it = uidMap.begin(); it != uidMap.end(); it++) {
+        int32_t uid = it->first;
+        std::shared_ptr<Application> app = it->second;
+        std::map<pid_t, std::shared_ptr<ProcessRecord>> pidMap = app->GetPidsMap();
+        for (auto pidIt = pidMap.begin(); pidIt != pidMap.end(); pidIt++) {
+            int32_t pid = pidIt->first;
+            std::shared_ptr<ProcessRecord> process = pidIt->second;
+            for (auto &windows : process->windows_) {
+                result.append("uid:").append(ToString(uid))
+                    .append(", pid:").append(ToString(pid))
+                    .append(", windowId:").append(ToString(windows->windowId_))
+                    .append(", visibilityState:").append(ToString(windows->visibilityState_))
+                    .append(", isVisible:").append(ToString(windows->isVisible_))
+                    .append(", isFocus:").append(ToString(windows->isFocused_)).append("\n");
+            }
+        }
+    }
+}
+
+void ResSchedService::DumpProcessEventState(std::string &result)
+{
+    auto supervisor = SchedController::GetInstance().GetSupervisor();
+    if (supervisor == nullptr) {
+        result.append("get supervisor failed");
+        return;
+    }
+
+    std::map<int32_t, std::shared_ptr<Application>> uidMap = supervisor->GetUidsMap();
+    for (auto it = uidMap.begin(); it != uidMap.end(); it++) {
+        int32_t uid = it->first;
+        std::shared_ptr<Application> app = it->second;
+        std::map<pid_t, std::shared_ptr<ProcessRecord>> pidMap = app->GetPidsMap();
+        for (auto pidIt = pidMap.begin(); pidIt != pidMap.end(); pidIt++) {
+            int32_t pid = pidIt->first;
+            std::shared_ptr<ProcessRecord> process = pidIt->second;
+            if (process->isRenderProcess_) {
+                continue;
+            }
+            result.append("uid:").append(ToString(uid))
+                .append(", pid:").append(ToString(pid))
+                .append(", processState:").append(ToString(process->processState_))
+                .append(", napState:").append(ToString(process->isNapState_))
+                .append(", mmiState:").append(ToString(process->mmiStatus_))
+                .append(", camearaStatus:").append(ToString(process->cameraState_))
+                .append(", bluetoothStatue:").append(ToString(process->bluetoothState_))
+                .append(", wifiStatue:").append(ToString(process->wifiState_)).append("\n");
         }
     }
 }
