@@ -501,6 +501,15 @@ enum AvCodecState : int64_t {
     CODEC_START_INFO = 0,
     CODEC_STOP_INFO = 1,
 };
+
+/**
+ * @brief app associated start type
+ */
+enum AssociatedStartType : int64_t {
+    SCB_START_ABILITY = 0,
+    EXTENSION_START_ABILITY = 1,
+    MISSION_LIST_START_ABILITY = 2,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
