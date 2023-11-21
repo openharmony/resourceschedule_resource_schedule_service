@@ -43,7 +43,8 @@ protected:
 };
 
 
-void ResSchedServiceTest::SetUpTestCase(void) {
+void ResSchedServiceTest::SetUpTestCase(void)
+{
     static const char *perms[] = {
         "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT",
         "ohos.permission.DUMP",
