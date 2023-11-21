@@ -154,6 +154,8 @@ enum : uint32_t {
     RES_TYPE_ON_APP_STATE_CHANGED = 55,
     // report efficiency resources event
     RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED = 56,
+    //report app associated start to performance radar
+    RES_TYPE_APP_ASSOCIATED_START = 57,
     //last resType
     RES_TYPE_LAST,
 };
@@ -216,6 +218,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE, "RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE" },
     { RES_TYPE_ON_APP_STATE_CHANGED, "RES_TYPE_ON_APP_STATE_CHANGED" },
     { RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED, "RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED" },
+    { RES_TYPE_APP_ASSOCIATED_START, "RES_TYPE_APP_ASSOCIATED_START" },
 };
 
 /**
