@@ -19,9 +19,12 @@
 #define private public
 #define protected public
 #include <vector>
+#include "accesstoken_kit.h"
+#include "nativetoken_kit.h"
+#include "plugin_mgr.h"
 #include "res_sched_service.h"
 #include "res_sched_service_ability.h"
-#include "plugin_mgr.h"
+#include "token_setproc.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -40,7 +43,26 @@ protected:
 };
 
 
-void ResSchedServiceTest::SetUpTestCase(void) {}
+void ResSchedServiceTest::SetUpTestCase(void) {
+    static const char *perms[] = {
+        "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT",
+        "ohos.permission.DUMP",
+    };
+    uint64_t tokenId;
+    NativeTokenInfoParams infoInstance = {
+        .dcapsNum = 0,
+        .permsNum = 2,
+        .aclsNum = 0,
+        .dcaps = nullptr,
+        .perms = perms,
+        .acls = nullptr,
+        .processName = "ResSchedServiceTest",
+        .aplStr = "system_core",
+    };
+    tokenId = GetAccessTokenId(&infoInstance);
+    SetSelfTokenID(tokenId);
+    AccessTokenKit::ReloadNativeTokenInfo();
+}
 
 void ResSchedServiceTest::TearDownTestCase() {}
 
