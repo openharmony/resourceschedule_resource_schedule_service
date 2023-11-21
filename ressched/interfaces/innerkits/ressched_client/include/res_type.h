@@ -252,10 +252,11 @@ enum ScreenLockStatus : int64_t {
  */
 enum ProcessStatus : int64_t {
     PROCESS_CREATED = 0,
-    PROCESS_DIED = 1,
-    PROCESS_READY = 2,
-    PROCESS_FOREGROUND = 3,
-    PROCESS_BACKGROUND = 4,
+    PROCESS_READY,
+    PROCESS_FOREGROUND,
+    PROCESS_FOCOUS,
+    PROCESS_BACKGROUND,
+    PROCESS_DIED,
 };
 
 /**
