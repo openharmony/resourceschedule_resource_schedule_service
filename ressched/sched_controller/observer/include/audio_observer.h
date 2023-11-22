@@ -15,7 +15,7 @@
 
 #ifndef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_AUDIO_OBSERVER_H
 #define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_AUDIO_OBSERVER_H
-
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
 #include <string>
 
 #include "nlohmann/json.hpp"
@@ -39,4 +39,5 @@ private:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif
 #endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_AUDIO_OBSERVER_H

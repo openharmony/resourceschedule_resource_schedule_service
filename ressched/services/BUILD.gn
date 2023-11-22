@@ -83,7 +83,6 @@ ohos_shared_library("resschedsvc") {
     "ability_runtime:wantagent_innerkits",
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
-    "audio_framework:audio_client",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
@@ -128,6 +127,10 @@ ohos_shared_library("resschedsvc") {
     sources +=
         [ "../sched_controller/observer/src/av_session_state_listener.cpp" ]
     external_deps += [ "av_session:avsession_client" ]
+  }
+  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
+    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
+    external_deps += [ "audio_framework:audio_client" ]
   }
 
   version_script = "libresschedsvc.versionscript"
@@ -192,7 +195,6 @@ ohos_static_library("resschedsvc_static") {
     "ability_runtime:wantagent_innerkits",
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
-    "audio_framework:audio_client",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
@@ -238,6 +240,10 @@ ohos_static_library("resschedsvc_static") {
     sources +=
         [ "../sched_controller/observer/src/av_session_state_listener.cpp" ]
     external_deps += [ "av_session:avsession_client" ]
+  }
+  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
+    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
+    external_deps += [ "audio_framework:audio_client" ]
   }
 
   subsystem_name = "resourceschedule"
