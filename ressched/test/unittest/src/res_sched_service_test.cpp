@@ -31,7 +31,7 @@ namespace ResourceSchedule {
 using namespace std;
 using namespace testing::ext;
 using namespace testing::mt;
-using namespace Security:AccessToken;
+using namespace Security::AccessToken;
 class ResSchedServiceTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
