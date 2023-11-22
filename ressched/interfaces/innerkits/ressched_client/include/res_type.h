@@ -158,6 +158,8 @@ enum : uint32_t {
     RES_TYPE_AV_CODEC_STATE = 57,
     //report app associated start to performance radar
     RES_TYPE_APP_ASSOCIATED_START = 58,
+    //report thermal state event
+    RES_TYPE_THERMAL_STATE = 59,
     //last resType
     RES_TYPE_LAST,
 };
@@ -510,6 +512,14 @@ enum AssociatedStartType : int64_t {
     SCB_START_ABILITY = 0,
     EXTENSION_START_ABILITY = 1,
     MISSION_LIST_START_ABILITY = 2,
+};
+
+/**
+ * @brief thermal state type
+ */
+enum ThermalStateType : int64_t {
+    THERMAL_LEVEL_STATE = 0,
+    THERMAL_ACTION_STATE = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
