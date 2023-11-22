@@ -31,6 +31,7 @@ namespace ResourceSchedule {
 using namespace std;
 using namespace testing::ext;
 using namespace testing::mt;
+using namespace Security::AccessToken;
 class ResSchedServiceTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -43,7 +44,8 @@ protected:
 };
 
 
-void ResSchedServiceTest::SetUpTestCase(void) {
+void ResSchedServiceTest::SetUpTestCase(void)
+{
     static const char *perms[] = {
         "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT",
         "ohos.permission.DUMP",
