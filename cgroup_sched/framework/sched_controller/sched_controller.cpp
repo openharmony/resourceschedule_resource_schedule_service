@@ -34,7 +34,9 @@
 #include "res_type.h"
 #include "supervisor.h"
 #include "window_state_observer.h"
+#ifdef POWER_MANAGER_ENABLE
 #include "power_mgr_client.h"
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -46,7 +48,6 @@ namespace {
 #ifdef CONFIG_BGTASK_MGR
 using OHOS::BackgroundTaskMgr::BackgroundTaskMgrHelper;
 #endif
-using namespace PowerMgr;
 
 OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
 {
@@ -322,27 +323,29 @@ void SchedController::UnsubscribeWindowState()
     }
 }
 
+#ifdef POWER_MANAGER_ENABLE
 void SchedController::GetRunningLockState()
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s, supervisor nullptr.", __func__);
         return;
     }
-    std::map<std::string, RunningLockInfo> runningLockLists;
-    bool ret = PowerMgrClient::GetInstance().QueryRunningLockLists(runningLockLists);
+    std::map<std::string, PowerMgr::RunningLockInfo> runningLockLists;
+    bool ret = PowerMgr::PowerMgrClient::GetInstance().QueryRunningLockLists(runningLockLists);
     if (!ret) {
         CGS_LOGE("%{public}s get running lock list failed.", __func__);
         return;
     }
     for (auto it = runningLockLists.begin(); it != runningLockLists.end(); it++) {
         std::string bundleName = it->first;
-        RunningLockInfo lockInfo = it->second;
+        PowerMgr::RunningLockInfo lockInfo = it->second;
         std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(lockInfo.uid);
         std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(lockInfo.pid);
         uint32_t key = static_cast<uint32_t>(lockInfo.type);
         procRecord->runningLockState_[key] = true;
     }
 }
+#endif
 
 extern "C" void CgroupSchedInit()
 {

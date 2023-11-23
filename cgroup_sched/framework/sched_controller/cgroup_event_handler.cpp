@@ -25,7 +25,9 @@
 #include "sched_controller.h"
 #include "sched_policy.h"
 #include "system_ability_definition.h"
+#ifdef POWER_MANAGER_ENABLE
 #include "power_mgr_client.h"
+#endif
 #include "window_manager.h"
 
 namespace OHOS {
@@ -41,8 +43,6 @@ namespace {
 
     const std::string MMI_SERVICE_NAME = "mmi_service";
 }
-
-using namespace PowerMgr;
 
 using OHOS::AppExecFwk::ApplicationState;
 using OHOS::AppExecFwk::AbilityState;
@@ -156,9 +156,11 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
                     }, EVENT_ID_REG_BGTASK_OBSERVER, DELAYED_RETRY_REGISTER_DURATION);
             }
             break;
+#ifdef POWER_MANAGER_ENABLE
         case POWER_MANAGER_SERVICE_ID:
             SchedController::GetInstance().GetRunningLockState();
             break;
+#endif
         default:
             break;
     }
@@ -768,13 +770,15 @@ void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t 
     state = static_cast<int32_t>(value);
     CGS_LOGD("report running lock event, uid:%{public}d, pid:%{public}d, lockType:%{public}d, state:%{public}d",
         uid, pid, type, state);
-    if (type == static_cast<uint32_t>(RunningLockType::RUNNINGLOCK_SCREEN) ||
-        type == static_cast<uint32_t>(RunningLockType::RUNNINGLOCK_BACKGROUND)) {
+#ifdef POWER_MANAGER_ENABLE
+    if (type == static_cast<uint32_t>(PowerMgr::RunningLockType::RUNNINGLOCK_SCREEN) ||
+        type == static_cast<uint32_t>(PowerMgr::RunningLockType::RUNNINGLOCK_BACKGROUND)) {
         std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
         std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
         procRecord->runningLockState_[type] = (state == ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE);
         ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType, state);
     }
+#endif
 }
 
 void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)

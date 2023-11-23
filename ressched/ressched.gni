@@ -78,4 +78,9 @@ declare_args() {
       !defined(global_parts_info.multimedia_av_session)) {
     ressched_with_resourceschedule_multimedia_av_session_enable = false
   }
+
+  ressched_power_manager_enable = true
+  if (defined(global_parts_info) && !defined(global_parts_info.powermgr_power_manager)) {
+    ressched_power_manager_enable = false
+  }
 }
