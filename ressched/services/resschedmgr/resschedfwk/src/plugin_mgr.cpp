@@ -35,7 +35,6 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace AppExecFwk;
 using namespace HiviewDFX;
-using OnPluginInitFunc = bool (*)(std::string);
 
 namespace {
     const int32_t DISPATCH_WARNING_TIME = 10; // ms
@@ -157,7 +156,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
         return nullptr;
     }
 
-    if (!onPluginInitFunc(info.libPath)) {
+    if (!onPluginInitFunc(const_cast<std::string&>(info.libPath_))) {
         RESSCHED_LOGE("%{public}s, %{public}s init failed!", __func__, info.libPath.c_str());
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", info.libPath,
@@ -399,7 +398,7 @@ void PluginMgr::RepairPlugin(TimePoint endTime, const std::string& pluginLib, Pl
     if (libInfo.onPluginDisableFunc_ && libInfo.onPluginInitFunc_) {
         RESSCHED_LOGW("%{public}s, %{public}s disable and enable it.", __func__, pluginLib.c_str());
         libInfo.onPluginDisableFunc_();
-        libInfo.onPluginInitFunc_(pluginLib);
+        libInfo.onPluginInitFunc_(const_cast<std::string&>(pluginLib));
     }
 }
 
