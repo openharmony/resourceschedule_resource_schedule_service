@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
 #include <string>
 
 #include "observer_manager.h"
@@ -490,4 +489,3 @@ extern "C" void ObserverManagerDisable()
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif
