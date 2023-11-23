@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
 #include "sched_telephony_observer.h"
 
 #include "res_sched_log.h"
@@ -28,3 +28,4 @@ void SchedTelephonyObserver::OnCallStateUpdated(int32_t slotId, int32_t callStat
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif

@@ -19,8 +19,9 @@
 #include "if_system_ability_manager.h"
 #include "system_ability_status_change_stub.h"
 #include "single_instance.h"
-
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
 #include "audio_observer.h"
+#endif
 #include "hisysevent_observer.h"
 #include "connection_subscriber.h"
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
@@ -82,7 +83,9 @@ public:
     int32_t slotId_ = 0;
     sptr<SchedTelephonyObserver> telephonyObserver_ = nullptr;
 #endif
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
     std::shared_ptr<AudioObserver> audioObserver_ = nullptr;
+#endif
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
     sptr<DeviceMovementObserver> deviceMovementObserver_ = nullptr;
 #endif

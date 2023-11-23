@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
 #include <string>
 
 #include "observer_manager.h"
@@ -241,6 +241,7 @@ void ObserverManager::DisableTelephonyObserver()
 
 void ObserverManager::InitAudioObserver()
 {
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
     pid_ = getpid();
     RESSCHED_LOGI("ObserverManager Init audio observer, pid: %{public}d", pid_);
     if (!audioObserver_) {
@@ -272,10 +273,12 @@ void ObserverManager::InitAudioObserver()
     } else {
         RESSCHED_LOGW("ObserverManager init audioVolumeKeyObserver failed");
     }
+#endif
 }
 
 void ObserverManager::DisableAudioObserver()
 {
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
     RESSCHED_LOGI("Disable telephony observer");
     if (!audioObserver_) {
         RESSCHED_LOGD("ObserverManager has been disable audioObserver");
@@ -303,6 +306,7 @@ void ObserverManager::DisableAudioObserver()
         RESSCHED_LOGW("ObserverManager disable audioVolumeKeyObserver failed");
     }
     audioObserver_ = nullptr;
+#endif
 }
 
 void ObserverManager::InitDeviceMovementObserver()
@@ -486,3 +490,4 @@ extern "C" void ObserverManagerDisable()
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif
