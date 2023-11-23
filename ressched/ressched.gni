@@ -80,7 +80,7 @@ declare_args() {
   }
   ressched_with_resourceschedule_multimedia_audio_framework_enable = true
   if (defined(global_parts_info) &&
-      !defined(global_parts_info.multimedia_av_session)) {
+      !defined(global_parts_info.multimedia_audio_framework)) {
     ressched_with_resourceschedule_multimedia_audio_framework_enable = false
   }
 }
