@@ -60,7 +60,7 @@ bool ResSchedService::AllowDump()
         RESSCHED_LOGE("Not eng mode");
         return false;
     }
-    Security::AccessToken::AccessTokenID tokenId = IPCSkeleton::GetFirstTokenID();
+    Security::AccessToken::AccessTokenID tokenId = IPCSkeleton::GetCallingTokenID();
     int32_t ret = Security::AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, "ohos.permission.DUMP");
     if (ret != Security::AccessToken::PermissionState::PERMISSION_GRANTED) {
         RESSCHED_LOGE("CheckPermission failed");
