@@ -12,8 +12,8 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("../cgroup_sched.gni")
 import("../../ressched/ressched.gni")
+import("../cgroup_sched.gni")
 
 config("cgroup_sched_public_config") {
   include_dirs = [
