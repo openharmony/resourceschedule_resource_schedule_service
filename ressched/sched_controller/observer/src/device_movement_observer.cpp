@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
 #include "device_movement_observer.h"
 
 #include "res_sched_log.h"
@@ -64,3 +64,4 @@ void DeviceMovementObserver::OnMovementChanged(const Msdp::MovementDataUtils::Mo
 }
 }
 }
+#endif

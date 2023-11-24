@@ -15,7 +15,7 @@
 
 #ifndef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_DEVICE_MOVEMENT_OBSERVER_H
 #define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_DEVICE_MOVEMENT_OBSERVER_H
-
+#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
 #include "iremote_stub.h"
 #include "imovement_callback.h"
 #include "movement_data_utils.h"
@@ -35,4 +35,5 @@ private:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif
 #endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_DEVICE_MOVEMENT_OBSERVER_H

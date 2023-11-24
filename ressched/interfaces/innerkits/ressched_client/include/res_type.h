@@ -161,6 +161,11 @@ enum : uint32_t {
     RES_TYPE_WIFI_P2P_STATE_CHANGED = 64,
   
     // last resType
+    //report app associated start to performance radar
+    RES_TYPE_APP_ASSOCIATED_START = 65,
+    //report thermal state event
+    RES_TYPE_THERMAL_STATE = 66,
+    //last resType
     RES_TYPE_LAST,
 };
 
@@ -229,7 +234,8 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE, "RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE" },
     { RES_TYPE_ON_APP_STATE_CHANGED, "RES_TYPE_ON_APP_STATE_CHANGED" },
     { RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED, "RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED" },
-    { RES_TYPE_AV_CODEC_STATE, "RES_TYPE_AV_CODEC_STATE" }
+    { RES_TYPE_AV_CODEC_STATE, "RES_TYPE_AV_CODEC_STATE" },
+    { RES_TYPE_APP_ASSOCIATED_START, "RES_TYPE_APP_ASSOCIATED_START" },
 };
 
 /**
@@ -265,10 +271,11 @@ enum ScreenLockStatus : int64_t {
  */
 enum ProcessStatus : int64_t {
     PROCESS_CREATED = 0,
-    PROCESS_DIED = 1,
-    PROCESS_READY = 2,
-    PROCESS_FOREGROUND = 3,
-    PROCESS_BACKGROUND = 4,
+    PROCESS_READY,
+    PROCESS_FOREGROUND,
+    PROCESS_FOCOUS,
+    PROCESS_BACKGROUND,
+    PROCESS_DIED,
 };
 
 /**
@@ -527,6 +534,23 @@ enum UsbDeviceStatus : int64_t {
 enum AvCodecState : int64_t {
     CODEC_START_INFO = 0,
     CODEC_STOP_INFO = 1,
+};
+
+/**
+ * @brief app associated start type
+ */
+enum AssociatedStartType : int64_t {
+    SCB_START_ABILITY = 0,
+    EXTENSION_START_ABILITY = 1,
+    MISSION_LIST_START_ABILITY = 2,
+};
+
+/**
+ * @brief thermal state type
+ */
+enum ThermalStateType : int64_t {
+    THERMAL_LEVEL_STATE = 0,
+    THERMAL_ACTION_STATE = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule

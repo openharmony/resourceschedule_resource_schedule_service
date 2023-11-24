@@ -83,6 +83,8 @@ namespace {
         ResType::RES_TYPE_ANCO_CUST,
         ResType::RES_TYPE_ANCO_APP_FRONT,
         ResType::RES_TYPE_TIMEZONE_CHANGED,
+        ResType::RES_TYPE_APP_ASSOCIATED_START,
+        ResType::RES_TYPE_THERMAL_STATE,
     };
     constexpr int32_t SAMGR_UID = 5555;
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
