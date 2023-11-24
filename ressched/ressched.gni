@@ -78,4 +78,15 @@ declare_args() {
       !defined(global_parts_info.multimedia_av_session)) {
     ressched_with_resourceschedule_multimedia_av_session_enable = false
   }
+  ressched_with_resourceschedule_multimedia_audio_framework_enable = true
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.multimedia_audio_framework)) {
+    ressched_with_resourceschedule_multimedia_audio_framework_enable = false
+  }
+
+  rss_device_standby_enable = true
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.resourceschedule_device_standby)) {
+    rss_device_standby_enable = false
+  }
 }

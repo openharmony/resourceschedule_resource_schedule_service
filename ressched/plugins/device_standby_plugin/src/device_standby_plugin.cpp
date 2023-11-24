@@ -14,9 +14,10 @@
  */
 
 #include "device_standby_plugin.h"
-
+#ifdef RSS_DEVICE_STANDBY_ENABLE
 #include "standby_service_client.h"
 #include "standby_res_data.h"
+#endif
 #include "config_info.h"
 #include "plugin_mgr.h"
 #include "res_sched_log.h"
@@ -68,25 +69,27 @@ void DeviceStandbyPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
     RESSCHED_LOGI(
         "DeviceStandbyPlugin::DispatchResource type=%{public}u value=%{public}lld",
         data->resType, (long long)(data->value));
+#ifdef RSS_DEVICE_STANDBY_ENABLE
     DevStandbyMgr::StandbyServiceClient::GetInstance().HandleEvent(
         std::make_shared<DevStandbyMgr::ResData>(data->resType, data->value, data->payload));
+#endif
 }
 
-extern "C" bool OnPulginInit(std::string& libName)
+extern "C" bool OnPluginInit(std::string& libName)
 {
     if (libName != LIB_NAME) {
-        RESSCHED_LOGI("DeviceStandbyPlugin::OnPulginInit lib name is not match");
+        RESSCHED_LOGI("DeviceStandbyPlugin::OnPluginInit lib name is not match");
         return false;
     }
     DeviceStandbyPlugin::GetInstance().Init();
-    RESSCHED_LOGI("DeviceStandbyPlugin::OnPulginInit success.");
+    RESSCHED_LOGI("DeviceStandbyPlugin::OnPluginInit success.");
     return true;
 }
 
-extern "C" void OnPulginDisable()
+extern "C" void OnPluginDisable()
 {
     DeviceStandbyPlugin::GetInstance().Disable();
-    RESSCHED_LOGI("DeviceStandbyPlugin::OnPulginDisable success.");
+    RESSCHED_LOGI("DeviceStandbyPlugin::OnPluginDisable success.");
 }
 
 extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& data)
