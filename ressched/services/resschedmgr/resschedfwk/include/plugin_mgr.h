@@ -38,7 +38,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 using Clock = std::chrono::high_resolution_clock;
 using TimePoint = std::chrono::time_point<Clock>;
-using OnPluginInitFunc = bool (*)(const std::string);
+using OnPluginInitFunc = bool (*)(std::string&);
 using OnDispatchResourceFunc = void (*)(const std::shared_ptr<ResData>&);
 using OnDumpFunc = void (*)(const std::vector<std::string>&, std::string&);
 using OnPluginDisableFunc = void (*)();

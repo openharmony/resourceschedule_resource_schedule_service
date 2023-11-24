@@ -49,6 +49,7 @@
         "soc_perf",
         "state_registry",
         "window_manager",
+        "device_standby",
         "power_manager",
         "av_session"
       ],
@@ -72,6 +73,7 @@
           "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/component_sched_plugin:component_sched_plugin",
           "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/socperf_plugin:socperf_plugin",
           "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/frame_aware_plugin:frame_aware_plugin",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/device_standby_plugin:device_standby_plugin",
           "//foundation/resourceschedule/resource_schedule_service/ressched/sa_profile:ressched_sa_profile",
           "//foundation/resourceschedule/resource_schedule_service/ressched/etc/init:resource_schedule_service.cfg",
           "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework:cgroup_sched",
