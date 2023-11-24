@@ -70,7 +70,7 @@ public:
     void HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
-    bool CheckVisibilityForRenderProcess(ProcessRecord &pr);
+    bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);
     bool ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid, int64_t value, const nlohmann::json& payload);
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
     std::shared_ptr<Supervisor> supervisor_;

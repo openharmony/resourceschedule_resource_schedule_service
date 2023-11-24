@@ -670,7 +670,7 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     if (!mainProcRecord) {
         return;
     }
-    if (CheckVisibilityForRenderProcess(*(procRecord.get()))) {
+    if (CheckVisibilityForRenderProcess(*(procRecord.get()), *mainProcRecord)) {
         CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d is not visible but active",
             __func__, app->GetName().c_str(), uid, pid);
     }
@@ -817,9 +817,9 @@ void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value,
         resType, static_cast<int32_t>(value));
 }
 
-bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr)
+bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc)
 {
-    return pr.isRenderProcess_ && pr.isActive_ && !pr.IsVisible();
+    return pr.isRenderProcess_ && pr.isActive_ && !mainProc.GetWindowInfoNonNull(pr.linkedWindowId_)->isVisible_;
 }
 
 bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,
