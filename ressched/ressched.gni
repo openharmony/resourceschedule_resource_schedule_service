@@ -80,7 +80,8 @@ declare_args() {
   }
 
   ressched_power_manager_enable = true
-  if (defined(global_parts_info) && !defined(global_parts_info.powermgr_power_manager)) {
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.powermgr_power_manager)) {
     ressched_power_manager_enable = false
   }
 
