@@ -24,6 +24,14 @@ config("frame_aware_plugin_config") {
 }
 
 ohos_shared_library("frame_aware_plugin") {
+  branch_protector_ret = "pac_ret"
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+
   configs = [ ":frame_aware_plugin_config" ]
 
   sources = [
