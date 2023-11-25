@@ -168,6 +168,7 @@ void ResSchedService::DumpProcessWindowInfo(std::string &result)
                     .append(", windowId:").append(ToString(windows->windowId_))
                     .append(", visibilityState:").append(ToString(windows->visibilityState_))
                     .append(", isVisible:").append(ToString(windows->isVisible_))
+                    .append(", drawingContentState:").append(ToString(windows->darwingContentState_))
                     .append(", isFocus:").append(ToString(windows->isFocused_)).append("\n");
             }
         }
@@ -199,8 +200,8 @@ void ResSchedService::DumpProcessEventState(std::string &result)
                 .append(", napState:").append(ToString(process->isNapState_))
                 .append(", mmiState:").append(ToString(process->mmiStatus_))
                 .append(", camearaStatus:").append(ToString(process->cameraState_))
-                .append(", bluetoothStatue:").append(ToString(process->bluetoothState_))
-                .append(", wifiStatue:").append(ToString(process->wifiState_)).append("\n");
+                .append(", bluetoothStatus:").append(ToString(process->bluetoothState_))
+                .append(", wifiStatus:").append(ToString(process->wifiState_)).append("\n");
         }
     }
 }

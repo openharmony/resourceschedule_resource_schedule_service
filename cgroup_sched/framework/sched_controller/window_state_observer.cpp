@@ -119,5 +119,20 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
             isVisible ? ResType::WindowVisibilityStatus::VISIBLE : ResType::WindowVisibilityStatus::INVISIBLE, payload);
     }
 }
+
+void WindowDrawingContentObserver::OnWindowDrawingContentChanged(const WindowDrawingContentInfo& changeInfo)
+{
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler) {
+        auto windowId = changeInfo.windowId_;
+        auto windowType = changeInfo.windowType_;
+        auto drawingContentState = changeInfo.drawingContentState_;
+        auto pid = changeInfo.pid_;
+        auto uid = changeInfo.uid_;
+        cgHandler->Submit([cgHandler, windowId, windowType, drawingContentState, pid, uid] {
+            cgHandler->HandleDrawingContentChangeWindow(windowId, windowType, drawingContentState, pid, uid);
+        });
+    }
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -146,6 +146,7 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
             }
             break;
         case WINDOW_MANAGER_SERVICE_ID:
+            windowSaInitState_ = true;
             SchedController::GetInstance().SubscribeWindowState();
             break;
         case BACKGROUND_TASK_MANAGER_SERVICE_ID:
@@ -174,6 +175,7 @@ void CgroupEventHandler::HandleAbilityRemoved(int32_t saId, const std::string& d
             SchedController::GetInstance().UnsubscribeAppState();
             break;
         case WINDOW_MANAGER_SERVICE_ID:
+            windowSaInitState_ = false;
             SchedController::GetInstance().UnsubscribeWindowState();
             break;
         case BACKGROUND_TASK_MANAGER_SERVICE_ID:
@@ -323,6 +325,9 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t proc
         procRecord->isExtensionProcess_ = true;
         procRecord->extensionType_ = extensionType;
     }
+    if (windowSaInitState_) {
+        SchedController::GetInstance().RegisterDrawingContentChangedObserve(*(procRecord.get()));
+    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_CREATE);
 }
@@ -343,6 +348,9 @@ void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, const std::stri
     if (procRecord) {
         ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
             ResType::RES_TYPE_PROCESS_STATE_CHANGE, ResType::ProcessStatus::PROCESS_DIED);
+        if (windowSaInitState_) {
+            SchedController::GetInstance().UnregisterDrawingContentChangedObserve(*(procRecord.get()));
+        }
     }
     app->RemoveProcessRecord(pid);
     // if all processes died, remove current app
@@ -534,6 +542,25 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_WINDOW_VISIBILITY_CHANGED);
+}
+
+void CgroupEventHandler::HandleDrawingContentChangeWindow(
+    uint32_t windowId, WindowType windowType, bool drawingContentState, int32_t pid, int32_t uid)
+{
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
+        drawingContentState, (int32_t)windowType, pid, uid);
+
+    std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
+        return;
+    }
+    auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
+    windowInfo->darwingContentState_ = drawingContentState;
 }
 
 void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
