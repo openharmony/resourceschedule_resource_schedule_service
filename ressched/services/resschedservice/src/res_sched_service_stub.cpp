@@ -29,6 +29,10 @@ namespace ResourceSchedule {
 using namespace OHOS::Security;
 namespace {
     #define PAYLOAD_MAX_SIZE 4096
+    static const std::unordered_set<uint32_t> scbRes = {
+        ResType::RES_TYPE_REPORT_SCENE_BOARD,
+        RES_TYPE_SHOW_REMOTE_ANIMATION,
+    }
     static const std::unordered_set<uint32_t> thirdPartRes_ = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
         ResType::RES_TYPE_PUSH_PAGE,
@@ -140,7 +144,7 @@ namespace {
 
     bool IsSBDResType(uint32_t type)
     {
-        if (type != ResType::RES_TYPE_REPORT_SCENE_BOARD) {
+        if (scbRes.find(type) == scbRes.end()) {
             return false;
         }
         AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
