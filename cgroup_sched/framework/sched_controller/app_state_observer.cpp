@@ -120,8 +120,8 @@ void RmsApplicationStateObserver::MarshallingProcessData(const ProcessData &proc
     payload["processType"] = std::to_string(static_cast<int32_t>(processData.processType));
     payload["renderUid"] = std::to_string(processData.renderUid);
     payload["bundleName"] = processData.bundleName;
-    payload["state"] = static_cast<uint32_t>(processData.state);
-    payload["extensionType"] = static_cast<uint32_t>(processData.extensionType);
+    payload["state"] = std::to_string(static_cast<uint32_t>(processData.state));
+    payload["extensionType"] = std::to_string(static_cast<uint32_t>(processData.extensionType));
 }
 
 void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processData)

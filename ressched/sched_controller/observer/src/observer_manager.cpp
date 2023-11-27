@@ -62,6 +62,38 @@ void ObserverManager::Disable()
     sysAbilityListener_ = nullptr;
 }
 
+void ObserverManager::InitObserverCbMap()
+{
+    handleObserverMap_ = {
+        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::InitHiSysEventObserver,
+            std::placeholders::_1) },
+        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
+            std::bind(&ObserverManager::InitTelephonyObserver, std::placeholders::_1) },
+        { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1) },
+        { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::InitDeviceMovementObserver, std::placeholders::_1) },
+        { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::InitMMiEventObserver, std::placeholders::_1) },
+        { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::InitConnectionSubscriber, std::placeholders::_1) },
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
+        { AVSESSION_SERVICE_ID, std::bind(&ObserverManager::InitAVSessionStateChangeListener, std::placeholders::_1) },
+#endif
+    };
+
+    removeObserverMap_ = {
+        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::DisableHiSysEventObserver,
+            std::placeholders::_1) },
+        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
+            std::bind(&ObserverManager::DisableTelephonyObserver, std::placeholders::_1) },
+        { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1) },
+        { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::DisableDeviceMovementObserver, std::placeholders::_1) },
+        { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::DisableMMiEventObserver, std::placeholders::_1) },
+        { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::DisableConnectionSubscriber, std::placeholders::_1) },
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
+        { AVSESSION_SERVICE_ID,
+          std::bind(&ObserverManager::DisableAVSessionStateChangeListener, std::placeholders::_1) },
+#endif
+    };
+}
+
 void ObserverManager::InitSysAbilityListener()
 {
     if (sysAbilityListener_ != nullptr) {
@@ -81,40 +113,14 @@ void ObserverManager::InitSysAbilityListener()
         RESSCHED_LOGE("systemAbilityManager is null");
         return;
     }
+    InitObserverCbMap();
 
-    handleObserverMap_ = {
-        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::InitHiSysEventObserver,
-            std::placeholders::_1) },
-        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
-            std::bind(&ObserverManager::InitTelephonyObserver, std::placeholders::_1) },
-        { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1) },
-        { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::InitDeviceMovementObserver, std::placeholders::_1) },
-        { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::InitMMiEventObserver, std::placeholders::_1) },
-        { ABILITY_MST_SERVICE_ID, std::bind(&ObserverManager::InitConnectionSubscriber, std::placeholders::_1) },
-#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
-        { AVSESSION_SERVICE_ID, std::bind(&ObserverManager::InitAVSessionStateChangeListener, std::placeholders::_1) },
-#endif
-    };
-    removeObserverMap_ = {
-        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::DisableHiSysEventObserver,
-            std::placeholders::_1) },
-        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
-            std::bind(&ObserverManager::DisableTelephonyObserver, std::placeholders::_1) },
-        { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1) },
-        { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::DisableDeviceMovementObserver, std::placeholders::_1) },
-        { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::DisableMMiEventObserver, std::placeholders::_1) },
-        { ABILITY_MST_SERVICE_ID, std::bind(&ObserverManager::DisableConnectionSubscriber, std::placeholders::_1) },
-#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
-        { AVSESSION_SERVICE_ID,
-          std::bind(&ObserverManager::DisableAVSessionStateChangeListener, std::placeholders::_1) },
-#endif
-    };
     AddItemToSysAbilityListener(DFX_SYS_EVENT_SERVICE_ABILITY_ID, systemAbilityManager);
     AddItemToSysAbilityListener(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, systemAbilityManager);
     AddItemToSysAbilityListener(AUDIO_POLICY_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(MSDP_MOVEMENT_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(MULTIMODAL_INPUT_SERVICE_ID, systemAbilityManager);
-    AddItemToSysAbilityListener(ABILITY_MST_SERVICE_ID, systemAbilityManager);
+    AddItemToSysAbilityListener(ABILITY_MGR_SERVICE_ID, systemAbilityManager);
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
     AddItemToSysAbilityListener(AVSESSION_SERVICE_ID, systemAbilityManager);
 #endif
@@ -365,6 +371,7 @@ void ObserverManager::InitMMiEventObserver()
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a mmi observer failed!");
+        return;
     }
     // Get all events registered in multimodal input.
     GetAllMmiStatusData();
@@ -418,7 +425,7 @@ void ObserverManager::GetAllMmiStatusData()
 
 void ObserverManager::InitConnectionSubscriber()
 {
-    if (!connectionSubscriber_) {
+    if (connectionSubscriber_ == nullptr) {
         connectionSubscriber_ = std::make_shared<ConnectionSubscriber>();
     }
 
@@ -437,7 +444,7 @@ void ObserverManager::InitConnectionSubscriber()
 void ObserverManager::DisableConnectionSubscriber()
 {
     RESSCHED_LOGI("Disable connect subscriber state listener");
-    if (!connectionSubscriber_) {
+    if (connectionSubscriber_ == nullptr) {
         RESSCHED_LOGD("ObserverManager has been disable connect subscriber state listener");
         return;
     }
@@ -455,7 +462,7 @@ void ObserverManager::DisableConnectionSubscriber()
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 void ObserverManager::InitAVSessionStateChangeListener()
 {
-    if (!avSessionStateListener_) {
+    if (avSessionStateListener_ == nullptr) {
         avSessionStateListener_ = std::make_shared<AvSessionStateListener>();
     }
 

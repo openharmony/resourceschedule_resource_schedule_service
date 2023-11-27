@@ -124,6 +124,7 @@ ohos_shared_library("resschedsvc") {
     external_deps += [ "bluetooth:btframework" ]
   }
   if (ressched_with_resourceschedule_multimedia_av_session_enable) {
+    defines += [ "RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE" ]
     sources +=
         [ "../sched_controller/observer/src/av_session_state_listener.cpp" ]
     external_deps += [ "av_session:avsession_client" ]
