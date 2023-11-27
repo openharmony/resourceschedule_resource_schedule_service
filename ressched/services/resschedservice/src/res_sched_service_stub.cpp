@@ -31,7 +31,7 @@ namespace {
     #define PAYLOAD_MAX_SIZE 4096
     static const std::unordered_set<uint32_t> scbRes = {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
-        RES_TYPE_SHOW_REMOTE_ANIMATION,
+        ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
     }
     static const std::unordered_set<uint32_t> thirdPartRes_ = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
