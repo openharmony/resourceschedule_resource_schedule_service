@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
 #include "audio_observer.h"
 
 #include "res_sched_log.h"
@@ -67,3 +68,4 @@ void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif
