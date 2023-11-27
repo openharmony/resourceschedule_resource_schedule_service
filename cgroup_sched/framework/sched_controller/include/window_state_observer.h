@@ -26,9 +26,11 @@ namespace OHOS {
 namespace ResourceSchedule {
 using OHOS::Rosen::IFocusChangedListener;
 using OHOS::Rosen::IVisibilityChangedListener;
+using OHOS::Rosen::IDrawingContentChangedListener;
 using OHOS::Rosen::WindowType;
 using OHOS::Rosen::FocusChangeInfo;
 using OHOS::Rosen::WindowVisibilityInfo;
+using OHOS::Rosen::WindowDrawingContentInfo;
 
 class WindowStateObserver : public IFocusChangedListener {
 public:
@@ -42,6 +44,11 @@ public:
 
 private:
     void MarshallingWindowVisibilityInfo(const sptr<WindowVisibilityInfo>& info, nlohmann::json& payload);
+};
+
+class WindowDrawingContentObserver : public IDrawingContentChangedListener {
+public:
+    void OnWindowDrawingContentChanged(const WindowDrawingContentInfo& changeInfo) override;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

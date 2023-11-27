@@ -57,6 +57,8 @@ public:
         WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
     void HandleWindowVisibilityChanged(uint32_t windowId, uint32_t visibilityState,
         WindowType windowType, int32_t pid, int32_t uid);
+    void HandleDrawingContentChangeWindow(uint32_t windowId, WindowType windowType,
+        bool drawingContentState, int32_t pid, int32_t uid);
     void HandleReportMMIProcess(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportRenderThread(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportKeyThread(uint32_t resType, int64_t value, const nlohmann::json& payload);
@@ -73,6 +75,7 @@ private:
     bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);
     bool ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid, int64_t value, const nlohmann::json& payload);
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
+    bool windowSaInitState_ = false;
     std::shared_ptr<Supervisor> supervisor_;
     std::shared_ptr<ffrt::queue> queue_{nullptr};
     std::unordered_map<uint32_t, std::vector<ffrt::task_handle>> eventMap_;

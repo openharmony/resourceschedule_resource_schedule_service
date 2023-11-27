@@ -25,6 +25,7 @@
 #include <map>
 
 #include "sched_policy.h"
+#include "window_state_observer.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -46,9 +47,10 @@ public:
     }
 
     uint32_t windowId_;
-    uint32_t visibilityState_ = 0;
+    uint32_t visibilityState_ = 2;
     bool isVisible_ = false;
     bool isFocused_ = false;
+    bool darwingContentState_ = false;
     int32_t windowType_ = 0;
     uint64_t displayId_ = 0;
     std::shared_ptr<AbilityInfo> ability_ = nullptr;
@@ -120,6 +122,7 @@ public:
     std::map<uint32_t, bool> runningLockState_;
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
     std::vector<std::shared_ptr<WindowInfo>> windows_;
+    sptr<WindowDrawingContentObserver> windowDrawingContentObserver_;
 
     std::map<int32_t, int32_t> keyThreadRoleMap_ {}; // items in keyThreadMap_ is (tid, role)
 private:

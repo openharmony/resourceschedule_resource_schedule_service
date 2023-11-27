@@ -21,6 +21,7 @@
 #include "hilog/log.h"
 #include "nlohmann/json.hpp"
 #include "refbase.h"
+#include "supervisor.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -48,6 +49,10 @@ public:
     void SubscribeWindowState();
     void UnsubscribeWindowState();
     void UnregisterStateObservers();
+    void SubscribeWindowDrawContentChange();
+    void UnsubscribeWindowDrawContentChange();
+    void RegisterDrawingContentChangedObserve(ProcessRecord &pr);
+    void UnregisterDrawingContentChangedObserve(ProcessRecord &pr);
     int GetProcessGroup(pid_t pid);
     void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status);
     void DispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload);

@@ -32,7 +32,6 @@
 #include "hisysevent.h"
 #include "ressched_utils.h"
 #include "res_type.h"
-#include "supervisor.h"
 #include "window_state_observer.h"
 #ifdef POWER_MANAGER_ENABLE
 #include "power_mgr_client.h"
@@ -306,7 +305,26 @@ void SchedController::SubscribeWindowState()
             }
         }
     }
+    SubscribeWindowDrawContentChange();
     CGS_LOGI("%{public}s success.", __func__);
+}
+
+void SchedController::SubscribeWindowDrawContentChange()
+{
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s, supervisor nullptr", __func__);
+        return;
+    }
+
+    std::map<int32_t, std::shared_ptr<Application>> uidMap = supervisor_->GetUidsMap();
+    for (auto &it : uidMap) {
+        auto app = it.second;
+        std::map<pid_t, std::shared_ptr<ProcessRecord>> pidMap = app->GetPidsMap();
+        for (auto &pidIt : pidMap) {
+            auto process = pidIt.second;
+            RegisterDrawingContentChangedObserve(*(process.get()));
+        }
+    }
 }
 
 void SchedController::UnsubscribeWindowState()
@@ -320,6 +338,50 @@ void SchedController::UnsubscribeWindowState()
     if (windowVisibilityObserver_) {
         OHOS::Rosen::WindowManager::GetInstance().UnregisterVisibilityChangedListener(windowVisibilityObserver_);
         windowVisibilityObserver_ = nullptr;
+    }
+
+    UnsubscribeWindowDrawContentChange();
+}
+
+void SchedController::UnsubscribeWindowDrawContentChange()
+{
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s, supervisor nullptr", __func__);
+        return;
+    }
+
+    std::map<int32_t, std::shared_ptr<Application>> uidMap = supervisor_->GetUidsMap();
+    for (auto &it : uidMap) {
+        auto app = it.second;
+        std::map<pid_t, std::shared_ptr<ProcessRecord>> pidMap = app->GetPidsMap();
+        for (auto &pidIt : pidMap) {
+            auto process = pidIt.second;
+            UnregisterDrawingContentChangedObserve(*(process.get()));
+        }
+    }
+}
+
+void SchedController::RegisterDrawingContentChangedObserve(ProcessRecord &pr)
+{
+    if (!pr.windowDrawingContentObserver_) {
+        pr.windowDrawingContentObserver_ = new (std::nothrow)WindowDrawingContentObserver();
+    }
+
+    if (pr.windowDrawingContentObserver_) {
+        OHOS::Rosen::WMError ret = OHOS::Rosen::WindowManager::GetInstance().
+            RegisterDrawingContentChangedListener(pr.windowDrawingContentObserver_);
+        if (ret != OHOS::Rosen::WMError::WM_OK) {
+            CGS_LOGI("%{public}s: register drawing content changed failed, pid is %{public}d", __func__, pr.GetPid());
+        }
+    }
+}
+
+void SchedController::UnregisterDrawingContentChangedObserve(ProcessRecord &pr)
+{
+    if (pr.windowDrawingContentObserver_) {
+        OHOS::Rosen::WindowManager::GetInstance().
+            UnregisterDrawingContentChangedListener(pr.windowDrawingContentObserver_);
+        pr.windowDrawingContentObserver_ = nullptr;
     }
 }
 
