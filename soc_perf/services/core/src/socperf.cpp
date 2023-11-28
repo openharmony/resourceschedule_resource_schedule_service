@@ -56,14 +56,14 @@ bool SocPerf::Init()
 
     InitThreadWraps();
 
-    for (auto threadWrap : socperfThreadWraps) {
-        if (threadWrap && perfSoPath && perfSoFunc) {
-            threadWrap->InitPerfFunc(perfSoPath, perfSoFunc);
-        }
-    }
+    // for (auto threadWrap : socperfThreadWraps) {
+    //     if (threadWrap && perfSoPath && perfSoFunc) {
+    //         threadWrap->InitPerfFunc(perfSoPath, perfSoFunc);
+    //     }
+    // }
 
-    xmlFree(perfSoPath);
-    xmlFree(perfSoFunc);
+    // xmlFree(perfSoPath);
+    // xmlFree(perfSoFunc);
     resNodeInfo.clear();
     govResNodeInfo.clear();
     resStrToIdInfo.clear();
@@ -351,7 +351,7 @@ bool SocPerf::ParseResourceXmlFile(const xmlNode* rootNode, const std::string& r
                 return false;
             }
         } else if (!xmlStrcmp(child->name, reinterpret_cast<const xmlChar*>("Info"))) {
-            LoadInfo(child, realConfigFile);
+            //LoadInfo(child, realConfigFile);
         }
     }
     return true;
@@ -519,7 +519,7 @@ bool SocPerf::LoadGovResource(xmlNode* child, const std::string& configFile)
     }
 
     if (!CheckGovResDefValid()) {
-        return false;
+        return false;IsValidReportToPerfSo
     }
 
     return true;
@@ -527,12 +527,12 @@ bool SocPerf::LoadGovResource(xmlNode* child, const std::string& configFile)
 
 void SocPerf::LoadInfo(xmlNode* child, const std::string& configFile)
 {
-    xmlNode* grandson = child->children;
-    if (xmlStrcmp(grandson->name, reinterpret_cast<const xmlChar*>("inf"))) {
-        return;
-    }
-    perfSoPath = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("path")));
-    perfSoFunc = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("func")));
+    // xmlNode* grandson = child->children;
+    // if (xmlStrcmp(grandson->name, reinterpret_cast<const xmlChar*>("inf"))) {
+    //     return;
+    // }
+    // perfSoPath = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("path")));
+    // perfSoFunc = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("func")));
 }
 
 bool SocPerf::TraversalGovResource(xmlNode* greatGrandson, const std::string& configFile,
@@ -682,7 +682,7 @@ bool SocPerf::CheckResourceTag(const char* id, const char* name, const char* pai
         SOC_PERF_LOGE("Invalid resource mode for %{public}s", configFile.c_str());
         return false;
     }
-    if (reportToPerfSo && (!IsNumber(reportToPerfSo) || IsValidReportToPerfSo(atoi(reportToPerfSo)))) {
+    if (reportToPerfSo && (!IsNumber(reportToPerfSo) || !IsValidReportToPerfSo(atoi(reportToPerfSo)))) {
         SOC_PERF_LOGE("Invalid resource reportToPerfSo for %{public}s", configFile.c_str());
         return false;
     }
@@ -755,7 +755,7 @@ bool SocPerf::CheckGovResourceTag(const char* id, const char* name,
         SOC_PERF_LOGE("Invalid governor resource name for %{public}s", configFile.c_str());
         return false;
     }
-    if (reportToPerfSo && (!IsNumber(reportToPerfSo) || IsValidReportToPerfSo(atoi(reportToPerfSo)))) {
+    if (reportToPerfSo && (!IsNumber(reportToPerfSo) || !IsValidReportToPerfSo(atoi(reportToPerfSo)))) {
         SOC_PERF_LOGE("Invalid governor resource reportToPerfSo for %{public}s", configFile.c_str());
         return false;
     }
