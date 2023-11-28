@@ -336,7 +336,7 @@ void SocPerfThreadWrap::UpdateCandidatesValue(int32_t resId, int32_t type)
 
     if (resStatus->resActionList[type].empty()) {
         resStatus->candidatesValue[type] = INVALID_VALUE;
-         resStatus->candidatesEndTime[type] = MAX_INT_VALUE;
+        resStatus->candidatesEndTime[type] = MAX_INT_VALUE;
     } else {
         InnerArbitrateCandidatesValue(type, resStatus);
     }
