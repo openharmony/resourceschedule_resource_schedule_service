@@ -16,6 +16,7 @@
 #include <cstdio>            // for FILE
 #include <cstdint>           // for int32_t
 #include <climits>           // for PATH_MAX
+#include <dlfcn.h>           // for dlopen
 #include <list>              // for list, __list_iterator, operator!=
 #include <new>               // for operator delete, operator new
 #include <cstdlib>           // for realpath
@@ -52,11 +53,29 @@ void SocPerfThreadWrap::InitResNodeInfo(std::shared_ptr<ResNode> resNode)
     }
     std::function<void()>&& initResNodeInfoFunc = [this, resNode]() {
         resNodeInfo.insert(std::pair<int32_t, std::shared_ptr<ResNode>>(resNode->id, resNode));
-        WriteNode(resNode->path, std::to_string(resNode->def));
+        WriteNode(resNode->id, resNode->path, std::to_string(resNode->def));
         auto resStatus = std::make_shared<ResStatus>(resNode->def);
         resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(resNode->id, resStatus));
     };
     queue->submit(initResNodeInfoFunc);
+}
+
+void SocPerfThreadWrap::InitPerfFunc(char* perfSoPath, char* perfSoFuc)
+{
+    if (!perfSoPath || !perfSoFunc) {
+        return；
+    }
+
+    auto handle = dlopen(perfSoPath, RTLD_NOW);
+    if (!handle) {
+        SOC_PERF_LOGE("perf so doesn't exist");
+        return;
+    }
+
+    reportFunc = reinterpret_cast<ReportDataFunc>(dlsym(handle, perfSoFuc));
+    if (!reportFunc) {
+        SOC_PERF_LOGE("perf func doesn't exist");
+    }
 }
 
 void SocPerfThreadWrap::InitGovResNodeInfo(std::shared_ptr<GovResNode> govResNode)
@@ -67,7 +86,7 @@ void SocPerfThreadWrap::InitGovResNodeInfo(std::shared_ptr<GovResNode> govResNod
     std::function<void()>&& initGovResNodeInfoFunc = [this, govResNode]() {
         govResNodeInfo.insert(std::pair<int32_t, std::shared_ptr<GovResNode>>(govResNode->id, govResNode));
         for (int32_t i = 0; i < (int32_t)govResNode->paths.size(); i++) {
-            WriteNode(govResNode->paths[i], govResNode->levelToStr[govResNode->def][i]);
+            WriteNode(govResNode->id, govResNode->paths[i], govResNode->levelToStr[govResNode->def][i]);
         }
         auto resStatus = std::make_shared<ResStatus>(govResNode->def);
         resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(govResNode->id, resStatus));
@@ -90,6 +109,7 @@ void SocPerfThreadWrap::DoFreqActionPack(std::shared_ptr<ResActionItem> head)
             queueHead->next = nullptr;
             queueHead = temp;
         }
+        SendResStatusToPerfSo();
     };
     queue->submit(doFreqActionPackFunc);
 }
@@ -104,6 +124,7 @@ void SocPerfThreadWrap::UpdatePowerLimitBoostFreq(bool powerLimitBoost)
         for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
             ArbitrateCandidate(iter->first);
         }
+        SendResStatusToPerfSo();
     };
     queue->submit(updatePowerLimitBoostFreqFunc);
 }
@@ -118,6 +139,7 @@ void SocPerfThreadWrap::UpdateThermalLimitBoostFreq(bool thermalLimitBoost)
         for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
             ArbitrateCandidate(iter->first);
         }
+        SendResStatusToPerfSo();
     };
     queue->submit(updateThermalLimitBoostFreqFunc);
 }
@@ -133,6 +155,7 @@ void SocPerfThreadWrap::UpdateLimitStatus(int32_t eventId, std::shared_ptr<ResAc
         } else if (eventId == INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL) {
             DoFreqActionLevel(resId, resAction);
         }
+        SendResStatusToPerfSo();
     };
     queue->submit(updateLimitStatusFunc);
 }
@@ -143,6 +166,35 @@ void SocPerfThreadWrap::DoFreqAction(int32_t resId, std::shared_ptr<ResAction> r
         return;
     }
     UpdateResActionList(resId, resAction, false);
+}
+
+void SocPerfThreadWrap::SendResStatusToPerfSo()
+{
+    if (!reportFunc) {
+        return;
+    }
+    std::vector<int32_t> qosId;
+    std::vector<int64_t> value;
+    std::vector<int64_t> endTime;
+    for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
+        int32_t resId = iter->first;
+        std::shared_ptr(ResStatus) resStatus = iter->Second;
+        if ((resNodeInfo.find(resId) != resNodeInfo.end() && resNodeInfo[resId]->reportToPerfSo == REPORT_TO_PERFSO)
+            || (govResNodeInfo.find(resId) != govResNodeInfo.end()
+                && govResNodeInfo[resId]->reportToPerfSo == REPORT_TO_PERFSO)) {
+            if (resStatus->previousValue != resStatus->currentValue
+                || resStatus->previousEndTime != resStatus->currentEndTime) {
+                qosId.push_back(resId);
+                value.push_back(resStatus->currentValue);
+                endTime.push_back(resStatus->currentEndTime);
+                resStatus->previousValue = resStatus->currentValue;
+                resStatus->previousEndTime = resStatus->currentEndTime;
+            }
+        }
+    }
+    if (qosId.size() > 0) {
+        report(qosId, value, endTime, "");
+    }
 }
 
 void SocPerfThreadWrap::DoFreqActionLevel(int32_t resId, std::shared_ptr<ResAction> resAction)
@@ -167,6 +219,7 @@ void SocPerfThreadWrap::PostDelayTask(int32_t resId, std::shared_ptr<ResAction> 
     taskAttr.delay(resAction->duration * SCALES_OF_MILLISECONDS_TO_MICROSECONDS);
     std::function<void()>&& postDelayTaskFunc = [this, resId, resAction]() {
         UpdateResActionList(resId, resAction, true);
+        SendResStatusToPerfSo();
     };
     queue->submit(postDelayTaskFunc, taskAttr);
 }
@@ -278,68 +331,80 @@ void SocPerfThreadWrap::UpdateResActionListByInstantMsg(int32_t resId, int32_t t
 void SocPerfThreadWrap::UpdateCandidatesValue(int32_t resId, int32_t type)
 {
     std::shared_ptr<ResStatus> resStatus = resStatusInfo[resId];
-    int64_t prev = resStatus->candidates[type];
+    int64_t prevValue = resStatus->candidatesValue[type];
+    int64_t prevEndTime = resStatus->candidatesEndTime[type];
 
     if (resStatus->resActionList[type].empty()) {
-        resStatus->candidates[type] = INVALID_VALUE;
+        resStatus->candidatesValue[type] = INVALID_VALUE;
     } else {
-        if (type == ACTION_TYPE_PERF) {
-            int64_t res = MIN_INT_VALUE;
-            for (auto iter = resStatus->resActionList[type].begin();
-                iter != resStatus->resActionList[type].end(); ++iter) {
-                res = Max(res, (*iter)->value);
-            }
-            resStatus->candidates[type] = res;
-        } else {
-            int64_t res = MAX_INT_VALUE;
-            for (auto iter = resStatus->resActionList[type].begin();
-                iter != resStatus->resActionList[type].end(); ++iter) {
-                res = Min(res, (*iter)->value);
-            }
-            resStatus->candidates[type] = res;
-        }
+        InnerArbitrateCandidatesValue(type, resStatus);
     }
 
-    if (resStatus->candidates[type] != prev) {
+    if (resStatus->candidatesValue[type] != prevValue || resStatus->candidatesEndTime[type] != prevEndTime) {
         ArbitrateCandidate(resId);
     }
+}
+
+void SocPerfThreadWrap::InnerArbitrateCandidatesValue(int32_t type, std::shared_ptr<ResStatus> resStatus)
+{
+    int64_t res = type == ACTION_TYPE_PERF ? MIN_INT_VALUE : MAX_INT_VALUE;
+    int64_t endTime = MIN_INT_VALUE;
+    for (auto iter = resStatus->resActionList[type].begin();
+        iter != resStatus->resActionList[type].end(); ++iter) {
+        if (((*iter->value) > res && type = ACTION_TYPE_PERF)
+            || ((*iter)->value < res && type != ACTION_TYPE_PERF)) {
+            res = (*iter)->value;
+            endTime = (*iter)->endTime;
+        } else if ((*iter)->value == res) {
+            endTime = Max(endTime, (*iter)->endTime);
+        }
+    }
+    resStatus->candidatesValue[type] = res;
+    resStatus->candidatesEndTime[type] = endTime;
 }
 
 void SocPerfThreadWrap::ArbitrateCandidate(int32_t resId)
 {
     std::shared_ptr<ResStatus> resStatus = resStatusInfo[resId];
-    int64_t candidatePerf = resStatus->candidates[ACTION_TYPE_PERF];
-    int64_t candidatePower = resStatus->candidates[ACTION_TYPE_POWER];
-    int64_t candidateThermal = resStatus->candidates[ACTION_TYPE_THERMAL];
+    int64_t candidatePerfValue = resStatus->candidatesValue[ACTION_TYPE_PERF];
+    int64_t candidatePerfEndTime = resStatus->candidatesEndTime[ACTION_TYPE_PERF];
+    int64_t candidatePowerValue = resStatus->candidatesValue[ACTION_TYPE_POWER];
+    int64_t candidatePowerEndTime = resStatus->candidatesEndTime[ACTION_TYPE_POWER];
+    int64_t candidateThermalValue = resStatus->candidatesValue[ACTION_TYPE_THERMAL];
+    int64_t candidateThermalEndTime = resStatus->candidatesEndTime[ACTION_TYPE_THERMAL];
 
-    if (ExistNoCandidate(resId, resStatus, candidatePerf, candidatePower, candidateThermal)) {
+    if (ExistNoCandidate(resId, resStatus, candidatePerfValue, candidatePowerValue, candidateThermalValue)) {
         return;
     }
 
     if (!powerLimitBoost && !thermalLimitBoost) {
-        if (candidatePerf != INVALID_VALUE) {
-            resStatus->candidate = Max(candidatePerf, candidatePower, candidateThermal);
+        if (candidatePerfValue != INVALID_VALUE) {
+            resStatus->candidate = Max(candidatePerfValue, candidatePowerValue, candidateThermalValue);
         } else {
             resStatus->candidate =
-                (candidatePower == INVALID_VALUE) ? candidateThermal :
-                    ((candidateThermal == INVALID_VALUE) ? candidatePower : Min(candidatePower, candidateThermal));
+                (candidatePowerValue == INVALID_VALUE) ? candidateThermalValue :
+                    ((candidateThermalValue == INVALID_VALUE) ? candidatePowerValue :
+                        Min(candidatePowerValue, candidateThermalValue));
         }
     } else if (!powerLimitBoost && thermalLimitBoost) {
         resStatus->candidate =
-            (candidateThermal != INVALID_VALUE) ? candidateThermal : Max(candidatePerf, candidatePower);
+            (candidateThermalValue != INVALID_VALUE) ? candidateThermalValue :
+                Max(candidatePerfValue, candidatePowerValue);
     } else if (powerLimitBoost && !thermalLimitBoost) {
         resStatus->candidate =
-            (candidatePower != INVALID_VALUE) ? candidatePower : Max(candidatePerf, candidateThermal);
+            (candidatePowerValue != INVALID_VALUE) ? candidatePowerValue :
+                Max(candidatePerfValue, candidateThermalValue);
     } else {
-        if (candidatePower == INVALID_VALUE && candidateThermal == INVALID_VALUE) {
-            resStatus->candidate = candidatePerf;
+        if (candidatePowerValue == INVALID_VALUE && candidateThermalValue == INVALID_VALUE) {
+            resStatus->candidate = candidatePerfValue;
         } else {
             resStatus->candidate =
-                (candidatePower == INVALID_VALUE) ? candidateThermal :
-                    ((candidateThermal == INVALID_VALUE) ? candidatePower : Min(candidatePower, candidateThermal));
+                (candidatePowerValue == INVALID_VALUE) ? candidateThermalValue :
+                    ((candidateThermalValue == INVALID_VALUE) ? candidatePowerValue :
+                        Min(candidatePowerValue, candidateThermalValue));
         }
     }
-
+    resStatus->currentEndTime = Min(candidatePerfEndTime, candidatePowerEndTime, candidateThermalEndTime);
     ArbitratePairRes(resId);
 }
 
@@ -388,29 +453,37 @@ void SocPerfThreadWrap::ArbitratePairRes(int32_t resId)
 void SocPerfThreadWrap::UpdatePairResValue(int32_t minResId, int64_t minResValue, int32_t maxResId,
     int64_t maxResValue)
 {
-    WriteNode(resNodeInfo[minResId]->path, std::to_string(resNodeInfo[minResId]->def));
-    WriteNode(resNodeInfo[maxResId]->path, std::to_string(resNodeInfo[maxResId]->def));
+    WriteNode(minResId, resNodeInfo[minResId]->path, std::to_string(resNodeInfo[minResId]->def));
+    WriteNode(maxResId, resNodeInfo[maxResId]->path, std::to_string(resNodeInfo[maxResId]->def));
     UpdateCurrentValue(minResId, minResValue);
     UpdateCurrentValue(maxResId, maxResValue);
+    resStatusInfo[minResId]->currentEndTime = Min(resStatusInfo[minResId]->currentEndTime,
+        resStatusInfo[maxResId]->currentEndTime);
+    resStatusInfo[maxResId]->currentEndTime = Min(resStatusInfo[minResId]->currentEndTime,
+        resStatusInfo[maxResId]->currentEndTime);
 }
 
 void SocPerfThreadWrap::UpdateCurrentValue(int32_t resId, int64_t currValue)
 {
-    resStatusInfo[resId]->current = currValue;
+    resStatusInfo[resId]->currentValue = currValue;
     if (IsGovResId(resId)) {
         if (govResNodeInfo[resId]->levelToStr.find(currValue) != govResNodeInfo[resId]->levelToStr.end()) {
-            std::vector<std::string> targetStrs = govResNodeInfo[resId]->levelToStr[resStatusInfo[resId]->current];
+            std::vector<std::string> targetStrs = govResNodeInfo[resId]->levelToStr[resStatusInfo[resId]->currentValue];
             for (int32_t i = 0; i < (int32_t)govResNodeInfo[resId]->paths.size(); i++) {
-                WriteNode(govResNodeInfo[resId]->paths[i], targetStrs[i]);
+                WriteNode(resId, govResNodeInfo[resId]->paths[i], targetStrs[i]);
             }
         }
     } else if (IsResId(resId)) {
-        WriteNode(resNodeInfo[resId]->path, std::to_string(resStatusInfo[resId]->current));
+        WriteNode(resId, resNodeInfo[resId]->path, std::to_string(resStatusInfo[resId]->currentValue));
     }
 }
 
-void SocPerfThreadWrap::WriteNode(const std::string& filePath, const std::string& value)
+void SocPerfThreadWrap::WriteNode(int32_t resId, const std::string& filePath, const std::string& value)
 {
+    if ((IsGovResId(resId) && govResNodeInfo[resId]->reportToPerfSo == REPORT_TO_PERFSO)
+        || (IsResId(resId) && resNodeInfo[resId]->reportToPerfSo == REPORT_TO_PERFSO)) {
+        return;
+    }
     int32_t fd = GetFdForFilePath(filePath);
     if (fd < 0) {
         return;
@@ -444,6 +517,7 @@ bool SocPerfThreadWrap::ExistNoCandidate(
         } else if (IsResId(resId)) {
             resStatus->candidate = resNodeInfo[resId]->def;
         }
+        resStatus->currentEndTime = MAX_INT_VALUE;
         ArbitratePairRes(resId);
         return true;
     }

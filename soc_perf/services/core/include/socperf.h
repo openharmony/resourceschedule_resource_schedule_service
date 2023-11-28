@@ -16,6 +16,7 @@
 #ifndef SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_H
 #define SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_H
 
+#include <chrono>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -51,6 +52,8 @@ private:
     std::unordered_map<int32_t, std::shared_ptr<GovResNode>> govResNodeInfo;
     std::unordered_map<std::string, int32_t> resStrToIdInfo;
     std::vector<std::unordered_map<int32_t, int32_t>> limitRequest;
+    char* perfSoPath;
+    char* perfSoFunc;
 
 private:
     std::mutex mutex_;
@@ -68,17 +71,19 @@ private:
     bool LoadGovResource(xmlNode* rootNode, const std::string& configFile);
     bool TraversalGovResource(xmlNode* greatGrandson, const std::string& configFile,
         std::shared_ptr<GovResNode> govResNode);
+    void LoadInfo(xmlNode* child, const std::string& configFile);
     bool LoadCmd(const xmlNode* rootNode, const std::string& configFile);
     bool TraversalBoostResource(xmlNode* grandson, const std::string& configFile, std::shared_ptr<Actions> actions);
     bool ParseDuration(xmlNode* greatGrandson, const std::string& configFile, std::shared_ptr<Action> action) const;
     bool ParseResValue(xmlNode* greatGrandson, const std::string& configFile, std::shared_ptr<Action> action);
     bool CheckResourceTag(const char* id, const char* name, const char* pair, const char* mode,
-        const std::string& configFile) const;
+        const char* reportToPerfSo, const std::string& configFile) const;
     bool CheckResourceTag(const char* def, const char* path, const std::string& configFile) const;
     bool LoadResourceAvailable(std::shared_ptr<ResNode> resNode, const char* node);
     bool CheckPairResIdValid() const;
     bool CheckResDefValid() const;
-    bool CheckGovResourceTag(const char* id, const char* name, const std::string& configFile) const;
+    bool CheckGovResourceTag(const char* id, const char* name, const char* reportToPerfSo,
+        const std::string& configFile) const;
     bool LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResNode, const char* level, const char* node);
     bool CheckGovResDefValid() const;
     bool CheckCmdTag(const char* id, const char* name, const std::string& configFile) const;

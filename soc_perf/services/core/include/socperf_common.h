@@ -51,6 +51,8 @@ const int32_t MAX_RESOURCE_ID                     = 5999;
 const int32_t RES_ID_ADDITION                     = 10000;
 const int32_t RES_ID_AND_VALUE_PAIR               = 2;
 const int32_t RES_ID_NUMS_PER_TYPE                = 1000;
+const int32_t WRITE_NODE                          = 0;
+const int32_t REPORT_TO_PERFSO                    = 1;
 
 class ResNode {
 public:
@@ -61,15 +63,17 @@ public:
     int32_t mode;
     int32_t pair;
     std::unordered_set<int64_t> available;
+    int32_t reportToPerfSo;
 
 public:
-    ResNode(int32_t resId, std::string resName, int32_t resMode, int32_t resPair)
+    ResNode(int32_t resId, std::string resName, int32_t resMode, int32_t resPair, int32_t resReportToPerfSo)
     {
         id = resId;
         name = resName;
         mode = resMode;
         pair = resPair;
         def = INVALID_VALUE;
+        reportToPerfSo = resReportToPerfSo;
     }
     ~ResNode() {}
 
@@ -101,13 +105,15 @@ public:
     std::vector<std::string> paths;
     std::unordered_set<int64_t> available;
     std::unordered_map<int64_t, std::vector<std::string>> levelToStr;
+    int32_t reportToPerfSo;
 
 public:
-    GovResNode(int32_t govResId, std::string govResName)
+    GovResNode(int32_t govResId, std::string govResName, int32_t govReportToPerfSo)
     {
         id = govResId;
         name = govResName;
         def = INVALID_VALUE;
+        reportToPerfSo = govReportToPerfSo;
     }
     ~GovResNode() {}
 
@@ -194,16 +200,18 @@ public:
     int32_t type;
     int32_t onOff;
     int32_t cmdId;
+    int64_t endTime;
 
 public:
     ResAction(int64_t resActionValue, int32_t resActionDuration, int32_t resActionType,
-        int32_t resActionOnOff, int32_t resActionCmdId)
+        int32_t resActionOnOff, int32_t resActionCmdId, int64_t resActionEndTime)
     {
         value = resActionValue;
         duration = resActionDuration;
         type = resActionType;
         onOff = resActionOnOff;
         cmdId = resActionCmdId;
+        endTime = resActionEndTime;
     }
     ~ResAction() {}
 
@@ -248,20 +256,31 @@ public:
 class ResStatus {
 public:
     std::vector<std::list<std::shared_ptr<ResAction>>> resActionList;
-    std::vector<int64_t> candidates;
+    std::vector<int64_t> candidatesValue;
+    std::vector<int64_t> candidatesEndTime;
     int64_t candidate;
-    int64_t current;
+    int64_t currentValue;
+    int64_t previousValue;
+    int64_t currentEndTime;
+    int64_t previousEndTime;
 
 public:
     explicit ResStatus(int64_t val)
     {
         resActionList = std::vector<std::list<std::shared_ptr<ResAction>>>(ACTION_TYPE_MAX);
-        candidates = std::vector<int64_t>(ACTION_TYPE_MAX);
-        candidates[ACTION_TYPE_PERF] = INVALID_VALUE;
-        candidates[ACTION_TYPE_POWER] = INVALID_VALUE;
-        candidates[ACTION_TYPE_THERMAL] = INVALID_VALUE;
+        candidatesValue = std::vector<int64_t>(ACTION_TYPE_MAX);
+        candidatesEndTime = std::vector<int64_t>(ACTION_TYPE_MAX);
+        candidatesValue[ACTION_TYPE_PERF] = INVALID_VALUE;
+        candidatesValue[ACTION_TYPE_POWER] = INVALID_VALUE;
+        candidatesValue[ACTION_TYPE_THERMAL] = INVALID_VALUE;
+        candidatesEndTime[ACTION_TYPE_PERF] = MAX_INT_VALUE;
+        candidatesEndTime[ACTION_TYPE_POWER] = MAX_INT_VALUE;
+        candidatesEndTime[ACTION_TYPE_THERMAL] = MAX_INT_VALUE;
         candidate = val;
-        current = val;
+        currentValue = val;
+        previousValue = val;
+        currentEndTime = MAX_INT_VALUE;
+        previousEndTime = MAX_INT_VALUE;
     }
     ~ResStatus() {}
 
@@ -292,13 +311,13 @@ public:
         if (!resActionList[ACTION_TYPE_THERMAL].empty()) {
             str.pop_back();
         }
-        str.append("]candidates[");
-        for (auto iter = candidates.begin(); iter != candidates.end(); ++iter) {
+        str.append("]candidatesValue[");
+        for (auto iter = candidatesValue.begin(); iter != candidatesValue.end(); ++iter) {
             str.append(std::to_string(*iter)).append(",");
         }
         str.pop_back();
         str.append("]candidate[").append(std::to_string(candidate));
-        str.append("]current[").append(std::to_string(current)).append("]");
+        str.append("]currentValue[").append(std::to_string(currentValue)).append("]");
         return str;
     }
 };
@@ -345,6 +364,14 @@ static inline bool IsNumber(std::string str)
 static inline bool IsValidResId(int32_t id)
 {
     if (id < MIN_RESOURCE_ID || id > MAX_RESOURCE_ID) {
+        return false;
+    }
+    return true;
+}
+
+static inline bool IsValidReportToPerfSo(int32_t reportToPerfSo)
+{
+    if (reportToPerfSo != WRITE_NODE && reportToPerfSo) {
         return false;
     }
     return true;
