@@ -67,6 +67,7 @@ public:
     void InitSysAbilityListener();
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
     void GetAllMmiStatusData();
+    void InitObserverCbMap();
     void InitConnectionSubscriber();
     void DisableConnectionSubscriber();
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
