@@ -528,7 +528,10 @@ bool SocPerf::LoadGovResource(xmlNode* child, const std::string& configFile)
 void SocPerf::LoadInfo(xmlNode* child, const std::string& configFile)
 {
     xmlNode* grandson = child->children;
-    if (grandson && xmlStrcmp(grandson->name, reinterpret_cast<const xmlChar*>("inf"))) {
+    if (!grandson) {
+        return;
+    }
+    if (xmlStrcmp(grandson->name, reinterpret_cast<const xmlChar*>("inf"))) {
         return;
     }
     perfSoPath = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("path")));
