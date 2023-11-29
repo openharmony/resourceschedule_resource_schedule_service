@@ -519,7 +519,7 @@ bool SocPerf::LoadGovResource(xmlNode* child, const std::string& configFile)
     }
 
     if (!CheckGovResDefValid()) {
-        return false;IsValidReportToPerfSo
+        return false;
     }
 
     return true;
