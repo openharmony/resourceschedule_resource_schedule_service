@@ -120,15 +120,22 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
     }
 }
 
-void WindowDrawingContentObserver::OnWindowDrawingContentChanged(const WindowDrawingContentInfo& changeInfo)
+void WindowDrawingContentObserver::OnWindowDrawingContentChanged(
+    const std::vector<sptr<WindowDrawingContentInfo>>& changeInfo)
 {
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHandler) {
-        auto windowId = changeInfo.windowId_;
-        auto windowType = changeInfo.windowType_;
-        auto drawingContentState = changeInfo.drawingContentState_;
-        auto pid = changeInfo.pid_;
-        auto uid = changeInfo.uid_;
+    if (!cgHandler) {
+        return;
+    }
+    for (auto& info : changeInfo) {
+        if (!info) {
+            continue;
+        }
+        auto windowId = info->windowId_;
+        auto windowType = info->windowType_;
+        auto drawingContentState = info->drawingContentState_;
+        auto pid = info->pid_;
+        auto uid = info->uid_;
         cgHandler->Submit([cgHandler, windowId, windowType, drawingContentState, pid, uid] {
             cgHandler->HandleDrawingContentChangeWindow(windowId, windowType, drawingContentState, pid, uid);
         });

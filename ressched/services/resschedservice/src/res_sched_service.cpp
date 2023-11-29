@@ -168,7 +168,7 @@ void ResSchedService::DumpProcessWindowInfo(std::string &result)
                     .append(", windowId:").append(ToString(windows->windowId_))
                     .append(", visibilityState:").append(ToString(windows->visibilityState_))
                     .append(", isVisible:").append(ToString(windows->isVisible_))
-                    .append(", drawingContentState:").append(ToString(windows->darwingContentState_))
+                    .append(", drawingContentState:").append(ToString(windows->drawingContentState_))
                     .append(", isFocus:").append(ToString(windows->isFocused_)).append("\n");
             }
         }

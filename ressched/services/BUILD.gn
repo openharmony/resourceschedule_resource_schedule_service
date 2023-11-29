@@ -98,7 +98,6 @@ ohos_shared_library("resschedsvc") {
     "ipc:ipc_single",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
-    "window_manager:libwm",
   ]
 
   if (device_movement_perception_enable) {
@@ -211,7 +210,6 @@ ohos_static_library("resschedsvc_static") {
     "ipc:ipc_single",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
-    "window_manager:libwm",
   ]
 
   if (device_movement_perception_enable) {

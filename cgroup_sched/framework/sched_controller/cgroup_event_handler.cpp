@@ -146,7 +146,6 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
             }
             break;
         case WINDOW_MANAGER_SERVICE_ID:
-            windowSaInitState_ = true;
             SchedController::GetInstance().SubscribeWindowState();
             break;
         case BACKGROUND_TASK_MANAGER_SERVICE_ID:
@@ -175,7 +174,6 @@ void CgroupEventHandler::HandleAbilityRemoved(int32_t saId, const std::string& d
             SchedController::GetInstance().UnsubscribeAppState();
             break;
         case WINDOW_MANAGER_SERVICE_ID:
-            windowSaInitState_ = false;
             SchedController::GetInstance().UnsubscribeWindowState();
             break;
         case BACKGROUND_TASK_MANAGER_SERVICE_ID:
@@ -325,9 +323,6 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t proc
         procRecord->isExtensionProcess_ = true;
         procRecord->extensionType_ = extensionType;
     }
-    if (windowSaInitState_) {
-        SchedController::GetInstance().RegisterDrawingContentChangedObserve(*(procRecord.get()));
-    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_CREATE);
 }
@@ -348,9 +343,6 @@ void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, const std::stri
     if (procRecord) {
         ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
             ResType::RES_TYPE_PROCESS_STATE_CHANGE, ResType::ProcessStatus::PROCESS_DIED);
-        if (windowSaInitState_) {
-            SchedController::GetInstance().UnregisterDrawingContentChangedObserve(*(procRecord.get()));
-        }
     }
     app->RemoveProcessRecord(pid);
     // if all processes died, remove current app
@@ -560,7 +552,7 @@ void CgroupEventHandler::HandleDrawingContentChangeWindow(
         return;
     }
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
-    windowInfo->darwingContentState_ = drawingContentState;
+    windowInfo->drawingContentState_ = drawingContentState;
 }
 
 void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
