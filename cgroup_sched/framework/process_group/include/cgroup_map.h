@@ -20,6 +20,7 @@
 #include <string>               // for basic_string, operator<
 #include <functional>           // for less
 #include <iosfwd>               // for string
+#include <vector>               // for getAllCgroupController
 #include "cgroup_controller.h"  // for CgroupController
 #include "nlohmann/json.hpp"         // for Value
 #include "sched_policy.h"       // for SchedPolicy
@@ -33,7 +34,7 @@ public:
 
     bool SetThreadSchedPolicy(int tid, SchedPolicy policy, bool isSetThreadGroup);
     bool LoadConfigFromJsonObj(const nlohmann::json& jsonObj);
-    bool FindFristEnableCgroupController(CgroupController** p);
+    bool FindAllEnableCgroupControllers(std::vector<CgroupController *> &controllers);
 
 private:
     CgroupMap() = default;
