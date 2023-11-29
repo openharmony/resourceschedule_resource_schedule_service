@@ -122,20 +122,20 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
         } else {
             if (pr.abilities_.size() == 0) {
                 group = SP_DEFAULT;
-                if (app.state_ == (int32_t)ApplicationState::APP_STATE_BACKGROUND) {
+                if (pr.processState_ == (int32_t)ApplicationState::APP_STATE_BACKGROUND) {
                     group = SP_BACKGROUND;
                 }
             } else if (pr.IsVisible()) {
                 group = SP_FOREGROUND;
             } else if (pr.HasServiceExtension()) {
                 group = SP_DEFAULT;
-                if (app.state_ == (int32_t)ApplicationState::APP_STATE_BACKGROUND) {
+                if (pr.processState_ == (int32_t)ApplicationState::APP_STATE_BACKGROUND) {
                     group = SP_BACKGROUND;
                 }
             } else {
-                if (app.state_ == (int32_t)ApplicationState::APP_STATE_BACKGROUND) {
+                if (pr.processState_ == (int32_t)ApplicationState::APP_STATE_BACKGROUND) {
                     group = SP_BACKGROUND;
-                } else if (app.state_ == (int32_t)ApplicationState::APP_STATE_FOREGROUND) {
+                } else if (pr.processState_ == (int32_t)ApplicationState::APP_STATE_FOREGROUND) {
                     group = SP_FOREGROUND;
                 } else {
                     group = SP_DEFAULT;
