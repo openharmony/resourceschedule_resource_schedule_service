@@ -37,7 +37,6 @@ public:
     void RemoveAllEvents();
     void HandleAbilityAdded(int32_t saId, const std::string& deviceId);
     void HandleAbilityRemoved(int32_t saId, const std::string& deviceId);
-    void HandleForegroundApplicationChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
     void HandleApplicationStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
     void HandleProcessStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
     void HandleAbilityStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
