@@ -216,7 +216,7 @@ void CgroupEventHandler::HandleProcessStateChanged(uid_t uid, pid_t pid,
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d, %{public}d", __func__, uid,
-        pid,bundleName.c_str(), state);
+        pid, bundleName.c_str(), state);
     ChronoScope cs("HandleProcessStateChanged");
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
