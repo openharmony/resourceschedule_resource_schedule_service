@@ -144,15 +144,14 @@ bool CgroupMap::LoadSchedPolicyConfig(CgroupController& controller, const nlohma
     return (count > 0);
 }
 
-bool CgroupMap::FindFristEnableCgroupController(CgroupController** p)
+bool CgroupMap::FindAllEnableCgroupControllers(std::vector<CgroupController *> &controllers)
 {
     for (auto it = controllers_.begin(); it != controllers_.end(); ++it) {
         if (it->second.IsEnabled()) {
-            *p = &(it->second);
-            return true;
+            controllers.emplace_back(&(it->second));
         }
     }
-    return false;
+    return controllers.size() != 0;
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule

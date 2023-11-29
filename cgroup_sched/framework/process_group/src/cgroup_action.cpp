@@ -174,13 +174,20 @@ int CgroupAction::GetSchedPolicy(int tid, SchedPolicy* policy)
         return -1;
     }
     std::string subgroup;
-    CgroupController *controller;
+    std::vector<CgroupController *> controllers;
+    bool getTaskGroup = false;
     CgroupMap& instance = CgroupMap::GetInstance();
-    if (instance.FindFristEnableCgroupController(&controller)) {
-        if (!controller->GetTaskGroup(tid, subgroup)) {
-            *policy = SP_UPPER_LIMIT;
-            return -1;
+    if (instance.FindAllEnableCgroupControllers(controllers)) {
+        for (const auto controller : controllers) {
+            if (controller->GetTaskGroup(tid, subgroup)) {
+                getTaskGroup = true;
+                break;
+            }
         }
+    }
+    if (!getTaskGroup) {
+        *policy = SP_UPPER_LIMIT;
+        return -1;
     }
     if (subgroup.empty()) {
         *policy = SP_DEFAULT;
