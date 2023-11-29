@@ -177,7 +177,7 @@ int CgroupAction::GetSchedPolicy(int tid, SchedPolicy* policy)
     std::vector<CgroupController *> controllers;
     bool getTaskGroup = false;
     CgroupMap& instance = CgroupMap::GetInstance();
-    if (instance.FindAllEnableCgroupControllers(controllers) {
+    if (instance.FindAllEnableCgroupControllers(controllers)) {
         for (const auto controller : controllers) {
             if (controller->GetTaskGroup(tid, subgroup)) {
                 getTaskGroup = true;
