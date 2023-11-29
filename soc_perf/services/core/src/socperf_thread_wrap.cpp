@@ -176,22 +176,22 @@ void SocPerfThreadWrap::SendResStatusToPerfSo()
     std::vector<int32_t> qosId;
     std::vector<int64_t> value;
     std::vector<int64_t> endTime;
-    // for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
-    //     int32_t resId = iter->first;
-    //     std::shared_ptr<ResStatus> resStatus = iter->second;
-    //     if ((resNodeInfo.find(resId) != resNodeInfo.end() && resNodeInfo[resId]->reportToPerfSo == REPORT_TO_PERFSO)
-    //         || (govResNodeInfo.find(resId) != govResNodeInfo.end()
-    //             && govResNodeInfo[resId]->reportToPerfSo == REPORT_TO_PERFSO)) {
-    //         if (resStatus->previousValue != resStatus->currentValue
-    //             || resStatus->previousEndTime != resStatus->currentEndTime) {
-    //             qosId.push_back(resId);
-    //             value.push_back(resStatus->currentValue);
-    //             endTime.push_back(resStatus->currentEndTime);
-    //             resStatus->previousValue = resStatus->currentValue;
-    //             resStatus->previousEndTime = resStatus->currentEndTime;
-    //         }
-    //     }
-    // }
+    for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
+        int32_t resId = iter->first;
+        std::shared_ptr<ResStatus> resStatus = iter->second;
+        if ((resNodeInfo.find(resId) != resNodeInfo.end() && resNodeInfo[resId]->reportToPerfSo == REPORT_TO_PERFSO)
+            || (govResNodeInfo.find(resId) != govResNodeInfo.end()
+                && govResNodeInfo[resId]->reportToPerfSo == REPORT_TO_PERFSO)) {
+            if (resStatus->previousValue != resStatus->currentValue
+                || resStatus->previousEndTime != resStatus->currentEndTime) {
+                qosId.push_back(resId);
+                value.push_back(resStatus->currentValue);
+                endTime.push_back(resStatus->currentEndTime);
+                resStatus->previousValue = resStatus->currentValue;
+                resStatus->previousEndTime = resStatus->currentEndTime;
+            }
+        }
+    }
     if (qosId.size() > 0) {
         reportFunc(qosId, value, endTime, "");
     }
