@@ -52,8 +52,8 @@ private:
     std::unordered_map<int32_t, std::shared_ptr<GovResNode>> govResNodeInfo;
     std::unordered_map<std::string, int32_t> resStrToIdInfo;
     std::vector<std::unordered_map<int32_t, int32_t>> limitRequest;
-    char* perfSoPath;
-    char* perfSoFunc;
+    char* perfSoPath = nullptr;
+    char* perfSoFunc = nullptr;
 
 private:
     std::mutex mutex_;
