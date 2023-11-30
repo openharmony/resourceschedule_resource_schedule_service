@@ -77,12 +77,13 @@ private:
     bool ParseDuration(xmlNode* greatGrandson, const std::string& configFile, std::shared_ptr<Action> action) const;
     bool ParseResValue(xmlNode* greatGrandson, const std::string& configFile, std::shared_ptr<Action> action);
     bool CheckResourceTag(const char* id, const char* name, const char* pair, const char* mode,
-        const char* reportToPerfSo, const std::string& configFile) const;
+        const char* persistMode, const std::string& configFile) const;
+    bool CheckResourcePersistMode(const char* persistMode, const std::string& configFile) const;
     bool CheckResourceTag(const char* def, const char* path, const std::string& configFile) const;
     bool LoadResourceAvailable(std::shared_ptr<ResNode> resNode, const char* node);
     bool CheckPairResIdValid() const;
     bool CheckResDefValid() const;
-    bool CheckGovResourceTag(const char* id, const char* name, const char* reportToPerfSo,
+    bool CheckGovResourceTag(const char* id, const char* name, const char* persistMode,
         const std::string& configFile) const;
     bool LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResNode, const char* level, const char* node);
     bool CheckGovResDefValid() const;

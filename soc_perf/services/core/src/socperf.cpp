@@ -237,15 +237,10 @@ void SocPerf::DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int
                 continue;
             }
             auto resActionItem = std::make_shared<ResActionItem>(action->variable[i]);
-            if (action->duration == 0) {
-                resActionItem->resAction =
-                    std::make_shared<ResAction>(action->variable[i + 1], action->duration,
-                        actionType, onOff, actions->id, MAX_INT_VALUE);
-            } else {
-                resActionItem->resAction =
-                    std::make_shared<ResAction>(action->variable[i + 1], action->duration,
-                        actionType, onOff, actions->id, curMs + action->duration);
-            }
+            int64_t endTime = action->duration == 0 ? MAX_INT_VALUE : curMs + action->duration;
+            resActionItem->resAction =
+                std::make_shared<ResAction>(action->variable[i + 1], action->duration,
+                    actionType, onOff, actions->id, endTime);
             int32_t id = action->variable[i] / RES_ID_NUMS_PER_TYPE - 1;
             if (curItem[id]) {
                 curItem[id]->next = resActionItem;
@@ -423,23 +418,23 @@ bool SocPerf::TraversalFreqResource(xmlNode* grandson, const std::string& config
     char* name = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("name")));
     char* pair = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("pair")));
     char* mode = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("mode")));
-    char* reportToPerfSo = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("switch")));
-    if (!CheckResourceTag(id, name, pair, mode, reportToPerfSo, configFile)) {
+    char* persistMode = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("switch")));
+    if (!CheckResourceTag(id, name, pair, mode, persistMode, configFile)) {
         xmlFree(id);
         xmlFree(name);
         xmlFree(pair);
         xmlFree(mode);
-        xmlFree(reportToPerfSo);
+        xmlFree(persistMode);
         return false;
     }
     xmlNode* greatGrandson = grandson->children;
     std::shared_ptr<ResNode> resNode = std::make_shared<ResNode>(atoi(id), name, mode ? atoi(mode) : 0,
-        pair ? atoi(pair) : INVALID_VALUE, reportToPerfSo ? atoi(reportToPerfSo) : 0);
+        pair ? atoi(pair) : INVALID_VALUE, persistMode ? atoi(persistMode) : 0);
     xmlFree(id);
     xmlFree(name);
     xmlFree(pair);
     xmlFree(mode);
-    xmlFree(reportToPerfSo);
+    xmlFree(persistMode);
     if (!LoadFreqResourceContent(greatGrandson, configFile, resNode)) {
         return false;
     }
@@ -496,20 +491,20 @@ bool SocPerf::LoadGovResource(xmlNode* child, const std::string& configFile)
         }
         char* id = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("id")));
         char* name = reinterpret_cast<char*>(xmlGetProp(grandson, reinterpret_cast<const xmlChar*>("name")));
-        char* reportToPerfSo = reinterpret_cast<char*>(xmlGetProp(grandson,
+        char* persistMode = reinterpret_cast<char*>(xmlGetProp(grandson,
             reinterpret_cast<const xmlChar*>("switch")));
-        if (!CheckGovResourceTag(id, name, reportToPerfSo, configFile)) {
+        if (!CheckGovResourceTag(id, name, persistMode, configFile)) {
             xmlFree(id);
             xmlFree(name);
-            xmlFree(reportToPerfSo);
+            xmlFree(persistMode);
             return false;
         }
         xmlNode* greatGrandson = grandson->children;
         std::shared_ptr<GovResNode> govResNode = std::make_shared<GovResNode>(atoi(id),
-            name, reportToPerfSo ? atoi(reportToPerfSo) : 0);
+            name, persistMode ? atoi(persistMode) : 0);
         xmlFree(id);
         xmlFree(name);
-        xmlFree(reportToPerfSo);
+        xmlFree(persistMode);
         wrapSwitch[govResNode->id / RES_ID_NUMS_PER_TYPE - 1] = true;
         if (!TraversalGovResource(greatGrandson, configFile, govResNode)) {
             return false;
@@ -527,7 +522,7 @@ bool SocPerf::LoadGovResource(xmlNode* child, const std::string& configFile)
 
 void SocPerf::LoadInfo(xmlNode* child, const std::string& configFile)
 {
-    xmlNode* grandson = chil->children;
+    xmlNode* grandson = child->children;
     if (!grandson || xmlStrcmp(grandson->name, reinterpret_cast<const xmlChar*>("inf"))) {
         return;
     }
@@ -664,7 +659,7 @@ bool SocPerf::TraversalBoostResource(xmlNode* grandson, const std::string& confi
 }
 
 bool SocPerf::CheckResourceTag(const char* id, const char* name, const char* pair, const char* mode,
-    const char* reportToPerfSo, const std::string& configFile) const
+    const char* persistMode, const std::string& configFile) const
 {
     if (!id || !IsNumber(id) || !IsValidResId(atoi(id))) {
         SOC_PERF_LOGE("Invalid resource id for %{public}s", configFile.c_str());
@@ -682,11 +677,16 @@ bool SocPerf::CheckResourceTag(const char* id, const char* name, const char* pai
         SOC_PERF_LOGE("Invalid resource mode for %{public}s", configFile.c_str());
         return false;
     }
-    if (reportToPerfSo && (!IsNumber(reportToPerfSo) || !IsValidReportToPerfSo(atoi(reportToPerfSo)))) {
-        SOC_PERF_LOGE("Invalid resource reportToPerfSo for %{public}s", configFile.c_str());
+    return CheckResourcePersistMode(persistMode, configFile);
+}
+
+bool CheckResourcePersistMode(const char* persistMode, const std::string& configFile) const
+{
+    if (persistMode && (!IsNumber(persistMode) || !IsValidPersistMode(atoi(persistMode)))) {
+        SOC_PERF_LOGE("Invalid resource persistMode for %{public}s", configFile.c_str());
         return false;
     }
-    return true;
+    return true; 
 }
 
 bool SocPerf::CheckResourceTag(const char* def, const char* path, const std::string& configFile) const
@@ -745,7 +745,7 @@ bool SocPerf::CheckResDefValid() const
 }
 
 bool SocPerf::CheckGovResourceTag(const char* id, const char* name,
-    const char* reportToPerfSo, const std::string& configFile) const
+    const char* persistMode, const std::string& configFile) const
 {
     if (!id || !IsNumber(id) || !IsValidResId(atoi(id))) {
         SOC_PERF_LOGE("Invalid governor resource id for %{public}s", configFile.c_str());
@@ -755,8 +755,8 @@ bool SocPerf::CheckGovResourceTag(const char* id, const char* name,
         SOC_PERF_LOGE("Invalid governor resource name for %{public}s", configFile.c_str());
         return false;
     }
-    if (reportToPerfSo && (!IsNumber(reportToPerfSo) || !IsValidReportToPerfSo(atoi(reportToPerfSo)))) {
-        SOC_PERF_LOGE("Invalid governor resource reportToPerfSo for %{public}s", configFile.c_str());
+    if (persistMode && (!IsNumber(persistMode) || !IsValidPersistMode(atoi(persistMode)))) {
+        SOC_PERF_LOGE("Invalid governor resource persistMode for %{public}s", configFile.c_str());
         return false;
     }
     return true;
@@ -808,14 +808,14 @@ bool SocPerf::TraversalActions(std::shared_ptr<Action> action, int32_t actionId)
         int32_t resId = action->variable[i];
         int64_t resValue = action->variable[i + 1];
         if (resNodeInfo.find(resId) != resNodeInfo.end()) {
-            if (resNodeInfo[resId]->reportToPerfSo != REPORT_TO_PERFSO && !resNodeInfo[resId]->available.empty()
+            if (resNodeInfo[resId]->persistMode != REPORT_TO_PERFSO && !resNodeInfo[resId]->available.empty()
                 && resNodeInfo[resId]->available.find(resValue) == resNodeInfo[resId]->available.end()) {
                 SOC_PERF_LOGE("action[%{public}d]'s resValue[%{public}lld] is not valid",
                     actionId, (long long)resValue);
                 return false;
             }
         } else if (govResNodeInfo.find(resId) != govResNodeInfo.end()) {
-            if (govResNodeInfo[resId]->reportToPerfSo != REPORT_TO_PERFSO
+            if (govResNodeInfo[resId]->persistMode != REPORT_TO_PERFSO
                 && govResNodeInfo[resId]->available.find(resValue) == govResNodeInfo[resId]->available.end()) {
                 SOC_PERF_LOGE("action[%{public}d]'s resValue[%{public}lld] is not valid",
                     actionId, (long long)resValue);

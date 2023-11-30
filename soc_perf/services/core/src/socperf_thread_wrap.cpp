@@ -36,6 +36,9 @@ SocPerfThreadWrap::SocPerfThreadWrap()
 
 SocPerfThreadWrap::~SocPerfThreadWrap()
 {
+    if (handle) {
+        dlclose(reportFunc);
+    }
 }
 
 void SocPerfThreadWrap::InitQueue(const std::string& queueName)
@@ -75,6 +78,7 @@ void SocPerfThreadWrap::InitPerfFunc(char* perfSoPath, char* perfSoFunc)
     reportFunc = reinterpret_cast<ReportDataFunc>(dlsym(handle, perfSoFunc));
     if (!reportFunc) {
         SOC_PERF_LOGE("perf func doesn't exist");
+        dlclose(reportFunc);
     }
 }
 
@@ -179,9 +183,9 @@ void SocPerfThreadWrap::SendResStatusToPerfSo()
     for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
         int32_t resId = iter->first;
         std::shared_ptr<ResStatus> resStatus = iter->second;
-        if ((resNodeInfo.find(resId) != resNodeInfo.end() && resNodeInfo[resId]->reportToPerfSo == REPORT_TO_PERFSO)
+        if ((resNodeInfo.find(resId) != resNodeInfo.end() && resNodeInfo[resId]->persistMode == REPORT_TO_PERFSO)
             || (govResNodeInfo.find(resId) != govResNodeInfo.end()
-                && govResNodeInfo[resId]->reportToPerfSo == REPORT_TO_PERFSO)) {
+                && govResNodeInfo[resId]->persistMode == REPORT_TO_PERFSO)) {
             if (resStatus->previousValue != resStatus->currentValue
                 || resStatus->previousEndTime != resStatus->currentEndTime) {
                 qosId.push_back(resId);
@@ -458,10 +462,6 @@ void SocPerfThreadWrap::UpdatePairResValue(int32_t minResId, int64_t minResValue
     WriteNode(maxResId, resNodeInfo[maxResId]->path, std::to_string(resNodeInfo[maxResId]->def));
     UpdateCurrentValue(minResId, minResValue);
     UpdateCurrentValue(maxResId, maxResValue);
-    resStatusInfo[minResId]->currentEndTime = Min(resStatusInfo[minResId]->currentEndTime,
-        resStatusInfo[maxResId]->currentEndTime);
-    resStatusInfo[maxResId]->currentEndTime = Min(resStatusInfo[minResId]->currentEndTime,
-        resStatusInfo[maxResId]->currentEndTime);
 }
 
 void SocPerfThreadWrap::UpdateCurrentValue(int32_t resId, int64_t currValue)
@@ -481,8 +481,8 @@ void SocPerfThreadWrap::UpdateCurrentValue(int32_t resId, int64_t currValue)
 
 void SocPerfThreadWrap::WriteNode(int32_t resId, const std::string& filePath, const std::string& value)
 {
-    if ((IsGovResId(resId) && govResNodeInfo[resId]->reportToPerfSo == REPORT_TO_PERFSO)
-        || (IsResId(resId) && resNodeInfo[resId]->reportToPerfSo == REPORT_TO_PERFSO)) {
+    if ((IsGovResId(resId) && govResNodeInfo[resId]->persistMode == REPORT_TO_PERFSO)
+        || (IsResId(resId) && resNodeInfo[resId]->persistMode == REPORT_TO_PERFSO)) {
         return;
     }
     int32_t fd = GetFdForFilePath(filePath);

@@ -63,17 +63,17 @@ public:
     int32_t mode;
     int32_t pair;
     std::unordered_set<int64_t> available;
-    int32_t reportToPerfSo;
+    int32_t persistMode;
 
 public:
-    ResNode(int32_t resId, std::string resName, int32_t resMode, int32_t resPair, int32_t resReportToPerfSo)
+    ResNode(int32_t resId, std::string resName, int32_t resMode, int32_t resPair, int32_t resPersistMode)
     {
         id = resId;
         name = resName;
         mode = resMode;
         pair = resPair;
         def = INVALID_VALUE;
-        reportToPerfSo = resReportToPerfSo;
+        persistMode = resPersistMode;
     }
     ~ResNode() {}
 
@@ -105,15 +105,15 @@ public:
     std::vector<std::string> paths;
     std::unordered_set<int64_t> available;
     std::unordered_map<int64_t, std::vector<std::string>> levelToStr;
-    int32_t reportToPerfSo;
+    int32_t persistMode;
 
 public:
-    GovResNode(int32_t govResId, std::string govResName, int32_t govReportToPerfSo)
+    GovResNode(int32_t govResId, std::string govResName, int32_t govPersistMode)
     {
         id = govResId;
         name = govResName;
         def = INVALID_VALUE;
-        reportToPerfSo = govReportToPerfSo;
+        persistMode = govPersistMode;
     }
     ~GovResNode() {}
 
@@ -369,9 +369,9 @@ static inline bool IsValidResId(int32_t id)
     return true;
 }
 
-static inline bool IsValidReportToPerfSo(int32_t reportToPerfSo)
+static inline bool IsValidPersistMode(int32_t persistMode)
 {
-    if (reportToPerfSo != WRITE_NODE && reportToPerfSo != REPORT_TO_PERFSO) {
+    if (persistMode != WRITE_NODE && persistMode != REPORT_TO_PERFSO) {
         return false;
     }
     return true;
