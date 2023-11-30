@@ -48,7 +48,7 @@ private:
 
 class WindowDrawingContentObserver : public IDrawingContentChangedListener {
 public:
-    void OnWindowDrawingContentChanged(const WindowDrawingContentInfo& changeInfo) override;
+    void OnWindowDrawingContentChanged(const std::vector<sptr<WindowDrawingContentInfo>>& changeInfo) override;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

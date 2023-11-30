@@ -74,7 +74,6 @@ private:
     bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);
     bool ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid, int64_t value, const nlohmann::json& payload);
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
-    bool windowSaInitState_ = false;
     std::shared_ptr<Supervisor> supervisor_;
     std::shared_ptr<ffrt::queue> queue_{nullptr};
     std::unordered_map<uint32_t, std::vector<ffrt::task_handle>> eventMap_;
