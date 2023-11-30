@@ -187,23 +187,6 @@ void CgroupEventHandler::HandleAbilityRemoved(int32_t saId, const std::string& d
     }
 }
 
-void CgroupEventHandler::HandleForegroundApplicationChanged(uid_t uid, pid_t pid,
-    const std::string& bundleName, int32_t state)
-{
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        return;
-    }
-    CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
-    ChronoScope cs("HandleForegroundApplicationChanged");
-    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
-    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
-    app->SetName(bundleName);
-    app->state_ = state;
-    app->SetMainProcess(procRecord);
-    CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FG_APP_CHANGE);
-}
-
 void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
     const std::string& bundleName, int32_t state)
 {
@@ -232,11 +215,14 @@ void CgroupEventHandler::HandleProcessStateChanged(uid_t uid, pid_t pid,
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}d", __func__, uid,
+        pid, bundleName.c_str(), state);
     ChronoScope cs("HandleProcessStateChanged");
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
     procRecord->processState_ = state;
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_PROCESS_STATE);
 }
 
 void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,

@@ -34,18 +34,6 @@ void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateD
         CGS_LOGE("%{public}s : validate app state data failed!", __func__);
         return;
     }
-    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHandler) {
-        auto uid = appStateData.uid;
-        auto bundleName = appStateData.bundleName;
-        auto state = appStateData.state;
-        auto pid = appStateData.pid;
-
-        cgHandler->Submit([cgHandler, uid, pid, bundleName, state] {
-            cgHandler->HandleForegroundApplicationChanged(uid, pid, bundleName, state);
-        });
-    }
-
     nlohmann::json payload;
     payload["pid"] = std::to_string(appStateData.pid);
     payload["uid"] = std::to_string(appStateData.uid);
