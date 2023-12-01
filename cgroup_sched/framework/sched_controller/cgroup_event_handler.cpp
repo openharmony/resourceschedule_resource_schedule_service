@@ -776,13 +776,16 @@ void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t 
     CGS_LOGD("report running lock event, uid:%{public}d, pid:%{public}d, lockType:%{public}d, state:%{public}d",
         uid, pid, type, state);
 #ifdef POWER_MANAGER_ENABLE
-    if (type == static_cast<uint32_t>(PowerMgr::RunningLockType::RUNNINGLOCK_SCREEN) ||
-        type == static_cast<uint32_t>(PowerMgr::RunningLockType::RUNNINGLOCK_BACKGROUND)) {
-        std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
-        std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
-        procRecord->runningLockState_[type] = (state == ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE);
-        ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType, state);
+    if (type == static_cast<uint32_t>(PowerMgr::RunningLockType::RUNNINGLOCK_PROXIMITY_SCREEN_CONTROL)) {
+        return;
     }
+    std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
+        return;
+    }
+    procRecord->runningLockState_[type] = (state == ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE);
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType, state);
 #endif
 }
 
