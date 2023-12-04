@@ -37,7 +37,7 @@ SocPerfThreadWrap::SocPerfThreadWrap()
 SocPerfThreadWrap::~SocPerfThreadWrap()
 {
     if (handle) {
-        dlclose(reportFunc);
+        dlclose(handle);
     }
 }
 
@@ -78,7 +78,7 @@ void SocPerfThreadWrap::InitPerfFunc(char* perfSoPath, char* perfSoFunc)
     reportFunc = reinterpret_cast<ReportDataFunc>(dlsym(handle, perfSoFunc));
     if (!reportFunc) {
         SOC_PERF_LOGE("perf func doesn't exist");
-        dlclose(reportFunc);
+        dlclose(handle);
     }
 }
 
