@@ -36,9 +36,6 @@ SocPerfThreadWrap::SocPerfThreadWrap()
 
 SocPerfThreadWrap::~SocPerfThreadWrap()
 {
-    if (handle) {
-        dlclose(handle);
-    }
 }
 
 void SocPerfThreadWrap::InitQueue(const std::string& queueName)
