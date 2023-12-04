@@ -23,6 +23,31 @@ config("module_private_config") {
     "${socperf_common}/include",
     "${socperf_interfaces}/inner_api/socperf_client/include",
     "${socperf_services}/core/include",
+    "${socperf_services}/server/include",
+  ]
+}
+
+ohos_unittest("SocPerfServerTest") {
+  module_out_path = module_output_path
+
+  sources = [ "socperf_server_test.cpp" ]
+
+  configs = [ ":module_private_config" ]
+
+  deps = [
+    "${socperf_services}:socperf_server_static",
+    "//third_party/googletest:gtest_main",
+    "//third_party/libxml2:xml2",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
+    "ffrt:libffrt",
+    "hilog:libhilog",
+    "ipc:ipc_single",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
   ]
 }
 
@@ -82,5 +107,6 @@ group("unittest") {
   deps = [
     ":SocPerfSubMockTest",
     ":SocPerfSubTest",
+    ":SocPerfServerTest",
   ]
 }
