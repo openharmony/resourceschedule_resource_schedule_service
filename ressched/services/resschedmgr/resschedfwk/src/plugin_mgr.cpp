@@ -20,9 +20,7 @@
 #include <dlfcn.h>
 #include <iostream>
 #include <string>
-#ifdef RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE
 #include "config_policy_utils.h"
-#endif // RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE
 #include "event_runner.h"
 #include "hisysevent.h"
 #include "refbase.h"
@@ -39,10 +37,8 @@ using namespace HiviewDFX;
 namespace {
     const int32_t DISPATCH_WARNING_TIME = 10; // ms
     const std::string RUNNER_NAME = "rssDispatcher";
-#ifdef RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE
     const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
     const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
-#endif // RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE 
 }
 
 IMPLEMENT_SINGLE_INSTANCE(PluginMgr);
@@ -59,7 +55,6 @@ void PluginMgr::Init()
         return;
     }
 
-#ifdef RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE
     if (!pluginSwitch_) {
         pluginSwitch_ = make_unique<PluginSwitch>();
         std::string realPath = GetRealConfigPath(PLUGIN_SWITCH_FILE_NAME);
@@ -83,7 +78,6 @@ void PluginMgr::Init()
                         "ERR_MSG", "PluginMgr load parameter config file failed!");
         }
     }
-#endif // RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE
 
     {
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
@@ -348,7 +342,6 @@ void PluginMgr::DumpPluginInfoAppend(std::string &result, PluginInfo info)
     }
 }
 
-#ifdef RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE
 std::string PluginMgr::GetRealConfigPath(const char* configName)
 {
     char buf[PATH_MAX + 1];
@@ -361,7 +354,6 @@ std::string PluginMgr::GetRealConfigPath(const char* configName)
     }
     return std::string(tmpPath);
 }
-#endif // RESSCHED_CUSTOMIZATION_CONFIG_POLICY_ENABLE
 
 void PluginMgr::ClearResource()
 {
