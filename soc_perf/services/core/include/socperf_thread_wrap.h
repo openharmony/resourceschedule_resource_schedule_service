@@ -33,6 +33,8 @@ namespace OHOS { namespace SOCPERF { class ResStatus; } }
 
 namespace OHOS {
 namespace SOCPERF {
+using ReportDataFunc = int (*)(const std::vector<int32_t>& resId, const std::vector<int64_t>& value,
+    const std::vector<int64_t>& endTime, const std::string& msgStr);
 enum SocPerfInnerEvent : uint32_t {
     INNER_EVENT_ID_INIT_RES_NODE_INFO = 0,
     INNER_EVENT_ID_INIT_GOV_RES_NODE_INFO,
@@ -55,6 +57,7 @@ public:
     void UpdatePowerLimitBoostFreq(bool powerLimitBoost);
     void UpdateThermalLimitBoostFreq(bool thermalLimitBoost);
     void UpdateLimitStatus(int32_t eventId, std::shared_ptr<ResAction> resAction, int32_t resId);
+    void InitPerfFunc(char* perfSoPath, char* perfSoFunc);
 
 private:
     static const int32_t SCALES_OF_MILLISECONDS_TO_MICROSECONDS = 1000;
@@ -65,8 +68,10 @@ private:
     std::shared_ptr<ffrt::queue> queue = nullptr;
     bool powerLimitBoost = false;
     bool thermalLimitBoost = false;
+    ReportDataFunc reportFunc = nullptr;
 
 private:
+    void SendResStatusToPerfSo();
     bool GetResValueByLevel(int32_t resId, int32_t level, int64_t& resValue);
     void UpdateResActionList(int32_t resId, std::shared_ptr<ResAction> resAction, bool delayed);
     void UpdateResActionListByDelayedMsg(int32_t resId, int32_t type,
@@ -74,11 +79,12 @@ private:
     void UpdateResActionListByInstantMsg(int32_t resId, int32_t type,
         std::shared_ptr<ResAction> resAction, std::shared_ptr<ResStatus> resStatus);
     void UpdateCandidatesValue(int32_t resId, int32_t type);
+    void InnerArbitrateCandidatesValue(int32_t type, std::shared_ptr<ResStatus> resStatus);
     void ArbitrateCandidate(int32_t resId);
     void ArbitratePairRes(int32_t resId);
     void UpdatePairResValue(int32_t minResId, int64_t minResValue, int32_t maxResId, int64_t maxResValue);
     void UpdateCurrentValue(int32_t resId, int64_t value);
-    void WriteNode(const std::string& path, const std::string& value);
+    void WriteNode(int32_t resId, const std::string& path, const std::string& value);
     bool ExistNoCandidate(
         int32_t resId, std::shared_ptr<ResStatus> resStatus, int64_t perf, int64_t power, int64_t thermal);
     bool IsGovResId(int32_t resId);
