@@ -105,8 +105,8 @@ ohos_unittest("SocPerfSubMockTest") {
 group("unittest") {
   testonly = true
   deps = [
+    ":SocPerfServerTest",
     ":SocPerfSubMockTest",
     ":SocPerfSubTest",
-    ":SocPerfServerTest",
   ]
 }
