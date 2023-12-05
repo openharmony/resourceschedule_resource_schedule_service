@@ -32,21 +32,25 @@ public:
     void SetUp();
     void TearDown();
 };
+private:
+    std::shared_ptr<SocPerfServer> socPerfServer_;
 
-void SocPerfSubTest::SetUpTestCase(void)
+void SocPerfServerTest::SetUpTestCase(void)
 {
 }
 
-void SocPerfSubTest::TearDownTestCase(void)
+void SocPerfServerTest::TearDownTestCase(void)
 {
 }
 
-void SocPerfSubTest::SetUp(void)
+void SocPerfServerTest::SetUp(void)
 {
+    socPerfServer_ = DelayedSingleton<SocPerfServer>::GetInstance();
 }
 
-void SocPerfSubTest::TearDown(void)
+void SocPerfServerTest::TearDown(void)
 {
+    socPerfServer_ = nullptr;
 }
 
 /*
@@ -55,13 +59,13 @@ void SocPerfSubTest::TearDown(void)
  * @tc.type FUNC
  * @tc.require: issueI78T3V
  */
-HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_001, Function | MediumTest | Level0)
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_LogEnable_001, Function | MediumTest | Level0)
 {
     SocPerfLog::EnableDebugLog();
-    bool isEnable = SocPerfLog::IsDebugLogEnables();
+    bool isEnable = SocPerfLog::IsDebugLogEnabled();
     EXPECT_TRUE(isEnable);
     SocPerfLog::DisableDebugLog();
-    isEnable = SocPerfLog::IsDebugLogEnables();
+    isEnable = SocPerfLog::IsDebugLogEnabled();
     EXPECT_FALSE(isEnable);
 }
 
@@ -71,17 +75,20 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_001, Function | MediumTest |
  * @tc.type FUNC
  * @tc.require: issueI78T3V
  */
-HWTEST_F(SocPerfSubTest, SocPerfSubTest_PerfRequest_002, Function | MediumTest | Level0)
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_SocPerfServerAPI_001, Function | MediumTest | Level0)
 {
     std::string msg = "testBoost";
     socPerfServer_->PerfRequest(10000, msg);
     socPerfServer_->PerfRequestEx(10000, true, msg);
-    socPerfServer_->PerfRequestex(10000, false, msg);
+    socPerfServer_->PerfRequestEx(10000, false, msg);
     socPerfServer_->LimitRequest(ActionType::ACTION_TYPE_POWER, {1005}, {1364000}, msg);
-    socPerfServer_->LimitRequest(ActionType::ACTION_TYPE_THERMAL, {1005}, {1364000}, msg);
     socPerfServer_->PowerLimitBoost(true, msg);
+    socPerfServer_->LimitRequest(ActionType::ACTION_TYPE_THERMAL, {1005}, {1364000}, msg);
     socPerfServer_->ThermalLimitBoost(true, msg);
+    socPerfServer_->PowerLimitBoost(false, msg);
+    socPerfServer_->ThermalLimitBoost(false, msg);
     socPerfServer_->Dump(-1, {});
     EXPECT_EQ(msg, "testBoost");
+}
 } // namespace SOCPERF
 } // namespace OHOS
