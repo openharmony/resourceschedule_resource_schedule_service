@@ -119,7 +119,7 @@ bool CgroupController::GetTaskGroup(int tid, std::string& subgroup)
     std::string filePath = StringPrintf("/proc/%d/cgroup", tid);
     if (!ReadFileToStringForVFS(filePath, content)) {
         PGCGS_LOGE("%{public}s: fail to read  = %{public}s", __func__, filePath.c_str());
-        return -1;
+        return false;
     }
     std::string cgTag = StringPrintf(":%s:", name_.c_str());
     size_t startPos = content.find(cgTag);
