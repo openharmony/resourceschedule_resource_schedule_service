@@ -686,7 +686,7 @@ bool SocPerf::CheckResourcePersistMode(const char* persistMode, const std::strin
         SOC_PERF_LOGE("Invalid resource persistMode for %{public}s", configFile.c_str());
         return false;
     }
-    return true; 
+    return true;
 }
 
 bool SocPerf::CheckResourceTag(const char* def, const char* path, const std::string& configFile) const
