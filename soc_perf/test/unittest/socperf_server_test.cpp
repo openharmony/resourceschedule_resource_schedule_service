@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,9 +31,9 @@ public:
     static void TearDownTestCase(void);
     void SetUp();
     void TearDown();
-};
 private:
     std::shared_ptr<SocPerfServer> socPerfServer_;
+};
 
 void SocPerfServerTest::SetUpTestCase(void)
 {
@@ -70,7 +70,7 @@ HWTEST_F(SocPerfServerTest, SocPerfServerTest_LogEnable_001, Function | MediumTe
 }
 
 /*
- * @tc.name: SocPerfServerTest_LogEnable_002
+ * @tc.name: SocPerfServerTest_SocPerfServerAPI_001
  * @tc.desc: test socperf server api
  * @tc.type FUNC
  * @tc.require: issueI78T3V
