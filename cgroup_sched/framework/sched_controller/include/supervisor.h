@@ -104,6 +104,7 @@ public:
     bool inSelfRenderCgroup_ = false;
     bool isExtensionProcess_ = false;
     bool isNapState_ = false;
+    bool hasRTMaliThread_ = false;
 
     uint32_t continuousTaskFlag_ = 0;
     int32_t audioState_ = -1;
