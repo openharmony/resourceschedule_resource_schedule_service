@@ -884,7 +884,6 @@ bool CgroupEventHandler::CheckQueuePtr()
     if (queue_ != nullptr) {
         return true;
     }
-    CGS_LOGE("queue_ is nullptr retry create");
     queue_ = std::make_shared<ffrt::queue>("cgroup_event_queue",
     ffrt::queue_attr().qos(ffrt::qos_default));
     if (queue_ == nullptr) {
