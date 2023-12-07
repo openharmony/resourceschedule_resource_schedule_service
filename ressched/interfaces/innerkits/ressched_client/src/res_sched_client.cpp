@@ -42,7 +42,7 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
     RESSCHED_LOGD("ResSchedClient::ReportData receive resType = %{public}u, value = %{public}lld.",
         resType, (long long)value);
     nlohmann::json payload;
-    payload["clientPid"] = std::to_string(getpid());
+    payload["clientPid"] = std::to_string(getprocpid());
     for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
         payload[it->first] = it->second;
     }
