@@ -70,11 +70,11 @@ void CgroupEventHandler::ProcessEvent(int32_t eventId, int32_t retryTimes)
     switch (eventId) {
         case EVENT_ID_REG_APP_STATE_OBSERVER: {
             if (!SchedController::GetInstance().SubscribeAppState() &&
-                retryTimes < MAX_RETRY_TIMES) {
+                retryTimes < static_cast<int32_t>(MAX_RETRY_TIMES)) {
                     this->SubmitH([this, eventId, retryTimes]() {
                     this->ProcessEvent(EVENT_ID_REG_APP_STATE_OBSERVER, retryTimes + 1);
                         }, EVENT_ID_REG_APP_STATE_OBSERVER, DELAYED_RETRY_REGISTER_DURATION);
-                if(retryTimes + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
+                if(retryTimes + 1 == static_cast<int32_t>(MAX_RETRY_TIMES)) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                     "COMPONENT_NAME", "MAIN",
                     "ERR_TYPE", "register failure",
@@ -87,11 +87,11 @@ void CgroupEventHandler::ProcessEvent(int32_t eventId, int32_t retryTimes)
         }
         case EVENT_ID_REG_BGTASK_OBSERVER: {
             if (!SchedController::GetInstance().SubscribeBackgroundTask() &&
-                retryTimes < MAX_RETRY_TIMES) {
+                retryTimes < static_cast<int32_t>(MAX_RETRY_TIMES)) {
                     this->SubmitH([this, eventId, retryTimes]() {
                     this->ProcessEvent(EVENT_ID_REG_BGTASK_OBSERVER, retryTimes + 1);
                         }, EVENT_ID_REG_BGTASK_OBSERVER, DELAYED_RETRY_REGISTER_DURATION);
-                if(retryTimes + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
+                if(retryTimes + 1 == static_cast<int32_t>(MAX_RETRY_TIMES)) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                     "COMPONENT_NAME", "MAIN",
                     "ERR_TYPE", "register failure",
@@ -661,7 +661,8 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     auto procRecord = app->GetProcessRecordNonNull(pid);
     CGS_LOGD("%{public}s : render process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, state);
-    if (nowSerialNum <= procRecord->serialNum_ && (procRecord->serialNum_ - nowSerialNum <= MAX_SPAN_SERIAL)) {
+    if (nowSerialNum <= procRecord->serialNum_ &&
+        (procRecord->serialNum_ - nowSerialNum <= static_cast<int32_t>(MAX_SPAN_SERIAL))) {
         return;
     }
     procRecord->serialNum_ = nowSerialNum;
