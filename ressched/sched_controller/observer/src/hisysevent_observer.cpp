@@ -160,19 +160,19 @@ void HiSysEventObserver::ProcessRunningLockEvent(const nlohmann::json& root, con
     RESSCHED_LOGD("Process runninglock event, event root:%{public}s", str.c_str());
     nlohmann::json payload;
     if (root.contains("UID") && root.at("UID").is_number_integer()) {
-        payload["uid"] = root.at("UID").get<std::int32_t>();
+        payload["uid"] = std::to_string(root.at("UID").get<std::int32_t>());
     } else {
         RESSCHED_LOGE("running lock event uid format error!");
         return;
     }
     if (root.contains("PID") && root.at("PID").is_number_integer()) {
-        payload["pid"] = root.at("PID").get<std::int32_t>();
+        payload["pid"] = std::to_string(root.at("PID").get<std::int32_t>());
     } else {
         RESSCHED_LOGE("running lock event pid format error!");
         return;
     }
     if (root.contains("TYPE") && root.at("TYPE").is_number_integer()) {
-        payload["type"] = root.at("TYPE").get<std::uint32_t>();
+        payload["type"] = std::to_string(root.at("TYPE").get<std::uint32_t>());
     } else {
         RESSCHED_LOGE("running lock event lock type format error!");
         return;

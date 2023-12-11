@@ -120,6 +120,16 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
     }
 }
 
+void WindowDrawingContentObserver::MarshallingWindowDrawingContentInfo(const sptr<WindowDrawingContentInfo>& info,
+    nlohmann::json& payload)
+{
+    payload["pid"] = std::to_string(info->pid_);
+    payload["uid"] = std::to_string(info->uid_);
+    payload["windowId"] = std::to_string(info->windowId_);
+    payload["windowType"] = std::to_string((int32_t)info->windowType_);
+    payload["drawingContentState"] = info->drawingContentState_;
+}
+
 void WindowDrawingContentObserver::OnWindowDrawingContentChanged(
     const std::vector<sptr<WindowDrawingContentInfo>>& changeInfo)
 {
@@ -139,6 +149,11 @@ void WindowDrawingContentObserver::OnWindowDrawingContentChanged(
         cgHandler->Submit([cgHandler, windowId, windowType, drawingContentState, pid, uid] {
             cgHandler->HandleDrawingContentChangeWindow(windowId, windowType, drawingContentState, pid, uid);
         });
+        nlohmann::json payload;
+        MarshallingWindowDrawingContentInfo(info, payload);
+        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
+            drawingContentState ? ResType::WindowDrawingStatus::Drawing : ResType::WindowDrawingStatus::NotDrawing,
+            payload);
     }
 }
 } // namespace ResourceSchedule
