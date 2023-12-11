@@ -24,6 +24,7 @@
 #include "event_handler.h"  // for EventHandler
 #include "event_runner.h"
 #include "ffrt.h"
+#include "ffrt_inner.h"
 #include "inner_event.h"    // for InnerEvent, InnerEvent::Pointer
 #include "socperf_common.h"
 namespace OHOS { namespace SOCPERF { class GovResNode; } }
