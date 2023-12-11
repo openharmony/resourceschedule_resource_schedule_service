@@ -40,7 +40,8 @@ SocPerfThreadWrap::~SocPerfThreadWrap()
 
 void SocPerfThreadWrap::InitQueue(const std::string& queueName)
 {
-    queue = std::make_shared<ffrt::queue>(queueName.c_str());
+    queue = std::make_shared<ffrt::queue>(queueName.c_str(),
+        ffrt::queue_attr().qos(ffrt::qos_user_interactive));
     if (queue == nullptr) {
         SOC_PERF_LOGE("create ffrt queue failed");
     }
