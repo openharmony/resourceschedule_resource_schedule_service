@@ -141,7 +141,6 @@ ohos_shared_library("resschedsvc") {
     cfi = true
     cfi_cross_dso = true
     debug = false
-    blocklist = "./resschedsvc_cfi_blocklist.txt"
   }
 }
 
