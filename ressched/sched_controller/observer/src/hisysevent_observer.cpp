@@ -28,6 +28,7 @@ namespace {
     static const std::string WIFI_CONNECTION = "WIFI_CONNECTION";
     static const std::string WIFI_SCAN = "WIFI_SCAN";
     static const std::string CAMERA_CONNECT = "CAMERA_CONNECT";
+    constexpr int32_t INDENT                    = -1;
     constexpr int32_t WIFISCAN                  = 2;
     constexpr int32_t WIFICONNECTED             = 3;
     constexpr int32_t WIFIDISCONNECTED          = 5;
@@ -36,6 +37,7 @@ namespace {
     constexpr int32_t RUNNINGLOCK_DISABLE       = 0;
     constexpr int32_t RUNNINGLOCK_ENABLE        = 1;
     constexpr int32_t RUNNINGLOCK_PROXIED       = 2;
+    constexpr int32_t MAX_LENGTH                = 1024;
 }
 
 HiSysEventObserver::HiSysEventObserver() : HiviewDFX::HiSysEventListener()
@@ -88,6 +90,10 @@ void HiSysEventObserver::OnEvent(std::shared_ptr<HiviewDFX::HiSysEventRecord> sy
         return;
     }
     std::string eventDetail = sysEvent->AsJson();
+    if (eventDetail.length() > MAX_LENGTH) {
+        RESSCHED_LOGE("eventDetail length is invalid");
+        return;
+    }
     RESSCHED_LOGD("Process hisysevent event, detail:%{public}s", eventDetail.c_str());
     nlohmann::json root = nlohmann::json::parse(eventDetail, nullptr, false);
     if (root.is_discarded()) {
@@ -123,7 +129,7 @@ void HiSysEventObserver::ProcessHiSysEvent(const std::string& eventName, const n
 
 void HiSysEventObserver::ProcessAvCodecEvent(const nlohmann::json& root, const std::string& eventName)
 {
-    std::string str = root.dump();
+    std::string str = root.dump(INDENT, ' ', false, nlohmann::json::error_handler_t::replace);
     RESSCHED_LOGD("Process av_codec event, event root:%{public}s", str.c_str());
     nlohmann::json payload;
     if (root.contains("CLIENT_UID") && root.at("CLIENT_UID").is_number_integer()) {
@@ -156,7 +162,7 @@ void HiSysEventObserver::ProcessAvCodecEvent(const nlohmann::json& root, const s
 
 void HiSysEventObserver::ProcessRunningLockEvent(const nlohmann::json& root, const std::string& eventName)
 {
-    std::string str = root.dump();
+    std::string str = root.dump(INDENT, ' ', false, nlohmann::json::error_handler_t::replace);
     RESSCHED_LOGD("Process runninglock event, event root:%{public}s", str.c_str());
     nlohmann::json payload;
     if (root.contains("UID") && root.at("UID").is_number_integer()) {
@@ -209,7 +215,7 @@ void HiSysEventObserver::ProcessRunningLockEvent(const nlohmann::json& root, con
 
 void HiSysEventObserver::ProcessAudioEvent(const nlohmann::json& root, const std::string& eventName)
 {
-    std::string str = root.dump();
+    std::string str = root.dump(INDENT, ' ', false, nlohmann::json::error_handler_t::replace);
     RESSCHED_LOGD("Process audio event, event root :%{public}s", str.c_str());
     nlohmann::json payload;
     if (root.contains("UID") && root.at("UID").is_number_integer()) {
@@ -250,7 +256,7 @@ void HiSysEventObserver::ProcessAudioEvent(const nlohmann::json& root, const std
 
 void HiSysEventObserver::ProcessCameraEvent(const nlohmann::json& root, const std::string& eventName)
 {
-    std::string str = root.dump();
+    std::string str = root.dump(INDENT, ' ', false, nlohmann::json::error_handler_t::replace);
     RESSCHED_LOGD("Process camera event, event root:%{public}s, eventName:%{public}s", str.c_str(), eventName.c_str());
     nlohmann::json payload;
     if (root.contains("UID") && root.at("UID").is_number_integer()) {
@@ -275,7 +281,7 @@ void HiSysEventObserver::ProcessCameraEvent(const nlohmann::json& root, const st
 
 void HiSysEventObserver::ProcessBluetoothEvent(const nlohmann::json& root, const std::string& eventName)
 {
-    std::string str = root.dump();
+    std::string str = root.dump(INDENT, ' ', false, nlohmann::json::error_handler_t::replace);
     RESSCHED_LOGD("Process bluetooth event, event root :%{public}s", str.c_str());
     nlohmann::json payload;
     if (root.contains("UID") && root.at("UID").is_number_integer()) {
@@ -310,7 +316,7 @@ void HiSysEventObserver::ProcessBluetoothEvent(const nlohmann::json& root, const
 
 void HiSysEventObserver::ProcessWifiEvent(const nlohmann::json& root, const std::string& eventName)
 {
-    std::string str = root.dump();
+    std::string str = root.dump(INDENT, ' ', false, nlohmann::json::error_handler_t::replace);
     RESSCHED_LOGD("Process wifi event, event root :%{public}s, eventName:%{public}s", str.c_str(), eventName.c_str());
     nlohmann::json payload;
     if (root.contains("uid_") && root.at("uid_").is_number_integer()) {
@@ -326,21 +332,25 @@ void HiSysEventObserver::ProcessWifiEvent(const nlohmann::json& root, const std:
         return;
     }
 
+    WifiState connectionType;
+    if (root.contains("TYPE") && root.at("TYPE").is_number_integer()) {
+        connectionType = WifiState(root.at("TYPE").get<std::int32_t>());
+    } else {
+        RESSCHED_LOGE("Wifi event type format error!");
+        return;
+    }
     if (eventName == WIFI_CONNECTION) {
-        if (root.contains("TYPE") && root.at("TYPE").is_number_integer()) {
-            WifiState connectionType = WifiState(root.at("TYPE").get<std::int32_t>());
-            switch (connectionType) {
-                case WifiState::CONNECTED:
-                    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
-                        WIFICONNECTED, payload);
-                    break;
-                case WifiState::DISCONNECTED:
-                    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
-                        WIFIDISCONNECTED, payload);
-                    break;
-                default:
-                    break;
-            }
+        switch (connectionType) {
+            case WifiState::CONNECTED:
+                ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
+                    WIFICONNECTED, payload);
+                break;
+            case WifiState::DISCONNECTED:
+                ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
+                    WIFIDISCONNECTED, payload);
+                break;
+            default:
+                break;
         }
     } else if (eventName == WIFI_SCAN) {
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE, WIFISCAN, payload);
