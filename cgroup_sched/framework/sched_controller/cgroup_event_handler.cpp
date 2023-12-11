@@ -52,7 +52,7 @@ using OHOS::AppExecFwk::ProcessType;
 CgroupEventHandler::CgroupEventHandler()
 {
     queue_ = std::make_shared<ffrt::queue>("cgroup_event_queue",
-    ffrt::queue_attr().qos(ffrt::qos_default));
+    ffrt::queue_attr().qos(ffrt::qos_user_initiated));
     if (!queue_) {
         CGS_LOGE("create queue_ failed!");
     }
