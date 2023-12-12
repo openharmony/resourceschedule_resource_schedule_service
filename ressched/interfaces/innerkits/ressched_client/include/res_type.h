@@ -169,6 +169,8 @@ enum : uint32_t {
     RES_TYPE_SOCPERF_CUST_EVENT_BEGIN = 67,
     // socperf event end
     RES_TYPE_SOCPERF_CUST_EVENT_END = 68,
+    // window drawing content change event
+    RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE = 69,
     //last resType
     RES_TYPE_LAST,
 };
@@ -243,6 +245,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_THERMAL_STATE, "RES_TYPE_THERMAL_STATE"},
     { RES_TYPE_SOCPERF_CUST_EVENT_BEGIN, "RES_TYPE_SOCPERF_CUST_EVENT_BEGIN" },
     { RES_TYPE_SOCPERF_CUST_EVENT_END, "RES_TYPE_SOCPERF_CUST_EVENT_END" },
+    { RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE, "RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE" },
 };
 
 /**
@@ -558,6 +561,14 @@ enum AssociatedStartType : int64_t {
 enum ThermalStateType : int64_t {
     THERMAL_LEVEL_STATE = 0,
     THERMAL_ACTION_STATE = 1,
+};
+
+/**
+ * @brief Window drawing status
+ */
+enum WindowDrawingStatus : int64_t {
+    NotDrawing = 0,
+    Drawing = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule

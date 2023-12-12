@@ -539,6 +539,9 @@ void CgroupEventHandler::HandleDrawingContentChangeWindow(
     }
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
     windowInfo->drawingContentState_ = drawingContentState;
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+        ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
+        drawingContentState ? ResType::WindowDrawingStatus::Drawing : ResType::WindowDrawingStatus::NotDrawing);
 }
 
 void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -753,7 +756,7 @@ void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t 
 {
     int32_t uid = 0;
     int32_t pid = 0;
-    uint32_t type = -1;
+    uint32_t type = 0;
     int32_t state = -1;
 
     if (!supervisor_) {
@@ -761,17 +764,14 @@ void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t 
         return;
     }
 
-    if (payload.contains("uid") && payload.at("uid").is_number_integer()) {
-        uid = payload["uid"].get<std::int32_t>();
-    }
-    if (payload.contains("pid") && payload.at("pid").is_number_integer()) {
-        pid = payload["pid"].get<std::int32_t>();
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+        return;
     }
     if (uid <= 0 || pid <= 0) {
         return;
     }
-    if (payload.contains("type") && payload.at("type").is_number_integer()) {
-        type = payload["type"].get<std::uint32_t>();
+    if (payload.contains("type") && payload.at("type").is_string()) {
+        type = static_cast<uint32_t>(atoi(payload["type"].get<std::string>().c_str()));
     }
     state = static_cast<int32_t>(value);
     CGS_LOGD("report running lock event, uid:%{public}d, pid:%{public}d, lockType:%{public}d, state:%{public}d",
@@ -822,12 +822,54 @@ void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value,
             procRecord->wifiState_ = static_cast<int32_t>(value);
             break;
         }
+        case ResType::RES_TYPE_MMI_INPUT_STATE: {
+            if (payload.contains("syncStatus") && payload.at("syncStatus").is_string()) {
+                procRecord->mmiStatus_ = atoi(payload["syncStatus"].get<std::string>().c_str());
+            }
+            break;
+        }
         default: {
             break;
         }
     }
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
         resType, static_cast<int32_t>(value));
+}
+
+void CgroupEventHandler::HandleReportAvCodecEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+    int32_t instanceId = -1;
+    int32_t state = -1;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr.", __func__);
+        return;
+    }
+
+    if (!ParseValue(uid, "CLIENT_UID", payload) || !ParseValue(pid, "CLIENT_PID", payload)) {
+        return;
+    }
+    if (uid <= 0 || pid <= 0) {
+        return;
+    }
+    if (!ParseValue(instanceId, "CODEC_INSTANCE_ID", payload)) {
+        return;
+    }
+    if (instanceId < 0) {
+        return;
+    }
+    state = static_cast<int32_t>(value);
+    CGS_LOGD("report av_codec event, uid:%{public}d, pid:%{public}d, instanceId:%{public}d, state:%{public}d",
+        uid, pid, instanceId, state);
+    std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
+        return;
+    }
+    procRecord->avCodecState_[instanceId] = (state == ResType::AvCodecState::CODEC_START_INFO);
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType, state);
 }
 
 bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc)

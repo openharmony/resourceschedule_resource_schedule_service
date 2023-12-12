@@ -35,10 +35,10 @@ void MmiObserver::SyncBundleName(int32_t pid, int32_t uid, std::string bundleNam
     RESSCHED_LOGI("mmi sync bundleName, pid:%{public}d, uid:%{public}d, bundleName:%{public}s, status:%{public}d",
         pid, uid, bundleName.c_str(), syncStatus);
     nlohmann::json payload;
-    payload["pid"] = pid;
-    payload["uid"] = uid;
+    payload["pid"] = std::to_string(pid);
+    payload["uid"] = std::to_string(uid);
     payload["bundleName"] = bundleName;
-    payload["syncStatus"] = syncStatus;
+    payload["syncStatus"] = std::to_string(syncStatus);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_MMI_INPUT_STATE, MMI_STATE, payload);
 }
 } // namespace ResourceSchedule

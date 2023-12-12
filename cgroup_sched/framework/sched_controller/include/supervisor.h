@@ -120,6 +120,7 @@ public:
     int32_t mmiStatus_ {-1};
 
     std::map<uint32_t, bool> runningLockState_;
+    std::map<int32_t, bool> avCodecState_;
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
     std::vector<std::shared_ptr<WindowInfo>> windows_;
 
