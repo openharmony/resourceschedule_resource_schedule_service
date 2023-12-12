@@ -37,9 +37,6 @@ ohos_shared_library("socperf_server") {
   deps = [ "//third_party/libxml2:xml2" ]
 
   external_deps = [
-    "ability_base:want",
-    "ability_runtime:app_manager",
-    "ability_runtime:wantagent_innerkits",
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
     "c_utils:utils",
@@ -83,9 +80,6 @@ ohos_static_library("socperf_server_static") {
   deps = [ "//third_party/libxml2:xml2" ]
 
   external_deps = [
-    "ability_base:want",
-    "ability_runtime:app_manager",
-    "ability_runtime:wantagent_innerkits",
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
     "c_utils:utils",
