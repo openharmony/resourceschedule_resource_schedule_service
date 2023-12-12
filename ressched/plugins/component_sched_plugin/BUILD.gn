@@ -23,6 +23,12 @@ config("component_sched_plugin_config") {
 }
 
 ohos_shared_library("component_sched_plugin") {
+  branch_protector_ret = "pac_ret"
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   configs = [ ":component_sched_plugin_config" ]
 
   sources = [ "src/component_sched_plugin.cpp" ]
