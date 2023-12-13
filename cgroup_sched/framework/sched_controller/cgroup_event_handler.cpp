@@ -537,6 +537,7 @@ void CgroupEventHandler::HandleDrawingContentChangeWindow(
     if (!app || !procRecord) {
         return;
     }
+    procRecord->processDrawingState_ = drawingContentState;
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
     windowInfo->drawingContentState_ = drawingContentState;
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
@@ -806,8 +807,11 @@ void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value,
     if (uid <= 0 || pid <= 0) {
         return;
     }
-    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
-    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
+    std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
+        return;
+    }
 
     switch (resType) {
         case ResType::RES_TYPE_REPORT_CAMERA_STATE: {
