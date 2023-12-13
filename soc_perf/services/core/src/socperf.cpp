@@ -354,10 +354,6 @@ bool SocPerf::CreateThreadWraps()
             continue;
         }
         auto socPerfThreadWrap = std::make_shared<SocPerfThreadWrap>();
-        if (!socPerfThreadWrap) {
-            SOC_PERF_LOGE("Failed to Create socPerfThreadWrap");
-            return false;
-        }
         socPerfThreadWrap->InitQueue(threadName.append(std::to_string(i)));
         socperfThreadWraps[i] = socPerfThreadWrap;
     }
