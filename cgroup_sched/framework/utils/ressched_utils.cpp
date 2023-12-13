@@ -21,7 +21,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-#ifdef __aarch64__
+#if defined(__aarch64__) || (defined(__riscv) && __riscv_xlen == 64)
     const std::string RES_SCHED_SERVICE_SO = "/system/lib64/libresschedsvc.z.so";
     const std::string RES_SCHED_CG_EXT_SO = "/system/lib64/libcgroup_sched_ext.z.so";
 #else
