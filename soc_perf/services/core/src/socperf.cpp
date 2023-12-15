@@ -18,7 +18,6 @@
 
 #include "config_policy_utils.h"
 #include "hitrace_meter.h"
-#include "time_service_client.h"
 
 namespace OHOS {
 namespace SOCPERF {
@@ -224,7 +223,8 @@ void SocPerf::DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int
 {
     std::shared_ptr<ResActionItem> header[MAX_QUEUE_NUM] = { nullptr };
     std::shared_ptr<ResActionItem> curItem[MAX_QUEUE_NUM] = { nullptr };
-    int64_t curMs = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
+    auto now = std::chrono::system_clock::now();
+    int64_t curMs = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
     for (auto iter = actions->actionList.begin(); iter != actions->actionList.end(); iter++) {
         std::shared_ptr<Action> action = *iter;
         for (int32_t i = 0; i < (int32_t)action->variable.size() - 1; i += RES_ID_AND_VALUE_PAIR) {
