@@ -137,7 +137,7 @@ void WindowDrawingContentObserver::OnWindowDrawingContentChanged(
     if (!cgHandler) {
         return;
     }
-    for (auto& info : changeInfo) {
+    for (const auto& info : changeInfo) {
         if (!info) {
             continue;
         }
