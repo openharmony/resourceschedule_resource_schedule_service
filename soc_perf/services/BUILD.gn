@@ -49,6 +49,7 @@ ohos_shared_library("socperf_server") {
     "ipc:ipc_single",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
+    "hisysevent:libhisysevent",
   ]
 
   defines = []
@@ -91,6 +92,7 @@ ohos_static_library("socperf_server_static") {
     "ipc:ipc_single",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
+    "hisysevent:libhisysevent",
   ]
 
   defines = []

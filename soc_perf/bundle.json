@@ -31,7 +31,8 @@
         "ipc",
         "init",
         "safwk",
-        "samgr"
+        "samgr",
+        "hisysevent"
       ],
       "third_party": [
         "libxml2"
@@ -70,6 +71,9 @@
         "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/fuzztest:fuzztest",
         "//foundation/resourceschedule/resource_schedule_service/soc_perf/test/testutil:socperf_test"
       ]
-    }
+    },
+    "hisysevent_config": [
+      "//foundation/resourceschedule/resource_schedule_service/ressched/hisysevent.yaml"
+    ]
   }
 }
