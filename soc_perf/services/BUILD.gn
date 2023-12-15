@@ -44,12 +44,12 @@ ohos_shared_library("socperf_server") {
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
+    "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",
     "init:libbegetutil",
     "ipc:ipc_single",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
-    "hisysevent:libhisysevent",
   ]
 
   defines = []
@@ -87,12 +87,12 @@ ohos_static_library("socperf_server_static") {
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
+    "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",
     "init:libbegetutil",
     "ipc:ipc_single",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
-    "hisysevent:libhisysevent",
   ]
 
   defines = []
