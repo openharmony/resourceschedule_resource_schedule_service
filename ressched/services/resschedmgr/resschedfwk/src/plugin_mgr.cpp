@@ -21,6 +21,7 @@
 #include <iostream>
 #include <string>
 #include "config_policy_utils.h"
+#include "ffrt_inner.h"
 #include "event_runner.h"
 #include "hisysevent.h"
 #include "refbase.h"
