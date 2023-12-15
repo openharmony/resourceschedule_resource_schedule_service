@@ -24,7 +24,7 @@ INIT_FAULT:
   ERR_MSG: {type: STRING, desc: error information}
 
 LIMIT_BOOST:
-  __BASE: {type: BEHAVIOR, level: MINOR, desc:power or thermal limit status}
+  __BASE: {type: BEHAVIOR, level: MINOR, desc: power or thermal limit status}
   CLIENT_ID: {type: INT32, desc: 1 means power 2 means thermal}
   ON_OFF_TAG: {type: BOOL, desc: can boost over max value or not}
 
