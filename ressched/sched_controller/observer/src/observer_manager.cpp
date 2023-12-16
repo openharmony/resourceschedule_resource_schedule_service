@@ -172,11 +172,25 @@ void ObserverManager::InitHiSysEventObserver()
         hiSysEventObserver_ = std::make_shared<ResourceSchedule::HiSysEventObserver>();
     }
 
-    HiviewDFX::ListenerRule statsRule("PowerStats");
+    HiviewDFX::ListenerRule runninglockState("POWER", "RUNNINGLOCK");
+    HiviewDFX::ListenerRule audioStreamState("AUDIO", "STREAM_CHANGE");
+    HiviewDFX::ListenerRule cameraConnectState("CAMERA", "CAMERA_CONNECT");
+    HiviewDFX::ListenerRule cameraDisconnectState("CAMERA", "CAMERA_DISCONNECT");
+    HiviewDFX::ListenerRule brSwitchState("BT_SERVICE", "BR_SWITCH_STATE");
+    HiviewDFX::ListenerRule bleSwitchState("BT_SERVICE", "BLE_SWITCH_STATE");
+    HiviewDFX::ListenerRule wifiConnectionState("COMMUNICATION", "WIFI_CONNECTION");
+    HiviewDFX::ListenerRule wifiScanState("COMMUNICATION", "WIFI_SCAN");
     HiviewDFX::ListenerRule avCodecStartState("AV_CODEC", "CODEC_START_INFO");
     HiviewDFX::ListenerRule avCodecStopState("AV_CODEC", "CODEC_STOP_INFO");
     std::vector<HiviewDFX::ListenerRule> sysRules;
-    sysRules.push_back(statsRule);
+    sysRules.push_back(runninglockState);
+    sysRules.push_back(audioStreamState);
+    sysRules.push_back(cameraConnectState);
+    sysRules.push_back(cameraDisconnectState);
+    sysRules.push_back(brSwitchState);
+    sysRules.push_back(bleSwitchState);
+    sysRules.push_back(wifiConnectionState);
+    sysRules.push_back(wifiScanState);
     sysRules.push_back(avCodecStartState);
     sysRules.push_back(avCodecStopState);
     auto res = HiviewDFX::HiSysEventManager::AddListener(hiSysEventObserver_, sysRules);
