@@ -642,9 +642,8 @@ bool SocPerf::TraversalBoostResource(xmlNode* grandson, const std::string& confi
     for (; grandson; grandson = grandson->next) { // Iterate all Action
         std::shared_ptr<Action> action = std::make_shared<Action>();
         xmlNode* greatGrandson = grandson->children;
-        bool ret = true;
         for (; greatGrandson; greatGrandson = greatGrandson->next) { // Iterate duration and all res
-            ret = ParseDuration(greatGrandson, configFile, action);
+            bool ret = ParseDuration(greatGrandson, configFile, action);
             if (!ret) {
                 return false;
             }
