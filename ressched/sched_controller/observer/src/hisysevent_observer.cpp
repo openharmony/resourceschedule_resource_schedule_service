@@ -237,13 +237,19 @@ void HiSysEventObserver::ProcessAudioEvent(const nlohmann::json& root, const std
         switch (audioState) {
             case AudioState::AUDIO_STATE_RUNNING:
                 ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
-                    ResType::AudioStatus::RENDERERRUNNING, payload);
+                    ResType::AudioStatus::RENDERER_RUNNING, payload);
                 break;
             case AudioState::AUDIO_STATE_STOPPED:
+                ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
+                    ResType::AudioStatus::RENDERER_STOPPED, payload);
+                break;
             case AudioState::AUDIO_STATE_RELEASED:
+                ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
+                    ResType::AudioStatus::RENDERER_RELEASED, payload);
+                break;
             case AudioState::AUDIO_STATE_PAUSED:
                 ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
-                    ResType::AudioStatus::RENDERERSTOPPED, payload);
+                    ResType::AudioStatus::RENDERER_PAUSED, payload);
                 break;
             default:
                 break;
