@@ -159,7 +159,7 @@ void SocPerfThreadWrap::UpdateLimitStatus(int32_t eventId, std::shared_ptr<ResAc
             DoFreqActionLevel(resId, resAction);
         }
         SendResStatusToPerfSo();
-        if (resAction->onOff) {
+        if (resAction->onOff && resStatusInfo[resId] != nullptr) {
             HiSysEventWrite(OHOS::HiviewDFX::HiSysEvent::Domain::RSS, "LIMIT_REQUEST",
                             OHOS::HiviewDFX::HiSysEvent::EventType::BEHAVIOR,
                             "CLIENT_ID", resAction->type,
