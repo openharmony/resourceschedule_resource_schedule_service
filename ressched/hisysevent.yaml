@@ -22,3 +22,14 @@ INIT_FAULT:
   COMPONENT_NAME: {type: STRING, desc: the name of component}
   ERR_TYPE: {type: STRING, desc: the type of error}
   ERR_MSG: {type: STRING, desc: error information}
+
+LIMIT_BOOST:
+  __BASE: {type: BEHAVIOR, level: MINOR, desc: power or thermal limit status}
+  CLIENT_ID: {type: INT32, desc: 1 means power 2 means thermal}
+  ON_OFF_TAG: {type: BOOL, desc: can boost over max value or not}
+
+LIMIT_REQUEST:
+  __BASE: {type: BEHAVIOR, level: MINOR, desc: limit max to xx}
+  CLIENT_ID: {type: INT32, desc: 1 means power 2 means thermal}
+  RES_ID: {type: INT32, desc: number of node path config in socperf_resource_config}
+  CONFIG: {type: INT64, desc: limit max to xx}

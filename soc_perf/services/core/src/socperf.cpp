@@ -17,6 +17,7 @@
 #include "socperf.h"
 
 #include "config_policy_utils.h"
+#include "hisysevent.h"
 #include "hitrace_meter.h"
 
 namespace OHOS {
@@ -118,7 +119,7 @@ void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
         SOC_PERF_LOGE("SocPerf disabled!");
         return;
     }
-    SOC_PERF_LOGD("onOffTag[%{public}d]msg[%{public}s]", onOffTag, msg.c_str());
+    SOC_PERF_LOGI("onOffTag[%{public}d]msg[%{public}s]", onOffTag, msg.c_str());
 
     std::string trace_str(__func__);
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
@@ -129,6 +130,10 @@ void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
             threadWrap->UpdatePowerLimitBoostFreq(onOffTag);
         }
     }
+    HiSysEventWrite(OHOS::HiviewDFX::HiSysEvent::Domain::RSS, "LIMIT_BOOST",
+                    OHOS::HiviewDFX::HiSysEvent::EventType::BEHAVIOR,
+                    "CLIENT_ID", ACTION_TYPE_POWER,
+                    "ON_OFF_TAG", onOffTag);
     FinishTrace(HITRACE_TAG_OHOS);
 }
 
@@ -138,7 +143,7 @@ void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
         SOC_PERF_LOGE("SocPerf disabled!");
         return;
     }
-    SOC_PERF_LOGD("onOffTag[%{public}d]msg[%{public}s]", onOffTag, msg.c_str());
+    SOC_PERF_LOGI("onOffTag[%{public}d]msg[%{public}s]", onOffTag, msg.c_str());
     std::string trace_str(__func__);
     trace_str.append(",onOff[").append(std::to_string(onOffTag)).append("]");
     trace_str.append(",msg[").append(msg).append("]");
@@ -148,6 +153,10 @@ void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
             threadWrap->UpdateThermalLimitBoostFreq(onOffTag);
         }
     }
+    HiSysEventWrite(OHOS::HiviewDFX::HiSysEvent::Domain::RSS, "LIMIT_BOOST",
+                    OHOS::HiviewDFX::HiSysEvent::EventType::BEHAVIOR,
+                    "CLIENT_ID", ACTION_TYPE_THERMAL,
+                    "ON_OFF_TAG", onOffTag);
     FinishTrace(HITRACE_TAG_OHOS);
 }
 
@@ -213,7 +222,7 @@ void SocPerf::LimitRequest(int32_t clientId,
         return;
     }
     for (int32_t i = 0; i < (int32_t)tags.size(); i++) {
-        SOC_PERF_LOGD("clientId[%{public}d],tags[%{public}d],configs[%{public}lld],msg[%{public}s]",
+        SOC_PERF_LOGI("clientId[%{public}d],tags[%{public}d],configs[%{public}lld],msg[%{public}s]",
             clientId, tags[i], (long long)configs[i], msg.c_str());
         SendLimitRequestEvent(clientId, tags[i], configs[i]);
     }

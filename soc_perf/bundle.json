@@ -31,7 +31,8 @@
         "ipc",
         "init",
         "safwk",
-        "samgr"
+        "samgr",
+        "hisysevent"
       ],
       "third_party": [
         "libxml2"

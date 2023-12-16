@@ -27,6 +27,7 @@
 #include <vector>            // for vector
 #include <unistd.h>          // for open, write
 #include <fcntl.h>           // for O_RDWR, O_CLOEXEC
+#include "hisysevent.h"
 
 namespace OHOS {
 namespace SOCPERF {
@@ -158,6 +159,13 @@ void SocPerfThreadWrap::UpdateLimitStatus(int32_t eventId, std::shared_ptr<ResAc
             DoFreqActionLevel(resId, resAction);
         }
         SendResStatusToPerfSo();
+        if (resAction->onOff && resStatusInfo[resId] != nullptr) {
+            HiSysEventWrite(OHOS::HiviewDFX::HiSysEvent::Domain::RSS, "LIMIT_REQUEST",
+                            OHOS::HiviewDFX::HiSysEvent::EventType::BEHAVIOR,
+                            "CLIENT_ID", resAction->type,
+                            "RES_ID", resId,
+                            "CONFIG", resStatusInfo[resId]->candidate);
+        }
     };
     queue->submit(updateLimitStatusFunc);
 }
