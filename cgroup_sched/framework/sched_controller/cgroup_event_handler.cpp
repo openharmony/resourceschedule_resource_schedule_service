@@ -19,6 +19,7 @@
 #include "cgroup_adjuster.h"
 #include "cgroup_sched_common.h"
 #include "cgroup_sched_log.h"
+#include "ffrt_inner.h"
 #include "hisysevent.h"
 #include "ressched_utils.h"
 #include "res_type.h"
@@ -52,7 +53,7 @@ using OHOS::AppExecFwk::ProcessType;
 CgroupEventHandler::CgroupEventHandler()
 {
     queue_ = std::make_shared<ffrt::queue>("cgroup_event_queue",
-    ffrt::queue_attr().qos(ffrt::qos_user_initiated));
+    ffrt::queue_attr().qos(ffrt::qos_user_interactive));
     if (!queue_) {
         CGS_LOGE("create queue_ failed!");
     }
