@@ -21,6 +21,7 @@
 #include <iostream>
 #include <string>
 #include "config_policy_utils.h"
+#include "ffrt_inner.h"
 #include "event_runner.h"
 #include "hisysevent.h"
 #include "refbase.h"
@@ -83,7 +84,7 @@ void PluginMgr::Init()
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         if (!dispatcher_) {
             dispatcher_ = std::make_shared<ffrt::queue>(RUNNER_NAME.c_str(),
-                ffrt::queue_attr().qos(ffrt::qos_user_initiated));
+                ffrt::queue_attr().qos(ffrt::qos_user_interactive));
         }
         if (!dispatcher_) {
             RESSCHED_LOGI("create dispatcher failed");
