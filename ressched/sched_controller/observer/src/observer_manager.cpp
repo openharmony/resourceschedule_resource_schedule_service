@@ -12,9 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <string>
 
 #include "observer_manager.h"
+
+#include <dlfcn.h>
+#include <string>
 
 #include "hisysevent.h"
 #include "hisysevent_manager.h"
@@ -46,6 +48,7 @@ const static int32_t TUPLE_UID = 1;
 const static int32_t TUPLE_NAME = 2;
 const static bool DEVICE_MOVEMENT_OBSERVER_ENABLE =
     system::GetBoolParameter("persist.sys.ressched_device_movement_observer_switch", false);
+const std::string RES_NAP_SO = "libapp_nap_service.z.so";
 IMPLEMENT_SINGLE_INSTANCE(ObserverManager)
 
 void ObserverManager::Init()
@@ -114,6 +117,7 @@ void ObserverManager::InitSysAbilityListener()
         return;
     }
     InitObserverCbMap();
+    GetReportFunc();
 
     AddItemToSysAbilityListener(DFX_SYS_EVENT_SERVICE_ABILITY_ID, systemAbilityManager);
     AddItemToSysAbilityListener(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, systemAbilityManager);
@@ -165,6 +169,23 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     }
 }
 
+void ObserverManager::GetReportFunc()
+{
+    auto handle = dlopen(RES_NAP_SO.c_str(), RTLD_NOW);
+    if (!handle) {
+        RESSCHED_LOGE("GetReportFunc dlopen failed");
+        return;
+    }
+    reportFunc_ = reinterpret_cast<ReportFunc>(dlsym(handle, "IsNeedReportEvents"));
+    if (!reportFunc_) {
+        RESSCHED_LOGE("GetReportFunc dlsym 'IsNeedReportEvents' failed");
+        dlclose(handle);
+        return;
+    }
+
+    isNeedReport_ = reportFunc_();
+}
+
 void ObserverManager::InitHiSysEventObserver()
 {
     RESSCHED_LOGI("Init hisysevent observer");
@@ -172,7 +193,6 @@ void ObserverManager::InitHiSysEventObserver()
         hiSysEventObserver_ = std::make_shared<ResourceSchedule::HiSysEventObserver>();
     }
 
-    HiviewDFX::ListenerRule runninglockState("POWER", "RUNNINGLOCK");
     HiviewDFX::ListenerRule audioStreamState("AUDIO", "STREAM_CHANGE");
     HiviewDFX::ListenerRule cameraConnectState("CAMERA", "CAMERA_CONNECT");
     HiviewDFX::ListenerRule cameraDisconnectState("CAMERA", "CAMERA_DISCONNECT");
@@ -183,7 +203,6 @@ void ObserverManager::InitHiSysEventObserver()
     HiviewDFX::ListenerRule avCodecStartState("AV_CODEC", "CODEC_START_INFO");
     HiviewDFX::ListenerRule avCodecStopState("AV_CODEC", "CODEC_STOP_INFO");
     std::vector<HiviewDFX::ListenerRule> sysRules;
-    sysRules.push_back(runninglockState);
     sysRules.push_back(audioStreamState);
     sysRules.push_back(cameraConnectState);
     sysRules.push_back(cameraDisconnectState);
@@ -193,6 +212,10 @@ void ObserverManager::InitHiSysEventObserver()
     sysRules.push_back(wifiScanState);
     sysRules.push_back(avCodecStartState);
     sysRules.push_back(avCodecStopState);
+    if (isNeedReport_) {
+        HiviewDFX::ListenerRule runninglockState("POWER", "RUNNINGLOCK");
+        sysRules.push_back(runninglockState);
+    }
     auto res = HiviewDFX::HiSysEventManager::AddListener(hiSysEventObserver_, sysRules);
     if (res == 0) {
         RESSCHED_LOGD("ObserverManager init hisysevent observer successfully");
@@ -371,6 +394,10 @@ void ObserverManager::DisableDeviceMovementObserver()
 
 void ObserverManager::InitMMiEventObserver()
 {
+    if (!isNeedReport_) {
+        RESSCHED_LOGI("not need init mmi observer.");
+        return;
+    }
     RESSCHED_LOGI("ObserverManager Init mmi observer.");
     if (!mmiEventObserver_) {
         mmiEventObserver_ = std::make_shared<MmiObserver>();
