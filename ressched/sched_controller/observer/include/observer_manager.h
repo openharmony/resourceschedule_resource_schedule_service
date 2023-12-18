@@ -37,6 +37,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+using ReportFunc = bool (*)();
 class ObserverManager {
     DECLARE_SINGLE_INSTANCE_BASE(ObserverManager);
 
@@ -70,6 +71,7 @@ public:
     void InitObserverCbMap();
     void InitConnectionSubscriber();
     void DisableConnectionSubscriber();
+    void GetReportFunc();
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
     void InitAVSessionStateChangeListener();
     void DisableAVSessionStateChangeListener();
@@ -94,6 +96,8 @@ public:
     std::shared_ptr<MmiObserver> mmiEventObserver_ = nullptr;
     std::map<std::tuple<int32_t, int32_t, std::string>, int32_t> mmiStatusData_;
     std::shared_ptr<ConnectionSubscriber> connectionSubscriber_ = nullptr;
+    ReportFunc reportFunc_ = nullptr;
+    bool isNeedReport_ = true;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
