@@ -853,13 +853,13 @@ void CgroupEventHandler::HandleReportAvCodecEvent(uint32_t resType, int64_t valu
         return;
     }
 
-    if (!ParseValue(uid, "CLIENT_UID", payload) || !ParseValue(pid, "CLIENT_PID", payload)) {
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
         return;
     }
     if (uid <= 0 || pid <= 0) {
         return;
     }
-    if (!ParseValue(instanceId, "CODEC_INSTANCE_ID", payload)) {
+    if (!ParseValue(instanceId, "instanceId", payload)) {
         return;
     }
     if (instanceId < 0) {
