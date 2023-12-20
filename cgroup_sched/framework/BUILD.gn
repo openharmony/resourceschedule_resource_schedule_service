@@ -28,6 +28,7 @@ config("cgroup_sched_private_config") {
     "../../ressched/interfaces/innerkits/ressched_client/include",
     "../common/include",
     "./utils/include",
+    "${ressched_common}/include",
   ]
 }
 

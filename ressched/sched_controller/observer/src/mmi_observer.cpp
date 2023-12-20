@@ -16,6 +16,7 @@
 #include "mmi_observer.h"
 
 #include "nlohmann/json.hpp"
+#include "res_common_util.h"
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "res_type.h"
@@ -27,8 +28,8 @@ namespace {
 }
 void MmiObserver::SyncBundleName(int32_t pid, int32_t uid, std::string bundleName, int32_t syncStatus)
 {
-    if (bundleName.size() == 0) {
-        RESSCHED_LOGE("mmi sync bundleName error!");
+    if (!ResCommonUtil::CheckBundleName(bundleName)) {
+        RESSCHED_LOGE("mmi sync bundleName error! bundleName:%{public}s", bundleName.c_str());
         return;
     }
     // mmi status, value -1: unsubscribe, value 0: nap status, value 1: subscribe, value 2: send a event.
