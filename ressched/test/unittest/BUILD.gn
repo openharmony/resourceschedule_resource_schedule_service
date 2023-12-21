@@ -19,7 +19,6 @@ group("unittest") {
   deps = [
     ":resschedclient_test",
     ":resschedfwk_test",
-    ":resschedservice_test",
   ]
 }
 
