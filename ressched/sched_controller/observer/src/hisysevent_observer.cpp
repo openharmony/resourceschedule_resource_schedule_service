@@ -58,7 +58,9 @@ HiSysEventObserver::HiSysEventObserver() : HiviewDFX::HiSysEventListener()
         {"WIFI_CONNECTION", std::bind(&HiSysEventObserver::ProcessWifiEvent,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)},
         {"WIFI_SCAN", std::bind(&HiSysEventObserver::ProcessWifiEvent,
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)}
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)},
+        {"PLAYER_STATE", std::bind(&HiSysEventObserver::ProcessScreenCaptureEvent,
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)},
     };
 }
 
@@ -357,6 +359,39 @@ void HiSysEventObserver::ProcessWifiEvent(const nlohmann::json& root, const std:
     } else {
         RESSCHED_LOGE("Wifi event name not support!");
         return;
+    }
+}
+
+void HiSysEventObserver::ProcessScreenCaptureEvent(const nlohmann::json& root, const std::string& eventName)
+{
+    std::string str = root.dump(INDENT, ' ', false, nlohmann::json::error_handler_t::replace);
+    RESSCHED_LOGD("Process screen capture event, event root:%{public}s, eventName:%{public}s", str.c_str(), eventName.c_str());
+    nlohmann::json payload;
+    if (root.contains("APP_UID") && root.at("APP_UID").is_number_integer()) {
+        payload["uid"] = std::to_string(root.at("APP_UID").get<std::int32_t>());
+    } else {
+        RESSCHED_LOGE("screen capture uid format error!");
+        return;
+    }
+    if (root.contains("APP_PID") && root.at("APP_PID").is_number_integer()) {
+        payload["pid"] = std::to_string(root.at("APP_PID").get<std::int32_t>());
+    } else {
+        RESSCHED_LOGE("screen capture pid format error!");
+        return;
+    }
+
+    if (!root.contains("STATUS") || !root.at("STATUS").is_string()) {
+        return;
+    }
+
+    if (root.at("STATUS") == "start") {
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_REPORT_SCREEN_CAPTURE,
+            ResType::ScreenCaptureStatus::START_SCREEN_CAPTURE, payload);
+    } else if (root.at("STATUS") == "stop") {
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_REPORT_SCREEN_CAPTURE,
+            ResType::ScreenCaptureStatus::STOP_SCREEN_CAPTURE, payload);
+    } else {
+        RESSCHED_LOGE("screen capture status not support!");
     }
 }
 

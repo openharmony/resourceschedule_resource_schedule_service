@@ -833,6 +833,16 @@ void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value,
             }
             break;
         }
+        case ResType::RES_TYPE_REPORT_SCREEN_CAPTURE: {
+            if (value == ResType::ScreenCaptureStatus::START_SCREEN_CAPTURE) {
+                procRecord->screenCaptureState_ = true;
+            } else {
+                procRecord->screenCaptureState_ = false;
+            }
+            CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+                AdjustSource::ADJS_REPORT_SCREEN_CAPTURE);
+            break;
+        }
         default: {
             break;
         }

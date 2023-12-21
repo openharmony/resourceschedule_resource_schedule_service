@@ -202,7 +202,8 @@ void ResSchedService::DumpProcessEventState(std::string &result)
                 .append(", mmiState:").append(ToString(process->mmiStatus_))
                 .append(", camearaStatus:").append(ToString(process->cameraState_))
                 .append(", bluetoothStatus:").append(ToString(process->bluetoothState_))
-                .append(", wifiStatus:").append(ToString(process->wifiState_)).append("\n");
+                .append(", wifiStatus:").append(ToString(process->wifiState_)).append("\n")
+                .append(", screenCaptureStatus:").append(ToString(process->screenCaptureState_)).append("\n");
         }
     }
 }
