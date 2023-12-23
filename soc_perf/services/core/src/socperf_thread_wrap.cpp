@@ -31,7 +31,7 @@
 
 namespace OHOS {
 namespace SOCPERF {
-SocPerfThreadWrap::SocPerfThreadWrap()
+SocPerfThreadWrap::SocPerfThreadWrap() : socperfQueue("socperf", ffrt::queue_attr().qos(ffrt::qos_user_interactive))
 {
 }
 
@@ -39,18 +39,9 @@ SocPerfThreadWrap::~SocPerfThreadWrap()
 {
 }
 
-void SocPerfThreadWrap::InitQueue(const std::string& queueName)
-{
-    queue = std::make_shared<ffrt::queue>(queueName.c_str(),
-        ffrt::queue_attr().qos(ffrt::qos_user_interactive));
-    if (queue == nullptr) {
-        SOC_PERF_LOGE("create ffrt queue failed");
-    }
-}
-
 void SocPerfThreadWrap::InitResNodeInfo(std::shared_ptr<ResNode> resNode)
 {
-    if (resNode == nullptr || queue == nullptr) {
+    if (resNode == nullptr) {
         return;
     }
     std::function<void()>&& initResNodeInfoFunc = [this, resNode]() {
@@ -59,7 +50,7 @@ void SocPerfThreadWrap::InitResNodeInfo(std::shared_ptr<ResNode> resNode)
         auto resStatus = std::make_shared<ResStatus>(resNode->def);
         resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(resNode->id, resStatus));
     };
-    queue->submit(initResNodeInfoFunc);
+    socperfQueue.submit(initResNodeInfoFunc);
 }
 
 void SocPerfThreadWrap::InitPerfFunc(char* perfSoPath, char* perfSoFunc)
@@ -83,7 +74,7 @@ void SocPerfThreadWrap::InitPerfFunc(char* perfSoPath, char* perfSoFunc)
 
 void SocPerfThreadWrap::InitGovResNodeInfo(std::shared_ptr<GovResNode> govResNode)
 {
-    if (govResNode == nullptr || queue == nullptr) {
+    if (govResNode == nullptr) {
         return;
     }
     std::function<void()>&& initGovResNodeInfoFunc = [this, govResNode]() {
@@ -94,12 +85,12 @@ void SocPerfThreadWrap::InitGovResNodeInfo(std::shared_ptr<GovResNode> govResNod
         auto resStatus = std::make_shared<ResStatus>(govResNode->def);
         resStatusInfo.insert(std::pair<int32_t, std::shared_ptr<ResStatus>>(govResNode->id, resStatus));
     };
-    queue->submit(initGovResNodeInfoFunc);
+    socperfQueue.submit(initGovResNodeInfoFunc);
 }
 
 void SocPerfThreadWrap::DoFreqActionPack(std::shared_ptr<ResActionItem> head)
 {
-    if (head == nullptr || queue == nullptr) {
+    if (head == nullptr) {
         return;
     }
     std::function<void()>&& doFreqActionPackFunc = [this, head]() {
@@ -114,14 +105,11 @@ void SocPerfThreadWrap::DoFreqActionPack(std::shared_ptr<ResActionItem> head)
         }
         SendResStatusToPerfSo();
     };
-    queue->submit(doFreqActionPackFunc);
+    socperfQueue.submit(doFreqActionPackFunc);
 }
 
 void SocPerfThreadWrap::UpdatePowerLimitBoostFreq(bool powerLimitBoost)
 {
-    if (queue == nullptr) {
-        return;
-    }
     std::function<void()>&& updatePowerLimitBoostFreqFunc = [this, powerLimitBoost]() {
         this->powerLimitBoost = powerLimitBoost;
         for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
@@ -129,14 +117,11 @@ void SocPerfThreadWrap::UpdatePowerLimitBoostFreq(bool powerLimitBoost)
         }
         SendResStatusToPerfSo();
     };
-    queue->submit(updatePowerLimitBoostFreqFunc);
+    socperfQueue.submit(updatePowerLimitBoostFreqFunc);
 }
 
 void SocPerfThreadWrap::UpdateThermalLimitBoostFreq(bool thermalLimitBoost)
 {
-    if (queue == nullptr) {
-        return;
-    }
     std::function<void()>&& updateThermalLimitBoostFreqFunc = [this, thermalLimitBoost]() {
         this->thermalLimitBoost = thermalLimitBoost;
         for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
@@ -144,12 +129,12 @@ void SocPerfThreadWrap::UpdateThermalLimitBoostFreq(bool thermalLimitBoost)
         }
         SendResStatusToPerfSo();
     };
-    queue->submit(updateThermalLimitBoostFreqFunc);
+    socperfQueue.submit(updateThermalLimitBoostFreqFunc);
 }
 
 void SocPerfThreadWrap::UpdateLimitStatus(int32_t eventId, std::shared_ptr<ResAction> resAction, int32_t resId)
 {
-    if (resAction == nullptr || queue == nullptr) {
+    if (resAction == nullptr) {
         return;
     }
     std::function<void()>&& updateLimitStatusFunc = [this, eventId, resId, resAction]() {
@@ -167,7 +152,7 @@ void SocPerfThreadWrap::UpdateLimitStatus(int32_t eventId, std::shared_ptr<ResAc
                             "CONFIG", resStatusInfo[resId]->candidate);
         }
     };
-    queue->submit(updateLimitStatusFunc);
+    socperfQueue.submit(updateLimitStatusFunc);
 }
 
 void SocPerfThreadWrap::DoFreqAction(int32_t resId, std::shared_ptr<ResAction> resAction)
@@ -222,7 +207,7 @@ void SocPerfThreadWrap::DoFreqActionLevel(int32_t resId, std::shared_ptr<ResActi
 
 void SocPerfThreadWrap::PostDelayTask(int32_t resId, std::shared_ptr<ResAction> resAction)
 {
-    if (!IsValidResId(resId) || queue == nullptr || resAction == nullptr) {
+    if (!IsValidResId(resId) || resAction == nullptr) {
         return;
     }
     ffrt::task_attr taskAttr;
@@ -231,7 +216,7 @@ void SocPerfThreadWrap::PostDelayTask(int32_t resId, std::shared_ptr<ResAction> 
         UpdateResActionList(resId, resAction, true);
         SendResStatusToPerfSo();
     };
-    queue->submit(postDelayTaskFunc, taskAttr);
+    socperfQueue.submit(postDelayTaskFunc, taskAttr);
 }
 
 bool SocPerfThreadWrap::GetResValueByLevel(int32_t resId, int32_t level, int64_t& resValue)
