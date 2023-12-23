@@ -63,9 +63,6 @@ bool SocPerf::Init()
     govResNodeInfo.clear();
     resStrToIdInfo.clear();
     limitRequest = std::vector<std::unordered_map<int32_t, int32_t>>(ACTION_TYPE_MAX);
-    limitRequest[ACTION_TYPE_PERF] = std::unordered_map<int32_t, int32_t>();
-    limitRequest[ACTION_TYPE_POWER] = std::unordered_map<int32_t, int32_t>();
-    limitRequest[ACTION_TYPE_THERMAL] = std::unordered_map<int32_t, int32_t>();
     enabled = true;
 
     SOC_PERF_LOGD("SocPerf Init SUCCESS!");
