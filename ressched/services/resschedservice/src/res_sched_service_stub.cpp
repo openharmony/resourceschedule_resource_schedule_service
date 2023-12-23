@@ -48,6 +48,7 @@ namespace {
         ResType::RES_TYPE_LOAD_URL,
         ResType::RES_TYPE_MOUSEWHEEL,
         ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
+        ResType::RES_TYPE_REPORT_RENDER_THREAD,
     };
     static const std::unordered_set<uint32_t> saRes_ = {
         ResType::RES_TYPE_SCREEN_STATUS,
@@ -61,7 +62,6 @@ namespace {
         ResType::RES_TYPE_CGROUP_ADJUSTER,
         ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
         ResType::RES_TYPE_REPORT_MMI_PROCESS,
-        ResType::RES_TYPE_REPORT_RENDER_THREAD,
         ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
         ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
         ResType::RES_TYPE_USER_SWITCH,
