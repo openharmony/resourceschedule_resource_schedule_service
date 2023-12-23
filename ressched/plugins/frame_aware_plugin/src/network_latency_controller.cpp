@@ -27,7 +27,6 @@
 #include "plugin_mgr.h"
 #include "res_sched_log.h"
 #include "event_runner.h"
-#include "ffrt_inner.h"
 
 #include "latency_control/inetwork_latency_switcher.h"
 #include "latency_control/network_latency_controller.h"
@@ -59,7 +58,7 @@ void NetworkLatencyController::Init()
 void NetworkLatencyController::Init(std::unique_ptr<INetworkLatencySwitcher> sw)
 {
     ffrtQueue_ = std::make_shared<ffrt::queue>("network_manager_ffrtQueue",
-        ffrt::queue_attr().qos(ffrt::qos_user_interactive));
+        ffrt::queue_attr().qos(ffrt::qos_background));
     if (ffrtQueue_ == nullptr) {
         RESSCHED_LOGE("%{public}s: failed: cannot allocate event handler", __func__);
         return;
