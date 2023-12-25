@@ -154,6 +154,10 @@ void SchedController::DispatchResource(uint32_t resType, int64_t value, const nl
                 handler->HandleReportRunningLockEvent(resType, value, payload);
                 break;
             }
+            case ResType::RES_TYPE_REPORT_SCENE_BOARD: {
+                handler->HandleSceneBoardState(resType, value, payload);
+                break;
+            }
             default: {
                 break;
             }
