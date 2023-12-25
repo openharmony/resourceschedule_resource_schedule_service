@@ -159,16 +159,22 @@ void ResSchedService::DumpProcessWindowInfo(std::string &result)
         int32_t uid = it->first;
         std::shared_ptr<Application> app = it->second;
         std::map<pid_t, std::shared_ptr<ProcessRecord>> pidMap = app->GetPidsMap();
+        std::string bundleName = app->GetName();
         for (auto pidIt = pidMap.begin(); pidIt != pidMap.end(); pidIt++) {
             int32_t pid = pidIt->first;
             std::shared_ptr<ProcessRecord> process = pidIt->second;
+            if (process->windows_.size() == 0) {
+                continue;
+            }
+            result.append("uid:").append(ToString(uid))
+                .append(", pid:").append(ToString(pid))
+                .append(", bundleName:").append(bundleName)
+                .append(", processDrawingState").append(ToString(process->processDrawingState_))
+                .append(", windowInfo:").append("\n");
             for (auto &windows : process->windows_) {
-                result.append("uid:").append(ToString(uid))
-                    .append(", pid:").append(ToString(pid))
-                    .append(", windowId:").append(ToString(windows->windowId_))
+                result.append("    windowId:").append(ToString(windows->windowId_))
                     .append(", visibilityState:").append(ToString(windows->visibilityState_))
                     .append(", isVisible:").append(ToString(windows->isVisible_))
-                    .append(", drawingContentState:").append(ToString(windows->drawingContentState_))
                     .append(", isFocus:").append(ToString(windows->isFocused_)).append("\n");
             }
         }
