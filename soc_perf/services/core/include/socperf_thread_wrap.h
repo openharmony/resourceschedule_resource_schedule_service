@@ -51,7 +51,6 @@ class SocPerfThreadWrap {
 public:
     explicit SocPerfThreadWrap();
     ~SocPerfThreadWrap();
-    void InitQueue(const std::string& queueName);
     void InitResNodeInfo(std::shared_ptr<ResNode> resNode);
     void InitGovResNodeInfo(std::shared_ptr<GovResNode> govResNode);
     void DoFreqActionPack(std::shared_ptr<ResActionItem> head);
@@ -66,7 +65,7 @@ private:
     std::unordered_map<int32_t, std::shared_ptr<GovResNode>> govResNodeInfo;
     std::unordered_map<int32_t, std::shared_ptr<ResStatus>> resStatusInfo;
     std::unordered_map<std::string, int32_t> fdInfo;
-    std::shared_ptr<ffrt::queue> queue = nullptr;
+    ffrt::queue socperfQueue;
     bool powerLimitBoost = false;
     bool thermalLimitBoost = false;
     ReportDataFunc reportFunc = nullptr;

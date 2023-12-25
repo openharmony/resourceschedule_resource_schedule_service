@@ -63,7 +63,6 @@ bool SocPerf::Init()
     govResNodeInfo.clear();
     resStrToIdInfo.clear();
     limitRequest = std::vector<std::unordered_map<int32_t, int32_t>>(ACTION_TYPE_MAX);
-
     enabled = true;
 
     SOC_PERF_LOGD("SocPerf Init SUCCESS!");
@@ -356,7 +355,6 @@ bool SocPerf::ParseResourceXmlFile(const xmlNode* rootNode, const std::string& r
 bool SocPerf::CreateThreadWraps()
 {
     socperfThreadWraps = std::vector<std::shared_ptr<SocPerfThreadWrap>>(MAX_QUEUE_NUM);
-    std::string threadName = "socperf#";
     for (int32_t i = 0; i < (int32_t)socperfThreadWraps.size(); i++) {
         if (!wrapSwitch[i]) {
             socperfThreadWraps[i] = nullptr;
@@ -367,7 +365,6 @@ bool SocPerf::CreateThreadWraps()
             SOC_PERF_LOGE("Failed to Create socPerfThreadWrap");
             return false;
         }
-        socPerfThreadWrap->InitQueue(threadName.append(std::to_string(i)));
         socperfThreadWraps[i] = socPerfThreadWrap;
     }
     SOC_PERF_LOGD("Success to Create All threadWrap threads");
