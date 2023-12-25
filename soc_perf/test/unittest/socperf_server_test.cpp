@@ -104,7 +104,6 @@ HWTEST_F(SocPerfServerTest, SocPerfServerTest_SocPerfServerAPI_001, Function | M
     socPerfServer_->ThermalLimitBoost(true, msg);
     socPerfServer_->PowerLimitBoost(false, msg);
     socPerfServer_->ThermalLimitBoost(false, msg);
-    socPerfServer_->Dump(-1, {});
     socPerfServer_->OnStop();
     EXPECT_EQ(msg, "testBoost");
 }
