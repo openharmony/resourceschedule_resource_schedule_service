@@ -202,6 +202,7 @@ void ObserverManager::InitHiSysEventObserver()
     HiviewDFX::ListenerRule wifiScanState("COMMUNICATION", "WIFI_SCAN");
     HiviewDFX::ListenerRule avCodecStartState("AV_CODEC", "CODEC_START_INFO");
     HiviewDFX::ListenerRule avCodecStopState("AV_CODEC", "CODEC_STOP_INFO");
+    HiviewDFX::ListenerRule screenCaptureState("MULTIMEDIA", "PLAYER_STATE");
     std::vector<HiviewDFX::ListenerRule> sysRules;
     sysRules.push_back(audioStreamState);
     sysRules.push_back(cameraConnectState);
@@ -212,6 +213,7 @@ void ObserverManager::InitHiSysEventObserver()
     sysRules.push_back(wifiScanState);
     sysRules.push_back(avCodecStartState);
     sysRules.push_back(avCodecStopState);
+    sysRules.push_back(screenCaptureState);
     if (isNeedReport_) {
         HiviewDFX::ListenerRule runninglockState("POWER", "RUNNINGLOCK");
         sysRules.push_back(runninglockState);

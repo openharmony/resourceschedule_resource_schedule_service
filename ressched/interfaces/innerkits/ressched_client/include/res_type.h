@@ -159,7 +159,7 @@ enum : uint32_t {
     RES_TYPE_USB_DEVICE = 62,
     RES_TYPE_CALL_STATE_CHANGED = 63,
     RES_TYPE_WIFI_P2P_STATE_CHANGED = 64,
-  
+
     // last resType
     //report app associated start to performance radar
     RES_TYPE_APP_ASSOCIATED_START = 65,
@@ -171,6 +171,9 @@ enum : uint32_t {
     RES_TYPE_SOCPERF_CUST_EVENT_END = 68,
     // window drawing content change event
     RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE = 69,
+
+    // report vediuo capture start or stop
+    RES_TYPE_REPORT_SCREEN_CAPTURE = 70,
     //last resType
     RES_TYPE_LAST,
 };
@@ -246,6 +249,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_SOCPERF_CUST_EVENT_BEGIN, "RES_TYPE_SOCPERF_CUST_EVENT_BEGIN" },
     { RES_TYPE_SOCPERF_CUST_EVENT_END, "RES_TYPE_SOCPERF_CUST_EVENT_END" },
     { RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE, "RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE" },
+    { RES_TYPE_REPORT_SCREEN_CAPTURE, "RES_TYPE_REPORT_SCREEN_CAPTURE" },
 };
 
 /**
@@ -571,6 +575,14 @@ enum ThermalStateType : int64_t {
 enum WindowDrawingStatus : int64_t {
     NotDrawing = 0,
     Drawing = 1,
+};
+
+/**
+ * @brief Window drawing status
+ */
+enum ScreenCaptureStatus : int64_t {
+    START_SCREEN_CAPTURE = 0,
+    STOP_SCREEN_CAPTURE = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
