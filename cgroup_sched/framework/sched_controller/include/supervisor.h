@@ -190,6 +190,7 @@ public:
     void SearchWindowId(std::shared_ptr<Application> &application, std::shared_ptr<ProcessRecord> &procRecord,
         uint32_t windowId);
 
+    int32_t sceneBoardPid_ = -1;
     std::shared_ptr<Application> focusedApp_ = nullptr;
 
     inline std::map<int32_t, std::shared_ptr<Application>> GetUidsMap() const

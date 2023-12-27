@@ -887,6 +887,25 @@ void CgroupEventHandler::HandleReportAvCodecEvent(uint32_t resType, int64_t valu
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType, state);
 }
 
+void CgroupEventHandler::HandleSceneBoardState(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t keyTid = 0;
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+
+    if (!ParseValue(keyTid, "tid", payload)) {
+        return;
+    }
+    if (keyTid <= 0) {
+        return;
+    }
+    
+    supervisor_->sceneBoardPid_ = keyTid;
+    CGS_LOGD("%{public}s : set sceneboard pid: %{public}d", __func__, keyTid);
+}
+
 bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc)
 {
     return pr.isRenderProcess_ && pr.isActive_ && !mainProc.GetWindowInfoNonNull(pr.linkedWindowId_)->isVisible_;
