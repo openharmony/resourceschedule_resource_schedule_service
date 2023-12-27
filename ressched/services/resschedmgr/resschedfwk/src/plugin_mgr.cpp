@@ -234,10 +234,10 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 
     std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) {
-       dispatcher_->PostTask(
-             [pluginList, resData, this] {
-                 DeliverResourceToPlugin(pluginList, resData);
-             });
+        dispatcher_->PostTask(
+            [pluginList, resData, this] {
+                DeliverResourceToPlugin(pluginList, resData);
+            });
     }
 }
 
@@ -475,7 +475,6 @@ void PluginMgr::OnDestroy()
         dispatcher_->RemoveAllEvents();
         dispatcher_ = nullptr;
     }
-
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
