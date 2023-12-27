@@ -32,7 +32,6 @@
 #include "res_type.h"
 #include "single_instance.h"
 #include "config_info.h"
-#include "ffrt.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -164,7 +163,7 @@ private:
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
 
     std::mutex dispatcherHandlerMutex_;
-    std::shared_ptr<ffrt::queue> dispatcher_ = nullptr;
+    std::shared_ptr<AppExecFwk::EventHandler> dispatcher_ = nullptr;
     std::map<std::string, PluginStat> pluginStat_;
 };
 } // namespace ResourceSchedule

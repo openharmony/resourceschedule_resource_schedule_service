@@ -83,8 +83,7 @@ void PluginMgr::Init()
     {
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         if (!dispatcher_) {
-            dispatcher_ = std::make_shared<ffrt::queue>(RUNNER_NAME.c_str(),
-                ffrt::queue_attr().qos(ffrt::qos_user_interactive));
+            dispatcher_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
         }
         if (!dispatcher_) {
             RESSCHED_LOGI("create dispatcher failed");
@@ -235,10 +234,10 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 
     std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) {
-        dispatcher_->submit(
-            [pluginList, resData, this] {
-                DeliverResourceToPlugin(pluginList, resData);
-            });
+       dispatcher_->PostTask(
+             [pluginList, resData, this] {
+                 DeliverResourceToPlugin(pluginList, resData);
+             });
     }
 }
 
@@ -441,7 +440,7 @@ void PluginMgr::DeliverResourceToPlugin(const std::list<std::string>& pluginList
             };
             std::lock_guard<std::mutex> autoLock2(dispatcherHandlerMutex_);
             if (dispatcher_) {
-                dispatcher_->submit(task);
+                dispatcher_->PostTask(task);
             }
         } else if (costTime > DISPATCH_WARNING_TIME) {
             RESSCHED_LOGW("%{public}s, WARNING :"
@@ -473,8 +472,10 @@ void PluginMgr::OnDestroy()
     ClearResource();
     std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) {
-        dispatcher_.reset();
+        dispatcher_->RemoveAllEvents();
+        dispatcher_ = nullptr;
     }
+
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
