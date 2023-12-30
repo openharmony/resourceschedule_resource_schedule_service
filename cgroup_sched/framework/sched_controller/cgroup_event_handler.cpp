@@ -711,8 +711,11 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
         return;
     }
 
-    auto app = supervisor_->GetAppRecordNonNull(uid);
-    auto procRecord = app->GetProcessRecordNonNull(pid);
+    std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
+        return;
+    }
     procRecord->audioState_ = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
