@@ -169,7 +169,7 @@ void ResSchedService::DumpProcessWindowInfo(std::string &result)
             result.append("uid:").append(ToString(uid))
                 .append(", pid:").append(ToString(pid))
                 .append(", bundleName:").append(bundleName)
-                .append(", processDrawingState").append(ToString(process->processDrawingState_))
+                .append(", processDrawingState:").append(ToString(process->processDrawingState_))
                 .append(", windowInfo:").append("\n");
             for (auto &windows : process->windows_) {
                 result.append("    windowId:").append(ToString(windows->windowId_))
