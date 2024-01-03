@@ -68,7 +68,7 @@ void CgroupEventHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer& eve
                 retry < MAX_RETRY_TIMES) {
                 auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_APP_STATE_OBSERVER, retry + 1);
                 this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
-                if(retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
+                if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                     "COMPONENT_NAME", "MAIN",
                     "ERR_TYPE", "register failure",
@@ -83,7 +83,7 @@ void CgroupEventHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer& eve
                 retry < MAX_RETRY_TIMES) {
                 auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_BGTASK_OBSERVER, retry + 1);
                 this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
-                if(retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
+                if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                     "COMPONENT_NAME", "MAIN",
                     "ERR_TYPE", "register failure",
