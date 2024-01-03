@@ -73,11 +73,11 @@ bool SocPerf::Init()
 void SocPerf::PerfRequest(int32_t cmdId, const std::string& msg)
 {
     if (!enabled) {
-        SOC_PERF_LOGE("SocPerf disabled!");
+        SOC_PERF_LOGD("SocPerf disabled!");
         return;
     }
     if (perfActionsInfo.find(cmdId) == perfActionsInfo.end()) {
-        SOC_PERF_LOGE("Invalid PerfRequest cmdId[%{public}d]", cmdId);
+        SOC_PERF_LOGD("Invalid PerfRequest cmdId[%{public}d]", cmdId);
         return;
     }
     SOC_PERF_LOGD("cmdId[%{public}d]msg[%{public}s]", cmdId, msg.c_str());
@@ -93,11 +93,11 @@ void SocPerf::PerfRequest(int32_t cmdId, const std::string& msg)
 void SocPerf::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
     if (!enabled) {
-        SOC_PERF_LOGE("SocPerf disabled!");
+        SOC_PERF_LOGD("SocPerf disabled!");
         return;
     }
     if (perfActionsInfo.find(cmdId) == perfActionsInfo.end()) {
-        SOC_PERF_LOGE("Invalid PerfRequestEx cmdId[%{public}d]", cmdId);
+        SOC_PERF_LOGD("Invalid PerfRequestEx cmdId[%{public}d]", cmdId);
         return;
     }
     SOC_PERF_LOGD("cmdId[%{public}d]onOffTag[%{public}d]msg[%{public}s]",
@@ -115,7 +115,7 @@ void SocPerf::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg
 void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
 {
     if (!enabled) {
-        SOC_PERF_LOGE("SocPerf disabled!");
+        SOC_PERF_LOGD("SocPerf disabled!");
         return;
     }
     SOC_PERF_LOGI("onOffTag[%{public}d]msg[%{public}s]", onOffTag, msg.c_str());
@@ -139,7 +139,7 @@ void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
 void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
 {
     if (!enabled) {
-        SOC_PERF_LOGE("SocPerf disabled!");
+        SOC_PERF_LOGD("SocPerf disabled!");
         return;
     }
     SOC_PERF_LOGI("onOffTag[%{public}d]msg[%{public}s]", onOffTag, msg.c_str());
