@@ -21,20 +21,19 @@
 #include "nlohmann/json.hpp"
 #include "supervisor.h"
 #include "wm_common.h"
-#include "ffrt.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
+using OHOS::AppExecFwk::EventHandler;
+using OHOS::AppExecFwk::EventRunner;
 using OHOS::Rosen::WindowType;
 
-class CgroupEventHandler {
+class CgroupEventHandler : public EventHandler {
 public:
-    explicit CgroupEventHandler();
+    explicit CgroupEventHandler(const std::shared_ptr<EventRunner> &runner);
     ~CgroupEventHandler();
-    void ProcessEvent(int32_t eventId, int32_t retryTimes);
+    void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
     void SetSupervisor(std::shared_ptr<Supervisor> supervisor);
-    void RemoveEvent(uint32_t eventId);
-    void RemoveAllEvents();
     void HandleAbilityAdded(int32_t saId, const std::string& deviceId);
     void HandleAbilityRemoved(int32_t saId, const std::string& deviceId);
     void HandleApplicationStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
@@ -65,9 +64,6 @@ public:
     void HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportWebviewAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportRunningLockEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
-    void Submit(std::function<void()>&& func, uint32_t delay = 0);
-    void SubmitH(std::function<void()>&& func, uint32_t eventId, uint32_t delay);
-    bool CheckQueuePtr();
     void HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportAvCodecEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleSceneBoardState(uint32_t resType, int64_t value, const nlohmann::json& payload);
@@ -77,8 +73,6 @@ private:
     bool ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid, int64_t value, const nlohmann::json& payload);
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
     std::shared_ptr<Supervisor> supervisor_;
-    std::shared_ptr<ffrt::queue> queue_{nullptr};
-    std::unordered_map<uint32_t, std::vector<ffrt::task_handle>> eventMap_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

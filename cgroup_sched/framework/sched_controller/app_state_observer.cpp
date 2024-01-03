@@ -57,7 +57,7 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         auto abilityState = abilityStateData.abilityState;
         auto abilityType = abilityStateData.abilityType;
 
-        cgHandler->Submit([cgHandler, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
             cgHandler->HandleAbilityStateChanged(uid, pid, bundleName, abilityName,
                 token, abilityState, abilityType);
         });
@@ -87,7 +87,7 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
         auto abilityState = abilityStateData.abilityState;
         auto abilityType = abilityStateData.abilityType;
 
-        cgHandler->Submit([cgHandler, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
             cgHandler->HandleExtensionStateChanged(uid, pid, bundleName, abilityName,
                 token, abilityState, abilityType);
         });
@@ -125,7 +125,7 @@ void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processDat
         auto bundleName = processData.bundleName;
         auto processType = static_cast<int32_t>(processData.processType);
         auto extensionType = static_cast<int32_t>(processData.extensionType);
-        cgHandler->Submit([cgHandler, uid, pid, processType, bundleName, extensionType] {
+        cgHandler->PostTask([cgHandler, uid, pid, processType, bundleName, extensionType] {
             cgHandler->HandleProcessCreated(uid, pid, processType, bundleName, extensionType);
         });
     }
@@ -148,7 +148,7 @@ void RmsApplicationStateObserver::OnProcessDied(const ProcessData &processData)
         auto pid = processData.pid;
         auto bundleName = processData.bundleName;
 
-        cgHandler->Submit([cgHandler, uid, pid, bundleName] {
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName] {
             cgHandler->HandleProcessDied(uid, pid, bundleName);
         });
     }
@@ -173,7 +173,7 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
         auto bundleName = appStateData.bundleName;
         auto state = appStateData.state;
 
-        cgHandler->Submit([cgHandler, uid, pid, bundleName, state] {
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName, state] {
             cgHandler->HandleApplicationStateChanged(uid, pid, bundleName, state);
         });
     }
@@ -220,7 +220,7 @@ void RmsApplicationStateObserver::OnProcessStateChanged(const ProcessData &proce
         auto bundleName = processData.bundleName;
         auto state = static_cast<int32_t>(processData.state);
 
-        cgHandler->Submit([cgHandler, uid, pid, bundleName, state] {
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName, state] {
             cgHandler->HandleProcessStateChanged(uid, pid, bundleName, state);
         });
     }

@@ -109,7 +109,7 @@ void SchedController::ReportAbilityStatus(int32_t saId, const std::string& devic
     if (!handler) {
         return;
     }
-    handler->Submit([handler, saId, deviceId, status] {
+    handler->PostTask([handler, saId, deviceId, status] {
         if (status > 0) {
             handler->HandleAbilityAdded(saId, deviceId);
         } else {
@@ -124,7 +124,7 @@ void SchedController::DispatchResource(uint32_t resType, int64_t value, const nl
     if (!handler) {
         return;
     }
-    handler->Submit([handler, resType, value, payload] {
+    handler->PostTask([handler, resType, value, payload] {
         switch (resType) {
             case ResType::RES_TYPE_REPORT_MMI_PROCESS: {
                 handler->HandleReportMMIProcess(resType, value, payload);
@@ -172,7 +172,7 @@ void SchedController::DispatchOtherResource(uint32_t resType, int64_t value, con
     if (!handler) {
         return;
     }
-    handler->Submit([handler, resType, value, payload] {
+    handler->PostTask([handler, resType, value, payload] {
         switch (resType) {
             case ResType::RES_TYPE_REPORT_CAMERA_STATE:
             case ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE:
@@ -215,7 +215,7 @@ std::string SchedController::GetBundleNameByUid(const int32_t uid)
 
 inline void SchedController::InitCgroupHandler()
 {
-    cgHandler_ = std::make_shared<CgroupEventHandler>();
+    cgHandler_ = std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create(CG_HANDLER_THREAD));
     cgHandler_->SetSupervisor(supervisor_);
 }
 
