@@ -65,7 +65,7 @@ public:
 
 protected:
     ResSchedClient() = default;
-    virtual ~ResSchedClient() = default;
+    virtual ~ResSchedClient();
 
 private:
     class ResSchedDeathRecipient : public IRemoteObject::DeathRecipient {

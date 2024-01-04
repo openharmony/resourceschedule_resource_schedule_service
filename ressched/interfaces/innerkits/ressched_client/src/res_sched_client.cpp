@@ -32,6 +32,10 @@ ResSchedClient& ResSchedClient::GetInstance()
     static ResSchedClient instance;
     return instance;
 }
+ResSchedClient::~ResSchedClient()
+{
+    StopRemoteObject();
+}
 
 void ResSchedClient::ReportData(uint32_t resType, int64_t value,
                                 const std::unordered_map<std::string, std::string>& mapPayload)
