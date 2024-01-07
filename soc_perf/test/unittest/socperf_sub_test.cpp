@@ -384,12 +384,16 @@ static void SocPerfSubTestLimitRequestTask()
 {
     int32_t clientId_power = ACTION_TYPE_POWER;
     std::vector<int32_t> tags;
-    tags.push_back(1000);
+    constexpr int resId = 1001;
+    tags.push_back(resId);
     std::vector<int64_t> configs;
     EXPECT_NE(tags.size(), configs.size());
-    configs.push_back(1608000);
+    constexpr int freqValue = 1416000;
+    configs.push_back(freqValue);
     EXPECT_EQ(tags.size(), configs.size());
     OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(clientId_power, tags, configs, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(true, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(false, "");
 }
 
 /*
