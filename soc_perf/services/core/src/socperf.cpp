@@ -391,6 +391,7 @@ bool SocPerf::CreateThreadWraps()
         auto runner = AppExecFwk::EventRunner::Create("socperf#" + std::to_string(i));
         if (!runner) {
             SOC_PERF_LOGE("Failed to Create EventRunner");
+            return false;
         }
         auto socPerfThreadWrap = std::make_shared<SocPerfThreadWrap>(runner);
 #endif
