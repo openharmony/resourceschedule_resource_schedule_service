@@ -23,8 +23,10 @@
 #include <stdint.h>         // for uint32_t
 #include "event_handler.h"  // for EventHandler
 #include "event_runner.h"
+#ifdef SOCPERF_ADAPTOR_FFRT
 #include "ffrt.h"
 #include "ffrt_inner.h"
+#endif
 #include "inner_event.h"    // for InnerEvent, InnerEvent::Pointer
 #include "socperf_common.h"
 namespace OHOS { namespace SOCPERF { class GovResNode; } }
@@ -47,10 +49,18 @@ enum SocPerfInnerEvent : uint32_t {
     INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL,
 };
 
+#ifdef SOCPERF_ADAPTOR_FFRT
 class SocPerfThreadWrap {
 public:
     explicit SocPerfThreadWrap();
     ~SocPerfThreadWrap();
+#else
+class SocPerfThreadWrap : public AppExecFwk::EventHandler {
+public:
+    explicit SocPerfThreadWrap(const std::shared_ptr<AppExecFwk::EventRunner>& runner);
+    ~SocPerfThreadWrap() override;
+    void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
+#endif
     void InitResNodeInfo(std::shared_ptr<ResNode> resNode);
     void InitGovResNodeInfo(std::shared_ptr<GovResNode> govResNode);
     void DoFreqActionPack(std::shared_ptr<ResActionItem> head);
@@ -65,7 +75,9 @@ private:
     std::unordered_map<int32_t, std::shared_ptr<GovResNode>> govResNodeInfo;
     std::unordered_map<int32_t, std::shared_ptr<ResStatus>> resStatusInfo;
     std::unordered_map<std::string, int32_t> fdInfo;
+#ifdef SOCPERF_ADAPTOR_FFRT
     ffrt::queue socperfQueue;
+#endif
     bool powerLimitBoost = false;
     bool thermalLimitBoost = false;
     ReportDataFunc reportFunc = nullptr;

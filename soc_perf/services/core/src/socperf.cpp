@@ -126,7 +126,12 @@ void SocPerf::PowerLimitBoost(bool onOffTag, const std::string& msg)
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
     for (auto threadWrap : socperfThreadWraps) {
         if (threadWrap) {
+#ifdef SOCPERF_ADAPTOR_FFRT
             threadWrap->UpdatePowerLimitBoostFreq(onOffTag);
+#else
+            auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ, onOffTag ? 1 : 0);
+            threadWrap->SendEvent(event);
+#endif
         }
     }
     HiSysEventWrite(OHOS::HiviewDFX::HiSysEvent::Domain::RSS, "LIMIT_BOOST",
@@ -149,7 +154,12 @@ void SocPerf::ThermalLimitBoost(bool onOffTag, const std::string& msg)
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
     for (auto threadWrap : socperfThreadWraps) {
         if (threadWrap) {
+#ifdef SOCPERF_ADAPTOR_FFRT
             threadWrap->UpdateThermalLimitBoostFreq(onOffTag);
+#else
+            auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_THERMAL_LIMIT_BOOST_FREQ, onOffTag ? 1 : 0);
+            threadWrap->SendEvent(event);
+#endif
         }
     }
     HiSysEventWrite(OHOS::HiviewDFX::HiSysEvent::Domain::RSS, "LIMIT_BOOST",
@@ -167,7 +177,12 @@ void SocPerf::SendLimitRequestEventOff(std::shared_ptr<SocPerfThreadWrap> thread
         && limitRequest[clientId][resId] != INVALID_VALUE) {
         auto resAction = std::make_shared<ResAction>(
             limitRequest[clientId][resId], 0, clientId, EVENT_OFF, -1, MAX_INT_VALUE);
+#ifdef SOCPERF_ADAPTOR_FFRT
         threadWrap->UpdateLimitStatus(eventId, resAction, resId);
+#else
+        auto event = AppExecFwk::InnerEvent::Get(eventId, resAction, resId);
+        threadWrap->SendEvent(event);
+#endif
         limitRequest[clientId].erase(iter);
     }
 }
@@ -177,7 +192,12 @@ void SocPerf::SendLimitRequestEventOn(std::shared_ptr<SocPerfThreadWrap> threadW
 {
     if (resValue != INVALID_VALUE && resValue != RESET_VALUE) {
         auto resAction = std::make_shared<ResAction>(resValue, 0, clientId, EVENT_ON, -1, MAX_INT_VALUE);
+#ifdef SOCPERF_ADAPTOR_FFRT
         threadWrap->UpdateLimitStatus(eventId, resAction, resId);
+#else
+        auto event = AppExecFwk::InnerEvent::Get(eventId, resAction, resId);
+        threadWrap->SendEvent(event);
+#endif
         limitRequest[clientId].insert(std::pair<int32_t, int32_t>(resId, resValue));
     }
 }
@@ -257,7 +277,12 @@ void SocPerf::DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int
         if (!socperfThreadWraps[i] || !header[i]) {
             continue;
         }
+#ifdef SOCPERF_ADAPTOR_FFRT
         socperfThreadWraps[i]->DoFreqActionPack(header[i]);
+#else
+        auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_DO_FREQ_ACTION_PACK, header[i]);
+        socperfThreadWraps[i]->SendEvent(event);
+#endif
     }
 }
 
@@ -360,7 +385,16 @@ bool SocPerf::CreateThreadWraps()
             socperfThreadWraps[i] = nullptr;
             continue;
         }
+#ifdef SOCPERF_ADAPTOR_FFRT
         auto socPerfThreadWrap = std::make_shared<SocPerfThreadWrap>();
+#else
+        auto runner = AppExecFwk::EventRunner::Create("socperf#" + std::to_string(i));
+        if (!runner) {
+            SOC_PERF_LOGE("Failed to Create EventRunner");
+            return false;
+        }
+        auto socPerfThreadWrap = std::make_shared<SocPerfThreadWrap>(runner);
+#endif
         if (!socPerfThreadWrap) {
             SOC_PERF_LOGE("Failed to Create socPerfThreadWrap");
             return false;
@@ -379,7 +413,12 @@ void SocPerf::InitThreadWraps()
         if (!threadWrap) {
             continue;
         }
+#ifdef SOCPERF_ADAPTOR_FFRT
         threadWrap->InitResNodeInfo(resNode);
+#else
+        auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_INIT_RES_NODE_INFO, resNode);
+        threadWrap->SendEvent(event);
+#endif
     }
     for (auto iter = govResNodeInfo.begin(); iter != govResNodeInfo.end(); ++iter) {
         std::shared_ptr<GovResNode> govResNode = iter->second;
@@ -387,7 +426,12 @@ void SocPerf::InitThreadWraps()
         if (!threadWrap) {
             continue;
         }
+#ifdef SOCPERF_ADAPTOR_FFRT
         threadWrap->InitGovResNodeInfo(govResNode);
+#else
+        auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_INIT_GOV_RES_NODE_INFO, govResNode);
+        threadWrap->SendEvent(event);
+#endif
     }
 }
 
