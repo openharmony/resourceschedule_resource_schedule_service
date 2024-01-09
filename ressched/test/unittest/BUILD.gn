@@ -17,10 +17,10 @@ import("../../ressched.gni")
 group("unittest") {
   testonly = true
   deps = [
+    ":comp_sched_plugin_test",
     ":resschedclient_test",
     ":resschedfwk_test",
     ":resschedservice_test",
-    ":comp_sched_plugin_test",
   ]
 }
 
