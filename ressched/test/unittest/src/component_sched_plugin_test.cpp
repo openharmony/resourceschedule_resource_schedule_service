@@ -39,9 +39,7 @@ const std::string LIB_NAME = "libcomponent_sched_plugin.z.so";
 extern "C" bool OnPluginInit(const std::string& libName);
 extern "C" void OnPluginDisable();
 extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& data);
-
 class CompSchedPluginTest : public testing::Test {
-
 public:
     static void SetUpTestCase()
     {
@@ -51,7 +49,6 @@ public:
     void SetUp() {}
     void TearDown() {}
 };
-
 
 /**
  * @tc.name: CompSchedPluginMockTest_001
@@ -66,7 +63,6 @@ HWTEST_F(CompSchedPluginTest, CompSchedPluginMockTest_001, TestSize.Level1)
     std::shared_ptr<ResData> resData1 = std::make_shared<ResData>(ResType::RES_TYPE_THERMAL_STATE, 0, payload);
     ComponentSchedPlugin::GetInstance().DispatchResource(resData1);
 }
-
 
 /**
  * @tc.name: CompSchedPluginMockTest_002
