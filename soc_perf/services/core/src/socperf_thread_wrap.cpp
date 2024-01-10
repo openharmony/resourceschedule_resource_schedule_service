@@ -259,7 +259,7 @@ void SocPerfThreadWrap::SendResStatusToPerfSo()
         }
     }
     if (SocPerfLog::IsDebugLogEnabled()) {
-        for (long i = 0; i < qosId.size(); i++) {
+        for (unsigned long i = 0; i < qosId.size(); i++) {
             SOC_PERF_LOGD("send data to perf so, id:[%{public}d], value:[%{public}lld], endTime:[%{public}lld]",
                 qosId[i], value[i], endTime[i]);
         }
