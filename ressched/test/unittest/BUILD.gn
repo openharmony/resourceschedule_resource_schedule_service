@@ -30,7 +30,7 @@ ohos_unittest("comp_sched_plugin_test") {
   module_out_path = module_output_path
 
   include_dirs = [
-    "../../include",
+    "${ressched_plugins}/component_sched_plugin/include",
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
     "${ressched_services}/resschedmgr/resschedfwk/include",
