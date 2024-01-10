@@ -37,7 +37,7 @@ ohos_unittest("comp_sched_plugin_test") {
     "${ressched_services}/resschedmgr/pluginbase/include",
   ]
 
-  sources = [ "component_sched_plugin_test.cpp" ]
+  sources = [ "src/component_sched_plugin_test.cpp" ]
 
   deps = [
     "${ressched_plugins}/component_sched_plugin:component_sched_plugin",
