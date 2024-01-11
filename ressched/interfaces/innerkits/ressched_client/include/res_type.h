@@ -174,6 +174,8 @@ enum : uint32_t {
 
     // report vediuo capture start or stop
     RES_TYPE_REPORT_SCREEN_CAPTURE = 70,
+    // report long frame, value 0 scene on 1 scene off.
+    RES_TYPE_LONG_FRAME = 71,
     //last resType
     RES_TYPE_LAST,
 };
@@ -250,6 +252,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_SOCPERF_CUST_EVENT_END, "RES_TYPE_SOCPERF_CUST_EVENT_END" },
     { RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE, "RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE" },
     { RES_TYPE_REPORT_SCREEN_CAPTURE, "RES_TYPE_REPORT_SCREEN_CAPTURE" },
+    { RES_TYPE_LONG_FRAME, "RES_TYPE_LONG_FRAME" },
 };
 
 /**
