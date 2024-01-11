@@ -104,7 +104,7 @@ void SocPerfThreadWrap::InitResNodeInfo(std::shared_ptr<ResNode> resNode)
 #endif
 }
 
-void SocPerfThreadWrap::InitPerfFunc(char* perfSoPath, char* perfSoFunc)
+void SocPerfThreadWrap::InitPerfFunc(const char* perfSoPath, const char* perfSoFunc)
 {
     if (!perfSoPath || !perfSoFunc) {
         return;
@@ -174,6 +174,9 @@ void SocPerfThreadWrap::UpdatePowerLimitBoostFreq(bool powerLimitBoost)
 #endif
         this->powerLimitBoost = powerLimitBoost;
         for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
+            if (resStatusInfo[iter->first] == nullptr) {
+                continue;
+            }
             ArbitrateCandidate(iter->first);
         }
         SendResStatusToPerfSo();
@@ -190,6 +193,9 @@ void SocPerfThreadWrap::UpdateThermalLimitBoostFreq(bool thermalLimitBoost)
 #endif
         this->thermalLimitBoost = thermalLimitBoost;
         for (auto iter = resStatusInfo.begin(); iter != resStatusInfo.end(); ++iter) {
+            if (resStatusInfo[iter->first] == nullptr) {
+                continue;
+            }
             ArbitrateCandidate(iter->first);
         }
         SendResStatusToPerfSo();

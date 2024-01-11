@@ -67,7 +67,7 @@ public:
     void UpdatePowerLimitBoostFreq(bool powerLimitBoost);
     void UpdateThermalLimitBoostFreq(bool thermalLimitBoost);
     void UpdateLimitStatus(int32_t eventId, std::shared_ptr<ResAction> resAction, int32_t resId);
-    void InitPerfFunc(char* perfSoPath, char* perfSoFunc);
+    void InitPerfFunc(const char* perfSoPath, const char* perfSoFunc);
 
 private:
     static const int32_t SCALES_OF_MILLISECONDS_TO_MICROSECONDS = 1000;

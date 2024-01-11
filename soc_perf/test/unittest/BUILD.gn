@@ -30,7 +30,11 @@ config("module_private_config") {
 ohos_unittest("SocPerfServerTest") {
   module_out_path = module_output_path
 
-  sources = [ "socperf_server_test.cpp" ]
+  sources = [
+    "socperf_server_test.cpp",
+    "mock/mock_system_ability.cpp",
+    "mock/mock_accesstoken_kit.cpp"
+  ]
 
   configs = [ ":module_private_config" ]
 
@@ -41,6 +45,8 @@ ohos_unittest("SocPerfServerTest") {
   ]
 
   external_deps = [
+    "access_token:libaccesstoken_sdk",
+    "access_token:libtokenid_sdk",
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
