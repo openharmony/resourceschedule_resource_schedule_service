@@ -49,6 +49,7 @@ namespace {
         ResType::RES_TYPE_MOUSEWHEEL,
         ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
         ResType::RES_TYPE_REPORT_RENDER_THREAD,
+        ResType::RES_TYPE_LONG_FRAME,
     };
     static const std::unordered_set<uint32_t> saRes_ = {
         ResType::RES_TYPE_SCREEN_STATUS,
