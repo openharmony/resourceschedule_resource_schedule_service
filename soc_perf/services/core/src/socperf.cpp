@@ -58,7 +58,9 @@ bool SocPerf::Init()
     }
 
     xmlFree(perfSoPath);
+    perfSoPath = nullptr;
     xmlFree(perfSoFunc);
+    perfSoFunc = nullptr;
     resNodeInfo.clear();
     govResNodeInfo.clear();
     resStrToIdInfo.clear();
