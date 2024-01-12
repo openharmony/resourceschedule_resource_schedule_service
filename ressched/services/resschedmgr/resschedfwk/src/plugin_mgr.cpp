@@ -274,7 +274,7 @@ void PluginMgr::DumpAllPlugin(std::string &result)
 {
     std::list<PluginInfo> pluginInfoList = pluginSwitch_->GetPluginSwitch();
     for (const auto& info : pluginInfoList) {
-        result.append(info.libPath + std::string(DUMP_ONE_STRING_SIZE - info.libPath.size(), ' '));
+        result.append(info.libPath).append(" ");
         DumpPluginInfoAppend(result, info);
     }
 }
@@ -289,7 +289,7 @@ void PluginMgr::DumpOnePlugin(std::string &result, std::string pluginName, std::
         return;
     }
     if (args.size() == 0) {
-        result.append(pluginName + std::string(DUMP_ONE_STRING_SIZE - pluginName.size(), ' '));
+        result.append(pluginName).append(" ");
         DumpPluginInfoAppend(result, *pos);
     } else {
         result.append("\n");
