@@ -77,12 +77,12 @@ HWTEST_F(SocPerfServerTest, SocPerfServerTest_LogEnable_001, Function | MediumTe
 }
 
 /*
- * @tc.name: SocPerfServerTest_SocPerfServerAPI_001
- * @tc.desc: test socperf server api
+ * @tc.name: SocPerfServerTest_SocPerfAPI_001
+ * @tc.desc: test socperf api
  * @tc.type FUNC
  * @tc.require: issueI78T3V
  */
-HWTEST_F(SocPerfServerTest, SocPerfServerTest_SocPerfServerAPI_001, Function | MediumTest | Level0)
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_SocPerfAPI_001, Function | MediumTest | Level0)
 {
     std::string msg = "testBoost";
     socPerf_.PerfRequest(10000, msg);
@@ -96,7 +96,30 @@ HWTEST_F(SocPerfServerTest, SocPerfServerTest_SocPerfServerAPI_001, Function | M
     socPerf_.LimitRequest(ActionType::ACTION_TYPE_THERMAL, {1001}, {1325000}, msg);
     socPerf_.PowerLimitBoost(true, msg);
     socPerf_.ThermalLimitBoost(true, msg);
+    EXPECT_EQ(msg, "testBoost");
+    std::string id = "1000";
+    std::string name = "lit_cpu_freq";
+    std::string pair = "1001";
+    std::string mode = "1";
+    std::string persisMode = "1";
+    std::string configFile = "";
+    bool ret = socPerf_.CheckResourceTag(id.c_str(), name.c_str(), pair.c_str(), mode.c_str(), persisMode.c_str(),
+        configFile.c_str());
+    EXPECT_TRUE(ret);
+    ret = socPerf_.CheckResourceTag(nullptr, name.c_str(), pair.c_str(), mode.c_str(), persisMode.c_str(),
+        configFile.c_str());
+    EXPECT_FALSE(ret);
+}
 
+/*
+ * @tc.name: SocPerfServerTest_SocPerfServerAPI_000
+ * @tc.desc: test socperf server api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_SocPerfServerAPI_000, Function | MediumTest | Level0)
+{
+    std::string msg = "testBoost";
     socPerfServer_->PerfRequest(10000, msg);
     socPerfServer_->PerfRequestEx(10000, true, msg);
     socPerfServer_->PerfRequestEx(10000, false, msg);
@@ -144,6 +167,20 @@ HWTEST_F(SocPerfServerTest, SocPerfServerTest_SocperfThreadWrapp_001, Function |
     socPerfThreadWrap->DoFreqAction(0, nullptr);
     socPerfThreadWrap->DoFreqAction(1000, nullptr);
     EXPECT_NE(msg.c_str(), "-1");
+    bool ret = false;
+    int inValidResId = 9999;
+    ret = socPerfThreadWrap->IsResId(inValidResId);
+    EXPECT_FALSE(ret);
+    ret = socPerfThreadWrap->IsValidResId(inValidResId);
+    EXPECT_FALSE(ret);
+    ret = socPerfThreadWrap->IsGovResId(inValidResId);
+    EXPECT_FALSE(ret);
+    int32_t fd = socPerfThreadWrap->GetFdForFilePath("");
+    EXPECT_TRUE(fd < 0);
+    int32_t level = 10;
+    int64_t value = 0;
+    ret = socPerfThreadWrap->GetResValueByLevel(inValidResId, level, value);
+    EXPECT_FALSE(ret);
 }
 
 class SocperfStubTest : public SocPerfStub {
@@ -174,9 +211,6 @@ HWTEST_F(SocPerfServerTest, SocPerfStubTest_SocPerfServerAPI_001, Function | Med
     MessageOption option;
     uint32_t requestIpcId = static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_PERF_REQUEST);
     socPerfStub.OnRemoteRequest(requestIpcId, data, reply, option);
-
-    uint32_t requestExIpcId = static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_PERF_REQUEST_EX);
-    socPerfStub.OnRemoteRequest(requestExIpcId, data, reply, option);
 }
 
 /*
