@@ -107,9 +107,24 @@ HWTEST_F(ResSchedMgrTest, KillProcess001, TestSize.Level1)
     ResSchedMgr::GetInstance().KillProcessByClient(payload);
     payload["pid"] = "0";
     ResSchedMgr::GetInstance().KillProcessByClient(payload);
+    payload["pid"] = "-1";
+    ResSchedMgr::GetInstance().KillProcessByClient(payload);
     payload["pid"] = "1234567";
     ResSchedMgr::GetInstance().KillProcessByClient(payload);
     EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
+}
+
+/**
+ * @tc.name: Stop ressched mgr 001
+ * @tc.desc: Verify if stop is success
+ * @tc.type: FUNC
+ * @tc.require: issueI8VZVN
+ * @tc.author:z30053169
+ */
+HWTEST_F(ResSchedMgrTest, Stop001, TestSize.Level1)
+{
+    ResSchedMgr::GetInstance().Stop();
+    SUCCEED();
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

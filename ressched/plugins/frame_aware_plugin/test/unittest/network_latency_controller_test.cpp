@@ -67,6 +67,18 @@ protected:
 };
 
 /**
+ * @tc.name: controllerInit001
+ * @tc.desc: test controller init
+ * @tc.type: FUNC
+ * @tc.require: issueI8VZVN
+ */
+HWTEST_F(NetworkLatencyControllerTest, controllerInit001, testing::ext::TestSize.Level1)
+{
+    ctrl.Init();
+    SUCCEED();
+}
+
+/**
  * @tc.name: singleUser_001
  * @tc.desc: test latency switching with a single user
  * @tc.type: FUNC
@@ -85,6 +97,10 @@ HWTEST_F(NetworkLatencyControllerTest, singleUser_001, testing::ext::TestSize.Le
     ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_NORMAL, identity);
     EXPECT_EQ(counter->onCount, 1);
     EXPECT_EQ(counter->offCount, 1);
+
+    //default
+    ctrl.HandleRequest(-1, identity);
+    SUCCEED();
 }
 
 /**

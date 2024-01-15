@@ -126,6 +126,15 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
 
     std::vector<std::u16string> argsOnePlugin = {to_utf16("-p"), to_utf16("1")};
     res = resSchedService_->Dump(correctFd, argsOnePlugin);
+
+    std::vector<std::u16string> argsOnePlugin1 = {to_utf16("getRunningLockInfo")};
+    res = resSchedService_->Dump(correctFd, argsOnePlugin1);
+
+    std::vector<std::u16string> argsOnePlugin2 = {to_utf16("getProcessEventInfo")};
+    res = resSchedService_->Dump(correctFd, argsOnePlugin2);
+
+    std::vector<std::u16string> argsOnePlugin3 = {to_utf16("getProcessWindowInfo")};
+    res = resSchedService_->Dump(correctFd, argsOnePlugin3);
 }
 
 /**
@@ -164,6 +173,20 @@ HWTEST_F(ResSchedServiceTest, Report002, Function | MediumTest | Level0)
 }
 
 /**
+ * @tc.name: Ressched service KillProcess 001
+ * @tc.desc: test the interface service KillProcess
+ * @tc.type: FUNC
+ * @tc.require: issueI8VZVN
+ * @tc.author:z30053169
+ */
+HWTEST_F(ResSchedServiceTest, KillProcess001, Function | MediumTest | Level0)
+{
+    nlohmann::json payload;
+    int32_t t = resSchedService_->KillProcess(payload);
+    EXPECT_EQ(t, 0);
+}
+
+/**
  * @tc.name: Start ResSchedServiceAbility 001
  * @tc.desc: Verify if ResSchedServiceAbility OnStart is success.
  * @tc.type: FUNC
@@ -194,6 +217,19 @@ HWTEST_F(ResSchedServiceTest, OnStart002, Function | MediumTest | Level0)
 {
     SET_THREAD_NUM(10);
     GTEST_RUN_TASK(OnStartTask);
+}
+
+/**
+ * @tc.name: Stop ResSchedServiceAbility 001
+ * @tc.desc: test the interface Onstop
+ * @tc.type: FUNC
+ * @tc.require: issueI8VZVN
+ * @tc.author:z30053169
+ */
+HWTEST_F(ResSchedServiceTest, OnStop001, Function | MediumTest | Level0)
+{
+    resSchedServiceAbility_->OnStop();
+    SUCCEED();
 }
 
 /**
