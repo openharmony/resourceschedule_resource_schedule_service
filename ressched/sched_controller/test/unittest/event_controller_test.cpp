@@ -14,7 +14,7 @@
  */
 
 #include <gtest/gtest.h>
-
+#define private public
 #include "application_info.h"
 #include "common_event_data.h"
 #include "common_event_manager.h"
@@ -176,6 +176,96 @@ HWTEST_F(EventControllerTest, connectivityChange_00105, testing::ext::TestSize.L
     int64_t expectValue = 0;
     EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
     EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);
+}
+
+/**
+ * @tc.name: connectivityChange_00106
+ * @tc.desc: test the interface OnAddSystemAbility
+ * @tc.type: FUNC
+ * @tc.require: DTS2023121404861
+ */
+HWTEST_F(EventControllerTest, connectivityChange_00106, testing::ext::TestSize.Level1)
+{
+    EventController::GetInstance().Init();
+    SUCCEED();
+    int32_t systemAbilityId = 0;
+    std::string deviceId;
+    EventController::GetInstance().sysAbilityListener_->OnAddSystemAbility(systemAbilityId, deviceId);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: connectivityChange_00107
+ * @tc.desc: test the interface
+ * @tc.type: FUNC
+ * @tc.require: DTS2023121404861
+ */
+HWTEST_F(EventControllerTest, connectivityChange_00107, testing::ext::TestSize.Level1)
+{
+    int32_t userId = 0;
+    std::string bundleName = "test";
+    EventController::GetInstance().GetUid(userId, bundleName);
+    SUCCEED();
+    EventController::GetInstance().Stop();
+    SUCCEED();
+}
+
+/**
+ * @tc.name: connectivityChange_00108
+ * @tc.desc: test the interface Init
+ * @tc.type: FUNC
+ * @tc.require: DTS2023121404861
+ */
+HWTEST_F(EventControllerTest, connectivityChange_00108, testing::ext::TestSize.Level1)
+{
+    EventController::GetInstance().Init();
+    SUCCEED();
+    EventController::GetInstance().sysAbilityListener_ = new EventController::SystemAbilityStatusChangeListener();
+    EventController::GetInstance().Init();
+    SUCCEED();
+}
+
+/**
+ * @tc.name: connectivityChange_00109
+ * @tc.desc: test the interface
+ * @tc.type: FUNC
+ * @tc.require: DTS2023121404861
+ */
+HWTEST_F(EventControllerTest, connectivityChange_00109, testing::ext::TestSize.Level1)
+{
+    int32_t userId = 0;
+    std::string action = EventFwk::CommonEventSupport::COMMON_EVENT_WIFI_P2P_STATE_CHANGED;
+    nlohmann::json payload;
+    EventController::GetInstance().handleEvent(userId, action, payload);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: connectivityChange_00110
+ * @tc.desc: test the interface
+ * @tc.type: FUNC
+ * @tc.require: DTS2023121404861
+ */
+HWTEST_F(EventControllerTest, connectivityChange_00110, testing::ext::TestSize.Level1)
+{
+    EventFwk::CommonEventData data;
+    nlohmann::json payload;
+    EventFwk::Want want = data.GetWant();
+    std::string action = EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_CHANGED;
+    bool b1 = EventController::GetInstance().HandlePkgCommonEvent(action, want, payload);
+    EXPECT_EQ(b1, true);
+
+    std::string action1 = EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_REPLACED;
+    bool b2 = EventController::GetInstance().HandlePkgCommonEvent(action1, want, payload);
+    EXPECT_EQ(b2, true);
+
+    std::string action2 = EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_FULLY_REMOVED;
+    bool b3 = EventController::GetInstance().HandlePkgCommonEvent(action2, want, payload);
+    EXPECT_EQ(b3, true);
+
+    std::string action3 = EventFwk::CommonEventSupport::COMMON_EVENT_BUNDLE_REMOVED;
+    bool b4 = EventController::GetInstance().HandlePkgCommonEvent(action3, want, payload);
+    EXPECT_EQ(b4, true);
 }
 }
 }

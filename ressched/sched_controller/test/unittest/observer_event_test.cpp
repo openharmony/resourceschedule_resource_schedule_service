@@ -18,6 +18,10 @@
 #define private public
 #include "hisysevent_observer.h"
 #include "mmi_observer.h"
+#include "device_movement_observer.h"
+#include "sched_telephony_observer.h"
+#include "audio_observer.h"
+#include "connection_subscriber.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -35,21 +39,61 @@ public:
     void TearDown() {}
     static std::shared_ptr<HiSysEventObserver> hisysEventObserver_;
     static std::shared_ptr<MmiObserver> mmiObserver_;
+    static std::shared_ptr<ConnectionSubscriber> connectionSubscriber_;
+#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
+    static std::shared_ptr<DeviceMovementObserver> deviceMovementObserver_;
+#endif
+#ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
+    static std::shared_ptr<SchedTelephonyObserver> schedTelephonyObserver_;
+#endif
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    static std::shared_ptr<AudioObserver> audioObserver_;
+#endif
 };
 
 std::shared_ptr<HiSysEventObserver> ObserverEventTest::hisysEventObserver_ = nullptr;
 std::shared_ptr<MmiObserver> ObserverEventTest::mmiObserver_ = nullptr;
+std::shared_ptr<ConnectionSubscriber> ObserverEventTest::connectionSubscriber_ = nullptr;
+#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
+    std::shared_ptr<DeviceMovementObserver> ObserverEventTest::deviceMovementObserver_ = nullptr;
+#endif
+#ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
+    std::shared_ptr<SchedTelephonyObserver> ObserverEventTest::schedTelephonyObserver_ = nullptr;
+#endif
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    std::shared_ptr<AudioObserver> ObserverEventTest::audioObserver_ = nullptr;
+#endif
 
 void ObserverEventTest::SetUpTestCase()
 {
     hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
     mmiObserver_ = std::make_shared<MmiObserver>();
+    connectionSubscriber_ = std::make_shared<ConnectionSubscriber>();
+#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
+    deviceMovementObserver_ = std::make_shared<DeviceMovementObserver>();
+#endif
+#ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
+    schedTelephonyObserver_ = std::make_shared<SchedTelephonyObserver>();
+#endif
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    audioObserver_ = std::make_shared<AudioObserver>();
+#endif
 }
 
 void ObserverEventTest::TearDownTestCase()
 {
     hisysEventObserver_ = nullptr;
     mmiObserver_ = nullptr;
+    connectionSubscriber_ = nullptr;
+#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
+    deviceMovementObserver_ = nullptr;
+#endif
+#ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
+    schedTelephonyObserver_ = nullptr;
+#endif
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    audioObserver_ = nullptr;
+#endif
 }
 
 /**
@@ -401,5 +445,111 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_001, testing::ext::TestSize.Level1)
     EXPECT_NE(mmiObserver_, nullptr);
 }
 
+/**
+ * @tc.name: deviceMovementObserverEvent_001
+ * @tc.desc: test multimodal input sync bundleName interface
+ * @tc.type: FUNC
+ * @tc.require: DTS2023121404861
+ */
+HWTEST_F(ObserverEventTest, deviceMovementObserverEvent_001, testing::ext::TestSize.Level1)
+{
+#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
+    // data is null
+    int32_t code = -1;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    int32_t testRequest = deviceMovementObserver_->OnRemoteRequest(code, data, reply, option);
+    EXPECT_EQ(testRequest, -1);
+
+    //code is MOVEMENT_CHANGE
+    data.WriteInterfaceToken(DeviceMovementObserver::GetDescriptor());
+    code = static_cast<int32_t>(Msdp::ImovementCallback::MOVEMENT_CHANGE);
+    int32_t t1 = deviceMovementObserver_->OnRemoteRequest(code, data, reply, option);
+    EXPECT_EQ(t1, 0);
+
+    //code is not MOVEMENT_CHANGE
+    code = -1;
+    int32_t t2 = deviceMovementObserver_->OnRemoteRequest(code, data, reply, option);
+    EXPECT_EQ(t2, IPCObjectStub::OnRemoteRequest(code, data, reply, option));
+#endif
+}
+
+/**
+ * @tc.name: schedTelephonyObserverEvent_001
+ * @tc.desc: test multimodal input sync bundleName interface
+ * @tc.type: FUNC
+ * @tc.require: DTS2023121404861
+ */
+HWTEST_F(ObserverEventTest, schedTelephonyObserverEvent_001, testing::ext::TestSize.Level1)
+{
+#ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
+    int32_t slotId = 0;
+    int32_t callState = 0;
+    std::u16string phoneNumber;
+    schedTelephonyObserver_->onCallStateUpdated(slotId, callState, phoneNumber);
+    SUCCEED();
+#endif
+}
+
+/**
+ * @tc.name: connectionSubscriberEvent_001
+ * @tc.desc: test multimodal input sync bundleName interface
+ * @tc.type: FUNC
+ * @tc.require: DTS2023121404861
+ */
+HWTEST_F(ObserverEventTest, connectionSubscriberEvent_001, testing::ext::TestSize.Level1)
+{
+    //test the interface
+    AbilityRuntime::ConnectionData data;
+    AbilityRuntime::DlpStateData data1;
+    nlohmann::json payload;
+    connectionSubscriber_->MarshallingConnectionData(data, payload);
+    SUCCEED();
+    connectionSubscriber_->OnExtensionConnected(data);
+    SUCCEED();
+    connectionSubscriber_->OnExtensionDisconnected(data);
+    SUCCEED();
+    connectionSubscriber_->MarshallingDlpStateData(data1, payload);
+    SUCCEED();
+    connectionSubscriber_->OnDlpAbilityOpened(data1);
+    SUCCEED();
+    connectionSubscriber_->OnDlpAbilityClosed(data1);
+    SUCCEED();
+    connectionSubscriber_->OnServiceDied();
+    SUCCEED();
+}
+
+/**
+ * @tc.name: audioObserverObserverEvent_001
+ * @tc.desc: test multimodal input sync bundleName interface
+ * @tc.type: FUNC
+ * @tc.require: DTS2023121404861
+ */
+HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level1)
+{
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    std::unique_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo;
+    nlohmann::json payload;
+    audioObserver_->MarshallingAudioRendererChangeInfo(audioRendererChangeInfo, payload);
+    SUCCEED();
+    audioObserver_->OnRendererStateChange(audioRendererChangeInfo);
+    SUCCEED();
+
+    //ringerMode equals mode_
+    AudioStandard::AudioRingerMode ringerMode = -1;.
+    audioObserver_->OnRingerModeUpdated(ringerMode);
+    SUCCEED();
+    //ringerMode is not mode_
+    AudioStandard::AudioRingerMode ringerMode1 = 0;
+    audioObserver_->OnRingerModeUpdated(ringerMode);
+    SUCCEED();
+
+    //test the interface of OnVolumeKeyEvent
+    AudioStandard::VolumeEvent volumeEvent;
+    audioObserver_->OnVolumeKeyEvent(volumeEvent);
+    SUCCEED();
+#endif
+}
 }
 }
