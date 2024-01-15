@@ -484,7 +484,7 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(
     windowInfo->visibilityState_ = visibilityState;
     windowInfo->isVisible_ = isVisible;
     windowInfo->windowType_ = (int32_t)windowType;
-    
+
     if (!shouldAdjustCgroup) {
         return;
     }
