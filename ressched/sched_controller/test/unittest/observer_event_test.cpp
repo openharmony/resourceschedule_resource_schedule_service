@@ -449,7 +449,7 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_001, testing::ext::TestSize.Level1)
  * @tc.name: deviceMovementObserverEvent_001
  * @tc.desc: test multimodal input sync bundleName interface
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  */
 HWTEST_F(ObserverEventTest, deviceMovementObserverEvent_001, testing::ext::TestSize.Level1)
 {
@@ -479,7 +479,7 @@ HWTEST_F(ObserverEventTest, deviceMovementObserverEvent_001, testing::ext::TestS
  * @tc.name: schedTelephonyObserverEvent_001
  * @tc.desc: test multimodal input sync bundleName interface
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  */
 HWTEST_F(ObserverEventTest, schedTelephonyObserverEvent_001, testing::ext::TestSize.Level1)
 {
@@ -496,7 +496,7 @@ HWTEST_F(ObserverEventTest, schedTelephonyObserverEvent_001, testing::ext::TestS
  * @tc.name: connectionSubscriberEvent_001
  * @tc.desc: test multimodal input sync bundleName interface
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  */
 HWTEST_F(ObserverEventTest, connectionSubscriberEvent_001, testing::ext::TestSize.Level1)
 {
@@ -524,7 +524,7 @@ HWTEST_F(ObserverEventTest, connectionSubscriberEvent_001, testing::ext::TestSiz
  * @tc.name: audioObserverObserverEvent_001
  * @tc.desc: test multimodal input sync bundleName interface
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  */
 HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level1)
 {

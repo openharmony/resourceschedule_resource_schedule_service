@@ -71,7 +71,7 @@ HWTEST_F(PluginMgrTest, Init001, TestSize.Level1)
  * @tc.name: Plugin mgr test Init 002
  * @tc.desc: Verify if can init fault.
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  * @tc.author:z30053169
  */
 HWTEST_F(PluginMgrTest, Init002, TestSize.Level1)
@@ -113,7 +113,7 @@ HWTEST_F(PluginMgrTest, GetConfig001, TestSize.Level1)
  * @tc.name: Plugin mgr test GetConfig 002
  * @tc.desc: Verify if can get config with wrong env.
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  * @tc.author:z30053169
  */
 HWTEST_F(PluginMgrTest, GetConfig002, TestSize.Level1)
@@ -127,7 +127,7 @@ HWTEST_F(PluginMgrTest, GetConfig002, TestSize.Level1)
  * @tc.name: Plugin mgr test SubscribeResource 002
  * @tc.desc: Verify if can SubscribeResource
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  * @tc.author:z30053169
  */
 HWTEST_F(PluginMgrTest, SubscribeResource002, TestSize.Level1)
@@ -144,7 +144,7 @@ HWTEST_F(PluginMgrTest, SubscribeResource002, TestSize.Level1)
  * @tc.name: Plugin mgr test UnSubscribeResource 003
  * @tc.desc: Verify if can SubscribeResource
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  * @tc.author:z30053169
  */
 HWTEST_F(PluginMgrTest, UnSubscribeResource003, TestSize.Level1)
@@ -165,7 +165,7 @@ HWTEST_F(PluginMgrTest, UnSubscribeResource003, TestSize.Level1)
  * @tc.name: Plugin mgr test DispatchResource 001
  * @tc.desc: Verify if can DispatchResource
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  * @tc.author:z30053169
  */
 HWTEST_F(PluginMgrTest, DispatchResource001, TestSize.Level1)
@@ -183,7 +183,7 @@ HWTEST_F(PluginMgrTest, DispatchResource001, TestSize.Level1)
  * @tc.name: Plugin mgr test DispatchResource 002
  * @tc.desc: Verify if can DispatchResource
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  * @tc.author:z30053169
  */
 HWTEST_F(PluginMgrTest, DispatchResource002, TestSize.Level1)
@@ -427,7 +427,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_004, Function | MediumTes
  * @tc.name: Plugin mgr test DumPluginInfoAppend_001
  * @tc.desc: test the interface DumpluginInfoAppend
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  * @tc.author:z30053169
  */
 HWTEST_F(PluginMgrTest, DumPluginInfoAppend_001, TestSize.Level1)
@@ -443,7 +443,7 @@ HWTEST_F(PluginMgrTest, DumPluginInfoAppend_001, TestSize.Level1)
  * @tc.name: Plugin mgr test DispatchResource 003
  * @tc.desc: test the interface DispatchResource
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  * @tc.author:z30053169
  */
 HWTEST_F(PluginMgrTest, DispatchResource003, TestSize.Level1)

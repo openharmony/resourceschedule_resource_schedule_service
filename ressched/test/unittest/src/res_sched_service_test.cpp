@@ -176,7 +176,7 @@ HWTEST_F(ResSchedServiceTest, Report002, Function | MediumTest | Level0)
  * @tc.name: Ressched service KillProcess 001
  * @tc.desc: test the interface service KillProcess
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  * @tc.author:z30053169
  */
 HWTEST_F(ResSchedServiceTest, KillProcess001, Function | MediumTest | Level0)
@@ -223,7 +223,7 @@ HWTEST_F(ResSchedServiceTest, OnStart002, Function | MediumTest | Level0)
  * @tc.name: Stop ResSchedServiceAbility 001
  * @tc.desc: test the interface Onstop
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  * @tc.author:z30053169
  */
 HWTEST_F(ResSchedServiceTest, OnStop001, Function | MediumTest | Level0)

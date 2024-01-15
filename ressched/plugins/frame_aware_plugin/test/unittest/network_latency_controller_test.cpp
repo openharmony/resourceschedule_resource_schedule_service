@@ -70,7 +70,7 @@ protected:
  * @tc.name: controllerInit001
  * @tc.desc: test controller init
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  */
 HWTEST_F(NetworkLatencyControllerTest, controllerInit001, testing::ext::TestSize.Level1)
 {

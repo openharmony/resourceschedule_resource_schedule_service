@@ -182,7 +182,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00105, testing::ext::TestSize.L
  * @tc.name: connectivityChange_00106
  * @tc.desc: test the interface OnAddSystemAbility
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  */
 HWTEST_F(EventControllerTest, connectivityChange_00106, testing::ext::TestSize.Level1)
 {
@@ -198,7 +198,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00106, testing::ext::TestSize.L
  * @tc.name: connectivityChange_00107
  * @tc.desc: test the interface
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  */
 HWTEST_F(EventControllerTest, connectivityChange_00107, testing::ext::TestSize.Level1)
 {
@@ -214,7 +214,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00107, testing::ext::TestSize.L
  * @tc.name: connectivityChange_00108
  * @tc.desc: test the interface Init
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  */
 HWTEST_F(EventControllerTest, connectivityChange_00108, testing::ext::TestSize.Level1)
 {
@@ -229,7 +229,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00108, testing::ext::TestSize.L
  * @tc.name: connectivityChange_00109
  * @tc.desc: test the interface
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  */
 HWTEST_F(EventControllerTest, connectivityChange_00109, testing::ext::TestSize.Level1)
 {
@@ -244,7 +244,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00109, testing::ext::TestSize.L
  * @tc.name: connectivityChange_00110
  * @tc.desc: test the interface
  * @tc.type: FUNC
- * @tc.require: DTS2023121404861
+ * @tc.require: issueI8VZVN
  */
 HWTEST_F(EventControllerTest, connectivityChange_00110, testing::ext::TestSize.Level1)
 {
