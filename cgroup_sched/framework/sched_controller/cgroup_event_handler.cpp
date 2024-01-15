@@ -480,12 +480,12 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(
         return;
     }
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
-    bool shouldAdjustCgroup = windowInfo->isVisible_ == isVisible;
+    bool visibleStatusNotChanged = windowInfo->isVisible_ == isVisible;
     windowInfo->visibilityState_ = visibilityState;
     windowInfo->isVisible_ = isVisible;
     windowInfo->windowType_ = (int32_t)windowType;
 
-    if (!shouldAdjustCgroup) {
+    if (visibleStatusNotChanged) {
         return;
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
