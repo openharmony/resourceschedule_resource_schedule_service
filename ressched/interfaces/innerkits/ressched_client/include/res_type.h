@@ -468,6 +468,7 @@ enum WebScene : int64_t {
     WEB_SCENE_SLIDE = 1003,
     WEB_SCENE_RESIZE = 1004,
     WEB_SCENE_VISIBLE = 1005,
+    WEB_SCENE_KEYBOARD_CLICK = 1006,
 };
 
 /**
