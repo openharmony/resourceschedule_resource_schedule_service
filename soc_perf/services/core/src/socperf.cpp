@@ -19,6 +19,7 @@
 #include "config_policy_utils.h"
 #include "hisysevent.h"
 #include "hitrace_meter.h"
+#include "parameters.h"
 
 namespace OHOS {
 namespace SOCPERF {
@@ -32,13 +33,15 @@ SocPerf::~SocPerf()
 
 bool SocPerf::Init()
 {
+    resourceConfigXml = system::GetParameter("ohos.boot.kernel", "").size() > 0 ?
+        SOCPERF_BOOST_CONFIG_XML_EXT : SOCPERF_BOOST_CONFIG_XML;
     if (!LoadConfigXmlFile(SOCPERF_RESOURCE_CONFIG_XML)) {
         SOC_PERF_LOGE("Failed to load %{public}s", SOCPERF_RESOURCE_CONFIG_XML.c_str());
         return false;
     }
 
-    if (!LoadConfigXmlFile(SOCPERF_BOOST_CONFIG_XML)) {
-        SOC_PERF_LOGE("Failed to load %{public}s", SOCPERF_BOOST_CONFIG_XML.c_str());
+    if (!LoadConfigXmlFile(resourceConfigXml)) {
+        SOC_PERF_LOGE("Failed to load %{public}s", resourceConfigXml.c_str());
         return false;
     }
 
@@ -633,7 +636,7 @@ bool SocPerf::LoadCmd(const xmlNode* rootNode, const std::string& configFile)
         if (!TraversalBoostResource(grandson, configFile, actions)) {
             return false;
         }
-        if (configFile.find(SOCPERF_BOOST_CONFIG_XML) != std::string::npos) {
+        if (configFile.find(resourceConfigXml) != std::string::npos) {
             perfActionsInfo.insert(std::pair<int32_t, std::shared_ptr<Actions>>(actions->id, actions));
         }
     }
@@ -874,7 +877,7 @@ bool SocPerf::TraversalActions(std::shared_ptr<Action> action, int32_t actionId)
 bool SocPerf::CheckActionResIdAndValueValid(const std::string& configFile)
 {
     std::unordered_map<int32_t, std::shared_ptr<Actions>> actionsInfo;
-    if (configFile.find(SOCPERF_BOOST_CONFIG_XML) != std::string::npos) {
+    if (configFile.find(resourceConfigXml) != std::string::npos) {
         actionsInfo = perfActionsInfo;
     }
     for (auto actionsIter = actionsInfo.begin(); actionsIter != actionsInfo.end(); ++actionsIter) {

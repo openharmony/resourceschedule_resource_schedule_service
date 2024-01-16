@@ -47,7 +47,7 @@ private:
     std::vector<std::shared_ptr<SocPerfThreadWrap>> socperfThreadWraps;
     bool wrapSwitch[MAX_QUEUE_NUM] = {false };
     bool enabled = false;
-
+    std::string resourceConfigXml;
     std::unordered_map<int32_t, std::shared_ptr<ResNode>> resNodeInfo;
     std::unordered_map<int32_t, std::shared_ptr<GovResNode>> govResNodeInfo;
     std::unordered_map<std::string, int32_t> resStrToIdInfo;
