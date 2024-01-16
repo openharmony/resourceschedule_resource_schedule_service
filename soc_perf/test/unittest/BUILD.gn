@@ -55,6 +55,13 @@ ohos_unittest("SocPerfServerTest") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  branch_protector_ret = "pac_ret"
 }
 
 ohos_unittest("SocPerfSubTest") {
