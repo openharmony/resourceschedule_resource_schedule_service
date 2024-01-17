@@ -296,7 +296,6 @@ extern "C" void OnPluginDisable()
 extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& data)
 {
     FrameAwarePlugin::GetInstance().DispatchResource(data);
-    RESSCHED_LOGI("FrameAwarePlugin::OnDispatchResource success.");
 }
 }
 }
