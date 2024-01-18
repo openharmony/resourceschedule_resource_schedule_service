@@ -35,7 +35,7 @@ bool ProcessGroupLog::InitOnLoaded()
 {
     const std::vector<LogLevel> levels = { LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
     for (const LogLevel& level : levels) {
-        if (HiLogIsLoggable(LOG_TAG_DOMAIN_ID_PGCGS, LOG_TAG_PGCGS, level)) {
+        if (HiLogIsLoggable(LOG_DOMAIN, LOG_TAG, level)) {
             ProcessGroupLog::SetLogLevel(level);
             break;
         }

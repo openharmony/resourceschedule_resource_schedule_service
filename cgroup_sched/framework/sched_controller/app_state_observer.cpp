@@ -22,12 +22,11 @@
 #include "res_type.h"
 #include "supervisor.h"
 
+#undef LOG_TAG
+#define LOG_TAG "RmsAppStateObserver"
+
 namespace OHOS {
 namespace ResourceSchedule {
-namespace {
-    constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "RmsAppStateObserver"};
-}
-
 void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateData &appStateData)
 {
     if (!ValidateAppStateData(appStateData)) {

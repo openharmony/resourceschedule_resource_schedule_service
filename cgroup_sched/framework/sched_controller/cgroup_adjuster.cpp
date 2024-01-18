@@ -26,12 +26,11 @@
 #include "res_type.h"
 #include "wm_common.h"
 
+#undef LOG_TAG
+#define LOG_TAG "CgroupAdjuster"
+
 namespace OHOS {
 namespace ResourceSchedule {
-namespace {
-    constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "CgroupAdjuster"};
-}
-
 using OHOS::AppExecFwk::ApplicationState;
 using OHOS::AppExecFwk::AbilityState;
 using OHOS::AppExecFwk::ExtensionState;

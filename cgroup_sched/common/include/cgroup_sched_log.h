@@ -20,11 +20,20 @@
 #include <vector>
 #include "hilog/log.h"
 
+#undef LOG_DOMAIN
+#define LOG_DOMAIN 0xD001702
+
+#undef LOG_TAG
+#define LOG_TAG "CGS"
+
+#define CGS_LOGD(...) HILOG_DEBUG(LOG_CORE, __VA_ARGS__)
+#define CGS_LOGI(...) HILOG_INFO(LOG_CORE, __VA_ARGS__)
+#define CGS_LOGW(...) HILOG_WARN(LOG_CORE, __VA_ARGS__)
+#define CGS_LOGE(...) HILOG_ERROR(LOG_CORE, __VA_ARGS__)
+#define CGS_LOGF(...) HILOG_FATAL(LOG_CORE, __VA_ARGS__)
+
 namespace OHOS {
 namespace ResourceSchedule {
-#define LOG_TAG_DOMAIN_ID_RMS 0xD001702
-#define LOG_TAG_CGROUP_SCHED "CGS"
-
 class CgroupSchedLog {
 public:
     CgroupSchedLog() = delete;
@@ -70,18 +79,6 @@ public:
 private:
     static LogLevel level_;
 };
-
-#define CGS_PRINT_LOG(logLevel, Logger, ...) do { \
-        if (CgroupSchedLog::JudgeLevel(logLevel)) { \
-            (void)OHOS::HiviewDFX::HiLog::Logger(LOG_LABEL, __VA_ARGS__); \
-        } \
-    } while (0)
-
-#define CGS_LOGD(...) CGS_PRINT_LOG(LOG_DEBUG, Debug, __VA_ARGS__)
-#define CGS_LOGI(...) CGS_PRINT_LOG(LOG_INFO, Info, __VA_ARGS__)
-#define CGS_LOGW(...) CGS_PRINT_LOG(LOG_WARN, Warn, __VA_ARGS__)
-#define CGS_LOGE(...) CGS_PRINT_LOG(LOG_ERROR, Error, __VA_ARGS__)
-#define CGS_LOGF(...) CGS_PRINT_LOG(LOG_FATAL, Fatal, __VA_ARGS__)
 } // namespace ResourceSchedule
 } // namespace OHOS
 

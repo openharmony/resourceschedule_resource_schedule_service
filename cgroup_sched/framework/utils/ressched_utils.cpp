@@ -19,12 +19,14 @@
 #include "hisysevent.h"
 #include "nlohmann/json.hpp"
 
+#undef LOG_TAG
+#define LOG_TAG "ResSchedUtils"
+
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     const std::string RES_SCHED_SERVICE_SO = "libresschedsvc.z.so";
     const std::string RES_SCHED_CG_EXT_SO = "libcgroup_sched_ext.z.so";
-    constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "ResSchedUtils"};
 }
 
 ResSchedUtils& ResSchedUtils::GetInstance()

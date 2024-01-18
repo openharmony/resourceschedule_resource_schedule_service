@@ -33,7 +33,7 @@ bool CgroupSchedLog::InitOnLoaded()
 {
     const std::vector<LogLevel> levels = { LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
     for (const LogLevel& level : levels) {
-        if (HiLogIsLoggable(LOG_TAG_DOMAIN_ID_RMS, LOG_TAG_CGROUP_SCHED, level)) {
+        if (HiLogIsLoggable(LOG_DOMAIN, LOG_TAG, level)) {
             CgroupSchedLog::SetLogLevel(level);
             break;
         }

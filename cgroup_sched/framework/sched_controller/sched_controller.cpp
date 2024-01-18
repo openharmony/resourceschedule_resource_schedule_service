@@ -38,11 +38,13 @@
 #include "power_mgr_client.h"
 #endif
 
+#undef LOG_TAG
+#define LOG_TAG "SchedController"
+
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     const std::string CG_HANDLER_THREAD = "CgroupEventHandler";
-    constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "SchedController"};
 }
 
 #ifdef CONFIG_BGTASK_MGR
