@@ -21,6 +21,9 @@
 
 #include "cgroup_sched_log.h"
 
+#undef LOG_TAG
+#define LOG_TAG "ChronoScope"
+
 namespace OHOS {
 namespace ResourceSchedule {
 using Clock = std::chrono::high_resolution_clock;
@@ -43,7 +46,6 @@ public:
     {
         Clock::time_point t2 = Clock::now();
         MilliSecondsType time_span = std::chrono::duration_cast<MilliSecondsType>(t2 - t1);
-        HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "ChronoScope"};
         CGS_LOGD("[%{public}s] cost %{public}lf milliseconds.", outmsg_.c_str(), time_span.count());
         if (out_) {
             *out_ = time_span.count();

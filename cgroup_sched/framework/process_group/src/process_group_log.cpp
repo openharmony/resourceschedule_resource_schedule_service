@@ -20,25 +20,12 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
 LogLevel ProcessGroupLog::level_ = { LOG_DEBUG };
-const bool RESULT = ProcessGroupLog::InitOnLoaded();
 
 bool ProcessGroupLog::JudgeLevel(const LogLevel &level)
 {
     const LogLevel &curLevel = ProcessGroupLog::GetLogLevel();
     if (level < curLevel) {
         return false;
-    }
-    return true;
-}
-
-bool ProcessGroupLog::InitOnLoaded()
-{
-    const std::vector<LogLevel> levels = { LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
-    for (const LogLevel& level : levels) {
-        if (HiLogIsLoggable(LOG_TAG_DOMAIN_ID_PGCGS, LOG_TAG_PGCGS, level)) {
-            ProcessGroupLog::SetLogLevel(level);
-            break;
-        }
     }
     return true;
 }

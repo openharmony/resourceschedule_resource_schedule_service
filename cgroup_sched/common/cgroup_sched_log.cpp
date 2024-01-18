@@ -18,25 +18,12 @@
 namespace OHOS {
 namespace ResourceSchedule {
 LogLevel CgroupSchedLog::level_ = { LOG_DEBUG };
-const bool RESULT = CgroupSchedLog::InitOnLoaded();
 
 bool CgroupSchedLog::JudgeLevel(const LogLevel &level)
 {
     const LogLevel &curLevel = CgroupSchedLog::GetLogLevel();
     if (level < curLevel) {
         return false;
-    }
-    return true;
-}
-
-bool CgroupSchedLog::InitOnLoaded()
-{
-    const std::vector<LogLevel> levels = { LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
-    for (const LogLevel& level : levels) {
-        if (HiLogIsLoggable(LOG_TAG_DOMAIN_ID_RMS, LOG_TAG_CGROUP_SCHED, level)) {
-            CgroupSchedLog::SetLogLevel(level);
-            break;
-        }
     }
     return true;
 }

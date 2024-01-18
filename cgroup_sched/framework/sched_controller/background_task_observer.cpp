@@ -22,12 +22,11 @@
 #include "ressched_utils.h"
 #include "res_type.h"
 
+#undef LOG_TAG
+#define LOG_TAG "BackgroundTaskObserver"
+
 namespace OHOS {
 namespace ResourceSchedule {
-namespace {
-    constexpr HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_TAG_DOMAIN_ID_RMS, "BackgroundTaskObserver"};
-}
-
 void BackgroundTaskObserver::MarshallingTransientTaskAppInfo(
     const std::shared_ptr<TransientTaskAppInfo>& info, nlohmann::json& payload)
 {

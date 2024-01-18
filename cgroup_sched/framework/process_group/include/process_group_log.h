@@ -19,23 +19,25 @@
 #include "hilog/log_c.h"    // for LogLevel, LOG_CORE, LOG_LEVEL_MAX, LOG_LE...
 #include "hilog/log_cpp.h"  // for HiLogLabel
 
+#undef LOG_DOMAIN
+#define LOG_DOMAIN 0xD001702
+
+#undef LOG_TAG
+#define LOG_TAG "pg-cgs"
+
+#define PGCGS_LOGD(...) HILOG_DEBUG(LOG_CORE, __VA_ARGS__)
+#define PGCGS_LOGI(...) HILOG_INFO(LOG_CORE, __VA_ARGS__)
+#define PGCGS_LOGW(...) HILOG_WARN(LOG_CORE, __VA_ARGS__)
+#define PGCGS_LOGE(...) HILOG_ERROR(LOG_CORE, __VA_ARGS__)
+#define PGCGS_LOGF(...) HILOG_FATAL(LOG_CORE, __VA_ARGS__)
+
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
-#define LOG_TAG_PGCGS "pg-cgs"
-#define LOG_TAG_DOMAIN_ID_PGCGS 0xD001702
-
 class ProcessGroupLog {
 public:
     ProcessGroupLog() = delete;
     ~ProcessGroupLog() = delete;
-
-    /**
-     * @brief Init log level on loaded.
-     *
-     * @return true if success, else false
-     */
-    static bool InitOnLoaded();
 
     /**
      * @brief Judge level.
@@ -44,18 +46,6 @@ public:
      * @return True if success,else false.
      */
     static bool JudgeLevel(const LogLevel &level);
-
-    /**
-     * @brief Set log level.
-     *
-     * @param level The level.
-     */
-    static void SetLogLevel(const LogLevel &level)
-    {
-        if (level > LOG_LEVEL_MIN && level < LOG_LEVEL_MAX) {
-            level_ = level;
-        }
-    }
 
     /**
      * @brief Get log level.
@@ -70,24 +60,6 @@ public:
 private:
     static LogLevel level_;
 };
-
-static constexpr OHOS::HiviewDFX::HiLogLabel PGCGS_LOG_LABEL = {
-    LOG_CORE,
-    LOG_TAG_DOMAIN_ID_PGCGS,
-    LOG_TAG_PGCGS
-};
-
-#define PGCGS_PRINT_LOG(logLevel, Logger, ...) do { \
-        if (ProcessGroupLog::JudgeLevel(logLevel)) { \
-            (void)OHOS::HiviewDFX::HiLog::Logger(PGCGS_LOG_LABEL, __VA_ARGS__); \
-        } \
-    } while (0)
-
-#define PGCGS_LOGD(...) PGCGS_PRINT_LOG(LOG_DEBUG, Debug, __VA_ARGS__)
-#define PGCGS_LOGI(...) PGCGS_PRINT_LOG(LOG_INFO, Info, __VA_ARGS__)
-#define PGCGS_LOGW(...) PGCGS_PRINT_LOG(LOG_WARN, Warn, __VA_ARGS__)
-#define PGCGS_LOGE(...) PGCGS_PRINT_LOG(LOG_ERROR, Error, __VA_ARGS__)
-#define PGCGS_LOGF(...) PGCGS_PRINT_LOG(LOG_FATAL, Fatal, __VA_ARGS__)
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
