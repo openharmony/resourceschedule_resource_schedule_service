@@ -25,11 +25,11 @@
 #undef LOG_TAG
 #define LOG_TAG "pg-cgs"
 
-#define CGS_LOGD(...) HILOG_DEBUG(LOG_CORE, __VA_ARGS__)
-#define CGS_LOGI(...) HILOG_INFO(LOG_CORE, __VA_ARGS__)
-#define CGS_LOGW(...) HILOG_WARN(LOG_CORE, __VA_ARGS__)
-#define CGS_LOGE(...) HILOG_ERROR(LOG_CORE, __VA_ARGS__)
-#define CGS_LOGF(...) HILOG_FATAL(LOG_CORE, __VA_ARGS__)
+#define PGCGS_LOGD(...) HILOG_DEBUG(LOG_CORE, __VA_ARGS__)
+#define PGCGS_LOGI(...) HILOG_INFO(LOG_CORE, __VA_ARGS__)
+#define PGCGS_LOGW(...) HILOG_WARN(LOG_CORE, __VA_ARGS__)
+#define PGCGS_LOGE(...) HILOG_ERROR(LOG_CORE, __VA_ARGS__)
+#define PGCGS_LOGF(...) HILOG_FATAL(LOG_CORE, __VA_ARGS__)
 
 namespace OHOS {
 namespace ResourceSchedule {
