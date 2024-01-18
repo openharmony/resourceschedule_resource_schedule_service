@@ -38,14 +38,7 @@ class CgroupSchedLog {
 public:
     CgroupSchedLog() = delete;
     ~CgroupSchedLog() = delete;
-
-    /**
-     * @brief Init log level on loaded.
-     *
-     * @return true if success, else false
-     */
-    static bool InitOnLoaded();
-
+    
     /**
      * @brief Judge level.
      *
@@ -53,18 +46,6 @@ public:
      * @return True if success,else false.
      */
     static bool JudgeLevel(const LogLevel &level);
-
-    /**
-     * @brief Set log level.
-     *
-     * @param level The level.
-     */
-    static void SetLogLevel(const LogLevel &level)
-    {
-        if (level > LOG_LEVEL_MIN && level < LOG_LEVEL_MAX) {
-            level_ = level;
-        }
-    }
 
     /**
      * @brief Get log level.
