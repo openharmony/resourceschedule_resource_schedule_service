@@ -20,37 +20,12 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-#define LOG_RESSCHED "RSS"
-#define LOG_DOMAIN_ID_RESSCHED 0xD001700
-enum class ResschedLogLevel : uint8_t { DEBUG = 0, INFO, WARN, ERROR, FATAL};
-static constexpr OHOS::HiviewDFX::HiLogLabel RES_SCHED_LABEL = {
-    LOG_CORE,
-    LOG_DOMAIN_ID_RESSCHED,
-    LOG_RESSCHED
-};
-class ResschedLog {
-public:
-    static ResschedLog& GetInstance()
-    {
-        static auto instance = new ResschedLog();
-        return *instance;
-    }
-    bool& getLogEnableByLevel(const ResschedLogLevel &level)
-    {
-        if (level == ResschedLogLevel::DEBUG) {
-            return debugLogEnabled_;
-        } else {
-            return otherLogEnable_;
-        }
-    }
-    bool debugLogEnabled_ = false;
-    bool otherLogEnable_ = true;
-private:
-    ResschedLog()
-    {
-        debugLogEnabled_ = HiLogIsLoggable(LOG_DOMAIN_ID_RESSCHED, LOG_RESSCHED, LOG_DEBUG);
-    }
-};
+#undef LOG_TAG
+#define LOG_TAG "RSS"
+
+#undef LOG_DOMAIN
+#define LOG_DOMAIN 0xD001700
+
 #ifdef RESSCHED_LOGF
 #undef RESSCHED_LOGF
 #endif
@@ -71,19 +46,11 @@ private:
 #undef RESSCHED_LOGD
 #endif
 
-#ifdef RESSCHED_LOG
-#undef RESSCHED_LOG
-#endif
-
-#define RESSCHED_LOG(RESSCHEDLOGLEVEL, level, ...)                                                  \
-    if (ResschedLog::GetInstance().getLogEnableByLevel(RESSCHEDLOGLEVEL))                           \
-        OHOS::HiviewDFX::HiLog::level(RES_SCHED_LABEL, ##__VA_ARGS__)                               \
-
-#define RESSCHED_LOGF(...) RESSCHED_LOG(ResschedLogLevel::FATAL, Fatal, ##__VA_ARGS__)
-#define RESSCHED_LOGE(...) RESSCHED_LOG(ResschedLogLevel::ERROR, Error, ##__VA_ARGS__)
-#define RESSCHED_LOGW(...) RESSCHED_LOG(ResschedLogLevel::WARN, Warn, ##__VA_ARGS__)
-#define RESSCHED_LOGI(...) RESSCHED_LOG(ResschedLogLevel::INFO, Info, ##__VA_ARGS__)
-#define RESSCHED_LOGD(...) RESSCHED_LOG(ResschedLogLevel::DEBUG, Debug, ##__VA_ARGS__)
+#define RESSCHED_LOGF(...) HILOG_FATAL(LOG_CORE, ##__VA_ARGS__)
+#define RESSCHED_LOGE(...) HILOG_ERROR(LOG_CORE, ##__VA_ARGS__)
+#define RESSCHED_LOGW(...) HILOG_WARN(LOG_CORE, ##__VA_ARGS__)
+#define RESSCHED_LOGI(...) HILOG_INFO(LOG_CORE, ##__VA_ARGS__)
+#define RESSCHED_LOGD(...) HILOG_DEBUG(LOG_CORE, ##__VA_ARGS__)
 } // namespace ResourceSchedule
 } // namespace OHOS
 
