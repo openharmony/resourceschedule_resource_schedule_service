@@ -15,13 +15,11 @@
 
 #ifdef RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE
 #include "socperf_plugin.h"
-
 #include "app_mgr_constants.h"
-
-#include "res_type.h"
-#include "res_sched_log.h"
-#include "plugin_mgr.h"
 #include "config_info.h"
+#include "plugin_mgr.h"
+#include "res_type.h"
+#include "socperf_log.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -61,7 +59,7 @@ void SocPerfPlugin::Init()
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
     socperfOnDemandSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND);
-    RESSCHED_LOGI("SocPerfPlugin::Init success");
+    SOC_PERF_LOGI("SocPerfPlugin::Init success");
 }
 
 void SocPerfPlugin::InitFunctionMap()
@@ -128,7 +126,7 @@ void SocPerfPlugin::Disable()
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
     resTypes.clear();
-    RESSCHED_LOGI("SocPerfPlugin::Disable success");
+    SOC_PERF_LOGI("SocPerfPlugin::Disable success");
 }
 
 void SocPerfPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
@@ -158,14 +156,14 @@ bool SocPerfPlugin::InitFeatureSwitch(std::string featureName)
 void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 {
     if (data->value == AppStartType::APP_COLD_START) {
-        RESSCHED_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
         if (socperfOnDemandSwitch_) {
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_APP_START, true, "");
         } else {
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
         }
     } else if (data->value == AppStartType::APP_WARM_START) {
-        RESSCHED_LOGI("SocPerfPlugin: socperf->APP_WARM_START");
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_WARM_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WARM_START, "");
     }
 }
@@ -173,14 +171,14 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
 {
     if (data->value == WindowFocusStatus::WINDOW_FOCUS) {
-        RESSCHED_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH");
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, "");
     }
 }
 
 void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("SocPerfPlugin: socperf->EVENT_CLICK: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK: %{public}lld", (long long)data->value);
     if (data->value == ClickEventType::TOUCH_EVENT) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH, "");
     } else if (data->value == ClickEventType::CLICK_EVENT) {
@@ -191,13 +189,13 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 void SocPerfPlugin::HandleLoadPage(const std::shared_ptr<ResData>& data)
 {
     if (data->value == LOAD_PAGE_START) {
-        RESSCHED_LOGI("SocPerfPlugin: socperf->PUSH_PAGE_START");
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->PUSH_PAGE_START");
         if (socperfOnDemandSwitch_) {
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_APP_START, false, "");
         }
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LOAD_PAGE_START, true, "");
     } else if (data->value == LOAD_PAGE_COMPLETE) {
-        RESSCHED_LOGI("SocPerfPlugin: socperf->PUSH_PAGE_COMPLETE");
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->PUSH_PAGE_COMPLETE");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LOAD_PAGE_START, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_LOAD_PAGE_COMPLETE, "");
     }
@@ -205,13 +203,13 @@ void SocPerfPlugin::HandleLoadPage(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandlePopPage(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("SocPerfPlugin: socperf->POP_PAGE: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->POP_PAGE: %{public}lld", (long long)data->value);
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_POP_PAGE, "");
 }
 
 void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
     if (data->value == SlideEventStatus::SLIDE_EVENT_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, true, "");
     } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
@@ -228,7 +226,7 @@ void SocPerfPlugin::HandleEventWebGesture(const std::shared_ptr<ResData>& data)
     if (data == nullptr) {
         return;
     }
-    RESSCHED_LOGI("SocPerfPlugin: socperf->WEB_GESTURE: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->WEB_GESTURE: %{public}lld", (long long)data->value);
     if (data->value == WebGesture::WEB_GESTURE_START) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE, true, "");
     } else if (data->value == WebGesture::WEB_GESTURE_END) {
@@ -241,7 +239,7 @@ void SocPerfPlugin::HandleResizeWindow(const std::shared_ptr<ResData>& data)
     if (data == nullptr) {
         return;
     }
-    RESSCHED_LOGI("SocPerfPlugin: socperf->RESIZE_WINDOW: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->RESIZE_WINDOW: %{public}lld", (long long)data->value);
     if (data->value == WindowResizeType::WINDOW_RESIZING) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_RESIZE_WINDOW, "");
     } else if (data->value == WindowResizeType::WINDOW_RESIZE_STOP) {
@@ -254,7 +252,7 @@ void SocPerfPlugin::HandleMoveWindow(const std::shared_ptr<ResData>& data)
     if (data == nullptr) {
         return;
     }
-    RESSCHED_LOGI("SocPerfPlugin: socperf->MOVE_WINDOW: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->MOVE_WINDOW: %{public}lld", (long long)data->value);
     if (data->value == WindowMoveType::WINDOW_MOVING) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_MOVE_WINDOW, "");
     } else if (data->value == WindowMoveType::WINDOW_MOVE_STOP) {
@@ -268,10 +266,10 @@ void SocPerfPlugin::HandleRemoteAnimation(const std::shared_ptr<ResData>& data)
         return;
     }
     if (data->value == ShowRemoteAnimationStatus::ANIMATION_BEGIN) {
-        RESSCHED_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, true, "");
     } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
-        RESSCHED_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, false, "");
     }
 }
@@ -281,7 +279,7 @@ void SocPerfPlugin::HandleDragStatusBar(const std::shared_ptr<ResData>& data)
     if (data == nullptr) {
         return;
     }
-    RESSCHED_LOGI("SocPerfPlugin: socperf->DRAG_STATUS_BAR: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->DRAG_STATUS_BAR: %{public}lld", (long long)data->value);
     if (data->value == StatusBarDragStatus::DRAG_START) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_DRAG_STATUS_BAR, "");
     } else if (data->value == StatusBarDragStatus::DRAG_END) {
@@ -294,7 +292,7 @@ void SocPerfPlugin::HandleWebGestureMove(const std::shared_ptr<ResData>& data)
     if (data == nullptr) {
         return;
     }
-    RESSCHED_LOGI("SocPerfPlugin: socperf->WEB_GESTURE_MOVE: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->WEB_GESTURE_MOVE: %{public}lld", (long long)data->value);
     if (data->value == WebGestureMove::WEB_GESTURE_MOVE_START) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_GESTURE_MOVE, true, "");
     } else if (data->value == WebGestureMove::WEB_GESTURE_MOVE_END) {
@@ -307,7 +305,7 @@ void SocPerfPlugin::HandleWebSlideNormal(const std::shared_ptr<ResData>& data)
     if (data == nullptr) {
         return;
     }
-    RESSCHED_LOGI("SocPerfPlugin: socperf->WEB_SLIDE_NORMAL: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->WEB_SLIDE_NORMAL: %{public}lld", (long long)data->value);
     if (data->value == WebSlideNormal::WEB_SLIDE_NORMAL_START) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_SLIDE_NORMAL, true, "");
     } else if (data->value == WebSlideNormal::WEB_SLIDE_NORMAL_END) {
@@ -317,20 +315,20 @@ void SocPerfPlugin::HandleWebSlideNormal(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleLoadUrl(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("SocPerfPlugin: socperf->LOAD_URL");
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->LOAD_URL");
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_LOAD_URL, "");
 }
 
 void SocPerfPlugin::HandleMousewheel(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("SocPerfPlugin: socperf->MOUSEWHEEL");
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->MOUSEWHEEL");
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_MOUSEWHEEL, "");
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
 {
     if (libName != LIB_NAME) {
-        RESSCHED_LOGE("SocPerfPlugin::OnPluginInit lib name is not match");
+        SOC_PERF_LOGI("SocPerfPlugin::OnPluginInit lib name is not match");
         return false;
     }
     SocPerfPlugin::GetInstance().Init();
