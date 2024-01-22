@@ -273,6 +273,8 @@ void SocPerfThreadWrap::SendResStatusToPerfSo()
             log.append(", value:").append(std::to_string(value[i]));
             log.append(", endTime:").append(std::to_string(endTime[i]));
         }
+        StartTrace(HITRACE_TAG_OHOS, log.c_str());
+        FinishTrace(HITRACE_TAG_OHOS);
     }
 }
 

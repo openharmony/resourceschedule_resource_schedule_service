@@ -328,7 +328,7 @@ void SocPerfPlugin::HandleMousewheel(const std::shared_ptr<ResData>& data)
 extern "C" bool OnPluginInit(std::string& libName)
 {
     if (libName != LIB_NAME) {
-        SOC_PERF_LOGI("SocPerfPlugin::OnPluginInit lib name is not match");
+        SOC_PERF_LOGE("SocPerfPlugin::OnPluginInit lib name is not match");
         return false;
     }
     SocPerfPlugin::GetInstance().Init();
