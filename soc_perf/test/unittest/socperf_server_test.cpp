@@ -61,22 +61,6 @@ void SocPerfServerTest::TearDown(void)
 }
 
 /*
- * @tc.name: SocPerfServerTest_LogEnable_001
- * @tc.desc: test log switch func
- * @tc.type FUNC
- * @tc.require: issueI78T3V
- */
-HWTEST_F(SocPerfServerTest, SocPerfServerTest_LogEnable_001, Function | MediumTest | Level0)
-{
-    SocPerfLog::EnableDebugLog();
-    bool isEnable = SocPerfLog::IsDebugLogEnabled();
-    EXPECT_TRUE(isEnable);
-    SocPerfLog::DisableDebugLog();
-    isEnable = SocPerfLog::IsDebugLogEnabled();
-    EXPECT_FALSE(isEnable);
-}
-
-/*
  * @tc.name: SocPerfServerTest_SocPerfAPI_001
  * @tc.desc: test socperf api
  * @tc.type FUNC

@@ -20,55 +20,17 @@
 
 namespace OHOS {
 namespace SOCPERF {
-#ifndef LOG_TAG_SOC_PERF
-#define LOG_TAG_SOC_PERF "socperf"
-#endif
+#undef LOG_DOMAIN
+#define LOG_DOMAIN 0xD001703
 
-#ifndef LOG_TAG_DOMAIN_ID_SOC_PERF
-#define LOG_TAG_DOMAIN_ID_SOC_PERF 0xD001703
-#endif
+#undef LOG_TAG
+#define LOG_TAG "socperf"
 
-static constexpr OHOS::HiviewDFX::HiLogLabel SOC_PERF_LOG_LABEL = {
-    LOG_CORE,
-    LOG_TAG_DOMAIN_ID_SOC_PERF,
-    LOG_TAG_SOC_PERF
-};
-
-class SocPerfLog {
-public:
-    SocPerfLog() = delete;
-    ~SocPerfLog() = delete;
-
-    static bool IsDebugLogEnabled()
-    {
-        return isDebugLogEnabled_;
-    }
-
-    static void EnableDebugLog()
-    {
-        isDebugLogEnabled_ = true;
-    }
-
-    static void DisableDebugLog()
-    {
-        isDebugLogEnabled_ = false;
-    }
-
-private:
-    static bool isDebugLogEnabled_;
-};
-
-#define SOC_PERF_PRINT_LOG(Level, fmt, ...)                     \
-    OHOS::HiviewDFX::HiLog::Level(SOC_PERF_LOG_LABEL, "[%{public}s]: " fmt, __FUNCTION__, ##__VA_ARGS__)
-
-#define SOC_PERF_LOGD(fmt, ...)                                 \
-    if (SocPerfLog::IsDebugLogEnabled())                        \
-    SOC_PERF_PRINT_LOG(Debug, fmt, ##__VA_ARGS__)
-
-#define SOC_PERF_LOGI(fmt, ...) SOC_PERF_PRINT_LOG(Info, fmt, ##__VA_ARGS__)
-#define SOC_PERF_LOGW(fmt, ...) SOC_PERF_PRINT_LOG(Warn, fmt, ##__VA_ARGS__)
-#define SOC_PERF_LOGE(fmt, ...) SOC_PERF_PRINT_LOG(Error, fmt, ##__VA_ARGS__)
-#define SOC_PERF_LOGF(fmt, ...) SOC_PERF_PRINT_LOG(Fatal, fmt, ##__VA_ARGS__)
+#define SOC_PERF_LOGD(fmt, ...) HILOG_DEBUG(LOG_CORE, "[%{public}s]: " fmt, __FUNCTION__, ##__VA_ARGS__)
+#define SOC_PERF_LOGI(fmt, ...) HILOG_INFO(LOG_CORE, "[%{public}s]: " fmt, __FUNCTION__, ##__VA_ARGS__)
+#define SOC_PERF_LOGW(fmt, ...) HILOG_WARN(LOG_CORE, "[%{public}s]: " fmt, __FUNCTION__, ##__VA_ARGS__)
+#define SOC_PERF_LOGE(fmt, ...) HILOG_ERROR(LOG_CORE, "[%{public}s]: " fmt, __FUNCTION__, ##__VA_ARGS__)
+#define SOC_PERF_LOGF(fmt, ...) HILOG_FATAL(LOG_CORE, "[%{public}s]: " fmt, __FUNCTION__, ##__VA_ARGS__)
 } // namespace SOCPERF
 } // namespace OHOS
 

@@ -28,6 +28,7 @@
 #include <unistd.h>          // for open, write
 #include <fcntl.h>           // for O_RDWR, O_CLOEXEC
 #include "hisysevent.h"
+#include "hitrace_meter.h"
 
 namespace OHOS {
 namespace SOCPERF {
@@ -264,14 +265,16 @@ void SocPerfThreadWrap::SendResStatusToPerfSo()
             }
         }
     }
-    if (SocPerfLog::IsDebugLogEnabled()) {
-        for (unsigned long i = 0; i < qosId.size(); i++) {
-            SOC_PERF_LOGD("send data to perf so, id:[%{public}d], value:[%{public}lld], endTime:[%{public}lld]",
-                qosId[i], value[i], endTime[i]);
-        }
-    }
     if (qosId.size() > 0) {
         reportFunc(qosId, value, endTime, "");
+        std::string log("send data to perf so");
+        for (unsigned long i = 0; i < qosId.size(); i++) {
+            log.append(",[id:").append(std::to_string(qosId[i]));
+            log.append(", value:").append(std::to_string(value[i]));
+            log.append(", endTime:").append(std::to_string(endTime[i])).append("]");
+        }
+        StartTrace(HITRACE_TAG_OHOS, log.c_str());
+        FinishTrace(HITRACE_TAG_OHOS);
     }
 }
 

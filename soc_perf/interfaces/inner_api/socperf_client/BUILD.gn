@@ -23,7 +23,6 @@ config("socperf_client_public_config") {
 
 ohos_shared_library("socperf_client") {
   sources = [
-    "${socperf_common}/src/socperf_log.cpp",
     "src/socperf_client.cpp",
     "src/socperf_proxy.cpp",
   ]

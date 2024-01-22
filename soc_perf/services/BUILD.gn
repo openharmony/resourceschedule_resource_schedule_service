@@ -27,7 +27,6 @@ ohos_shared_library("socperf_server") {
   configs = [ ":socperf_server_config" ]
 
   sources = [
-    "${socperf_common}/src/socperf_log.cpp",
     "core/src/socperf.cpp",
     "core/src/socperf_thread_wrap.cpp",
     "server/src/socperf_server.cpp",
@@ -70,7 +69,6 @@ ohos_static_library("socperf_server_static") {
   configs = [ ":socperf_server_config" ]
 
   sources = [
-    "${socperf_common}/src/socperf_log.cpp",
     "core/src/socperf.cpp",
     "core/src/socperf_thread_wrap.cpp",
     "server/src/socperf_server.cpp",
