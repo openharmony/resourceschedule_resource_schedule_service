@@ -267,11 +267,11 @@ void SocPerfThreadWrap::SendResStatusToPerfSo()
     }
     if (qosId.size() > 0) {
         reportFunc(qosId, value, endTime, "");
-        std::string log("send data to perf so, ");
+        std::string log("send data to perf so");
         for (unsigned long i = 0; i < qosId.size(); i++) {
-            log.append("id:").append(std::to_string(qosId[i]));
+            log.append(",[id:").append(std::to_string(qosId[i]));
             log.append(", value:").append(std::to_string(value[i]));
-            log.append(", endTime:").append(std::to_string(endTime[i]));
+            log.append(", endTime:").append(std::to_string(endTime[i])).append("]");
         }
         StartTrace(HITRACE_TAG_OHOS, log.c_str());
         FinishTrace(HITRACE_TAG_OHOS);
