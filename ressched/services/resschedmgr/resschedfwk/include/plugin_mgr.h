@@ -32,6 +32,9 @@
 #include "res_type.h"
 #include "single_instance.h"
 #include "config_info.h"
+#ifdef ressched_services_with_ffrt_enable
+#include "ffrt.h"
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -155,15 +158,22 @@ private:
     std::unique_ptr<ConfigReader> configReader_ = nullptr;
     std::unique_ptr<PluginSwitch> pluginSwitch_ = nullptr;
 
-    std::mutex pluginMutex_;
     std::map<std::string, PluginLib> pluginLibMap_;
 
     // mutex for resTypeMap_
     std::mutex resTypeMutex_;
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
 
+#ifdef ressched_services_with_ffrt_enable
+    ffrt::mutex pluginMutex_;
+    ffrt::mutex dispatcherHandlerMutex_;
+    std::shared_ptr<ffrt::queue> dispatcher_ = nullptr;
+#else
+    std::mutex pluginMutex_;
     std::mutex dispatcherHandlerMutex_;
     std::shared_ptr<AppExecFwk::EventHandler> dispatcher_ = nullptr;
+#endif
+
     std::map<std::string, PluginStat> pluginStat_;
 };
 } // namespace ResourceSchedule
