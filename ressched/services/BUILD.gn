@@ -239,7 +239,9 @@ ohos_static_library("resschedsvc_static") {
     defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
     external_deps += [ "audio_framework:audio_client" ]
   }
-
+  if (ressched_services_with_ffrt_enable) {
+    defines += [ "RESSCHED_SERVICES_WITH_FFRT_ENABLE" ]
+  }
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
   branch_protector_ret = "pac_ret"
