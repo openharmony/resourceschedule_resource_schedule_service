@@ -32,7 +32,7 @@
 #include "res_type.h"
 #include "single_instance.h"
 #include "config_info.h"
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt.h"
 #endif
 
@@ -165,7 +165,7 @@ private:
     std::mutex resTypeMutex_;
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
 
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     ffrt::mutex pluginMutex_;
     ffrt::mutex dispatcherHandlerMutex_;
     std::shared_ptr<ffrt::queue> dispatcher_ = nullptr;

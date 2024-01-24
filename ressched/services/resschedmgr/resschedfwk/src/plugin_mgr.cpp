@@ -21,7 +21,7 @@
 #include <iostream>
 #include <string>
 #include "config_policy_utils.h"
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt_inner.h"
 #else
 #include "event_runner.h"
@@ -84,13 +84,13 @@ void PluginMgr::Init()
     }
 
     {
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
         std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
 #else
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
 #endif
         if (!dispatcher_) {
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
             dispatcher_ = std::make_shared<ffrt::queue>(RUNNER_NAME.c_str(),
                 ffrt::queue_attr().qos(ffrt::qos_user_interactive));
 #else
@@ -121,7 +121,7 @@ void PluginMgr::LoadPlugin()
         if (libInfoPtr == nullptr) {
             continue;
         }
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
         std::lock_guard<ffrt::mutex> autoLock(pluginMutex_);
 #else
         std::lock_guard<std::mutex> autoLock(pluginMutex_);
@@ -248,13 +248,13 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
                   resData->resType, (long long)resData->value, libNameAll.c_str());
     FinishTrace(HITRACE_TAG_OHOS);
 
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
 #else
     std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
 #endif
     if (dispatcher_) {
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
         dispatcher_->submit(
             [pluginList, resData, this] {
                 DeliverResourceToPlugin(pluginList, resData);
@@ -329,7 +329,7 @@ void PluginMgr::DumpOnePlugin(std::string &result, std::string pluginName, std::
 
 std::string PluginMgr::DumpInfoFromPlugin(std::string& result, std::string libPath, std::vector<std::string>& args)
 {
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::lock_guard<ffrt::mutex> autoLock(pluginMutex_);
 #else
     std::lock_guard<std::mutex> autoLock(pluginMutex_);
@@ -365,7 +365,7 @@ void PluginMgr::DumpPluginInfoAppend(std::string &result, PluginInfo info)
     } else {
         result.append(" | switch off\t");
     }
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::lock_guard<ffrt::mutex> autoLock(pluginMutex_);
 #else
     std::lock_guard<std::mutex> autoLock(pluginMutex_);
@@ -443,7 +443,7 @@ void PluginMgr::DeliverResourceToPlugin(const std::list<std::string>& pluginList
     for (auto& pluginLib : sortPluginList) {
         PluginLib libInfo;
         {
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
             std::lock_guard<ffrt::mutex> autoLock(pluginMutex_);
 #else
             std::lock_guard<std::mutex> autoLock(pluginMutex_);
@@ -487,13 +487,13 @@ void PluginMgr::DeliverResourceToPlugin(const std::list<std::string>& pluginList
 
 void PluginMgr::SubmitTaskToDispatcher(std::function<void()> task)
 {
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::lock_guard<ffrt::mutex> autoLock2(dispatcherHandlerMutex_);
 #else
     std::lock_guard<std::mutex> autoLock2(dispatcherHandlerMutex_);
 #endif
     if (dispatcher_) {
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
         dispatcher_->submit(task);
 #else
         dispatcher_->PostTask(task);
@@ -503,7 +503,7 @@ void PluginMgr::SubmitTaskToDispatcher(std::function<void()> task)
 
 void PluginMgr::UnLoadPlugin()
 {
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::lock_guard<ffrt::mutex> autoLock(pluginMutex_);
 #else
     std::lock_guard<std::mutex> autoLock(pluginMutex_);
@@ -525,13 +525,13 @@ void PluginMgr::OnDestroy()
     configReader_ = nullptr;
     pluginSwitch_ = nullptr;
     ClearResource();
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
 #else
     std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
 #endif
     if (dispatcher_) {
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
         dispatcher_.reset();
 #else
         dispatcher_->RemoveAllEvents();

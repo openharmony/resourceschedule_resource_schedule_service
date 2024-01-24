@@ -14,7 +14,7 @@
     "subsystem": "resourceschedule",
     "syscap": [],
     "features": [
-      "ressched_services_with_ffrt_enable"
+      "resource_schedule_service_with_ffrt_enable"
     ],
     "adapted_system_type": [
       "standard"
