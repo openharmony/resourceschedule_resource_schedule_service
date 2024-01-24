@@ -32,6 +32,9 @@
 #include "res_type.h"
 #include "single_instance.h"
 #include "config_info.h"
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+#include "ffrt.h"
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -143,6 +146,7 @@ private:
     void UnLoadPlugin();
     void ClearResource();
     void DeliverResourceToPlugin(const std::list<std::string>& pluginList, const std::shared_ptr<ResData>& resData);
+    void SubmitTaskToDispatcher(std::function<void()> task);
     void RepairPlugin(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo);
     void RemoveDisablePluginHandler();
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);
@@ -155,15 +159,22 @@ private:
     std::unique_ptr<ConfigReader> configReader_ = nullptr;
     std::unique_ptr<PluginSwitch> pluginSwitch_ = nullptr;
 
-    std::mutex pluginMutex_;
     std::map<std::string, PluginLib> pluginLibMap_;
 
     // mutex for resTypeMap_
     std::mutex resTypeMutex_;
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+    ffrt::mutex pluginMutex_;
+    ffrt::mutex dispatcherHandlerMutex_;
+    std::shared_ptr<ffrt::queue> dispatcher_ = nullptr;
+#else
+    std::mutex pluginMutex_;
     std::mutex dispatcherHandlerMutex_;
     std::shared_ptr<AppExecFwk::EventHandler> dispatcher_ = nullptr;
+#endif
+
     std::map<std::string, PluginStat> pluginStat_;
 };
 } // namespace ResourceSchedule

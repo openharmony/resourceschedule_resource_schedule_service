@@ -130,6 +130,9 @@ ohos_shared_library("resschedsvc") {
     defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
     external_deps += [ "audio_framework:audio_client" ]
   }
+  if (resource_schedule_service_with_ffrt_enable) {
+    defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE" ]
+  }
 
   version_script = "libresschedsvc.versionscript"
   shlib_type = "sa"
@@ -239,7 +242,6 @@ ohos_static_library("resschedsvc_static") {
     defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
     external_deps += [ "audio_framework:audio_client" ]
   }
-
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
   branch_protector_ret = "pac_ret"
