@@ -90,7 +90,13 @@ void PluginMgr::Init()
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
 #endif
         if (!dispatcher_) {
+#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+            dispatcher_ = std::make_shared<ffrt::queue>(RUNNER_NAME.c_str(),
+                ffrt::queue_attr().qos(ffrt::qos_user_interactive));
+#else
             dispatcher_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
+#endif    
+
         }
         if (!dispatcher_) {
             RESSCHED_LOGI("create dispatcher failed");
