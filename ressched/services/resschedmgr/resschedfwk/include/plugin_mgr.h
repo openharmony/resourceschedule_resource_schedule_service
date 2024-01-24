@@ -146,6 +146,7 @@ private:
     void UnLoadPlugin();
     void ClearResource();
     void DeliverResourceToPlugin(const std::list<std::string>& pluginList, const std::shared_ptr<ResData>& resData);
+    void SubmitTaskToDispatcher(std::function<void()> task);
     void RepairPlugin(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo);
     void RemoveDisablePluginHandler();
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);

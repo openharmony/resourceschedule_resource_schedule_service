@@ -466,29 +466,33 @@ void PluginMgr::DeliverResourceToPlugin(const std::list<std::string>& pluginList
 
         if (costTime > DISPATCH_TIME_OUT) {
             // dispatch resource use too long time, unload it
-            RESSCHED_LOGE("%{public}s, ERROR :"
-                "%{public}s plugin cost time(%{public}dms) over %{public}d ms! disable it.",
+            RESSCHED_LOGE("%{public}s, ERROR :%{public}s cost time(%{public}dms) over %{public}d ms! disable it.",
                 __func__, pluginLib.c_str(), costTime, DISPATCH_TIME_OUT);
             auto task = [endTime, pluginLib, libInfo, this] {
                 RepairPlugin(endTime, pluginLib, libInfo);
             };
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
-            std::lock_guard<ffrt::mutex> autoLock2(dispatcherHandlerMutex_);
-#else
-            std::lock_guard<std::mutex> autoLock2(dispatcherHandlerMutex_);
-#endif
-            if (dispatcher_) {
-#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
-                dispatcher_->submit(task);
-#else
-                dispatcher_->PostTask(task);
-#endif
-            }
+            SubmitTaskToDispatcher(task);
         } else if (costTime > DISPATCH_WARNING_TIME) {
             RESSCHED_LOGW("%{public}s, WARNING :"
                 "%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
                 __func__, pluginLib.c_str(), costTime, DISPATCH_WARNING_TIME);
         }
+    }
+}
+
+void PluginMgr::SubmitTaskToDispatcher(std::function<void()> task)
+{
+#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+    std::lock_guard<ffrt::mutex> autoLock2(dispatcherHandlerMutex_);
+#else
+    std::lock_guard<std::mutex> autoLock2(dispatcherHandlerMutex_);
+#endif
+    if (dispatcher_) {
+#ifdef RESSCHED_SERVICES_WITH_FFRT_ENABLE
+        dispatcher_->submit(task);
+#else
+        dispatcher_->PostTask(task);
+#endif
     }
 }
 
@@ -528,7 +532,6 @@ void PluginMgr::OnDestroy()
         dispatcher_->RemoveAllEvents();
         dispatcher_ = nullptr;
 #endif
-
     }
 }
 } // namespace ResourceSchedule
