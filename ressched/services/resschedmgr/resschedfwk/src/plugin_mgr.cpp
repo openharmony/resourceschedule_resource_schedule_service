@@ -95,8 +95,7 @@ void PluginMgr::Init()
                 ffrt::queue_attr().qos(ffrt::qos_user_interactive));
 #else
             dispatcher_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
-#endif    
-
+#endif
         }
         if (!dispatcher_) {
             RESSCHED_LOGI("create dispatcher failed");
