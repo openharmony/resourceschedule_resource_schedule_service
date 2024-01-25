@@ -18,6 +18,7 @@ config("frame_aware_plugin_config") {
   include_dirs = [
     "include",
     "../../../cgroup_sched/framework/process_group/include/",
+    "${resourceschedule_path}/frame_aware_sched/common/include",
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
   ]

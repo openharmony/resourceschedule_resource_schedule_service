@@ -25,7 +25,7 @@
 #include <unistd.h>
 
 #include "plugin_mgr.h"
-#include "res_sched_log.h"
+#include "rme_log_domain.h"
 #include "event_runner.h"
 #include "ffrt_inner.h"
 
@@ -39,20 +39,21 @@ namespace {
     const std::string NET_LATENCY_TIMER_NAME = "netLatTimer";
     const std::chrono::duration TIMEOUT = std::chrono::seconds(60); // 1 minute timeout
 }
+DEFINE_RMELOG_INTELLISENSE("ueaServer-NetworkLatencyController");
 
 void NetworkLatencyController::Init()
 {
     // use PMQoS switch if available
     int err = access(PmqosNetworkLatencySwitcher::PMQOS_PATH.data(), W_OK);
     if (!err) {
-        RESSCHED_LOGI("%{public}s: using pmqos latency switcher", __func__);
+        RME_LOGI("%{public}s: using pmqos latency switcher", __func__);
         Init(std::make_unique<PmqosNetworkLatencySwitcher>());
         return;
     }
 
     // Another latency switchers can be implemented if required.
     // If nothing matched, use default object, which is noop switcher.
-    RESSCHED_LOGI("%{public}s: using default latency switcher", __func__);
+    RME_LOGI("%{public}s: using default latency switcher", __func__);
     Init(std::make_unique<NoopNetworkLatencySwitcher>());
 }
 
@@ -61,7 +62,7 @@ void NetworkLatencyController::Init(std::unique_ptr<INetworkLatencySwitcher> sw)
     ffrtQueue_ = std::make_shared<ffrt::queue>("network_manager_ffrtQueue",
         ffrt::queue_attr().qos(ffrt::qos_user_interactive));
     if (ffrtQueue_ == nullptr) {
-        RESSCHED_LOGE("%{public}s: failed: cannot allocate event handler", __func__);
+        RME_LOGE("%{public}s: failed: cannot allocate event handler", __func__);
         return;
     }
 
@@ -71,7 +72,7 @@ void NetworkLatencyController::Init(std::unique_ptr<INetworkLatencySwitcher> sw)
 void NetworkLatencyController::HandleRequest(long long value, const std::string &identity)
 {
     if (!switcher || ffrtQueue_ == nullptr) {
-        RESSCHED_LOGE("%{public}s: controller is not initialized", __func__);
+        RME_LOGE("%{public}s: controller is not initialized", __func__);
         return;
     }
 
@@ -83,7 +84,7 @@ void NetworkLatencyController::HandleRequest(long long value, const std::string 
             HandleDelRequest(identity);
             break;
         default:
-            RESSCHED_LOGW("%{public}s: invalid value: %{public}lld", __func__, value);
+            RME_LOGW("%{public}s: invalid value: %{public}lld", __func__, value);
             return;
     }
 }
@@ -100,7 +101,7 @@ void NetworkLatencyController::HandleAddRequest(const std::string &identity)
     }
     std::unique_lock<std::mutex> lk(mtx);
 
-    RESSCHED_LOGD("%{public}s: add new request from %{public}s", __func__, identity.c_str());
+    RME_LOGD("%{public}s: add new request from %{public}s", __func__, identity.c_str());
     AddRequest(identity);
 
     // set up the auto disable timer
@@ -124,7 +125,7 @@ void NetworkLatencyController::HandleDelRequest(const std::string &identity)
     }
     std::unique_lock<std::mutex> lk(mtx);
 
-    RESSCHED_LOGD("%{public}s: delete request from %{public}s", __func__, identity.c_str());
+    RME_LOGD("%{public}s: delete request from %{public}s", __func__, identity.c_str());
     DelRequest(identity);
 }
 
@@ -135,7 +136,7 @@ void NetworkLatencyController::AddRequest(const std::string &identity)
 
     // check whether it is the first request
     if (wasEmpty) {
-        RESSCHED_LOGD("%{public}s: activating low latency", __func__);
+        RME_LOGD("%{public}s: activating low latency", __func__);
         switcher->LowLatencyOn();
     }
 }
@@ -147,7 +148,7 @@ void NetworkLatencyController::DelRequest(const std::string &identity)
 
     // check whether is was the last request
     if (!wasEmpty && requests.empty()) {
-        RESSCHED_LOGD("%{public}s: no callers left, restore normal latency", __func__);
+        RME_LOGD("%{public}s: no callers left, restore normal latency", __func__);
         switcher->LowLatencyOff();
     }
 }
@@ -156,7 +157,7 @@ void NetworkLatencyController::AutoDisableTask(const std::string &identity)
 {
     std::unique_lock<std::mutex> lk(mtx);
 
-    RESSCHED_LOGD("%{public}s: identity %{public}s timed out", __func__, identity.c_str());
+    RME_LOGD("%{public}s: identity %{public}s timed out", __func__, identity.c_str());
     DelRequest(identity);
 }
 } // namespace OHOS::ResourceSchedule
