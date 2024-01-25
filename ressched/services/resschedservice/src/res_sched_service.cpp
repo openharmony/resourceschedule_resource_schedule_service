@@ -39,7 +39,7 @@ namespace {
 
 void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    RESSCHED_LOGI("ResSchedService::ReportData from ipc receive data resType = %{public}u, value = %{public}lld.",
+    RESSCHED_LOGD("ResSchedService::ReportData from ipc receive data resType = %{public}u, value = %{public}lld.",
                   resType, (long long)value);
     const nlohmann::json* payloadP = &payload;
     int32_t callingUid = IPCSkeleton::GetCallingUid();
