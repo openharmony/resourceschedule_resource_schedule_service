@@ -16,7 +16,7 @@
 #include "frame_aware_plugin.h"
 #include "frame_msg_intf.h"
 #include "res_type.h"
-#include "res_sched_log.h"
+#include "rme_log_domain.h"
 #include "plugin_mgr.h"
 #include "config_info.h"
 #include "parameters.h"
@@ -28,6 +28,7 @@ using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libframe_aware_plugin.z.so";
 }
+DEFINE_RMELOG_INTELLISENSE("ueaServer-FrameAwarePlugin");
 IMPLEMENT_SINGLE_INSTANCE(FrameAwarePlugin)
 
 void FrameAwarePlugin::Init()
@@ -71,7 +72,7 @@ void FrameAwarePlugin::Init()
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
     RME::FrameMsgIntf::GetInstance().Init();
-    RESSCHED_LOGI("FrameAwarePlugin::Init ueaServer success");
+    RME_LOGI("FrameAwarePlugin::Init ueaServer success");
 }
 
 void FrameAwarePlugin::Disable()
@@ -82,7 +83,7 @@ void FrameAwarePlugin::Disable()
     RME::FrameMsgIntf::GetInstance().Stop();
     functionMap.clear();
     resTypes.clear();
-    RESSCHED_LOGI("FrameAwarePlugin::Disable ueaServer success");
+    RME_LOGI("FrameAwarePlugin::Disable ueaServer success");
 }
 
 void FrameAwarePlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
@@ -94,7 +95,7 @@ void FrameAwarePlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data
     if (!data->payload.contains("pid") || !data->payload.contains("uid") || !data->payload.contains("bundleName") ||
         !data->payload["pid"].is_string() || !data->payload["uid"].is_string() ||
         !data->payload["bundleName"].is_string()) {
-        RESSCHED_LOGI("FrameAwarePlugin::HandleAppStateChange payload is not contains pid or uid or bundleName");
+        RME_LOGI("FrameAwarePlugin::HandleAppStateChange payload is not contains pid or uid or bundleName");
         return;
     }
 
@@ -114,7 +115,7 @@ void FrameAwarePlugin::HandleProcessStateChange(const std::shared_ptr<ResData>& 
     if (!data->payload.contains("pid") || !data->payload.contains("uid") || !data->payload.contains("bundleName") ||
         !data->payload["pid"].is_string() || !data->payload["uid"].is_string() ||
         !data->payload["bundleName"].is_string()) {
-        RESSCHED_LOGI("FrameAwarePlugin::HandleProcessStateChange payload is not contains pid or uid or bundleName");
+        RME_LOGI("FrameAwarePlugin::HandleProcessStateChange payload is not contains pid or uid or bundleName");
         return;
     }
 
@@ -132,7 +133,7 @@ void FrameAwarePlugin::HandleContinuousTask(const std::shared_ptr<ResData>& data
     }
     if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
         !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
-        RESSCHED_LOGI("FrameAwarePlugin::HandleContinuousTask payload is not contains pid or uid");
+        RME_LOGI("FrameAwarePlugin::HandleContinuousTask payload is not contains pid or uid");
         return;
     }
 
@@ -149,13 +150,13 @@ void FrameAwarePlugin::HandleCgroupAdjuster(const std::shared_ptr<ResData>& data
 
     if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
         !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
-        RESSCHED_LOGI("FrameAwarePlugin::HandleCgroupAdjuster payload is not contains pid or uid");
+        RME_LOGI("FrameAwarePlugin::HandleCgroupAdjuster payload is not contains pid or uid");
         return;
     }
 
     if (!data->payload.contains("oldGroup") || !data->payload.contains("newGroup") ||
         !data->payload["oldGroup"].is_string() || !data->payload["newGroup"].is_string()) {
-        RESSCHED_LOGI("FrameAwarePlugin::HandleCgroupAdjuster payload is not contains oldGroup or newGroup");
+        RME_LOGI("FrameAwarePlugin::HandleCgroupAdjuster payload is not contains oldGroup or newGroup");
         return;
     }
     int pid = atoi(data->payload["pid"].get<std::string>().c_str());
@@ -175,7 +176,7 @@ void FrameAwarePlugin::HandleWindowsFocus(const std::shared_ptr<ResData>& data)
 
     if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
         !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
-        RESSCHED_LOGI("FrameAwarePlugin::HandleWindowsFocus payload is not contains pid or uid");
+        RME_LOGI("FrameAwarePlugin::HandleWindowsFocus payload is not contains pid or uid");
         return;
     }
 
@@ -192,7 +193,7 @@ void FrameAwarePlugin::HandleReportRender(const std::shared_ptr<ResData>& data)
 
     if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
         !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
-        RESSCHED_LOGI("FrameAwarePlugin::HandleReportRender payload is not contains pid or uid");
+        RME_LOGI("FrameAwarePlugin::HandleReportRender payload is not contains pid or uid");
         return;
     }
 
@@ -208,12 +209,12 @@ void FrameAwarePlugin::HandleNetworkLatencyRequest(const std::shared_ptr<ResData
     }
 
     if (!data->payload.contains("clientPid") || !data->payload["clientPid"].is_string()) {
-        RESSCHED_LOGE("FrameAwarePlugin::HandleNetworkLatencyRequest payload does not contain clientPid");
+        RME_LOGE("FrameAwarePlugin::HandleNetworkLatencyRequest payload does not contain clientPid");
         return;
     }
 
     if (!data->payload.contains("identity") || !data->payload["identity"].is_string()) {
-        RESSCHED_LOGI("FrameAwarePlugin::HandleNetworkLatencyRequest payload does not contain identity");
+        RME_LOGI("FrameAwarePlugin::HandleNetworkLatencyRequest payload does not contain identity");
         return;
     }
 
@@ -234,7 +235,7 @@ void FrameAwarePlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 
     if (!data->payload.contains("clientPid") || !data->payload.contains("callingUid") ||
         !data->payload["clientPid"].is_string() || !data->payload["callingUid"].is_string()) {
-        RESSCHED_LOGI("FrameAwarePlugin::HandleEventSlide payload is not contains pid or uid");
+        RME_LOGI("FrameAwarePlugin::HandleEventSlide payload is not contains pid or uid");
         return;
     }
 
@@ -249,7 +250,7 @@ void FrameAwarePlugin::HandleScreenLock(const std::shared_ptr<ResData>& data)
         return;
     }
     if (!data->value) {
-        RESSCHED_LOGI("Screen Lock Report");
+        RME_LOGI("Screen Lock Report");
     }
 }
 
@@ -259,14 +260,14 @@ void FrameAwarePlugin::HandleScreenStatus(const std::shared_ptr<ResData>& data)
         return;
     }
     if (data->value) {
-        RESSCHED_LOGI("Screen Bright Report");
+        RME_LOGI("Screen Bright Report");
     }
 }
 
 void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
-    RESSCHED_LOGI("FrameAwarePlugin:DispatchResource type:%{public}u, value:%{public}lld",
-                  data->resType, (long long)data->value);
+    RME_LOGI("FrameAwarePlugin:DispatchResource type:%{public}u, value:%{public}lld",
+             data->resType, (long long)data->value);
     auto funcIter = functionMap.find(data->resType);
     if (funcIter != functionMap.end()) {
         auto function = funcIter->second;
@@ -279,18 +280,18 @@ void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 extern "C" bool OnPluginInit(std::string& libName)
 {
     if (libName != LIB_NAME) {
-        RESSCHED_LOGE("FrameAwarePlugin::OnPluginInit lib name is not match");
+        RME_LOGE("FrameAwarePlugin::OnPluginInit lib name is not match");
         return false;
     }
     FrameAwarePlugin::GetInstance().Init();
-    RESSCHED_LOGI("FrameAwarePlugin::OnPluginInit success.");
+    RME_LOGI("FrameAwarePlugin::OnPluginInit success.");
     return true;
 }
 
 extern "C" void OnPluginDisable()
 {
     FrameAwarePlugin::GetInstance().Disable();
-    RESSCHED_LOGI("FrameAwarePlugin::OnPluginDisable success.");
+    RME_LOGI("FrameAwarePlugin::OnPluginDisable success.");
 }
 
 extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& data)
