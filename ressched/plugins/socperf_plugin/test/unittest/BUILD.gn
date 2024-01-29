@@ -13,7 +13,7 @@
 
 import("//build/test.gni")
 import("../../../../ressched.gni")
-afasfsdf
+
 module_output_path = "resource_schedule_service/ressched"
 
 config("module_private_config") {
