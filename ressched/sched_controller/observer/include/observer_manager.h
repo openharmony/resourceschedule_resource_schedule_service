@@ -38,7 +38,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 using ReportFunc = bool (*)();
-class ObserverManager {
+class ObserverManager : public std::enable_shared_from_this<ObserverManager> {
     DECLARE_SINGLE_INSTANCE_BASE(ObserverManager);
 
 public:

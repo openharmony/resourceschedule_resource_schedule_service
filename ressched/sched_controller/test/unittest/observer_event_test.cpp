@@ -22,6 +22,10 @@
 #include "sched_telephony_observer.h"
 #include "audio_observer.h"
 #include "connection_subscriber.h"
+#include "if_system_ability_manager.h"
+#include "system_ability_definition.h"
+#include "iservice_registry.h"
+#include "observer_manager.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -550,6 +554,24 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level
     audioObserver_->OnVolumeKeyEvent(volumeEvent);
     SUCCEED();
 #endif
+}
+
+/**
+ * @tc.name: mmiObserverEvent_002
+ * @tc.desc: test multimodal input get mmi status status interface
+ * @tc.type: FUNC
+ * @tc.require: issueI8ZIVH
+ */
+HWTEST_F(ObserverEventTest, mmiObserverEvent_002, testing::ext::TestSize.Level1)
+{
+    auto samgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    EXPECT_NE(samgr, nullptr);
+    auto remoteObj = samgr->GetSystemAbility(MULTIMODAL_INPUT_SERVICE_ID);
+    if (!remoteObj) {
+        return;
+    }
+    ObserverManager::GetInstance().GetAllMmiStatusData();
+    SUCCEED();
 }
 }
 }

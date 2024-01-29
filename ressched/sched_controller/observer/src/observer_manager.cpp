@@ -17,6 +17,7 @@
 
 #include <dlfcn.h>
 #include <string>
+#include <memory>
 
 #include "hisysevent.h"
 #include "hisysevent_manager.h"
@@ -417,7 +418,17 @@ void ObserverManager::InitMMiEventObserver()
         return;
     }
     // Get all events registered in multimodal input.
-    GetAllMmiStatusData();
+    AppExecFwk::EventHandler* handler = reinterpret_cast<AppExecFwk::EventHandler*>(
+        SchedController::GetInstance().GetCgroupEventHandler().get());
+    if (handler) {
+        handler->PostTask([weak = weak_from_this()] {
+            auto self = weak.lock();
+            if (self == nullptr) {
+                return;
+            }
+            self->GetAllMmiStatusData();
+        });
+    }
 }
 
 void ObserverManager::DisableMMiEventObserver()
@@ -459,10 +470,11 @@ void ObserverManager::GetAllMmiStatusData()
         RESSCHED_LOGD(
             "get mmi subscribed events, pid:%{public}d, uid:%{public}d, bundleName:%{public}s, status:%{public}d.",
             pid, uid, bundleName.c_str(), status);
-        auto app = supervisor->GetAppRecordNonNull(uid);
-        auto procRecord = app->GetProcessRecordNonNull(pid);
-        app->SetName(bundleName);
-        procRecord->mmiStatus_ = status;
+        auto app = supervisor->GetAppRecord(uid);
+        auto procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+        if (procRecord) {
+            procRecord->mmiStatus_ = status;
+        }
     }
 }
 
