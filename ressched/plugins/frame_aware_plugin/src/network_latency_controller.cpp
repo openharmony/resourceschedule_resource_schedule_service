@@ -34,12 +34,14 @@
 #include "latency_control/noop_network_latency_switcher.h"
 #include "latency_control/pmqos_network_latency_switcher.h"
 
+#undef LOG_TAG
+#define LOG_TAG "ueaServer-NetworkLatencyController"
+
 namespace OHOS::ResourceSchedule {
 namespace {
     const std::string NET_LATENCY_TIMER_NAME = "netLatTimer";
     const std::chrono::duration TIMEOUT = std::chrono::seconds(60); // 1 minute timeout
 }
-DEFINE_RMELOG_INTELLISENSE("ueaServer-NetworkLatencyController");
 
 void NetworkLatencyController::Init()
 {
