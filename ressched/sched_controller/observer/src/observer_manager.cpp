@@ -17,7 +17,6 @@
 
 #include <dlfcn.h>
 #include <string>
-#include <memory>
 
 #include "hisysevent.h"
 #include "hisysevent_manager.h"
@@ -50,7 +49,6 @@ const static int32_t TUPLE_NAME = 2;
 const static bool DEVICE_MOVEMENT_OBSERVER_ENABLE =
     system::GetBoolParameter("persist.sys.ressched_device_movement_observer_switch", false);
 const std::string RES_NAP_SO = "libapp_nap_service.z.so";
-IMPLEMENT_SINGLE_INSTANCE(ObserverManager)
 
 void ObserverManager::Init()
 {
@@ -148,11 +146,11 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
     RESSCHED_LOGI("Add system ability, system ability id: %{public}d", systemAbilityId);
-    auto funcIter = ObserverManager::GetInstance().handleObserverMap_.find(systemAbilityId);
-    if (funcIter != ObserverManager::GetInstance().handleObserverMap_.end()) {
+    auto funcIter = ObserverManager::GetInstance()->handleObserverMap_.find(systemAbilityId);
+    if (funcIter != ObserverManager::GetInstance()->handleObserverMap_.end()) {
         auto function = funcIter->second;
             if (function) {
-                function(&ObserverManager::GetInstance());
+                function(ObserverManager::GetInstance());
             }
     }
 }
@@ -161,11 +159,11 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
     RESSCHED_LOGD("Remove system ability, system ability id: %{public}d", systemAbilityId);
-    auto funcIter = ObserverManager::GetInstance().removeObserverMap_.find(systemAbilityId);
-    if (funcIter != ObserverManager::GetInstance().removeObserverMap_.end()) {
+    auto funcIter = ObserverManager::GetInstance()->removeObserverMap_.find(systemAbilityId);
+    if (funcIter != ObserverManager::GetInstance()->removeObserverMap_.end()) {
         auto function = funcIter->second;
             if (function) {
-                function(&ObserverManager::GetInstance());
+                function(ObserverManager::GetInstance());
             }
     }
 }
@@ -542,12 +540,12 @@ void ObserverManager::DisableAVSessionStateChangeListener()
 
 extern "C" void ObserverManagerInit()
 {
-    ObserverManager::GetInstance().Init();
+    ObserverManager::GetInstance()->Init();
 }
 
 extern "C" void ObserverManagerDisable()
 {
-    ObserverManager::GetInstance().Disable();
+    ObserverManager::GetInstance()->Disable();
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

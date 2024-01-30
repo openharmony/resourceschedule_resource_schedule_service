@@ -570,7 +570,7 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_002, testing::ext::TestSize.Level1)
     if (!remoteObj) {
         return;
     }
-    ObserverManager::GetInstance().GetAllMmiStatusData();
+    ObserverManager::GetInstance()->GetAllMmiStatusData();
     SUCCEED();
 }
 }

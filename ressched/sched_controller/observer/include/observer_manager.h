@@ -16,9 +16,10 @@
 #ifndef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_OBSERVER_MANAGER_H
 #define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_OBSERVER_MANAGER_H
 
+#include <memory>
 #include "if_system_ability_manager.h"
 #include "system_ability_status_change_stub.h"
-#include "single_instance.h"
+#include "singleton.h"
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
 #include "audio_observer.h"
 #endif
@@ -38,9 +39,8 @@
 namespace OHOS {
 namespace ResourceSchedule {
 using ReportFunc = bool (*)();
-class ObserverManager : public std::enable_shared_from_this<ObserverManager> {
-    DECLARE_SINGLE_INSTANCE_BASE(ObserverManager);
-
+class ObserverManager : public DelayedSingleton<ObserverManager>,
+    public std::enable_shared_from_this<ObserverManager> {
 public:
     ObserverManager() {}
     ~ObserverManager() {}
@@ -79,8 +79,8 @@ public:
 #endif
 
     pid_t pid_ = -1;
-    std::map<int32_t, std::function<void(ObserverManager *)>> handleObserverMap_;
-    std::map<int32_t, std::function<void(ObserverManager *)>> removeObserverMap_;
+    std::map<int32_t, std::function<void(std::shared_ptr<ObserverManager>)>> handleObserverMap_;
+    std::map<int32_t, std::function<void(std::shared_ptr<ObserverManager>)>> removeObserverMap_;
     std::shared_ptr<HiviewDFX::HiSysEventListener> hiSysEventObserver_ = nullptr;
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     int32_t slotId_ = 0;
