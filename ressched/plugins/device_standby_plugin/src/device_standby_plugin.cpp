@@ -71,7 +71,6 @@ void DeviceStandbyPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 
     DevStandbyMgr::StandbyServiceClient::GetInstance().HandleEvent(
         std::make_shared<DevStandbyMgr::ResData>(data->resType, data->value, data->payload));
-
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
