@@ -15,6 +15,7 @@
 
 #ifndef DEVICE_STANDBY_PLUGIN_H
 #define DEVICE_STANDBY_PLUGIN_H
+#ifdef RSS_DEVICE_STANDBY_ENABLE
 
 #include <set>
 
@@ -39,5 +40,6 @@ private:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif // RSS_DEVICE_STANDBY_ENABLE
 #endif // DEVICE_STANDBY_PLUGIN_H
 

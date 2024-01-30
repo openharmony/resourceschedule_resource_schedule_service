@@ -13,14 +13,13 @@
  * limitations under the License.
  */
 
-#include "device_standby_plugin.h"
 #ifdef RSS_DEVICE_STANDBY_ENABLE
+#include "device_standby_plugin.h"
 #include "standby_service_client.h"
 #include "standby_res_data.h"
-#endif
+#include "standby_service_log.h"
 #include "config_info.h"
 #include "plugin_mgr.h"
-#include "res_sched_log.h"
 #include "res_type.h"
 
 namespace OHOS {
@@ -47,7 +46,7 @@ void DeviceStandbyPlugin::Init()
     for (auto resType : resTypes_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
-    RESSCHED_LOGI("DevicesStandbyPlugin::Init success");
+    STANDBYSERVICE_LOGI("DevicesStandbyPlugin::Init success");
 }
 
 void DeviceStandbyPlugin::Disable()
@@ -56,17 +55,17 @@ void DeviceStandbyPlugin::Disable()
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
     resTypes_.clear();
-    RESSCHED_LOGI("DevicesStandbyPlugin::Disable success");
+    STANDBYSERVICE_LOGI("DevicesStandbyPlugin::Disable success");
 }
 
 void DeviceStandbyPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
     if (!data) {
-        RESSCHED_LOGW("DeviceStandbyPlugin::DispatchResource data is null");
+        STANDBYSERVICE_LOGW("DeviceStandbyPlugin::DispatchResource data is null");
         return;
     }
 
-    RESSCHED_LOGI(
+    STANDBYSERVICE_LOGI(
         "DeviceStandbyPlugin::DispatchResource type=%{public}u value=%{public}lld",
         data->resType, (long long)(data->value));
 #ifdef RSS_DEVICE_STANDBY_ENABLE
@@ -82,20 +81,21 @@ extern "C" bool OnPluginInit(std::string& libName)
         return false;
     }
     DeviceStandbyPlugin::GetInstance().Init();
-    RESSCHED_LOGI("DeviceStandbyPlugin::OnPluginInit success.");
+    STANDBYSERVICE_LOGI("DeviceStandbyPlugin::OnPluginInit success.");
     return true;
 }
 
 extern "C" void OnPluginDisable()
 {
     DeviceStandbyPlugin::GetInstance().Disable();
-    RESSCHED_LOGI("DeviceStandbyPlugin::OnPluginDisable success.");
+    STANDBYSERVICE_LOGI("DeviceStandbyPlugin::OnPluginDisable success.");
 }
 
 extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& data)
 {
     DeviceStandbyPlugin::GetInstance().DispatchResource(data);
-    RESSCHED_LOGI("DeviceStandbyPlugin::OnDispatchResource success.");
+    STANDBYSERVICE_LOGD("DeviceStandbyPlugin::OnDispatchResource success.");
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif

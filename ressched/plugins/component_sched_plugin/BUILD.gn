@@ -47,6 +47,7 @@ ohos_shared_library("component_sched_plugin") {
   if (component_sched_enable) {
     external_deps += [
       "efficiency_manager:component_sched_client",
+      "efficiency_manager:component_sched_common",
       "ipc:ipc_single",
     ]
     defines += [ "COMPONENT_SCHED_ENABLE" ]

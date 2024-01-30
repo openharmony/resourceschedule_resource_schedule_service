@@ -15,6 +15,7 @@
 
 #ifndef COMPONENT_SCHED_PLUGIN_H
 #define COMPONENT_SCHED_PLUGIN_H
+#ifdef COMPONENT_SCHED_ENABLE
 
 #include <set>
 
@@ -39,4 +40,5 @@ private:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif // COMPONENT_SCHED_ENABLE
 #endif // COMPONENT_SCHED_PLUGIN_H
