@@ -94,7 +94,6 @@ public:
 #endif
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
     std::shared_ptr<MmiObserver> mmiEventObserver_ = nullptr;
-    std::map<std::tuple<int32_t, int32_t, std::string>, int32_t> mmiStatusData_;
     std::shared_ptr<ConnectionSubscriber> connectionSubscriber_ = nullptr;
     ReportFunc reportFunc_ = nullptr;
     bool isNeedReport_ = true;
