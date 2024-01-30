@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 
+#ifdef COMPONENT_SCHED_ENABLE
 #include <gtest/gtest.h>
 
 #include "component_sched_plugin.h"
 
-#ifdef COMPONENT_SCHED_ENABLE
 #include"component_sched_client.h"
-#endif
 
 #include "config_info.h"
 #include "plugin_mgr.h"
@@ -84,3 +83,4 @@ HWTEST_F(CompSchedPluginTest, CompSchedPluginMockTest_002, TestSize.Level1)
 }
 } // namespace ComponentScheduler
 } // namespace OHOS
+#endif
