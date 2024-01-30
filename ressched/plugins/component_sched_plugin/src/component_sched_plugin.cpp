@@ -70,9 +70,7 @@ void ComponentSchedPlugin::DispatchResource(const std::shared_ptr<ResData>& data
         "ComponentSchedPlugin::DispatchResource type=%{public}u value=%{public}lld",
         data->resType, (long long)(data->value));
 
-#ifdef COMPONENT_SCHED_ENABLE
     ComponentScheduler::ComponentSchedClient::GetInstance().ReportSceneInfo(data);
-#endif
 }
 
 extern "C" bool OnPluginInit(std::string& libName)

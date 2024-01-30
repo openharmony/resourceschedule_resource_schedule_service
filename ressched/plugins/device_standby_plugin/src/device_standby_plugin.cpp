@@ -68,10 +68,10 @@ void DeviceStandbyPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
     STANDBYSERVICE_LOGI(
         "DeviceStandbyPlugin::DispatchResource type=%{public}u value=%{public}lld",
         data->resType, (long long)(data->value));
-#ifdef RSS_DEVICE_STANDBY_ENABLE
+
     DevStandbyMgr::StandbyServiceClient::GetInstance().HandleEvent(
         std::make_shared<DevStandbyMgr::ResData>(data->resType, data->value, data->payload));
-#endif
+
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
