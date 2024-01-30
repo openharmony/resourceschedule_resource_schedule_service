@@ -449,8 +449,9 @@ void ObserverManager::DisableMMiEventObserver()
 void ObserverManager::GetAllMmiStatusData()
 {
     RESSCHED_LOGI("get all mmi subscribed events.");
-    MMI::InputManager::GetInstance()->GetAllMmiSubscribedEvents(mmiStatusData_);
-    if (mmiStatusData_.empty()) {
+    std::map<std::tuple<int32_t, int32_t, std::string>, int32_t> mmiStatusData;
+    MMI::InputManager::GetInstance()->GetAllMmiSubscribedEvents(mmiStatusData);
+    if (mmiStatusData.empty()) {
         RESSCHED_LOGI("get mmi subscribed events is null.");
         return;
     }
@@ -460,7 +461,7 @@ void ObserverManager::GetAllMmiStatusData()
         return;
     }
 
-    for (auto data = mmiStatusData_.begin(); data != mmiStatusData_.end(); ++data) {
+    for (auto data = mmiStatusData.begin(); data != mmiStatusData.end(); ++data) {
         int32_t pid = std::get<TUPLE_PID>(data->first);
         int32_t uid = std::get<TUPLE_UID>(data->first);
         std::string bundleName = std::get<TUPLE_NAME>(data->first);
@@ -540,7 +541,12 @@ void ObserverManager::DisableAVSessionStateChangeListener()
 
 extern "C" void ObserverManagerInit()
 {
-    ObserverManager::GetInstance()->Init();
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->Init();
+    } else {
+        RESSCHED_LOGE("ObserverManager GetInstance failed");
+    }
 }
 
 extern "C" void ObserverManagerDisable()
