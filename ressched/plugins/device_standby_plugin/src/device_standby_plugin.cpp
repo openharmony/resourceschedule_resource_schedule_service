@@ -77,7 +77,7 @@ void DeviceStandbyPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 extern "C" bool OnPluginInit(std::string& libName)
 {
     if (libName != LIB_NAME) {
-        RESSCHED_LOGI("DeviceStandbyPlugin::OnPluginInit lib name is not match");
+        STANDBYSERVICE_LOGI("DeviceStandbyPlugin::OnPluginInit lib name is not match");
         return false;
     }
     DeviceStandbyPlugin::GetInstance().Init();
