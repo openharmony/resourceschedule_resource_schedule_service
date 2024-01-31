@@ -103,7 +103,7 @@ void HiSysEventObserver::OnEvent(std::shared_ptr<HiviewDFX::HiSysEventRecord> sy
     }
     std::string domainName = root.at("domain_").get<std::string>();
     std::string eventName = root.at("name_").get<std::string>();
-    RESSCHED_LOGI("hisysevent info, domain: %{public}s, name:%{public}s", domainName.c_str(), eventName.c_str());
+    RESSCHED_LOGD("hisysevent info, domain: %{public}s, name:%{public}s", domainName.c_str(), eventName.c_str());
     ProcessHiSysEvent(eventName, root);
 }
 
