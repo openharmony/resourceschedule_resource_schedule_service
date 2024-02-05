@@ -22,13 +22,15 @@
 #include "parameters.h"
 #include "sched_policy.h"
 
+#undef LOG_TAG
+#define LOG_TAG "ueaServer-FrameAwarePlugin"
+
 namespace OHOS {
 namespace ResourceSchedule {
 using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libframe_aware_plugin.z.so";
 }
-DEFINE_RMELOG_INTELLISENSE("ueaServer-FrameAwarePlugin");
 IMPLEMENT_SINGLE_INSTANCE(FrameAwarePlugin)
 
 void FrameAwarePlugin::Init()
