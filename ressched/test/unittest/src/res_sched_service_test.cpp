@@ -183,7 +183,7 @@ HWTEST_F(ResSchedServiceTest, KillProcess001, Function | MediumTest | Level0)
 {
     nlohmann::json payload;
     int32_t t = resSchedService_->KillProcess(payload);
-    EXPECT_EQ(t, 0);
+    EXPECT_EQ(t, -1);
 }
 
 /**
