@@ -43,6 +43,22 @@ namespace {
     const std::string RUNNER_NAME = "rssDispatcher";
     const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
     const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+    const int32_t DEFAULT_VALUE = -1;
+    const char* EXT_RES_KEY = "extType";
+    int32_t StringToInt32(const std::string &value)
+    {
+        char* pEnd = nullptr;
+        errno = 0;
+        int64_t result = std::strtol(value.c_str(), &pEnd, 10);
+        if (errno == ERANGE || pEnd == value.c_str() || *pEnd != '\0' ||
+          (result < INT_MIN || result > INT_MAX)) {
+            return 0;
+        } else {
+            return result;
+        }
+    }
+#endif
 }
 
 IMPLEMENT_SINGLE_INSTANCE(PluginMgr);
@@ -207,6 +223,20 @@ void PluginMgr::Stop()
     OnDestroy();
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+int32_t PluginMgr::GetExtTypeByResPayload(const std::shared_ptr<ResData>& resData);
+{
+    if (!resData || resData->resType != ResType::RES_TYPE_KEY_PERF_SCENE) {
+        return DEFAULT_VALUE;
+    }
+    auto payload = resData->payload;
+    if (!payload.contains(EXT_RES_KEY) || !payload[EXT_RES_KEY].is_string()) {
+        return DEFAULT_VALUE;
+    }
+    return StringToInt32(payload[EXT_RES_KEY]);
+}
+#endif
+
 bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>& pluginList)
 {
     std::lock_guard<std::mutex> autoLock(resTypeMutex_);
@@ -226,6 +256,12 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         return;
     }
     std::list<std::string> pluginList;
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+    int32_t extType = GetExtTypeByResPayload(resData);
+    if (extType != DEFAULT_VALUE) {
+        resData->resType = extType;
+    }
+#endif
     if (!GetPluginListByResType(resData->resType, pluginList)) {
         return;
     }

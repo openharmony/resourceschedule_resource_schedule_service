@@ -133,6 +133,9 @@ ohos_shared_library("resschedsvc") {
   if (resource_schedule_service_with_ffrt_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE" ]
   }
+  if (resource_schedule_service_with_ext_res_enable) {
+    defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
+  }
 
   version_script = "libresschedsvc.versionscript"
   shlib_type = "sa"

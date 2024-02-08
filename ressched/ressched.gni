@@ -36,6 +36,7 @@ declare_args() {
   ressched_with_telephony_state_registry_enable = true
   ressched_with_communication_netmanager_base_enable = true
   resource_schedule_service_with_ffrt_enable = false
+  resource_schedule_service_with_ext_res_enable = false
 
   if (defined(global_parts_info) &&
       !defined(global_parts_info.resourceschedule_efficiency_manager)) {
