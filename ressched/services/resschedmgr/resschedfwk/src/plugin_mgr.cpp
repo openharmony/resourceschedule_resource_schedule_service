@@ -265,7 +265,7 @@ std::string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resDat
     trace_str.append(",value[").append(std::to_string(resData->value)).append("]");
     trace_str.append(",pluginlist:").append(libNameAll);
     return trace_str;
-} 
+}
 
 void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 {
