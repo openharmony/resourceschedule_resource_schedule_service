@@ -249,8 +249,8 @@ bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>&
     return true;
 }
 
-string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resData,
-    const string& funcName, list<std::string>& pluginList)
+std::string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resData,
+    const std::string& funcName, std::list<std::string>& pluginList);
 {
     std::string libNameAll = "[";
     for (const auto& libName : pluginList) {
