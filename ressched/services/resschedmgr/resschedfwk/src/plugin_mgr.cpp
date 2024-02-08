@@ -249,6 +249,25 @@ bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>&
     return true;
 }
 
+string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resData,
+    const string& funcName, list<std::string>& pluginList)
+{
+    std::string libNameAll = "[";
+    for (const auto& libName : pluginList) {
+        libNameAll.append(libName);
+        libNameAll.append(",");
+    }
+    libNameAll.append("]");
+    string trace_str(funcName);
+    string resTypeString =
+        ResType::resTypeToStr.count(resData->resType) ? ResType::resTypeToStr.at(resData->resType) : "UNKNOWN";
+    trace_str.append(" PluginMgr ,resType[").append(std::to_string(resData->resType)).append("]");
+    trace_str.append(",resTypeStr[").append(resTypeString).append("]");
+    trace_str.append(",value[").append(std::to_string(resData->value)).append("]");
+    trace_str.append(",pluginlist:").append(libNameAll);
+    return trace_str;
+} 
+
 void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 {
     if (!resData) {
@@ -265,19 +284,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     if (!GetPluginListByResType(resData->resType, pluginList)) {
         return;
     }
-    std::string libNameAll = "[";
-    for (const auto& libName : pluginList) {
-        libNameAll.append(libName);
-        libNameAll.append(",");
-    }
-    libNameAll.append("]");
-    string trace_str(__func__);
-    string resTypeString =
-        ResType::resTypeToStr.count(resData->resType) ? ResType::resTypeToStr.at(resData->resType) : "UNKNOWN";
-    trace_str.append(" PluginMgr ,resType[").append(std::to_string(resData->resType)).append("]");
-    trace_str.append(",resTypeStr[").append(resTypeString).append("]");
-    trace_str.append(",value[").append(std::to_string(resData->value)).append("]");
-    trace_str.append(",pluginlist:").append(libNameAll);
+    string trace_str = BuildDispatchTrace(resData, __func__,pluginList);
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
     RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, "
                   "value = %{public}lld, pluginlist is %{public}s.", __func__,
