@@ -151,7 +151,7 @@ private:
     void RemoveDisablePluginHandler();
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);
     bool GetPluginListByResType(uint32_t resType, std::list<std::string>& pluginList);
-    std::string BuildDispatchTrace(const std::shared_ptr<ResData>& resData,
+    std::string BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,
         const std::string& funcName, std::list<std::string>& pluginList);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     int32_t GetExtTypeByResPayload(const std::shared_ptr<ResData>& resData);

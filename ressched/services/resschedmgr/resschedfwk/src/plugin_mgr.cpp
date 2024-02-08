@@ -249,10 +249,9 @@ bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>&
     return true;
 }
 
-std::string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resData,
-    const std::string& funcName, std::list<std::string>& pluginList);
+std::string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,
+    const std::string& funcName, std::list<std::string>& pluginList)
 {
-    std::string libNameAll = "[";
     for (const auto& libName : pluginList) {
         libNameAll.append(libName);
         libNameAll.append(",");
@@ -284,7 +283,8 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     if (!GetPluginListByResType(resData->resType, pluginList)) {
         return;
     }
-    string trace_str = BuildDispatchTrace(resData, __func__,pluginList);
+    std::string libNameAll = "[";
+    string trace_str = BuildDispatchTrace(resData, libNameAll, __func__, pluginList);
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
     RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, "
                   "value = %{public}lld, pluginlist is %{public}s.", __func__,
