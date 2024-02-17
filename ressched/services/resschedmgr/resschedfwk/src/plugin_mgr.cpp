@@ -244,7 +244,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
                   resData->resType, (long long)resData->value, libNameAll.c_str());
     FinishTrace(HITRACE_TAG_OHOS);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-        DeliverResourceToPluginAsync(pluginList, resData);
+    DeliverResourceToPluginAsync(pluginList, resData);
 #else
     std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) { 
