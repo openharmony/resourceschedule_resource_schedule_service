@@ -224,7 +224,7 @@ void PluginMgr::Stop()
 }
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
-int32_t PluginMgr::GetExtTypeByResPayload(const std::shared_ptr<ResData>& resData);
+int32_t PluginMgr::GetExtTypeByResPayload(const std::shared_ptr<ResData>& resData)
 {
     if (!resData || resData->resType != ResType::RES_TYPE_KEY_PERF_SCENE) {
         return DEFAULT_VALUE;
