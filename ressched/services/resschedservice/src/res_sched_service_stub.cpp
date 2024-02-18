@@ -92,6 +92,7 @@ namespace {
         ResType::RES_TYPE_APP_ASSOCIATED_START,
         ResType::RES_TYPE_THERMAL_STATE,
         ResType::RES_TYPE_REPORT_SCREEN_CAPTURE,
+        ResType::RES_TYPE_KEY_PERF_SCENE,
     };
     constexpr int32_t SAMGR_UID = 5555;
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
