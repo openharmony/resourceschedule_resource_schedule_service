@@ -467,12 +467,16 @@ HWTEST_F(PluginMgrTest, DispatchResource003, TestSize.Level1)
 HWTEST_F(PluginMgrTest, DispatchResource004, TestSize.Level1)
 {
     nlohmann::json payload;
-    payload["extType"] = "10000";
-    auto data = std::make_shared<ResData>(ResType::RES_TYPE_KEY_PERF_SCENE,
+    auto dataNoExtType = std::make_shared<ResData>(ResType::RES_TYPE_KEY_PERF_SCENE,
         ResType::KeyPerfStatus::ENTER_SCENE, payload);
     PluginMgr::GetInstance().SubscribeResource("test", 10000);
     SUCCEED();
-    PluginMgr::GetInstance().DispatchResource(data);
+    PluginMgr::GetInstance().DispatchResource(dataNoExtType);
+    SUCCEED();
+    payload["extType"] = "10000";
+    auto dataWithExtType = std::make_shared<ResData>(ResType::RES_TYPE_KEY_PERF_SCENE,
+        ResType::KeyPerfStatus::ENTER_SCENE, payload);
+    PluginMgr::GetInstance().DispatchResource(dataWithExtType);
     SUCCEED();
 }
 
