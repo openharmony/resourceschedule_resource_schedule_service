@@ -479,7 +479,5 @@ HWTEST_F(PluginMgrTest, DispatchResource004, TestSize.Level1)
     PluginMgr::GetInstance().DispatchResource(dataWithExtType);
     SUCCEED();
 }
-
-
 } // namespace ResourceSchedule
 } // namespace OHOS
