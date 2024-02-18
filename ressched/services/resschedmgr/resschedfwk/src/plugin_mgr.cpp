@@ -457,7 +457,7 @@ void PluginMgr::DeliverResourceToPluginSync(const std::list<std::string>& plugin
             if (dispatcher_) {
                 dispatcher_->PostTask(task);
             }
-#enndef
+#endif
         } else if (costTime > DISPATCH_WARNING_TIME) {
             RESSCHED_LOGW("%{public}s, WARNING :"
                 "%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
@@ -466,6 +466,7 @@ void PluginMgr::DeliverResourceToPluginSync(const std::list<std::string>& plugin
     }
 }
 
+#ifndef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 void PluginMgr::DeliverResourceToPluginAsync(const std::list<std::string>& pluginList,
     const std::shared_ptr<ResData>& resData)
 {
@@ -494,6 +495,7 @@ void PluginMgr::DeliverResourceToPluginAsync(const std::list<std::string>& plugi
             });
     }
 }
+#endif
 
 void PluginMgr::UnLoadPlugin()
 {
