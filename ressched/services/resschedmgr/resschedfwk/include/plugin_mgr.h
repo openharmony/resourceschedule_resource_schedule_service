@@ -146,7 +146,9 @@ private:
     void UnLoadPlugin();
     void ClearResource();
     void DeliverResourceToPluginSync(const std::list<std::string>& pluginList, const std::shared_ptr<ResData>& resData);
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     void DeliverResourceToPluginAsync(const std::list<std::string>& pluginList, const std::shared_ptr<ResData>& resData);
+#endif
     void RepairPlugin(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo);
     void RemoveDisablePluginHandler();
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);
