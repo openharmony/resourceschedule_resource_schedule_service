@@ -252,8 +252,8 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
             [pluginList, resData, this] {
                 DeliverResourceToPluginSync(pluginList, resData);
             });
-#endif
     }
+#endif
 }
 
 void PluginMgr::SubscribeResource(const std::string& pluginLib, uint32_t resType)
@@ -452,10 +452,12 @@ void PluginMgr::DeliverResourceToPluginSync(const std::list<std::string>& plugin
             auto task = [endTime, pluginLib, libInfo, this] {
                 RepairPlugin(endTime, pluginLib, libInfo);
             };
+#ifndef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
             std::lock_guard<std::mutex> autoLock2(dispatcherHandlerMutex_);
             if (dispatcher_) {
                 dispatcher_->PostTask(task);
             }
+#enndef
         } else if (costTime > DISPATCH_WARNING_TIME) {
             RESSCHED_LOGW("%{public}s, WARNING :"
                 "%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
