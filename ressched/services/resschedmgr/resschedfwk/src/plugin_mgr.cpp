@@ -100,7 +100,6 @@ void PluginMgr::Init()
             RESSCHED_LOGI("create dispatcher failed");
         }
 #endif
-
     }
     RESSCHED_LOGI("PluginMgr::Init success!");
 }
@@ -247,7 +246,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     DeliverResourceToPluginAsync(pluginList, resData);
 #else
     std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
-    if (dispatcher_) { 
+    if (dispatcher_) {
         dispatcher_->PostTask(
             [pluginList, resData, this] {
                 DeliverResourceToPluginSync(pluginList, resData);
@@ -459,8 +458,7 @@ void PluginMgr::DeliverResourceToPluginSync(const std::list<std::string>& plugin
             }
 #endif
         } else if (costTime > DISPATCH_WARNING_TIME) {
-            RESSCHED_LOGW("%{public}s, WARNING :"
-                "%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
+            RESSCHED_LOGW("%{public}s, WARNING :%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
                 __func__, pluginLib.c_str(), costTime, DISPATCH_WARNING_TIME);
         }
     }
