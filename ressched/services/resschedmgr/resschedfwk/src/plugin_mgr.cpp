@@ -466,7 +466,7 @@ void PluginMgr::DeliverResourceToPluginSync(const std::list<std::string>& plugin
     }
 }
 
-#ifndef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 void PluginMgr::DeliverResourceToPluginAsync(const std::list<std::string>& pluginList,
     const std::shared_ptr<ResData>& resData)
 {
