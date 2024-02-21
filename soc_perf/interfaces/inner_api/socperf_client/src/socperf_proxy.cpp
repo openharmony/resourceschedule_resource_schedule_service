@@ -15,6 +15,7 @@
 
 #include "socperf_ipc_interface_code.h"
 #include "socperf_proxy.h"
+#include "socperf_log.h"
 
 namespace OHOS {
 namespace SOCPERF {
@@ -90,6 +91,25 @@ void SocPerfProxy::LimitRequest(int32_t clientId,
     data.WriteString(msg);
     Remote()->SendRequest(static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_LIMIT_REQUEST),
         data, reply, option);
+}
+
+void SocPerfProxy::SetRequestStatus(bool status, const std::string &msg)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option = { MessageOption::TF_ASYNC };
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        return;
+    }
+    if (!data.WriteBool(status)) {
+        SOC_PERF_LOGE("Failed to write status: %{public}d", status);
+        return;
+    }
+    if (!data.WriteString(msg)) {
+        SOC_PERF_LOGE("Failed to write msg: %{public}s", msg.c_str());
+        return;
+    }
+    Remote()->SendRequest(static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_SET_STATUS), data, reply, option);
 }
 } // namespace SOCPERF
 } // namespace OHOS

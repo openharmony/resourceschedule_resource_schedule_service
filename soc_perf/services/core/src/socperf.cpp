@@ -13,9 +13,7 @@
  * limitations under the License.
  */
 
-
 #include "socperf.h"
-
 #include "config_policy_utils.h"
 #include "hisysevent.h"
 #include "hitrace_meter.h"
@@ -249,6 +247,29 @@ void SocPerf::LimitRequest(int32_t clientId,
         SOC_PERF_LOGI("clientId[%{public}d],tags[%{public}d],configs[%{public}lld],msg[%{public}s]",
             clientId, tags[i], (long long)configs[i], msg.c_str());
         SendLimitRequestEvent(clientId, tags[i], configs[i]);
+    }
+}
+
+void SocPerf::ClearAllAliveRequest()
+{
+    if (!enabled) {
+        SOC_PERF_LOGE("SocPerf disabled!");
+        return;
+    }
+    for (int32_t i = 0; i < ACTION_TYPE_MAX; i++) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        limitRequest[i].clear();
+    }
+    for (int32_t i = 0; i < MAX_QUEUE_NUM; ++i) {
+        if (socperfThreadWraps[i] == nullptr) {
+            continue;
+        }
+#ifdef SOCPERF_ADAPTOR_FFRT
+        socperfThreadWraps[i]->ClearAllAliveRequest();
+#else
+        auto event = AppExecFwk::InnerEvent::Get(INNER_EVENT_ID_CLEAR_ALL_ALIVE_REQUEST);
+        socperfThreadWraps[i]->SendEvent(event);
+#endif
     }
 }
 
