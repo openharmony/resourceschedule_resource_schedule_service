@@ -28,6 +28,7 @@
 #endif
 #include "hisysevent.h"
 #include "refbase.h"
+#include "res_common_tuil.h" 
 #include "res_sched_log.h"
 #include "hitrace_meter.h"
 
@@ -46,18 +47,6 @@ namespace {
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     const int32_t DEFAULT_VALUE = -1;
     const char* EXT_RES_KEY = "extType";
-    int32_t StringToInt32(const std::string &value)
-    {
-        char* pEnd = nullptr;
-        errno = 0;
-        int64_t result = std::strtol(value.c_str(), &pEnd, 10);
-        if (errno == ERANGE || pEnd == value.c_str() || *pEnd != '\0' ||
-          (result < INT_MIN || result > INT_MAX)) {
-            return 0;
-        } else {
-            return result;
-        }
-    }
 #endif
 }
 
@@ -233,7 +222,12 @@ int32_t PluginMgr::GetExtTypeByResPayload(const std::shared_ptr<ResData>& resDat
     if (!payload.contains(EXT_RES_KEY) || !payload[EXT_RES_KEY].is_string()) {
         return DEFAULT_VALUE;
     }
-    return StringToInt32(payload[EXT_RES_KEY]);
+    int type = DEFAULT_VALUE;
+    if (ResCommonUtil::StringToInt32(payload[EXT_RES_KEY], type)) {
+        return type;
+    } else {
+        return DEFAULT_VALUE;
+    }
 }
 #endif
 
@@ -252,6 +246,7 @@ bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>&
 std::string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,
     const std::string& funcName, std::list<std::string>& pluginList)
 {
+    libNameAll.append("[");
     for (const auto& libName : pluginList) {
         libNameAll.append(libName);
         libNameAll.append(",");
@@ -283,7 +278,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     if (!GetPluginListByResType(resData->resType, pluginList)) {
         return;
     }
-    std::string libNameAll = "[";
+    std::string libNameAll = "";
     string trace_str = BuildDispatchTrace(resData, libNameAll, __func__, pluginList);
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
     RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, "
