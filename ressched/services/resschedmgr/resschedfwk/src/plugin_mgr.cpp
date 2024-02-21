@@ -28,7 +28,7 @@
 #endif
 #include "hisysevent.h"
 #include "refbase.h"
-#include "res_common_tuil.h" 
+#include "res_common_util.h" 
 #include "res_sched_log.h"
 #include "hitrace_meter.h"
 
