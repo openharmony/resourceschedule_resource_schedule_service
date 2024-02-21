@@ -473,9 +473,23 @@ HWTEST_F(PluginMgrTest, DispatchResource004, TestSize.Level1)
     SUCCEED();
     PluginMgr::GetInstance().DispatchResource(dataNoExtType);
     SUCCEED();
+}
+
+/**
+ * @tc.name: Plugin mgr test DispatchResource 005
+ * @tc.desc: Verify if can DispatchResource
+ * @tc.type: FUNC
+ * @tc.require: issueI91HSR
+ * @tc.author:baiheng
+ */
+HWTEST_F(PluginMgrTest, DispatchResource005, TestSize.Level1)
+{
+    nlohmann::json payload;
     payload["extType"] = "10000";
     auto dataWithExtType = std::make_shared<ResData>(ResType::RES_TYPE_KEY_PERF_SCENE,
         ResType::KeyPerfStatus::ENTER_SCENE, payload);
+    PluginMgr::GetInstance().SubscribeResource("test", 10000);
+    SUCCEED();
     PluginMgr::GetInstance().DispatchResource(dataWithExtType);
     SUCCEED();
 }
