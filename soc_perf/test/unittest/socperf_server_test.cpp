@@ -176,7 +176,7 @@ public:
     void ThermalLimitBoost(bool onOffTag, const std::string& msg) override {}
     void LimitRequest(int32_t clientId,
         const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg) override {}
-    void SetRequestStatus(bool status) override {};
+    void SetRequestStatus(bool status, const std::string& msg) override {};
 };
 
 /*
