@@ -20,6 +20,7 @@
     *SocPerfClient*PowerLimitBoost*;
     *SocPerfClient*ThermalLimitBoost*;
     *SocPerfClient*LimitRequest*;
+    *SocPerfClient*SetRequestStatus*;
     *SocPerfClient*ResetClient*;
     *SocPerfProxy*;
   local:

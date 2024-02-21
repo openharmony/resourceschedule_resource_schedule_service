@@ -31,6 +31,9 @@ public:
         MessageParcel &reply, MessageOption &option) override;
 private:
     bool HasPerfPermission();
+    int32_t OnRemoteRequestExt(uint32_t code, MessageParcel &data,
+        MessageParcel &reply, MessageOption &option);
+    bool requestEnable = true;
 };
 } // namespace SOCPERF
 } // namespace OHOS

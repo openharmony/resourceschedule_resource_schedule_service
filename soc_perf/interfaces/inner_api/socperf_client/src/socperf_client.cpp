@@ -137,5 +137,14 @@ void SocPerfClient::LimitRequest(int32_t clientId,
     std::string newMsg = AddPidAndTidInfo(msg);
     client->LimitRequest(clientId, tags, configs, newMsg);
 }
+
+void SocPerfClient::SetRequestStatus(bool status, const std::string& msg)
+{
+    if (!CheckClientValid()) {
+        return;
+    }
+    std::string newMsg = AddPidAndTidInfo(msg);
+    client->SetRequestStatus(status, newMsg);
+}
 } // namespace SOCPERF
 } // namespace OHOS

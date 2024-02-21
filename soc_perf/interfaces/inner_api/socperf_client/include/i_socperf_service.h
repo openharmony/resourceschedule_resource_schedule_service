@@ -75,6 +75,14 @@ public:
     virtual void LimitRequest(int32_t clientId,
         const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg) = 0;
 
+    /**
+     * @brief set socperf server status, enable or disable
+     *
+     * @param status true means enable socperfserver, false means disable socperfserver
+     * @param msg the reason why we need change socperfserver status
+     */
+    virtual void SetRequestStatus(bool status, const std::string& msg) = 0;
+
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"Resourceschedule.ISocPerfService");
 };

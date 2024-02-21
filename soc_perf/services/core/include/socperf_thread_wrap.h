@@ -47,6 +47,7 @@ enum SocPerfInnerEvent : uint32_t {
     INNER_EVENT_ID_POWER_LIMIT_BOOST_FREQ,
     INNER_EVENT_ID_THERMAL_LIMIT_BOOST_FREQ,
     INNER_EVENT_ID_DO_FREQ_ACTION_LEVEL,
+    INNER_EVENT_ID_CLEAR_ALL_ALIVE_REQUEST
 };
 
 #ifdef SOCPERF_ADAPTOR_FFRT
@@ -68,6 +69,7 @@ public:
     void UpdateThermalLimitBoostFreq(bool thermalLimitBoost);
     void UpdateLimitStatus(int32_t eventId, std::shared_ptr<ResAction> resAction, int32_t resId);
     void InitPerfFunc(const char* perfSoPath, const char* perfSoFunc);
+    void ClearAllAliveRequest();
 
 private:
     static const int32_t SCALES_OF_MILLISECONDS_TO_MICROSECONDS = 1000;

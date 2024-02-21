@@ -81,6 +81,10 @@ void SocPerfThreadWrap::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &even
             UpdateThermalLimitBoostFreq(event->GetParam());
             break;
         }
+        case INNER_EVENT_ID_CLEAR_ALL_ALIVE_REQUEST: {
+            ClearAllAliveRequest();
+            break;
+        }
         default:
             break;
     }
@@ -227,6 +231,30 @@ void SocPerfThreadWrap::UpdateLimitStatus(int32_t eventId, std::shared_ptr<ResAc
                             "RES_ID", resId,
                             "CONFIG", resStatusInfo[resId]->candidate);
         }
+#ifdef SOCPERF_ADAPTOR_FFRT
+    };
+    socperfQueue.submit(updateLimitStatusFunc);
+#endif
+}
+
+void SocPerfThreadWrap::ClearAllAliveRequest()
+{
+#ifdef SOCPERF_ADAPTOR_FFRT
+    std::function<void()>&& updateLimitStatusFunc = [this]() {
+#endif
+    for (const std::pair<int32_t, std::shared_ptr<ResStatus>>& item : this->resStatusInfo) {
+        if (item.second == nullptr) {
+            continue;
+        }
+        for (int32_t i = 0; i < ACTION_TYPE_MAX; i++) {
+            std::list<std::shared_ptr<ResAction>>& resActionList = item.second->resActionList[i];
+            resActionList.clear();
+            this->thermalLimitBoost = false;
+            this->powerLimitBoost = false;
+            UpdateCandidatesValue(item.first, i);
+        }
+    }
+    SendResStatusToPerfSo();
 #ifdef SOCPERF_ADAPTOR_FFRT
     };
     socperfQueue.submit(updateLimitStatusFunc);
