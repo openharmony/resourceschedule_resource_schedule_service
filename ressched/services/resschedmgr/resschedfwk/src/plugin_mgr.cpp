@@ -20,6 +20,7 @@
 #include <dlfcn.h>
 #include <iostream>
 #include <string>
+#include <string_ex.h>
 #include "config_policy_utils.h"
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt_inner.h"
@@ -43,6 +44,10 @@ namespace {
     const std::string RUNNER_NAME = "rssDispatcher";
     const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
     const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+    const int32_t DEFAULT_VALUE = -1;
+    const char* EXT_RES_KEY = "extType";
+#endif
 }
 
 IMPLEMENT_SINGLE_INSTANCE(PluginMgr);
@@ -202,6 +207,25 @@ void PluginMgr::Stop()
     OnDestroy();
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+int32_t PluginMgr::GetExtTypeByResPayload(const std::shared_ptr<ResData>& resData)
+{
+    if (!resData || resData->resType != ResType::RES_TYPE_KEY_PERF_SCENE) {
+        return DEFAULT_VALUE;
+    }
+    auto payload = resData->payload;
+    if (!payload.contains(EXT_RES_KEY) || !payload[EXT_RES_KEY].is_string()) {
+        return DEFAULT_VALUE;
+    }
+    int type = DEFAULT_VALUE;
+    if (StrToInt(payload[EXT_RES_KEY], type)) {
+        return type;
+    } else {
+        return DEFAULT_VALUE;
+    }
+}
+#endif
+
 bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>& pluginList)
 {
     std::lock_guard<std::mutex> autoLock(resTypeMutex_);
@@ -214,6 +238,25 @@ bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>&
     return true;
 }
 
+std::string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,
+    const std::string& funcName, std::list<std::string>& pluginList)
+{
+    libNameAll.append("[");
+    for (const auto& libName : pluginList) {
+        libNameAll.append(libName);
+        libNameAll.append(",");
+    }
+    libNameAll.append("]");
+    string trace_str(funcName);
+    string resTypeString =
+        ResType::resTypeToStr.count(resData->resType) ? ResType::resTypeToStr.at(resData->resType) : "UNKNOWN";
+    trace_str.append(" PluginMgr ,resType[").append(std::to_string(resData->resType)).append("]");
+    trace_str.append(",resTypeStr[").append(resTypeString).append("]");
+    trace_str.append(",value[").append(std::to_string(resData->value)).append("]");
+    trace_str.append(",pluginlist:").append(libNameAll);
+    return trace_str;
+}
+
 void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 {
     if (!resData) {
@@ -221,22 +264,17 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         return;
     }
     std::list<std::string> pluginList;
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+    int32_t extType = GetExtTypeByResPayload(resData);
+    if (extType != DEFAULT_VALUE) {
+        resData->resType = extType;
+    }
+#endif
     if (!GetPluginListByResType(resData->resType, pluginList)) {
         return;
     }
-    std::string libNameAll = "[";
-    for (const auto& libName : pluginList) {
-        libNameAll.append(libName);
-        libNameAll.append(",");
-    }
-    libNameAll.append("]");
-    string trace_str(__func__);
-    string resTypeString =
-        ResType::resTypeToStr.count(resData->resType) ? ResType::resTypeToStr.at(resData->resType) : "UNKNOWN";
-    trace_str.append(" PluginMgr ,resType[").append(std::to_string(resData->resType)).append("]");
-    trace_str.append(",resTypeStr[").append(resTypeString).append("]");
-    trace_str.append(",value[").append(std::to_string(resData->value)).append("]");
-    trace_str.append(",pluginlist:").append(libNameAll);
+    std::string libNameAll = "";
+    string trace_str = BuildDispatchTrace(resData, libNameAll, __func__, pluginList);
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
     RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, "
                   "value = %{public}lld, pluginlist is %{public}s.", __func__,
