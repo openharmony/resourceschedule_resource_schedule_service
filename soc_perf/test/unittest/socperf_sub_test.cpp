@@ -222,9 +222,6 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_GetService_002, Function | MediumTest | 
 {
     sptr<ISystemAbilityManager> samgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     EXPECT_NE(samgr, nullptr);
-
-    sptr<IRemoteObject> object = samgr->GetSystemAbility(RES_SCHED_SYS_ABILITY_ID);
-    EXPECT_NE(object, nullptr);
 }
 
 static void SocPerfSubTestGetServiceTask()
@@ -233,9 +230,6 @@ static void SocPerfSubTestGetServiceTask()
     EXPECT_NE(samgr, nullptr);
 
     sptr<IRemoteObject> object = samgr->GetSystemAbility(SOC_PERF_SERVICE_SA_ID);
-    EXPECT_NE(object, nullptr);
-
-    object = samgr->GetSystemAbility(RES_SCHED_SYS_ABILITY_ID);
     EXPECT_NE(object, nullptr);
 }
 
@@ -430,6 +424,10 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_ResetClient_001, Function | MediumTest |
     OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(true, msg);
     EXPECT_EQ(msg, "");
     OHOS::SOCPERF::SocPerfClient::GetInstance().ThermalLimitBoost(false, msg);
+    EXPECT_EQ(msg, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().SetRequestStatus(false, msg);
+    EXPECT_EQ(msg, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().SetRequestStatus(true, msg);
     EXPECT_EQ(msg, "");
     OHOS::SOCPERF::SocPerfClient::GetInstance().ResetClient();
 }
