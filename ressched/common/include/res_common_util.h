@@ -44,19 +44,6 @@ public:
         }
         return true;
     }
-    static bool StringToInt32(const std::string &inValue, int32_t &outValue)
-    {
-        char* pEnd = nullptr;
-        errno = 0;
-        int64_t result = std::strtol(inValue.c_str(), &pEnd, 10);
-        if (errno == ERANGE || pEnd == inValue.c_str() || *pEnd != '\0' ||
-          (result < INT_MIN || result > INT_MAX)) {
-            return false;
-        } else {
-            outValue = result;
-            return true;
-        }
-    }
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

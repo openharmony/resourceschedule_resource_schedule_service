@@ -20,6 +20,7 @@
 #include <dlfcn.h>
 #include <iostream>
 #include <string>
+#include <string_ex.h>
 #include "config_policy_utils.h"
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt_inner.h"
@@ -28,7 +29,6 @@
 #endif
 #include "hisysevent.h"
 #include "refbase.h"
-#include "res_common_util.h"
 #include "res_sched_log.h"
 #include "hitrace_meter.h"
 
@@ -223,7 +223,7 @@ int32_t PluginMgr::GetExtTypeByResPayload(const std::shared_ptr<ResData>& resDat
         return DEFAULT_VALUE;
     }
     int type = DEFAULT_VALUE;
-    if (ResCommonUtil::StringToInt32(payload[EXT_RES_KEY], type)) {
+    if (StrToInt(payload[EXT_RES_KEY], type)) {
         return type;
     } else {
         return DEFAULT_VALUE;
