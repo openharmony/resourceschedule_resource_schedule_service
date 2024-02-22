@@ -246,13 +246,9 @@ void SocPerfThreadWrap::ClearAllAliveRequest()
         if (item.second == nullptr) {
             continue;
         }
-        for (int32_t i = 0; i < ACTION_TYPE_MAX; i++) {
-            std::list<std::shared_ptr<ResAction>>& resActionList = item.second->resActionList[i];
-            resActionList.clear();
-            this->thermalLimitBoost = false;
-            this->powerLimitBoost = false;
-            UpdateCandidatesValue(item.first, i);
-        }
+        std::list<std::shared_ptr<ResAction>>& resActionList = item.second->resActionList[ACTION_TYPE_PERF];
+        resActionList.clear();
+        UpdateCandidatesValue(item.first, ACTION_TYPE_PERF);
     }
     SendResStatusToPerfSo();
 #ifdef SOCPERF_ADAPTOR_FFRT

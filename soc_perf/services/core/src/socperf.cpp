@@ -256,10 +256,6 @@ void SocPerf::ClearAllAliveRequest()
         SOC_PERF_LOGE("SocPerf disabled!");
         return;
     }
-    for (int32_t i = 0; i < ACTION_TYPE_MAX; i++) {
-        std::lock_guard<std::mutex> lock(mutex_);
-        limitRequest[i].clear();
-    }
     for (int32_t i = 0; i < MAX_QUEUE_NUM; ++i) {
         if (socperfThreadWraps[i] == nullptr) {
             continue;

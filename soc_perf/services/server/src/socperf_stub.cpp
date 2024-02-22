@@ -34,7 +34,8 @@ int32_t SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
         return ERR_INVALID_STATE;
     }
     /* if socperf server is disabled, only SetStatus API work */
-    if (!requestEnable && code != static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_SET_STATUS)) {
+    if (!requestEnable && (code == static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_PERF_REQUEST) ||
+        code == static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_PERF_REQUEST_EX))) {
         return ERR_INVALID_STATE;
     }
     switch (code) {
