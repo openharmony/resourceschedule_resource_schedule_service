@@ -863,21 +863,21 @@ void CgroupEventHandler::HandleReportAvCodecEvent(uint32_t resType, int64_t valu
 
 void CgroupEventHandler::HandleSceneBoardState(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    int32_t keyTid = 0;
+    int32_t sceneBoardPid = 0;
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
 
-    if (!ParseValue(keyTid, "tid", payload)) {
+    if (!ParseValue(sceneBoardPid, "pid", payload)) {
         return;
     }
-    if (keyTid <= 0) {
+    if (sceneBoardPid <= 0) {
         return;
     }
     
-    supervisor_->sceneBoardPid_ = keyTid;
-    CGS_LOGD("%{public}s : set sceneboard pid: %{public}d", __func__, keyTid);
+    supervisor_->sceneBoardPid_ = sceneBoardPid;
+    CGS_LOGD("%{public}s : set sceneboard pid: %{public}d", __func__, sceneBoardPid);
 }
 
 bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc)
