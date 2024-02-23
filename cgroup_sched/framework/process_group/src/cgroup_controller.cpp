@@ -118,7 +118,7 @@ bool CgroupController::GetTaskGroup(int tid, std::string& subgroup)
     std::string content;
     std::string filePath = StringPrintf("/proc/%d/cgroup", tid);
     if (!ReadFileToStringForVFS(filePath, content)) {
-        PGCGS_LOGE("%{public}s: fail to read  = %{public}s", __func__, filePath.c_str());
+        PGCGS_LOGE("%{public}s: fail to read pid %{public}d cgroup proc", __func__, tid);
         return false;
     }
     std::string cgTag = StringPrintf(":%s:", name_.c_str());
@@ -150,8 +150,8 @@ bool CgroupController::AddThreadSchedPolicy(SchedPolicy policy, const std::strin
     }
     int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
-        PGCGS_LOGE("%{public}s open file failed; file = %{public}s, fd = %{public}d ",
-            __func__, realPath.c_str(), fd);
+        PGCGS_LOGE("%{public}s open tasks file failed, name is %{public}s, subgroup is %{public}s",
+            __func__, name_.c_str(), subgroup.c_str());
         return false;
     }
     policyToTaskFd_[policy] = fd;
@@ -172,8 +172,8 @@ bool CgroupController::AddThreadGroupSchedPolicy(SchedPolicy policy, const std::
     }
     int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
-        PGCGS_LOGE("%{public}s open file failed; file = %{public}s'; fd = %{public}d",
-            __func__, realPath.c_str(), fd);
+        PGCGS_LOGE("%{public}s open cgroup.procs file failed, name is %{public}s, subgroup is %{public}s",
+            __func__, name_.c_str(), subgroup.c_str());
         return false;
     }
     policyToProcFd_[policy] = fd;
