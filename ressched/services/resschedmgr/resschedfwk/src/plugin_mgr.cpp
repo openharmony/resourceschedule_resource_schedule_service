@@ -128,7 +128,7 @@ void PluginMgr::LoadPlugin()
         std::lock_guard<std::mutex> autoLock(pluginMutex_);
         pluginLibMap_.emplace(info.libPath, *libInfoPtr);
 
-        RESSCHED_LOGI("%{public}s, init %{public}s success!", __func__, info.libPath.c_str());
+        RESSCHED_LOGI("%{public}s, init %{private}s success!", __func__, info.libPath.c_str());
     }
 }
 
@@ -167,7 +167,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     }
 
     if (!onPluginInitFunc(const_cast<std::string&>(info.libPath))) {
-        RESSCHED_LOGE("%{public}s, %{public}s init failed!", __func__, info.libPath.c_str());
+        RESSCHED_LOGE("%{public}s, %{private}s init failed!", __func__, info.libPath.c_str());
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", info.libPath,
                         "ERR_TYPE", "plugin failure",
