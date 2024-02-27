@@ -48,7 +48,7 @@ const static int32_t TUPLE_UID = 1;
 const static int32_t TUPLE_NAME = 2;
 const static bool DEVICE_MOVEMENT_OBSERVER_ENABLE =
     system::GetBoolParameter("persist.sys.ressched_device_movement_observer_switch", false);
-const std::string RES_NAP_SO = "libapp_nap_service.z.so";
+const std::string RES_SCHED_CG_EXT_SO = "libcgroup_sched_ext.z.so";
 
 void ObserverManager::Init()
 {
@@ -170,19 +170,20 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
 
 void ObserverManager::GetReportFunc()
 {
-    auto handle = dlopen(RES_NAP_SO.c_str(), RTLD_NOW);
+    auto handle = dlopen(RES_SCHED_CG_EXT_SO.c_str(), RTLD_NOW);
     if (!handle) {
         RESSCHED_LOGE("GetReportFunc dlopen failed");
         return;
     }
-    reportFunc_ = reinterpret_cast<ReportFunc>(dlsym(handle, "IsNeedReportEvents"));
-    if (!reportFunc_) {
+    ReportFunc reportFunc = reinterpret_cast<ReportFunc>(dlsym(handle, "IsNeedReportEvents"));
+    if (!reportFunc) {
         RESSCHED_LOGE("GetReportFunc dlsym 'IsNeedReportEvents' failed");
         dlclose(handle);
         return;
     }
 
-    isNeedReport_ = reportFunc_();
+    isNeedReport_ = reportFunc();
+    dlclose(handle);
 }
 
 void ObserverManager::InitHiSysEventObserver()
