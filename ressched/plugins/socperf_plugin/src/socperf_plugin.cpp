@@ -58,7 +58,6 @@ void SocPerfPlugin::Init()
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
-    socperfOnDemandSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND);
     SOC_PERF_LOGI("SocPerfPlugin::Init success");
 }
 
@@ -95,6 +94,8 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleLoadUrl(data); } },
         { RES_TYPE_MOUSEWHEEL,
             [this](const std::shared_ptr<ResData>& data) { HandleMousewheel(data); } },
+        { RES_TYPE_APP_STATE_CHANGE,
+            [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
     };
 }
 
@@ -116,6 +117,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_WEB_SLIDE_NORMAL,
         RES_TYPE_LOAD_URL,
         RES_TYPE_MOUSEWHEEL,
+        RES_TYPE_APP_STATE_CHANGE,
     };
 }
 
@@ -157,11 +159,7 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 {
     if (data->value == AppStartType::APP_COLD_START) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
-        if (socperfOnDemandSwitch_) {
-            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_APP_START, true, "");
-        } else {
-            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
-        }
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
     } else if (data->value == AppStartType::APP_WARM_START) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_WARM_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WARM_START, "");
@@ -190,9 +188,6 @@ void SocPerfPlugin::HandleLoadPage(const std::shared_ptr<ResData>& data)
 {
     if (data->value == LOAD_PAGE_START) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->PUSH_PAGE_START");
-        if (socperfOnDemandSwitch_) {
-            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_APP_START, false, "");
-        }
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LOAD_PAGE_START, true, "");
     } else if (data->value == LOAD_PAGE_COMPLETE) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->PUSH_PAGE_COMPLETE");
@@ -262,9 +257,6 @@ void SocPerfPlugin::HandleMoveWindow(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleRemoteAnimation(const std::shared_ptr<ResData>& data)
 {
-    if (!socperfOnDemandSwitch_) {
-        return;
-    }
     if (data->value == ShowRemoteAnimationStatus::ANIMATION_BEGIN) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, true, "");
@@ -323,6 +315,14 @@ void SocPerfPlugin::HandleMousewheel(const std::shared_ptr<ResData>& data)
 {
     SOC_PERF_LOGI("SocPerfPlugin: socperf->MOUSEWHEEL");
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_MOUSEWHEEL, "");
+}
+
+void SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
+{
+    if (data->value == ResType::ProcessStatus::PROCESS_CREATED) {
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->APPSTATECHANGE");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+    }
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
