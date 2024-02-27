@@ -618,7 +618,7 @@ enum CollabroationServiceStatus : int32_t {
     PREPARE = 2,
     CONNECTING = 3,
     CONNECT_SUCC = 4,
-}
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
