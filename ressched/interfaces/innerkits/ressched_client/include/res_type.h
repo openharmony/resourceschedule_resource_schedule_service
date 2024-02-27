@@ -612,7 +612,7 @@ enum KeyPerfStatus : int64_t {
 /**
  * @brief Collabroation Service status
  */
-enum CollabroationServiceStatus : int32_t {
+enum CollabroationServiceStatus : int64_t {
     UNKNOWN_STATE = 0,
     IDLE = 1,
     PREPARE = 2,
