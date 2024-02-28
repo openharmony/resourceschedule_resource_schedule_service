@@ -178,6 +178,12 @@ enum : uint32_t {
     RES_TYPE_LONG_FRAME = 71,
     // report key perf scene, value 0 enter scene 1 exit scene.
     RES_TYPE_KEY_PERF_SCENE = 72,
+    // report super launcher state
+    RES_TYPE_SUPER_LAUNCHER = 73,
+    // report cast screen state
+    RES_TYPE_CAST_SCREEN = 74,
+    // report screen collabroation state
+    RES_TYPR_SCREEN_COLLABROATION = 75,
     //last resType
     RES_TYPE_LAST,
 };
@@ -256,6 +262,9 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_REPORT_SCREEN_CAPTURE, "RES_TYPE_REPORT_SCREEN_CAPTURE" },
     { RES_TYPE_LONG_FRAME, "RES_TYPE_LONG_FRAME" },
     { RES_TYPE_KEY_PERF_SCENE, "RES_TYPE_KEY_PERF_SCENE" },
+    { RES_TYPE_SUPER_LAUNCHER, "RES_TYPE_SUPER_LAUNCHER" },
+    { RES_TYPE_CAST_SCREEN, "RES_TYPE_CAST_SCREEN" },
+    { RES_TYPR_SCREEN_COLLABROATION, "RES_TYPR_SCREEN_COLLABROATION" },
 };
 
 /**
@@ -598,6 +607,17 @@ enum ScreenCaptureStatus : int64_t {
 enum KeyPerfStatus : int64_t {
     ENTER_SCENE = 0,
     EXIT_SCENE = 1,
+};
+
+/**
+ * @brief Collabroation Service status
+ */
+enum CollabroationServiceStatus : int64_t {
+    UNKNOWN_STATE = 0,
+    IDLE = 1,
+    PREPARE = 2,
+    CONNECTING = 3,
+    CONNECT_SUCC = 4,
 };
 } // namespace ResType
 } // namespace ResourceSchedule

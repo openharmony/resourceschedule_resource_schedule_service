@@ -29,6 +29,7 @@ namespace ResourceSchedule {
 using namespace OHOS::Security;
 namespace {
     #define PAYLOAD_MAX_SIZE 4096
+    constexpr int32_t SAMGR_UID = 5555;
     static const std::unordered_set<uint32_t> scbRes = {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
@@ -93,8 +94,10 @@ namespace {
         ResType::RES_TYPE_THERMAL_STATE,
         ResType::RES_TYPE_REPORT_SCREEN_CAPTURE,
         ResType::RES_TYPE_KEY_PERF_SCENE,
+        ResType::RES_TYPE_SUPER_LAUNCHER,
+        ResType::RES_TYPE_CAST_SCREEN,
+        ResType::RES_TYPR_SCREEN_COLLABROATION,
     };
-    constexpr int32_t SAMGR_UID = 5555;
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
 
