@@ -65,9 +65,9 @@ void ResSchedUtils::LoadUtilsExtra()
     if (!handle) {
         CGS_LOGD("%{public}s load %{public}s failed! errno:%{public}d", __func__, RES_SCHED_CG_EXT_SO.c_str(), errno);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
+                        "COMPONENT_NAME", RES_SCHED_CG_EXT_SO,
                         "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "ResSchedUtils dlopen " + RES_SCHED_SERVICE_SO + " failed!");
+                        "ERR_MSG", "ResSchedUtils dlopen " + RES_SCHED_CG_EXT_SO + " failed!");
         return;
     }
 
@@ -76,11 +76,24 @@ void ResSchedUtils::LoadUtilsExtra()
     if (!reportArbitrationResultFunc_) {
         CGS_LOGD("%{public}s load function:ReportArbitrationResult failed! errno:%{public}d", __func__, errno);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
+                        "COMPONENT_NAME", RES_SCHED_CG_EXT_SO,
                         "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "ResSchedUtils don't found dlsym " + RES_SCHED_SERVICE_SO + "!");
+                        "ERR_MSG", "ResSchedUtils don't found dlsym " + RES_SCHED_CG_EXT_SO + "!");
         dlclose(handle);
         return;
+    }
+
+    dispatchResourceExtFunc_ =
+        reinterpret_cast<DispatchResourceExtFunc>(dlsym(handle, "DispatchResourceExt"));
+
+    if (!dispatchResourceExtFunc_) {
+        CGS_LOGD("%{public}s load function:DispatchResourceExt failed! errno:%{public}d", __func__, errno);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", RES_SCHED_CG_EXT_SO,
+                        "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "ResSchedUtils don't found dlsym " + RES_SCHED_CG_EXT_SO + "!");
+        dlclose(handle);
+        return;       
     }
 
     reportSysEventFunc_ =
@@ -88,9 +101,9 @@ void ResSchedUtils::LoadUtilsExtra()
     if (!reportSysEventFunc_) {
         CGS_LOGD("%{public}s load function:ReportSysEvent failed! errno:%{public}d", __func__, errno);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
+                        "COMPONENT_NAME", RES_SCHED_CG_EXT_SO,
                         "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "ResSchedUtils don't found ReportSysEvent in " + RES_SCHED_SERVICE_SO + "!");
+                        "ERR_MSG", "ResSchedUtils don't found ReportSysEvent in " + RES_SCHED_CG_EXT_SO + "!");
         dlclose(handle);
         return;
     }
@@ -121,6 +134,15 @@ void ResSchedUtils::ReportSysEvent(Application &app, ProcessRecord &pr, uint32_t
         return;
     }
     reportSysEventFunc_(app, pr, resType, state);
+}
+
+void ResSchedUtils::DispatchResourceExt(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    if (!dispatchResourceExtFunc_) {
+        CGS_LOGD("%{public}s failed, function nullptr.", __func__);
+        return;
+    }
+    dispatchResourceExtFunc_(resType, value, payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
