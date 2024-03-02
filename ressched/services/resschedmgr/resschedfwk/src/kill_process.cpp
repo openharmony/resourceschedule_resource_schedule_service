@@ -16,15 +16,23 @@
 
 #include <cstdint>
 #include <csignal>
+#include <fstream>
 #include <sys/types.h>
+#include "ability_manager_client.h"
+#include "exit_reason.h"
 #include "res_sched_errors.h"
+#include "res_sched_kill_reason.h"
 #include "res_sched_log.h"
+#include "string_ex.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 using namespace std;
 namespace {
+    constexpr int32_t MAX_INDEX = 22;
     constexpr int32_t SIGNAL_KILL = 9;
+    constexpr int32_t START_TIME_INDEX = 19;
+    const std::string UNKNOWN_PROCESS = "unknown_process";
 }
 
 int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload)
@@ -34,31 +42,82 @@ int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload)
     }
 
     pid_t pid = static_cast<int32_t>(atoi(payload["pid"].get<string>().c_str()));
-    if (pid == 0) {
+    std::string processName = payload.contains("processName") && payload["processName"].is_string() ?
+                                  payload["processName"].get<string>() : UNKNOWN_PROCESS;
+    time_t processStartTime = GetProcessStartTime(pid);
+    if (pid < 0 || processStartTime <=0) {
+        RESSCHED_LOGE("process %{public}d:%{public}s is invalid", pid, processName.c_str());
         return RES_SCHED_KILL_PROCESS_FAIL;
     }
-    int32_t killRes = KillProcessByPid(pid);
-    if (killRes < 0) {
-        RESSCHED_LOGE("kill process %{public}d failed.", pid);
-    } else {
-        string processName = "unknown process";
-        if (payload.contains("processName") && payload["processName"].is_string()) {
-            processName = payload["processName"].get<string>();
+
+    if (payload.contains("killReason") && payload["killReason"].is_string()) {
+        std::string killReason = payload["killReason"].get<string>();
+        AAFwk::ExitReason reason = {AAFwk::REASON_PERFORMANCE_CONTROL, killReason};
+        if (AAFwk::AbilityManagerClient::GetInstance()->RecordProcessExitReason(pid, reason) == 0) {
+            RESSCHED_LOGI("process %{public}d exitReason:%{public}s record success", pid, killReason.c_str());
+        } else {
+            RESSCHED_LOGE("process %{public}d exitReason:%{public}s record failed", pid, killReason.c_str());
         }
-        RESSCHED_LOGI("kill process, killer is %{public}s to be killed, pid is %{public}d.",
-            processName.c_str(), pid);
+    }
+
+    if (processStartTime != GetProcessStartTime(pid)) {
+        RESSCHED_LOGE("process %{public}d:%{public}s has killed in advance", pid, processName.c_str());
+        return RES_SCHED_KILL_PROCESS_FAIL;
+    }
+
+    int32_t killRes = kill(pid, SIGNAL_KILL);
+    if (killRes < 0) {
+        RESSCHED_LOGE("kill process %{public}d:%{public}s failed", pid, processName.c_str());
+    } else {
+        RESSCHED_LOGI("kill process %{public}d:%{public}s success", pid, processName.c_str());
     }
     return killRes;
 }
 
-int32_t KillProcess::KillProcessByPid(const pid_t pid) const
+time_t KillProcess::GetProcessStartTime(int pid)
 {
-    int32_t ret = -1;
-    if (pid > 0) {
-        ret = kill(pid, SIGNAL_KILL);
-        RESSCHED_LOGI("kill pid %{public}d.", pid);
+    std::string path = "/proc/" + std::to_string(pid) + "/stat";
+    std::vector<std::string> statInfo = GetStatInfo(path);
+    if (statInfo.size() < MAX_INDEX) {
+        return -1;
     }
-    return ret;
+    std::string startTime = statInfo[START_TIME_INDEX];
+    if (!isdigit(startTime[0])) {
+        RESSCHED_LOGE("failed to get process start time, reason: not digital, pid: %d\n", pid);
+        return -1;
+    }
+    return stol(startTime);
+}
+
+std::vector<std::string> KillProcess::GetStatInfo(const std::string &path)
+{
+    std::string statInfo = ReadFileByChar(path);
+    // process_name was included in pair (), find ")" as part for skip speical in process_name.
+    size_t pos = statInfo.find(')');
+    if (pos != std::string::npos) {
+        statInfo = statInfo.substr(++pos);
+    }
+    vector<string> stats;
+    SplitStr(statInfo, " ", stats);
+    return stats;
+}
+
+std::string KillProcess::ReadFileByChar(const std::string &path)
+{
+    std::ifstream fin(path);
+    if (!fin.is_open()) {
+        return UNKNOWN_PROCESS;
+    }
+    std::string content;
+    char c;
+    while (!fin.eof()) {
+        fin >> std::noskipws >> c;
+        if (c == '\0' || c == '\n') {
+            break;
+        }
+        content += c;
+    }
+    return content;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

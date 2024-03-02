@@ -25,8 +25,9 @@ class KillProcess {
 public:
     int32_t KillProcessByPidWithClient(const nlohmann::json& payload);
 private:
-
-    int32_t KillProcessByPid(const pid_t pid) const;
+    time_t GetProcessStartTime(int pid);
+    std::vector<std::string> GetStatInfo(const std::string &path);
+    std::string ReadFileByChar(const std::string &path);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

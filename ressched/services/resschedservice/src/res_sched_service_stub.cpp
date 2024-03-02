@@ -29,6 +29,7 @@ namespace ResourceSchedule {
 using namespace OHOS::Security;
 namespace {
     #define PAYLOAD_MAX_SIZE 4096
+    constexpr int32_t MEMMGR_UID = 1111;
     constexpr int32_t SAMGR_UID = 5555;
     static const std::unordered_set<uint32_t> scbRes = {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
@@ -210,7 +211,8 @@ int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel
     uint32_t accessToken = IPCSkeleton::GetCallingTokenID();
     int32_t uid = IPCSkeleton::GetCallingUid();
     Security::AccessToken::ATokenTypeEnum tokenTypeFlag = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(accessToken);
-    if (uid != SAMGR_UID || tokenTypeFlag != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
+    if ((uid != MEMMGR_UID && uid != SAMGR_UID)
+        || tokenTypeFlag != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
         RESSCHED_LOGE("no permission， kill process fail");
         return RES_SCHED_KILL_PROCESS_FAIL;
     }
