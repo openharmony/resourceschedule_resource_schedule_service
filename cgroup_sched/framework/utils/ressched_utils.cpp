@@ -85,7 +85,6 @@ void ResSchedUtils::LoadUtilsExtra()
 
     dispatchResourceExtFunc_ =
         reinterpret_cast<DispatchResourceExtFunc>(dlsym(handle, "DispatchResourceExt"));
-
     if (!dispatchResourceExtFunc_) {
         CGS_LOGD("%{public}s load function:DispatchResourceExt failed! errno:%{public}d", __func__, errno);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
@@ -93,7 +92,7 @@ void ResSchedUtils::LoadUtilsExtra()
                         "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "ResSchedUtils don't found dlsym " + RES_SCHED_CG_EXT_SO + "!");
         dlclose(handle);
-        return;       
+        return;
     }
 
     reportSysEventFunc_ =
