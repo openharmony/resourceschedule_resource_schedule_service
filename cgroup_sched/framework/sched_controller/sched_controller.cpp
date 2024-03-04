@@ -193,6 +193,7 @@ void SchedController::DispatchOtherResource(uint32_t resType, int64_t value, con
             }
         }
     });
+    ResSchedUtils::GetInstance().DispatchResourceExt(resType, value, payload);
 }
 
 std::string SchedController::GetBundleNameByUid(const int32_t uid)

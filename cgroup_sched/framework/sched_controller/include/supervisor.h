@@ -127,6 +127,8 @@ public:
     std::vector<std::shared_ptr<WindowInfo>> windows_;
 
     std::map<int32_t, int32_t> keyThreadRoleMap_ {}; // items in keyThreadMap_ is (tid, role)
+
+    std::unordered_map<int32_t, SchedPolicy> specialSchedThread_;
 private:
     uid_t uid_;
     pid_t pid_;
