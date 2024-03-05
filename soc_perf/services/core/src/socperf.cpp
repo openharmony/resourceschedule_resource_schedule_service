@@ -75,7 +75,7 @@ bool SocPerf::Init()
 
 void SocPerf::PerfRequest(int32_t cmdId, const std::string& msg)
 {
-    if (!enabled) {
+    if (!enabled || !perfRequestEnable_) {
         SOC_PERF_LOGD("SocPerf disabled!");
         return;
     }
@@ -95,7 +95,7 @@ void SocPerf::PerfRequest(int32_t cmdId, const std::string& msg)
 
 void SocPerf::PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)
 {
-    if (!enabled) {
+    if (!enabled || !perfRequestEnable_) {
         SOC_PERF_LOGD("SocPerf disabled!");
         return;
     }
@@ -247,6 +247,16 @@ void SocPerf::LimitRequest(int32_t clientId,
         SOC_PERF_LOGI("clientId[%{public}d],tags[%{public}d],configs[%{public}lld],msg[%{public}s]",
             clientId, tags[i], (long long)configs[i], msg.c_str());
         SendLimitRequestEvent(clientId, tags[i], configs[i]);
+    }
+}
+
+void SocPerf::SetRequestStatus(bool status, const std::string& msg)
+{
+    SOC_PERF_LOGI("requestEnable is changed to %{public}d, the reason is %{public}s", status, msg.c_str());
+    perfRequestEnable_ = status;
+    /* disable socperf sever, we should clear all alive request to avoid high freq for long time */
+    if (!perfRequestEnable_) {
+        ClearAllAliveRequest();
     }
 }
 

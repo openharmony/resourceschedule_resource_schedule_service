@@ -114,11 +114,7 @@ void SocPerfServer::LimitRequest(int32_t clientId,
 
 void SocPerfServer::SetRequestStatus(bool status, const std::string &msg)
 {
-    SOC_PERF_LOGI("requestEnable is changed to %{public}d, the reason is %{public}s", status, msg.c_str());
-    /* disable socperf sever, we should clear all alive request to avoid high freq for long time */
-    if (!status) {
-        socPerf.ClearAllAliveRequest();
-    }
+    socPerf.SetRequestStatus(status, msg);
 }
 } // namespace SOCPERF
 } // namespace OHOS

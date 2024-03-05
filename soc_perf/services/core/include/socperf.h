@@ -37,7 +37,7 @@ public:
     void ThermalLimitBoost(bool onOffTag, const std::string& msg);
     void LimitRequest(int32_t clientId,
         const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg);
-    void ClearAllAliveRequest();
+    void SetRequestStatus(bool status, const std::string& msg);
 public:
     SocPerf();
     ~SocPerf();
@@ -54,6 +54,7 @@ private:
     std::vector<std::unordered_map<int32_t, int32_t>> limitRequest;
     char* perfSoPath = nullptr;
     char* perfSoFunc = nullptr;
+    volatile bool perfRequestEnable_ = true;
 
 private:
     std::mutex mutex_;
@@ -97,6 +98,7 @@ private:
         int32_t clientId, int32_t resId, int32_t eventId);
     void SendLimitRequestEventOn(std::shared_ptr<SocPerfThreadWrap> threadWrap,
         int32_t clientId, int32_t resId, int64_t resValue, int32_t eventId);
+    void ClearAllAliveRequest();
 };
 } // namespace SOCPERF
 } // namespace OHOS
