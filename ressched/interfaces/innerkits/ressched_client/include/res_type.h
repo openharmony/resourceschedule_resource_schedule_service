@@ -184,6 +184,8 @@ enum : uint32_t {
     RES_TYPE_CAST_SCREEN = 74,
     // report screen collabroation state
     RES_TYPR_SCREEN_COLLABROATION = 75,
+    // report sa control app event, eg: start app or stop app
+    RES_TYPE_SA_CONTROL_APP_EVENT = 76,
     //last resType
     RES_TYPE_LAST,
 };
@@ -265,6 +267,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_SUPER_LAUNCHER, "RES_TYPE_SUPER_LAUNCHER" },
     { RES_TYPE_CAST_SCREEN, "RES_TYPE_CAST_SCREEN" },
     { RES_TYPR_SCREEN_COLLABROATION, "RES_TYPR_SCREEN_COLLABROATION" },
+    { RES_TYPE_SA_CONTROL_APP_EVENT, "RES_TYPE_SA_CONTROL_APP_EVENT" },
 };
 
 /**
@@ -618,6 +621,14 @@ enum CollabroationServiceStatus : int64_t {
     PREPARE = 2,
     CONNECTING = 3,
     CONNECT_SUCC = 4,
+};
+
+/**
+ * @brief sa control app status
+ */
+enum SaControlAppStatus : int64_t {
+    SA_START_APP = 0,
+    SA_STOP_APP = 0,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
