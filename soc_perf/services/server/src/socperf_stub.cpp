@@ -33,11 +33,6 @@ int32_t SocPerfStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     if (GetDescriptor() != remoteDescriptor || !HasPerfPermission()) {
         return ERR_INVALID_STATE;
     }
-    /* if socperf server is disabled, only SetStatus API work */
-    if (!requestEnable && (code == static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_PERF_REQUEST) ||
-        code == static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_PERF_REQUEST_EX))) {
-        return ERR_INVALID_STATE;
-    }
     switch (code) {
         case static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_PERF_REQUEST): {
             int32_t cmdId = data.ReadInt32();
@@ -85,7 +80,7 @@ int32_t SocPerfStub::OnRemoteRequestExt(uint32_t code, MessageParcel &data,
 {
     switch (code) {
         case static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_SET_STATUS): {
-            requestEnable = data.ReadBool();
+            bool requestEnable = data.ReadBool();
             std::string msg = data.ReadString();
             SetRequestStatus(requestEnable, msg);
             break;
