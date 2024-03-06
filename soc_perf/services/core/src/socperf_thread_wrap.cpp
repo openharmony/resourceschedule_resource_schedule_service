@@ -464,12 +464,16 @@ void SocPerfThreadWrap::UpdateCandidatesValue(int32_t resId, int32_t type)
 
 void SocPerfThreadWrap::InnerArbitrateCandidatesValue(int32_t type, std::shared_ptr<ResStatus> resStatus)
 {
-    int64_t res = type == ACTION_TYPE_PERF ? MIN_INT_VALUE : MAX_INT_VALUE;
+    // perf first action type:  ACTION_TYPE_PERF\ACTION_TYPE_PERFLVL
+    // power first action type: ACTION_TYPE_POWER\ACTION_TYPE_THERMAL
+    bool isPerfFirst = (type == ACTION_TYPE_PERF || type == ACTION_TYPE_PERFLVL);
+
+    int64_t res = isPerfFirst ? MIN_INT_VALUE : MAX_INT_VALUE;
     int64_t endTime = MIN_INT_VALUE;
     for (auto iter = resStatus->resActionList[type].begin();
         iter != resStatus->resActionList[type].end(); ++iter) {
-        if (((*iter)->value > res && type == ACTION_TYPE_PERF)
-            || ((*iter)->value < res && type != ACTION_TYPE_PERF)) {
+        if (((*iter)->value > res && isPerfFirst)
+            || ((*iter)->value < res && !isPerfFirst)) {
             res = (*iter)->value;
             endTime = (*iter)->endTime;
         } else if ((*iter)->value == res) {
@@ -484,13 +488,10 @@ void SocPerfThreadWrap::ArbitrateCandidate(int32_t resId)
 {
     std::shared_ptr<ResStatus> resStatus = resStatusInfo[resId];
     int64_t candidatePerfValue = resStatus->candidatesValue[ACTION_TYPE_PERF];
-    int64_t candidatePerfEndTime = resStatus->candidatesEndTime[ACTION_TYPE_PERF];
     int64_t candidatePowerValue = resStatus->candidatesValue[ACTION_TYPE_POWER];
-    int64_t candidatePowerEndTime = resStatus->candidatesEndTime[ACTION_TYPE_POWER];
     int64_t candidateThermalValue = resStatus->candidatesValue[ACTION_TYPE_THERMAL];
-    int64_t candidateThermalEndTime = resStatus->candidatesEndTime[ACTION_TYPE_THERMAL];
 
-    if (ExistNoCandidate(resId, resStatus, candidatePerfValue, candidatePowerValue, candidateThermalValue)) {
+    if (ExistNoCandidate(resId, resStatus)) {
         return;
     }
 
@@ -498,34 +499,55 @@ void SocPerfThreadWrap::ArbitrateCandidate(int32_t resId)
         if (candidatePerfValue != INVALID_VALUE) {
             resStatus->candidate = Max(candidatePerfValue, candidatePowerValue, candidateThermalValue);
         } else {
-            resStatus->candidate =
-                (candidatePowerValue == INVALID_VALUE) ? candidateThermalValue :
-                    ((candidateThermalValue == INVALID_VALUE) ? candidatePowerValue :
-                        Min(candidatePowerValue, candidateThermalValue));
+            resStatus->candidate = (candidatePowerValue == INVALID_VALUE) ? candidateThermalValue :
+                ((candidateThermalValue == INVALID_VALUE) ? candidatePowerValue :
+                Min(candidatePowerValue, candidateThermalValue));
         }
     } else if (!powerLimitBoost && thermalLimitBoost) {
-        resStatus->candidate =
-            (candidateThermalValue != INVALID_VALUE) ? candidateThermalValue :
-                Max(candidatePerfValue, candidatePowerValue);
+        resStatus->candidate = (candidateThermalValue != INVALID_VALUE) ? candidateThermalValue :
+            Max(candidatePerfValue, candidatePowerValue);
     } else if (powerLimitBoost && !thermalLimitBoost) {
-        resStatus->candidate =
-            (candidatePowerValue != INVALID_VALUE) ? candidatePowerValue :
-                Max(candidatePerfValue, candidateThermalValue);
+        resStatus->candidate = (candidatePowerValue != INVALID_VALUE) ? candidatePowerValue :
+            Max(candidatePerfValue, candidateThermalValue);
     } else {
         if (candidatePowerValue == INVALID_VALUE && candidateThermalValue == INVALID_VALUE) {
             resStatus->candidate = candidatePerfValue;
         } else {
-            resStatus->candidate =
-                (candidatePowerValue == INVALID_VALUE) ? candidateThermalValue :
-                    ((candidateThermalValue == INVALID_VALUE) ? candidatePowerValue :
-                        Min(candidatePowerValue, candidateThermalValue));
+            resStatus->candidate = (candidatePowerValue == INVALID_VALUE) ? candidateThermalValue :
+                ((candidateThermalValue == INVALID_VALUE) ? candidatePowerValue :
+                Min(candidatePowerValue, candidateThermalValue));
         }
     }
-    resStatus->currentEndTime = Min(candidatePerfEndTime, candidatePowerEndTime, candidateThermalEndTime);
-    ArbitratePairRes(resId);
+    resStatus->currentEndTime = Min(resStatus->candidatesEndTime[ACTION_TYPE_PERF],
+        resStatus->candidatesEndTime[ACTION_TYPE_POWER], resStatus->candidatesEndTime[ACTION_TYPE_THERMAL]);
+
+    // perf request thermal level is highest priority in this freq adjuster
+    if (ArbitratePairResInPerfLvl(resId)) {
+        return;
+    }
+
+    ArbitratePairRes(resId, powerLimitBoost || thermalLimitBoost);
 }
 
-void SocPerfThreadWrap::ArbitratePairRes(int32_t resId)
+bool SocPerfThreadWrap::ArbitratePairResInPerfLvl(int32_t resId)
+{
+    std::shared_ptr<ResStatus> resStatus = resStatusInfo[resId];
+    // this resource self has perflvl value
+    if (resStatus->candidatesValue[ACTION_TYPE_PERFLVL] != INVALID_VALUE) {
+        resStatus->candidate = resStatus->candidatesValue[ACTION_TYPE_PERFLVL];
+        ArbitratePairRes(resId, true);
+        return true;
+    }
+    // this resource's pair has perflvl value
+    if (!IsGovResId(resId) && resNodeInfo[resId]->pair != INVALID_VALUE &&
+        resStatusInfo[resNodeInfo[resId]->pair]->candidatesValue[ACTION_TYPE_PERFLVL] != INVALID_VALUE) {
+        ArbitratePairRes(resId, true);
+        return true;
+    }
+    return false;
+}
+
+void SocPerfThreadWrap::ArbitratePairRes(int32_t resId, bool duringLimit)
 {
     if (IsGovResId(resId)) {
         UpdateCurrentValue(resId, resStatusInfo[resId]->candidate);
@@ -540,7 +562,7 @@ void SocPerfThreadWrap::ArbitratePairRes(int32_t resId)
 
     if (resNodeInfo[resId]->mode == 1) {
         if (resStatusInfo[resId]->candidate < resStatusInfo[pairResId]->candidate) {
-            if (powerLimitBoost || thermalLimitBoost) {
+            if (duringLimit) {
                 UpdatePairResValue(pairResId,
                     resStatusInfo[resId]->candidate, resId, resStatusInfo[resId]->candidate);
             } else {
@@ -553,7 +575,7 @@ void SocPerfThreadWrap::ArbitratePairRes(int32_t resId)
         }
     } else {
         if (resStatusInfo[resId]->candidate > resStatusInfo[pairResId]->candidate) {
-            if (powerLimitBoost || thermalLimitBoost) {
+            if (duringLimit) {
                 UpdatePairResValue(resId,
                     resStatusInfo[pairResId]->candidate, pairResId, resStatusInfo[pairResId]->candidate);
             } else {
@@ -621,17 +643,21 @@ int32_t SocPerfThreadWrap::GetFdForFilePath(const std::string& filePath)
     return fdInfo[filePath];
 }
 
-bool SocPerfThreadWrap::ExistNoCandidate(
-    int32_t resId, std::shared_ptr<ResStatus> resStatus, int64_t perf, int64_t power, int64_t thermal)
+bool SocPerfThreadWrap::ExistNoCandidate(int32_t resId, std::shared_ptr<ResStatus> resStatus)
 {
-    if (perf == INVALID_VALUE && power == INVALID_VALUE && thermal == INVALID_VALUE) {
+    int64_t perfCandidate = resStatus->candidatesValue[ACTION_TYPE_PERF];
+    int64_t powerCandidate = resStatus->candidatesValue[ACTION_TYPE_POWER];
+    int64_t thermalCandidate = resStatus->candidatesValue[ACTION_TYPE_THERMAL];
+    int64_t perfLvlCandidate = resStatus->candidatesValue[ACTION_TYPE_PERFLVL];
+    if (perfCandidate == INVALID_VALUE && powerCandidate == INVALID_VALUE && thermalCandidate == INVALID_VALUE
+        && perfLvlCandidate == INVALID_VALUE) {
         if (IsGovResId(resId)) {
             resStatus->candidate = govResNodeInfo[resId]->def;
         } else if (IsResId(resId)) {
             resStatus->candidate = resNodeInfo[resId]->def;
         }
         resStatus->currentEndTime = MAX_INT_VALUE;
-        ArbitratePairRes(resId);
+        ArbitratePairRes(resId, powerLimitBoost || thermalLimitBoost);
         return true;
     }
     return false;

@@ -95,12 +95,12 @@ private:
     void UpdateCandidatesValue(int32_t resId, int32_t type);
     void InnerArbitrateCandidatesValue(int32_t type, std::shared_ptr<ResStatus> resStatus);
     void ArbitrateCandidate(int32_t resId);
-    void ArbitratePairRes(int32_t resId);
+    void ArbitratePairRes(int32_t resId, bool duringLimit);
+    bool ArbitratePairResInPerfLvl(int32_t resId);
     void UpdatePairResValue(int32_t minResId, int64_t minResValue, int32_t maxResId, int64_t maxResValue);
     void UpdateCurrentValue(int32_t resId, int64_t value);
     void WriteNode(int32_t resId, const std::string& path, const std::string& value);
-    bool ExistNoCandidate(
-        int32_t resId, std::shared_ptr<ResStatus> resStatus, int64_t perf, int64_t power, int64_t thermal);
+    bool ExistNoCandidate(int32_t resId, std::shared_ptr<ResStatus> resStatus);
     bool IsGovResId(int32_t resId);
     bool IsResId(int32_t resId);
     bool IsValidResId(int32_t resId);

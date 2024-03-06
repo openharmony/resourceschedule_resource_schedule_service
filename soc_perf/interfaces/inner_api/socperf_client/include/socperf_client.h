@@ -83,6 +83,13 @@ public:
      * @param msg the reason why we need change socperfserver status
      */
     void SetRequestStatus(bool status, const std::string& msg);
+
+    /**
+     * @brief set thermal level intermal for perfquest
+     *
+     * @param level thermal level
+     */
+    void SetThermalLevel(int32_t level);
     
     /**
      * @brief Reset SocperfClient

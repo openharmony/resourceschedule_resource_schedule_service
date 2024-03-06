@@ -95,7 +95,7 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_ActionType_003, Function | MediumTest | 
  */
 HWTEST_F(SocPerfSubTest, SocPerfSubTest_ActionType_004, Function | MediumTest | Level0)
 {
-    EXPECT_EQ(OHOS::SOCPERF::ActionType::ACTION_TYPE_MAX, 3);
+    EXPECT_EQ(OHOS::SOCPERF::ActionType::ACTION_TYPE_MAX, 4);
 }
 
 /*
@@ -430,6 +430,18 @@ HWTEST_F(SocPerfSubTest, SocPerfSubTest_ResetClient_001, Function | MediumTest |
     OHOS::SOCPERF::SocPerfClient::GetInstance().SetRequestStatus(true, msg);
     EXPECT_EQ(msg, "");
     OHOS::SOCPERF::SocPerfClient::GetInstance().ResetClient();
+}
+
+/*
+ * @tc.name: SocPerfSubTest_SetThermalLvl_001
+ * @tc.desc: perf request lvl client API
+ * @tc.type FUNC
+ * @tc.require: issue#I95U8S
+ */
+HWTEST_F(SocPerfSubTest, SocPerfSubTest_SetThermalLevel_001, Function | MediumTest | Level0)
+{
+    OHOS::SOCPERF::SocPerfClient::GetInstance().SetThermalLevel(3);
+    SUCCEED();
 }
 
 static void SocPerfSubTestMultithreadingTask()

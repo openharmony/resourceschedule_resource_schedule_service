@@ -205,6 +205,7 @@ public:
     void LimitRequest(int32_t clientId,
         const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg) override {}
     void SetRequestStatus(bool status, const std::string& msg) override {};
+    void SetThermalLevel(int32_t level) override {};
 };
 
 /*
@@ -323,7 +324,7 @@ HWTEST_F(SocPerfServerTest, SocPerfStubTest_SocPerfServerAPI_006, Function | Med
     data.WriteBool(true);
     MessageParcel reply;
     MessageOption option;
-    uint32_t ipcId = 0x0004;
+    uint32_t ipcId = 0x0006;
     int32_t ret = socPerfStub.OnRemoteRequest(ipcId, data, reply, option);
     EXPECT_NE(ret, ERR_OK);
 }
@@ -355,7 +356,7 @@ HWTEST_F(SocPerfServerTest, SocPerfStubTest_SocPerfServerAPI_007, Function | Med
     MessageOption optionPerf;
     uint32_t requestPerfIpcId = static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_PERF_REQUEST);
     ret = socPerfStub.OnRemoteRequest(requestPerfIpcId, dataPerf, replyPerf, optionPerf);
-    EXPECT_EQ(ret, ERR_OK);
+    EXPECT_EQ(ret, ERR_INVALID_STATE);
 
     MessageParcel dataLimit;
     dataLimit.WriteInterfaceToken(SocPerfStub::GetDescriptor());
@@ -370,6 +371,75 @@ HWTEST_F(SocPerfServerTest, SocPerfStubTest_SocPerfServerAPI_007, Function | Med
     uint32_t powerLimitId = static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_LIMIT_REQUEST);
     ret = socPerfStub.OnRemoteRequest(powerLimitId, dataLimit, reply, option);
     EXPECT_EQ(ret, ERR_OK);
+}
+
+/*
+ * @tc.name: SocPerfServerTest_SetThermalLevel_001
+ * @tc.desc: perf request lvl server API
+ * @tc.type FUNC
+ * @tc.require: issue#I95U8S
+ */
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_001, Function | MediumTest | Level0)
+{
+    SocperfStubTest socPerfStub;
+    MessageParcel data;
+    data.WriteInterfaceToken(SocPerfStub::GetDescriptor());
+    data.WriteInt32(3);
+    MessageParcel reply;
+    MessageOption option;
+    uint32_t ipcId = static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_SET_THERMAL_LEVEL);
+    int32_t ret = socPerfStub.OnRemoteRequest(ipcId, data, reply, option);
+    EXPECT_EQ(ret, ERR_OK);
+}
+
+/*
+ * @tc.name: SocPerfServerTest_SetThermalLevel_Server_002
+ * @tc.desc: perf request lvl server API
+ * @tc.type FUNC
+ * @tc.require: issue#I95U8S
+ */
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_002, Function | MediumTest | Level0)
+{
+    socPerfServer_->SetThermalLevel(3);
+    EXPECT_EQ(socPerfServer_->socPerf.thermalLvl_, 3);
+}
+
+/*
+ * @tc.name: SocPerfServerTest_SetThermalLevel_Server_003
+ * @tc.desc: perf request lvl server API
+ * @tc.type FUNC
+ * @tc.require: issue#I95U8S
+ */
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_003, Function | MediumTest | Level0)
+{
+    std::shared_ptr<Action> action = std::make_shared<Action>();
+    action->duration = 1000;
+    action->thermalCmdId_ = 88888;
+    bool ret = socPerfServer_->socPerf.DoPerfRequestThremalLvl(10000, action, EVENT_INVALID);
+    EXPECT_FALSE(ret);
+
+    action->duration = 1000;
+    action->thermalCmdId_ = 10001;
+    ret = socPerfServer_->socPerf.DoPerfRequestThremalLvl(10000, action, EVENT_INVALID);
+    EXPECT_TRUE(ret);
+
+    std::list<std::shared_ptr<Action>> configActionList = socPerfServer_->socPerf.perfActionsInfo[10001]->actionList;
+    int32_t minThermalLvl = 3;
+    for (auto item : configActionList) {
+        (*item).thermalLvl_ = minThermalLvl;
+        minThermalLvl++;
+    }
+    socPerfServer_->SetThermalLevel(1);
+    ret = socPerfServer_->socPerf.DoPerfRequestThremalLvl(10000, action, EVENT_INVALID);
+    EXPECT_FALSE(ret);
+
+    socPerfServer_->SetThermalLevel(3);
+    ret = socPerfServer_->socPerf.DoPerfRequestThremalLvl(10000, action, EVENT_INVALID);
+    EXPECT_TRUE(ret);
+
+    socPerfServer_->SetThermalLevel(99);
+    ret = socPerfServer_->socPerf.DoPerfRequestThremalLvl(10000, action, EVENT_INVALID);
+    EXPECT_TRUE(ret);
 }
 
 } // namespace SOCPERF

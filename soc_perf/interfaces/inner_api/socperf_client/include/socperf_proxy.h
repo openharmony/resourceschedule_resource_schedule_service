@@ -74,6 +74,13 @@ public:
      */
     void SetRequestStatus(bool status, const std::string& msg) override;
 
+    /**
+     * @brief set thermal level intermal for perfquest
+     *
+     * @param level thermal level
+     */
+    void SetThermalLevel(int32_t level) override;
+
 public:
     /**
      * @brief Construct a new SocPerfProxy object.

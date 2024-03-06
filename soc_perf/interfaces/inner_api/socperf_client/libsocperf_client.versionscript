@@ -21,6 +21,7 @@
     *SocPerfClient*ThermalLimitBoost*;
     *SocPerfClient*LimitRequest*;
     *SocPerfClient*SetRequestStatus*;
+    *SocPerfClient*SetThermalLevel*;
     *SocPerfClient*ResetClient*;
     *SocPerfProxy*;
   local:

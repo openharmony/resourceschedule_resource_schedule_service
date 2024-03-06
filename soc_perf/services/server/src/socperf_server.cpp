@@ -116,5 +116,10 @@ void SocPerfServer::SetRequestStatus(bool status, const std::string &msg)
 {
     socPerf.SetRequestStatus(status, msg);
 }
+
+void SocPerfServer::SetThermalLevel(int32_t level)
+{
+    socPerf.SetThermalLevel(level);
+}
 } // namespace SOCPERF
 } // namespace OHOS
