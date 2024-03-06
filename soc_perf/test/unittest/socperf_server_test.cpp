@@ -356,7 +356,7 @@ HWTEST_F(SocPerfServerTest, SocPerfStubTest_SocPerfServerAPI_007, Function | Med
     MessageOption optionPerf;
     uint32_t requestPerfIpcId = static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_PERF_REQUEST);
     ret = socPerfStub.OnRemoteRequest(requestPerfIpcId, dataPerf, replyPerf, optionPerf);
-    EXPECT_EQ(ret, ERR_INVALID_STATE);
+    EXPECT_EQ(ret, ERR_OK);
 
     MessageParcel dataLimit;
     dataLimit.WriteInterfaceToken(SocPerfStub::GetDescriptor());
