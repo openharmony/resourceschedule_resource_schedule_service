@@ -95,11 +95,11 @@ HWTEST_F(SocPerfServerTest, SocPerfServerTest_SocPerfAPI_001, Function | MediumT
     std::string mode = "1";
     std::string persisMode = "1";
     std::string configFile = "";
-    bool ret = socPerfServer_->socPerf.CheckResourceTag(id.c_str(), name.c_str(), pair.c_str(), mode.c_str(), persisMode.c_str(),
-        configFile.c_str());
+    bool ret = socPerfServer_->socPerf.CheckResourceTag(id.c_str(), name.c_str(), pair.c_str(), mode.c_str(),
+        persisMode.c_str(), configFile.c_str());
     EXPECT_TRUE(ret);
-    ret = socPerfServer_->socPerf.CheckResourceTag(nullptr, name.c_str(), pair.c_str(), mode.c_str(), persisMode.c_str(),
-        configFile.c_str());
+    ret = socPerfServer_->socPerf.CheckResourceTag(nullptr, name.c_str(), pair.c_str(), mode.c_str(),
+        persisMode.c_str(), configFile.c_str());
     EXPECT_FALSE(ret);
 }
 

@@ -95,7 +95,7 @@ private:
     void UpdateCandidatesValue(int32_t resId, int32_t type);
     void InnerArbitrateCandidatesValue(int32_t type, std::shared_ptr<ResStatus> resStatus);
     void ArbitrateCandidate(int32_t resId);
-    void ArbitratePairRes(int32_t resId, bool duringLimit);
+    void ArbitratePairRes(int32_t resId, bool perfRequestLimit);
     bool ArbitratePairResInPerfLvl(int32_t resId);
     void UpdatePairResValue(int32_t minResId, int64_t minResValue, int32_t maxResId, int64_t maxResValue);
     void UpdateCurrentValue(int32_t resId, int64_t value);

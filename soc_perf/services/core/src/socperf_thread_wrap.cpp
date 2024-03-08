@@ -32,6 +32,9 @@
 
 namespace OHOS {
 namespace SOCPERF {
+namespace {
+    const int32_t MAX_FREQUE_NODE = 1;
+}
 #ifdef SOCPERF_ADAPTOR_FFRT
 SocPerfThreadWrap::SocPerfThreadWrap() : socperfQueue("socperf", ffrt::queue_attr().qos(ffrt::qos_user_interactive))
 #else
@@ -526,29 +529,30 @@ void SocPerfThreadWrap::ArbitrateCandidate(int32_t resId)
         return;
     }
 
-    ArbitratePairRes(resId, powerLimitBoost || thermalLimitBoost);
+    ArbitratePairRes(resId, false);
 }
 
 bool SocPerfThreadWrap::ArbitratePairResInPerfLvl(int32_t resId)
 {
     std::shared_ptr<ResStatus> resStatus = resStatusInfo[resId];
-    // this resource self has perflvl value
-    if (resStatus->candidatesValue[ACTION_TYPE_PERFLVL] != INVALID_VALUE) {
-        resStatus->candidate = resStatus->candidatesValue[ACTION_TYPE_PERFLVL];
-        ArbitratePairRes(resId, true);
-        return true;
+    // if resource self and resource's pair both not have perflvl value
+    if (resStatus->candidatesValue[ACTION_TYPE_PERFLVL] == INVALID_VALUE &&
+        (!IsGovResId(resId) && resNodeInfo[resId]->pair != INVALID_VALUE &&
+        resStatusInfo[resNodeInfo[resId]->pair]->candidatesValue[ACTION_TYPE_PERFLVL] == INVALID_VALUE)) {
+        return false;
     }
-    // this resource's pair has perflvl value
-    if (!IsGovResId(resId) && resNodeInfo[resId]->pair != INVALID_VALUE &&
-        resStatusInfo[resNodeInfo[resId]->pair]->candidatesValue[ACTION_TYPE_PERFLVL] != INVALID_VALUE) {
-        ArbitratePairRes(resId, true);
-        return true;
+
+    bool limit = false;
+    if (!IsGovResId(resId) && resNodeInfo[resId]->mode == MAX_FREQUE_NODE) {
+        limit = true;
     }
-    return false;
+    ArbitratePairRes(resId, limit);
+    return true;
 }
 
-void SocPerfThreadWrap::ArbitratePairRes(int32_t resId, bool duringLimit)
+void SocPerfThreadWrap::ArbitratePairRes(int32_t resId, bool perfRequestLimit)
 {
+    bool limit = powerLimitBoost || thermalLimitBoost || perfRequestLimit;
     if (IsGovResId(resId)) {
         UpdateCurrentValue(resId, resStatusInfo[resId]->candidate);
         return;
@@ -560,9 +564,9 @@ void SocPerfThreadWrap::ArbitratePairRes(int32_t resId, bool duringLimit)
         return;
     }
 
-    if (resNodeInfo[resId]->mode == 1) {
+    if (resNodeInfo[resId]->mode == MAX_FREQUE_NODE) {
         if (resStatusInfo[resId]->candidate < resStatusInfo[pairResId]->candidate) {
-            if (duringLimit) {
+            if (limit) {
                 UpdatePairResValue(pairResId,
                     resStatusInfo[resId]->candidate, resId, resStatusInfo[resId]->candidate);
             } else {
@@ -575,7 +579,7 @@ void SocPerfThreadWrap::ArbitratePairRes(int32_t resId, bool duringLimit)
         }
     } else {
         if (resStatusInfo[resId]->candidate > resStatusInfo[pairResId]->candidate) {
-            if (duringLimit) {
+            if (limit) {
                 UpdatePairResValue(resId,
                     resStatusInfo[pairResId]->candidate, pairResId, resStatusInfo[pairResId]->candidate);
             } else {
@@ -657,7 +661,7 @@ bool SocPerfThreadWrap::ExistNoCandidate(int32_t resId, std::shared_ptr<ResStatu
             resStatus->candidate = resNodeInfo[resId]->def;
         }
         resStatus->currentEndTime = MAX_INT_VALUE;
-        ArbitratePairRes(resId, powerLimitBoost || thermalLimitBoost);
+        ArbitratePairRes(resId, false);
         return true;
     }
     return false;
