@@ -28,8 +28,6 @@ using namespace testing::mt;
 
 namespace OHOS {
 namespace SOCPERF {
-namespace {
-}
 class SocPerfServerTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -54,6 +52,20 @@ void SocPerfServerTest::SetUp(void)
 
 void SocPerfServerTest::TearDown(void)
 {
+}
+
+/*
+ * @tc.name: SocPerfServerTest_Init_Config_001
+ * @tc.desc: test init config
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_Init_Config_001, Function | MediumTest | Level0)
+{
+    socPerfServer_->OnStart();
+    bool ret = socPerfServer_->socPerf.Init();
+    sleep(1);
+    EXPECT_TRUE(ret);
 }
 
 /*
@@ -396,8 +408,6 @@ HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_001, Functi
  */
 HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_002, Function | MediumTest | Level0)
 {
-    bool ret = socPerfServer_->socPerf.Init();
-    EXPECT_TRUE(ret);
     socPerfServer_->SetThermalLevel(3);
     EXPECT_EQ(socPerfServer_->socPerf.thermalLvl_, 3);
 }
@@ -439,7 +449,6 @@ HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_003, Functi
  */
 HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_004, Function | MediumTest | Level0)
 {
-    sleep(1);
     const int32_t appColdStartCmdId = 10000;
     const int32_t appWarmStartCmdId = 10001;
     if (socPerfServer_->socPerf.perfActionsInfo[appColdStartCmdId] == nullptr ||
@@ -480,7 +489,6 @@ HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_004, Functi
  */
 HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_005, Function | MediumTest | Level0)
 {
-    sleep(1);
     std::shared_ptr<SocPerfThreadWrap> socPerfThreadWrap = socPerfServer_->socPerf.socperfThreadWraps[0];
     socPerfThreadWrap->resStatusInfo[1000]->candidatesValue[ACTION_TYPE_PERFLVL] = 1000;
     bool ret = socPerfThreadWrap->ArbitratePairResInPerfLvl(1000);
