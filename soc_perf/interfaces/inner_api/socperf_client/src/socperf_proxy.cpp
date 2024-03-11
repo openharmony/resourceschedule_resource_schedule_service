@@ -118,6 +118,7 @@ void SocPerfProxy::SetThermalLevel(int32_t level)
     MessageParcel reply;
     MessageOption option = { MessageOption::TF_ASYNC };
     if (!data.WriteInterfaceToken(GetDescriptor())) {
+        SOC_PERF_LOGE("Failed to write descriptor");
         return;
     }
     if (!data.WriteInt32(level)) {
