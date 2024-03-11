@@ -111,5 +111,22 @@ void SocPerfProxy::SetRequestStatus(bool status, const std::string &msg)
     }
     Remote()->SendRequest(static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_SET_STATUS), data, reply, option);
 }
+
+void SocPerfProxy::SetThermalLevel(int32_t level)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option = { MessageOption::TF_ASYNC };
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        SOC_PERF_LOGE("Failed to write descriptor");
+        return;
+    }
+    if (!data.WriteInt32(level)) {
+        SOC_PERF_LOGE("Failed to write level: %{public}d", level);
+        return;
+    }
+    Remote()->SendRequest(static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_SET_THERMAL_LEVEL),
+        data, reply, option);
+}
 } // namespace SOCPERF
 } // namespace OHOS

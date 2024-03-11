@@ -35,8 +35,7 @@ public:
     void SetUp();
     void TearDown();
 private:
-    std::shared_ptr<SocPerfServer> socPerfServer_;
-    SocPerf socPerf_;
+    std::shared_ptr<SocPerfServer> socPerfServer_ = DelayedSingleton<SocPerfServer>::GetInstance();
 };
 
 void SocPerfServerTest::SetUpTestCase(void)
@@ -49,15 +48,24 @@ void SocPerfServerTest::TearDownTestCase(void)
 
 void SocPerfServerTest::SetUp(void)
 {
-    socPerfServer_ = DelayedSingleton<SocPerfServer>::GetInstance();
-    socPerfServer_->OnStart();
-
-    socPerf_.Init();
 }
 
 void SocPerfServerTest::TearDown(void)
 {
-    socPerfServer_ = nullptr;
+}
+
+/*
+ * @tc.name: SocPerfServerTest_Init_Config_001
+ * @tc.desc: test init config
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_Init_Config_001, Function | MediumTest | Level0)
+{
+    socPerfServer_->OnStart();
+    bool ret = socPerfServer_->socPerf.Init();
+    sleep(1);
+    EXPECT_TRUE(ret);
 }
 
 /*
@@ -69,17 +77,17 @@ void SocPerfServerTest::TearDown(void)
 HWTEST_F(SocPerfServerTest, SocPerfServerTest_SocPerfAPI_001, Function | MediumTest | Level0)
 {
     std::string msg = "testBoost";
-    socPerf_.PerfRequest(10000, msg);
-    socPerf_.PerfRequestEx(10000, true, msg);
-    socPerf_.PerfRequestEx(10000, false, msg);
-    socPerf_.PerfRequestEx(10028, true, msg);
-    socPerf_.PerfRequestEx(10028, false, msg);
-    socPerf_.LimitRequest(ActionType::ACTION_TYPE_POWER, {1001}, {999000}, msg);
-    socPerf_.LimitRequest(ActionType::ACTION_TYPE_THERMAL, {1001}, {999000}, msg);
-    socPerf_.LimitRequest(ActionType::ACTION_TYPE_POWER, {1001}, {1325000}, msg);
-    socPerf_.LimitRequest(ActionType::ACTION_TYPE_THERMAL, {1001}, {1325000}, msg);
-    socPerf_.PowerLimitBoost(true, msg);
-    socPerf_.ThermalLimitBoost(true, msg);
+    socPerfServer_->socPerf.PerfRequest(10000, msg);
+    socPerfServer_->socPerf.PerfRequestEx(10000, true, msg);
+    socPerfServer_->socPerf.PerfRequestEx(10000, false, msg);
+    socPerfServer_->socPerf.PerfRequestEx(10028, true, msg);
+    socPerfServer_->socPerf.PerfRequestEx(10028, false, msg);
+    socPerfServer_->socPerf.LimitRequest(ActionType::ACTION_TYPE_POWER, {1001}, {999000}, msg);
+    socPerfServer_->socPerf.LimitRequest(ActionType::ACTION_TYPE_THERMAL, {1001}, {999000}, msg);
+    socPerfServer_->socPerf.LimitRequest(ActionType::ACTION_TYPE_POWER, {1001}, {1325000}, msg);
+    socPerfServer_->socPerf.LimitRequest(ActionType::ACTION_TYPE_THERMAL, {1001}, {1325000}, msg);
+    socPerfServer_->socPerf.PowerLimitBoost(true, msg);
+    socPerfServer_->socPerf.ThermalLimitBoost(true, msg);
     EXPECT_EQ(msg, "testBoost");
     std::string id = "1000";
     std::string name = "lit_cpu_freq";
@@ -87,11 +95,11 @@ HWTEST_F(SocPerfServerTest, SocPerfServerTest_SocPerfAPI_001, Function | MediumT
     std::string mode = "1";
     std::string persisMode = "1";
     std::string configFile = "";
-    bool ret = socPerf_.CheckResourceTag(id.c_str(), name.c_str(), pair.c_str(), mode.c_str(), persisMode.c_str(),
-        configFile.c_str());
+    bool ret = socPerfServer_->socPerf.CheckResourceTag(id.c_str(), name.c_str(), pair.c_str(), mode.c_str(),
+        persisMode.c_str(), configFile.c_str());
     EXPECT_TRUE(ret);
-    ret = socPerf_.CheckResourceTag(nullptr, name.c_str(), pair.c_str(), mode.c_str(), persisMode.c_str(),
-        configFile.c_str());
+    ret = socPerfServer_->socPerf.CheckResourceTag(nullptr, name.c_str(), pair.c_str(), mode.c_str(),
+        persisMode.c_str(), configFile.c_str());
     EXPECT_FALSE(ret);
 }
 
@@ -134,7 +142,7 @@ HWTEST_F(SocPerfServerTest, SocPerfServerTest_SocPerfServerAPI_001, Function | M
 {
     std::string msg = "";
     socPerfServer_->SetRequestStatus(false, msg);
-    socPerf_.ClearAllAliveRequest();
+    socPerfServer_->socPerf.ClearAllAliveRequest();
     EXPECT_FALSE(socPerfServer_->socPerf.perfRequestEnable_);
 #ifdef SOCPERF_ADAPTOR_FFRT
     auto socPerfThreadWrap = std::make_shared<SocPerfThreadWrap>();
@@ -205,6 +213,7 @@ public:
     void LimitRequest(int32_t clientId,
         const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg) override {}
     void SetRequestStatus(bool status, const std::string& msg) override {};
+    void SetThermalLevel(int32_t level) override {};
 };
 
 /*
@@ -323,7 +332,7 @@ HWTEST_F(SocPerfServerTest, SocPerfStubTest_SocPerfServerAPI_006, Function | Med
     data.WriteBool(true);
     MessageParcel reply;
     MessageOption option;
-    uint32_t ipcId = 0x0004;
+    uint32_t ipcId = 0x0006;
     int32_t ret = socPerfStub.OnRemoteRequest(ipcId, data, reply, option);
     EXPECT_NE(ret, ERR_OK);
 }
@@ -372,5 +381,128 @@ HWTEST_F(SocPerfServerTest, SocPerfStubTest_SocPerfServerAPI_007, Function | Med
     EXPECT_EQ(ret, ERR_OK);
 }
 
+/*
+ * @tc.name: SocPerfServerTest_SetThermalLevel_001
+ * @tc.desc: perf request lvl server API
+ * @tc.type FUNC
+ * @tc.require: issue#I95U8S
+ */
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_001, Function | MediumTest | Level0)
+{
+    SocperfStubTest socPerfStub;
+    MessageParcel data;
+    data.WriteInterfaceToken(SocPerfStub::GetDescriptor());
+    data.WriteInt32(3);
+    MessageParcel reply;
+    MessageOption option;
+    uint32_t ipcId = static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_SET_THERMAL_LEVEL);
+    int32_t ret = socPerfStub.OnRemoteRequest(ipcId, data, reply, option);
+    EXPECT_EQ(ret, ERR_OK);
+}
+
+/*
+ * @tc.name: SocPerfServerTest_SetThermalLevel_Server_002
+ * @tc.desc: perf request lvl server API
+ * @tc.type FUNC
+ * @tc.require: issue#I95U8S
+ */
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_002, Function | MediumTest | Level0)
+{
+    socPerfServer_->SetThermalLevel(3);
+    EXPECT_EQ(socPerfServer_->socPerf.thermalLvl_, 3);
+}
+
+/*
+ * @tc.name: SocPerfServerTest_SetThermalLevel_Server_003
+ * @tc.desc: perf request lvl server API
+ * @tc.type FUNC
+ * @tc.require: issue#I95U8S
+ */
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_003, Function | MediumTest | Level0)
+{
+    const int32_t appColdStartCmdId = 10000;
+    const int32_t appWarmStartCmdId = 10001;
+    if (socPerfServer_->socPerf.perfActionsInfo[appColdStartCmdId] == nullptr ||
+        socPerfServer_->socPerf.perfActionsInfo[appWarmStartCmdId] == nullptr) {
+        SUCCEED();
+        return;
+    }
+    std::shared_ptr<Actions> appColdStartActions = socPerfServer_->socPerf.perfActionsInfo[appColdStartCmdId];
+    std::list<std::shared_ptr<Action>>  appColdStartActionList = appColdStartActions->actionList;
+    for (auto item : appColdStartActionList) {
+        item->thermalCmdId_ = 88888;
+        bool ret = socPerfServer_->socPerf.DoPerfRequestThremalLvl(appColdStartCmdId, item, EVENT_INVALID);
+        EXPECT_FALSE(ret);
+
+        item->thermalCmdId_ = appWarmStartCmdId;
+        ret = socPerfServer_->socPerf.DoPerfRequestThremalLvl(appColdStartCmdId, item, EVENT_INVALID);
+        EXPECT_TRUE(ret);
+    }
+    SUCCEED();
+}
+
+/*
+ * @tc.name: SocPerfServerTest_SetThermalLevel_Server_004
+ * @tc.desc: perf request lvl server API
+ * @tc.type FUNC
+ * @tc.require: issue#I95U8S
+ */
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_004, Function | MediumTest | Level0)
+{
+    const int32_t appColdStartCmdId = 10000;
+    const int32_t appWarmStartCmdId = 10001;
+    if (socPerfServer_->socPerf.perfActionsInfo[appColdStartCmdId] == nullptr ||
+        socPerfServer_->socPerf.perfActionsInfo[appWarmStartCmdId] == nullptr) {
+        SUCCEED();
+        return;
+    }
+    std::shared_ptr<Actions> appWarmStartActions = socPerfServer_->socPerf.perfActionsInfo[appWarmStartCmdId];
+    std::shared_ptr<Actions> appColdStartActions = socPerfServer_->socPerf.perfActionsInfo[appColdStartCmdId];
+    std::list<std::shared_ptr<Action>> appWarmStartActionList = appWarmStartActions->actionList;
+    int32_t minThermalLvl = 3;
+    for (auto item : appWarmStartActionList) {
+        (*item).thermalLvl_ = minThermalLvl;
+        minThermalLvl++;
+    }
+    std::list<std::shared_ptr<Action>>  appColdStartActionList = appColdStartActions->actionList;
+    for (auto item : appColdStartActionList) {
+        (*item).thermalCmdId_ = appWarmStartCmdId;
+        socPerfServer_->SetThermalLevel(1);
+        bool ret = socPerfServer_->socPerf.DoPerfRequestThremalLvl(appColdStartCmdId, item, EVENT_INVALID);
+        EXPECT_FALSE(ret);
+
+        socPerfServer_->SetThermalLevel(3);
+        ret = socPerfServer_->socPerf.DoPerfRequestThremalLvl(appColdStartCmdId, item, EVENT_INVALID);
+        EXPECT_TRUE(ret);
+
+        socPerfServer_->SetThermalLevel(99);
+        ret = socPerfServer_->socPerf.DoPerfRequestThremalLvl(appColdStartCmdId, item, EVENT_INVALID);
+        EXPECT_TRUE(ret);
+    }
+}
+
+/*
+ * @tc.name: SocPerfServerTest_SetThermalLevel_Server_005
+ * @tc.desc: perf request lvl server API
+ * @tc.type FUNC
+ * @tc.require: issue#I95U8S
+ */
+HWTEST_F(SocPerfServerTest, SocPerfServerTest_SetThermalLevel_Server_005, Function | MediumTest | Level0)
+{
+    std::shared_ptr<SocPerfThreadWrap> socPerfThreadWrap = socPerfServer_->socPerf.socperfThreadWraps[0];
+    socPerfThreadWrap->resStatusInfo[1000]->candidatesValue[ACTION_TYPE_PERFLVL] = 1000;
+    bool ret = socPerfThreadWrap->ArbitratePairResInPerfLvl(1000);
+    EXPECT_TRUE(ret);
+
+    socPerfThreadWrap->resStatusInfo[1000]->candidatesValue[ACTION_TYPE_PERFLVL] = INVALID_VALUE;
+    socPerfThreadWrap->resStatusInfo[1001]->candidatesValue[ACTION_TYPE_PERFLVL] = 1000;
+    ret = socPerfThreadWrap->ArbitratePairResInPerfLvl(1000);
+    EXPECT_TRUE(ret);
+
+    socPerfThreadWrap->resStatusInfo[1000]->candidatesValue[ACTION_TYPE_PERFLVL] = INVALID_VALUE;
+    socPerfThreadWrap->resStatusInfo[1001]->candidatesValue[ACTION_TYPE_PERFLVL] = INVALID_VALUE;
+    ret = socPerfThreadWrap->ArbitratePairResInPerfLvl(1000);
+    EXPECT_FALSE(ret);
+}
 } // namespace SOCPERF
 } // namespace OHOS

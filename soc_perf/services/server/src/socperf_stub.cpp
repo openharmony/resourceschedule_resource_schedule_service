@@ -85,6 +85,10 @@ int32_t SocPerfStub::OnRemoteRequestExt(uint32_t code, MessageParcel &data,
             SetRequestStatus(requestEnable, msg);
             break;
         }
+        case static_cast<uint32_t>(SocPerfInterfaceCode::TRANS_IPC_ID_SET_THERMAL_LEVEL): {
+            SetThermalLevel(data.ReadInt32());
+            break;
+        }
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }

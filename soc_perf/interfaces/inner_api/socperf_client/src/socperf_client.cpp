@@ -146,5 +146,13 @@ void SocPerfClient::SetRequestStatus(bool status, const std::string& msg)
     std::string newMsg = AddPidAndTidInfo(msg);
     client->SetRequestStatus(status, newMsg);
 }
+
+void SocPerfClient::SetThermalLevel(int32_t level)
+{
+    if (!CheckClientValid()) {
+        return;
+    }
+    client->SetThermalLevel(level);
+}
 } // namespace SOCPERF
 } // namespace OHOS

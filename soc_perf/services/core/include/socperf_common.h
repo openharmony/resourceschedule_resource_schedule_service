@@ -54,6 +54,8 @@ const int32_t RES_ID_AND_VALUE_PAIR               = 2;
 const int32_t RES_ID_NUMS_PER_TYPE                = 1000;
 const int32_t WRITE_NODE                          = 0;
 const int32_t REPORT_TO_PERFSO                    = 1;
+const int32_t INVALID_THERMAL_CMD_ID              = -1;
+const int32_t MIN_THERMAL_LVL                     = 0;
 
 class ResNode {
 public:
@@ -153,6 +155,8 @@ public:
 
 class Action {
 public:
+    int32_t thermalCmdId_ = INVALID_THERMAL_CMD_ID;
+    int32_t thermalLvl_ = MIN_THERMAL_LVL;
     int32_t duration;
     std::vector<int64_t> variable;
 
@@ -274,9 +278,11 @@ public:
         candidatesValue[ACTION_TYPE_PERF] = INVALID_VALUE;
         candidatesValue[ACTION_TYPE_POWER] = INVALID_VALUE;
         candidatesValue[ACTION_TYPE_THERMAL] = INVALID_VALUE;
+        candidatesValue[ACTION_TYPE_PERFLVL] = INVALID_VALUE;
         candidatesEndTime[ACTION_TYPE_PERF] = MAX_INT_VALUE;
         candidatesEndTime[ACTION_TYPE_POWER] = MAX_INT_VALUE;
         candidatesEndTime[ACTION_TYPE_THERMAL] = MAX_INT_VALUE;
+        candidatesEndTime[ACTION_TYPE_PERFLVL] = MAX_INT_VALUE;
         candidate = val;
         currentValue = val;
         previousValue = val;
