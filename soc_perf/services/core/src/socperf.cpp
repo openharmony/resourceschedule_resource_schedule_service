@@ -762,8 +762,7 @@ bool SocPerf::ParseResValue(xmlNode* greatGrandson, const std::string& configFil
 int32_t SocPerf::GetXmlIntProp(const xmlNode* xmlNode, const char* propName) const
 {
     int ret = -1;
-    char* propValue = reinterpret_cast<char*>(xmlGetProp(xmlNode,
-        reinterpret_cast<const xmlChar*>(propName)));
+    char* propValue = reinterpret_cast<char*>(xmlGetProp(xmlNode, reinterpret_cast<const xmlChar*>(propName)));
     if (propValue != nullptr && IsNumber(propValue)) {
         ret = atoi(propValue);
     }
