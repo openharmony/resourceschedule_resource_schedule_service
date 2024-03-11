@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,6 +31,7 @@ namespace {
     #define PAYLOAD_MAX_SIZE 4096
     constexpr int32_t MEMMGR_UID = 1111;
     constexpr int32_t SAMGR_UID = 5555;
+    const std::string SYSTEMLOAD_CHANGE = "systemLoadChange";
     static const std::unordered_set<uint32_t> scbRes = {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
@@ -229,6 +230,54 @@ int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel
     return ERR_OK;
 }
 
+void ResSchedServiceStub::RegisterSystemloadNotifierInner(MessageParcel& data,
+                                                          [[maybe_unused]] MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        RESSCHED_LOGE("Register invalid token.");
+        return;
+    }
+    std::string cbType;
+    READ_PARCEL(data, String, cbType, , ResSchedServiceStub);
+    if (cbType != SYSTEMLOAD_CHANGE) {
+        RESSCHED_LOGE("Register wrong systemload type.");
+        return;
+    }
+    sptr<IRemoteObject> notifier = data.ReadRemoteObject();
+    if (notifier == nullptr) {
+        RESSCHED_LOGE("ResSchedServiceStub Read notifier fail.");
+        return;
+    }
+    RegisterSystemloadNotifier(cbType, notifier);
+}
+
+void ResSchedServiceStub::UnRegisterSystemloadNotifierInner(MessageParcel& data,
+                                                            [[maybe_unused]] MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        RESSCHED_LOGE("UnRegister invalid token.");
+        return;
+    }
+    std::string cbType;
+    READ_PARCEL(data, String, cbType, , ResSchedServiceStub);
+    if (cbType != SYSTEMLOAD_CHANGE) {
+        RESSCHED_LOGE("UnRegister wrong systemload type.");
+        return;
+    }
+    UnRegisterSystemloadNotifier(cbType);
+}
+
+int32_t ResSchedServiceStub::GetSystemloadLevelInner(MessageParcel& data, MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        RESSCHED_LOGE("GetSystemload level invalid token.");
+        return ERR_RES_SCHED_PARCEL_ERROR;
+    }
+    int32_t level = GetSystemloadLevel();
+    reply.WriteInt32(level);
+    return ERR_OK;
+}
+
 int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
@@ -241,6 +290,14 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
             return ReportDataInner(data, reply);
         case static_cast<uint32_t>(ResourceScheduleInterfaceCode::KILL_PROCESS):
             return KillProcessInner(data, reply);
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::REGISTER_SYSTEMLOAD_NOTIFIER):
+            RegisterSystemloadNotifierInner(data, reply);
+            return ERR_OK;
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::UNREGISTER_SYSTEMLOAD_NOTIFIER):
+            UnRegisterSystemloadNotifierInner(data, reply);
+            return ERR_OK;
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::GET_SYSTEMLOAD_LEVEL):
+            return GetSystemloadLevelInner(data, reply);
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -629,6 +629,31 @@ enum CollabroationServiceStatus : int64_t {
 enum SaControlAppStatus : int64_t {
     SA_START_APP = 0,
     SA_STOP_APP = 0,
+};
+
+/**
+ * @brief systemload level
+ */
+enum SystemloadLevel : int64_t {
+    LOW = 0,
+    NORMAL = 1,
+    MEDIUM = 2,
+    HIGH = 3,
+    OVERHEATED = 4,
+    WARNING = 5,
+    EMERGENCY = 6,
+    ESCAPE = 7,
+};
+
+/**
+ * @brief Device status
+ */
+enum DeviceStatus : int64_t {
+    SYSTEMLOAD_LEVEL = 0,
+    POWER_FOOTAGE = 1,
+    THERMAL = 2,
+    MEMORY_LEVEL = 3,
+    HIGH_LOAD = 4,
 };
 } // namespace ResType
 } // namespace ResourceSchedule

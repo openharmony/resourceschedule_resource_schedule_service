@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,6 +31,7 @@ enum : int32_t {
     RES_SCHED_ACCESS_TOKEN_FAIL = -3,
     RES_SCHED_REQUEST_FAIL = -4,
     RES_SCHED_DATA_ERROR = -5,
+    RES_SCHED_SERVICE_ERROR = -6,
 };
 
 constexpr ErrCode RES_SCHED_COMMON_ERR_OFFSET = ErrCodeOffset(SUBSYS_IAWARE, RES_SCHED_MODULE_COMMON);

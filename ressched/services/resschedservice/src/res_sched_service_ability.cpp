@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,7 @@
  */
 
 #include "hisysevent.h"
+#include "notifier_mgr.h"
 #include "res_sched_service_ability.h"
 #include "observer_manager_intf.h"
 #include "res_sched_log.h"
@@ -39,6 +40,7 @@ ResSchedServiceAbility::~ResSchedServiceAbility()
 void ResSchedServiceAbility::OnStart()
 {
     ResSchedMgr::GetInstance().Init();
+    NotifierMgr::GetInstance().Init();
     if (!service_) {
         service_ = new (std::nothrow) ResSchedService();
     }
@@ -108,6 +110,16 @@ void ResSchedServiceAbility::OnRemoveSystemAbility(int32_t systemAbilityId, cons
 {
     ReportAbilityStatus(systemAbilityId, deviceId, 0);
 }
+
+void ResSchedServiceAbility::OnDeviceLevelChanged(int32_t type, int32_t level, std::string& action)
+{
+    if (service_ == nullptr) {
+        RESSCHED_LOGE("On Device Level Changed failed due to service nullptr!");
+        return;
+    }
+    service_->OnDeviceLevelChanged(type, level, action);
+}
+
 } // namespace ResourceSchedule
 } // namespace OHOS
 

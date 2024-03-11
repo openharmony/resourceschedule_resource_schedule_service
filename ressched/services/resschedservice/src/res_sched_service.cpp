@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,7 @@
 #include <string_ex.h>
 #include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
+#include "notifier_mgr.h"
 #include "plugin_mgr.h"
 #include "res_sched_errors.h"
 #include "res_sched_log.h"
@@ -52,6 +53,26 @@ int32_t ResSchedService::KillProcess(const nlohmann::json& payload)
 {
     return ResSchedMgr::GetInstance().KillProcessByClient(payload);
 
+}
+
+void ResSchedService::RegisterSystemloadNotifier(const std::string& cbType, const sptr<IRemoteObject>& notifier)
+{
+    NotifierMgr::GetInstance().RegisterNotifier(IPCSkeleton::GetCallingPid(), cbType, notifier);
+}
+
+void ResSchedService::UnRegisterSystemloadNotifier(const std::string& cbType)
+{
+    NotifierMgr::GetInstance().UnRegisterNotifier(IPCSkeleton::GetCallingPid(), cbType);
+}
+
+int32_t ResSchedService::GetSystemloadLevel()
+{
+    return NotifierMgr::GetInstance().GetSystemloadLevel();
+}
+
+void ResSchedService::OnDeviceLevelChanged(int32_t type, int32_t level, std::string& action)
+{
+    NotifierMgr::GetInstance().OnDeviceLevelChanged(type, level, action);
 }
 
 bool ResSchedService::AllowDump()

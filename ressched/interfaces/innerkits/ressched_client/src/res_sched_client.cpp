@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -74,6 +74,51 @@ int32_t ResSchedClient::KillProcess(const std::unordered_map<std::string, std::s
         return RES_SCHED_KILL_PROCESS_FAIL;
     }
     return rss_->KillProcess(payload);
+}
+
+void ResSchedClient::RegisterSystemloadNotifier(const std::string& cbType, const sptr<IRemoteObject>& notifier)
+{
+    if (TryConnect() != ERR_OK) {
+        return;
+    }
+    RESSCHED_LOGD("ResSchedClient::RegisterSystemloadNotifier receive mission.");
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (rss_ == nullptr) {
+        RESSCHED_LOGE("ResSchedClient::RegisterSystemloadNotifier fail to get resource schedule service.");
+        return;
+    }
+    rss_->RegisterSystemloadNotifier(cbType, notifier);
+}
+
+void ResSchedClient::UnRegisterSystemloadNotifier(const std::string& cbType)
+{
+    if (TryConnect() != ERR_OK) {
+        return;
+    }
+    RESSCHED_LOGD("ResSchedClient::UnRegisterSystemloadNotifier receive mission.");
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (rss_ == nullptr) {
+        RESSCHED_LOGE("ResSchedClient::UnRegisterSystemloadNotifier fail to get resource schedule service.");
+        return;
+    }
+    rss_->UnRegisterSystemloadNotifier(cbType);
+}
+
+int32_t ResSchedClient::GetSystemloadLevel()
+{
+    if (TryConnect() != ERR_OK) {
+        return RES_SCHED_CONNECT_FAIL;
+    }
+    RESSCHED_LOGD("ResSchedClient::GetSystemloadLevel receive mission.");
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (rss_ == nullptr) {
+        RESSCHED_LOGE("ResSchedClient::GetSystemloadLevel fail to get resource schedule service.");
+        return RES_SCHED_SERVICE_ERROR;
+    }
+    return rss_->GetSystemloadLevel();
 }
 
 ErrCode ResSchedClient::TryConnect()

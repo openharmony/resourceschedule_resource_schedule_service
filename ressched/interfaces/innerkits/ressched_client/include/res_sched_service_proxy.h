@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,6 +43,26 @@ public:
      * @param payload Indicates the context info of the kill message.
      */
     int32_t KillProcess(const nlohmann::json& payload) override;
+
+    /**
+     * @brief Register systemload remote listener.
+     *
+     * @param cbType callback type string
+     * @param notifier remote listener object
+     */
+    void RegisterSystemloadNotifier(const std::string& cbType, const sptr<IRemoteObject>& notifier) override;
+
+    /**
+     * @brief UnRegister systemload remote listener.
+     *
+     * @param cbType callback type string
+     */
+    void UnRegisterSystemloadNotifier(const std::string& cbType) override;
+
+    /**
+     * @brief client get systemload level.
+     */
+    int32_t GetSystemloadLevel() override;
 public:
     /**
      * @brief Construct a new ResSchedServiceProxy object.

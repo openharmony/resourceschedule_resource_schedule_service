@@ -48,6 +48,7 @@
         "init",
         "ipc",
         "movement",
+        "napi",
         "input",
         "samgr",
         "safwk",
@@ -71,7 +72,8 @@
           "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/profiles:process_group_config"
         ],
         "fwk_group" : [
-          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"
+          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi:systemload"
         ],
         "service_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc",
@@ -96,7 +98,11 @@
               "res_sched_service_proxy.h",
               "res_type.h",
               "res_sched_ipc_interface_code.h",
-              "res_sched_kill_reason.h"
+              "res_sched_kill_reason.h",
+              "ires_sched_systemload_notifier.h",
+              "res_sched_notifier_death_recipient.h",
+              "res_sched_systemload_notifier_proxy.h",
+              "res_sched_systemload_notifier_stub.h"
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,6 +28,14 @@ public:
     void ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload) override;
 
     int32_t KillProcess(const nlohmann::json& payload) override;
+
+    void RegisterSystemloadNotifier(const std::string& cbType, const sptr<IRemoteObject>& notifier) override;
+
+    void UnRegisterSystemloadNotifier(const std::string& cbType) override;
+
+    int32_t GetSystemloadLevel() override;
+
+    void OnDeviceLevelChanged(int32_t type, int32_t level, std::string& action);
 
     int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
 
