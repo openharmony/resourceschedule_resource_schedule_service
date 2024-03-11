@@ -490,14 +490,26 @@ void SocPerfThreadWrap::InnerArbitrateCandidatesValue(int32_t type, std::shared_
 void SocPerfThreadWrap::ArbitrateCandidate(int32_t resId)
 {
     std::shared_ptr<ResStatus> resStatus = resStatusInfo[resId];
-    int64_t candidatePerfValue = resStatus->candidatesValue[ACTION_TYPE_PERF];
-    int64_t candidatePowerValue = resStatus->candidatesValue[ACTION_TYPE_POWER];
-    int64_t candidateThermalValue = resStatus->candidatesValue[ACTION_TYPE_THERMAL];
-
+    // if perf, power and thermal don't have valid value, send default value
     if (ExistNoCandidate(resId, resStatus)) {
         return;
     }
+    // Arbitrate in perf, power and thermal
+    ProcessLimitCase(resId);
+    // perf request thermal level is highest priority in this freq adjuster
+    if (ArbitratePairResInPerfLvl(resId)) {
+        return;
+    }
+    // adjust resource value if it has 'max' config
+    ArbitratePairRes(resId, false);
+}
 
+void SocPerfThreadWrap::ProcessLimitCase(int32_t resId)
+{
+    std::shared_ptr<ResStatus> resStatus = resStatusInfo[resId];
+    int64_t candidatePerfValue = resStatus->candidatesValue[ACTION_TYPE_PERF];
+    int64_t candidatePowerValue = resStatus->candidatesValue[ACTION_TYPE_POWER];
+    int64_t candidateThermalValue = resStatus->candidatesValue[ACTION_TYPE_THERMAL];
     if (!powerLimitBoost && !thermalLimitBoost) {
         if (candidatePerfValue != INVALID_VALUE) {
             resStatus->candidate = Max(candidatePerfValue, candidatePowerValue, candidateThermalValue);
@@ -523,13 +535,6 @@ void SocPerfThreadWrap::ArbitrateCandidate(int32_t resId)
     }
     resStatus->currentEndTime = Min(resStatus->candidatesEndTime[ACTION_TYPE_PERF],
         resStatus->candidatesEndTime[ACTION_TYPE_POWER], resStatus->candidatesEndTime[ACTION_TYPE_THERMAL]);
-
-    // perf request thermal level is highest priority in this freq adjuster
-    if (ArbitratePairResInPerfLvl(resId)) {
-        return;
-    }
-
-    ArbitratePairRes(resId, false);
 }
 
 bool SocPerfThreadWrap::ArbitratePairResInPerfLvl(int32_t resId)
