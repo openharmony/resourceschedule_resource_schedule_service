@@ -540,15 +540,20 @@ void SocPerfThreadWrap::ProcessLimitCase(int32_t resId)
 bool SocPerfThreadWrap::ArbitratePairResInPerfLvl(int32_t resId)
 {
     std::shared_ptr<ResStatus> resStatus = resStatusInfo[resId];
+    int32_t pairResId = IsGovResId(resId) ? INVALID_VALUE : resNodeInfo[resId]->pair;
     // if resource self and resource's pair both not have perflvl value
-    if (resStatus->candidatesValue[ACTION_TYPE_PERFLVL] == INVALID_VALUE &&
-        (!IsGovResId(resId) && resNodeInfo[resId]->pair != INVALID_VALUE &&
-        resStatusInfo[resNodeInfo[resId]->pair]->candidatesValue[ACTION_TYPE_PERFLVL] == INVALID_VALUE)) {
+    if (resStatus->candidatesValue[ACTION_TYPE_PERFLVL] == INVALID_VALUE && (pairResId != INVALID_VALUE &&
+        resStatusInfo[pairResId]->candidatesValue[ACTION_TYPE_PERFLVL] == INVALID_VALUE)) {
         return false;
     }
-
+    // if this resource has PerfRequestLvl value, the final arbitrate value change to PerfRequestLvl value
+    if (resStatus->candidatesValue[ACTION_TYPE_PERFLVL] != INVALID_VALUE) {
+        resStatus->candidate = resStatus->candidatesValue[ACTION_TYPE_PERFLVL];
+    }
+    // only limit max when PerfRequestLvl has max value
     bool limit = false;
-    if (!IsGovResId(resId) && resNodeInfo[resId]->mode == MAX_FREQUE_NODE) {
+    if (!IsGovResId(resId) && (resNodeInfo[resId]->mode == MAX_FREQUE_NODE ||
+        (pairResId != INVALID_VALUE && resNodeInfo[pairResId]->mode == MAX_FREQUE_NODE))) {
         limit = true;
     }
     ArbitratePairRes(resId, limit);
