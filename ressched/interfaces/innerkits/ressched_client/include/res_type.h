@@ -279,8 +279,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPR_SCREEN_COLLABROATION, "RES_TYPR_SCREEN_COLLABROATION" },
     { RES_TYPE_SA_CONTROL_APP_EVENT, "RES_TYPE_SA_CONTROL_APP_EVENT" },
     { RES_TYPE_SYSTEM_CPU_LOAD, "RES_TYPE_SYSTEM_CPU_LOAD" },
-    { RES_TYPE_DOWNLOAD, "RES_TYPE_DOWNLOAD" },
-    { RES_TYPE_UPLOAD, "RES_TYPE_UPLOAD" },
+    { RES_TYPE_UPLOAD_DOWNLOAD, "RES_TYPE_UPLOAD_DOWNLOAD" },
     { RES_TYPE_SPLIT_SCREEN, "RES_TYPE_SPLIT_SCREEN" },
     { RES_TYPE_FLOATING_WINDOW, "RES_TYPE_FLOATING_WINDOW" },
 };
@@ -649,18 +648,11 @@ enum SaControlAppStatus : int64_t {
 /**
  * @brief Key Download Scene status
  */
-enum KeyDownloadStatus : int64_t {
-    ENTER_DOWNLOAD_SCENE = 0,
-    EXIT_DOWNLOAD__SCENE = 1,
+enum KeyUploadOrDownloadStatus : int64_t {
+    ENTER_UPLOAD_DOWNLOAD_SCENE = 0,
+    EXIT_UPLOAD_DOWNLOAD__SCENE = 1,
 };
 
-/**
- * @brief Key Upload Scene status
- */
-enum KeyUploadStatus : int64_t {
-    ENTER_UPLOAD_SCENE = 0,
-    EXIT_UPLOAD_SCENE = 1,
-};
 
 /**
  * @brief Key Split Screen Scene status
