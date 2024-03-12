@@ -17,15 +17,32 @@
 
 #include <vector>
 
+#include "app_mgr_constants.h"
+#include "parameters.h"
 #include "res_sched_log.h"
 #include "res_sched_notifier_death_recipient.h"
 #include "res_sched_systemload_notifier_proxy.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
+using OHOS::AppExecFwk::ApplicationState;
+
 static std::map<ResType::DeviceStatus, std::string> g_DeviceStatusType = {
     { ResType::DeviceStatus::SYSTEMLOAD_LEVEL, "systemLoadChange" }
 };
+
+static std::vector<std::pair<std::string, ResType::SystemloadLevel>> g_systemloadPair = {
+    { "LOW", ResType::SystemloadLevel::LOW },
+    { "NORMAL", ResType::SystemloadLevel::NORMAL },
+    { "MEDIUM", ResType::SystemloadLevel::MEDIUM },
+    { "HIGH", ResType::SystemloadLevel::HIGH },
+    { "OVERHEATED", ResType::SystemloadLevel::OVERHEATED },
+    { "WARNING", ResType::SystemloadLevel::WARNING },
+    { "EMERGENCY", ResType::SystemloadLevel::EMERGENCY },
+    { "ESCAPE", ResType::SystemloadLevel::ESCAPE }
+};
+
+static const std::string SYSTEMLOAD_PARAMETER = "resourceschedule.systemload";
 
 NotifierMgr& NotifierMgr::GetInstance()
 {
@@ -35,10 +52,24 @@ NotifierMgr& NotifierMgr::GetInstance()
 
 void NotifierMgr::Init()
 {
+    if (initialized) {
+        RESSCHED_LOGE("NotifierMgr has initialized");
+        return;
+    }
+    initialized = true;
     notifierDeathRecipient_ = sptr<IRemoteObject::DeathRecipient>(
         new (std::nothrow) ResSchedNotifierDeathRecipient(
         std::bind(&NotifierMgr::RemoteNotifierDied, this, std::placeholders::_1)));
     notifierHandler_ = std::make_shared<ffrt::queue>("OnDeviceLevelChanged");
+    std::string systemloadParamDef;
+    std::string systemloadParam = OHOS::system::GetParameter(SYSTEMLOAD_PARAMETER, systemloadParamDef);
+    if (!systemloadParam.empty()) {
+        for (auto& vec : g_systemloadPair) {
+            if (vec.first == systemloadParam) {
+                systemloadLevel_ = vec.second;
+            }
+        }
+    }
 }
 
 void NotifierMgr::RegisterNotifier(int32_t pid, const std::string& cbType, const sptr<IRemoteObject>& notifier)
@@ -97,7 +128,41 @@ void NotifierMgr::OnDeviceLevelChanged(int32_t type, int32_t level, std::string&
         RESSCHED_LOGW("OnDeviceLevelChanged, no type matched");
         return;
     }
+
+    systemloadLevel_ = static_cast<ResType::SystemloadLevel>(level);
+    for (auto& vec : g_systemloadPair) {
+        if (systemloadLevel_ == vec.second) {
+            OHOS::system::SetParameter(SYSTEMLOAD_PARAMETER, vec.first);
+        }
+    }
+
+    if (notifierHandler_ == nullptr) {
+        RESSCHED_LOGE("OnDeviceLevelChanged error due to notifierHandler null.");
+        return;
+    }
+
     OnDeviceLevelChangedLock(g_DeviceStatusType[cbType], level, action);
+}
+
+void NotifierMgr::OnApplicationStateChange(int32_t state, int32_t pid)
+{
+    RESSCHED_LOGD("OnApplicationStateChange called, state: %{public}d, pid : %{public}d .", state, pid);
+    {
+        std::lock_guard<std::mutex> autoLock(notifierMutex_);
+        if (notifierMap_.count(pid) == 0) {
+            return;
+        }
+    }
+
+    std::lock_guard<std::mutex> autoLock(pidSetMutex);
+    if (state == static_cast<int32_t>(ApplicationState::APP_STATE_FOREGROUND)) {
+        fgPidSet_.insert(pid);
+    }
+    if (state == static_cast<int32_t>(ApplicationState::APP_STATE_BACKGROUND)
+        || state == static_cast<int32_t>(ApplicationState::APP_STATE_TERMINATED)
+        || state == static_cast<int32_t>(ApplicationState::APP_STATE_END)) {
+        fgPidSet_.erase(pid);
+    }
 }
 
 int32_t NotifierMgr::GetSystemloadLevel()
@@ -112,29 +177,29 @@ void NotifierMgr::RemoveNotifierLock(const sptr<IRemoteObject>& notifier)
     std::lock_guard<std::mutex> autoLock(notifierMutex_);
     for (auto& notifiers : notifierMap_) {
         for (auto& iter : notifiers.second) {
-            if (iter.second == notifier) {
-                iter.second->RemoveDeathRecipient(notifierDeathRecipient_);
-                notifiers.second.erase(iter.first);
-                if (notifiers.second.empty()) {
-                    notifierMap_.erase(notifiers.first);
-                }
-                return;
+            if (iter.second != notifier) {
+                continue;
             }
+            iter.second->RemoveDeathRecipient(notifierDeathRecipient_);
+            notifiers.second.erase(iter.first);
+            if (notifiers.second.empty()) {
+                notifierMap_.erase(notifiers.first);
+            }
+            return;
         }
     }
 }
 
 void NotifierMgr::OnDeviceLevelChangedLock(const std::string& cbType, int32_t level, std::string& action)
 {
-    systemloadLevel_ = static_cast<ResType::SystemloadLevel>(level);
-    if (notifierHandler_ == nullptr) {
-        RESSCHED_LOGE("OnDeviceLevelChanged error due to notifierHandler null.");
-        return;
-    }
     std::vector<sptr<IRemoteObject>> notifierArray;
     {
         std::lock_guard<std::mutex> autoLock(notifierMutex_);
         for (auto& notifiers : notifierMap_) {
+            if (fgPidSet_.count(notifiers.first) == 0) {
+                RESSCHED_LOGD("app on background, pid = %{public}d .", notifiers.first);
+                continue;
+            }
             for (auto& iter : notifiers.second) {
                 if (iter.first == cbType) {
                     notifierArray.push_back(iter.second);

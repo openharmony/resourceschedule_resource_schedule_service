@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,6 +50,17 @@ void ResSchedUtils::LoadUtils()
     reportFunc_ = reinterpret_cast<ReportDataFunc>(dlsym(handle, "ReportDataInProcess"));
     if (!reportFunc_) {
         CGS_LOGW("%{public}s load function:ReportDataInProcess failed!", __func__);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
+                        "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "ResSchedUtils don't found dlsym " + RES_SCHED_SERVICE_SO + "!");
+        dlclose(handle);
+        return;
+    }
+
+    reportAppStateFunc_ = reinterpret_cast<ReportAppStateFunc>(dlsym(handle, "ReportAppStateInProcess"));
+    if (!reportAppStateFunc_) {
+        CGS_LOGW("%{public}s load function:ReportAppStateInProcess failed!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
                         "ERR_TYPE", "plugin failure",
@@ -142,6 +153,15 @@ void ResSchedUtils::DispatchResourceExt(uint32_t resType, int64_t value, const n
         return;
     }
     dispatchResourceExtFunc_(resType, value, payload);
+}
+
+void ResSchedUtils::ReportAppStateInProcess(int32_t state, int32_t pid)
+{
+    if (!reportAppStateFunc_) {
+        CGS_LOGD("%{public}s failed, function nullptr.", __func__);
+        return;
+    }
+    reportAppStateFunc_(state, pid);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -13,6 +13,7 @@
 
 #####################hydra-fuzz###################
 import("//build/config/features.gni")
+import("//build/ohos.gni")
 import("//build/test.gni")
 import("../../../../ressched.gni")
 module_output_path = "resource_schedule_service/resource_schedule_service"
@@ -43,15 +44,22 @@ ohos_fuzztest("ResSchedObserverFuzzTest") {
   deps = [ "${ressched_services}:resschedsvc_static" ]
 
   external_deps = [
+    "ability_base:want",
+    "ability_runtime:abilitykit_native",
     "ability_runtime:app_manager",
+    "ability_runtime:connection_obs_manager",
     "ability_runtime:wantagent_innerkits",
+    "bundle_framework:appexecfwk_base",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
     "eventhandler:libeventhandler",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
+    "hisysevent:libhisyseventmanager",
     "hitrace:hitrace_meter",
+    "input:libmmi-client",
     "ipc:ipc_single",
+    "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libwm",
   ]
@@ -68,6 +76,14 @@ ohos_fuzztest("ResSchedObserverFuzzTest") {
       "core_service:tel_core_service_api",
       "state_registry:tel_state_registry_api",
     ]
+  }
+  if (communication_bluetooth_perception_enable) {
+    defines += [ "RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE" ]
+    external_deps += [ "bluetooth:btframework" ]
+  }
+  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
+    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
+    external_deps += [ "audio_framework:audio_client" ]
   }
 
   part_name = "resource_schedule_service"

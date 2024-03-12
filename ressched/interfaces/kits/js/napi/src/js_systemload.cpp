@@ -69,10 +69,8 @@ void Systemload::OnSystemloadLevel(napi_env env, int32_t level)
     NAPI_CALL_RETURN_VOID(env,
         napi_create_string_latin1(env, "OnSystemloadLevel", NAPI_AUTO_LENGTH, &resourceName));
 
-    std::unique_ptr<NativeReference> callbackRef;
     NAPI_CALL_RETURN_VOID(env,
         napi_create_reference(env, jsCallBackMap_[SYSTEMLOAD_LEVEL]->GetNapiValue(), 1, &cbInfo->callback));
-    callbackRef.reset(reinterpret_cast<NativeReference *>(cbInfo->callback));
 
     NAPI_CALL_RETURN_VOID(env, napi_create_async_work(env, nullptr, resourceName,
         [] (napi_env env, void* data) {},
@@ -203,10 +201,14 @@ void Systemload::CompleteCb(napi_env env, napi_status status, void* data)
     napi_value callResult = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
     NAPI_CALL_RETURN_VOID(env, napi_get_reference_value(env, cbInfo->callback, &callback));
-
     napi_create_uint32(env, static_cast<uint32_t>(cbInfo->result), &result);
+    // call js callback
     NAPI_CALL_RETURN_VOID(env, napi_call_function(env, undefined, callback, 1, &result, &callResult));
+    // delete resources
     NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, cbInfo->asyncWork));
+    if (cbInfo->callback != nullptr) {
+        NAPI_CALL_RETURN_VOID(env, napi_delete_reference(env, cbInfo->callback));
+    }
     delete cbInfo;
     cbInfo = nullptr;
     RESSCHED_LOGI("CompleteCb, main event thread complete end.");

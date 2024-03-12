@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,10 +20,15 @@
 #define protected public
 #include <vector>
 #include "accesstoken_kit.h"
+#include "ipc_skeleton.h"
 #include "nativetoken_kit.h"
+#include "notifier_mgr.h"
 #include "plugin_mgr.h"
+#include "res_sched_notifier_death_recipient.h"
 #include "res_sched_service.h"
 #include "res_sched_service_ability.h"
+#include "res_sched_systemload_notifier_proxy.h"
+#include "res_sched_systemload_notifier_stub.h"
 #include "token_setproc.h"
 
 namespace OHOS {
@@ -43,6 +48,19 @@ protected:
     std::shared_ptr<ResSchedServiceAbility> resSchedServiceAbility_ = nullptr;
 };
 
+class TestResSchedSystemloadListener : public ResSchedSystemloadNotifierStub {
+public:
+    TestResSchedSystemloadListener() = default;
+
+    void OnSystemloadLevel(int32_t level)
+    {
+        testSystemloadLevel = level;
+    }
+
+    static int32_t testSystemloadLevel;
+};
+
+int32_t TestResSchedSystemloadListener::testSystemloadLevel = 0;
 
 void ResSchedServiceTest::SetUpTestCase(void)
 {
@@ -187,6 +205,267 @@ HWTEST_F(ResSchedServiceTest, KillProcess001, Function | MediumTest | Level0)
 }
 
 /**
+ * @tc.name: Ressched service TestResSchedSystemloadListener 001
+ * @tc.desc: test the interface service TestResSchedSystemloadListener
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, TestResSchedSystemloadListener001, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+    std::string cbType = "systemLoadChange";
+    resSchedService_->RegisterSystemloadNotifier(cbType, notifier);
+    NotifierMgr::GetInstance().OnApplicationStateChange(2, IPCSkeleton::GetCallingPid());
+    std::string emptyAction;
+    resSchedService_->OnDeviceLevelChanged(0, 2, emptyAction);
+    EXPECT_TRUE(TestResSchedSystemloadListener::testSystemloadLevel == 2);
+    resSchedService_->UnRegisterSystemloadNotifier(cbType);
+    NotifierMgr::GetInstance().OnApplicationStateChange(4, IPCSkeleton::GetCallingPid());
+    TestResSchedSystemloadListener::testSystemloadLevel = 0;
+}
+
+/**
+ * @tc.name: Ressched service TestResSchedSystemloadListener 002
+ * @tc.desc: test the interface service TestResSchedSystemloadListener
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, TestResSchedSystemloadListener002, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+    std::string cbType = "systemLoadChange";
+    resSchedService_->RegisterSystemloadNotifier(cbType, notifier);
+    std::string emptyAction;
+    resSchedService_->OnDeviceLevelChanged(0, 2, emptyAction);
+    EXPECT_TRUE(TestResSchedSystemloadListener::testSystemloadLevel == 0);
+    resSchedService_->UnRegisterSystemloadNotifier(cbType);
+    TestResSchedSystemloadListener::testSystemloadLevel = 0;
+}
+
+/**
+ * @tc.name: Ressched service TestResSchedSystemloadListener 003
+ * @tc.desc: test the interface service RegisterSystemloadNotifier
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, TestResSchedSystemloadListener003, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+    std::string cbType = "test";
+    resSchedService_->RegisterSystemloadNotifier(cbType, notifier);
+    NotifierMgr::GetInstance().OnApplicationStateChange(2, IPCSkeleton::GetCallingPid());
+    std::string emptyAction;
+    resSchedService_->OnDeviceLevelChanged(0, 2, emptyAction);
+    EXPECT_TRUE(TestResSchedSystemloadListener::testSystemloadLevel == 0);
+    resSchedService_->UnRegisterSystemloadNotifier(cbType);
+    NotifierMgr::GetInstance().OnApplicationStateChange(4, IPCSkeleton::GetCallingPid());
+    TestResSchedSystemloadListener::testSystemloadLevel = 0;
+}
+
+/**
+ * @tc.name: Ressched service TestResSchedSystemloadListener 004
+ * @tc.desc: test the interface service TestResSchedSystemloadListener
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, TestResSchedSystemloadListener004, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+    std::string cbType = "systemLoadChange";
+    resSchedService_->RegisterSystemloadNotifier(cbType, notifier);
+    NotifierMgr::GetInstance().OnApplicationStateChange(2, 111111);
+    std::string emptyAction;
+    resSchedService_->OnDeviceLevelChanged(0, 2, emptyAction);
+    EXPECT_TRUE(TestResSchedSystemloadListener::testSystemloadLevel == 0);
+    resSchedService_->UnRegisterSystemloadNotifier(cbType);
+    NotifierMgr::GetInstance().OnApplicationStateChange(4, 111111);
+    TestResSchedSystemloadListener::testSystemloadLevel = 0;
+}
+
+/**
+ * @tc.name: Ressched service TestResSchedSystemloadListener 005
+ * @tc.desc: test the interface service TestResSchedSystemloadListener
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, TestResSchedSystemloadListener005, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+    std::string cbType = "systemLoadChange";
+    resSchedService_->RegisterSystemloadNotifier(cbType, notifier);
+    NotifierMgr::GetInstance().OnApplicationStateChange(2, IPCSkeleton::GetCallingPid());
+    NotifierMgr::GetInstance().RemoteNotifierDied(notifier);
+    std::string emptyAction;
+    resSchedService_->OnDeviceLevelChanged(0, 2, emptyAction);
+    EXPECT_TRUE(TestResSchedSystemloadListener::testSystemloadLevel == 0);
+    resSchedService_->UnRegisterSystemloadNotifier(cbType);
+    NotifierMgr::GetInstance().OnApplicationStateChange(4, IPCSkeleton::GetCallingPid());
+    TestResSchedSystemloadListener::testSystemloadLevel = 0;
+}
+
+/**
+ * @tc.name: Ressched service RegisterSystemloadNotifier 001
+ * @tc.desc: test the interface service RegisterSystemloadNotifier
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, RegisterSystemloadNotifier001, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+    std::string cbType = "systemLoadChange";
+    std::string cbType1 = "test";
+    resSchedService_->RegisterSystemloadNotifier(cbType, notifier);
+}
+
+/**
+ * @tc.name: Ressched service RegisterSystemloadNotifier 002
+ * @tc.desc: test the interface service RegisterSystemloadNotifier
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, RegisterSystemloadNotifier002, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+    std::string cbType = "systemLoadChange";
+    std::string cbType1 = "test";
+    resSchedService_->RegisterSystemloadNotifier(cbType, notifier);
+    resSchedService_->RegisterSystemloadNotifier(cbType1, notifier);
+}
+
+/**
+ * @tc.name: Ressched service UnRegisterSystemloadNotifier 001
+ * @tc.desc: test the interface service UnRegisterSystemloadNotifier
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, UnRegisterSystemloadNotifier001, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+    std::string cbType = "systemLoadChange";
+    resSchedService_->RegisterSystemloadNotifier(cbType, notifier);
+    resSchedService_->UnRegisterSystemloadNotifier(cbType);
+}
+
+/**
+ * @tc.name: Ressched service UnRegisterSystemloadNotifier 002
+ * @tc.desc: test the interface service UnRegisterSystemloadNotifier
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, UnRegisterSystemloadNotifier002, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+    std::string cbType = "systemLoadChange";
+    resSchedService_->UnRegisterSystemloadNotifier(cbType);
+}
+
+/**
+ * @tc.name: Ressched service UnRegisterSystemloadNotifier 003
+ * @tc.desc: test the interface service UnRegisterSystemloadNotifier
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, UnRegisterSystemloadNotifier003, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+    std::string cbType = "systemLoadChange";
+    std::string cbType1 = "test";
+    resSchedService_->RegisterSystemloadNotifier(cbType, notifier);
+    resSchedService_->UnRegisterSystemloadNotifier(cbType1);
+}
+
+/**
+ * @tc.name: Ressched service GetSystemloadLevel 001
+ * @tc.desc: test the interface service GetSystemloadLevel
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, GetSystemloadLevel001, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+    std::string emptyAction;
+    resSchedService_->OnDeviceLevelChanged(0, 0, emptyAction);
+    int32_t res = resSchedService_->GetSystemloadLevel();
+    EXPECT_TRUE(res == 0);
+}
+
+/**
+ * @tc.name: Ressched service GetSystemloadLevel 001
+ * @tc.desc: test the interface service GetSystemloadLevel
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, GetSystemloadLevel001, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+    std::string emptyAction;
+    resSchedService_->OnDeviceLevelChanged(0, 2, emptyAction);
+    resSchedService_->OnDeviceLevelChanged(1, 5, emptyAction);
+    int32_t res = resSchedService_->GetSystemloadLevel();
+    EXPECT_TRUE(res == 2);
+}
+
+/**
  * @tc.name: Start ResSchedServiceAbility 001
  * @tc.desc: Verify if ResSchedServiceAbility OnStart is success.
  * @tc.type: FUNC
@@ -276,6 +555,19 @@ public:
     }
 
     int32_t KillProcess(const nlohmann::json& payload) override
+    {
+        return 0;
+    }
+
+    void RegisterSystemloadNotifier(const std::string& cbType, const sptr<IRemoteObject>& notifier) override
+    {
+    }
+
+    void UnRegisterSystemloadNotifier(const std::string& cbType) override
+    {
+    }
+
+    int32_t GetSystemloadLevel() override
     {
         return 0;
     }
@@ -411,6 +703,57 @@ HWTEST_F(ResSchedServiceTest, RemoteRequest002, Function | MediumTest | Level0)
 {
     SET_THREAD_NUM(10);
     GTEST_RUN_TASK(RemoteRequestTask);
+}
+
+/**
+ * @tc.name: ResSchedServicesStub RegisterSystemloadNotifier 001
+ * @tc.desc: Verify if resschedstub RegisterSystemloadNotifier is success.
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, RegisterSystemloadNotifier001, Function | MediumTest | Level0)
+{
+    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
+    MessageParcel reply;
+    MessageParcel emptyData;
+    EXPECT_TRUE(resSchedServiceStub_ != nullptr);
+    resSchedServiceStub_->RegisterSystemloadNotifierInner(emptyData, reply);
+}
+
+/**
+ * @tc.name: ResSchedServicesStub UnRegisterSystemloadNotifier 001
+ * @tc.desc: Verify if resschedstub UnRegisterSystemloadNotifier is success.
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, UnRegisterSystemloadNotifier001, Function | MediumTest | Level0)
+{
+    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
+    MessageParcel reply;
+    MessageParcel emptyData;
+    EXPECT_TRUE(resSchedServiceStub_ != nullptr);
+    resSchedServiceStub_->UnRegisterSystemloadNotifierInner(emptyData, reply);
+}
+
+/**
+ * @tc.name: ResSchedServicesStub GetSystemloadLevel 001
+ * @tc.desc: Verify if resschedstub GetSystemloadLevel is success.
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(ResSchedServiceTest, GetSystemloadLevel001, Function | MediumTest | Level0)
+{
+    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
+    MessageParcel reply;
+    MessageParcel emptyData;
+    EXPECT_TRUE(resSchedServiceStub_->GetSystemloadLevelInner(emptyData, reply));
+
+    MessageParcel reportData;
+    reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
+    EXPECT_TRUE(!resSchedServiceStub_->ReportDataInner(reportData, reply));
 }
 #undef private
 #undef protected

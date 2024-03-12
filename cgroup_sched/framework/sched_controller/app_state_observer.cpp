@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -184,6 +184,7 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     payload["bundleName"] = appStateData.bundleName;
     payload["extensionType"] = static_cast<uint32_t>(appStateData.extensionType);
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);
+    ResSchedUtils::GetInstance().ReportAppStateInProcess(appStateData.state, appStateData.pid);
 }
 
 void RmsApplicationStateObserver::MarshallingAppStateData(const AppStateData &appStateData, nlohmann::json &payload)
@@ -206,6 +207,7 @@ void RmsApplicationStateObserver::OnAppStateChanged(const AppStateData &appState
     MarshallingAppStateData(appStateData, payload);
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_ON_APP_STATE_CHANGED, appStateData.state,
         payload);
+    ResSchedUtils::GetInstance().ReportAppStateInProcess(appStateData.state, appStateData.pid);
 }
 
 void RmsApplicationStateObserver::OnProcessStateChanged(const ProcessData &processData)

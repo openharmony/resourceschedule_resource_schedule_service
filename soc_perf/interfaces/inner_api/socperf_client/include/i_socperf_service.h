@@ -83,6 +83,13 @@ public:
      */
     virtual void SetRequestStatus(bool status, const std::string& msg) = 0;
 
+    /**
+     * @brief set thermal level intermal for perfquest
+     *
+     * @param level thermal level
+     */
+    virtual void SetThermalLevel(int32_t level) = 0;
+
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"Resourceschedule.ISocPerfService");
 };

@@ -22,6 +22,16 @@
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
 #include "device_movement_observer.h"
 #endif
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+#include "audio_observer.h"
+#endif
+#ifdef RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE
+#include "bluetooth_def.h"
+#endif
+
+#include "hisysevent_observer.h"
+#include "observer_manager.h"
+#include "system_ability_definition.h"
 #include "res_sched_service.h"
 
 #include <cstddef>
@@ -41,6 +51,14 @@ typedef int errno_t;
 
 namespace OHOS {
 namespace ResourceSchedule {
+
+namespace {
+    static const int32_t TWO_PARAMETERS = 2;
+    static const int32_t THREE_PARAMETERS = 3;
+    static const int32_t FOUR_PARAMETERS = 4;
+    static const int32_t FIVE_PARAMETERS = 5;
+    static const int32_t SIX_PARAMETERS = 6;
+}
     const uint8_t* g_data = nullptr;
     size_t g_size = 0;
     size_t g_pos;
@@ -84,6 +102,260 @@ namespace ResourceSchedule {
         }
         std::u16string str(cstr);
         return str;
+    }
+
+/*
+* get a string from g_data
+*/
+    std::string GetStringFromData(int strlen)
+    {
+        if (strlen <= 0) {
+            return "";
+        }
+        char cstr[strlen];
+        cstr[strlen - 1] = '\0';
+        for (int i = 0; i < strlen - 1; i++) {
+            char tmp = GetData<char>();
+            if (tmp == '\0') {
+                tmp = '1';
+            }
+            cstr[i] = tmp;
+        }
+        std::string str(cstr);
+        return str;
+    }
+
+
+    bool HisysEventAvCodecEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= SIX_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        nlohmann::json sysEvent;
+        sysEvent["UID"] = GetData<int32_t>();
+        sysEvent["PID"] = GetData<int32_t>();
+        sysEvent["CLIENT_UID"] = GetData<int32_t>();
+        sysEvent["CLIENT_PID"] = GetData<int32_t>();
+        sysEvent["INSTANCE_ID"] = GetData<int32_t>();
+        sysEvent["CODEC_INSTANCE_ID"] = GetData<int32_t>();
+        std::string eventName = GetStringFromData(int(size) - SIX_PARAMETERS * sizeof(int32_t));
+        sysEvent["name_"] = eventName;
+        std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
+        hisysEventObserver_->ProcessAvCodecEvent(sysEvent, eventName);
+        return true;
+    }
+
+    bool HisysEventRunningLockEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= FOUR_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        nlohmann::json sysEvent;
+        sysEvent["UID"] = GetData<int32_t>();
+        sysEvent["PID"] = GetData<int32_t>();
+        sysEvent["TYPE"] = GetData<int32_t>();
+        sysEvent["STATE"] = GetData<int32_t>();
+        std::string eventName = GetStringFromData(int(size) - FOUR_PARAMETERS * sizeof(int32_t));
+        sysEvent["name_"] = eventName;
+        std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
+        hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
+        return true;
+    }
+
+    bool HisysEventAudioEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= THREE_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        nlohmann::json sysEvent;
+        sysEvent["UID"] = GetData<int32_t>();
+        sysEvent["PID"] = GetData<int32_t>();
+        sysEvent["STATE"] = GetData<int32_t>();
+        std::string eventName = GetStringFromData(int(size) - THREE_PARAMETERS * sizeof(int32_t));
+        sysEvent["name_"] = eventName;
+        std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
+        hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
+        return true;
+    }
+
+    bool HisysEventBluetoothFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= THREE_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        nlohmann::json sysEvent;
+        sysEvent["UID"] = GetData<int32_t>();
+        sysEvent["PID"] = GetData<int32_t>();
+        sysEvent["STATE"] = GetData<int32_t>();
+        std::string eventName = GetStringFromData(int(size) - THREE_PARAMETERS * sizeof(int32_t));
+        sysEvent["name_"] = eventName;
+        std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
+        hisysEventObserver_->ProcessBluetoothEvent(sysEvent, eventName);
+        return true;
+    }
+
+    bool HisysEventCameraEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= TWO_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        nlohmann::json sysEvent;
+        sysEvent["UID"] = GetData<int32_t>();
+        sysEvent["PID"] = GetData<int32_t>();
+        std::string eventName = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t));
+        sysEvent["name_"] = eventName;
+        std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
+        hisysEventObserver_->ProcessCameraEvent(sysEvent, eventName);
+        return true;
+    }
+
+    bool HisysEventWifiEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= THREE_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        nlohmann::json sysEvent;
+        sysEvent["UID"] = GetData<int32_t>();
+        sysEvent["PID"] = GetData<int32_t>();
+        sysEvent["TYPE"] = GetData<int32_t>();
+        std::string eventName = GetStringFromData(int(size) - THREE_PARAMETERS * sizeof(int32_t));
+        sysEvent["name_"] = eventName;
+        std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
+        hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
+        return true;
+    }
+
+    bool HisysEventScreenCaptureEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= FIVE_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        nlohmann::json sysEvent;
+        sysEvent["UID"] = GetData<int32_t>();
+        sysEvent["PID"] = GetData<int32_t>();
+        sysEvent["STATUS"] = GetData<int32_t>();
+        sysEvent["APP_UID"] = GetData<int32_t>();
+        sysEvent["APP_PID"] = GetData<int32_t>();
+        std::string eventName = GetStringFromData(int(size) - FIVE_PARAMETERS * sizeof(int32_t));
+        sysEvent["name_"] = eventName;
+        std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
+        hisysEventObserver_->ProcessScreenCaptureEvent(sysEvent, eventName);
+        return true;
+    }
+
+    bool ProcessHiSysEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <=  TWO_PARAMETERS * sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        nlohmann::json sysEvent;
+        sysEvent["domain_"] = GetStringFromData(int(size));
+        std::string eventName = GetStringFromData(int(size) - sizeof(std::string));
+        sysEvent["name_"] = eventName;
+        std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
+        hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+        return true;
+    }
+
+    bool ObserverManagerFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <=  TWO_PARAMETERS * sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+        auto instance = ObserverManager::GetInstance();
+        if (instance) {
+            instance->GetAllMmiStatusData();
+        }
+        return true;
     }
 
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
@@ -173,6 +445,15 @@ namespace ResourceSchedule {
 /* Fuzzer entry point */
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
+    OHOS::ResourceSchedule::HisysEventAvCodecEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::HisysEventRunningLockEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::HisysEventAudioEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::HisysEventCameraEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::HisysEventBluetoothFuzzTest(data, size);
+    OHOS::ResourceSchedule::HisysEventWifiEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::HisysEventScreenCaptureEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::ProcessHiSysEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::ObserverManagerFuzzTest(data, size);
     /* Run your code on data */
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     OHOS::ResourceSchedule::OnCallStateUpdatedFuzzTest(data, size);

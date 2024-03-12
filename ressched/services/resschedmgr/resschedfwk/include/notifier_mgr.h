@@ -18,6 +18,7 @@
 
 #include <map>
 #include <mutex>
+#include <set>
 #include <string>
 
 #include "ffrt.h"
@@ -37,13 +38,17 @@ public:
     void UnRegisterNotifier(int32_t pid, const std::string& cbType);
     void RemoteNotifierDied(const sptr<IRemoteObject>& notifier);
     void OnDeviceLevelChanged(int32_t type, int32_t level, std::string& action);
+    void OnApplicationStateChange(int32_t state, int32_t pid);
     int32_t GetSystemloadLevel();
 private:
     void RemoveNotifierLock(const sptr<IRemoteObject>& notifier);
     void OnDeviceLevelChangedLock(const std::string& cbType, int32_t level, std::string& action);
 
+    bool initialized = false;
     std::mutex notifierMutex_;
     NotifierMap notifierMap_;
+    std::mutex pidSetMutex;
+    std::set<int32_t> fgPidSet_;
     ResType::SystemloadLevel systemloadLevel_ = ResType::SystemloadLevel::LOW;
     sptr<IRemoteObject::DeathRecipient> notifierDeathRecipient_ = nullptr;
     std::shared_ptr<ffrt::queue> notifierHandler_ = nullptr;

@@ -76,7 +76,7 @@ inline napi_value CreateJsNumber(napi_env env, double value)
 }
 
 template<class T>
-inline napi_value CreateJsValue(napi_env env, const T& value)
+napi_value CreateJsValue(napi_env env, const T& value)
 {
     using ValueType = std::remove_cv_t<std::remove_reference_t<T>>;
     napi_value result = nullptr;
@@ -122,7 +122,7 @@ inline bool ConvertFromJsNumber(napi_env env, napi_value jsValue, double& value)
 }
 
 template<class T>
-inline bool ConvertFromJsValue(napi_env env, napi_value jsValue, T& value)
+bool ConvertFromJsValue(napi_env env, napi_value jsValue, T& value)
 {
     if (jsValue == nullptr) {
         return false;

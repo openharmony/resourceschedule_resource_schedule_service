@@ -38,6 +38,7 @@ public:
     void LimitRequest(int32_t clientId,
         const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg);
     void SetRequestStatus(bool status, const std::string& msg);
+    void SetThermalLevel(int32_t level);
 public:
     SocPerf();
     ~SocPerf();
@@ -55,6 +56,7 @@ private:
     char* perfSoPath = nullptr;
     char* perfSoFunc = nullptr;
     volatile bool perfRequestEnable_ = true;
+    int32_t thermalLvl_ = MIN_THERMAL_LVL;
 
 private:
     std::mutex mutex_;
@@ -69,6 +71,7 @@ private:
     bool TraversalFreqResource(xmlNode* grandson, const std::string& configFile);
     bool LoadFreqResourceContent(xmlNode* greatGrandson, const std::string& configFile,
         std::shared_ptr<ResNode> resNode);
+    int32_t GetXmlIntProp(const xmlNode* xmlNode, const char* propName) const;
     bool LoadGovResource(xmlNode* rootNode, const std::string& configFile);
     bool TraversalGovResource(xmlNode* greatGrandson, const std::string& configFile,
         std::shared_ptr<GovResNode> govResNode);
@@ -92,6 +95,7 @@ private:
     bool CheckActionResIdAndValueValid(const std::string& configFile);
     bool TraversalActions(std::shared_ptr<Action> action, int32_t actionId);
     void DoFreqActions(std::shared_ptr<Actions> actions, int32_t onOff, int32_t actionType);
+    bool DoPerfRequestThremalLvl(int32_t cmdId, std::shared_ptr<Action> action, int32_t onOff);
     void PrintCachedInfo() const;
     void SendLimitRequestEvent(int32_t clientId, int32_t resId, int64_t resValue);
     void SendLimitRequestEventOff(std::shared_ptr<SocPerfThreadWrap> threadWrap,
