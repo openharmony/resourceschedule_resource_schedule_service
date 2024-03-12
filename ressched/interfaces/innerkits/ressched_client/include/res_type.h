@@ -188,14 +188,12 @@ enum : uint32_t {
     RES_TYPE_SA_CONTROL_APP_EVENT = 76,
     // report CPU load of the entire machine，payload:cpuPercent
     RES_TYPE_SYSTEM_CPU_LOAD = 77,
-    // report download scene,value 0 enter scene 1 exit scene.
-    RES_TYPE_DOWNLOAD = 78,
-    // report UPLOAD scene，value 0 enter scene 1 exit scene.
-    RES_TYPE_UPLOAD = 79,
+    // report download or upload scene,value 0 enter scene 1 exit scene.
+    RES_TYPE_UPLOAD_DOWNLOAD = 78,
     // report main screen split，value 0 enter scene 1 exit scene.
-    RES_TYPE_SPLIT_SCREEN = 80,
+    RES_TYPE_SPLIT_SCREEN = 79,
     // report main screen floating window，value 0 enter scene 1 exit scene.
-    RES_TYPE_FLOATING_WINDOW = 81,
+    RES_TYPE_FLOATING_WINDOW = 80,
     //last resType
     RES_TYPE_LAST,
 };
