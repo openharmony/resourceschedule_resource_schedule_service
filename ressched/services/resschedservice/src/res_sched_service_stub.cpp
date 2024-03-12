@@ -99,6 +99,11 @@ namespace {
         ResType::RES_TYPE_CAST_SCREEN,
         ResType::RES_TYPR_SCREEN_COLLABROATION,
         ResType::RES_TYPE_SA_CONTROL_APP_EVENT,
+        ResType::RES_TYPE_SYSTEM_CPU_LOAD,
+        ResType::RES_TYPE_DOWNLOAD,
+        ResType::RES_TYPE_UPLOAD,
+        ResType::RES_TYPE_SPLIT_SCREEN,
+        ResType::RES_TYPE_FLOATING_WINDOW,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
