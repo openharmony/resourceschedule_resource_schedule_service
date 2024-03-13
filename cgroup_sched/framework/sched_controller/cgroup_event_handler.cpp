@@ -381,8 +381,6 @@ void CgroupEventHandler:: HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}s",
-        __func__, uid, pid, abilityName.c_str());
     ChronoScope cs("HandleContinuousTaskUpdate");
     auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecord(pid);
@@ -391,6 +389,8 @@ void CgroupEventHandler:: HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
     }
     procRecord->continuousTaskFlag_ = 0;
     for (const auto& typeId : typeIds) {
+        CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, ",
+            __func__, uid, pid, typeId);
         procRecord->continuousTaskFlag_ &= ~(1U << typeId);
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
