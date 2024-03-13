@@ -87,7 +87,15 @@ void BackgroundTaskObserver::MarshallingContinuousTaskCallbackInfo(
     payload["pid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorPid());
     payload["uid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorUid());
     payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();
+    payload["isBatchApi"] =  std::to_string(continuousTaskCallbackInfo->IsBatchApi());
     payload["typeId"] = std::to_string(continuousTaskCallbackInfo->GetTypeId());
+    auto typeIds = continuousTaskCallbackInfo->GetTypeIds();
+    payload["typeIdSize"] = std::to_string(typeIds.size());
+    for (uint32_t i = 0; i < typeIds.size(); i++) {
+        std::string typeId = "typeId" + std::to_string(i);
+        payload[typeId] = std::to_string(typeIds[i]);
+    }
+    payload["abilityId"] = std::to_string(continuousTaskCallbackInfo->GetAbilityId());
     payload["isFromWebview"] = continuousTaskCallbackInfo->IsFromWebview();
 }
 
@@ -104,10 +112,17 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
         auto pid = continuousTaskCallbackInfo->GetCreatorPid();
         auto typeId = continuousTaskCallbackInfo->GetTypeId();
         auto abilityName = continuousTaskCallbackInfo->GetAbilityName();
-
-        cgHandler->PostTask([cgHandler, uid, pid, typeId, abilityName] {
-            cgHandler->HandleContinuousTaskStart(uid, pid, typeId, abilityName);
-        });
+        auto isBatchApi = continuousTaskCallbackInfo->IsBatchApi();
+        if (isBatchApi) {
+            auto typeIds = continuousTaskCallbackInfo->GetTypeIds();
+            cgHandler->PostTask([cgHandler, uid, pid, typeIds, abilityName] {
+                cgHandler->HandleContinuousTaskUpdate(uid, pid, typeIds, abilityName);
+            });
+        } else {
+            cgHandler->PostTask([cgHandler, uid, pid, typeId, abilityName] {
+                cgHandler->HandleContinuousTaskStart(uid, pid, typeId, abilityName);
+            });
+        }
     }
 
     nlohmann::json payload;
@@ -139,6 +154,31 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
     MarshallingContinuousTaskCallbackInfo(continuousTaskCallbackInfo, payload);
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_END, payload);
+}
+
+void BackgroundTaskObserver::OnContinuousTaskUpdate(
+    const std::shared_ptr<ContinuousTaskCallbackInfo> &continuousTaskCallbackInfo)
+{
+    if (!ValidateTaskInfo(continuousTaskCallbackInfo)) {
+        CGS_LOGE("%{public}s failed, invalid event data!", __func__);
+        return;
+    }
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler) {
+        auto uid = continuousTaskCallbackInfo->GetCreatorUid();
+        auto pid = continuousTaskCallbackInfo->GetCreatorPid();
+        auto typeIds = continuousTaskCallbackInfo->GetTypeIds();
+        auto abilityName = continuousTaskCallbackInfo->GetAbilityName();
+
+        cgHandler->PostTask([cgHandler, uid, pid, typeIds, abilityName] {
+            cgHandler->HandleContinuousTaskUpdate(uid, pid, typeIds, abilityName);
+        });
+    }
+
+    nlohmann::json payload;
+    MarshallingContinuousTaskCallbackInfo(continuousTaskCallbackInfo, payload);
+    ResSchedUtils::GetInstance().ReportDataInProcess(
+        ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_UPDATE, payload);   
 }
 
 void BackgroundTaskObserver::OnRemoteDied(const wptr<IRemoteObject> &object)

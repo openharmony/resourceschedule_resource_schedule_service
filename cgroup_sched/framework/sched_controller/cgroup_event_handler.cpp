@@ -374,6 +374,29 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_
         AdjustSource::ADJS_CONTINUOUS_END);
 }
 
+void CgroupEventHandler:: HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
+    const std::vector<uint32_t>& typeIds, const std::string& abilityName)
+{
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}s",
+        __func__, uid, pid, abilityName.c_str());
+    ChronoScope cs("HandleContinuousTaskUpdate");
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    auto procRecord = app->GetProcessRecord(pid);
+    if (!procRecord) {
+        return;
+    }
+    procRecord->continuousTaskFlag_ = 0;
+    for (const auto& typeId : typeIds) {
+        procRecord->continuousTaskFlag_ &= ~(1U << typeId);
+    }
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_CONTINUOUS_END);    
+}
+
 void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilityToken,
     WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
 {

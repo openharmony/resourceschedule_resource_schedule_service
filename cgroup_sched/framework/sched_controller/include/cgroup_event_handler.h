@@ -49,6 +49,8 @@ public:
     void HandleTransientTaskEnd(uid_t uid, pid_t pid, const std::string& packageName);
     void HandleContinuousTaskStart(uid_t uid, pid_t pid, int32_t typeId, const std::string& abilityName);
     void HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId, const std::string& abilityName);
+    void HandleContinuousTaskUpdate(
+        uid_t uid, pid_t pid, const std::vector<uint32_t>& typeIds, const std::string& abilityName);
     void HandleFocusedWindow(uint32_t windowId, uintptr_t abilityToken,
         WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
     void HandleUnfocusedWindow(uint32_t windowId, uintptr_t abilityToken,
