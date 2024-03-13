@@ -100,8 +100,7 @@ namespace {
         ResType::RES_TYPR_SCREEN_COLLABROATION,
         ResType::RES_TYPE_SA_CONTROL_APP_EVENT,
         ResType::RES_TYPE_SYSTEM_CPU_LOAD,
-        ResType::RES_TYPE_DOWNLOAD,
-        ResType::RES_TYPE_UPLOAD,
+        ResType::RES_TYPE_UPLOAD_DOWNLOAD,
         ResType::RES_TYPE_SPLIT_SCREEN,
         ResType::RES_TYPE_FLOATING_WINDOW,
     };
