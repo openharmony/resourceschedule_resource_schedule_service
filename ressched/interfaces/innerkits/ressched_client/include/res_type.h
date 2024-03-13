@@ -627,8 +627,8 @@ enum CollabroationServiceStatus : int64_t {
  * @brief sa control app status
  */
 enum SaControlAppStatus : int64_t {
-    SA_START_APP = 0,
-    SA_STOP_APP = 0,
+    SA_START_APP,
+    SA_STOP_APP,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
