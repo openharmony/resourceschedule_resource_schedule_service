@@ -475,8 +475,7 @@ void PluginMgr::DeliverResourceToPluginSync(const std::list<std::string>& plugin
         }
         StartTrace(HITRACE_TAG_OHOS, pluginLib);
         auto beginTime = Clock::now();
-        auto dispatchResData = std::make_shared<ResData>(resData->resType, resData->value, resData->payload);
-        pluginDispatchFunc(dispatchResData);
+        pluginDispatchFunc(std::make_shared<ResData>(resData->resType, resData->value, resData->payload));
         auto endTime = Clock::now();
         FinishTrace(HITRACE_TAG_OHOS);
         int32_t costTimeUs = (endTime - beginTime) / std::chrono::microseconds(1);
@@ -527,8 +526,7 @@ void PluginMgr::DeliverResourceToPluginAsync(const std::list<std::string>& plugi
         dispatchers_[pluginLib]->submit(
             [pluginLib, resData, pluginDispatchFunc] {
                 StartTrace(HITRACE_TAG_OHOS, pluginLib);
-                auto dispatchResData = std::make_shared<ResData>(resData->resType, resData->value, resData->payload);
-                pluginDispatchFunc(dispatchResData);
+                pluginDispatchFunc(std::make_shared<ResData>(resData->resType, resData->value, resData->payload));
                 FinishTrace(HITRACE_TAG_OHOS);
             });
     }
