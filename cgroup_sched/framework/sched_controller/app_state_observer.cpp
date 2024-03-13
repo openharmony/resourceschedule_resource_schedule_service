@@ -182,7 +182,7 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     payload["pid"] = std::to_string(appStateData.pid);
     payload["uid"] = std::to_string(appStateData.uid);
     payload["bundleName"] = appStateData.bundleName;
-    payload["extensionType"] = static_cast<uint32_t>(appStateData.extensionType);
+    payload["extensionType"] = std::to_string(static_cast<uint32_t>(appStateData.extensionType));
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);
 }
 
