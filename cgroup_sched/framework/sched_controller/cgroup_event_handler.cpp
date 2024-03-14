@@ -381,7 +381,7 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_
     procRecord->continuousTaskFlag_ = 0;
     for (const auto& ablityIdAndcontinuousTaskFlag : procRecord->ablityIdAndcontinuousTaskFlagMap_) {
         for (const auto& typeId : ablityIdAndcontinuousTaskFlagMap_.second) {
-             procRecord->continuousTaskFlag_ |= (1U << typeId);
+            procRecord->continuousTaskFlag_ |= (1U << typeId);
         }
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
