@@ -348,13 +348,13 @@ void CgroupEventHandler::HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
     auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecordNonNull(pid);
     procRecord->continuousTaskFlag_ = 0;
-    procRecord->ablityIdAndcontinuousTaskFlagMap_[abilityId] = typeIds;
+    procRecord->abilityIdAndContinuousTaskFlagMap_[abilityId] = typeIds;
     for (const auto& typeId : typeIds) {
         CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, abilityId %{public}d,",
             __func__, uid, pid, typeId, abilityId);
     }
-    for (const auto& ablityIdAndcontinuousTaskFlag : procRecord->ablityIdAndcontinuousTaskFlagMap_) {
-        for (const auto& typeId : ablityIdAndcontinuousTaskFlagMap_.second) {
+    for (const auto& ablityIdAndcontinuousTaskFlag : procRecord->abilityIdAndContinuousTaskFlagMap_) {
+        for (const auto& typeId : ablityIdAndcontinuousTaskFlag.second) {
             procRecord->continuousTaskFlag_ |= (1U << typeId);
         }
     }
@@ -377,10 +377,10 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_
     if (!procRecord) {
         return;
     }
-    procRecord->ablityIdAndcontinuousTaskFlagMap_.erase(abilityId);
+    procRecord->abilityIdAndContinuousTaskFlagMap_.erase(abilityId);
     procRecord->continuousTaskFlag_ = 0;
-    for (const auto& ablityIdAndcontinuousTaskFlag : procRecord->ablityIdAndcontinuousTaskFlagMap_) {
-        for (const auto& typeId : ablityIdAndcontinuousTaskFlagMap_.second) {
+    for (const auto& ablityIdAndcontinuousTaskFlag : procRecord->abilityIdAndContinuousTaskFlagMap_) {
+        for (const auto& typeId : ablityIdAndcontinuousTaskFlag.second) {
             procRecord->continuousTaskFlag_ |= (1U << typeId);
         }
     }
