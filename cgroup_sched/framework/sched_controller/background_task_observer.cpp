@@ -160,10 +160,10 @@ void BackgroundTaskObserver::OnContinuousTaskUpdate(
         auto uid = continuousTaskCallbackInfo->GetCreatorUid();
         auto pid = continuousTaskCallbackInfo->GetCreatorPid();
         auto typeIds = continuousTaskCallbackInfo->GetTypeIds();
-        auto abilityName = continuousTaskCallbackInfo->GetAbilityName();
+        auto abilityId = continuousTaskCallbackInfo->GetAbilityId();
 
-        cgHandler->PostTask([cgHandler, uid, pid, typeIds, abilityName] {
-            cgHandler->HandleContinuousTaskUpdate(uid, pid, typeIds, abilityName);
+        cgHandler->PostTask([cgHandler, uid, pid, typeIds, abilityId] {
+            cgHandler->HandleContinuousTaskUpdate(uid, pid, typeIds, abilityId);
         });
     }
 
