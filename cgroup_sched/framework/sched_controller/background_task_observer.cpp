@@ -111,18 +111,11 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
         auto uid = continuousTaskCallbackInfo->GetCreatorUid();
         auto pid = continuousTaskCallbackInfo->GetCreatorPid();
         auto typeId = continuousTaskCallbackInfo->GetTypeId();
-        auto abilityName = continuousTaskCallbackInfo->GetAbilityName();
-        auto isBatchApi = continuousTaskCallbackInfo->IsBatchApi();
-        if (isBatchApi) {
-            auto typeIds = continuousTaskCallbackInfo->GetTypeIds();
-            cgHandler->PostTask([cgHandler, uid, pid, typeIds, abilityName] {
-                cgHandler->HandleContinuousTaskUpdate(uid, pid, typeIds, abilityName);
-            });
-        } else {
-            cgHandler->PostTask([cgHandler, uid, pid, typeId, abilityName] {
-                cgHandler->HandleContinuousTaskStart(uid, pid, typeId, abilityName);
-            });
-        }
+        auto abilityId = continuousTaskCallbackInfo->GetAbilityId();
+        auto typeIds = continuousTaskCallbackInfo->GetTypeIds();
+        cgHandler->PostTask([cgHandler, uid, pid, typeIds, abilityId] {
+            cgHandler->HandleContinuousTaskUpdate(uid, pid, typeIds, abilityId);
+        });
     }
 
     nlohmann::json payload;
@@ -143,10 +136,10 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
         auto uid = continuousTaskCallbackInfo->GetCreatorUid();
         auto pid = continuousTaskCallbackInfo->GetCreatorPid();
         auto typeId = continuousTaskCallbackInfo->GetTypeId();
-        auto abilityName = continuousTaskCallbackInfo->GetAbilityName();
+        auto abilityId = continuousTaskCallbackInfo->GetAbilityId();
 
-        cgHandler->PostTask([cgHandler, uid, pid, typeId, abilityName] {
-            cgHandler->HandleContinuousTaskCancel(uid, pid, typeId, abilityName);
+        cgHandler->PostTask([cgHandler, uid, pid, typeId, abilityId] {
+            cgHandler->HandleContinuousTaskCancel(uid, pid, typeId, abilityId);
         });
     }
 
