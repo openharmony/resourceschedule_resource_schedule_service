@@ -91,7 +91,8 @@ void BackgroundTaskObserver::MarshallingContinuousTaskCallbackInfo(
     payload["typeId"] = std::to_string(continuousTaskCallbackInfo->GetTypeId());
     payload["abilityId"] = std::to_string(continuousTaskCallbackInfo->GetAbilityId());
     payload["isFromWebview"] = continuousTaskCallbackInfo->IsFromWebview();
-    payload.emplace_back("typeIds", continuousTaskCallbackInfo->GetTypeIds());
+    payload["typeIds"] = nlohmann::json::array;
+    payload["typeIds"].emplace_back(continuousTaskCallbackInfo->GetTypeIds());
 }
 
 void BackgroundTaskObserver::OnContinuousTaskStart(
