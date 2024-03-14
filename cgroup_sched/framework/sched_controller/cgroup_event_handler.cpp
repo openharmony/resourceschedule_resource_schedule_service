@@ -350,7 +350,7 @@ void CgroupEventHandler::HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
     procRecord->continuousTaskFlag_ = 0;
     procRecord->abilityIdAndContinuousTaskFlagMap_[abilityId] = typeIds;
     for (const auto& typeId : typeIds) {
-        CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, abilityId %{public}d,",
+        CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, abilityId %{public}d,",
             __func__, uid, pid, typeId, abilityId);
     }
     for (const auto& ablityIdAndcontinuousTaskFlag : procRecord->abilityIdAndContinuousTaskFlagMap_) {
