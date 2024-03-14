@@ -170,7 +170,7 @@ void BackgroundTaskObserver::OnContinuousTaskUpdate(
     nlohmann::json payload;
     MarshallingContinuousTaskCallbackInfo(continuousTaskCallbackInfo, payload);
     ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_UPDATE, payload);   
+        ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_UPDATE, payload);
 }
 
 void BackgroundTaskObserver::OnRemoteDied(const wptr<IRemoteObject> &object)
