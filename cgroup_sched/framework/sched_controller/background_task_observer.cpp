@@ -110,7 +110,6 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
     if (cgHandler) {
         auto uid = continuousTaskCallbackInfo->GetCreatorUid();
         auto pid = continuousTaskCallbackInfo->GetCreatorPid();
-        auto typeId = continuousTaskCallbackInfo->GetTypeId();
         auto abilityId = continuousTaskCallbackInfo->GetAbilityId();
         auto typeIds = continuousTaskCallbackInfo->GetTypeIds();
         cgHandler->PostTask([cgHandler, uid, pid, typeIds, abilityId] {
