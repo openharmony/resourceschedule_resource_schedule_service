@@ -372,10 +372,7 @@ void CgroupEventHandler:: HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
     }
     ChronoScope cs("HandleContinuousTaskUpdate");
     auto app = supervisor_->GetAppRecordNonNull(uid);
-    auto procRecord = app->GetProcessRecord(pid);
-    if (!procRecord) {
-        return;
-    }
+    auto procRecord = app->GetProcessRecordNonNull(pid);
     procRecord->continuousTaskFlag_ = 0;
     procRecord->ablityIdAndcontinuousTaskFlagMap_[abilityId] = typeIds;
     for (const auto& typeId : typeIds) {
