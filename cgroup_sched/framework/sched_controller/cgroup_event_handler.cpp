@@ -337,7 +337,7 @@ void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, const std:
     procRecord->runningTransientTask_ = false;
 }
 
-void CgroupEventHandler:: HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
+void CgroupEventHandler::HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
     const std::vector<uint32_t>& typeIds, int32_t abilityId)
 {
     if (!supervisor_) {
@@ -355,7 +355,7 @@ void CgroupEventHandler:: HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
     }
     for (const auto& ablityIdAndcontinuousTaskFlag : procRecord->ablityIdAndcontinuousTaskFlagMap_) {
         for (const auto& typeId : ablityIdAndcontinuousTaskFlagMap_.second) {
-             procRecord->continuousTaskFlag_ |= (1U << typeId);
+            procRecord->continuousTaskFlag_ |= (1U << typeId);
         }
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
