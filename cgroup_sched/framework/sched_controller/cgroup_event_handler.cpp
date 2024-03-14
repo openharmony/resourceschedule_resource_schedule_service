@@ -360,7 +360,7 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_
         }
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-        AdjustSource::ADJS_CONTINUOUS_BEGIN);
+        AdjustSource::ADJS_CONTINUOUS_END);
 }
 
 void CgroupEventHandler:: HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
@@ -385,7 +385,7 @@ void CgroupEventHandler:: HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
         }
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-        AdjustSource::ADJS_CONTINUOUS_END);    
+        AdjustSource::ADJS_CONTINUOUS_BEGIN);
 }
 
 void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilityToken,
