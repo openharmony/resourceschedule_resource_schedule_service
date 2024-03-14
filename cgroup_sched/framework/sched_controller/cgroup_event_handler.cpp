@@ -337,45 +337,34 @@ void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, const std:
     procRecord->runningTransientTask_ = false;
 }
 
-void CgroupEventHandler::HandleContinuousTaskStart(uid_t uid, pid_t pid, int32_t typeId,
-    const std::string& abilityName)
-{
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        return;
-    }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}s",
-        __func__, uid, pid, typeId, abilityName.c_str());
-    ChronoScope cs("HandleContinuousTaskStart");
-    auto app = supervisor_->GetAppRecordNonNull(uid);
-    auto procRecord = app->GetProcessRecordNonNull(pid);
-    procRecord->continuousTaskFlag_ |= (1U << typeId);
-    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-        AdjustSource::ADJS_CONTINUOUS_BEGIN);
-}
-
 void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId,
-    const std::string& abilityName)
+    int32_t abilityId)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}s",
-        __func__, uid, pid, typeId, abilityName.c_str());
+    CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d",
+        __func__, uid, pid, typeId, abilityId);
     ChronoScope cs("HandleContinuousTaskCancel");
     auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecord(pid);
     if (!procRecord) {
         return;
     }
-    procRecord->continuousTaskFlag_ &= ~(1U << typeId);
+    procRecord->ablityIdAndcontinuousTaskFlagMap_.erase(abilityId);
+    procRecord->continuousTaskFlag_ = 0;
+    for (const auto& ablityIdAndcontinuousTaskFlag : procRecord->ablityIdAndcontinuousTaskFlagMap_) {
+        for (const auto& typeId : ablityIdAndcontinuousTaskFlagMap_.second) {
+             procRecord->continuousTaskFlag_ |= (1U << typeId);
+        }
+    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-        AdjustSource::ADJS_CONTINUOUS_END);
+        AdjustSource::ADJS_CONTINUOUS_BEGIN);
 }
 
 void CgroupEventHandler:: HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
-    const std::vector<uint32_t>& typeIds, const std::string& abilityName)
+    const std::vector<uint32_t>& typeIds, int32_t abilityId)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -388,10 +377,15 @@ void CgroupEventHandler:: HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
         return;
     }
     procRecord->continuousTaskFlag_ = 0;
+    procRecord->ablityIdAndcontinuousTaskFlagMap_[abilityId] = typeIds;
     for (const auto& typeId : typeIds) {
         CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, ",
             __func__, uid, pid, typeId);
-        procRecord->continuousTaskFlag_ &= ~(1U << typeId);
+    }
+    for (const auto& ablityIdAndcontinuousTaskFlag : procRecord->ablityIdAndcontinuousTaskFlagMap_) {
+        for (const auto& typeId : ablityIdAndcontinuousTaskFlagMap_.second) {
+             procRecord->continuousTaskFlag_ |= (1U << typeId);
+        }
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_CONTINUOUS_END);    
