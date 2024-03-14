@@ -89,14 +89,9 @@ void BackgroundTaskObserver::MarshallingContinuousTaskCallbackInfo(
     payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();
     payload["isBatchApi"] =  std::to_string(continuousTaskCallbackInfo->IsBatchApi());
     payload["typeId"] = std::to_string(continuousTaskCallbackInfo->GetTypeId());
-    auto typeIds = continuousTaskCallbackInfo->GetTypeIds();
-    payload["typeIdSize"] = std::to_string(typeIds.size());
-    for (uint32_t i = 0; i < typeIds.size(); i++) {
-        std::string typeId = "typeId" + std::to_string(i);
-        payload[typeId] = std::to_string(typeIds[i]);
-    }
     payload["abilityId"] = std::to_string(continuousTaskCallbackInfo->GetAbilityId());
     payload["isFromWebview"] = continuousTaskCallbackInfo->IsFromWebview();
+    payload.emplace_back("typeIds", continuousTaskCallbackInfo->GetTypeIds());
 }
 
 void BackgroundTaskObserver::OnContinuousTaskStart(
