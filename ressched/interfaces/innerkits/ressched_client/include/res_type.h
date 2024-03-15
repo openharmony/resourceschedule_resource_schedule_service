@@ -336,6 +336,7 @@ enum TransientTaskStatus : int64_t {
 enum ContinuousTaskStatus : int64_t {
     CONTINUOUS_TASK_START = 0,
     CONTINUOUS_TASK_END = 1,
+    CONTINUOUS_TASK_UPDATE = 2,
 };
 
 /**

@@ -123,6 +123,7 @@ public:
 
     std::map<uint32_t, bool> runningLockState_;
     std::map<int32_t, bool> avCodecState_;
+    std::unordered_map<int32_t, std::vector<uint32_t>> abilityIdAndContinuousTaskFlagMap_;
     std::vector<std::shared_ptr<AbilityInfo>> abilities_;
     std::vector<std::shared_ptr<WindowInfo>> windows_;
 
