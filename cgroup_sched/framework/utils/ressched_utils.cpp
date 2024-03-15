@@ -60,13 +60,11 @@ void ResSchedUtils::LoadUtils()
 
     reportAppStateFunc_ = reinterpret_cast<ReportAppStateFunc>(dlsym(handle, "ReportAppStateInProcess"));
     if (!reportAppStateFunc_) {
-        CGS_LOGW("%{public}s load function:ReportAppStateInProcess failed!", __func__);
+        CGS_LOGW("%{public}s load function:ReportAppStateInProcess failed! Due to %{public}s", __func__, dlerror());
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
                         "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "ResSchedUtils don't found dlsym " + RES_SCHED_SERVICE_SO + "!");
-        dlclose(handle);
-        return;
     }
 }
 

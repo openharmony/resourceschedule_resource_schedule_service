@@ -19,7 +19,6 @@
 #include <functional>
 
 #include "js_napi_utils.h"
-#include "js_systemload_listener.h"
 #include "res_sched_client.h"
 #include "res_sched_log.h"
 
@@ -34,6 +33,12 @@ Systemload& Systemload::GetInstance()
 {
     static Systemload systemload;
     return systemload;
+}
+
+Systemload::~Systemload()
+{
+    std::lock_guard<std::mutex> autoLock(jsCallbackMapLock_);
+    jsCallBackMap_.clear();
 }
 
 napi_value Systemload::SystemloadOn(napi_env env, napi_callback_info info)
@@ -59,7 +64,7 @@ void Systemload::OnSystemloadLevel(napi_env env, int32_t level)
         RESSCHED_LOGE("OnSystemloadLevel cb type has not register yet.");
         return;
     }
-    auto* cbInfo = new (std::nothrow) SystemloadLevelCbInfo;
+    std::unique_ptr<SystemloadLevelCbInfo> cbInfo = std::make_unique<SystemloadLevelCbInfo>(env);
     if (cbInfo == nullptr) {
         RESSCHED_LOGE("OnSystemloadLevel cbInfo null.");
         return;
@@ -70,14 +75,15 @@ void Systemload::OnSystemloadLevel(napi_env env, int32_t level)
         napi_create_string_latin1(env, "OnSystemloadLevel", NAPI_AUTO_LENGTH, &resourceName));
 
     NAPI_CALL_RETURN_VOID(env,
-        napi_create_reference(env, jsCallBackMap_[SYSTEMLOAD_LEVEL]->GetNapiValue(), 1, &cbInfo->callback));
+        napi_create_reference(env, jsCallBackMap_[SYSTEMLOAD_LEVEL].first->GetNapiValue(), 1, &cbInfo->callback));
 
     NAPI_CALL_RETURN_VOID(env, napi_create_async_work(env, nullptr, resourceName,
         [] (napi_env env, void* data) {},
         CompleteCb,
-        static_cast<void *>(cbInfo),
+        static_cast<void *>(cbInfo.get()),
         &cbInfo->asyncWork));
     NAPI_CALL_RETURN_VOID(env, napi_queue_async_work(env, cbInfo->asyncWork));
+    cbInfo.release();
     napi_value result = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_get_null(env, &result));
     RESSCHED_LOGI("OnSystemloadLevel asyncCallback end");
@@ -94,6 +100,11 @@ napi_value Systemload::RegisterSystemloadCallback(napi_env env, napi_callback_in
         return CreateJsUndefined(env);
     }
 
+    if (cbType != SYSTEMLOAD_LEVEL) {
+        RESSCHED_LOGE("Register cbType not systemLoadChange.");
+        return CreateJsUndefined(env);
+    }
+
     napi_ref tempRef = nullptr;
     napi_create_reference(env, jsCallback, 1, &tempRef);
     std::unique_ptr<NativeReference> callbackRef;
@@ -105,13 +116,15 @@ napi_value Systemload::RegisterSystemloadCallback(napi_env env, napi_callback_in
         RESSCHED_LOGE("Register Systemload listener nullptr.");
         return CreateJsUndefined(env);
     }
-    ResSchedClient::GetInstance().RegisterSystemloadNotifier(cbType, systemloadListener);
-    std::lock_guard<std::mutex> autoLock(jsCallbackMapLock_);
-    if (jsCallBackMap_.find(cbType) != jsCallBackMap_.end()) {
-        RESSCHED_LOGW("Register a exist callback type.");
-        return CreateJsUndefined(env);
+    {
+        std::lock_guard<std::mutex> autoLock(jsCallbackMapLock_);
+        if (jsCallBackMap_.find(cbType) != jsCallBackMap_.end()) {
+            RESSCHED_LOGW("Register a exist callback type.");
+            return CreateJsUndefined(env);
+        }
+        jsCallBackMap_[cbType] = { std::move(callbackRef), systemloadListener };
     }
-    jsCallBackMap_[cbType] = std::move(callbackRef);
+    ResSchedClient::GetInstance().RegisterSystemloadNotifier(systemloadListener);
     return CreateJsUndefined(env);
 }
 
@@ -122,22 +135,31 @@ napi_value Systemload::UnRegisterSystemloadCallback(napi_env env, napi_callback_
     napi_value jsCallback = nullptr;
 
     if (!CheckCallbackParam(env, info, cbType, &jsCallback)) {
-        RESSCHED_LOGE("Register Systemload Callback parameter error.");
+        RESSCHED_LOGE("UnRegister Systemload Callback parameter error.");
         return CreateJsUndefined(env);
     }
 
-    ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(cbType);
-    std::lock_guard<std::mutex> autoLock(jsCallbackMapLock_);
-    if (jsCallBackMap_.find(cbType) != jsCallBackMap_.end()) {
+    if (cbType != SYSTEMLOAD_LEVEL) {
+        RESSCHED_LOGE("UnRegister cbType not systemLoadChange.");
+        return CreateJsUndefined(env);
+    }
+
+    {
+        std::lock_guard<std::mutex> autoLock(jsCallbackMapLock_);
+        if (jsCallBackMap_.find(cbType) == jsCallBackMap_.end()) {
+            RESSCHED_LOGE("unRegister cbType has not registered");
+            return CreateJsUndefined(env);
+        }
         jsCallBackMap_.erase(cbType);
     }
+    ResSchedClient::GetInstance().UnRegisterSystemloadNotifier();
     return CreateJsUndefined(env);
 }
 
 napi_value Systemload::GetSystemloadLevel(napi_env env, napi_callback_info info)
 {
     RESSCHED_LOGI("GetSystemloadLevel, promise.");
-    auto* cbInfo = new (std::nothrow) SystemloadLevelCbInfo;
+    std::unique_ptr<SystemloadLevelCbInfo> cbInfo = std::make_unique<SystemloadLevelCbInfo>(env);
     if (cbInfo == nullptr) {
         return CreateJsUndefined(env);
     }
@@ -151,9 +173,10 @@ napi_value Systemload::GetSystemloadLevel(napi_env env, napi_callback_info info)
     NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName,
         Execute,
         Complete,
-        static_cast<void *>(cbInfo),
+        static_cast<void *>(cbInfo.get()),
         &cbInfo->asyncWork));
     NAPI_CALL(env, napi_queue_async_work(env, cbInfo->asyncWork));
+    cbInfo.release();
     RESSCHED_LOGI("GetSystemloadLevel, promise end");
     return promise;
 }
@@ -172,29 +195,30 @@ void Systemload::Execute(napi_env env, void* data)
 
 void Systemload::Complete(napi_env env, napi_status status, void* data)
 {
-    RESSCHED_LOGI("GetSystemloadLevel,  main event thread complete.");
-    auto* cbInfo = static_cast<SystemloadLevelCbInfo*>(data);
-    if (cbInfo == nullptr) {
+    RESSCHED_LOGI("GetSystemloadLevel, main event thread complete.");
+    auto* info = static_cast<SystemloadLevelCbInfo*>(data);
+    if (info == nullptr) {
         RESSCHED_LOGW("GetSystemloadLevel Complete cb info is nullptr.");
         return;
     }
+    std::unique_ptr<SystemloadLevelCbInfo> cbInfo(info);
     napi_value result = nullptr;
     napi_create_uint32(env, static_cast<uint32_t>(cbInfo->result), &result);
     NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, cbInfo->deferred, result));
     NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, cbInfo->asyncWork));
-    delete cbInfo;
-    cbInfo = nullptr;
+    cbInfo->asyncWork = nullptr;
     RESSCHED_LOGI("GetSystemloadLevel,  main event thread complete end.");
 }
 
 void Systemload::CompleteCb(napi_env env, napi_status status, void* data)
 {
     RESSCHED_LOGI("CompleteCb, main event thread complete callback.");
-    auto* cbInfo = static_cast<SystemloadLevelCbInfo*>(data);
-    if (cbInfo == nullptr) {
-        RESSCHED_LOGW("GetSystemloadLevel Complete cb info is nullptr.");
+    auto* info = static_cast<SystemloadLevelCbInfo*>(data);
+    if (info == nullptr) {
+        RESSCHED_LOGW("Complete cb info is nullptr.");
         return;
     }
+    std::unique_ptr<SystemloadLevelCbInfo> cbInfo(info);
     napi_value callback = nullptr;
     napi_value undefined = nullptr;
     napi_value result = nullptr;
@@ -206,11 +230,11 @@ void Systemload::CompleteCb(napi_env env, napi_status status, void* data)
     NAPI_CALL_RETURN_VOID(env, napi_call_function(env, undefined, callback, 1, &result, &callResult));
     // delete resources
     NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, cbInfo->asyncWork));
+    cbInfo->asyncWork = nullptr;
     if (cbInfo->callback != nullptr) {
         NAPI_CALL_RETURN_VOID(env, napi_delete_reference(env, cbInfo->callback));
+        cbInfo->callback = nullptr;
     }
-    delete cbInfo;
-    cbInfo = nullptr;
     RESSCHED_LOGI("CompleteCb, main event thread complete end.");
 }
 
@@ -237,7 +261,7 @@ bool Systemload::CheckCallbackParam(napi_env env, napi_callback_info info,
     bool isCallable = false;
     napi_is_callable(env, *jsCallback, &isCallable);
     if (!isCallable) {
-        RESSCHED_LOGE("Parameter error. The type of \"callback\" must be Callback<Array<ContinuationResult>>");
+        RESSCHED_LOGE("Parameter error. The type of \"callback\" must be Callback");
         return false;
     }
     return true;

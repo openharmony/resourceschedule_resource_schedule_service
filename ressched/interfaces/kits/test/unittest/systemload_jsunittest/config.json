@@ -1,0 +1,66 @@
+{
+  "app": {
+    "bundleName": "com.example.test",
+    "vendor": "example",
+    "version": {
+      "code": 1,
+      "name": "1.0"
+    },
+    "apiVersion": {
+      "compatible": 7,
+      "target": 8
+    }
+  },
+  "deviceConfig": {},
+  "module": {
+    "package": "com.example.test",
+    "name": ".MyApplication",
+    "deviceType": [
+      "tablet",
+      "default",
+      "phone",
+      "2in1"
+    ],
+    "distro": {
+      "deliveryWithInstall": true,
+      "moduleName": "entry",
+      "moduleType": "entry"
+    },
+    "abilities": [
+      {
+        "visible": true,
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          }
+        ],
+        "backgroundModes": [
+          "dataTransfer"
+        ],
+        "name": "com.example.test.MainAbility",
+        "icon": "$media:icon",
+        "description": "$string:mainability_description",
+        "label": "MyApplication",
+        "type": "page",
+        "launchType": "standard"
+      }
+    ],
+    "js": [
+      {
+        "pages": [
+          "pages/index/index"
+        ],
+        "name": "default",
+        "window": {
+          "designWidth": 720,
+          "autoDesignWidth": false
+        }
+      }
+    ]
+  }
+}

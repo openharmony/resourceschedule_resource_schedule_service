@@ -31,7 +31,6 @@ namespace {
     #define PAYLOAD_MAX_SIZE 4096
     constexpr int32_t MEMMGR_UID = 1111;
     constexpr int32_t SAMGR_UID = 5555;
-    const std::string SYSTEMLOAD_CHANGE = "systemLoadChange";
     static const std::unordered_set<uint32_t> scbRes = {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
@@ -101,8 +100,7 @@ namespace {
         ResType::RES_TYPR_SCREEN_COLLABROATION,
         ResType::RES_TYPE_SA_CONTROL_APP_EVENT,
         ResType::RES_TYPE_SYSTEM_CPU_LOAD,
-        ResType::RES_TYPE_DOWNLOAD,
-        ResType::RES_TYPE_UPLOAD,
+        ResType::RES_TYPE_UPLOAD_DOWNLOAD,
         ResType::RES_TYPE_SPLIT_SCREEN,
         ResType::RES_TYPE_FLOATING_WINDOW,
     };
@@ -242,18 +240,12 @@ void ResSchedServiceStub::RegisterSystemloadNotifierInner(MessageParcel& data,
         RESSCHED_LOGE("Register invalid token.");
         return;
     }
-    std::string cbType;
-    READ_PARCEL(data, String, cbType, , ResSchedServiceStub);
-    if (cbType != SYSTEMLOAD_CHANGE) {
-        RESSCHED_LOGE("Register wrong systemload type.");
-        return;
-    }
     sptr<IRemoteObject> notifier = data.ReadRemoteObject();
     if (notifier == nullptr) {
         RESSCHED_LOGE("ResSchedServiceStub Read notifier fail.");
         return;
     }
-    RegisterSystemloadNotifier(cbType, notifier);
+    RegisterSystemloadNotifier(notifier);
 }
 
 void ResSchedServiceStub::UnRegisterSystemloadNotifierInner(MessageParcel& data,
@@ -263,13 +255,7 @@ void ResSchedServiceStub::UnRegisterSystemloadNotifierInner(MessageParcel& data,
         RESSCHED_LOGE("UnRegister invalid token.");
         return;
     }
-    std::string cbType;
-    READ_PARCEL(data, String, cbType, , ResSchedServiceStub);
-    if (cbType != SYSTEMLOAD_CHANGE) {
-        RESSCHED_LOGE("UnRegister wrong systemload type.");
-        return;
-    }
-    UnRegisterSystemloadNotifier(cbType);
+    UnRegisterSystemloadNotifier();
 }
 
 int32_t ResSchedServiceStub::GetSystemloadLevelInner(MessageParcel& data, MessageParcel& reply)
@@ -279,7 +265,10 @@ int32_t ResSchedServiceStub::GetSystemloadLevelInner(MessageParcel& data, Messag
         return ERR_RES_SCHED_PARCEL_ERROR;
     }
     int32_t level = GetSystemloadLevel();
-    reply.WriteInt32(level);
+    if (!reply.WriteInt32(level)) {
+        RESSCHED_LOGE("GetSystemload level write reply failed.");
+        return ERR_RES_SCHED_PARCEL_ERROR;
+    }
     return ERR_OK;
 }
 

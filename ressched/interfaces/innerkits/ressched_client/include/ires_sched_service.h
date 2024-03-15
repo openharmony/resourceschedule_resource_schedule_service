@@ -44,17 +44,14 @@ public:
     /**
      * @brief Register systemload remote listener.
      *
-     * @param cbType callback type string
      * @param notifier remote listener object
      */
-    virtual void RegisterSystemloadNotifier(const std::string& cbType, const sptr<IRemoteObject>& notifier) = 0;
+    virtual void RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier) = 0;
 
     /**
      * @brief UnRegister systemload remote listener.
-     *
-     * @param cbType callback type string
      */
-    virtual void UnRegisterSystemloadNotifier(const std::string& cbType) = 0;
+    virtual void UnRegisterSystemloadNotifier() = 0;
 
     /**
      * @brief client get systemload level.

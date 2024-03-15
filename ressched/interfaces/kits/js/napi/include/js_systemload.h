@@ -21,23 +21,42 @@
 #include <string>
 #include <map>
 
+#include "js_systemload_listener.h"
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
 #include "native_engine/native_engine.h"
+#include "refbase.h"
 #include "single_instance.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 class Systemload {
-    DECLARE_SINGLE_INSTANCE(Systemload);
+    DECLARE_SINGLE_INSTANCE_BASE(Systemload);
 public:
     struct SystemloadLevelCbInfo {
-        napi_ref callback;
-        napi_async_work asyncWork;
-        napi_deferred deferred;
+        explicit SystemloadLevelCbInfo(napi_env env)
+            : nativeEnv(env) {}
+        ~SystemloadLevelCbInfo()
+        {
+            if (nativeEnv) {
+                if (callback) {
+                    napi_delete_reference(nativeEnv, callback);
+                    callback = nullptr;
+                }
+                if (asyncWork) {
+                    napi_delete_async_work(nativeEnv, asyncWork);
+                    asyncWork = nullptr;
+                }
+            }
+        }
+        napi_ref callback = nullptr;
+        napi_async_work asyncWork = nullptr;
+        napi_deferred deferred = nullptr;
+        napi_env nativeEnv = nullptr;
         int32_t result = 0;
     };
 
+    using CallBackPair = std::pair<std::unique_ptr<NativeReference>, sptr<SystemloadListener>>;
     // static function
     static napi_value SystemloadOn(napi_env env, napi_callback_info info);
     static napi_value SystemloadOff(napi_env env, napi_callback_info info);
@@ -45,6 +64,8 @@ public:
 
     void OnSystemloadLevel(napi_env env, int32_t level);
 private:
+    Systemload() = default;
+    ~Systemload();
     napi_value RegisterSystemloadCallback(napi_env env, napi_callback_info info);
     napi_value UnRegisterSystemloadCallback(napi_env env, napi_callback_info info);
     napi_value GetSystemloadLevel(napi_env env, napi_callback_info info);
@@ -55,7 +76,7 @@ private:
     static void CompleteCb(napi_env env, napi_status status, void* data);
 
     std::mutex jsCallbackMapLock_;
-    std::map<std::string, std::unique_ptr<NativeReference>> jsCallBackMap_;
+    std::map<std::string, CallBackPair> jsCallBackMap_;
 };
 } // ResourceSchedule
 } // OHOS

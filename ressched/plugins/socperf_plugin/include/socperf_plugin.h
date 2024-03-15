@@ -55,7 +55,7 @@ private:
     void HandleWebSlideNormal(const std::shared_ptr<ResData>& data);
     void HandleLoadUrl(const std::shared_ptr<ResData>& data);
     void HandleMousewheel(const std::shared_ptr<ResData>& data);
-    void HandleAppStateChange(const std::shared_ptr<ResData>& data);
+    bool HandleAppStateChange(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

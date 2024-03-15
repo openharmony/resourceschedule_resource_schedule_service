@@ -55,14 +55,14 @@ int32_t ResSchedService::KillProcess(const nlohmann::json& payload)
 
 }
 
-void ResSchedService::RegisterSystemloadNotifier(const std::string& cbType, const sptr<IRemoteObject>& notifier)
+void ResSchedService::RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier)
 {
-    NotifierMgr::GetInstance().RegisterNotifier(IPCSkeleton::GetCallingPid(), cbType, notifier);
+    NotifierMgr::GetInstance().RegisterNotifier(IPCSkeleton::GetCallingPid(), notifier);
 }
 
-void ResSchedService::UnRegisterSystemloadNotifier(const std::string& cbType)
+void ResSchedService::UnRegisterSystemloadNotifier()
 {
-    NotifierMgr::GetInstance().UnRegisterNotifier(IPCSkeleton::GetCallingPid(), cbType);
+    NotifierMgr::GetInstance().UnRegisterNotifier(IPCSkeleton::GetCallingPid());
 }
 
 int32_t ResSchedService::GetSystemloadLevel()
@@ -70,9 +70,9 @@ int32_t ResSchedService::GetSystemloadLevel()
     return NotifierMgr::GetInstance().GetSystemloadLevel();
 }
 
-void ResSchedService::OnDeviceLevelChanged(int32_t type, int32_t level, std::string& action)
+void ResSchedService::OnDeviceLevelChanged(int32_t type, int32_t level)
 {
-    NotifierMgr::GetInstance().OnDeviceLevelChanged(type, level, action);
+    NotifierMgr::GetInstance().OnDeviceLevelChanged(type, level);
 }
 
 bool ResSchedService::AllowDump()
@@ -121,6 +121,8 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
             DumpProcessEventState(result);
         } else if (argsInStr[DUMP_OPTION] == "getProcessWindowInfo") {
             DumpProcessWindowInfo(result);
+        } else if (argsInStr[DUMP_OPTION] == "getSystemloadInfo") {
+            DumpSystemLoadInfo(result);
         } else {
             result.append("Error params.");
         }
@@ -233,6 +235,27 @@ void ResSchedService::DumpProcessEventState(std::string &result)
                 .append(", screenCaptureStatus:").append(ToString(process->screenCaptureState_)).append("\n");
         }
     }
+}
+
+void ResSchedService::DumpSystemLoadInfo(std::string &result)
+{
+    result.append("systemloadLevel:")
+        .append(ToString(NotifierMgr::GetInstance().GetSystemloadLevel()))
+        .append("\n");
+    auto notifierInfo = NotifierMgr::GetInstance().DumpRegisterInfo();
+    std::string native("natives:");
+    std::string hap("apps:");
+    for (auto& info : notifierInfo) {
+        std::string str = ToString(info.first).append(" ");
+        if (info.second) {
+            hap.append(str);
+        } else {
+            native.append(str);
+        }
+    }
+    hap.append("\n");
+    native.append("\n");
+    result.append(native).append(hap);
 }
 
 void ResSchedService::DumpUsage(std::string &result)

@@ -30,29 +30,38 @@
 namespace OHOS {
 namespace ResourceSchedule {
 class NotifierMgr {
-    DECLARE_SINGLE_INSTANCE(NotifierMgr);
+    DECLARE_SINGLE_INSTANCE_BASE(NotifierMgr);
 public:
-    using NotifierMap = std::map<int32_t, std::map<std::string, sptr<IRemoteObject>>>;
+    struct NotifierInfo {
+        sptr<IRemoteObject> notifier = nullptr;
+        bool hapApp = false;
+    };
+    using NotifierMap = std::map<int32_t, NotifierInfo>;
     void Init();
-    void RegisterNotifier(int32_t pid, const std::string& cbType, const sptr<IRemoteObject>& notifier);
-    void UnRegisterNotifier(int32_t pid, const std::string& cbType);
-    void RemoteNotifierDied(const sptr<IRemoteObject>& notifier);
-    void OnDeviceLevelChanged(int32_t type, int32_t level, std::string& action);
+    void RegisterNotifier(int32_t pid, const sptr<IRemoteObject>& notifier);
+    void UnRegisterNotifier(int32_t pid);
+    void OnRemoteNotifierDied(const sptr<IRemoteObject>& notifier);
+    void OnDeviceLevelChanged(int32_t type, int32_t level);
     void OnApplicationStateChange(int32_t state, int32_t pid);
     int32_t GetSystemloadLevel();
+    std::vector<std::pair<int32_t, bool>> DumpRegisterInfo();
 private:
+    NotifierMgr() = default;
+    ~NotifierMgr();
     void RemoveNotifierLock(const sptr<IRemoteObject>& notifier);
-    void OnDeviceLevelChangedLock(const std::string& cbType, int32_t level, std::string& action);
+    void OnDeviceLevelChangedLock(int32_t level);
+    void HandleDeviceLevelChange(std::vector<sptr<IRemoteObject>>& notifierVec, int32_t level);
+    bool IsHapApp();
 
-    bool initialized = false;
+    bool initialized_ = false;
     std::mutex notifierMutex_;
     NotifierMap notifierMap_;
-    std::mutex pidSetMutex;
+    std::mutex pidSetMutex_;
     std::set<int32_t> fgPidSet_;
     ResType::SystemloadLevel systemloadLevel_ = ResType::SystemloadLevel::LOW;
     sptr<IRemoteObject::DeathRecipient> notifierDeathRecipient_ = nullptr;
     std::shared_ptr<ffrt::queue> notifierHandler_ = nullptr;
 };
-} // OHOS
 } // ResourceSchedule
+} // OHOS
 #endif // RESSCHED_SERVICES_RESSCHEDMGR_RESSCHEDFWK_INCLUDE_NOTIFIER_MGR_H

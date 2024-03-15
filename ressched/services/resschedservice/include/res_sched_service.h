@@ -29,13 +29,13 @@ public:
 
     int32_t KillProcess(const nlohmann::json& payload) override;
 
-    void RegisterSystemloadNotifier(const std::string& cbType, const sptr<IRemoteObject>& notifier) override;
+    void RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier) override;
 
-    void UnRegisterSystemloadNotifier(const std::string& cbType) override;
+    void UnRegisterSystemloadNotifier() override;
 
     int32_t GetSystemloadLevel() override;
 
-    void OnDeviceLevelChanged(int32_t type, int32_t level, std::string& action);
+    void OnDeviceLevelChanged(int32_t type, int32_t level);
 
     int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
 
@@ -44,6 +44,8 @@ public:
     void DumpProcessWindowInfo(std::string &result);
 
     void DumpProcessEventState(std::string &result);
+
+    void DumpSystemLoadInfo(std::string &result);
 
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedService);

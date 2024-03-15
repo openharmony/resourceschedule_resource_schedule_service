@@ -13,21 +13,22 @@
  * limitations under the License.
  */
 
-#include "js_systemload_listener.h"
+
+#ifndef RESSCHED_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_NOTIFIER_MGR_TEST_H
+#define RESSCHED_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_NOTIFIER_MGR_TEST_H
+
+#include "gtest/gtest.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-SystemloadListener::SystemloadListener(napi_env env, OnSystemloadLevelCb callback)
-    : napiEnv_(env), systemloadLevelCb_(callback)
-{
-}
+class NotifierMgrTest : public testing::Test {
+public:
+    static void SetUpTestCase();
+    static void TearDownTestCase();
+    void SetUp();
+    void TearDown();
+};
+} // namespace ResourceSchedule
+} // namespace OHOS
 
-void SystemloadListener::OnSystemloadLevel(int32_t level)
-{
-    if (napiEnv_ == nullptr || systemloadLevelCb_ == nullptr) {
-        return;
-    }
-    systemloadLevelCb_(napiEnv_, level);
-}
-} // ResourceSchedule
-} // OHOS
+#endif // RESSCHED_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_NOTIFIER_MGR_TEST_H

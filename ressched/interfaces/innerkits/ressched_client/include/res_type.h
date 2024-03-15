@@ -188,14 +188,12 @@ enum : uint32_t {
     RES_TYPE_SA_CONTROL_APP_EVENT = 76,
     // report CPU load of the entire machine，payload:cpuPercent
     RES_TYPE_SYSTEM_CPU_LOAD = 77,
-    // report download scene,value 0 enter scene 1 exit scene.
-    RES_TYPE_DOWNLOAD = 78,
-    // report UPLOAD scene，value 0 enter scene 1 exit scene.
-    RES_TYPE_UPLOAD = 79,
+    // report download or upload scene,value 0 enter scene 1 exit scene.
+    RES_TYPE_UPLOAD_DOWNLOAD = 78,
     // report main screen split，value 0 enter scene 1 exit scene.
-    RES_TYPE_SPLIT_SCREEN = 80,
+    RES_TYPE_SPLIT_SCREEN = 79,
     // report main screen floating window，value 0 enter scene 1 exit scene.
-    RES_TYPE_FLOATING_WINDOW = 81,
+    RES_TYPE_FLOATING_WINDOW = 80,
     //last resType
     RES_TYPE_LAST,
 };
@@ -279,8 +277,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPR_SCREEN_COLLABROATION, "RES_TYPR_SCREEN_COLLABROATION" },
     { RES_TYPE_SA_CONTROL_APP_EVENT, "RES_TYPE_SA_CONTROL_APP_EVENT" },
     { RES_TYPE_SYSTEM_CPU_LOAD, "RES_TYPE_SYSTEM_CPU_LOAD" },
-    { RES_TYPE_DOWNLOAD, "RES_TYPE_DOWNLOAD" },
-    { RES_TYPE_UPLOAD, "RES_TYPE_UPLOAD" },
+    { RES_TYPE_UPLOAD_DOWNLOAD, "RES_TYPE_UPLOAD_DOWNLOAD" },
     { RES_TYPE_SPLIT_SCREEN, "RES_TYPE_SPLIT_SCREEN" },
     { RES_TYPE_FLOATING_WINDOW, "RES_TYPE_FLOATING_WINDOW" },
 };
@@ -642,25 +639,18 @@ enum CollabroationServiceStatus : int64_t {
  * @brief sa control app status
  */
 enum SaControlAppStatus : int64_t {
-    SA_START_APP = 0,
-    SA_STOP_APP = 0,
+    SA_START_APP,
+    SA_STOP_APP,
 };
 
 /**
  * @brief Key Download Scene status
  */
-enum KeyDownloadStatus : int64_t {
-    ENTER_DOWNLOAD_SCENE = 0,
-    EXIT_DOWNLOAD__SCENE = 1,
+enum KeyUploadOrDownloadStatus : int64_t {
+    ENTER_UPLOAD_DOWNLOAD_SCENE = 0,
+    EXIT_UPLOAD_DOWNLOAD__SCENE = 1,
 };
 
-/**
- * @brief Key Upload Scene status
- */
-enum KeyUploadStatus : int64_t {
-    ENTER_UPLOAD_SCENE = 0,
-    EXIT_UPLOAD_SCENE = 1,
-};
 
 /**
  * @brief Key Split Screen Scene status
@@ -676,6 +666,16 @@ enum KeySplitScreenStatus : int64_t {
 enum KeyFloatingWindowStatus : int64_t {
     ENTER_FLOATING_WINDOW_SCENE = 0,
     EXIT_FLOATING_WINDOW_SCENE = 1,
+};
+
+/**
+ * @brief ui sensitive extension
+ */
+const std::vector<int32_t > UI_SENSITIVE_EXTENSION = {
+    2, // INPUT_EXTENSION_TYPE
+    255, // UNSPECIFIED_EXTENSION_TYPE
+    256, // UI_EXTENSION_TYPE
+    500 // SYS_COMMON_UI_TYPE
 };
 
 /**

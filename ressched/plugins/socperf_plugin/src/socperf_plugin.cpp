@@ -29,6 +29,8 @@ namespace {
     const std::string PLUGIN_NAME = "SOCPERF";
     const std::string CONFIG_NAME_SOCPERF_FEATURE_SWITCH = "socperfFeatureSwitch";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND = "socperf_on_demand";
+    const std::string EXTENSION_TYPE_KEY = "extensionType";
+    const int32_t INVALID_VALUE                             = -1;
     const int32_t PERF_REQUEST_CMD_ID_APP_START             = 10000;
     const int32_t PERF_REQUEST_CMD_ID_WARM_START            = 10001;
     const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH         = 10002;
@@ -155,6 +157,20 @@ bool SocPerfPlugin::InitFeatureSwitch(std::string featureName)
     return false;
 }
 
+static int32_t ParsePayload(const std::shared_ptr<ResData>& data, const std::string& key)
+{
+    if (!data->payload.contains(key)) {
+        return INVALID_VALUE;
+    }
+    if (data->payload.at(key).is_string()) {
+        return atoi(data->payload[key].get<std::string>().c_str());
+    }
+    if (data->payload.at(key).is_number_integer()) {
+        return data->payload[key].get<int32_t>();
+    }
+    return INVALID_VALUE;
+}
+
 void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 {
     if (data->value == AppStartType::APP_COLD_START) {
@@ -204,7 +220,7 @@ void SocPerfPlugin::HandlePopPage(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
-    SOC_PERF_LOGI("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
     if (data->value == SlideEventStatus::SLIDE_EVENT_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, true, "");
     } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
@@ -221,7 +237,7 @@ void SocPerfPlugin::HandleEventWebGesture(const std::shared_ptr<ResData>& data)
     if (data == nullptr) {
         return;
     }
-    SOC_PERF_LOGI("SocPerfPlugin: socperf->WEB_GESTURE: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->WEB_GESTURE: %{public}lld", (long long)data->value);
     if (data->value == WebGesture::WEB_GESTURE_START) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE, true, "");
     } else if (data->value == WebGesture::WEB_GESTURE_END) {
@@ -297,7 +313,7 @@ void SocPerfPlugin::HandleWebSlideNormal(const std::shared_ptr<ResData>& data)
     if (data == nullptr) {
         return;
     }
-    SOC_PERF_LOGI("SocPerfPlugin: socperf->WEB_SLIDE_NORMAL: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->WEB_SLIDE_NORMAL: %{public}lld", (long long)data->value);
     if (data->value == WebSlideNormal::WEB_SLIDE_NORMAL_START) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_SLIDE_NORMAL, true, "");
     } else if (data->value == WebSlideNormal::WEB_SLIDE_NORMAL_END) {
@@ -317,12 +333,19 @@ void SocPerfPlugin::HandleMousewheel(const std::shared_ptr<ResData>& data)
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_MOUSEWHEEL, "");
 }
 
-void SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
+bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
 {
-    if (data->value == ResType::ProcessStatus::PROCESS_CREATED) {
+    if (data->value != ResType::ProcessStatus::PROCESS_CREATED) {
+        return false;
+    }
+    int extensionType = ParsePayload(data, EXTENSION_TYPE_KEY);
+    if (std::find(ResType::UI_SENSITIVE_EXTENSION.begin(), ResType::UI_SENSITIVE_EXTENSION.end(), extensionType) !=
+        ResType::UI_SENSITIVE_EXTENSION.end()) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->APPSTATECHANGE");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+        return true;
     }
+    return false;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)

@@ -138,9 +138,8 @@ HWTEST_F(ResSchedClientTest, StopRemoteObject, Function | MediumTest | Level0)
  */
 HWTEST_F(ResSchedClientTest, RegisterSystemloadNotifier, Function | MediumTest | Level0)
 {
-    std::string systemload = "systemLoadChange";
     sptr<IRemoteObject> notifier = nullptr;
-    ResSchedClient::GetInstance().RegisterSystemloadNotifier(systemload, notifier);
+    ResSchedClient::GetInstance().RegisterSystemloadNotifier(notifier);
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
 }
 
@@ -153,8 +152,7 @@ HWTEST_F(ResSchedClientTest, RegisterSystemloadNotifier, Function | MediumTest |
  */
 HWTEST_F(ResSchedClientTest, UnRegisterSystemloadNotifier, Function | MediumTest | Level0)
 {
-    std::string systemload = "systemLoadChange";
-    ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(systemload);
+    ResSchedClient::GetInstance().UnRegisterSystemloadNotifier();
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
 }
 

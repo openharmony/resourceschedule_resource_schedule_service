@@ -30,7 +30,7 @@ namespace ResourceSchedule {
 int32_t ResSchedSystemloadNotifierStub::OnRemoteRequest(uint32_t code, MessageParcel& data,
                                                         MessageParcel& reply, MessageOption& option)
 {
-    RESSCHED_LOGI("systemload nitifier ipc code = %{public}u", code);
+    RESSCHED_LOGI("systemload notifier ipc code = %{public}u", code);
     switch (code) {
         case static_cast<uint32_t>(ResourceSceduleSystemloadNotifierCode::SYSTEMLOAD_LEVEL): {
             return OnSystemloadLevelInner(data, reply);

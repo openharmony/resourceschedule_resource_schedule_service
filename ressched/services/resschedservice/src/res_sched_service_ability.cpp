@@ -117,7 +117,7 @@ void ResSchedServiceAbility::OnDeviceLevelChanged(int32_t type, int32_t level, s
         RESSCHED_LOGE("On Device Level Changed failed due to service nullptr!");
         return;
     }
-    service_->OnDeviceLevelChanged(type, level, action);
+    service_->OnDeviceLevelChanged(type, level);
 }
 
 } // namespace ResourceSchedule

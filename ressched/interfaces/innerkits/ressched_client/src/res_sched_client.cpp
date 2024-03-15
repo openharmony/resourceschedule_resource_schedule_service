@@ -76,7 +76,7 @@ int32_t ResSchedClient::KillProcess(const std::unordered_map<std::string, std::s
     return rss_->KillProcess(payload);
 }
 
-void ResSchedClient::RegisterSystemloadNotifier(const std::string& cbType, const sptr<IRemoteObject>& notifier)
+void ResSchedClient::RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier)
 {
     if (TryConnect() != ERR_OK) {
         return;
@@ -88,10 +88,10 @@ void ResSchedClient::RegisterSystemloadNotifier(const std::string& cbType, const
         RESSCHED_LOGE("ResSchedClient::RegisterSystemloadNotifier fail to get resource schedule service.");
         return;
     }
-    rss_->RegisterSystemloadNotifier(cbType, notifier);
+    rss_->RegisterSystemloadNotifier(notifier);
 }
 
-void ResSchedClient::UnRegisterSystemloadNotifier(const std::string& cbType)
+void ResSchedClient::UnRegisterSystemloadNotifier()
 {
     if (TryConnect() != ERR_OK) {
         return;
@@ -103,7 +103,7 @@ void ResSchedClient::UnRegisterSystemloadNotifier(const std::string& cbType)
         RESSCHED_LOGE("ResSchedClient::UnRegisterSystemloadNotifier fail to get resource schedule service.");
         return;
     }
-    rss_->UnRegisterSystemloadNotifier(cbType);
+    rss_->UnRegisterSystemloadNotifier();
 }
 
 int32_t ResSchedClient::GetSystemloadLevel()
@@ -116,7 +116,7 @@ int32_t ResSchedClient::GetSystemloadLevel()
     std::lock_guard<std::mutex> lock(mutex_);
     if (rss_ == nullptr) {
         RESSCHED_LOGE("ResSchedClient::GetSystemloadLevel fail to get resource schedule service.");
-        return RES_SCHED_SERVICE_ERROR;
+        return RES_SCHED_CONNECT_FAIL;
     }
     return rss_->GetSystemloadLevel();
 }

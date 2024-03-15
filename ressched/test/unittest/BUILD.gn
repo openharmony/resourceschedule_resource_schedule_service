@@ -94,6 +94,7 @@ ohos_unittest("resschedfwk_test") {
 
   sources = [
     "src/config_reader_test.cpp",
+    "src/notifier_mgr_test.cpp",
     "src/plugin_mgr_test.cpp",
     "src/plugin_switch_test.cpp",
     "src/res_sched_mgr_test.cpp",

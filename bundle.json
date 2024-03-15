@@ -148,6 +148,7 @@
         "//foundation/resourceschedule/resource_schedule_service/ressched/test/fuzztest:fuzztest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/test/testutil:ressched_test",
         "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/test/fuzztest:fuzztest",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/test/unittest/systemload_jsunittest:js_unittest",
         "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/test/fuzztest:fuzztest"
       ]
     },

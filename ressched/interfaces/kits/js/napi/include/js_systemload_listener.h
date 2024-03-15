@@ -31,8 +31,8 @@ public:
     virtual ~SystemloadListener() = default;
     void OnSystemloadLevel(int32_t level) override;
 private:
-    napi_env napiEnv = nullptr;
-    OnSystemloadLevelCb systemloadLevelCb = nullptr;
+    napi_env napiEnv_ = nullptr;
+    OnSystemloadLevelCb systemloadLevelCb_ = nullptr;
 };
 } // ResourceSchedule
 } // OHOS
