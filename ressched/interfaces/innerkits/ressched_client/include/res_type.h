@@ -194,6 +194,8 @@ enum : uint32_t {
     RES_TYPE_SPLIT_SCREEN = 79,
     // report main screen floating window，value 0 enter scene 1 exit scene.
     RES_TYPE_FLOATING_WINDOW = 80,
+    // report event distribute tid, value tid, payload uid, pid.
+    RES_TYPE_REPORT_DISTRIBUTE_TID = 81,
     //last resType
     RES_TYPE_LAST,
 };
@@ -280,6 +282,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_UPLOAD_DOWNLOAD, "RES_TYPE_UPLOAD_DOWNLOAD" },
     { RES_TYPE_SPLIT_SCREEN, "RES_TYPE_SPLIT_SCREEN" },
     { RES_TYPE_FLOATING_WINDOW, "RES_TYPE_FLOATING_WINDOW" },
+    { RES_TYPE_REPORT_DISTRIBUTE_TID, "RES_TYPE_REPORT_DISTRIBUTE_TID"},
 };
 
 /**
