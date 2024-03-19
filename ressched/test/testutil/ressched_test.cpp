@@ -17,6 +17,8 @@
 #include <iostream>
 #include <unordered_map>
 #include <unistd.h>
+#include "accesstoken_kit.h"
+#include "ipc_skeleton.h"
 #include "nativetoken_kit.h"
 #include "res_sched_client.h"
 #include "token_setproc.h"
@@ -24,16 +26,18 @@
 const static int32_t PARAMETERS_NUM_MIN                      = 2;
 const static int32_t PARAMETERS_NUM_MIN_KILL_PROCESS         = 4;
 const static int32_t PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME = 5;
+const static int32_t PARAMETERS_NUM_REPORT_DATA = 6;
 
 static void MockProcess(int32_t uid)
 {
     static const char *perms[] = {
-        "ohos.permission.DISTRIBUTED_DATASYNC"
+        "ohos.permission.DISTRIBUTED_DATASYNC",
+        "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT"
     };
     uint64_t tokenId;
     NativeTokenInfoParams infoInstance = {
         .dcapsNum = 0,
-        .permsNum = 1,
+        .permsNum = 2,
         .aclsNum = 0,
         .dcaps = nullptr,
         .perms = perms,
@@ -44,6 +48,7 @@ static void MockProcess(int32_t uid)
     tokenId = GetAccessTokenId(&infoInstance);
     SetSelfTokenID(tokenId);
     setuid(uid);
+    OHOS::Security::AccessToken::AccessTokenKit::ReloadNativeTokenInfo();
 }
 
 static void KillProcess(int32_t argc, char *argv[])
@@ -62,6 +67,23 @@ static void KillProcess(int32_t argc, char *argv[])
     std::cout << "kill result:" << res << std::endl;
 }
 
+static void ReportData(int32_t argc, char *argv[])
+{
+    if (argc != PARAMETERS_NUM_REPORT_DATA) {
+        return;
+    }
+    int32_t uid = atoi(argv[PARAMETERS_NUM_REPORT_DATA - 4]);
+    MockProcess(uid);
+    int32_t pid = atoi(argv[PARAMETERS_NUM_REPORT_DATA - 3]);
+    int32_t resType = atoi(argv[PARAMETERS_NUM_REPORT_DATA - 2]);
+    int32_t value = atoi(argv[PARAMETERS_NUM_REPORT_DATA - 1]);
+    std::unordered_map<std::string, std::string> mapPayload;
+    mapPayload["uid"] = uid;
+    mapPayload["pid"] = pid;
+    OHOS::ResourceSchedule::ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
+    std::cout << "success passing on pid = " << pid << std::endl;
+}
+
 int32_t main(int32_t argc, char *argv[])
 {
     if (!(argc >= PARAMETERS_NUM_MIN && argv)) {
@@ -71,6 +93,8 @@ int32_t main(int32_t argc, char *argv[])
     char* function = argv[1];
     if (strcmp(function, "KillProcess") == 0) {
         KillProcess(argc, argv);
+    } else if (strcmp(function, "ReportData") == 0) {
+        ReportData(argc, argv);
     } else {
         std::cout << "error parameters";
     }
