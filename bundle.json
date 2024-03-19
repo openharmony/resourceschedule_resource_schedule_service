@@ -37,7 +37,6 @@
         "common_event_service",
         "config_policy",
         "core_service",
-        "efficiency_manager",
         "eventhandler",
         "ffrt",
         "frame_aware_sched",
