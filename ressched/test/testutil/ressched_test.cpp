@@ -23,14 +23,12 @@
 #include "res_sched_client.h"
 #include "token_setproc.h"
 
-const static int32_t PARAMETERS_NUM_MIN                      = 2;
-const static int32_t PARAMETERS_NUM_MIN_KILL_PROCESS         = 4;
-const static int32_t PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME = 5;
+const static int32_t OTHER_PARAMETERS_ONE = 4;
+const static int32_t OTHER_PARAMETERS_TWO = 5;
 const static int32_t PARAMETERS_NUM_REPORT_DATA = 6;
-const static int32_t UID_INDEX = 2;
+const static int32_t PARAMETERS_NUM_KILL_PROCESS = 4;
 const static int32_t PID_INDEX = 3;
-const static int32_t RESTYPE_INDEX = 4;
-const static int32_t VALUE_INDEX = 5;
+const static int32_t UID_INDEX = 2;
 
 static void MockProcess(int32_t uid)
 {
@@ -57,15 +55,15 @@ static void MockProcess(int32_t uid)
 
 static void KillProcess(int32_t argc, char *argv[])
 {
-    if (argc < PARAMETERS_NUM_MIN_KILL_PROCESS) {
+    if (argc < PARAMETERS_NUM_KILL_PROCESS) {
         return;
     }
-    int32_t uid = atoi(argv[PARAMETERS_NUM_MIN]);
+    int32_t uid = atoi(argv[UID_INDEX]);
     MockProcess(uid);
     std::unordered_map<std::string, std::string> mapPayload;
-    mapPayload["pid"] = argv[PARAMETERS_NUM_MIN_KILL_PROCESS - 1];
-    if (argc >= PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME) {
-        mapPayload["processName"] = argv[PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME - 1];
+    mapPayload["pid"] = argv[PID_INDEX];
+    if (argc >= OTHER_PARAMETERS_TWO) {
+        mapPayload["processName"] = argv[OTHER_PARAMETERS_ONE];
     }
     int32_t res = OHOS::ResourceSchedule::ResSchedClient::GetInstance().KillProcess(mapPayload);
     std::cout << "kill result:" << res << std::endl;
@@ -79,8 +77,8 @@ static void ReportData(int32_t argc, char *argv[])
     int32_t uid = atoi(argv[UID_INDEX]);
     MockProcess(uid);
     int32_t pid = atoi(argv[PID_INDEX]);
-    int32_t resType = atoi(argv[RESTYPE_INDEX]);
-    int32_t value = atoi(argv[VALUE_INDEX]);
+    int32_t resType = atoi(argv[OTHER_PARAMETERS_ONE]);
+    int32_t value = atoi(argv[OTHER_PARAMETERS_TWO]);
     std::unordered_map<std::string, std::string> mapPayload;
     mapPayload["uid"] = uid;
     mapPayload["pid"] = pid;
@@ -90,7 +88,7 @@ static void ReportData(int32_t argc, char *argv[])
 
 int32_t main(int32_t argc, char *argv[])
 {
-    if (!(argc >= PARAMETERS_NUM_MIN && argv)) {
+    if (!(argc >= UID_INDEX && argv)) {
         std::cout << "error parameters";
         return 0;
     }
