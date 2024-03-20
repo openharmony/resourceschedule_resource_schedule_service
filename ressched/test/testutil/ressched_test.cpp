@@ -27,6 +27,10 @@ const static int32_t PARAMETERS_NUM_MIN                      = 2;
 const static int32_t PARAMETERS_NUM_MIN_KILL_PROCESS         = 4;
 const static int32_t PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME = 5;
 const static int32_t PARAMETERS_NUM_REPORT_DATA = 6;
+const static int32_t UID_INDEX = 2;
+const static int32_t PID_INDEX = 3;
+const static int32_t RESTYPE_INDEX = 4;
+const static int32_t VALUE_INDEX = 5;
 
 static void MockProcess(int32_t uid)
 {
@@ -37,7 +41,7 @@ static void MockProcess(int32_t uid)
     uint64_t tokenId;
     NativeTokenInfoParams infoInstance = {
         .dcapsNum = 0,
-        .permsNum = 2,
+        .permsNum = strlen(*perms),
         .aclsNum = 0,
         .dcaps = nullptr,
         .perms = perms,
@@ -72,11 +76,11 @@ static void ReportData(int32_t argc, char *argv[])
     if (argc != PARAMETERS_NUM_REPORT_DATA) {
         return;
     }
-    int32_t uid = atoi(argv[PARAMETERS_NUM_REPORT_DATA - 4]);
+    int32_t uid = atoi(argv[UID_INDEX]);
     MockProcess(uid);
-    int32_t pid = atoi(argv[PARAMETERS_NUM_REPORT_DATA - 3]);
-    int32_t resType = atoi(argv[PARAMETERS_NUM_REPORT_DATA - 2]);
-    int32_t value = atoi(argv[PARAMETERS_NUM_REPORT_DATA - 1]);
+    int32_t pid = atoi(argv[PID_INDEX]);
+    int32_t resType = atoi(argv[RESTYPE_INDEX]);
+    int32_t value = atoi(argv[VALUE_INDEX]);
     std::unordered_map<std::string, std::string> mapPayload;
     mapPayload["uid"] = uid;
     mapPayload["pid"] = pid;
