@@ -39,7 +39,7 @@ static void MockProcess(int32_t uid)
     uint64_t tokenId;
     NativeTokenInfoParams infoInstance = {
         .dcapsNum = 0,
-        .permsNum = 2,
+        .permsNum = sizeof(perms) / sizeof(perms[0]),
         .aclsNum = 0,
         .dcaps = nullptr,
         .perms = perms,
