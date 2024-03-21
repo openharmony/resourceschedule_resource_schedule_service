@@ -33,7 +33,6 @@ public:
     DISALLOW_COPY_AND_MOVE(ResSchedServiceStub);
     int32_t OnRemoteRequest(
         uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
-    bool serialInvokeFlag_ = { true };
 
 private:
     int32_t ReportDataInner(MessageParcel& data, MessageParcel& reply);
