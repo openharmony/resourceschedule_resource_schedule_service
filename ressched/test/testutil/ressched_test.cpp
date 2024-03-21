@@ -90,7 +90,7 @@ static void ReportData(int32_t argc, char *argv[])
 
 int32_t main(int32_t argc, char *argv[])
 {
-    if (!(argc >= PARAMETERS_NUM_MIN  && argv)) {
+    if (!(argc >= PARAMETERS_NUM_MIN && argv)) {
         std::cout << "error parameters";
         return 0;
     }
