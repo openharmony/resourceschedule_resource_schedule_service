@@ -1,4 +1,4 @@
-# Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -62,6 +62,7 @@ ohos_shared_library("resschedsvc") {
     "../sched_controller/observer/src/observer_manager.cpp",
     "resschedmgr/resschedfwk/src/config_reader.cpp",
     "resschedmgr/resschedfwk/src/kill_process.cpp",
+    "resschedmgr/resschedfwk/src/notifier_mgr.cpp",
     "resschedmgr/resschedfwk/src/plugin_mgr.cpp",
     "resschedmgr/resschedfwk/src/plugin_switch.cpp",
     "resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
@@ -178,6 +179,7 @@ ohos_static_library("resschedsvc_static") {
     "../sched_controller/observer/src/observer_manager.cpp",
     "resschedmgr/resschedfwk/src/config_reader.cpp",
     "resschedmgr/resschedfwk/src/kill_process.cpp",
+    "resschedmgr/resschedfwk/src/notifier_mgr.cpp",
     "resschedmgr/resschedfwk/src/plugin_mgr.cpp",
     "resschedmgr/resschedfwk/src/plugin_switch.cpp",
     "resschedmgr/resschedfwk/src/res_sched_mgr.cpp",

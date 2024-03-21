@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #include "res_sched_mgr.h"
 #include <cinttypes>
 #include "cgroup_sched.h"
+#include "notifier_mgr.h"
 #include "res_sched_log.h"
 #include "plugin_mgr.h"
 #include "hitrace_meter.h"
@@ -71,6 +72,11 @@ void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const n
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     ResSchedMgr::GetInstance().ReportDataInner(resType, value, payload);
+}
+
+extern "C" void ReportAppStateInProcess(int32_t state, int32_t pid)
+{
+    NotifierMgr::GetInstance().OnApplicationStateChange(state, pid);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

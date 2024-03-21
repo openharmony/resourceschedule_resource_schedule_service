@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -62,6 +62,23 @@ public:
      * @brief Stop remote Object, reset ResSchedClient.
      */
     void StopRemoteObject();
+
+    /**
+     * @brief Register systemload remote listener.
+     *
+     * @param notifier remote listener object
+     */
+    void RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier);
+
+    /**
+     * @brief UnRegister systemload remote listener.
+     */
+    void UnRegisterSystemloadNotifier();
+
+    /**
+     * @brief client get systemload level.
+     */
+    int32_t GetSystemloadLevel();
 
 protected:
     ResSchedClient() = default;

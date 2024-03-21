@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -129,6 +129,45 @@ HWTEST_F(ResSchedClientTest, StopRemoteObject, Function | MediumTest | Level0)
     EXPECT_TRUE(nullptr == ResSchedClient::GetInstance().rss_);
 }
 
+/**
+ * @tc.name: RegisterSystemloadNotifier
+ * @tc.desc: Register systemload notifier
+ * @tc.type: FUNC
+ * @tc.require: I97M6C
+ * @tc.author: shanhaiyang
+ */
+HWTEST_F(ResSchedClientTest, RegisterSystemloadNotifier, Function | MediumTest | Level0)
+{
+    sptr<IRemoteObject> notifier = nullptr;
+    ResSchedClient::GetInstance().RegisterSystemloadNotifier(notifier);
+    EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
+}
+
+/**
+ * @tc.name: UnRegisterSystemloadNotifier
+ * @tc.desc: UnRegister systemload notifier
+ * @tc.type: FUNC
+ * @tc.require: I97M6C
+ * @tc.author: shanhaiyang
+ */
+HWTEST_F(ResSchedClientTest, UnRegisterSystemloadNotifier, Function | MediumTest | Level0)
+{
+    ResSchedClient::GetInstance().UnRegisterSystemloadNotifier();
+    EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
+}
+
+/**
+ * @tc.name: GetSystemloadLevel
+ * @tc.desc: Get systemload level
+ * @tc.type: FUNC
+ * @tc.require: I97M6C
+ * @tc.author: shanhaiyang
+ */
+HWTEST_F(ResSchedClientTest, GetSystemloadLevel, Function | MediumTest | Level0)
+{
+    int32_t res = ResSchedClient::GetInstance().GetSystemloadLevel();
+    EXPECT_TRUE(!(res < 0 || res > 7));
+}
 #undef private
 #undef protected
 } // namespace ResourceSchedule
