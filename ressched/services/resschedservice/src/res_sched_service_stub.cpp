@@ -172,7 +172,7 @@ namespace {
     }
 }
 
-ResSchedServiceStub::ResSchedServiceStub()
+ResSchedServiceStub::ResSchedServiceStub(bool serialInvokeFlag) : IRemoteStub(serialInvokeFlag)
 {
     Init();
 }
