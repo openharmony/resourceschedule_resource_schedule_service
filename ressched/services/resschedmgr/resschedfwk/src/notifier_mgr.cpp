@@ -156,12 +156,6 @@ void NotifierMgr::OnApplicationStateChange(int32_t state, int32_t pid)
     RESSCHED_LOGD("OnApplicationStateChange called, state: %{public}d, pid : %{public}d .", state, pid);
     std::lock_guard<std::mutex> autoLock(pidSetMutex_);
     if (state == static_cast<int32_t>(ApplicationState::APP_STATE_FOREGROUND)) {
-        {
-            std::lock_guard<std::mutex> autoLock(notifierMutex_);
-            if (notifierMap_.count(pid) == 0) {
-                return;
-            }
-        }
         fgPidSet_.insert(pid);
     }
     if (state == static_cast<int32_t>(ApplicationState::APP_STATE_BACKGROUND)
