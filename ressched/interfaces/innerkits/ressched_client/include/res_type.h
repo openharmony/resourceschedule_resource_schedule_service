@@ -196,6 +196,8 @@ enum : uint32_t {
     RES_TYPE_FLOATING_WINDOW = 80,
     // report event distribute tid, value tid, payload uid, pid.
     RES_TYPE_REPORT_DISTRIBUTE_TID = 81,
+    // report frame rate
+    RES_TYPE_FRAME_RATE_REPORT = 82,
     //last resType
     RES_TYPE_LAST,
 };
@@ -283,6 +285,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_SPLIT_SCREEN, "RES_TYPE_SPLIT_SCREEN" },
     { RES_TYPE_FLOATING_WINDOW, "RES_TYPE_FLOATING_WINDOW" },
     { RES_TYPE_REPORT_DISTRIBUTE_TID, "RES_TYPE_REPORT_DISTRIBUTE_TID"},
+    { RES_TYPE_FRAME_RATE_REPORT, "RES_TYPE_FRAME_RATE_REPORT"},
 };
 
 /**
