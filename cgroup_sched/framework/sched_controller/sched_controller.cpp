@@ -160,6 +160,14 @@ void SchedController::DispatchResource(uint32_t resType, int64_t value, const nl
                 handler->HandleSceneBoardState(resType, value, payload);
                 break;
             }
+            case ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE: {
+                handler->HandleWebviewScreenCapture(resType, value, payload);
+                break;
+            }
+            case ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE: {
+                handler->HandleReportWebviewVideoState(resType, value, payload);
+                break;
+            }
             default: {
                 break;
             }

@@ -68,6 +68,8 @@ public:
     void HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportAvCodecEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleSceneBoardState(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleReportWebviewVideoState(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
     bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);

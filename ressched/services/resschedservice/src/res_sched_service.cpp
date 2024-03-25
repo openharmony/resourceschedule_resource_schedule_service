@@ -200,7 +200,9 @@ void ResSchedService::DumpProcessWindowInfo(std::string &result)
                 result.append("    windowId:").append(ToString(windows->windowId_))
                     .append(", visibilityState:").append(ToString(windows->visibilityState_))
                     .append(", isVisible:").append(ToString(windows->isVisible_))
-                    .append(", isFocus:").append(ToString(windows->isFocused_)).append("\n");
+                    .append(", isFocus:").append(ToString(windows->isFocused_))
+                    .append(", topWebRenderUid:").append(ToString(windows->topWebviewRenderUid_))
+                    .append(", topWebRenderPid:").append(ToString(windows->topWebviewRenderPid_)).append("\n");
             }
         }
     }
@@ -222,9 +224,6 @@ void ResSchedService::DumpProcessEventState(std::string &result)
         for (auto pidIt = pidMap.begin(); pidIt != pidMap.end(); pidIt++) {
             int32_t pid = pidIt->first;
             std::shared_ptr<ProcessRecord> process = pidIt->second;
-            if (process->isRenderProcess_) {
-                continue;
-            }
             result.append("uid:").append(ToString(uid))
                 .append(", pid:").append(ToString(pid))
                 .append(", processState:").append(ToString(process->processState_))
@@ -234,7 +233,12 @@ void ResSchedService::DumpProcessEventState(std::string &result)
                 .append(", camearaStatus:").append(ToString(process->cameraState_))
                 .append(", bluetoothStatus:").append(ToString(process->bluetoothState_))
                 .append(", wifiStatus:").append(ToString(process->wifiState_)).append("\n")
-                .append(", screenCaptureStatus:").append(ToString(process->screenCaptureState_)).append("\n");
+                .append(", screenCaptureStatus:").append(ToString(process->screenCaptureState_))
+                .append(", videoState:").append(ToString(process->videoState_))
+                .append(", audioState:").append(ToString(process->audioState_))
+                .append(", isActive:").append(ToString(process->isActive_))
+                .append(", linkedWindowId:").append(ToString(process->linkedWindowId_))
+                .append("\n");
         }
     }
 }
