@@ -50,6 +50,7 @@ ohos_unittest("FrameAwarePluginTest") {
   external_deps = [
     "ffrt:libffrt",
     "hilog:libhilog",
+    "safwk:system_ability_fwk",
   ]
 }
 
