@@ -414,6 +414,32 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_004, Function | MediumTes
     SUCCEED();
 }
 
+/*
+ * @tc.name: SocPerfSubTest_DispatchResource_005
+ * @tc.desc: DispatchResource Plugin
+ * @tc.type FUNC
+ * @tc.author:fangdinggeng
+ * @tc.require: issueI5VWUI
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_005, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto data = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
+        ResType::DeviceModeStatus::MODE_ENTER, payload);
+    /* Init */
+    SocPerfPlugin::GetInstance().Init();
+
+    /* HandleDeviceModeStatusChange */
+    data->payload["deviceMode"] = "test";
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+    data->value = ResType::DeviceModeStatus::MODE_QUIT;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+
+    /* DeInit */
+    SocPerfPlugin::GetInstance().Disable();
+    SUCCEED();
+}
+
 /**
  * @tc.name: Plugin mgr test DumPluginInfoAppend_001
  * @tc.desc: test the interface DumpluginInfoAppend

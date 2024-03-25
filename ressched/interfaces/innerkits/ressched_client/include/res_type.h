@@ -196,6 +196,8 @@ enum : uint32_t {
     RES_TYPE_FLOATING_WINDOW = 80,
     // report event distribute tid, value tid, payload uid, pid.
     RES_TYPE_REPORT_DISTRIBUTE_TID = 81,
+    // report display mode event, value status, payload mode.
+    RES_TYPE_DEVICE_MODE_STATUS = 82,
     //last resType
     RES_TYPE_LAST,
 };
@@ -283,6 +285,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_SPLIT_SCREEN, "RES_TYPE_SPLIT_SCREEN" },
     { RES_TYPE_FLOATING_WINDOW, "RES_TYPE_FLOATING_WINDOW" },
     { RES_TYPE_REPORT_DISTRIBUTE_TID, "RES_TYPE_REPORT_DISTRIBUTE_TID"},
+    { RES_TYPE_DEVICE_MODE_STATUS, "RES_TYPE_DEVICE_MODE_STATUS"},
 };
 
 /**
@@ -705,6 +708,14 @@ enum DeviceStatus : int64_t {
     THERMAL = 2,
     MEMORY_LEVEL = 3,
     HIGH_LOAD = 4,
+};
+
+/**
+ * @brief Device mode status
+ */
+enum DeviceModeStatus : int64_t {
+    MODE_ENTER = 0,
+    MODE_QUIT = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule

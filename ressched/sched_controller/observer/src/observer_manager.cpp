@@ -18,6 +18,8 @@
 #include <dlfcn.h>
 #include <string>
 
+#include "display_manager.h"
+#include "dm_common.h"
 #include "hisysevent.h"
 #include "hisysevent_manager.h"
 #include "ipc_skeleton.h"
@@ -74,6 +76,7 @@ void ObserverManager::InitObserverCbMap()
         { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1) },
         { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::InitDeviceMovementObserver, std::placeholders::_1) },
         { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::InitMMiEventObserver, std::placeholders::_1) },
+        { DISPLAY_MANAGER_SERVICE_ID, std::bind(&ObserverManager::InitDisplayModeObserver, std::placeholders::_1) },
         { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::InitConnectionSubscriber, std::placeholders::_1) },
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
         { AVSESSION_SERVICE_ID, std::bind(&ObserverManager::InitAVSessionStateChangeListener, std::placeholders::_1) },
@@ -88,6 +91,7 @@ void ObserverManager::InitObserverCbMap()
         { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1) },
         { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::DisableDeviceMovementObserver, std::placeholders::_1) },
         { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::DisableMMiEventObserver, std::placeholders::_1) },
+        { DISPLAY_MANAGER_SERVICE_ID, std::bind(&ObserverManager::DisableDisplayModeObserver, std::placeholders::_1) },
         { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::DisableConnectionSubscriber, std::placeholders::_1) },
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
         { AVSESSION_SERVICE_ID,
@@ -123,6 +127,7 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(AUDIO_POLICY_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(MSDP_MOVEMENT_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(MULTIMODAL_INPUT_SERVICE_ID, systemAbilityManager);
+    AddItemToSysAbilityListener(DISPLAY_MANAGER_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(ABILITY_MGR_SERVICE_ID, systemAbilityManager);
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
     AddItemToSysAbilityListener(AVSESSION_SERVICE_ID, systemAbilityManager);
@@ -476,6 +481,50 @@ void ObserverManager::GetAllMmiStatusData()
             procRecord->mmiStatus_ = status;
         }
     }
+}
+
+void ObserverManager::InitDisplayModeObserver()
+{
+    RESSCHED_LOGI("ObserverManager Init display mode observer.");
+    bool isFoldable = OHOS::Rosen::DisplayManager::GetInstance().IsFoldable();
+    if (!isFoldable) {
+        RESSCHED_LOGI("ObserverManager Init display mode observer return for foldable.");
+        return;
+    }
+
+    foldDisplayModeObserver_ = new (std::nothrow)FoldDisplayModeObserver();
+    if (foldDisplayModeObserver_ == nullptr) {
+        RESSCHED_LOGE("Failed to create fold ChangeListener due to no memory");
+        return;
+    }
+    auto ret = OHOS::Rosen::DisplayManager::GetInstance().RegisterDisplayModeListener(foldDisplayModeObserver_);
+    if (ret == OHOS::Rosen::DMError::DM_OK) {
+        RESSCHED_LOGI("ObserverManager init displayModeObserver successfully");
+        auto displayMode = OHOS::Rosen::DisplayManager::GetInstance().GetFoldDisplayMode();
+        foldDisplayModeObserver_->OnDisplayModeChanged(displayMode);
+    } else {
+        RESSCHED_LOGW("ObserverManager init displayModeObserver failed");
+        foldDisplayModeObserver_ = nullptr;
+        return;
+    }
+}
+
+void ObserverManager::DisableDisplayModeObserver()
+{
+    RESSCHED_LOGI("ObserverManager Disable display mode observer.");
+    if (!foldDisplayModeObserver_) {
+        RESSCHED_LOGD("ObserverManager has been disable displayModeObserver");
+        return;
+    }
+
+    auto ret = OHOS::Rosen::DisplayManager::GetInstance().UnregisterDisplayModeListener(foldDisplayModeObserver_);
+    if (ret == OHOS::Rosen::DMError::DM_OK) {
+        RESSCHED_LOGI("ObserverManager disable displayModeObserver successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager disable displayModeObserver failed");
+        return;
+    }
+    foldDisplayModeObserver_ = nullptr;
 }
 
 void ObserverManager::InitConnectionSubscriber()
