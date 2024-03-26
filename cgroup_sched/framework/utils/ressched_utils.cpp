@@ -163,10 +163,11 @@ bool ResSchedUtils::CheckTidIsInPid(int32_t pid, int32_t tid)
     char *tmpPath = NULL;
     tmpPath = realpath(pathName.c_str(), NULL);
     if (tmpPath == NULL) {
-        CGS_LOGD("%{public}s faild, realPath is null.", __func__);
+        CGS_LOGD("%{public}s failed, realPath is null.", __func__);
         return false;
     }
-    bool flag = access(rmpPath, F_OK) != -1? true : false;
+    bool flag = access(tmpPath, F_OK) != -1? true : false;
+    free(tmpPath);
     return flag;
 }
 
