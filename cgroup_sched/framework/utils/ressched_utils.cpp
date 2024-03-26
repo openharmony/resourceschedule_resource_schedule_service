@@ -14,7 +14,10 @@
  */
 #include "ressched_utils.h"
 
+#include <cstdlib>
 #include <dlfcn.h>
+#include <unistd.h>
+#include <limits.h>
 #include "cgroup_sched_log.h"
 #include "hisysevent.h"
 #include "nlohmann/json.hpp"
@@ -142,6 +145,17 @@ void ResSchedUtils::DispatchResourceExt(uint32_t resType, int64_t value, const n
         return;
     }
     dispatchResourceExtFunc_(resType, value, payload);
+}
+
+bool ResSchedUtils::CheckTidIsInPid(int32_t pid, int32_t tid)
+{
+    std::string pathName = std::string("/proc/").append(std::to_string(pid))
+        .append("/task/").append(std::to_string(tid)).append("/comm");
+    char tmpPath[PATH_MAX + 1] = {0};
+    if (!realpath(pathName.c_str(), tmpPath)) {
+        return false;
+    }
+    return (access(tmpPath, F_OK) != -1);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
