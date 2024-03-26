@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,6 +29,14 @@ public:
 
     int32_t KillProcess(const nlohmann::json& payload) override;
 
+    void RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier) override;
+
+    void UnRegisterSystemloadNotifier() override;
+
+    int32_t GetSystemloadLevel() override;
+
+    void OnDeviceLevelChanged(int32_t type, int32_t level);
+
     int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
 
     void DumpProcessRunningLock(std::string& result);
@@ -36,6 +44,8 @@ public:
     void DumpProcessWindowInfo(std::string &result);
 
     void DumpProcessEventState(std::string &result);
+
+    void DumpSystemLoadInfo(std::string &result);
 
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedService);
