@@ -56,9 +56,7 @@
         "window_manager",
         "device_standby",
         "power_manager",
-        "av_session"
-      ],
-      "third_party": [
+        "av_session",
         "json",
         "libxml2"
       ]
