@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -64,5 +64,57 @@ int32_t ResSchedServiceProxy::KillProcess(const nlohmann::json& payload)
     RESSCHED_LOGD("%{public}s, success.", __func__);
     return reply.ReadInt32();
 }
+
+void ResSchedServiceProxy::RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier)
+{
+    int32_t error;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option = { MessageOption::TF_SYNC };
+    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), , ResSchedServiceProxy);
+    WRITE_PARCEL(data, RemoteObject, notifier, , ResSchedServiceProxy);
+    error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::REGISTER_SYSTEMLOAD_NOTIFIER),
+        data, reply, option);
+    if (error != NO_ERROR) {
+        RESSCHED_LOGE("Send request error: %{public}d.", error);
+        return;
+    }
+    RESSCHED_LOGD("%{public}s, success.", __func__);
+}
+
+void ResSchedServiceProxy::UnRegisterSystemloadNotifier()
+{
+    int32_t error;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option = { MessageOption::TF_SYNC };
+    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), , ResSchedServiceProxy);
+    error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::UNREGISTER_SYSTEMLOAD_NOTIFIER),
+        data, reply, option);
+    if (error != NO_ERROR) {
+        RESSCHED_LOGE("Send request error: %{public}d.", error);
+        return;
+    }
+    RESSCHED_LOGD("%{public}s, success.", __func__);
+}
+
+int32_t ResSchedServiceProxy::GetSystemloadLevel()
+{
+    int32_t error;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option = { MessageOption::TF_SYNC };
+    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), RES_SCHED_DATA_ERROR,
+        ResSchedServiceProxy);
+    error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::GET_SYSTEMLOAD_LEVEL),
+        data, reply, option);
+    if (error != NO_ERROR) {
+        RESSCHED_LOGE("Send request error: %{public}d.", error);
+        return RES_SCHED_REQUEST_FAIL;
+    }
+    RESSCHED_LOGD("%{public}s, success.", __func__);
+    return reply.ReadInt32();
+}
+
 } // namespace ResourceSchedule
 } // namespace OHOS
