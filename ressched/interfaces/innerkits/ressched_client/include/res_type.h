@@ -471,6 +471,7 @@ enum ThreadRole : int64_t {
     IMPORTANT_DISPLAY = 2,
     NORMAL_AUDIO = 3,
     IMPORTANT_AUDIO = 4,
+    IMAGE_DECODE = 5,
 };
 
 /**
@@ -503,6 +504,8 @@ enum WebScene : int64_t {
     WEB_SCENE_RESIZE = 1004,
     WEB_SCENE_VISIBLE = 1005,
     WEB_SCENE_KEYBOARD_CLICK = 1006,
+    WEB_SCENE_KEY_TASK = 1007,
+    WEB_SCENE_IMAGE_DECODE = 1008,
 };
 
 /**
