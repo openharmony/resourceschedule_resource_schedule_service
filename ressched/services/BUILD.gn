@@ -52,8 +52,6 @@ ohos_shared_library("resschedsvc") {
     "${cgroup_sched_framework}/utils/include/",
   ]
 
-  public_external_deps = [ "connectionobs_manager:connection_obs_manager" ]
-
   sources = [
     "../sched_controller/common_event/src/event_controller.cpp",
     "../sched_controller/observer/src/audio_observer.cpp",
@@ -169,8 +167,6 @@ ohos_static_library("resschedsvc_static") {
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/sched_controller/include/",
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group/include/",
   ]
-
-  public_external_deps = [ "connectionobs_manager:connection_obs_manager" ]
 
   sources = [
     "../sched_controller/common_event/src/event_controller.cpp",
