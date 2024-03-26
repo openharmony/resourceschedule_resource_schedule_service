@@ -36,12 +36,11 @@ ohos_shared_library("ressched_client") {
     "src/res_sched_systemload_notifier_stub.cpp",
   ]
 
-  public_deps = [ "//third_party/json:nlohmann_json_static" ]
-
   external_deps = [
     "c_utils:utils",
     "hilog:libhilog",
     "ipc:ipc_single",
+    "json:nlohmann_json_static",
     "samgr:samgr_proxy",
   ]
 
