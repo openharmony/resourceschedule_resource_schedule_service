@@ -165,13 +165,6 @@ bool ResSchedUtils::CheckTidIsInPid(int32_t pid, int32_t tid)
         return false;
     }
     return (access(tmpPath, F_OK) != -1);
-void ResSchedUtils::ReportAppStateInProcess(int32_t state, int32_t pid)
-{
-    if (!reportAppStateFunc_) {
-        CGS_LOGD("%{public}s failed, function nullptr.", __func__);
-        return;
-    }
-    reportAppStateFunc_(state, pid);
 }
 
 void ResSchedUtils::ReportAppStateInProcess(int32_t state, int32_t pid)
