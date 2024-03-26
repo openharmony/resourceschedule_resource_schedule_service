@@ -104,6 +104,7 @@ namespace {
         ResType::RES_TYPE_UPLOAD_DOWNLOAD,
         ResType::RES_TYPE_SPLIT_SCREEN,
         ResType::RES_TYPE_FLOATING_WINDOW,
+        ResType::RES_TYPE_FRAME_RATE_REPORT,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
