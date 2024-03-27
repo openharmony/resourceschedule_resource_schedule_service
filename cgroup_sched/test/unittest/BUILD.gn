@@ -52,7 +52,7 @@ ohos_unittest("ResschedUtilsTest") {
   module_out_path = process_group_module_output_path
 
   include_dirs = [
-    "../../framework/process_group/include",
+    "../../framework/utils/include",
     "../../framework/sched_controller/include",
   ]
 
