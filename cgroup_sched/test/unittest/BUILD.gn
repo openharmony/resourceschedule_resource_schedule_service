@@ -56,7 +56,7 @@ ohos_unittest("ResschedUtilsTest") {
     "../../framework/sched_controller/include",
   ]
 
-  sources = [ "process_group_sub_test.cpp" ]
+  sources = [ "ressched_utils_test.cpp" ]
 
   cflags = []
 
@@ -100,6 +100,6 @@ group("unittest") {
   testonly = true
   deps = [
     ":ProcessGroupSubTest",
-    "ResschedUtilsTest",  
+    ":ResschedUtilsTest",  
   ]
 }
