@@ -48,6 +48,36 @@ ohos_unittest("ProcessGroupSubTest") {
   ]
 }
 
+ohos_unittest("ResschedUtilsTest") {
+  module_out_path = process_group_module_output_path
+
+  include_dirs = [
+    "../../framework/process_group/include",
+    "../../framework/sched_controller/include",
+  ]
+
+  sources = [ "process_group_sub_test.cpp" ]
+
+  cflags = []
+
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+
+  configs = [ ":process_group_module_private_config" ]
+
+  deps = [
+    "//third_party/googletest:gtest_main",
+    "//third_party/json:nlohmann_json_static",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "hilog:libhilog",
+    "resource_schedule_service:cgroup_sched",
+  ]
+}
+
 ohos_executable("process_proup_test") {
   module_install_dir = "bin/process_group"
   include_dirs = []
@@ -68,5 +98,8 @@ ohos_executable("process_proup_test") {
 
 group("unittest") {
   testonly = true
-  deps = [ ":ProcessGroupSubTest" ]
+  deps = [
+    ":ProcessGroupSubTest",
+    "ResschedUtilsTest",  
+  ]
 }
