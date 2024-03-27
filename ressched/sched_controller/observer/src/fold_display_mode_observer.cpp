@@ -34,19 +34,20 @@ namespace {
 
 void FoldDisplayModeObserver::OnDisplayModeChanged(FoldDisplayMode diplayMode)
 {
-    RESSCHED_LOGD("Fold display mode %{public}d last %{public}s", diplayMode, lastMode.c_str());
+    // FULL SUB MAIN report enter the device mode, other display mode quit the current device mode
+    RESSCHED_LOGD("Fold display mode %{public}d last %{public}s", diplayMode, currentDisplayMode.c_str());
     if (diplayMode == FoldDisplayMode::FULL) {
         ReportDisplayModeStatus(ResType::DeviceModeStatus::MODE_ENTER, DISPLAY_MODE_FULL);
-        lastMode = DISPLAY_MODE_FULL;
+        currentDisplayMode = DISPLAY_MODE_FULL;
     } else if (diplayMode == FoldDisplayMode::SUB) {
         ReportDisplayModeStatus(ResType::DeviceModeStatus::MODE_ENTER, DISPLAY_MODE_SUB);
-        lastMode = DISPLAY_MODE_SUB;
+        currentDisplayMode = DISPLAY_MODE_SUB;
     } else if (diplayMode == FoldDisplayMode::MAIN) {
         ReportDisplayModeStatus(ResType::DeviceModeStatus::MODE_ENTER, DISPLAY_MODE_MAIN);
-        lastMode = DISPLAY_MODE_MAIN;
+        currentDisplayMode = DISPLAY_MODE_MAIN;
     } else {
-        ReportDisplayModeStatus(ResType::DeviceModeStatus::MODE_QUIT, lastMode);
-        lastMode = DISPLAY_MODE_UNKOWN;
+        ReportDisplayModeStatus(ResType::DeviceModeStatus::MODE_QUIT, currentDisplayMode);
+        currentDisplayMode = DISPLAY_MODE_UNKOWN;
     }
 }
 
@@ -54,7 +55,7 @@ void FoldDisplayModeObserver::ReportDisplayModeStatus(int64_t status, const std:
 {
     nlohmann::json payload;
     payload[DEVICE_MODE_STR] = mode;
-    ResSchedMgr::GetInstance().ReportData(RES_TYPE::RES_TYPE_DEVICE_MODE_STATUS, status, payload);
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_DEVICE_MODE_STATUS, status, payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

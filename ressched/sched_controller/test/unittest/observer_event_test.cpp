@@ -590,17 +590,21 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_002, testing::ext::TestSize.Level1)
  */
 HWTEST_F(ObserverEventTest, foldDisplayModeObserver_001, testing::ext::TestSize.Level1)
 {
+    const std::string DISPLAY_MODE_MAIN = "displayMain";
     foldDisplayModeObserver_->OnDisplayModeChanged(FoldDisplayMode::MAIN);
-    EXPECT_NE(foldDisplayModeObserver_, nullptr);
+    EXPECT_EQ(foldDisplayModeObserver_->currentDisplayMode, DISPLAY_MODE_MAIN);
 
+    const std::string DISPLAY_MODE_FULL = "displayFull";
     foldDisplayModeObserver_->OnDisplayModeChanged(FoldDisplayMode::FULL);
-    EXPECT_NE(foldDisplayModeObserver_, nullptr);
+    EXPECT_EQ(foldDisplayModeObserver_->currentDisplayMode, DISPLAY_MODE_FULL);
 
+    const std::string DISPLAY_MODE_SUB = "displaySub";
     foldDisplayModeObserver_->OnDisplayModeChanged(FoldDisplayMode::SUB);
-    EXPECT_NE(foldDisplayModeObserver_, nullptr);
+    EXPECT_EQ(foldDisplayModeObserver_->currentDisplayMode, DISPLAY_MODE_SUB);
 
+    const std::string DISPLAY_MODE_UNKOWN = "displayUnknown";
     foldDisplayModeObserver_->OnDisplayModeChanged(FoldDisplayMode::UNKNOWN);
-    EXPECT_NE(foldDisplayModeObserver_, nullptr);
+    EXPECT_EQ(foldDisplayModeObserver_->currentDisplayMode, DISPLAY_MODE_UNKOWN);
 }
 }
 }

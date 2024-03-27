@@ -37,7 +37,7 @@ public:
     void OnDisplayModeChanged(FoldDisplayMode diplayMode) override;
 
 private:
-    std::string lastMode = DISPLAY_MODE_UNKOWN;
+    std::string currentDisplayMode = DISPLAY_MODE_UNKOWN;
     void ReportDisplayModeStatus(int64_t status, const std::string& mode);
 };
 } // namespace ResourceSchedule

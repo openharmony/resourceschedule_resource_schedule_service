@@ -428,12 +428,14 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_017, Function | MediumTes
     std::shared_ptr<ResData> normalValuedata = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
         ResType::DeviceModeStatus::MODE_ENTER, payload);
     SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(normalValuedata);
+    SUCCEED();
 
     nlohmann::json payload2;
     payload["test"] = "test";
     std::shared_ptr<ResData> invalidPayload = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
         ResType::DeviceModeStatus::MODE_ENTER, payload2);
     SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(invalidPayload);
+    SUCCEED();
 
     nlohmann::json payload3;
     payload["test"] = "test";
@@ -441,19 +443,21 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_017, Function | MediumTes
     std::shared_ptr<ResData> invalidValue = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
         invalidType, payload3);
     SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(invalidValue);
+    SUCCEED();
 
     nlohmann::json payload4;
     payload["deviceMode"] = "";
     std::shared_ptr<ResData> emptyPayload = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
         ResType::DeviceModeStatus::MODE_ENTER, payload4);
     SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(emptyPayload);
+    SUCCEED();
 
     nlohmann::json payload5;
     payload["deviceMode"] = "ABCEDFGHABCEDFGHABCEDFGHABCEDFGHABCEDFGHABCEDFGHABCEDFGHABCEDFGHZ";
     std::shared_ptr<ResData> maxLenPayload = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
         ResType::DeviceModeStatus::MODE_ENTER, payload5);
     SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(maxLenPayload);
+    SUCCEED();
 }
-
 } // namespace SOCPERF
 } // namespace OHOS

@@ -196,8 +196,10 @@ enum : uint32_t {
     RES_TYPE_FLOATING_WINDOW = 80,
     // report event distribute tid, value tid, payload uid, pid.
     RES_TYPE_REPORT_DISTRIBUTE_TID = 81,
+    // report frame rate
+    RES_TYPE_FRAME_RATE_REPORT = 82,
     // report display mode event, value status, payload mode.
-    RES_TYPE_DEVICE_MODE_STATUS = 82,
+    RES_TYPE_DEVICE_MODE_STATUS = 83,
     //last resType
     RES_TYPE_LAST,
 };
@@ -285,6 +287,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_SPLIT_SCREEN, "RES_TYPE_SPLIT_SCREEN" },
     { RES_TYPE_FLOATING_WINDOW, "RES_TYPE_FLOATING_WINDOW" },
     { RES_TYPE_REPORT_DISTRIBUTE_TID, "RES_TYPE_REPORT_DISTRIBUTE_TID"},
+    { RES_TYPE_FRAME_RATE_REPORT, "RES_TYPE_FRAME_RATE_REPORT"},
     { RES_TYPE_DEVICE_MODE_STATUS, "RES_TYPE_DEVICE_MODE_STATUS"},
 };
 
@@ -471,6 +474,7 @@ enum ThreadRole : int64_t {
     IMPORTANT_DISPLAY = 2,
     NORMAL_AUDIO = 3,
     IMPORTANT_AUDIO = 4,
+    IMAGE_DECODE = 5,
 };
 
 /**
@@ -503,6 +507,8 @@ enum WebScene : int64_t {
     WEB_SCENE_RESIZE = 1004,
     WEB_SCENE_VISIBLE = 1005,
     WEB_SCENE_KEYBOARD_CLICK = 1006,
+    WEB_SCENE_KEY_TASK = 1007,
+    WEB_SCENE_IMAGE_DECODE = 1008,
 };
 
 /**

@@ -513,7 +513,7 @@ void ObserverManager::DisableDisplayModeObserver()
 {
     RESSCHED_LOGI("ObserverManager Disable display mode observer.");
     if (!foldDisplayModeObserver_) {
-        RESSCHED_LOGD("ObserverManager has been disable displayModeObserver");
+        RESSCHED_LOGE("ObserverManager has been disable displayModeObserver");
         return;
     }
 
