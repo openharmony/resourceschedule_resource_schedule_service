@@ -45,7 +45,7 @@ void ResschedUtilsTest::TearDown(void)
 
 /**
  * @tc.name: ResschedUtilsTest_CheckTidIsInPid_001
- * @tc.desc: check tid is in pid or not 
+ * @tc.desc: check tid is in pid or not
  * @tc.type: FUNC
  * @tc.require: issueI9BPMB
  * @tc.desc:z30053169

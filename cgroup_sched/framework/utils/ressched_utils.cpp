@@ -17,7 +17,6 @@
 #include <cstdlib>
 #include <dlfcn.h>
 #include <unistd.h>
-#include <climits>
 #include "cgroup_sched_log.h"
 #include "hisysevent.h"
 #include "nlohmann/json.hpp"
