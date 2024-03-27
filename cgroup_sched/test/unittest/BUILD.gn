@@ -100,6 +100,6 @@ group("unittest") {
   testonly = true
   deps = [
     ":ProcessGroupSubTest",
-    ":ResschedUtilsTest",  
+    ":ResschedUtilsTest",
   ]
 }
