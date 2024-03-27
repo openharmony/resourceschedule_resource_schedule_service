@@ -14,11 +14,9 @@
  */
 #include "ressched_utils.h"
 
-#include <cstdlib>
-#include <climits>
 #include <dlfcn.h>
-#include <unistd.h>
 #include "cgroup_sched_log.h"
+#include "directory_ex.h"
 #include "hisysevent.h"
 #include "nlohmann/json.hpp"
 
@@ -160,11 +158,8 @@ bool ResSchedUtils::CheckTidIsInPid(int32_t pid, int32_t tid)
 {
     std::string pathName = std::string("/proc/").append(std::to_string(pid))
         .append("/task/").append(std::to_string(tid)).append("/comm");
-    char tmpPath[PATH_MAX + 1] = {0};
-    if (!realpath(pathName.c_str(), tmpPath)) {
-        return false;
-    }
-    return (access(tmpPath, F_OK) != -1);
+    std::string realPath;
+    return PathToRealPath(pathName, realPath);
 }
 
 void ResSchedUtils::ReportAppStateInProcess(int32_t state, int32_t pid)
