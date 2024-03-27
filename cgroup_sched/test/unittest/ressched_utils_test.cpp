@@ -17,7 +17,7 @@
 #include "ressched_utils.h"
 
 using namespace testing::ext;
-namespace OHOS{
+namespace OHOS {
 namespace ResourceSchedule {
 class ResschedUtilsTest : public testing::Test {
 public:
@@ -57,7 +57,7 @@ HWTEST_F(ResschedUtilsTest, ProcessGroupSubTest_SchedPolicyType_001, Function | 
 
 /**
  * @tc.name: ResschedUtilsTest_CheckTidIsInPid_002
- * @tc.desc: check tid is in pid or not 
+ * @tc.desc: check tid is in pid or not
  * @tc.type: FUNC
  * @tc.require: issueI9BPMB
  * @tc.desc:z30053169
