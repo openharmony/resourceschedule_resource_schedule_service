@@ -29,13 +29,13 @@ ohos_shared_library("libprocess_group") {
     "./src/sched_policy.cpp",
   ]
 
-  deps = [ "//third_party/json:nlohmann_json_static" ]
-
   external_deps = [
     "c_utils:utils",
     "config_policy:configpolicy_util",
     "hilog:libhilog",
   ]
+
+  public_external_deps = [ "json:nlohmann_json_static" ]
 
   sanitize = {
     cfi = true
