@@ -33,8 +33,9 @@ ohos_shared_library("libprocess_group") {
     "c_utils:utils",
     "config_policy:configpolicy_util",
     "hilog:libhilog",
-    "json:nlohmann_json_static",
   ]
+
+  public_external_deps = [ "json:nlohmann_json_static" ]
 
   sanitize = {
     cfi = true
