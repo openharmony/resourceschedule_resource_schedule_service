@@ -46,7 +46,7 @@ static std::vector<std::pair<std::string, ResType::SystemloadLevel>> g_systemloa
     { "ESCAPE", ResType::SystemloadLevel::ESCAPE }
 };
 
-static const std::string SYSTEMLOAD_PARAMETER = "resourceschedule.systemload";
+static const std::string SYSTEMLOAD_PARAMETER = "resourceschedule.systemload.level";
 
 NotifierMgr& NotifierMgr::GetInstance()
 {

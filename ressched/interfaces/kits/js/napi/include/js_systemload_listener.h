@@ -17,22 +17,25 @@
 #define RESSCHED_INTERFACES_KITS_JS_SYSTEMLOAD_LISTENER_H
 
 #include <functional>
+#include <memory>
 
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
-#include "res_sched_systemload_notifier_stub.h"
+#include "native_engine/native_engine.h"
+#include "res_sched_systemload_notifier_client.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-class SystemloadListener : public ResSchedSystemloadNotifierStub {
+class SystemloadListener : public ResSchedSystemloadNotifierClient {
 public:
-    using OnSystemloadLevelCb = std::function<void(napi_env env, int32_t)>;
-    SystemloadListener(napi_env env, OnSystemloadLevelCb callback);
+    using OnSystemloadLevelCb = std::function<void(napi_env, napi_value, int32_t)>;
+    SystemloadListener(napi_env env, napi_value callbackObj, OnSystemloadLevelCb callback);
     virtual ~SystemloadListener() = default;
     void OnSystemloadLevel(int32_t level) override;
 private:
     napi_env napiEnv_ = nullptr;
     OnSystemloadLevelCb systemloadLevelCb_ = nullptr;
+    std::unique_ptr<NativeReference> callbackRef_ = nullptr;
 };
 } // ResourceSchedule
 } // OHOS

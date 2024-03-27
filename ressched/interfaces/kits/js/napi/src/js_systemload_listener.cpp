@@ -17,17 +17,23 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-SystemloadListener::SystemloadListener(napi_env env, OnSystemloadLevelCb callback)
+SystemloadListener::SystemloadListener(napi_env env, napi_value callbackObj, OnSystemloadLevelCb callback)
     : napiEnv_(env), systemloadLevelCb_(callback)
 {
+    if (napiEnv_ == nullptr || callbackObj == nullptr) {
+        return;
+    }
+    napi_ref tmpRef = nullptr;
+    napi_create_reference(napiEnv_, callbackObj, 1, &tmpRef);
+    callbackRef_.reset(reinterpret_cast<NativeReference*>(tmpRef));
 }
 
 void SystemloadListener::OnSystemloadLevel(int32_t level)
 {
-    if (napiEnv_ == nullptr || systemloadLevelCb_ == nullptr) {
+    if (napiEnv_ == nullptr || callbackRef_ == nullptr || systemloadLevelCb_ == nullptr) {
         return;
     }
-    systemloadLevelCb_(napiEnv_, level);
+    systemloadLevelCb_(napiEnv_, callbackRef_->GetNapiValue(), level);
 }
 } // ResourceSchedule
 } // OHOS
