@@ -40,9 +40,10 @@ ohos_shared_library("ressched_client") {
     "c_utils:utils",
     "hilog:libhilog",
     "ipc:ipc_single",
-    "json:nlohmann_json_static",
     "samgr:samgr_proxy",
   ]
+
+  public_external_deps = [ "json:nlohmann_json_static" ]
 
   innerapi_tags = [ "platformsdk" ]
   version_script = "libressched_client.versionscript"
