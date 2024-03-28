@@ -607,7 +607,9 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
     if (uid <= 0 || pid <= 0) {
         return;
     }
-
+    if (!ResSchedUtils::GetInstance().CheckTidIsInPid(pid, keyTid)) {
+        return;
+    }
     auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecordNonNull(pid);
     if (value == ResType::ReportChangeStatus::CREATE) {
@@ -721,7 +723,7 @@ void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t
         return;
     }
 
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "clientPid", payload)) {
         return;
     }
     if (uid <= 0 || pid <= 0) {
