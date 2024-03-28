@@ -74,6 +74,8 @@ void SchedController::Init()
     InitCgroupHandler();
     // Init cgroup adjuster thread
     InitCgroupAdjuster();
+    // init dispatch resource function map
+    InitDispatchResFuncMap();
 }
 
 void SchedController::Deinit()
@@ -126,52 +128,13 @@ void SchedController::DispatchResource(uint32_t resType, int64_t value, const nl
     if (!handler) {
         return;
     }
-    handler->PostTask([handler, resType, value, payload] {
-        switch (resType) {
-            case ResType::RES_TYPE_REPORT_MMI_PROCESS: {
-                handler->HandleReportMMIProcess(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_REPORT_RENDER_THREAD: {
-                handler->HandleReportRenderThread(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_REPORT_KEY_THREAD: {
-                handler->HandleReportKeyThread(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_REPORT_WINDOW_STATE: {
-                handler->HandleReportWindowState(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE: {
-                handler->HandleReportWebviewAudioState(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE: {
-                handler->HandleReportAudioState(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_RUNNINGLOCK_STATE: {
-                handler->HandleReportRunningLockEvent(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_REPORT_SCENE_BOARD: {
-                handler->HandleSceneBoardState(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE: {
-                handler->HandleWebviewScreenCapture(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE: {
-                handler->HandleReportWebviewVideoState(resType, value, payload);
-                break;
-            }
-            default: {
-                break;
-            }
-        }
+
+    auto iter = dispatchResFuncMap_.find(resType);
+    if (iter == dispatchResFuncMap_.end()) {
+        return;
+    }
+    handler->PostTask([func = iter->second, handler, resType, value, payload] {
+        func(handler, resType, value, payload);
     });
     DispatchOtherResource(resType, value, payload);
 }
@@ -238,6 +201,42 @@ inline void SchedController::InitCgroupAdjuster()
 inline void SchedController::InitSupervisor()
 {
     supervisor_ = std::make_shared<Supervisor>();
+}
+
+inline void SchedController::InitDispatchResFuncMap()
+{
+    dispatchResFuncMap_ = {
+        { ResType::RES_TYPE_REPORT_MMI_PROCESS, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportMMIProcess(resType, value, payload); } },
+        { ResType::RES_TYPE_REPORT_RENDER_THREAD, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportRenderThread(resType, value, payload); } },
+        { ResType::RES_TYPE_REPORT_KEY_THREAD, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportKeyThread(resType, value, payload); } },
+        { ResType::RES_TYPE_REPORT_WINDOW_STATE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportWindowState(resType, value, payload); } },
+        { ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportWebviewAudioState(resType, value, payload); } },
+        { ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportAudioState(resType, value, payload); } },
+        { ResType::RES_TYPE_RUNNINGLOCK_STATE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportRunningLockEvent(resType, value, payload); } },
+        { ResType::RES_TYPE_REPORT_SCENE_BOARD, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleSceneBoardState(resType, value, payload); } },
+        { ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleWebviewScreenCapture(resType, value, payload); } },
+        { ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportWebviewVideoState(resType, value, payload); } },
+    };
 }
 
 bool SchedController::SubscribeAppState()

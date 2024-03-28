@@ -671,11 +671,7 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     if (!mainProcRecord) {
         return;
     }
-    if (state == ResType::WindowStates::ACTIVE) {
-        auto win = mainProcRecord->GetWindowInfoNonNull(windowId);
-        win->topWebviewRenderUid_ = uid;
-        win->topWebviewRenderPid_ = pid;
-    }
+    UpdateActivepWebRenderInfo(uid, pid, windowId, state, mainProcRecord);
     if (CheckVisibilityForRenderProcess(*(procRecord.get()), *mainProcRecord)) {
         CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d is not visible but active",
             __func__, app->GetName().c_str(), uid, pid);
@@ -683,7 +679,17 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
         AdjustSource::ADJS_REPORT_WINDOW_STATE_CHANGED);
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
-        ResType::RES_TYPE_REPORT_WINDOW_STATE,state);
+        ResType::RES_TYPE_REPORT_WINDOW_STATE, state);
+}
+
+void CgroupEventHandler::UpdateActivepWebRenderInfo(int32_t& uid, int32_t& pid, int32_t& windowId, int32_t& state,
+    const std::shared_ptr<PorcessRecord>& proc)
+{
+    if (state == ResType::WindowStates::ACTIVE) {
+        auto win = proc->GetWindowInfoNonNull(windowId);
+        win->topWebviewRenderUid_ = uid;
+        win->topWebviewRenderPid_ = pid;
+    }
 }
 
 void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload)
