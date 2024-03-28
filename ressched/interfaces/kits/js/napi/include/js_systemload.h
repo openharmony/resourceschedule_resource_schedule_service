@@ -16,6 +16,7 @@
 #ifndef RESSCHED_INTERFACES_KITS_JS_SYSTEMLOAD_H
 #define RESSCHED_INTERFACES_KITS_JS_SYSTEMLOAD_H
 
+#include <list>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -62,7 +63,7 @@ public:
     static napi_value SystemloadOff(napi_env env, napi_callback_info info);
     static napi_value GetLevel(napi_env env, napi_callback_info info);
 
-    void OnSystemloadLevel(napi_env env, int32_t level);
+    void OnSystemloadLevel(napi_env env, napi_value callbackObj, int32_t level);
 private:
     Systemload() = default;
     ~Systemload();
@@ -76,7 +77,7 @@ private:
     static void CompleteCb(napi_env env, napi_status status, void* data);
 
     std::mutex jsCallbackMapLock_;
-    std::map<std::string, CallBackPair> jsCallBackMap_;
+    std::map<std::string, std::list<CallBackPair> > jsCallBackMap_;
 };
 } // ResourceSchedule
 } // OHOS

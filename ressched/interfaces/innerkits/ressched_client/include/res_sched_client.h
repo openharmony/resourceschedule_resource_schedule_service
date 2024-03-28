@@ -16,15 +16,18 @@
 #ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_CLIENT_H
 #define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_CLIENT_H
 
-#include <cstdint>               // for int64_t, uint32_t
-#include <unordered_map>         // for unordered_map
-#include <mutex>                 // for mutex
-#include <iosfwd>                // for string
-#include "errors.h"              // for ErrCode
-#include "iremote_object.h"      // for IRemoteObject, IRemoteObject::DeathR...
-#include "ires_sched_service.h"  // for IResSchedService
-#include "nocopyable.h"          // for DISALLOW_COPY_AND_MOVE
-#include "refbase.h"             // for sptr, wptr
+#include <cstdint>                                  // for int64_t, uint32_t
+#include <unordered_map>                            // for unordered_map
+#include <mutex>                                    // for mutex
+#include <iosfwd>                                   // for string
+#include <list>                                     // for list
+#include "errors.h"                                 // for ErrCode
+#include "iremote_object.h"                         // for IRemoteObject, IRemoteObject::DeathR...
+#include "ires_sched_service.h"                     // for IResSchedService
+#include "nocopyable.h"                             // for DISALLOW_COPY_AND_MOVE
+#include "refbase.h"                                // for sptr, wptr
+#include "res_sched_systemload_notifier_client.h"   // for ResSchedSystemloadNotifierClient
+#include "res_sched_systemload_notifier_stub.h"     // for ResSchedSystemloadNotifierStub
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -64,16 +67,18 @@ public:
     void StopRemoteObject();
 
     /**
-     * @brief Register systemload remote listener.
+     * @brief Register systemload level listener.
      *
-     * @param notifier remote listener object
+     * @param callbackObj systemload level listener object.
      */
-    void RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier);
+    void RegisterSystemloadNotifier(const sptr<ResSchedSystemloadNotifierClient>& callbackObj);
 
     /**
-     * @brief UnRegister systemload remote listener.
+     * @brief UnRegister systemload level listener.
+     *
+     * @param callbackObj systemload level listener object
      */
-    void UnRegisterSystemloadNotifier();
+    void UnRegisterSystemloadNotifier(const sptr<ResSchedSystemloadNotifierClient>& callbackObj);
 
     /**
      * @brief client get systemload level.
@@ -85,6 +90,18 @@ protected:
     virtual ~ResSchedClient();
 
 private:
+    class SystemloadLevelListener : public ResSchedSystemloadNotifierStub {
+    public:
+        SystemloadLevelListener() = default;
+        virtual ~SystemloadLevelListener();
+        void RegisterSystemloadLevelCb(const sptr<ResSchedSystemloadNotifierClient>& callbackObj);
+        void UnRegisterSystemloadLevelCb(const sptr<ResSchedSystemloadNotifierClient>& callbackObj);
+        bool IsSystemloadCbArrayEmpty();
+        void OnSystemloadLevel(int32_t level) override;
+    private:
+        std::mutex listMutex_;
+        std::list<sptr<ResSchedSystemloadNotifierClient>> systemloadLevelCbs_;
+    };
     class ResSchedDeathRecipient : public IRemoteObject::DeathRecipient {
     public:
         explicit ResSchedDeathRecipient(ResSchedClient &resSchedClient);
@@ -101,6 +118,7 @@ private:
     sptr<ResSchedDeathRecipient> recipient_;
     sptr<IRemoteObject> remoteObject_;
     sptr<IResSchedService> rss_;
+    sptr<SystemloadLevelListener> systemloadLevelListener_;
     DISALLOW_COPY_AND_MOVE(ResSchedClient);
 };
 } // namespace ResourceSchedule

@@ -21,6 +21,7 @@
 #include <vector>
 #include "nativetoken_kit.h"
 #include "res_sched_client.h"
+#include "res_sched_systemload_notifier_client.h"
 #include "token_setproc.h"
 
 namespace OHOS {
@@ -138,7 +139,7 @@ HWTEST_F(ResSchedClientTest, StopRemoteObject, Function | MediumTest | Level0)
  */
 HWTEST_F(ResSchedClientTest, RegisterSystemloadNotifier, Function | MediumTest | Level0)
 {
-    sptr<IRemoteObject> notifier = nullptr;
+    sptr<ResSchedSystemloadNotifierClient> notifier = nullptr;
     ResSchedClient::GetInstance().RegisterSystemloadNotifier(notifier);
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
 }
@@ -152,7 +153,8 @@ HWTEST_F(ResSchedClientTest, RegisterSystemloadNotifier, Function | MediumTest |
  */
 HWTEST_F(ResSchedClientTest, UnRegisterSystemloadNotifier, Function | MediumTest | Level0)
 {
-    ResSchedClient::GetInstance().UnRegisterSystemloadNotifier();
+    sptr<ResSchedSystemloadNotifierClient> notifier = nullptr;
+    ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(notifier);
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
 }
 
