@@ -50,6 +50,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_DRAG_STATUS_BAR       = 10034;
     const int32_t PERF_REQUEST_CMD_ID_LOAD_URL              = 10070;
     const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
+    const int32_t PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE       = 10073;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -98,6 +99,8 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleMousewheel(data); } },
         { RES_TYPE_APP_STATE_CHANGE,
             [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
+        { RES_TYPE_WEB_DRAG_RESIZE,
+            [this](const std::shared_ptr<ResData>& data) { HandleWebDragResize(data); } },
     };
 }
 
@@ -120,6 +123,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_LOAD_URL,
         RES_TYPE_MOUSEWHEEL,
         RES_TYPE_APP_STATE_CHANGE,
+        RES_TYPE_WEB_DRAG_RESIZE,
     };
 }
 
@@ -346,6 +350,19 @@ bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
         return true;
     }
     return false;
+}
+
+void SocPerfPlugin::HandleWebDragResize(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->WEB_DRAG_RESIZE: %{public}lld", (long long)data->value);
+    if (data->value == WebDragResizeStatus::WEB_DRAG_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE, "");
+    } else if (data->value == WebDragResizeStatus::WEB_DRAG_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE, false, "");
+    }
 }
 
 extern "C" bool OnPluginInit(std::string& libName)

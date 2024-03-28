@@ -198,6 +198,8 @@ enum : uint32_t {
     RES_TYPE_REPORT_DISTRIBUTE_TID = 81,
     // report frame rate
     RES_TYPE_FRAME_RATE_REPORT = 82,
+    // report web drag resize
+    RES_TYPE_WEB_DRAG_RESIZE = 86,
     //last resType
     RES_TYPE_LAST,
 };
@@ -286,6 +288,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_FLOATING_WINDOW, "RES_TYPE_FLOATING_WINDOW" },
     { RES_TYPE_REPORT_DISTRIBUTE_TID, "RES_TYPE_REPORT_DISTRIBUTE_TID"},
     { RES_TYPE_FRAME_RATE_REPORT, "RES_TYPE_FRAME_RATE_REPORT"},
+    { RES_TYPE_WEB_DRAG_RESIZE, "RES_TYPE_WEB_DRAG_RESIZE"},
 };
 
 /**
@@ -711,6 +714,14 @@ enum DeviceStatus : int64_t {
     THERMAL = 2,
     MEMORY_LEVEL = 3,
     HIGH_LOAD = 4,
+};
+
+/**
+ * @brief drag web window resize status
+ */
+enum WebDragResizeStatus : int64_t {
+    WEB_DRAG_START = 0,
+    WEB_DRAG_END = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
