@@ -682,14 +682,15 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
         ResType::RES_TYPE_REPORT_WINDOW_STATE, state);
 }
 
-void CgroupEventHandler::UpdateActivepWebRenderInfo(int32_t& uid, int32_t& pid, int32_t& windowId, int32_t& state,
-    const std::shared_ptr<PorcessRecord>& proc)
+void CgroupEventHandler::UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, int32_t windowId, int32_t state,
+    const std::shared_ptr<ProcessRecord>& proc)
 {
-    if (state == ResType::WindowStates::ACTIVE) {
-        auto win = proc->GetWindowInfoNonNull(windowId);
-        win->topWebviewRenderUid_ = uid;
-        win->topWebviewRenderPid_ = pid;
+    if (state != ResType::WindowStates::ACTIVE) {
+        return;
     }
+    auto win = proc->GetWindowInfoNonNull(windowId);
+    win->topWebviewRenderUid_ = uid;
+    win->topWebviewRenderPid_ = pid;
 }
 
 void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -717,9 +718,9 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
     if (!app || !procRecord) {
         return;
     }
-    procRecord->audioState_ = static_cast<int32_t>(value);
+    procRecord->audioPlayingState_ = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
-        __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
+        __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
@@ -754,9 +755,9 @@ void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t
     }
 
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(procRecord->GetUid());
-    procRecord->audioState_ = static_cast<int32_t>(value);
+    procRecord->audioPlayingState_ = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
-        __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
+        __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_WEBVIEW_AUDIO_STATE_CHANGED);

@@ -203,7 +203,7 @@ inline void SchedController::InitSupervisor()
     supervisor_ = std::make_shared<Supervisor>();
 }
 
-inline void SchedController::InitDispatchResFuncMap()
+void SchedController::InitDispatchResFuncMap()
 {
     dispatchResFuncMap_ = {
         { ResType::RES_TYPE_REPORT_MMI_PROCESS, [](std::shared_ptr<CgroupEventHandler> handler,

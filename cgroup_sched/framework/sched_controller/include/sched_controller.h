@@ -93,7 +93,7 @@ private:
     inline void InitCgroupHandler();
     inline void InitCgroupAdjuster();
     inline void InitSupervisor();
-    inline void InitDispatchResFuncMap();
+    void InitDispatchResFuncMap();
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
