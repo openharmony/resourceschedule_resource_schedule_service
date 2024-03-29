@@ -47,7 +47,7 @@ const static int32_t TUPLE_PID = 0;
 const static int32_t TUPLE_UID = 1;
 const static int32_t TUPLE_NAME = 2;
 const static bool DEVICE_MOVEMENT_OBSERVER_ENABLE =
-    system::GetBoolParameter("persist.sys.ressched_device_movement_observer_switch", false);
+    system::GetBoolParameter("persist.sys.ressched_device_movement_observer_switch", true);
 const std::string RES_SCHED_CG_EXT_SO = "libcgroup_sched_ext.z.so";
 
 void ObserverManager::Init()
