@@ -729,7 +729,7 @@ enum DeviceStatus : int64_t {
 enum WebDragResizeStatus : int64_t {
     WEB_DRAG_START = 0,
     WEB_DRAG_END = 1,
-}
+};
 
 /**
  * @brief web screen capture start
