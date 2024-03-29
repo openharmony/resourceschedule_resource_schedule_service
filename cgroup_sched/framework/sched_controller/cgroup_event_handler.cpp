@@ -408,6 +408,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
         procRecord = app->GetProcessRecordNonNull(pid);
         auto win = procRecord->GetWindowInfoNonNull(windowId);
         auto abi = procRecord->GetAbilityInfo(abilityToken);
+        procRecord->linkedWindowId_ = windowId;
         win->windowType_ = (int32_t)(windowType);
         win->isFocused_ = true;
         win->displayId_ = displayId;
@@ -643,9 +644,12 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
         !ParseValue(windowId, "windowId", payload) || !ParseValue(state, "state", payload) ||
         !ParseValue(nowSerialNum, "serialNum", payload)) {
+        CGS_LOGW("%{public}s : param is not valid or not exist", __func__);
         return;
     }
     if (uid <= 0 || pid <= 0) {
+        CGS_LOGW("%{public}s : uid or pid invalid, uid: %{public}d, pid: %{public}d!",
+            __func__, uid, pid);
         return;
     }
 
@@ -663,19 +667,32 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
         procRecord->linkedWindowId_ = windowId;
         procRecord->isActive_ = true;
     } else {
-        procRecord->linkedWindowId_ = -1;
         procRecord->isActive_ = false;
     }
     auto mainProcRecord = app->GetMainProcessRecord();
     if (!mainProcRecord) {
         return;
     }
+    UpdateActivepWebRenderInfo(uid, pid, windowId, state, mainProcRecord);
     if (CheckVisibilityForRenderProcess(*(procRecord.get()), *mainProcRecord)) {
         CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d is not visible but active",
             __func__, app->GetName().c_str(), uid, pid);
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
         AdjustSource::ADJS_REPORT_WINDOW_STATE_CHANGED);
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+        ResType::RES_TYPE_REPORT_WINDOW_STATE, state);
+}
+
+void CgroupEventHandler::UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, int32_t windowId, int32_t state,
+    const std::shared_ptr<ProcessRecord>& proc)
+{
+    if (state != ResType::WindowStates::ACTIVE) {
+        return;
+    }
+    auto win = proc->GetWindowInfoNonNull(windowId);
+    win->topWebviewRenderUid_ = uid;
+    win->topWebviewRenderPid_ = pid;
 }
 
 void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -703,9 +720,9 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
     if (!app || !procRecord) {
         return;
     }
-    procRecord->audioState_ = static_cast<int32_t>(value);
+    procRecord->audioPlayingState_ = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
-        __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
+        __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
@@ -727,21 +744,27 @@ void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t
         return;
     }
     if (uid <= 0 || pid <= 0) {
+        CGS_LOGW("%{public}s : uid or pid invalid, uid: %{public}d, pid: %{public}d!",
+            __func__, uid, pid);
         return;
     }
 
     std::shared_ptr<ProcessRecord> procRecord = supervisor_->FindProcessRecord(pid);
     if (!procRecord) {
+        CGS_LOGW("%{public}s : proc record is not exist, uid: %{public}d, pid: %{public}d",
+            __func__, uid, pid);
         return;
     }
 
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(procRecord->GetUid());
-    procRecord->audioState_ = static_cast<int32_t>(value);
+    procRecord->audioPlayingState_ = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
-        __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
+        __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-        AdjustSource::ADJS_REPORT_WEBVIEW_STATE_CHANGED);
+        AdjustSource::ADJS_REPORT_WEBVIEW_AUDIO_STATE_CHANGED);
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+        resType, static_cast<int32_t>(value));
 }
 
 void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -891,7 +914,7 @@ void CgroupEventHandler::HandleSceneBoardState(uint32_t resType, int64_t value, 
     if (sceneBoardPid <= 0) {
         return;
     }
-    
+
     supervisor_->sceneBoardPid_ = sceneBoardPid;
     CGS_LOGD("%{public}s : set sceneboard pid: %{public}d", __func__, sceneBoardPid);
 }
@@ -899,6 +922,79 @@ void CgroupEventHandler::HandleSceneBoardState(uint32_t resType, int64_t value, 
 bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc)
 {
     return pr.isRenderProcess_ && pr.isActive_ && !mainProc.GetWindowInfoNonNull(pr.linkedWindowId_)->isVisible_;
+}
+
+void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+        return;
+    }
+    if (uid <= 0 || pid <= 0) {
+        CGS_LOGW("%{public}s : uid or pid is invalid, uid: %{public}d, pid: %{public}d!",
+            __func__, uid, pid);
+        return;
+    }
+
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    auto procRecord = app->GetProcessRecordNonNull(pid);
+    if (!procRecord) {
+        CGS_LOGW("%{public}s : proc record is not exist, uid: %{public}d, pid: %{public}d!",
+            __func__, uid, pid);
+        return;
+    }
+
+    procRecord->screenCaptureState_= (value == ResType::WebScreenCapture::WEB_SCREEN_CAPTURE_START);
+    CGS_LOGD("%{public}s : screen capture process: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+        __func__, app->GetName().c_str(), uid, pid, procRecord->screenCaptureState_);
+
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_REPORT_WEBVIEW_SCREEN_CAPTURE);
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType,
+        procRecord->screenCaptureState_);
+}
+
+void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+        CGS_LOGW("%{public}s : invalid param!", __func__);
+        return;
+    }
+    if (uid <= 0 || pid <= 0) {
+        CGS_LOGW("%{public}s : uid or pid invalid, uid: %{public}d, pid: %{public}d!",
+            __func__, uid, pid);
+        return;
+    }
+
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    auto procRecord = app->GetProcessRecordNonNull(pid);
+    if (!procRecord) {
+        CGS_LOGW("%{public}s : proc record is not exist, uid: %{public}d, pid: %{public}d!",
+            __func__, uid, pid);
+        return;
+    }
+
+    procRecord->videoState_ = (value == ResType::WebVideoState::WEB_VIDEO_PLAYING_START);
+    CGS_LOGD("%{public}s : video process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+        __func__, app->GetName().c_str(), uid, pid, procRecord->videoState_);
+
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType,
+        procRecord->videoState_);
 }
 
 bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,

@@ -126,5 +126,35 @@ HWTEST_F(ResSchedMgrTest, Stop001, TestSize.Level1)
     ResSchedMgr::GetInstance().Stop();
     SUCCEED();
 }
+
+/**
+ * @tc.name: Init ressched ReportData 002
+ * @tc.desc: Verify if ReportData is success
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ResSchedMgrTest, 002, TestSize.Level1)
+{
+    nlohmann::json payload;
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, 0, payload);
+    EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
+
+    ResSchedMgr::GetInstance().DispatchResourceInner(ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, 0, payload);
+}
+
+/**
+ * @tc.name: Init ressched ReportData 003
+ * @tc.desc: Verify if ReportData is success
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ResSchedMgrTest, 003, TestSize.Level1)
+{
+    nlohmann::json payload;
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, 0, payload);
+    EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
+
+    ResSchedMgr::GetInstance().DispatchResourceInner(ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, 0, payload);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
