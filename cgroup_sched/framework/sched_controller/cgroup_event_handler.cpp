@@ -931,7 +931,7 @@ void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t va
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
 
-    if (!GetProcInfoByPayload(uid, pid, app, procRecord)) {
+    if (!GetProcInfoByPayload(uid, pid, app, procRecord, payload)) {
         return;
     }
 
@@ -952,7 +952,7 @@ void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
 
-    if (!GetProcInfoByPayload(uid, pid, app, procRecord)) {
+    if (!GetProcInfoByPayload(uid, pid, app, procRecord, payload)) {
         return;
     }
 
@@ -977,9 +977,9 @@ bool CgroupEventHandler::GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::s
             __func__, uid, pid);
         return false;
     }
-
-    if (app = supervisor_->GetAppRecord(uid)) {
-        procRecord = app->GetProcessRecord(pid)
+    app = supervisor_->GetAppRecord(uid);
+    if (app) {
+        procRecord = app->GetProcessRecord(pid);
     }
     if (!app || !procRecord) {
         CGS_LOGW("%{public}s : app record or proc record is not exist, uid: %{public}d, pid: %{public}d!",
@@ -989,7 +989,8 @@ bool CgroupEventHandler::GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::s
     return true;
 }
 
-bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, const nlohmann::json& payload) {
+bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, const nlohmann::json& payload)
+{
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
         return false;
     }
