@@ -49,7 +49,6 @@ ohos_shared_library("resschedsvc") {
   include_dirs = [
     "${cgroup_sched_framework}/sched_controller/include",
     "${cgroup_sched_framework}/process_group/include",
-    "//foundation/ability/ability_runtime/interfaces/inner_api/connectionobs_manager/include/",
     "${cgroup_sched_framework}/utils/include/",
   ]
 
@@ -75,7 +74,6 @@ ohos_shared_library("resschedsvc") {
   deps = [
     "${cgroup_sched_framework}:cgroup_sched",
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
-    "//third_party/libxml2:xml2",
   ]
 
   external_deps = [
@@ -100,6 +98,7 @@ ohos_shared_library("resschedsvc") {
     "init:libbegetutil",
     "input:libmmi-client",
     "ipc:ipc_single",
+    "libxml2:libxml2",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libdm",
@@ -166,7 +165,6 @@ ohos_static_library("resschedsvc_static") {
   defines = []
 
   include_dirs = [
-    "//foundation/ability/ability_runtime/interfaces/inner_api/connectionobs_manager/include/",
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/utils/include/",
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/sched_controller/include/",
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group/include/",
@@ -194,7 +192,6 @@ ohos_static_library("resschedsvc_static") {
   deps = [
     "${cgroup_sched_framework}:cgroup_sched",
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
-    "//third_party/libxml2:xml2",
   ]
 
   external_deps = [
@@ -218,6 +215,7 @@ ohos_static_library("resschedsvc_static") {
     "init:libbegetutil",
     "input:libmmi-client",
     "ipc:ipc_single",
+    "libxml2:libxml2",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libdm",

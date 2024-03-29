@@ -56,12 +56,25 @@ napi_value Systemload::GetLevel(napi_env env, napi_callback_info info)
     return GetInstance().GetSystemloadLevel(env, info);
 }
 
-void Systemload::OnSystemloadLevel(napi_env env, int32_t level)
+void Systemload::OnSystemloadLevel(napi_env env, napi_value callbackObj, int32_t level)
 {
     RESSCHED_LOGI("OnSystemloadLevel asyncCallback.");
     std::lock_guard<std::mutex> autoLock(jsCallbackMapLock_);
     if (jsCallBackMap_.find(SYSTEMLOAD_LEVEL) == jsCallBackMap_.end()) {
         RESSCHED_LOGE("OnSystemloadLevel cb type has not register yet.");
+        return;
+    }
+    auto& callbackList = jsCallBackMap_[SYSTEMLOAD_LEVEL];
+    auto iter = callbackList.begin();
+    bool isEqual = false;
+    for (; iter != callbackList.end(); iter++) {
+        NAPI_CALL_RETURN_VOID(env, napi_strict_equals(env, callbackObj, iter->first->GetNapiValue(), &isEqual));
+        if (isEqual) {
+            break;
+        }
+    }
+    if (!isEqual) {
+        RESSCHED_LOGE("OnSystemload level callback not found in registered array.");
         return;
     }
     std::unique_ptr<SystemloadLevelCbInfo> cbInfo = std::make_unique<SystemloadLevelCbInfo>(env);
@@ -75,7 +88,7 @@ void Systemload::OnSystemloadLevel(napi_env env, int32_t level)
         napi_create_string_latin1(env, "OnSystemloadLevel", NAPI_AUTO_LENGTH, &resourceName));
 
     NAPI_CALL_RETURN_VOID(env,
-        napi_create_reference(env, jsCallBackMap_[SYSTEMLOAD_LEVEL].first->GetNapiValue(), 1, &cbInfo->callback));
+        napi_create_reference(env, iter->first->GetNapiValue(), 1, &cbInfo->callback));
 
     NAPI_CALL_RETURN_VOID(env, napi_create_async_work(env, nullptr, resourceName,
         [] (napi_env env, void* data) {},
@@ -100,31 +113,34 @@ napi_value Systemload::RegisterSystemloadCallback(napi_env env, napi_callback_in
         return CreateJsUndefined(env);
     }
 
-    if (cbType != SYSTEMLOAD_LEVEL) {
-        RESSCHED_LOGE("Register cbType not systemLoadChange.");
-        return CreateJsUndefined(env);
-    }
-
     napi_ref tempRef = nullptr;
     napi_create_reference(env, jsCallback, 1, &tempRef);
     std::unique_ptr<NativeReference> callbackRef;
     callbackRef.reset(reinterpret_cast<NativeReference*>(tempRef));
+    std::lock_guard<std::mutex> autoLock(jsCallbackMapLock_);
+    if (jsCallBackMap_.find(cbType) == jsCallBackMap_.end()) {
+        jsCallBackMap_[cbType] = std::list<CallBackPair>();
+    }
+    auto& callbackList = jsCallBackMap_[cbType];
+    auto iter = callbackList.begin();
+    for (; iter != callbackList.end(); iter++) {
+        bool isEqual = false;
+        napi_strict_equals(env, jsCallback, iter->first->GetNapiValue(), &isEqual);
+        if (isEqual) {
+            RESSCHED_LOGW("Register a exist callback type.");
+            return CreateJsUndefined(env);
+        }
+    }
     auto systemloadLevelCb = std::bind(
-        &Systemload::OnSystemloadLevel, this, std::placeholders::_1, std::placeholders::_2);
-    sptr<SystemloadListener> systemloadListener = new (std::nothrow) SystemloadListener(env, systemloadLevelCb);
+        &Systemload::OnSystemloadLevel, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+    sptr<SystemloadListener> systemloadListener =
+        new (std::nothrow) SystemloadListener(env, jsCallback, systemloadLevelCb);
     if (systemloadListener == nullptr) {
         RESSCHED_LOGE("Register Systemload listener nullptr.");
         return CreateJsUndefined(env);
     }
-    {
-        std::lock_guard<std::mutex> autoLock(jsCallbackMapLock_);
-        if (jsCallBackMap_.find(cbType) != jsCallBackMap_.end()) {
-            RESSCHED_LOGW("Register a exist callback type.");
-            return CreateJsUndefined(env);
-        }
-        jsCallBackMap_[cbType] = { std::move(callbackRef), systemloadListener };
-    }
     ResSchedClient::GetInstance().RegisterSystemloadNotifier(systemloadListener);
+    callbackList.emplace_back(std::move(callbackRef), systemloadListener);
     return CreateJsUndefined(env);
 }
 
@@ -139,20 +155,21 @@ napi_value Systemload::UnRegisterSystemloadCallback(napi_env env, napi_callback_
         return CreateJsUndefined(env);
     }
 
-    if (cbType != SYSTEMLOAD_LEVEL) {
-        RESSCHED_LOGE("UnRegister cbType not systemLoadChange.");
+    std::lock_guard<std::mutex> autoLock(jsCallbackMapLock_);
+    if (jsCallBackMap_.find(cbType) == jsCallBackMap_.end()) {
+        RESSCHED_LOGE("unRegister cbType has not registered");
         return CreateJsUndefined(env);
     }
-
-    {
-        std::lock_guard<std::mutex> autoLock(jsCallbackMapLock_);
-        if (jsCallBackMap_.find(cbType) == jsCallBackMap_.end()) {
-            RESSCHED_LOGE("unRegister cbType has not registered");
-            return CreateJsUndefined(env);
+    auto& callbackList = jsCallBackMap_[cbType];
+    for (auto iter = callbackList.begin(); iter != callbackList.end(); iter++) {
+        bool isEqual = false;
+        napi_strict_equals(env, jsCallback, iter->first->GetNapiValue(), &isEqual);
+        if (isEqual) {
+            ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(iter->second);
+            callbackList.erase(iter);
+            break;
         }
-        jsCallBackMap_.erase(cbType);
     }
-    ResSchedClient::GetInstance().UnRegisterSystemloadNotifier();
     return CreateJsUndefined(env);
 }
 

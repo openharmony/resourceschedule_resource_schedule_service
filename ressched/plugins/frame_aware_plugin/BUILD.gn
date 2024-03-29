@@ -18,7 +18,6 @@ config("frame_aware_plugin_config") {
   include_dirs = [
     "include",
     "../../../cgroup_sched/framework/process_group/include/",
-    "${resourceschedule_path}/frame_aware_sched/common/include",
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
   ]
@@ -46,6 +45,7 @@ ohos_shared_library("frame_aware_plugin") {
     "c_utils:utils",
     "ffrt:libffrt",
     "frame_aware_sched:frame_msg_intf",
+    "frame_aware_sched:rtg_interface",
     "hilog:libhilog",
     "init:libbegetutil",
   ]

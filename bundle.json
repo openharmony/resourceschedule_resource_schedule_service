@@ -56,9 +56,7 @@
         "window_manager",
         "device_standby",
         "power_manager",
-        "av_session"
-      ],
-      "third_party": [
+        "av_session",
         "json",
         "libxml2"
       ]
@@ -97,9 +95,7 @@
               "res_type.h",
               "res_sched_ipc_interface_code.h",
               "res_sched_kill_reason.h",
-              "ires_sched_systemload_notifier.h",
-              "res_sched_notifier_death_recipient.h",
-              "res_sched_systemload_notifier_proxy.h",
+              "res_sched_systemload_notifier_client.h",
               "res_sched_systemload_notifier_stub.h"
             ]
           },

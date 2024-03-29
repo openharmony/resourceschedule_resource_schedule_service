@@ -16,6 +16,7 @@
 
 #include <dlfcn.h>
 #include "cgroup_sched_log.h"
+#include "directory_ex.h"
 #include "hisysevent.h"
 #include "nlohmann/json.hpp"
 
@@ -151,6 +152,14 @@ void ResSchedUtils::DispatchResourceExt(uint32_t resType, int64_t value, const n
         return;
     }
     dispatchResourceExtFunc_(resType, value, payload);
+}
+
+bool ResSchedUtils::CheckTidIsInPid(int32_t pid, int32_t tid)
+{
+    std::string pathName = std::string("/proc/").append(std::to_string(pid))
+        .append("/task/").append(std::to_string(tid)).append("/comm");
+    std::string realPath;
+    return PathToRealPath(pathName, realPath);
 }
 
 void ResSchedUtils::ReportAppStateInProcess(int32_t state, int32_t pid)
