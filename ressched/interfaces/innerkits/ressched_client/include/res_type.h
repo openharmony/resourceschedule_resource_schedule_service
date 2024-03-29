@@ -196,9 +196,9 @@ enum : uint32_t {
     RES_TYPE_FLOATING_WINDOW = 80,
     // report event distribute tid, value tid, payload uid, pid.
     RES_TYPE_REPORT_DISTRIBUTE_TID = 81,
-
     // report frame rate
     RES_TYPE_FRAME_RATE_REPORT = 82,
+
     // report web screen capture, value 0 start, value 1 stop
     RES_TYPE_WEBVIEW_SCREEN_CAPTURE = 82,
     // report video state. value 0 start playing, value 1 stop playing
