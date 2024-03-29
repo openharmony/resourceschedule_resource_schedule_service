@@ -68,11 +68,15 @@ public:
     void HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportAvCodecEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleSceneBoardState(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleReportWebviewVideoState(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
     bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);
     bool ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid, int64_t value, const nlohmann::json& payload);
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
+    void UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, int32_t windowId, int32_t state,
+        const std::shared_ptr<ProcessRecord>& proc);
     std::shared_ptr<Supervisor> supervisor_;
 };
 } // namespace ResourceSchedule

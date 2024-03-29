@@ -55,6 +55,8 @@ namespace {
         ResType::RES_TYPE_LONG_FRAME,
         ResType::RES_TYPE_REPORT_DISTRIBUTE_TID,
         ResType::RES_TYPE_WEB_DRAG_RESIZE,
+        ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE,
+        ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
     };
     static const std::unordered_set<uint32_t> saRes_ = {
         ResType::RES_TYPE_SCREEN_STATUS,

@@ -75,7 +75,7 @@ int32_t ResSchedClient::KillProcess(const std::unordered_map<std::string, std::s
     return rss_->KillProcess(payload);
 }
 
-void ResSchedClient::RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier)
+void ResSchedClient::RegisterSystemloadNotifier(const sptr<ResSchedSystemloadNotifierClient>& callbackObj)
 {
     if (TryConnect() != ERR_OK) {
         return;
@@ -87,10 +87,18 @@ void ResSchedClient::RegisterSystemloadNotifier(const sptr<IRemoteObject>& notif
         RESSCHED_LOGE("ResSchedClient::RegisterSystemloadNotifier fail to get resource schedule service.");
         return;
     }
-    rss_->RegisterSystemloadNotifier(notifier);
+    if (systemloadLevelListener_ == nullptr) {
+        systemloadLevelListener_ = new (std::nothrow) SystemloadLevelListener;
+        if (systemloadLevelListener_ != nullptr) {
+            rss_->RegisterSystemloadNotifier(systemloadLevelListener_);
+        }
+    }
+    if (systemloadLevelListener_ != nullptr) {
+        systemloadLevelListener_->RegisterSystemloadLevelCb(callbackObj);
+    }
 }
 
-void ResSchedClient::UnRegisterSystemloadNotifier()
+void ResSchedClient::UnRegisterSystemloadNotifier(const sptr<ResSchedSystemloadNotifierClient>& callbackObj)
 {
     if (TryConnect() != ERR_OK) {
         return;
@@ -102,7 +110,13 @@ void ResSchedClient::UnRegisterSystemloadNotifier()
         RESSCHED_LOGE("ResSchedClient::UnRegisterSystemloadNotifier fail to get resource schedule service.");
         return;
     }
-    rss_->UnRegisterSystemloadNotifier();
+    if (systemloadLevelListener_ != nullptr) {
+        systemloadLevelListener_->UnRegisterSystemloadLevelCb(callbackObj);
+        if (systemloadLevelListener_->IsSystemloadCbArrayEmpty()) {
+            rss_->UnRegisterSystemloadNotifier();
+            systemloadLevelListener_ = nullptr;
+        }
+    }
 }
 
 int32_t ResSchedClient::GetSystemloadLevel()
@@ -160,6 +174,7 @@ void ResSchedClient::StopRemoteObject()
         rss_->AsObject()->RemoveDeathRecipient(recipient_);
     }
     rss_ = nullptr;
+    systemloadLevelListener_ = nullptr;
 }
 
 ResSchedClient::ResSchedDeathRecipient::ResSchedDeathRecipient(ResSchedClient &resSchedClient)
@@ -170,6 +185,59 @@ ResSchedClient::ResSchedDeathRecipient::~ResSchedDeathRecipient() {}
 void ResSchedClient::ResSchedDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
 {
     resSchedClient_.StopRemoteObject();
+}
+
+ResSchedClient::SystemloadLevelListener::~SystemloadLevelListener()
+{
+    std::lock_guard<std::mutex> lock(listMutex_);
+    systemloadLevelCbs_.clear();
+}
+
+void ResSchedClient::SystemloadLevelListener::RegisterSystemloadLevelCb(
+    const sptr<ResSchedSystemloadNotifierClient>& callbackObj)
+{
+    std::lock_guard<std::mutex> lock(listMutex_);
+    if (callbackObj != nullptr) {
+        for (auto& iter : systemloadLevelCbs_) {
+            if (iter == callbackObj) {
+                RESSCHED_LOGE("ResSchedClient register an exist callback object.");
+                return;
+            }
+        }
+        systemloadLevelCbs_.emplace_back(callbackObj);
+    }
+    RESSCHED_LOGD("Client has registered %{public}d listeners.", static_cast<int32_t>(systemloadLevelCbs_.size()));
+}
+void ResSchedClient::SystemloadLevelListener::UnRegisterSystemloadLevelCb(
+    const sptr<ResSchedSystemloadNotifierClient>& callbackObj)
+{
+    std::lock_guard<std::mutex> lock(listMutex_);
+    systemloadLevelCbs_.remove(callbackObj);
+    RESSCHED_LOGD(
+        "Client left %{public}d systemload level listeners.", static_cast<int32_t>(systemloadLevelCbs_.size()));
+}
+
+bool ResSchedClient::SystemloadLevelListener::IsSystemloadCbArrayEmpty()
+{
+    std::lock_guard<std::mutex> lock(listMutex_);
+    return systemloadLevelCbs_.empty();
+}
+
+void ResSchedClient::SystemloadLevelListener::OnSystemloadLevel(int32_t level)
+{
+    std::list<sptr<ResSchedSystemloadNotifierClient>> notifyList;
+    {
+        std::lock_guard<std::mutex> lock(listMutex_);
+        for (auto& iter : systemloadLevelCbs_) {
+            notifyList.push_back(iter);
+        }
+    }
+    // copy notifiers from systemloadLevelCbs_ to revent dead lock
+    for (auto& notifier : notifyList) {
+        if (notifier != nullptr) {
+            notifier->OnSystemloadLevel(level);
+        }
+    }
 }
 
 extern "C" void ReportData(uint32_t resType, int64_t value,

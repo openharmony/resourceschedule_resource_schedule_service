@@ -200,6 +200,11 @@ enum : uint32_t {
     RES_TYPE_FRAME_RATE_REPORT = 82,
     // report web drag resize
     RES_TYPE_WEB_DRAG_RESIZE = 86,
+
+    // report web screen capture, value 0 start, value 1 stop
+    RES_TYPE_WEBVIEW_SCREEN_CAPTURE = 82,
+    // report video state. value 0 start playing, value 1 stop playing
+    RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE = 83,
     //last resType
     RES_TYPE_LAST,
 };
@@ -289,6 +294,8 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_REPORT_DISTRIBUTE_TID, "RES_TYPE_REPORT_DISTRIBUTE_TID"},
     { RES_TYPE_FRAME_RATE_REPORT, "RES_TYPE_FRAME_RATE_REPORT"},
     { RES_TYPE_WEB_DRAG_RESIZE, "RES_TYPE_WEB_DRAG_RESIZE"},
+    { RES_TYPE_WEBVIEW_SCREEN_CAPTURE, "RES_TYPE_WEBVIEW_SCREEN_CAPTURE"},
+    { RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, "RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE"},
 };
 
 /**
@@ -722,6 +729,22 @@ enum DeviceStatus : int64_t {
 enum WebDragResizeStatus : int64_t {
     WEB_DRAG_START = 0,
     WEB_DRAG_END = 1,
+}
+
+/**
+ * @brief web screen capture start
+ */
+enum WebScreenCapture : int64_t {
+    WEB_SCREEN_CAPTURE_START = 0,
+    WEB_SCREEN_CAPTURE_STOP = 1,
+};
+
+/**
+ * @brief web video state
+ */
+enum WebVideoState : int64_t {
+    WEB_VIDEO_PLAYING_START = 0,
+    WEB_VIDEO_PLAYING_STOP = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
