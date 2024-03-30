@@ -592,7 +592,7 @@ HWTEST_F(ObserverEventTest, downLoadUploadObserver_001, testing::ext::TestSize.L
     SUCCEED();
     downLoadUploadObserver_->OnRunningTaskCountUpdate(1);
     SUCCEED();
-    downLoadUploadObserver = nullptr;
+    downLoadUploadObserver_ = nullptr;
 }
 
 /**
@@ -605,8 +605,8 @@ HWTEST_F(ObserverEventTest, observerManager_001, testing::ext::TestSize.Level1)
 {
     auto instance = ObserverManager::GetInstance();
     if (instance) {
-        auto downloadUploadObserver_ = std::make_shared<DownLoadUploadObserver>();
-        instance->downloadUploadObserver_ = downloadUploadObserver_;
+        auto downLoadUploadObserver_ = std::make_shared<DownLoadUploadObserver>();
+        instance->downLoadUploadObserver_ = downLoadUploadObserver_;
         instance->InitDownloadUploadObserver();
         instance->DisableDownloadUploadObserver();
     }
