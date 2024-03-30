@@ -35,6 +35,7 @@
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 #include "av_session_state_listener.h"
 #endif
+#include "download_upload_observer.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -72,6 +73,9 @@ public:
     void InitConnectionSubscriber();
     void DisableConnectionSubscriber();
     void GetReportFunc();
+    void InitDownloadUploadObserver();
+    void DisableDownloadUploadObserver();
+
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
     void InitAVSessionStateChangeListener();
     void DisableAVSessionStateChangeListener();
@@ -95,6 +99,7 @@ public:
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
     std::shared_ptr<MmiObserver> mmiEventObserver_ = nullptr;
     std::shared_ptr<ConnectionSubscriber> connectionSubscriber_ = nullptr;
+    std::shared_ptr<DownLoadUploadObserver> downLoadUploadObserver_ = nullptr;
     bool isNeedReport_ = true;
 };
 } // namespace ResourceSchedule

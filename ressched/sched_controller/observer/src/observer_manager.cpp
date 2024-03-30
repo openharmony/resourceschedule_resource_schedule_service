@@ -75,6 +75,7 @@ void ObserverManager::InitObserverCbMap()
         { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::InitDeviceMovementObserver, std::placeholders::_1) },
         { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::InitMMiEventObserver, std::placeholders::_1) },
         { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::InitConnectionSubscriber, std::placeholders::_1) },
+        { DOWNLOAD_SERVICE_ID, std::bind(&ObserverManager::InitDownloadUploadObserver, std::placeholders::_1) },
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
         { AVSESSION_SERVICE_ID, std::bind(&ObserverManager::InitAVSessionStateChangeListener, std::placeholders::_1) },
 #endif
@@ -89,6 +90,7 @@ void ObserverManager::InitObserverCbMap()
         { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::DisableDeviceMovementObserver, std::placeholders::_1) },
         { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::DisableMMiEventObserver, std::placeholders::_1) },
         { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::DisableConnectionSubscriber, std::placeholders::_1) },
+        { DOWNLOAD_SERVICE_ID, std::bind(&ObserverManager::DisableDownloadUploadObserver, std::placeholders::_1) },
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
         { AVSESSION_SERVICE_ID,
           std::bind(&ObserverManager::DisableAVSessionStateChangeListener, std::placeholders::_1) },
@@ -124,6 +126,7 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(MSDP_MOVEMENT_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(MULTIMODAL_INPUT_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(ABILITY_MGR_SERVICE_ID, systemAbilityManager);
+    AddItemToSysAbilityListener(DOWNLOAD_SERVICE_ID, systemAbilityManager);
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
     AddItemToSysAbilityListener(AVSESSION_SERVICE_ID, systemAbilityManager);
 #endif
@@ -539,6 +542,30 @@ void ObserverManager::DisableAVSessionStateChangeListener()
     avSessionStateListener_ = nullptr;
 }
 #endif
+void ObserverManager::InitDownloadUploadObserver()
+{
+    if (downLoadUploadObserver_ == nullptr) {
+        downLoadUploadObserver_ = std::make_shared<DownLoadUploadObserver>();
+    }
+
+    auto res = OHOS::Request::SubscribeRunningTaskCount(downLoadUploadObserver_);
+    if (res == OPERATION_SUCCESS) {
+        RESSCHED_LOGI("ObserverManager init download Upload observer successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager init download Upload observer failed");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a download Upload observer failed!");
+    }
+}
+
+void ObserverManager::DisableDownloadUploadObserver()
+{
+    OHOS::Request::UnsubscribeRunningTaskCount(downLoadUploadObserver_);
+    RESSCHED_LOGI("Disable download Upload observer");
+    downLoadUploadObserver_ = nullptr;
+}
 
 extern "C" void ObserverManagerInit()
 {
