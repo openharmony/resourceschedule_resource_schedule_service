@@ -73,9 +73,6 @@ public:
 
 private:
     bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);
-    bool GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::shared_ptr<Application>& app,
-        std::shared_ptr<ProcessRecord>& procRecord, const nlohmann::json& payload);
-    bool ParsePayload(int32_t& uid, int32_t& pid, const nlohmann::json& payload);
     bool ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid, int64_t value, const nlohmann::json& payload);
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
     void UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, int32_t windowId, int32_t state,

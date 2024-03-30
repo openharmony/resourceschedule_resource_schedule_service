@@ -355,6 +355,18 @@ void SchedController::SubscribeWindowState()
             }
         }
     }
+    if (!windowModeObserver_) {
+        windowModeObserver_ = new (std::nothrow)WindowModeObserver();
+        if (windowModeObserver_) {
+            if (OHOS::Rosen::WindowManager::GetInstance().
+                RegisterWindowModeListener(windowModeObserver_) != OHOS::Rosen::WMError::WM_OK) {
+                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                        HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of window mode content change failed.");
+            }
+        }
+    }
     CGS_LOGI("%{public}s success.", __func__);
 }
 
@@ -375,6 +387,11 @@ void SchedController::UnsubscribeWindowState()
         OHOS::Rosen::WindowManager::GetInstance().
             UnregisterDrawingContentChangedListener(windowDrawingContentObserver_);
         windowDrawingContentObserver_ = nullptr;
+    }
+    if (windowModeObserver_) {
+        OHOS::Rosen::WindowManager::GetInstance().
+            UnregisterWindowModeListener(windowModeObserver_);
+        windowModeObserver_ = nullptr;
     }
 }
 

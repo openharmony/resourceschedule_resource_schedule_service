@@ -23,6 +23,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+    const uint8_t WINDOW_MODE_FLOATING_BIT = 1;
 void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo)
 {
     if (!focusChangeInfo) {
@@ -155,6 +156,54 @@ void WindowDrawingContentObserver::OnWindowDrawingContentChanged(
             drawingContentState ? ResType::WindowDrawingStatus::Drawing : ResType::WindowDrawingStatus::NotDrawing,
             payload);
     }
+}
+void WindowModeObserver::OnWindowModeUpdate(const WindowModeType mode)
+{
+    CGS_LOGI("WindowModeObserver OnWindowModeUpdate mode: %{public}hhu ", mode);
+    uint8_t nowWindowMode = MarshallingWindowModeType(mode);
+    uint8_t windowModeChangeBit = nowWindowMode ^ lastWindowMode_;
+    nlohmann::json payload;
+    uint8_t windowModeSplitValue = nowWindowMode & RSSWindowMode::WINDOW_MODE_SPLIT;
+    uint8_t windowModeFloatingValue = (nowWindowMode & RSSWindowMode::WINDOW_MODE_FLOATING) >> WINDOW_MODE_FLOATING_BIT;
+    switch (windowModeChangeBit) {
+        case RSSWindowMode::WINDOW_MODE_FLOATING_CHANGED:
+            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_SPLIT_SCREEN,
+                windowModeSplitValue, payload);
+            break;
+        case RSSWindowMode::WINDOW_MODE_SPLIT_CHANGED:
+            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_FLOATING_WINDOW,
+                windowModeFloatingValue, payload);
+            break;
+        case RSSWindowMode::WINDOW_MODE_SPLIT_FLOATING_CHANGED:
+            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_SPLIT_SCREEN,
+                windowModeSplitValue, payload);
+            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_FLOATING_WINDOW,
+                windowModeFloatingValue, payload);
+            break;
+        default:
+            break;
+    }
+    lastWindowMode_ = nowWindowMode;
+}
+
+uint8_t WindowModeObserver::MarshallingWindowModeType(const WindowModeType mode)
+{
+    uint8_t nowWindowMode = RSSWindowMode::WINDOW_MODE_OTHER;
+    switch (mode) {
+        case Rosen::WindowModeType::WINDOW_MODE_SPLIT:
+            nowWindowMode = RSSWindowMode::WINDOW_MODE_SPLIT;
+            break;
+        case Rosen::WindowModeType::WINDOW_MODE_FLOATING:
+            nowWindowMode = RSSWindowMode::WINDOW_MODE_FLOATING;
+            break;
+        case Rosen::WindowModeType::WINDOW_MODE_SPLIT_FLOATING:
+            nowWindowMode = RSSWindowMode::WINDOW_MODE_SPLIT_FLOATING;
+            break;
+        default:
+            nowWindowMode = RSSWindowMode::WINDOW_MODE_OTHER;
+            break;
+    }
+    return nowWindowMode;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

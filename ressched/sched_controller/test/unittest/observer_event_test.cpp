@@ -26,6 +26,7 @@
 #include "system_ability_definition.h"
 #include "iservice_registry.h"
 #include "observer_manager.h"
+#include "download_upload_observer.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -573,6 +574,41 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_002, testing::ext::TestSize.Level1)
     auto instance = ObserverManager::GetInstance();
     if (instance) {
         instance->GetAllMmiStatusData();
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: downLoadUploadObserver_001
+ * @tc.desc: Test downLoad Upload Observer
+ * @tc.type: FUNC
+ * @tc.require: issuesI9BU37
+ */
+HWTEST_F(ObserverEventTest, downLoadUploadObserver_001, testing::ext::TestSize.Level1)
+{
+    std::shared_ptr<DownLoadUploadObserver> downLoadUploadObserver_ =
+        std::make_shared<DownLoadUploadObserver>();
+    downLoadUploadObserver_->OnRunningTaskCountUpdate(0);
+    SUCCEED();
+    downLoadUploadObserver_->OnRunningTaskCountUpdate(1);
+    SUCCEED();
+    downLoadUploadObserver = nullptr;
+}
+
+/**
+ * @tc.name: observerManager_001
+ * @tc.desc: test observer Manager
+ * @tc.type: FUNC
+ * @tc.require: issuesI9BU37
+ */
+HWTEST_F(ObserverEventTest, observerManager_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        auto downloadUploadObserver_ = std::make_shared<DownLoadUploadObserver>();
+        instance->downloadUploadObserver_ = downloadUploadObserver_;
+        instance->InitDownloadUploadObserver();
+        instance->DisableDownloadUploadObserver();
     }
     SUCCEED();
 }
