@@ -140,7 +140,7 @@ ohos_shared_library("resschedsvc") {
   }
   if (rss_request_enable) {
     defines += [ "RESOURCE_REQUEST_REQUEST" ]
-    external_deps += [  "request:request_native" ]
+    external_deps += [ "request:request_native" ]
   }
 
   version_script = "libresschedsvc.versionscript"
@@ -257,7 +257,7 @@ ohos_static_library("resschedsvc_static") {
   }
   if (rss_request_enable) {
     defines += [ "RESOURCE_REQUEST_REQUEST" ]
-    external_deps += [  "request:request_native" ]
+    external_deps += [ "request:request_native" ]
   }
 
   subsystem_name = "resourceschedule"
