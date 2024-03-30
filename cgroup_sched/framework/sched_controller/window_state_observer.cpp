@@ -163,8 +163,8 @@ void WindowModeObserver::OnWindowModeUpdate(const WindowModeType mode)
     uint8_t nowWindowMode = MarshallingWindowModeType(mode);
     uint8_t windowModeChangeBit = nowWindowMode ^ lastWindowMode_;
     nlohmann::json payload;
-    uint8_t windowModeSplitValue = nowWindowMode & RSSWindowMode::WINDOW_MODE_SPLIT;
-    uint8_t windowModeFloatingValue = (nowWindowMode & RSSWindowMode::WINDOW_MODE_FLOATING) >> WINDOW_MODE_FLOATING_BIT;
+    uint8_t windowModeSplitValue = (nowWindowMode & RSSWindowMode::WINDOW_MODE_SPLIT) >> WINDOW_MODE_FLOATING_BIT;
+    uint8_t windowModeFloatingValue = nowWindowMode & RSSWindowMode::WINDOW_MODE_FLOATING;
     switch (windowModeChangeBit) {
         case RSSWindowMode::WINDOW_MODE_FLOATING_CHANGED:
             ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_FLOATING_WINDOW,
