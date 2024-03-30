@@ -48,6 +48,7 @@ ohos_unittest("event_controller_test") {
     "hisysevent:libhisyseventmanager",
     "input:libmmi-client",
     "ipc:ipc_single",
+    "request:request_native",
     "samgr:samgr_proxy",
   ]
 

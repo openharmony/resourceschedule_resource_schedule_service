@@ -127,16 +127,16 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_WindowStateObserver_002, Function | Me
         std::make_shared<WindowModeObserver>();
     uint8_t nowWindowMode = windowModeObserver_->MarshallingWindowModeType(
         Rosen::WindowModeType::WINDOW_MODE_SPLIT_FLOATING);
-    EXPECT_NQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_SPLIT_FLOATING);
+    EXPECT_EQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_SPLIT_FLOATING);
 
-    uint8_t nowWindowMode = windowModeObserver_->MarshallingWindowModeType(Rosen::WindowModeType::WINDOW_MODE_SPLIT);
-    EXPECT_NQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_SPLIT);
+    nowWindowMode = windowModeObserver_->MarshallingWindowModeType(Rosen::WindowModeType::WINDOW_MODE_SPLIT);
+    EXPECT_EQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_SPLIT);
 
-    uint8_t nowWindowMode = windowModeObserver_->MarshallingWindowModeType(Rosen::WindowModeType::WINDOW_MODE_FLOATING);
-    EXPECT_NQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_FLOATING);
+    nowWindowMode = windowModeObserver_->MarshallingWindowModeType(Rosen::WindowModeType::WINDOW_MODE_FLOATING);
+    EXPECT_EQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_FLOATING);
 
-    uint8_t nowWindowMode = windowModeObserver_->MarshallingWindowModeType(Rosen::WindowModeType::WINDOW_MODE_OTHER);
-    EXPECT_NQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_OTHER);
+    nowWindowMode = windowModeObserver_->MarshallingWindowModeType(Rosen::WindowModeType::WINDOW_MODE_OTHER);
+    EXPECT_EQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_OTHER);
     windowModeObserver_ = nullptr;
 }
 
@@ -149,7 +149,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_WindowStateObserver_002, Function | Me
  */
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_001, Function | MediumTest | Level1)
 {
-    auto schedController = SchedController::GetInstance();
+    auto &schedController = SchedController::GetInstance();
     SUCCEED();
     schedController.SubscribeWindowState();
     SUCCEED();
