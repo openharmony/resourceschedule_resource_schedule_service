@@ -167,12 +167,12 @@ void WindowModeObserver::OnWindowModeUpdate(const WindowModeType mode)
     uint8_t windowModeFloatingValue = (nowWindowMode & RSSWindowMode::WINDOW_MODE_FLOATING) >> WINDOW_MODE_FLOATING_BIT;
     switch (windowModeChangeBit) {
         case RSSWindowMode::WINDOW_MODE_FLOATING_CHANGED:
-            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_SPLIT_SCREEN,
-                windowModeSplitValue, payload);
-            break;
-        case RSSWindowMode::WINDOW_MODE_SPLIT_CHANGED:
             ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_FLOATING_WINDOW,
                 windowModeFloatingValue, payload);
+            break;
+        case RSSWindowMode::WINDOW_MODE_SPLIT_CHANGED:
+            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_SPLIT_SCREEN,
+                windowModeSplitValue, payload);
             break;
         case RSSWindowMode::WINDOW_MODE_SPLIT_FLOATING_CHANGED:
             ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_SPLIT_SCREEN,
