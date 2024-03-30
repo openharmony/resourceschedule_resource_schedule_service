@@ -48,7 +48,6 @@ ohos_unittest("event_controller_test") {
     "hisysevent:libhisyseventmanager",
     "input:libmmi-client",
     "ipc:ipc_single",
-    "request:request_native",
     "samgr:samgr_proxy",
   ]
 
@@ -57,6 +56,10 @@ ohos_unittest("event_controller_test") {
   if (ressched_with_communication_netmanager_base_enable) {
     defines += [ "RESSCHED_COMMUNICATION_NETMANAGER_BASE_ENABLE" ]
     external_deps += [ "netmanager_base:net_conn_manager_if" ]
+  }
+  if (rss_request_enable) {
+    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    external_deps += [  "request:request_native" ]
   }
 
   subsystem_name = "resourceschedule"

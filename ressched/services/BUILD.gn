@@ -99,7 +99,6 @@ ohos_shared_library("resschedsvc") {
     "input:libmmi-client",
     "ipc:ipc_single",
     "libxml2:libxml2",
-    "request:request_native",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
@@ -138,6 +137,10 @@ ohos_shared_library("resschedsvc") {
   }
   if (resource_schedule_service_with_ext_res_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
+  }
+  if (rss_request_enable) {
+    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    external_deps += [  "request:request_native" ]
   }
 
   version_script = "libresschedsvc.versionscript"
@@ -216,7 +219,6 @@ ohos_static_library("resschedsvc_static") {
     "input:libmmi-client",
     "ipc:ipc_single",
     "libxml2:libxml2",
-    "request:request_native",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
@@ -252,6 +254,10 @@ ohos_static_library("resschedsvc_static") {
   }
   if (resource_schedule_service_with_ext_res_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
+  }
+  if (rss_request_enable) {
+    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    external_deps += [  "request:request_native" ]
   }
 
   subsystem_name = "resourceschedule"

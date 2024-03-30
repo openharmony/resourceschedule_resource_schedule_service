@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#ifndef RESOURCE_REQUEST_REQUEST
 #include "download_upload_observer.h"
 #include "nlohmann/json.hpp"
 #include "res_sched_log.h"
@@ -30,7 +30,8 @@ void DownLoadUploadObserver::OnRunningTaskCountUpdate(int count)
         return;
     }
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
-        ResType::KeyUploadOrDownloadStatus::EXIT_UPLOAD_DOWNLOAD__SCENE, payload);
+        ResType::KeyUploadOrDownloadStatus::EXIT_UPLOAD_DOWNLOAD_SCENE, payload);
 }
+#endif
 } // namespace ResourceSchedule
 } // namespace OHOS
