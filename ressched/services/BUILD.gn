@@ -98,8 +98,8 @@ ohos_shared_library("resschedsvc") {
     "init:libbegetutil",
     "input:libmmi-client",
     "ipc:ipc_single",
-    "request:request_native",
     "libxml2:libxml2",
+    "request:request_native",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
@@ -215,8 +215,8 @@ ohos_static_library("resschedsvc_static") {
     "init:libbegetutil",
     "input:libmmi-client",
     "ipc:ipc_single",
-    "request:request_native",
     "libxml2:libxml2",
+    "request:request_native",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
