@@ -359,7 +359,7 @@ void SchedController::SubscribeWindowState()
         windowModeObserver_ = new (std::nothrow)WindowModeObserver();
         if (windowModeObserver_) {
             if (OHOS::Rosen::WindowManager::GetInstance().
-                RegisterWindowModeListener(windowModeObserver_) != OHOS::Rosen::WMError::WM_OK) {
+                RegisterWindowModeChangedListener(windowModeObserver_) != OHOS::Rosen::WMError::WM_OK) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                         HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
@@ -390,7 +390,7 @@ void SchedController::UnsubscribeWindowState()
     }
     if (windowModeObserver_) {
         OHOS::Rosen::WindowManager::GetInstance().
-            UnregisterWindowModeListener(windowModeObserver_);
+            UnregisterWindowModeChangedListener(windowModeObserver_);
         windowModeObserver_ = nullptr;
     }
 }
