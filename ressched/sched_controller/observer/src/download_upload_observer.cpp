@@ -32,6 +32,6 @@ void DownLoadUploadObserver::OnRunningTaskCountUpdate(int count)
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
         ResType::KeyUploadOrDownloadStatus::EXIT_UPLOAD_DOWNLOAD_SCENE, payload);
 }
-#endif
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif
