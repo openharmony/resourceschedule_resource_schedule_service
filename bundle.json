@@ -49,6 +49,7 @@
         "movement",
         "napi",
         "input",
+        "request",
         "samgr",
         "safwk",
         "soc_perf",

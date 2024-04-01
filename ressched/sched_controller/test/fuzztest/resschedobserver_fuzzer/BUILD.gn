@@ -59,6 +59,7 @@ ohos_fuzztest("ResSchedObserverFuzzTest") {
     "hitrace:hitrace_meter",
     "input:libmmi-client",
     "ipc:ipc_single",
+    "request:request_native",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libwm",
