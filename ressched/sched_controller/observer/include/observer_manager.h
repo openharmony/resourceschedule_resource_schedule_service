@@ -35,6 +35,7 @@
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 #include "av_session_state_listener.h"
 #endif
+#include "fold_display_mode_observer.h"
 #include "download_upload_observer.h"
 
 namespace OHOS {
@@ -66,6 +67,8 @@ public:
     void DisableDeviceMovementObserver();
     void InitMMiEventObserver();
     void DisableMMiEventObserver();
+    void InitDisplayModeObserver();
+    void DisableDisplayModeObserver();
     void InitSysAbilityListener();
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
     void GetAllMmiStatusData();
@@ -99,6 +102,7 @@ public:
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
     std::shared_ptr<MmiObserver> mmiEventObserver_ = nullptr;
     std::shared_ptr<ConnectionSubscriber> connectionSubscriber_ = nullptr;
+    sptr<FoldDisplayModeObserver> foldDisplayModeObserver_ = nullptr;
     std::shared_ptr<DownLoadUploadObserver> downLoadUploadObserver_ = nullptr;
     bool isNeedReport_ = true;
 };

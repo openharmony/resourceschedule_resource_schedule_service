@@ -18,6 +18,7 @@
 #define private public
 #include "hisysevent_observer.h"
 #include "mmi_observer.h"
+#include "fold_display_mode_observer.h"
 #include "device_movement_observer.h"
 #include "sched_telephony_observer.h"
 #include "audio_observer.h"
@@ -54,10 +55,12 @@ public:
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
     static std::shared_ptr<AudioObserver> audioObserver_;
 #endif
+    static std::shared_ptr<FoldDisplayModeObserver> foldDisplayModeObserver_;
 };
 
 std::shared_ptr<HiSysEventObserver> ObserverEventTest::hisysEventObserver_ = nullptr;
 std::shared_ptr<MmiObserver> ObserverEventTest::mmiObserver_ = nullptr;
+std::shared_ptr<FoldDisplayModeObserver> ObserverEventTest::foldDisplayModeObserver_ = nullptr;
 std::shared_ptr<ConnectionSubscriber> ObserverEventTest::connectionSubscriber_ = nullptr;
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
     std::shared_ptr<DeviceMovementObserver> ObserverEventTest::deviceMovementObserver_ = nullptr;
@@ -74,6 +77,7 @@ void ObserverEventTest::SetUpTestCase()
     hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
     mmiObserver_ = std::make_shared<MmiObserver>();
     connectionSubscriber_ = std::make_shared<ConnectionSubscriber>();
+    foldDisplayModeObserver_ = std::make_shared<FoldDisplayModeObserver>();
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
     deviceMovementObserver_ = std::make_shared<DeviceMovementObserver>();
 #endif
@@ -90,6 +94,7 @@ void ObserverEventTest::TearDownTestCase()
     hisysEventObserver_ = nullptr;
     mmiObserver_ = nullptr;
     connectionSubscriber_ = nullptr;
+    foldDisplayModeObserver_ = nullptr;
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
     deviceMovementObserver_ = nullptr;
 #endif
@@ -576,6 +581,31 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_002, testing::ext::TestSize.Level1)
         instance->GetAllMmiStatusData();
     }
     SUCCEED();
+}
+
+/**
+ * @tc.name: foldDisplayModeObserver_001
+ * @tc.desc: test fold display mode status interface
+ * @tc.type: FUNC
+ * @tc.require: issueI8ZIVH
+ */
+HWTEST_F(ObserverEventTest, foldDisplayModeObserver_001, testing::ext::TestSize.Level1)
+{
+    const std::string DISPLAY_MODE_MAIN = "displayMain";
+    foldDisplayModeObserver_->OnDisplayModeChanged(FoldDisplayMode::MAIN);
+    EXPECT_EQ(foldDisplayModeObserver_->currentDisplayMode, DISPLAY_MODE_MAIN);
+
+    const std::string DISPLAY_MODE_FULL = "displayFull";
+    foldDisplayModeObserver_->OnDisplayModeChanged(FoldDisplayMode::FULL);
+    EXPECT_EQ(foldDisplayModeObserver_->currentDisplayMode, DISPLAY_MODE_FULL);
+
+    const std::string DISPLAY_MODE_SUB = "displaySub";
+    foldDisplayModeObserver_->OnDisplayModeChanged(FoldDisplayMode::SUB);
+    EXPECT_EQ(foldDisplayModeObserver_->currentDisplayMode, DISPLAY_MODE_SUB);
+
+    const std::string DISPLAY_MODE_UNKOWN = "displayUnknown";
+    foldDisplayModeObserver_->OnDisplayModeChanged(FoldDisplayMode::UNKNOWN);
+    EXPECT_EQ(foldDisplayModeObserver_->currentDisplayMode, DISPLAY_MODE_UNKOWN);
 }
 
 /**

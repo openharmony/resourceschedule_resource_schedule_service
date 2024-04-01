@@ -207,6 +207,8 @@ enum : uint32_t {
     RES_TYPE_LOCATION_STATUS_CHANGE = 85,
     // report silent playback
     RES_TYPE_AUDIO_SILENT_PLAYBACK = 86,
+    // report display mode event, value status, payload mode.
+    RES_TYPE_DEVICE_MODE_STATUS = 87,
     //last resType
     RES_TYPE_LAST,
 };
@@ -298,7 +300,8 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_WEBVIEW_SCREEN_CAPTURE, "RES_TYPE_WEBVIEW_SCREEN_CAPTURE"},
     { RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, "RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE"},
     { RES_TYPE_LOCATION_STATUS_CHANGE, "RES_TYPE_LOCATION_STATUS_CHANGE"},
-    { RES_TYPE_AUDIO_SILENT_PLAYBACK, "RES_TYPE_AUDIO_SILENT_PLAYBACK" }
+    { RES_TYPE_AUDIO_SILENT_PLAYBACK, "RES_TYPE_AUDIO_SILENT_PLAYBACK" },
+    { RES_TYPE_DEVICE_MODE_STATUS, "RES_TYPE_DEVICE_MODE_STATUS"}
 };
 
 /**
@@ -724,6 +727,14 @@ enum DeviceStatus : int64_t {
     THERMAL = 2,
     MEMORY_LEVEL = 3,
     HIGH_LOAD = 4,
+};
+
+/**
+ * @brief Device mode status
+ */
+enum DeviceModeStatus : int64_t {
+    MODE_ENTER = 0,
+    MODE_QUIT = 1,
 };
 
 /**
