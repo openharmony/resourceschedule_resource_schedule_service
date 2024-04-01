@@ -203,6 +203,8 @@ enum : uint32_t {
     RES_TYPE_WEBVIEW_SCREEN_CAPTURE = 83,
     // report video state. value 0 start playing, value 1 stop playing
     RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE = 84,
+    // report systemload level
+    RES_TYPE_SYSTEMLOAD_LEVEL = 85,
     //last resType
     RES_TYPE_LAST,
 };
@@ -293,6 +295,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_FRAME_RATE_REPORT, "RES_TYPE_FRAME_RATE_REPORT"},
     { RES_TYPE_WEBVIEW_SCREEN_CAPTURE, "RES_TYPE_WEBVIEW_SCREEN_CAPTURE"},
     { RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, "RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE"},
+    { RES_TYPE_SYSTEMLOAD_LEVEL, "RES_TYPE_SYSTEMLOAD_LEVEL"},
 };
 
 /**
