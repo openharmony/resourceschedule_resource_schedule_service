@@ -577,7 +577,7 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_002, testing::ext::TestSize.Level1)
     }
     SUCCEED();
 }
-
+#ifndef RESOURCE_REQUEST_REQUEST
 /**
  * @tc.name: downLoadUploadObserver_001
  * @tc.desc: Test downLoad Upload Observer
@@ -612,5 +612,6 @@ HWTEST_F(ObserverEventTest, observerManager_001, testing::ext::TestSize.Level1)
     }
     SUCCEED();
 }
+#endif
 }
 }
