@@ -203,8 +203,12 @@ enum : uint32_t {
     RES_TYPE_WEBVIEW_SCREEN_CAPTURE = 83,
     // report video state. value 0 start playing, value 1 stop playing
     RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE = 84,
+    // report location status. value 0 app status, value 1 switch status
+    RES_TYPE_LOCATION_STATUS_CHANGE = 85,
+    // report silent playback
+    RES_TYPE_AUDIO_SILENT_PLAYBACK = 86,
     // report display mode event, value status, payload mode.
-    RES_TYPE_DEVICE_MODE_STATUS = 85,
+    RES_TYPE_DEVICE_MODE_STATUS = 87,
     //last resType
     RES_TYPE_LAST,
 };
@@ -295,7 +299,9 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_FRAME_RATE_REPORT, "RES_TYPE_FRAME_RATE_REPORT"},
     { RES_TYPE_WEBVIEW_SCREEN_CAPTURE, "RES_TYPE_WEBVIEW_SCREEN_CAPTURE"},
     { RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, "RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE"},
-    { RES_TYPE_DEVICE_MODE_STATUS, "RES_TYPE_DEVICE_MODE_STATUS"},
+    { RES_TYPE_LOCATION_STATUS_CHANGE, "RES_TYPE_LOCATION_STATUS_CHANGE"},
+    { RES_TYPE_AUDIO_SILENT_PLAYBACK, "RES_TYPE_AUDIO_SILENT_PLAYBACK" },
+    { RES_TYPE_DEVICE_MODE_STATUS, "RES_TYPE_DEVICE_MODE_STATUS"}
 };
 
 /**
@@ -746,6 +752,15 @@ enum WebVideoState : int64_t {
     WEB_VIDEO_PLAYING_START = 0,
     WEB_VIDEO_PLAYING_STOP = 1,
 };
+
+/**
+ * @brief location state
+ */
+enum LocationStatus : int64_t {
+    APP_LOCATION_STATUE_CHANGE = 0,
+    LOCATION_SWTICH_CHANGE = 1,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
