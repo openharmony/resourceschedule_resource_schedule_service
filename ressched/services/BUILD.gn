@@ -57,6 +57,7 @@ ohos_shared_library("resschedsvc") {
     "../sched_controller/observer/src/audio_observer.cpp",
     "../sched_controller/observer/src/connection_subscriber.cpp",
     "../sched_controller/observer/src/download_upload_observer.cpp",
+    "../sched_controller/observer/src/fold_display_mode_observer.cpp",
     "../sched_controller/observer/src/hisysevent_observer.cpp",
     "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
@@ -102,6 +103,7 @@ ohos_shared_library("resschedsvc") {
     "request:request_native",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
+    "window_manager:libdm",
   ]
 
   if (device_movement_perception_enable) {
@@ -175,6 +177,7 @@ ohos_static_library("resschedsvc_static") {
     "../sched_controller/observer/src/audio_observer.cpp",
     "../sched_controller/observer/src/connection_subscriber.cpp",
     "../sched_controller/observer/src/download_upload_observer.cpp",
+    "../sched_controller/observer/src/fold_display_mode_observer.cpp",
     "../sched_controller/observer/src/hisysevent_observer.cpp",
     "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
@@ -219,6 +222,7 @@ ohos_static_library("resschedsvc_static") {
     "request:request_native",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
+    "window_manager:libdm",
   ]
 
   if (device_movement_perception_enable) {
