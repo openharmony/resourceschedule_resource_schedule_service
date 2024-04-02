@@ -12,31 +12,19 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("../../ressched/ressched.gni")
 import("../cgroup_sched.gni")
 
 config("cgroup_sched_public_config") {
   include_dirs = [
-    "../interfaces/innerkits/include",
-    "sched_controller/include",
-    "process_group/include",
-  ]
-}
-
-config("cgroup_sched_private_config") {
-  include_dirs = [
-    "../../ressched/interfaces/innerkits/ressched_client/include",
-    "../common/include",
     "./utils/include",
-    "${ressched_common}/include",
+    "../common/include",
+    "../interfaces/innerkits/include",
+    "process_group/include",
   ]
 }
 
 ohos_shared_library("cgroup_sched") {
   public_configs = [ ":cgroup_sched_public_config" ]
-
-  configs = [ ":cgroup_sched_private_config" ]
-
   sources = [
     "${cgroup_sched_common}/cgroup_sched_log.cpp",
     "sched_controller/app_state_observer.cpp",
@@ -61,6 +49,8 @@ ohos_shared_library("cgroup_sched") {
     "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",
     "ipc:ipc_single",
+    "resource_schedule_service:cgroup_sched",
+    "resource_schedule_service:ressched_client",
     "samgr:samgr_proxy",
     "window_manager:libwm",
   ]
@@ -71,7 +61,7 @@ ohos_shared_library("cgroup_sched") {
     external_deps += [ "background_task_mgr:bgtaskmgr_innerkits" ]
   }
 
-  if (ressched_power_manager_enable) {
+  if (cgreou_ressched_power_manager_enable) {
     external_deps += [ "power_manager:powermgr_client" ]
     defines += [ "POWER_MANAGER_ENABLE" ]
   }
