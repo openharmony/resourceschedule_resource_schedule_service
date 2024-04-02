@@ -211,6 +211,8 @@ enum : uint32_t {
     RES_TYPE_DEVICE_MODE_STATUS = 87,
     // report systemload level
     RES_TYPE_SYSTEMLOAD_LEVEL = 88,
+    // report distribute component change
+    RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE = 89,
     //last resType
     RES_TYPE_LAST,
 };
@@ -305,6 +307,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_AUDIO_SILENT_PLAYBACK, "RES_TYPE_AUDIO_SILENT_PLAYBACK" },
     { RES_TYPE_DEVICE_MODE_STATUS, "RES_TYPE_DEVICE_MODE_STATUS"},
     { RES_TYPE_SYSTEMLOAD_LEVEL, "RES_TYPE_SYSTEMLOAD_LEVEL"},
+    { RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE, "RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE"},
 };
 
 /**
