@@ -16,7 +16,6 @@ import("//build/config/features.gni")
 import("//build/ohos.gni")
 import("//build/test.gni")
 import("../../../cgroup_sched.gni")
-
 module_output_path = "resource_schedule_service/resource_schedule_service"
 
 ##############################fuzztest##########################################
