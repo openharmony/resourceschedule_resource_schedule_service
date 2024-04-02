@@ -43,7 +43,7 @@ declare_args() {
   }
 
   if (defined(global_parts_info) &&
-      defined(global_parts_info.resourceschedule_background_task_mgr)) {
+      defined(global_parts_info.powermgr_power_manager)) {
     cgroup_ressched_power_manager_enable = true
   }
 }
