@@ -59,7 +59,6 @@ ohos_fuzztest("ResSchedObserverFuzzTest") {
     "hitrace:hitrace_meter",
     "input:libmmi-client",
     "ipc:ipc_single",
-    "request:request_native",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libwm",
@@ -85,6 +84,10 @@ ohos_fuzztest("ResSchedObserverFuzzTest") {
   if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
     defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
     external_deps += [ "audio_framework:audio_client" ]
+  }
+  if (rss_request_enable) {
+    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    external_deps += [ "request:request_native" ]
   }
 
   part_name = "resource_schedule_service"
