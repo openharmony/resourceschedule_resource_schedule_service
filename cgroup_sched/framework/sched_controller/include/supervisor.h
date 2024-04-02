@@ -196,6 +196,8 @@ public:
         uintptr_t token);
     void SearchWindowId(std::shared_ptr<Application> &application, std::shared_ptr<ProcessRecord> &procRecord,
         uint32_t windowId);
+    void SetSystemLoadLevelState(int32_t level);
+    int32_t GetSystemLoadLevel();
 
     int32_t sceneBoardPid_ = -1;
     std::shared_ptr<Application> focusedApp_ = nullptr;
@@ -207,6 +209,7 @@ public:
 
 private:
     std::map<int32_t, std::shared_ptr<Application>> uidsMap_;
+    int32_t systemLoadLevel_ = -1;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
