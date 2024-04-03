@@ -30,6 +30,7 @@
         "ability_runtime",
         "access_token",
         "audio_framework",
+        "av_session",
         "background_task_mgr",
         "bluetooth",
         "bundle_framework",
@@ -37,8 +38,10 @@
         "common_event_service",
         "config_policy",
         "core_service",
+        "data_share",
+        "device_standby",
+        "efficiency_manager",
         "eventhandler",
-        "ffrt",
         "frame_aware_sched",
         "ffrt",
         "hilog",
@@ -47,17 +50,15 @@
         "init",
         "ipc",
         "movement",
-        "napi",
         "input",
-        "request",
         "samgr",
         "safwk",
         "soc_perf",
         "state_registry",
         "window_manager",
-        "device_standby",
-        "power_manager",
-        "av_session",
+        "power_manager"
+      ],
+      "third_party": [
         "json",
         "libxml2"
       ]
@@ -71,10 +72,11 @@
         ],
         "fwk_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
-          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi:systemload"
+          "//foundation/resourceschedule/resource_schedule_service/ressched/common:resschedsvc_common"
         ],
         "service_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/component_sched_plugin:component_sched_plugin",
           "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/socperf_plugin:socperf_plugin",
           "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/frame_aware_plugin:frame_aware_plugin",
           "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/device_standby_plugin:device_standby_plugin",
@@ -95,9 +97,7 @@
               "res_sched_service_proxy.h",
               "res_type.h",
               "res_sched_ipc_interface_code.h",
-              "res_sched_kill_reason.h",
-              "res_sched_systemload_notifier_client.h",
-              "res_sched_systemload_notifier_stub.h"
+              "res_sched_kill_reason.h"
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"
@@ -133,6 +133,16 @@
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group:libprocess_group"
+        },
+        {
+          "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/common/include",
+            "header_files": [
+              "res_data_ability_observer.h",
+              "res_data_ability_provider.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/common:resschedsvc_common"
         }
       ],
       "test": [
@@ -144,7 +154,6 @@
         "//foundation/resourceschedule/resource_schedule_service/ressched/test/fuzztest:fuzztest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/test/testutil:ressched_test",
         "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/test/fuzztest:fuzztest",
-        "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/test/unittest/systemload_jsunittest:js_unittest",
         "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/test/fuzztest:fuzztest"
       ]
     },

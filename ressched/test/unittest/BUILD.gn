@@ -17,6 +17,7 @@ import("../../ressched.gni")
 group("unittest") {
   testonly = true
   deps = [
+    ":comp_sched_plugin_test",
     ":resschedclient_test",
     ":resschedfwk_test",
     ":resschedservice_test",
@@ -25,14 +26,52 @@ group("unittest") {
 
 module_output_path = "resource_schedule_service/ressched"
 
+ohos_unittest("comp_sched_plugin_test") {
+  module_out_path = module_output_path
+
+  include_dirs = [
+    "${ressched_plugins}/component_sched_plugin/include",
+    "${ressched_common}/include",
+    "${ressched_interfaces}/innerkits/ressched_client/include",
+    "${ressched_services}/resschedmgr/resschedfwk/include",
+    "${ressched_services}/resschedmgr/pluginbase/include",
+  ]
+
+  sources = [ "src/component_sched_plugin_test.cpp" ]
+
+  deps = [
+    "${ressched_plugins}/component_sched_plugin:component_sched_plugin",
+    "//third_party/googletest:gtest_main",
+  ]
+
+  external_deps = [
+    "ability_runtime:ability_manager",
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
+    "ffrt:libffrt",
+    "hilog:libhilog",
+    "hisysevent:libhisysevent",
+    "init:libbegetutil",
+    "resource_schedule_service:resschedsvc",
+  ]
+}
+
 ohos_unittest("resschedservice_test") {
   module_out_path = module_output_path
   include_dirs = [
+    "include",
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
   ]
 
-  sources = [ "src/res_sched_service_test.cpp" ]
+  sources = [
+    "${ressched_common}/src/data_share_utils.cpp",
+    "${ressched_common}/src/oobe_manager.cpp",
+    "${ressched_common}/src/res_data_ability_observer.cpp",
+    "${ressched_common}/src/res_data_ability_provider.cpp",
+    "src/oobe_mgr_test.cpp",
+    "src/res_sched_service_test.cpp",
+  ]
 
   deps = [
     "${ressched_services}:resschedsvc_static",
@@ -40,13 +79,22 @@ ohos_unittest("resschedservice_test") {
   ]
 
   external_deps = [
+    "ability_base:want",
+    "ability_base:zuri",
     "ability_runtime:ability_manager",
+    "ability_runtime:dataobs_manager",
     "access_token:libaccesstoken_sdk",
     "access_token:libnativetoken",
     "access_token:libtoken_setproc",
     "c_utils:utils",
+    "data_share:datashare_common",
+    "data_share:datashare_consumer",
+    "eventhandler:libeventhandler",
     "ffrt:libffrt",
+    "hilog:libhilog",
+    "ipc:ipc_core",
     "ipc:ipc_single",
+    "safwk:system_ability_fwk",
   ]
 
   sanitize = {
@@ -94,7 +142,6 @@ ohos_unittest("resschedfwk_test") {
 
   sources = [
     "src/config_reader_test.cpp",
-    "src/notifier_mgr_test.cpp",
     "src/plugin_mgr_test.cpp",
     "src/plugin_switch_test.cpp",
     "src/res_sched_mgr_test.cpp",
