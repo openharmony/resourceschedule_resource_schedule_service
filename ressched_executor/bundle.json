@@ -1,0 +1,96 @@
+{
+    "name": "@ohos/ressched_executor",
+    "description": "resource schedule executor",
+    "version": "3.1",
+    "license": "Apache License 2.0",
+    "publishAs": "code-segment",
+    "segment": {
+      "destPath": "foundation/resourceschedule/resource_schedule_service/ressched_executor"
+    },
+    "dirs": {},
+    "scripts": {},
+    "component": {
+      "name": "ressched_executor",
+      "subsystem": "resourceschedule",
+      "features": [
+        "ressched_executor_with_ffrt_enable"
+      ],
+      "adapted_system_type": [
+        "standard"
+      ],
+      "rom": "2048KB",
+      "ram": "10240KB",
+      "deps": {
+        "components": [
+          "ability_base",
+          "ability_runtime",
+          "access_token",
+          "av_session",
+          "bundle_framework",
+          "c_utils",
+          "common_event_service",
+          "config_policy",
+          "core_service",
+          "eventhandler",
+          "ffrt",
+          "hilog",
+          "hisysevent",
+          "hitrace",
+          "init",
+          "ipc",
+          "movement",
+          "input",
+          "samgr",
+          "safwk",
+          "state_registry"
+        ],
+        "third_party": [
+          "json",
+          "libxml2"
+        ]
+      },
+      "build": {
+        "group_type": {
+          "base_group" : [],
+          "fwk_group" : [
+            "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client:resschedexe_client"
+          ],
+          "service_group" : [
+            "//foundation/resourceschedule/resource_schedule_service/ressched_executor/services:resschedexesvc",
+            "//foundation/resourceschedule/resource_schedule_service/ressched_executor/sa_profile:resschedexe_sa_profile",
+            "//foundation/resourceschedule/resource_schedule_service/ressched_executor/etc/init:resource_schedule_executor.cfg"
+          ]
+        },
+        "inner_kits": [
+          {
+            "header": {
+              "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client/include",
+              "header_files": [
+                "ires_sched_exe_service.h",
+                "res_sched_exe_client.h",
+                "res_sched_exe_constants.h",
+                "res_sched_exe_service_proxy.h",
+                "res_type.h"
+              ]
+            },
+            "name": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client:resschedexe_client"
+          },
+          {
+            "header": {
+              "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/pluginbase/include",
+              "header_files": [
+                "config_info.h",
+                "plugin.h",
+                "res_data.h"
+              ]
+            },
+            "name": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/services:resschedexesvc"
+          }
+        ],
+        "test": [
+          "//foundation/resourceschedule/resource_schedule_service/ressched_executor/test/unittest:unittest"
+        ]
+      }
+    }
+  }
+  

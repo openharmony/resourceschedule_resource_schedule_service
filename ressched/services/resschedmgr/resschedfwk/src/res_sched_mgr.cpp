@@ -14,12 +14,16 @@
  */
 
 #include "res_sched_mgr.h"
+
 #include <cinttypes>
+
+#include "hitrace_meter.h"
+
 #include "cgroup_sched.h"
 #include "notifier_mgr.h"
-#include "res_sched_log.h"
 #include "plugin_mgr.h"
-#include "hitrace_meter.h"
+#include "res_sched_log.h"
+#include "res_type.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -30,6 +34,7 @@ IMPLEMENT_SINGLE_INSTANCE(ResSchedMgr);
 void ResSchedMgr::Init()
 {
     PluginMgr::GetInstance().Init();
+    PluginMgr::GetInstance().SetResTypeStrMap(ResType::resTypeToStr);
 
     if (!killProcess_) {
         killProcess_ = std::make_shared<KillProcess>();

@@ -18,23 +18,24 @@
 
 #include <functional>
 #include <list>
-#include <string>
-#include <memory>
 #include <map>
+#include <memory>
+#include <string>
 #include <vector>
+
 #include "datetime_ex.h"
 #include "event_handler.h"
-#include "config_reader.h"
-#include "plugin_switch.h"
-#include "plugin.h"
-#include "nocopyable.h"
-#include "res_data.h"
-#include "res_type.h"
-#include "single_instance.h"
-#include "config_info.h"
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt.h"
 #endif
+#include "nocopyable.h"
+#include "single_instance.h"
+
+#include "config_info.h"
+#include "config_reader.h"
+#include "plugin.h"
+#include "plugin_switch.h"
+#include "res_data.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -89,8 +90,10 @@ public:
 
     /**
      * Init pluginmanager, load xml config file, construct plugin instances.
+     *
+     * @param isRssExe Calling service is resource schedule executor.
      */
-    void Init();
+    void Init(bool isRssExe = false);
 
     /**
      * Disable all plugins, maybe service exception happens or stopped.
@@ -137,6 +140,8 @@ public:
 
     PluginConfig GetConfig(const std::string& pluginName, const std::string& configName);
 
+    void SetResTypeStrMap(std::map<uint32_t, std::string> resTypeStr);
+
 private:
     PluginMgr() = default;
     std::string GetRealConfigPath(const char* configName);
@@ -174,6 +179,7 @@ private:
     std::mutex pluginMutex_;
     std::mutex dispatcherHandlerMutex_;
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
+    std::map<uint32_t, std::string> resTypeStrMap_;
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::map<std::string, std::shared_ptr<ffrt::queue>> dispatchers_;

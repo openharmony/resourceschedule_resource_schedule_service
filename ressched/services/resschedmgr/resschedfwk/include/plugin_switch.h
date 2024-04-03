@@ -18,9 +18,11 @@
 
 #include <memory>
 #include <mutex>
-#include "config_info.h"
+
 #include "libxml/parser.h"
 #include "libxml/xpath.h"
+
+#include "config_info.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -35,9 +37,10 @@ public:
      * Load the config file, parse the xml stream and construct the objects.
      *
      * @param configFile The xml filepath.
+     * @param isRssExe Calling service is resource schedule executor.
      * @return Returns true if parse successfully.
      */
-    bool LoadFromConfigFile(const std::string& configFile);
+    bool LoadFromConfigFile(const std::string& configFile, bool isRssExe = false);
 
     /**
      * Get all plugin info, about plugin switch status.
@@ -48,6 +51,7 @@ public:
 
 private:
     static bool IsInvalidNode(const xmlNode& currNode);
+    static bool FillinPluginInfo(const xmlNode& currNode, PluginInfo& info, bool isRssExe = false);
 
     using PluginInfoMap = std::map<std::string, std::string>;
 
