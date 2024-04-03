@@ -83,7 +83,7 @@ ohos_shared_library("resschedexesvc") {
   version_script = "libresschedexeservice.versionscript"
   shlib_type = "sa"
   subsystem_name = "resourceschedule"
-  part_name = "ressched_executor"
+  part_name = "resource_schedule_service"
 
   branch_protector_ret = "pac_ret"
 
@@ -151,7 +151,7 @@ ohos_static_library("resschedexesvc_static") {
   }
 
   subsystem_name = "resourceschedule"
-  part_name = "ressched_executor"
+  part_name = "resource_schedule_service"
 
   branch_protector_ret = "pac_ret"
 

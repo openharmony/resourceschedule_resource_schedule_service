@@ -23,5 +23,5 @@ ohos_prebuilt_etc("resource_schedule_executor.cfg") {
   source = "resource_schedule_executor.cfg"
   relative_install_dir = "init"
   subsystem_name = "resourceschedule"
-  part_name = "ressched_executor"
+  part_name = "resource_schedule_service"
 }
