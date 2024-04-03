@@ -131,6 +131,7 @@ void SchedController::DispatchResource(uint32_t resType, int64_t value, const nl
 
     auto iter = dispatchResFuncMap_.find(resType);
     if (iter == dispatchResFuncMap_.end()) {
+        DispatchOtherResource(resType, value, payload);
         return;
     }
     handler->PostTask([func = iter->second, handler, resType, value, payload] {
