@@ -39,7 +39,7 @@ ohos_shared_library("cgroup_sched") {
 
   deps = [
     "./process_group:libprocess_group",
-    "${ressched_interfaces}/interkits/ressched_client:ressched_client",
+    "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
   ]
 
   external_deps = [
