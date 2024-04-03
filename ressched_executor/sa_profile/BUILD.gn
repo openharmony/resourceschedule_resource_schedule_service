@@ -14,7 +14,7 @@
 import("//build/ohos/sa_profile/sa_profile.gni")
 
 ohos_sa_profile("resschedexe_sa_profile") {
-  sources = [ "1917.json" ]
+  sources = [ "1918.json" ]
 
   part_name = "ressched_executor"
 }
