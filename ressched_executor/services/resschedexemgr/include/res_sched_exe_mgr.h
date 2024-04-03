@@ -45,11 +45,11 @@ public:
      *
      * @param resType Resource type.
      * @param value bit64 content.
-     * @param payload Extra content.
      * @param reply Reply content.
+     * @param payload Extra content.
      */
     int32_t SendResRequest(uint32_t resType, int64_t value = 0,
-        const nlohmann::json& payload = nullptr, nlohmann::json& reply = nullptr);
+        nlohmann::json& reply, const nlohmann::json& payload = nullptr);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

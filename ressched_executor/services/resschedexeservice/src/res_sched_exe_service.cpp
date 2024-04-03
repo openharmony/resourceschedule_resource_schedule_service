@@ -37,12 +37,13 @@ namespace {
 int32_t ResSchedExeService::SendResRequest(uint32_t resType, int64_t value,
     const nlohmann::json& context, nlohmann::json& reply)
 {
-    return ResSchedExeMgr::GetInstance().SendResRequest(resType, value, context, reply);
+    return ResSchedExeMgr::GetInstance().SendResRequest(resType, value, reply, context);
 }
 
 void ResSchedExeService::ReportData(uint32_t resType, int64_t value, const nlohmann::json& context)
 {
-    ResSchedExeMgr::GetInstance().SendResRequest(resType, value, context);
+    nlohmann::json reply;
+    ResSchedExeMgr::GetInstance().SendResRequest(resType, value, reply, context);
 }
 
 bool ResSchedExeService::AllowDump()
