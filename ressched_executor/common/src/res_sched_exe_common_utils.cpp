@@ -48,7 +48,8 @@ bool ResSchedExeCommonUtils::CheckDeviceMode()
     return OHOS::system::GetIntParameter("const.debuggable", 0) != 0;
 }
 
-bool ResSchedExeCommonUtils::CheckPermission(std::string permission){
+bool ResSchedExeCommonUtils::CheckPermission(std::string permission)
+{
     Security::AccessToken::AccessTokenID tokenId = IPCSkeleton::GetCallingTokenID();
     auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
     if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {

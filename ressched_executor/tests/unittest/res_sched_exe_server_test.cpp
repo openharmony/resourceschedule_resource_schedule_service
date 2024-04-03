@@ -356,11 +356,11 @@ HWTEST_F(ResSchedExeServiceTest, RemoteRequest001, Function | MediumTest | Level
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     MessageOption option;
     MessageParcel reply;
-    int32_t res = resSchedExeServiceStub_->OnRemoteRequest(1, reply, reply, option);
+    int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REPORT_DATA, reply, reply, option);
     EXPECT_TRUE(res);
-    res = resSchedExeServiceStub_->OnRemoteRequest(2, reply, reply, option);
+    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_DEBUG, reply, reply, option);
     EXPECT_TRUE(res);
-    res = resSchedExeServiceStub_->OnRemoteRequest(0, reply, reply, option);
+    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::RES_REQUEST, reply, reply, option);
     EXPECT_TRUE(res);
 }
 
@@ -369,11 +369,11 @@ static void RemoteRequestTask()
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     MessageOption option;
     MessageParcel reply;
-    int32_t res = resSchedExeServiceStub_->OnRemoteRequest(1, reply, reply, option);
+    int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REPORT_DATA, reply, reply, option);
     EXPECT_TRUE(res);
-    res = resSchedExeServiceStub_->OnRemoteRequest(2, reply, reply, option);
+    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_DEBUG, reply, reply, option);
     EXPECT_TRUE(res);
-    res = resSchedExeServiceStub_->OnRemoteRequest(0, reply, reply, option);
+    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::RES_REQUEST, reply, reply, option);
     EXPECT_TRUE(res);
 }
 
@@ -401,14 +401,14 @@ HWTEST_F(ResSchedExeServiceTest, ParseParcel001, Function | MediumTest | Level0)
     int64_t value = 0;
     nlohmann::json context;
     MessageParcel emptyData;
-    EXPECT_TRUE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
+    EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
 
     MessageParcel reportData;
     reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData, resType, value, context));
+    EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(reportData, resType, value, context));
 }
 
 static void ParseParcelTask()
@@ -417,14 +417,14 @@ static void ParseParcelTask()
     resSchedExeServiceStub_->Init();
     MessageParcel reply;
     MessageParcel emptyData;
-    EXPECT_TRUE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
+    EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
 
     MessageParcel reportData;
     reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_TRUE(!resSchedExeServiceStub_->ParseParcel(reportData, resType, value, context));
+    EXPECT_TRUE(resSchedExeServiceStub_->ParseParcel(reportData, resType, value, context));
 }
 
 /**

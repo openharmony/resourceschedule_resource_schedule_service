@@ -1,5 +1,5 @@
 {
-    "name": "@ohos/ressched_executor",
+    "name": "@ohos/resource_schedule_executor",
     "description": "resource schedule executor",
     "version": "3.1",
     "license": "Apache License 2.0",
@@ -38,15 +38,13 @@
           "hitrace",
           "init",
           "ipc",
+          "json",
+          "libxml2",
           "movement",
           "input",
           "samgr",
           "safwk",
           "state_registry"
-        ],
-        "third_party": [
-          "json",
-          "libxml2"
         ]
       },
       "build": {

@@ -81,17 +81,19 @@ int32_t ResSchedExeServiceProxy::MakeUpParcel(MessageParcel& data,
     return ResErrCode::RSSEXE_NO_ERR;
 }
 
-void ResSchedExeServiceProxy::SendDebugCommand(MessageOption& option)
+int32_t ResSchedExeServiceProxy::SendDebugCommand(MessageOption& option)
 {
     MessageParcel data;
-    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), , ResSchedExeServiceProxy);
-    WRITE_PARCEL(data, Uint32, ResExeType::RES_TYPE_DEBUG, , ResSchedExeServiceProxy);
+    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(),
+        ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
+    WRITE_PARCEL(data, Uint32, ResExeType::RES_TYPE_DEBUG, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     uint64_t curr = ResSchedExeCommonUtils::GetCurrentTimestampUs();
-    WRITE_PARCEL(data, Uint64, curr, , ResSchedExeServiceProxy);
+    WRITE_PARCEL(data, Uint64, curr, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     RSSEXE_LOGD("IPC debug: client send request, current timestamp is %{public}ld.", curr);
 
     nlohmann::json reply;
     SendRequestInner(ResIpcType::REQUEST_DEBUG, data, option, reply);
+    return ResErrCode::RSSEXE_NO_ERR;
 }
 
 } // namespace ResourceSchedule

@@ -31,28 +31,28 @@ public:
 
     /**
      * @brief get current timestamp
-     * 
+     *
      * @return current timestamp, unit ms
      */
     static uint64_t GetCurrentTimestampMs();
 
     /**
      * @brief get current timestamp
-     * 
+     *
      * @return current timestamp, unit us
      */
     static uint64_t GetCurrentTimestampUs();
 
     /**
      * @brief check device is eng mode
-     * 
+     *
      * @return device is eng mode or not
      */
     static bool CheckDeviceMode();
 
     /**
      * @brief check process has permission
-     * 
+     *
      * @param permission permission name to check
      * @return process has permission or not
      */
@@ -60,7 +60,7 @@ public:
 
     /**
      * @brief convert string to json
-     * 
+     *
      * @param str message string
      * @param payload message will be convert to json
      */

@@ -11,10 +11,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resourcescheduleservice_path = "//foundation/resourceschedule/resource_schedule_service"
+resourcescheduleservice_path =
+    "//foundation/resourceschedule/resource_schedule_service"
 
-resschedexe_common =
-    "${resourcescheduleservice_path}/ressched_executor/common"
+resschedexe_common = "${resourcescheduleservice_path}/ressched_executor/common"
 
 resschedexe_interfaces =
     "${resourcescheduleservice_path}/ressched_executor/interfaces"
@@ -24,9 +24,6 @@ resschedexe_services =
 
 resschedexe_plugins =
     "${resourcescheduleservice_path}/ressched/services/resschedmgr"
-
-ressched_test =
-    "${resourcescheduleservice_path}/ressched_executor/test"
 
 declare_args() {
   ressched_executor_with_ffrt_enable = false

@@ -164,6 +164,7 @@ private:
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     int32_t GetExtTypeByResPayload(const std::shared_ptr<ResData>& resData);
 #endif
+    std::list<std::string> SortPluginList(const std::list<std::string>& pluginList);
 
     // plugin crash 3 times in 60s, will be disable forever
     const int32_t MAX_PLUGIN_TIMEOUT_TIMES = 3;
