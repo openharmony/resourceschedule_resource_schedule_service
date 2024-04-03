@@ -21,7 +21,7 @@
 #include <sys/types.h>
 
 #include "event_handler.h"
-#include "nlohmann/json.h"
+#include "nlohmann/json.hpp"
 #include "single_instance.h"
 
 namespace OHOS {

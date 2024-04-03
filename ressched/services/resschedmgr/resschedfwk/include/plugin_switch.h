@@ -51,7 +51,7 @@ public:
 
 private:
     static bool IsInvalidNode(const xmlNode& currNode);
-    static bool FillinPluginInfo(const xmlNode& currNode, PluginInfo& info, bool isRssExe = false);
+    static bool FillinPluginInfo(const xmlNode* currNode, PluginInfo& info, bool isRssExe = false);
 
     using PluginInfoMap = std::map<std::string, std::string>;
 

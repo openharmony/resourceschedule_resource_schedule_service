@@ -38,7 +38,7 @@ bool PluginSwitch::IsInvalidNode(const xmlNode& currNode)
     return false;
 }
 
-bool PluginSwitch::FillinPluginInfo(const xmlNode& currNode, PluginInfo& info, bool isRssExe)
+bool PluginSwitch::FillinPluginInfo(const xmlNode* currNode, PluginInfo& info, bool isRssExe)
 {
     xmlChar *attrValue = nullptr;
     if (!isRssExe) {
