@@ -24,13 +24,13 @@ cgroup_sched_interfaces = "${cgroup_sched_path}/interfaces"
 
 resourceschedule_path = "//foundation/resourceschedule"
 
-ressched_common = 
+ressched_common =
     "${resourceschedule_path}/resource_schedule_service/ressched/common"
 
-ressched_interfaces = 
+ressched_interfaces =
     "${resourceschedule_path}/resource_schedule_service/ressched/interfaces"
 
-ressched_services = 
+ressched_services =
     "${resourceschedule_path}/resource_schedule_service/ressched/services"
 
 declare_args() {
