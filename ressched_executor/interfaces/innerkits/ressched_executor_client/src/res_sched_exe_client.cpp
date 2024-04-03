@@ -61,7 +61,7 @@ int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64
     if (TryConnect() != ResErrCode::RSSEXE_NO_ERR) {
         return ResIpcErrCode::RSSEXE_CONNECT_FAIL;
     }
-    RSSEXE_LOGD("SendRequestInner receive resType = %{public}u, value = %{public}ld.", resType, value);
+    RSSEXE_LOGD("SendRequestInner receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
 
     std::lock_guard<std::mutex> lock(mutex_);
     if (resSchedExe_ == nullptr) {

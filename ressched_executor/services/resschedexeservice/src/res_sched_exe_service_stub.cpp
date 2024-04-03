@@ -77,8 +77,8 @@ int32_t ResSchedExeServiceStub::ReportRequestInner(MessageParcel& data, MessageP
         return ResIpcErrCode::RSSEXE_DATA_ERROR;
     }
     int32_t clientPid = IPCSkeleton::GetCallingPid();
-    RSSEXE_LOGD("receive data from ipc resType: %{public}u, value: %{public}ld, pid: %{public}d",
-        resType, value, clientPid);
+    RSSEXE_LOGD("receive data from ipc resType: %{public}u, value: %{public}lld, pid: %{public}d",
+        resType, (long long)value, clientPid);
 
     int32_t ret = 0;
     if (context.size() <= PAYLOAD_MAX_SIZE) {
@@ -116,8 +116,8 @@ int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data, MessagePar
     uint64_t curr = ResSchedExeCommonUtils::GetCurrentTimestampUs();
     uint64_t start;
     READ_PARCEL(data, Uint64, start, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
-    RSSEXE_LOGD("IPC debug: server recieve request, current timestamp is %{public}ld.", curr);
-    RSSEXE_LOGD("IPC debug: server recieve request, cost tome is %{public}ld.", curr - start);
+    RSSEXE_LOGD("IPC debug: server recieve request, current timestamp is %{public}llu.", curr);
+    RSSEXE_LOGD("IPC debug: server recieve request, cost tome is %{public}llu.", curr - start);
     return ResErrCode::RSSEXE_NO_ERR;
 }
 

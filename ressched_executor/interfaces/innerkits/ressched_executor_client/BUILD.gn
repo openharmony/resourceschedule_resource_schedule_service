@@ -39,6 +39,7 @@ ohos_shared_library("resschedexe_client") {
     "access_token:libtokenid_sdk",
     "c_utils:utils",
     "hilog:libhilog",
+    "init:libbegetutil",
     "ipc:ipc_single",
     "samgr:samgr_proxy",
   ]

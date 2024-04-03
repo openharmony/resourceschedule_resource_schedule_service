@@ -72,7 +72,7 @@ int32_t ResSchedExeServiceProxy::SendRequestInner(uint32_t ipcType, MessageParce
 int32_t ResSchedExeServiceProxy::MakeUpParcel(MessageParcel& data,
     uint32_t resType, int64_t value, const nlohmann::json& context)
 {
-    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(),
+    WRITE_PARCEL(data, InterfaceToken, ResSchedExeServiceProxy::GetDescriptor(),
         ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     WRITE_PARCEL(data, Uint32, resType, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     WRITE_PARCEL(data, Int64, value, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
@@ -84,12 +84,12 @@ int32_t ResSchedExeServiceProxy::MakeUpParcel(MessageParcel& data,
 int32_t ResSchedExeServiceProxy::SendDebugCommand(MessageOption& option)
 {
     MessageParcel data;
-    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(),
+    WRITE_PARCEL(data, InterfaceToken, ResSchedExeServiceProxy::GetDescriptor(),
         ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     WRITE_PARCEL(data, Uint32, ResExeType::RES_TYPE_DEBUG, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     uint64_t curr = ResSchedExeCommonUtils::GetCurrentTimestampUs();
     WRITE_PARCEL(data, Uint64, curr, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
-    RSSEXE_LOGD("IPC debug: client send request, current timestamp is %{public}ld.", curr);
+    RSSEXE_LOGD("IPC debug: client send request, current timestamp is %{public}llu.", curr);
 
     nlohmann::json reply;
     SendRequestInner(ResIpcType::REQUEST_DEBUG, data, option, reply);

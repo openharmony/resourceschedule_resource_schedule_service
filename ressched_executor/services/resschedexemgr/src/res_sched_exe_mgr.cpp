@@ -43,7 +43,7 @@ void ResSchedExeMgr::Stop()
 int32_t ResSchedExeMgr::SendResRequest(uint32_t resType, int64_t value = 0,
     const nlohmann::json& payload, nlohmann::json& reply)
 {
-    PLGMGR_LOGD("receive resType = %{public}u, value = %{public}ld.", resType, value);
+    PLGMGR_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
     std::string trace_str(__func__);
     trace_str.append(",resType[").append(std::to_string(resType)).append("]");
     trace_str.append(",value[").append(std::to_string(value)).append("]");
