@@ -30,8 +30,8 @@ ohos_shared_library("resschedexe_client") {
 
   sources = [
     "${resschedexe_common}/src/res_sched_exe_common_utils.cpp",
-    "src/res_sched_client.cpp",
-    "src/res_sched_service_proxy.cpp",
+    "src/res_sched_exe_client.cpp",
+    "src/res_sched_exe_service_proxy.cpp",
   ]
 
   external_deps = [

@@ -111,7 +111,7 @@ ohos_static_library("resschedexesvc_static") {
     "${resschedexe_plugins}/resschedfwk/src/config_reader.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_mgr.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_switch.cpp",
-    "resschedexemgr/src/res_sched_mgr.cpp",
+    "resschedexemgr/src/res_sched_exe_mgr.cpp",
     "resschedexeservice/src/res_sched_exe_service.cpp",
     "resschedexeservice/src/res_sched_exe_service_ability.cpp",
     "resschedexeservice/src/res_sched_exe_service_stub.cpp",
