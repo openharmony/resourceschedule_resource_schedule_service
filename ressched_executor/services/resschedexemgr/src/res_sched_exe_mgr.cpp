@@ -21,7 +21,7 @@
 
 #include "plugin_mgr.h"
 #include "plugin_mgr_log.h"
-#include "res_exe_type.h"
+#include "res_sched_exe_constants.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -40,7 +40,7 @@ void ResSchedExeMgr::Stop()
     PluginMgr::GetInstance().Stop();
 }
 
-int32_t ResSchedExeMgr::SendResRequest(uint32_t resType, int64_t value = 0,
+int32_t ResSchedExeMgr::SendResRequest(uint32_t resType, int64_t value,
     nlohmann::json& reply, const nlohmann::json& payload)
 {
     PLGMGR_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);

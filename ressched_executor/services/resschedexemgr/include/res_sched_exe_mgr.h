@@ -48,7 +48,7 @@ public:
      * @param reply Reply content.
      * @param payload Extra content.
      */
-    int32_t SendResRequest(uint32_t resType, int64_t value = 0,
+    int32_t SendResRequest(uint32_t resType, int64_t value,
         nlohmann::json& reply, const nlohmann::json& payload = nullptr);
 };
 } // namespace ResourceSchedule
