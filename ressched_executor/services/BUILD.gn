@@ -24,9 +24,7 @@ config("service_public_config") {
 }
 
 config("service_private_config") {
-  include_dirs = [
-    "resschedexeservice/include",
-  ]
+  include_dirs = [ "resschedexeservice/include" ]
 }
 
 ohos_shared_library("resschedexesvc") {
@@ -48,9 +46,7 @@ ohos_shared_library("resschedexesvc") {
     "resschedexeservice/src/res_sched_exe_service_stub.cpp",
   ]
 
-  deps = [
-    "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
-  ]
+  deps = [ "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client" ]
 
   external_deps = [
     "ability_base:want",
@@ -121,9 +117,7 @@ ohos_static_library("resschedexesvc_static") {
     "resschedexeservice/src/res_sched_exe_service_stub.cpp",
   ]
 
-  deps = [
-    "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
-  ]
+  deps = [ "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client" ]
 
   external_deps = [
     "ability_base:want",
