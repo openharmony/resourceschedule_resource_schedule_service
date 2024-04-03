@@ -21,6 +21,7 @@
 
 #include "plugin_mgr.h"
 #include "plugin_mgr_log.h"
+#include "res_exe_type.h"
 #include "res_sched_exe_constants.h"
 
 namespace OHOS {

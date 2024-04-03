@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-using namespace OHOS::Security;
 namespace {
     constexpr int32_t DUMP_OPTION = 0;
     constexpr int32_t DUMP_PARAM_INDEX = 1;
@@ -62,7 +61,7 @@ bool ResSchedExeService::AllowDump()
 int32_t ResSchedExeService::Dump(int32_t fd, const std::vector<std::u16string>& args)
 {
     if (!AllowDump()) {
-        return ERR_RES_SCHED_PERMISSION_DENIED;
+        return ResErrCode::RSSEXE_PERMISSIOM_DENIED;
     }
     RSSEXE_LOGI("%{public}s Dump service.", __func__);
     std::vector<std::string> argsInStr;
