@@ -62,10 +62,9 @@ public:
     int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
 
 private:
-    int32_t ReportRequestInner(MessageParcel& data, MessageParcel& reply, int32_t uid);
-    int32_t ReportDebugInner(MessageParcel& data, MessageParcel& reply);
-    bool ParseParcel(MessageParcel& data, uint32_t& resType, int64_t& value, const nlohmann::json& context);
-    void Init();
+    bool AllowDump();
+    void DumpAllInfo(std::string &result);
+    void DumpUsage(std::string &result);
     DISALLOW_COPY_AND_MOVE(ResSchedExeService);
 };
 } // namespace ResourceSchedule
