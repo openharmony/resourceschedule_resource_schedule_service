@@ -28,7 +28,7 @@ module_output_path = "resource_schedule_service/ressched"
 ohos_unittest("resschedservice_test") {
   module_out_path = module_output_path
   include_dirs = [
-    "include",
+    "./include",
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
   ]

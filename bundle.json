@@ -40,10 +40,9 @@
         "core_service",
         "data_share",
         "device_standby",
-        "efficiency_manager",
         "eventhandler",
-        "frame_aware_sched",
         "ffrt",
+        "frame_aware_sched",
         "hilog",
         "hisysevent",
         "hitrace",
@@ -58,9 +57,7 @@
         "soc_perf",
         "state_registry",
         "window_manager",
-        "power_manager"
-      ],
-      "third_party": [
+        "power_manager",
         "json",
         "libxml2"
       ]
