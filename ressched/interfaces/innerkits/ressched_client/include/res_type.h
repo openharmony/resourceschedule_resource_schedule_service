@@ -776,7 +776,7 @@ enum LocationStatus : int64_t {
 enum WebDragResizeStatus : int64_t {
     WEB_DRAG_START = 0,
     WEB_DRAG_END = 1,
-}
+};
 
 } // namespace ResType
 } // namespace ResourceSchedule
