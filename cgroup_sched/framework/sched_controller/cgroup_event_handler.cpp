@@ -28,7 +28,7 @@
 #ifdef POWER_MANAGER_ENABLE
 #include "power_mgr_client.h"
 #endif
-#include "window_manager.h"
+#include "window_manager_lite.h"
 
 #undef LOG_TAG
 #define LOG_TAG "CgroupEventHandler"

@@ -18,7 +18,7 @@
 
 #include <sys/types.h>
 #include "iremote_object.h"
-#include "window_manager.h"
+#include "window_manager_lite.h"
 #include "wm_common.h"
 #include "nlohmann/json.hpp"
 #include <cstdint>
