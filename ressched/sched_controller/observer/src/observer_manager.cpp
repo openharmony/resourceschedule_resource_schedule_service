@@ -78,9 +78,7 @@ void ObserverManager::InitObserverCbMap()
         { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::InitMMiEventObserver, std::placeholders::_1) },
         { DISPLAY_MANAGER_SERVICE_ID, std::bind(&ObserverManager::InitDisplayModeObserver, std::placeholders::_1) },
         { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::InitConnectionSubscriber, std::placeholders::_1) },
-#ifndef RESOURCE_REQUEST_REQUEST
         { DOWNLOAD_SERVICE_ID, std::bind(&ObserverManager::InitDownloadUploadObserver, std::placeholders::_1) },
-#endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
         { AVSESSION_SERVICE_ID, std::bind(&ObserverManager::InitAVSessionStateChangeListener, std::placeholders::_1) },
 #endif
@@ -96,9 +94,7 @@ void ObserverManager::InitObserverCbMap()
         { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::DisableMMiEventObserver, std::placeholders::_1) },
         { DISPLAY_MANAGER_SERVICE_ID, std::bind(&ObserverManager::DisableDisplayModeObserver, std::placeholders::_1) },
         { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::DisableConnectionSubscriber, std::placeholders::_1) },
-#ifndef RESOURCE_REQUEST_REQUEST
         { DOWNLOAD_SERVICE_ID, std::bind(&ObserverManager::DisableDownloadUploadObserver, std::placeholders::_1) },
-#endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
         { AVSESSION_SERVICE_ID,
           std::bind(&ObserverManager::DisableAVSessionStateChangeListener, std::placeholders::_1) },
@@ -135,9 +131,7 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(MULTIMODAL_INPUT_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(DISPLAY_MANAGER_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(ABILITY_MGR_SERVICE_ID, systemAbilityManager);
-#ifndef RESOURCE_REQUEST_REQUEST
     AddItemToSysAbilityListener(DOWNLOAD_SERVICE_ID, systemAbilityManager);
-#endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
     AddItemToSysAbilityListener(AVSESSION_SERVICE_ID, systemAbilityManager);
 #endif
@@ -597,7 +591,6 @@ void ObserverManager::DisableAVSessionStateChangeListener()
     avSessionStateListener_ = nullptr;
 }
 #endif
-#ifndef RESOURCE_REQUEST_REQUEST
 void ObserverManager::InitDownloadUploadObserver()
 {
     if (downLoadUploadObserver_ == nullptr) {
@@ -622,7 +615,6 @@ void ObserverManager::DisableDownloadUploadObserver()
     RESSCHED_LOGI("Disable download Upload observer");
     downLoadUploadObserver_ = nullptr;
 }
-#endif
 
 extern "C" void ObserverManagerInit()
 {

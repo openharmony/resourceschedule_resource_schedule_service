@@ -680,7 +680,7 @@ enum SaControlAppStatus : int64_t {
  */
 enum KeyUploadOrDownloadStatus : int64_t {
     ENTER_UPLOAD_DOWNLOAD_SCENE = 0,
-    EXIT_UPLOAD_DOWNLOAD_SCENE = 1,
+    EXIT_UPLOAD_DOWNLOAD__SCENE = 1,
 };
 
 

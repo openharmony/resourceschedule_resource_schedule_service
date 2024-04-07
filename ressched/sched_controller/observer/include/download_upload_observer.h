@@ -12,9 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #ifndef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_DOWNLOAD_UPLOAD_OBSERVER_H
 #define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_DOWNLOAD_UPLOAD_OBSERVER_H
-#ifndef RESOURCE_REQUEST_REQUEST
+
 #include "running_task_count.h"
 namespace OHOS {
 namespace ResourceSchedule {
@@ -26,5 +27,4 @@ public:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif
 #endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_DOWNLOAD_UPLOAD_OBSERVER_H
