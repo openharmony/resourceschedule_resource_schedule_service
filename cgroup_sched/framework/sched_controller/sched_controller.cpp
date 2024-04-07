@@ -327,8 +327,7 @@ void SchedController::SubscribeWindowState()
             if (OHOS::Rosen::WindowManagerLite::GetInstance().
             RegisterFocusChangedListener(windowStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
+                        "COMPONENT_NAME", "MAIN","ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of window focus change failed.");
             }
         }
@@ -336,11 +335,10 @@ void SchedController::SubscribeWindowState()
     if (!windowVisibilityObserver_) {
         windowVisibilityObserver_ = new (std::nothrow)WindowVisibilityObserver();
         if (windowVisibilityObserver_) {
-            if(OHOS::Rosen::WindowManagerLite::GetInstance().
+            if (OHOS::Rosen::WindowManagerLite::GetInstance().
             RegisterVisibilityChangedListener(windowVisibilityObserver_) != OHOS::Rosen::WMError::WM_OK) {
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
+                        "COMPONENT_NAME", "MAIN","ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of window visibility change failed.");
             }
         }
@@ -352,8 +350,7 @@ void SchedController::SubscribeWindowState()
                 RegisterDrawingContentChangedListener(windowDrawingContentObserver_) != OHOS::Rosen::WMError::WM_OK) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                         HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
+                        "COMPONENT_NAME", "MAIN","ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of window draw content change failed.");
             }
         }
