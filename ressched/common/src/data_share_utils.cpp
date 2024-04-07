@@ -36,13 +36,17 @@ const std::string SETTING_URI_PROXY = "datashare:///com.ohos.settingsdata/entry/
 } // namespace
 
 DataShareUtils::DataShareUtils() = default;
-
 DataShareUtils::~DataShareUtils() = default;
 
 DataShareUtils& DataShareUtils::GetInstance()
 {
-    instance_ = new DataShareUtils();
-    instance_->InitSystemAbilityManager();
+    if (instance_ == nullptr) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (instance_ == nullptr) {
+            instance_ = new DataShareUtils();
+            instance->InitSystemAbilityManager();
+        }
+    }
     return *instance_;
 }
 
@@ -103,6 +107,9 @@ std::shared_ptr<DataShare::DataShareHelper> DataShareUtils::CreateDataShareHelpe
 
 bool DataShareUtils::ReleaseDataShareHelper(std::shared_ptr<DataShare::DataShareHelper>& helper)
 {
+    if (helper == nullptr) {
+        return false;
+    }
     if (!helper->Release()) {
         RESSCHED_LOGW("release helper fail, remoteObj_%{public}p", remoteObj_.GetRefPtr());
         return false;
@@ -117,9 +124,9 @@ void DataShareUtils::InitSystemAbilityManager()
         RESSCHED_LOGE("get sam return nullptr");
         return;
     }
-    auto remoteObj = sam->GetSystemAbility(systemAbilityId);
+    auto remoteObj = sam->GetSystemAbility(RES_SCHED_SYS_ABILITY_ID);
     if (remoteObj == nullptr) {
-        RESSCHED_LOGE("Get remoteObj return nullptr, systemAbilityId=%{public}d", systemAbilityId);
+        RESSCHED_LOGE("Get remoteObj return nullptr, systemAbilityId=%{public}d", RES_SCHED_SYS_ABILITY_ID);
         return;
     }
     remoteObj_ = remoteObj;

@@ -44,8 +44,8 @@ const std::string SETTING_URI_PROXY = "datashare:///com.ohos.settingsdata/entry/
 
 class OOBETaskImpl : public IOOBETask {
 public:
-    OOBETaskImpl();
-    void ExcutingTask() override;
+    OOBETaskImpl() {}
+    void ExcutingTask() override {}
 };
 
 void OOBEMgrTest::SetUpTestCase() {}
@@ -95,7 +95,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_003, Function | MediumTest | Level0)
 {
     std::string result;
     ResourceSchedule::DataShareUtils.GetInstance().GetValue(KEYWORD, result);
-    EXPECT_NE(result, nullptr);
+    EXPECT_NE(result, "");
 }
 
 /**
@@ -125,13 +125,13 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_005, Function | MediumTest | Level0)
     int32_t ret1 = ResourceSchedule::DataShareUtils.GetInstance().GetStringValue(KEYWORD, result);
     EXPECT_EQ(ret1, ERR_OK);
 
-    int32_t ret2 = ResourceSchedule::DataShareUtils.GetInstance().GetStringValue(KEYWORD, result);
+    int32_t ret2 = ResourceSchedule::DataShareUtils.GetInstance().GetStringValue("", result);
     EXPECT_NE(ret2, ERR_OK);
 
-    int32_t ret3 = ResourceSchedule::DataShareUtils.GetInstance().GetStringValue(KEYWORD, result);
+    int32_t ret3 = ResourceSchedule::DataShareUtils.GetInstance().GetStringValue("test", result);
     EXPECT_NE(ret3, ERR_OK);
 
-    int32_t ret4 = ResourceSchedule::DataShareUtils.GetInstance().GetStringValue(KEYWORD, result);
+    int32_t ret4 = ResourceSchedule::DataShareUtils.GetInstance().GetStringValue("123", result);
     EXPECT_NE(ret4, ERR_OK);
 }
 
@@ -160,6 +160,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_006, Function | MediumTest | Level0)
 HWTEST_F(OOBEMgrTest, TestDataShareUtils_007, Function | MediumTest | Level0)
 {
     DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
+    dataShareUtils.InitSystemAbilityManager();
     std::shared_ptr<DataShare::DataShareHelper> helper = dataShareUtils.CreateDataShareHelper();
     EXPECT_NE(helper, nullptr);
 }
@@ -174,6 +175,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_007, Function | MediumTest | Level0)
 HWTEST_F(OOBEMgrTest, TestDataShareUtils_008, Function | MediumTest | Level0)
 {
     DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
+    dataShareUtils.InitSystemAbilityManager();
     std::shared_ptr<DataShare::DataShareHelper> helper = dataShareUtils.CreateDataShareHelper();
     bool flag = dataShareUtils.ReleaseDataShareHelper(helper);
     EXPECT_TRUE(flag);
@@ -181,7 +183,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_008, Function | MediumTest | Level0)
 
 /**
  * @tc.name: oobe manager TestDataShareUtils_009
- * @tc.desc: test the interface ReleaseDataShareHelper of dataShareUtils
+ * @tc.desc: test the interface InitSystemAbilityManager of dataShareUtils
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
@@ -189,27 +191,12 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_008, Function | MediumTest | Level0)
 HWTEST_F(OOBEMgrTest, TestDataShareUtils_009, Function | MediumTest | Level0)
 {
     DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
-    std::shared_ptr<DataShare::DataShareHelper> helper = dataShareUtils.CreateDataShareHelper();
-    bool flag = dataShareUtils.ReleaseDataShareHelper(helper);
-    EXPECT_EQ(flag, false);
-}
-
-/**
- * @tc.name: oobe manager TestDataShareUtils_010
- * @tc.desc: test the interface InitSystemAbilityManager of dataShareUtils
- * @tc.type: FUNC
- * @tc.require: issueI97493
- * @tc.author:zhumingjie
- */
-HWTEST_F(OOBEMgrTest, TestDataShareUtils_010, Function | MediumTest | Level0)
-{
-    DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
     dataShareUtils.InitSystemAbilityManager();
     SUCCEED();
 }
 
 /**
- * @tc.name: oobe manager TestDataShareUtils_011
+ * @tc.name: oobe manager TestDataShareUtils_010
  * @tc.desc: test the interface AssembleUri of dataShareUtils
  * @tc.type: FUNC
  * @tc.require: issueI97493
@@ -247,38 +234,29 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_001, Function | MediumTest | Level0)
  */
 HWTEST_F(OOBEMgrTest, TestOOBEManager_002, Function | MediumTest | Level0)
 {
+    OOBEManager& oobeMgr = OOBEManager::GetInstance();
+    oobeMgr.InitSystemAbilityListener();
     sptr<OOBEManager::SystemAbilityStatusChangeListener> listener =
-        sptr<OOBEManager::SystemAbilityStatusChangeListener>(new OOBEManager::SystemAbilityStatusChangeListener());
-    listener->OnAddSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, nullptr);
+        sptr<OOBEManager::SystemAbilityStatusChangeListener>();
+        std::string deviceId;
+    listener->OnAddSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
     SUCCEED();
 
-    listener->OnAddSystemAbility(0, nullptr);
+    listener->OnAddSystemAbility(0, deviceId);
+    SUCCEED();
+
+    listener->OnRemoveSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
     SUCCEED();
 }
 
 /**
  * @tc.name: oobe manager TestOOBEManager_003
- * @tc.desc: test the interface OnRemoveSystemAbility of OOBEManager
- * @tc.type: FUNC
- * @tc.require: issueI97493
- * @tc.author:zhumingjie
- */
-HWTEST_F(OOBEMgrTest, TestOOBEManager_003, Function | MediumTest | Level0)
-{
-    sptr<OOBEManager::SystemAbilityStatusChangeListener> listener =
-        sptr<OOBEManager::SystemAbilityStatusChangeListener>(new OOBEManager::SystemAbilityStatusChangeListener());
-    listener->OnRemoveSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, nullptr);
-    SUCCEED();
-}
-
-/**
- * @tc.name: oobe manager TestOOBEManager_004
  * @tc.desc: test the interface Initialize of OOBEManager
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestOOBEManager_004, Function | MediumTest | Level0)
+HWTEST_F(OOBEMgrTest, TestOOBEManager_003, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
     bool flag = oobeMgr.Initialize();
@@ -286,42 +264,42 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_004, Function | MediumTest | Level0)
 }
 
 /**
+ * @tc.name: oobe manager TestOOBEManager_004
+ * @tc.desc: test the interface SubmitTask of OOBEManager
+ * @tc.type: FUNC
+ * @tc.require: issueI97493
+ * @tc.author:zhumingjie
+ */
+HWTEST_F(OOBEMgrTest, TestOOBEManager_004, Function | MediumTest | Level0)
+{
+    OOBEManager& oobeMgr = OOBEManager::GetInstance();
+    bool flag = oobeMgr.SubmitTask(nullptr);
+    EXPECT_EQ(flag, false);
+}
+
+/**
  * @tc.name: oobe manager TestOOBEManager_005
- * @tc.desc: test the interface AddTask of OOBEManager
+ * @tc.desc: test the interface SubmitTask of OOBEManager
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
 HWTEST_F(OOBEMgrTest, TestOOBEManager_005, Function | MediumTest | Level0)
 {
+    std::shared_ptr<IOOBETask> oobeTask = std::make_shared<OOBETaskImpl>();
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
-    bool flag = oobeMgr.AddTask(nullptr);
-    EXPECT_EQ(flag, false);
+    bool flag = oobeMgr.SubmitTask(oobeTask);
+    EXPECT_EQ(flag, true);
 }
 
 /**
  * @tc.name: oobe manager TestOOBEManager_006
- * @tc.desc: test the interface AddTask of OOBEManager
+ * @tc.desc: test the interface StartListen of OOBEManager
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
 HWTEST_F(OOBEMgrTest, TestOOBEManager_006, Function | MediumTest | Level0)
-{
-    std::shared_ptr<IOOBETask> oobeTask = std::make_shared<OOBETaskImpl>();
-    OOBEManager& oobeMgr = OOBEManager::GetInstance();
-    bool flag = oobeMgr.AddTask(oobeTask);
-    EXPECT_EQ(flag, true);
-}
-
-/**
- * @tc.name: oobe manager TestOOBEManager_007
- * @tc.desc: test the interface AddTask of OOBEManager
- * @tc.type: FUNC
- * @tc.require: issueI97493
- * @tc.author:zhumingjie
- */
-HWTEST_F(OOBEMgrTest, TestOOBEManager_007, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
     oobeMgr.StartListen();

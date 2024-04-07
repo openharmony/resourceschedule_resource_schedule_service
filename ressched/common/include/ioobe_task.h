@@ -22,7 +22,6 @@ class IOOBETask {
 public:
     virtual ~IOOBETask() = default;
     virtual void ExcutingTask() = 0;
-
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

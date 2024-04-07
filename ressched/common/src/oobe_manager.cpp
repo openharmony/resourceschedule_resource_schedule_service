@@ -25,7 +25,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 OOBEManager* OOBEManager::oobeInstance_;
 std::mutex OOBEManager::mutex_;
-std::vector<std::shared_ptr<IOOBETask>> OOBEManager::oobetasks_;
+std::vector<std::shared_ptr<IOOBETask>> OOBEManager::oobeTasks_;
 namespace {
 const std::string KEYWORD = "basic_statement_agreed";
 } // namespace
@@ -79,21 +79,25 @@ void OOBEManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
 {
     RESSCHED_LOGI("OOBEManager add system ability systemAbilityId:%{public}d", systemAbilityId);
     switch (systemAbilityId) {
-    case DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID:
-        if (!OOBEManager::GetInstance().Initialize()) {
-            RESSCHED_LOGI("the user does not agreed to the authorization.");
-            OOBEManager::GetInstance().StartListen();
+        case DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID: {
+            if (!OOBEManager::GetInstance().Initialize()) {
+                RESSCHED_LOGI("the user does not agreed to the authorization.");
+                OOBEManager::GetInstance().StartListen();
+            }
+            break;
         }
-        break;
-    default:
-        RESSCHED_LOGI("Unhandled systemAbilityId:%{public}d", systemAbilityId);
-        break;
+        default: {
+            RESSCHED_LOGI("Unhandled systemAbilityId:%{public}d", systemAbilityId);
+            break;
+        }
     }
 }
 
 void OOBEManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
+    ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
+    ResDataAbilityProvider::GetInstance().UnregisterObserver(KEYWORD, updateFunc);
     RESSCHED_LOGI("OOBEManager remove system ability systemAbilityId:%{public}d", systemAbilityId);
 }
 
@@ -115,7 +119,7 @@ bool OOBEManager::AddTask(const std::shared_ptr<IOOBETask>& task)
     }
     std::lock_guard<std::mutex> lock(mutex_);
     oobeTasks_.push_back(task);
-    return true;    
+    return true;
 }
 
 void OOBEManager::StartListen()
@@ -124,7 +128,7 @@ void OOBEManager::StartListen()
         int result = 0;
         ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
         if (result != 0) {
-            RESSCHED_LOGI("User consent authorization");
+            RESSCHED_LOGI("User consent authorization!");
             std::lock_guard<std::mutex> lock(mutex_);
             for (auto task : oobeTasks_) {
                 task->ExcutingTask();

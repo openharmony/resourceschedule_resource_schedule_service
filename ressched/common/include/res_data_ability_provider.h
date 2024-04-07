@@ -18,6 +18,7 @@
 #include "datashare_helper.h"
 #include "errors.h"
 #include <map>
+#include "mutex"
 #include "res_data_ability_observer.h"
 
 namespace OHOS {
@@ -33,11 +34,8 @@ protected:
 
 private:
     static ResDataAbilityProvider* instance_;
+    static std::mutex mutex_;
     static std::map<std::string, sptr<ResDataAbilityObserver>> observers_;
-    static void Initialize(int32_t systemAbilityId);
-    static std::shared_ptr<DataShare::DataShareHelper> CreateDataShareHelper();
-    static bool ReleaseDataShareHelper(std::shared_ptr<DataShare::DataShareHelper>& helper);
-    static Uri AssembleUri(const std::string& key);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

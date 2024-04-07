@@ -30,7 +30,7 @@ class OOBEManager {
 public:
     static OOBEManager& GetInstance();
     void StartListen();
-    bool AddTask(const std::shared_ptr<IOOBETask>& task);
+    bool SubmitTask(const std::shared_ptr<IOOBETask>& task);
     bool Initialize();
     void InitSystemAbilityListener();
 

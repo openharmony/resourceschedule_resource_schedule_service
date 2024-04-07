@@ -16,38 +16,41 @@
 #include "datashare_errno.h"
 #include "datashare_predicates.h"
 #include "datashare_result_set.h"
+#include "data_share_utils.h"
 #include "datashare_values_bucket.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
 #include "res_data_ability_provider.h"
 #include "res_sched_log.h"
 #include "system_ability_definition.h"
-#include "uri.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 ResDataAbilityProvider* ResDataAbilityProvider::instance_;
+std::mutex ResDataAbilityProvider::mutex_;
 std::map<std::string, sptr<ResDataAbilityObserver>> ResDataAbilityProvider::observers_;
 
 ResDataAbilityProvider::~ResDataAbilityProvider()
 {
-    if (instance_ != nullptr) {
-        delete instance_;
-    }
-    instance_ = nullptr;
-    remoteObj_ = nullptr;
+    RESSCHED_LOGI("ResDataAbilityProvider has been deconstructed");
 }
 
 ResDataAbilityProvider& ResDataAbilityProvider::GetInstance()
 {
-    instance_ = new ResDataAbilityProvider();
+    if (instance_ == nullptr) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (instance_ == nullptr) {
+            instance_ = new ResDataAbilityProvider();
+        }
+    }
     return *instance_;
 }
 
 ErrCode ResDataAbilityProvider::RegisterObserver(const std::string& key, ResDataAbilityObserver::UpdateFunc& func)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     auto iter = observers_.find(key);
-    if (iter == observers_.end()) {
+    if (iter != observers_.end()) {
         return ERR_INVALID_OPERATION;
     }
     std::string callingIdentity = IPCSkeleton::ResetCallingIdentity();
@@ -69,6 +72,7 @@ ErrCode ResDataAbilityProvider::RegisterObserver(const std::string& key, ResData
 
 ErrCode ResDataAbilityProvider::UnregisterObserver(const std::string& key, ResDataAbilityObserver::UpdateFunc& func)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     auto iter = observers_.find(key);
     if (iter == observers_.end()) {
         return ERR_INVALID_OPERATION;
