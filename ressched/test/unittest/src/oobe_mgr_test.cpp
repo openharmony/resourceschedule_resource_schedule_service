@@ -315,9 +315,9 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_006, Function | MediumTest | Level0)
  */
 HWTEST_F(OOBEMgrTest, TestResDataAbilityProvider_001, Function | MediumTest | Level0)
 {
-    ResDataAbilityProvider& provider = ResDataAbilityProvider::GetInstance();
+    ResDataAbilityProvider& resDataProvider = ResDataAbilityProvider::GetInstance();
     ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
-    int32_t ret = provider.RegisterObserver(KEYWORD, updateFunc);
+    int32_t ret = resDataProvider.RegisterObserver(KEYWORD, updateFunc);
     EXPECT_EQ(ret, ERR_OK);
 }
 
@@ -330,9 +330,9 @@ HWTEST_F(OOBEMgrTest, TestResDataAbilityProvider_001, Function | MediumTest | Le
  */
 HWTEST_F(OOBEMgrTest, TestResDataAbilityProvider_002, Function | MediumTest | Level0)
 {
-    ResDataAbilityProvider& provider = ResDataAbilityProvider::GetInstance();
+    ResDataAbilityProvider& resDataProvider = ResDataAbilityProvider::GetInstance();
     ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
-    int32_t ret = provider.UnregisterObserver(KEYWORD, updateFunc);
+    int32_t ret = resDataProvider.UnregisterObserver(KEYWORD, updateFunc);
     EXPECT_EQ(ret, ERR_OK);
 }
 #undef private

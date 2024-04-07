@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef RESOURCE_SCHEDULE_SERVICE_RESSCHED_RES_DATA_ABILITY_PROVIDER_H
-#define RESOURCE_SCHEDULE_SERVICE_RESSCHED_RES_DATA_ABILITY_PROVIDER_H
+#ifndef RESOURCE_SCHEDULE_SERVICE_RESSCHED_COMMON_RES_DATA_ABILITY_PROVIDER_H
+#define RESOURCE_SCHEDULE_SERVICE_RESSCHED_COMMON_RES_DATA_ABILITY_PROVIDER_H
 
 #include "datashare_helper.h"
 #include "errors.h"
@@ -39,4 +39,4 @@ private:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // RESOURCE_SCHEDULE_SERVICE_RESSCHED_RES_DATA_ABILITY_PROVIDER_H
+#endif // RESOURCE_SCHEDULE_SERVICE_RESSCHED_COMMON_RES_DATA_ABILITY_PROVIDER_H
