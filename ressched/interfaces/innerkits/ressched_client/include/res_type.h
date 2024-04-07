@@ -202,9 +202,19 @@ enum : uint32_t {
     RES_TYPE_WEB_DRAG_RESIZE = 86,
 
     // report web screen capture, value 0 start, value 1 stop
-    RES_TYPE_WEBVIEW_SCREEN_CAPTURE = 82,
+    RES_TYPE_WEBVIEW_SCREEN_CAPTURE = 83,
     // report video state. value 0 start playing, value 1 stop playing
-    RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE = 83,
+    RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE = 84,
+    // report location status. value 0 app status, value 1 switch status
+    RES_TYPE_LOCATION_STATUS_CHANGE = 85,
+    // report silent playback
+    RES_TYPE_AUDIO_SILENT_PLAYBACK = 86,
+    // report display mode event, value status, payload mode.
+    RES_TYPE_DEVICE_MODE_STATUS = 87,
+    // report systemload level
+    RES_TYPE_SYSTEMLOAD_LEVEL = 88,
+    // report distribute component change
+    RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE = 89,
     //last resType
     RES_TYPE_LAST,
 };
@@ -296,6 +306,11 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_WEB_DRAG_RESIZE, "RES_TYPE_WEB_DRAG_RESIZE"},
     { RES_TYPE_WEBVIEW_SCREEN_CAPTURE, "RES_TYPE_WEBVIEW_SCREEN_CAPTURE"},
     { RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, "RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE"},
+    { RES_TYPE_LOCATION_STATUS_CHANGE, "RES_TYPE_LOCATION_STATUS_CHANGE"},
+    { RES_TYPE_AUDIO_SILENT_PLAYBACK, "RES_TYPE_AUDIO_SILENT_PLAYBACK" },
+    { RES_TYPE_DEVICE_MODE_STATUS, "RES_TYPE_DEVICE_MODE_STATUS"},
+    { RES_TYPE_SYSTEMLOAD_LEVEL, "RES_TYPE_SYSTEMLOAD_LEVEL"},
+    { RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE, "RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE"},
 };
 
 /**
@@ -668,7 +683,7 @@ enum SaControlAppStatus : int64_t {
  */
 enum KeyUploadOrDownloadStatus : int64_t {
     ENTER_UPLOAD_DOWNLOAD_SCENE = 0,
-    EXIT_UPLOAD_DOWNLOAD__SCENE = 1,
+    EXIT_UPLOAD_DOWNLOAD_SCENE = 1,
 };
 
 
@@ -724,11 +739,11 @@ enum DeviceStatus : int64_t {
 };
 
 /**
- * @brief drag web window resize status
+ * @brief Device mode status
  */
-enum WebDragResizeStatus : int64_t {
-    WEB_DRAG_START = 0,
-    WEB_DRAG_END = 1,
+enum DeviceModeStatus : int64_t {
+    MODE_ENTER = 0,
+    MODE_QUIT = 1,
 };
 
 /**
@@ -746,6 +761,23 @@ enum WebVideoState : int64_t {
     WEB_VIDEO_PLAYING_START = 0,
     WEB_VIDEO_PLAYING_STOP = 1,
 };
+
+/**
+ * @brief location state
+ */
+enum LocationStatus : int64_t {
+    APP_LOCATION_STATUE_CHANGE = 0,
+    LOCATION_SWTICH_CHANGE = 1,
+};
+
+/**
+ * @brief drag web window resize status
+ */
+enum WebDragResizeStatus : int64_t {
+    WEB_DRAG_START = 0,
+    WEB_DRAG_END = 1,
+}
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS

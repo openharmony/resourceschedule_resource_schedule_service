@@ -30,6 +30,7 @@ namespace {
     const std::string CONFIG_NAME_SOCPERF_FEATURE_SWITCH = "socperfFeatureSwitch";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND = "socperf_on_demand";
     const std::string EXTENSION_TYPE_KEY = "extensionType";
+    const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t PERF_REQUEST_CMD_ID_APP_START             = 10000;
     const int32_t PERF_REQUEST_CMD_ID_WARM_START            = 10001;
@@ -99,6 +100,8 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleMousewheel(data); } },
         { RES_TYPE_APP_STATE_CHANGE,
             [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
+        { RES_TYPE_DEVICE_MODE_STATUS,
+            [this](const std::shared_ptr<ResData>& data) { HandleDeviceModeStatusChange(data); } },
         { RES_TYPE_WEB_DRAG_RESIZE,
             [this](const std::shared_ptr<ResData>& data) { HandleWebDragResize(data); } },
     };
@@ -123,6 +126,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_LOAD_URL,
         RES_TYPE_MOUSEWHEEL,
         RES_TYPE_APP_STATE_CHANGE,
+        RES_TYPE_DEVICE_MODE_STATUS,
         RES_TYPE_WEB_DRAG_RESIZE,
     };
 }
@@ -350,6 +354,24 @@ bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
         return true;
     }
     return false;
+}
+
+void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>& data)
+{
+    if ((data->value != DeviceModeStatus::MODE_ENTER) && (data->value != DeviceModeStatus::MODE_QUIT)) {
+        SOC_PERF_LOGW("SocPerfPlugin: device mode status value is error");
+        return;
+    }
+
+    if (!data->payload.contains(DEVICE_MODE_PAYMODE_NAME) || !data->payload[DEVICE_MODE_PAYMODE_NAME].is_string()) {
+        SOC_PERF_LOGW("SocPerfPlugin: device mode status payload is error");
+        return;
+    }
+
+    std::string deviceMode = data->payload[DEVICE_MODE_PAYMODE_NAME];
+    bool status = (data->value == DeviceModeStatus::MODE_ENTER);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceMode, status);
+    SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceMode.c_str(), status);
 }
 
 void SocPerfPlugin::HandleWebDragResize(const std::shared_ptr<ResData>& data)

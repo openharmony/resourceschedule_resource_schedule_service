@@ -57,6 +57,7 @@ namespace {
         ResType::RES_TYPE_WEB_DRAG_RESIZE,
         ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE,
         ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
+        ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
     };
     static const std::unordered_set<uint32_t> saRes_ = {
         ResType::RES_TYPE_SCREEN_STATUS,
@@ -108,6 +109,8 @@ namespace {
         ResType::RES_TYPE_SPLIT_SCREEN,
         ResType::RES_TYPE_FLOATING_WINDOW,
         ResType::RES_TYPE_FRAME_RATE_REPORT,
+        ResType::RES_TYPE_LOCATION_STATUS_CHANGE,
+        ResType::RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";

@@ -85,6 +85,10 @@ ohos_fuzztest("ResSchedObserverFuzzTest") {
     defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
     external_deps += [ "audio_framework:audio_client" ]
   }
+  if (rss_request_enable) {
+    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    external_deps += [ "request:request_native" ]
+  }
 
   part_name = "resource_schedule_service"
   subsystem_name = "resourceschedule"

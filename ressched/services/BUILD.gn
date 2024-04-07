@@ -56,6 +56,8 @@ ohos_shared_library("resschedsvc") {
     "../sched_controller/common_event/src/event_controller.cpp",
     "../sched_controller/observer/src/audio_observer.cpp",
     "../sched_controller/observer/src/connection_subscriber.cpp",
+    "../sched_controller/observer/src/download_upload_observer.cpp",
+    "../sched_controller/observer/src/fold_display_mode_observer.cpp",
     "../sched_controller/observer/src/hisysevent_observer.cpp",
     "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
@@ -100,6 +102,7 @@ ohos_shared_library("resschedsvc") {
     "libxml2:libxml2",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
+    "window_manager:libdm",
   ]
 
   if (device_movement_perception_enable) {
@@ -137,6 +140,10 @@ ohos_shared_library("resschedsvc") {
   if (resource_schedule_service_with_ext_res_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
   }
+  if (rss_request_enable) {
+    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    external_deps += [ "request:request_native" ]
+  }
 
   version_script = "libresschedsvc.versionscript"
   shlib_type = "sa"
@@ -172,6 +179,8 @@ ohos_static_library("resschedsvc_static") {
     "../sched_controller/common_event/src/event_controller.cpp",
     "../sched_controller/observer/src/audio_observer.cpp",
     "../sched_controller/observer/src/connection_subscriber.cpp",
+    "../sched_controller/observer/src/download_upload_observer.cpp",
+    "../sched_controller/observer/src/fold_display_mode_observer.cpp",
     "../sched_controller/observer/src/hisysevent_observer.cpp",
     "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
@@ -215,6 +224,7 @@ ohos_static_library("resschedsvc_static") {
     "libxml2:libxml2",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
+    "window_manager:libdm",
   ]
 
   if (device_movement_perception_enable) {
@@ -248,6 +258,10 @@ ohos_static_library("resschedsvc_static") {
   }
   if (resource_schedule_service_with_ext_res_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
+  }
+  if (rss_request_enable) {
+    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    external_deps += [ "request:request_native" ]
   }
 
   subsystem_name = "resourceschedule"

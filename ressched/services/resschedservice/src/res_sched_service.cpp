@@ -28,6 +28,7 @@
 #include "tokenid_kit.h"
 #include "sched_controller.h"
 #include "supervisor.h"
+#include "ressched_utils.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -75,6 +76,9 @@ int32_t ResSchedService::GetSystemloadLevel()
 void ResSchedService::OnDeviceLevelChanged(int32_t type, int32_t level)
 {
     NotifierMgr::GetInstance().OnDeviceLevelChanged(type, level);
+    nlohmann::json payload;
+    payload["systemloadLevel"] = std::to_string(level);
+    ResSchedUtils::GetInstance().ReportDataInProcess(type, level, payload);
 }
 
 bool ResSchedService::AllowDump()

@@ -18,6 +18,8 @@
 #include <dlfcn.h>
 #include <string>
 
+#include "display_manager.h"
+#include "dm_common.h"
 #include "hisysevent.h"
 #include "hisysevent_manager.h"
 #include "ipc_skeleton.h"
@@ -47,7 +49,7 @@ const static int32_t TUPLE_PID = 0;
 const static int32_t TUPLE_UID = 1;
 const static int32_t TUPLE_NAME = 2;
 const static bool DEVICE_MOVEMENT_OBSERVER_ENABLE =
-    system::GetBoolParameter("persist.sys.ressched_device_movement_observer_switch", false);
+    system::GetBoolParameter("persist.sys.ressched_device_movement_observer_switch", true);
 const std::string RES_SCHED_CG_EXT_SO = "libcgroup_sched_ext.z.so";
 
 void ObserverManager::Init()
@@ -74,7 +76,11 @@ void ObserverManager::InitObserverCbMap()
         { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1) },
         { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::InitDeviceMovementObserver, std::placeholders::_1) },
         { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::InitMMiEventObserver, std::placeholders::_1) },
+        { DISPLAY_MANAGER_SERVICE_ID, std::bind(&ObserverManager::InitDisplayModeObserver, std::placeholders::_1) },
         { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::InitConnectionSubscriber, std::placeholders::_1) },
+#ifndef RESOURCE_REQUEST_REQUEST
+        { DOWNLOAD_SERVICE_ID, std::bind(&ObserverManager::InitDownloadUploadObserver, std::placeholders::_1) },
+#endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
         { AVSESSION_SERVICE_ID, std::bind(&ObserverManager::InitAVSessionStateChangeListener, std::placeholders::_1) },
 #endif
@@ -88,7 +94,11 @@ void ObserverManager::InitObserverCbMap()
         { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1) },
         { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::DisableDeviceMovementObserver, std::placeholders::_1) },
         { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::DisableMMiEventObserver, std::placeholders::_1) },
+        { DISPLAY_MANAGER_SERVICE_ID, std::bind(&ObserverManager::DisableDisplayModeObserver, std::placeholders::_1) },
         { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::DisableConnectionSubscriber, std::placeholders::_1) },
+#ifndef RESOURCE_REQUEST_REQUEST
+        { DOWNLOAD_SERVICE_ID, std::bind(&ObserverManager::DisableDownloadUploadObserver, std::placeholders::_1) },
+#endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
         { AVSESSION_SERVICE_ID,
           std::bind(&ObserverManager::DisableAVSessionStateChangeListener, std::placeholders::_1) },
@@ -123,7 +133,11 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(AUDIO_POLICY_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(MSDP_MOVEMENT_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(MULTIMODAL_INPUT_SERVICE_ID, systemAbilityManager);
+    AddItemToSysAbilityListener(DISPLAY_MANAGER_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(ABILITY_MGR_SERVICE_ID, systemAbilityManager);
+#ifndef RESOURCE_REQUEST_REQUEST
+    AddItemToSysAbilityListener(DOWNLOAD_SERVICE_ID, systemAbilityManager);
+#endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
     AddItemToSysAbilityListener(AVSESSION_SERVICE_ID, systemAbilityManager);
 #endif
@@ -478,6 +492,50 @@ void ObserverManager::GetAllMmiStatusData()
     }
 }
 
+void ObserverManager::InitDisplayModeObserver()
+{
+    RESSCHED_LOGI("ObserverManager Init display mode observer.");
+    bool isFoldable = OHOS::Rosen::DisplayManager::GetInstance().IsFoldable();
+    if (!isFoldable) {
+        RESSCHED_LOGI("ObserverManager Init display mode observer return for foldable.");
+        return;
+    }
+
+    foldDisplayModeObserver_ = new (std::nothrow)FoldDisplayModeObserver();
+    if (foldDisplayModeObserver_ == nullptr) {
+        RESSCHED_LOGE("Failed to create fold ChangeListener due to no memory");
+        return;
+    }
+    auto ret = OHOS::Rosen::DisplayManager::GetInstance().RegisterDisplayModeListener(foldDisplayModeObserver_);
+    if (ret == OHOS::Rosen::DMError::DM_OK) {
+        RESSCHED_LOGI("ObserverManager init displayModeObserver successfully");
+        auto displayMode = OHOS::Rosen::DisplayManager::GetInstance().GetFoldDisplayMode();
+        foldDisplayModeObserver_->OnDisplayModeChanged(displayMode);
+    } else {
+        RESSCHED_LOGW("ObserverManager init displayModeObserver failed");
+        foldDisplayModeObserver_ = nullptr;
+        return;
+    }
+}
+
+void ObserverManager::DisableDisplayModeObserver()
+{
+    RESSCHED_LOGI("ObserverManager Disable display mode observer.");
+    if (!foldDisplayModeObserver_) {
+        RESSCHED_LOGE("ObserverManager has been disable displayModeObserver");
+        return;
+    }
+
+    auto ret = OHOS::Rosen::DisplayManager::GetInstance().UnregisterDisplayModeListener(foldDisplayModeObserver_);
+    if (ret == OHOS::Rosen::DMError::DM_OK) {
+        RESSCHED_LOGI("ObserverManager disable displayModeObserver successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager disable displayModeObserver failed");
+        return;
+    }
+    foldDisplayModeObserver_ = nullptr;
+}
+
 void ObserverManager::InitConnectionSubscriber()
 {
     if (connectionSubscriber_ == nullptr) {
@@ -537,6 +595,32 @@ void ObserverManager::DisableAVSessionStateChangeListener()
 {
     RESSCHED_LOGI("Disable session state listener");
     avSessionStateListener_ = nullptr;
+}
+#endif
+#ifndef RESOURCE_REQUEST_REQUEST
+void ObserverManager::InitDownloadUploadObserver()
+{
+    if (downLoadUploadObserver_ == nullptr) {
+        downLoadUploadObserver_ = std::make_shared<DownLoadUploadObserver>();
+    }
+
+    auto res = OHOS::Request::SubscribeRunningTaskCount(downLoadUploadObserver_);
+    if (res == OPERATION_SUCCESS) {
+        RESSCHED_LOGI("ObserverManager init download Upload observer successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager init download Upload observer failed");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a download Upload observer failed!");
+    }
+}
+
+void ObserverManager::DisableDownloadUploadObserver()
+{
+    OHOS::Request::UnsubscribeRunningTaskCount(downLoadUploadObserver_);
+    RESSCHED_LOGI("Disable download Upload observer");
+    downLoadUploadObserver_ = nullptr;
 }
 #endif
 

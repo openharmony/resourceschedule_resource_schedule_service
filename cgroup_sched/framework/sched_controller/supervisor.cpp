@@ -254,5 +254,15 @@ void Supervisor::SearchWindowId(std::shared_ptr<Application> &application,
         }
     }
 }
+
+void Supervisor::SetSystemLoadLevelState(int32_t level)
+{
+    systemLoadLevel_ = level;
+}
+
+int32_t Supervisor::GetSystemLoadLevel()
+{
+    return systemLoadLevel_;
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

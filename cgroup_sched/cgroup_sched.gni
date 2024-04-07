@@ -22,11 +22,28 @@ cgroup_sched_dummy = "${cgroup_sched_path}/dummy_adaption"
 
 cgroup_sched_interfaces = "${cgroup_sched_path}/interfaces"
 
+resourceschedule_path = "//foundation/resourceschedule"
+
+ressched_common =
+    "${resourceschedule_path}/resource_schedule_service/ressched/common"
+
+ressched_interfaces =
+    "${resourceschedule_path}/resource_schedule_service/ressched/interfaces"
+
+ressched_services =
+    "${resourceschedule_path}/resource_schedule_service/ressched/services"
+
 declare_args() {
+  cgroup_ressched_power_manager_enable = true
   has_bg_task_mgr = false
 
   if (defined(global_parts_info) &&
       defined(global_parts_info.resourceschedule_background_task_mgr)) {
     has_bg_task_mgr = true
+  }
+
+  if (defined(global_parts_info) &&
+      defined(global_parts_info.powermgr_power_manager)) {
+    cgroup_ressched_power_manager_enable = false
   }
 }

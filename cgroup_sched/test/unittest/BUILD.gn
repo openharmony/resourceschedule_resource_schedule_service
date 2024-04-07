@@ -25,9 +25,15 @@ config("process_group_module_private_config") {
 ohos_unittest("ProcessGroupSubTest") {
   module_out_path = process_group_module_output_path
 
-  include_dirs = [ "../../framework/process_group/include" ]
+  include_dirs = [
+    "../../framework/process_group/include",
+    "../../framework/sched_controller/include",
+  ]
 
-  sources = [ "process_group_sub_test.cpp" ]
+  sources = [
+    "cgroup_sched_test.cpp",
+    "process_group_sub_test.cpp",
+  ]
 
   cflags = []
 
@@ -38,6 +44,7 @@ ohos_unittest("ProcessGroupSubTest") {
   configs = [ ":process_group_module_private_config" ]
 
   deps = [
+    "../../framework:cgroup_sched",
     "../../framework/process_group:libprocess_group",
     "//third_party/googletest:gtest_main",
   ]
@@ -45,6 +52,8 @@ ohos_unittest("ProcessGroupSubTest") {
   external_deps = [
     "c_utils:utils",
     "hilog:libhilog",
+    "samgr:samgr_proxy",
+    "window_manager:libwm",
   ]
 }
 
