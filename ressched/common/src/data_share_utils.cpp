@@ -44,7 +44,7 @@ DataShareUtils& DataShareUtils::GetInstance()
         std::lock_guard<std::mutex> lock(mutex_);
         if (instance_ == nullptr) {
             instance_ = new DataShareUtils();
-            instance->InitSystemAbilityManager();
+            instance_->InitSystemAbilityManager();
         }
     }
     return *instance_;

@@ -61,7 +61,7 @@ void OOBEManager::InitSystemAbilityListener()
         return;
     }
     sptr<ISystemAbilityManager> systemAbilityManager
-        = SystemAbilityManagerClient::GetIhstance().GetSystemAbilityManager();
+        = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (systemAbilityManager == nullptr) {
         RESSCHED_LOGI("systemAbilityManager is null");
         return;
@@ -112,7 +112,7 @@ bool OOBEManager::Initialize()
     return false;
 }
 
-bool OOBEManager::AddTask(const std::shared_ptr<IOOBETask>& task)
+bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
 {
     if (task == nullptr) {
         return false;
