@@ -70,7 +70,7 @@ int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64
     }
 
     RSSEXE_LOGD("send request.");
-    nlohmann::json payload = ConvertMapTojson(context);
+    nlohmann::json payload = ConvertMapToJson(context);
     nlohmann::json result;
     if (isSync) {
         int32_t ret = resSchedExe_->SendResRequest(resType, value, payload, result);
@@ -82,7 +82,7 @@ int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64
     }
 }
 
-nlohmann::json ResSchedExeClient::ConvertMapTojson(const std::unordered_map<std::string, std::string>& context)
+nlohmann::json ResSchedExeClient::ConvertMapToJson(const std::unordered_map<std::string, std::string>& context)
 {
     nlohmann::json payload;
     for (auto it = context.begin(); it != context.end(); ++it) {

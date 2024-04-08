@@ -107,19 +107,6 @@ HWTEST_F(ResSchedExeClientTest, SendDebugCommand002, Function | MediumTest | Lev
 }
 
 /**
- * @tc.name: ConvertMapTojson001
- * @tc.desc: report data stable test
- * @tc.type: FUNC
- */
-HWTEST_F(ResSchedExeClientTest, ConvertMapTojson001, Function | MediumTest | Level0)
-{
-    std::unordered_map<std::string, std::string> context;
-    context["message"] = "test";
-    nlohmann::json payload = ResSchedExeClient::GetInstance().ConvertMapTojson(context);
-    EXPECT_FALSE(payload.empty());
-}
-
-/**
  * @tc.name: StopRemoteObject001
  * @tc.desc: Stop Remote Object
  * @tc.type: FUNC

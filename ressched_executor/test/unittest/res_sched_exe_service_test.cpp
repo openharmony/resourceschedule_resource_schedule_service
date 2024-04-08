@@ -259,34 +259,32 @@ HWTEST_F(ResSchedExeServiceTest, ReportRequestInner001, Function | MediumTest | 
 {
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     resSchedExeServiceStub_->Init();
-    auto uid = IPCSkeleton::GetCallingUid();
     MessageParcel reply;
     MessageParcel emptyData;
-    EXPECT_TRUE(resSchedExeServiceStub_->ReportRequestInner(emptyData, reply, uid));
+    EXPECT_TRUE(resSchedExeServiceStub_->ReportRequestInner(emptyData, reply));
 
     MessageParcel reportData;
     reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_TRUE(!resSchedExeServiceStub_->ReportRequestInner(reportData, reply, uid));
+    EXPECT_TRUE(!resSchedExeServiceStub_->ReportRequestInner(reportData, reply));
 }
 
 static void ReportRequestInnerTask()
 {
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     resSchedExeServiceStub_->Init();
-    auto uid = IPCSkeleton::GetCallingUid();
     MessageParcel reply;
     MessageParcel emptyData;
-    EXPECT_TRUE(resSchedExeServiceStub_->ReportRequestInner(emptyData, reply, uid));
+    EXPECT_TRUE(resSchedExeServiceStub_->ReportRequestInner(emptyData, reply));
 
     MessageParcel reportData;
     reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_TRUE(!resSchedExeServiceStub_->ReportRequestInner(reportData, reply, uid));
+    EXPECT_TRUE(!resSchedExeServiceStub_->ReportRequestInner(reportData, reply));
 }
 
 /**

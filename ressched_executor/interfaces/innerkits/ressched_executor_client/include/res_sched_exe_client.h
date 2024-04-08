@@ -91,7 +91,7 @@ private:
     int32_t TryConnect();
     int32_t SendRequestInner(bool isSync, uint32_t resType, int64_t value,
         const std::unordered_map<std::string, std::string>& context, std::string& reply);
-    nlohmann::json ConvertMapTojson(const std::unordered_map<std::string, std::string>& context);
+    nlohmann::json ConvertMapToJson(const std::unordered_map<std::string, std::string>& context);
 
     std::mutex mutex_;
     sptr<IRemoteObject> remoteObject_;
