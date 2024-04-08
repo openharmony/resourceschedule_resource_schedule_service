@@ -30,7 +30,7 @@ ohos_unittest("resschedexeservice_test") {
   include_dirs = [
     "${ressched_common}/include",
     "${resschedexe_common}/include",
-    "${resschedexe_interfaces}/innerkits/ressched_client/include",
+    "${resschedexe_interfaces}/innerkits/ressched_executor_client/include",
   ]
 
   sources = [ "res_sched_exe_service_test.cpp" ]

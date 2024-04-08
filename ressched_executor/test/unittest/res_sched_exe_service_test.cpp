@@ -408,14 +408,16 @@ HWTEST_F(ResSchedExeServiceTest, ParseParcel001, Function | MediumTest | Level0)
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(reportData, resType, value, context));
+    EXPECT_TRUE(resSchedExeServiceStub_->ParseParcel(reportData, resType, value, context));
 }
 
 static void ParseParcelTask()
 {
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     resSchedExeServiceStub_->Init();
-    MessageParcel reply;
+    uint32_t resType = 0;
+    int64_t value = 0;
+    nlohmann::json context;
     MessageParcel emptyData;
     EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
 

@@ -64,7 +64,7 @@ void ResSchedExeServiceStub::Init()
 {
 }
 
-int32_t ResSchedExeServiceStub::ReportRequestInner(MessageParcel& data, MessageParcel& reply, int32_t uid)
+int32_t ResSchedExeServiceStub::ReportRequestInner(MessageParcel& data, MessageParcel& reply)
 {
     uint32_t resType = 0;
     int64_t value = 0;
@@ -76,9 +76,11 @@ int32_t ResSchedExeServiceStub::ReportRequestInner(MessageParcel& data, MessageP
         reply.WriteInt32(ResIpcErrCode::RSSEXE_DATA_ERROR);
         return ResIpcErrCode::RSSEXE_DATA_ERROR;
     }
+
+    int32_t uid = IPCSkeleton::GetCallingUid();
     int32_t clientPid = IPCSkeleton::GetCallingPid();
-    RSSEXE_LOGD("receive data from ipc resType: %{public}u, value: %{public}lld, pid: %{public}d",
-        resType, (long long)value, clientPid);
+    RSSEXE_LOGD("receive data from ipc resType: %{public}u, value: %{public}lld, uid: %{public}d, pid: %{public}d",
+        resType, (long long)value, uid, clientPid);
 
     int32_t ret = 0;
     if (context.size() <= PAYLOAD_MAX_SIZE) {
@@ -124,14 +126,13 @@ int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data, MessagePar
 int32_t ResSchedExeServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
-    auto uid = IPCSkeleton::GetCallingUid();
-    RSSEXE_LOGD("code = %{public}u, flags = %{public}d, uid = %{public}d.", code, option.GetFlags(), uid);
+    RSSEXE_LOGD("code = %{public}u, flags = %{public}d.", code, option.GetFlags());
 
     switch (code) {
         case ResIpcType::RES_REQUEST:
-            return ReportRequestInner(data, reply, uid);
+            return ReportRequestInner(data, reply);
         case ResIpcType::REPORT_DATA:
-            return ReportRequestInner(data, reply, uid);
+            return ReportRequestInner(data, reply);
         case ResIpcType::REQUEST_DEBUG:
             return ReportDebugInner(data, reply);
         default:

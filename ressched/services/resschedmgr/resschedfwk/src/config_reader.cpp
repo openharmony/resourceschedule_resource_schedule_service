@@ -14,7 +14,6 @@
  */
 
 #include "config_reader.h"
-
 #include "res_sched_log.h"
 
 using namespace std;
