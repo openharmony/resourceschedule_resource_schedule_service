@@ -28,6 +28,7 @@ ohos_unittest("resschedexeservice_test") {
   module_out_path = module_output_path
 
   include_dirs = [
+    "${ressched_common}/include",
     "${resschedexe_common}/include",
     "${resschedexe_interfaces}/innerkits/ressched_client/include",
   ]
@@ -62,6 +63,7 @@ ohos_unittest("resschedexeclient_test") {
   module_out_path = module_output_path
 
   include_dirs = [
+    "${ressched_common}/include",
     "${resschedexe_common}/include",
     "${resschedexe_interfaces}/innerkits/ressched_executor_client/include",
   ]
