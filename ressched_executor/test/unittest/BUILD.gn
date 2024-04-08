@@ -47,8 +47,8 @@ ohos_unittest("resschedexefwk_test") {
     "access_token:libtoken_setproc",
     "c_utils:utils",
     "ffrt:libffrt",
-    "ipc:ipc_single",
     "hilog:libhilog",
+    "ipc:ipc_single",
   ]
 
   sanitize = {
