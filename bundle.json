@@ -125,7 +125,7 @@
               "res_sched_exe_client.h",
               "res_sched_exe_constants.h",
               "res_sched_exe_service_proxy.h",
-              "res_type.h"
+              "res_exe_type.h"
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client:resschedexe_client"
