@@ -32,6 +32,7 @@ const std::string KEYWORD = "basic_statement_agreed";
 
 OOBEManager::OOBEManager()
 {
+    Initialize();
 }
 
 OOBEManager::~OOBEManager()
@@ -80,10 +81,7 @@ void OOBEManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     RESSCHED_LOGI("OOBEManager add system ability systemAbilityId:%{public}d", systemAbilityId);
     switch (systemAbilityId) {
         case DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID: {
-            if (!OOBEManager::GetInstance().Initialize()) {
-                RESSCHED_LOGI("the user does not agreed to the authorization.");
-                OOBEManager::GetInstance().StartListen();
-            }
+            OOBEManager::GetInstance().StartListen();
             break;
         }
         default: {
@@ -101,25 +99,31 @@ void OOBEManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     RESSCHED_LOGI("OOBEManager remove system ability systemAbilityId:%{public}d", systemAbilityId);
 }
 
-bool OOBEManager::Initialize()
+void OOBEManager::Initialize()
 {
     int resultValue = 0;
     auto dataShareUtils = ResourceSchedule::DataShareUtils::GetInstance();
     dataShareUtils.GetValue(KEYWORD, resultValue);
     if (resultValue != 0) {
-        return true;
+        g_oobeValue = true;
     }
-    return false;
 }
 
 bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     if (task == nullptr) {
+        RESSCHED_LOGE("Bad task passed!");
         return false;
     }
-    std::lock_guard<std::mutex> lock(mutex_);
+    if (g_oobeValue == true) {
+        task->ExcutingTask();
+        RESSCHED_LOGD("OOBE agreed, task has excuted!");
+        return true;
+    }
     oobeTasks_.push_back(task);
-    return true;
+    InitSystemAbilityListener();
+    return g_oobeValue;
 }
 
 void OOBEManager::StartListen()
@@ -130,6 +134,7 @@ void OOBEManager::StartListen()
         if (result != 0) {
             RESSCHED_LOGI("User consent authorization!");
             std::lock_guard<std::mutex> lock(mutex_);
+            g_oobeValue = true;
             for (auto task : oobeTasks_) {
                 task->ExcutingTask();
             }

@@ -29,17 +29,18 @@ namespace ResourceSchedule {
 class OOBEManager {
 public:
     static OOBEManager& GetInstance();
-    void StartListen();
     bool SubmitTask(const std::shared_ptr<IOOBETask>& task);
-    bool Initialize();
-    void InitSystemAbilityListener();
 
 private:
+    static g_oobeValue = false;
     static OOBEManager* oobeInstance_;
     static std::mutex mutex_;
     static std::vector<std::shared_ptr<IOOBETask>> oobeTasks_;
     OOBEManager();
     ~OOBEManager();
+    void Initialize();
+    void InitSystemAbilityListener();
+    void StartListen();
     class SystemAbilityStatusChangeListener : public OHOS::SystemAbilityStatusChangeStub {
     public:
         SystemAbilityStatusChangeListener() {};
