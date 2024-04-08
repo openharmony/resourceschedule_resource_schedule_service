@@ -20,9 +20,9 @@
 #include "hitrace_meter.h"
 
 #include "plugin_mgr.h"
-#include "plugin_mgr_log.h"
 #include "res_exe_type.h"
 #include "res_sched_exe_constants.h"
+#include "res_sched_exe_log.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -44,7 +44,7 @@ void ResSchedExeMgr::Stop()
 int32_t ResSchedExeMgr::SendResRequest(uint32_t resType, int64_t value,
     nlohmann::json& reply, const nlohmann::json& payload)
 {
-    PLGMGR_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
+    RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
     std::string trace_str(__func__);
     trace_str.append(",resType[").append(std::to_string(resType)).append("]");
     trace_str.append(",value[").append(std::to_string(value)).append("]");

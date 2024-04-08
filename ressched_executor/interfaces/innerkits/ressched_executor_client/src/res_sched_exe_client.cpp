@@ -43,7 +43,7 @@ ResSchedExeClient::~ResSchedExeClient()
 }
 
 int32_t ResSchedExeClient::SendResRequest(uint32_t resType, int64_t value,
-    const std::unordered_map<std::string, std::string>& context, std::string reply)
+    const std::unordered_map<std::string, std::string>& context, std::string& reply)
 {
     return SendRequestInner(true, resType, value, context, reply);
 }
@@ -56,7 +56,7 @@ void ResSchedExeClient::ReportData(uint32_t resType, int64_t value,
 }
 
 int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64_t value,
-    const std::unordered_map<std::string, std::string>& context, std::string reply)
+    const std::unordered_map<std::string, std::string>& context, std::string& reply)
 {
     if (TryConnect() != ResErrCode::RSSEXE_NO_ERR) {
         return ResIpcErrCode::RSSEXE_CONNECT_FAIL;

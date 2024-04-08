@@ -33,7 +33,7 @@
 #include "hitrace_meter.h"
 #include "refbase.h"
 
-#include "plugin_mgr_log.h"
+#include "res_sched_log.h"
 
 using namespace std;
 
@@ -63,7 +63,7 @@ PluginMgr::~PluginMgr()
 void PluginMgr::Init(bool isRssExe)
 {
     if (pluginSwitch_) {
-        PLGMGR_LOGW("%{public}s, PluginMgr has Initialized!", __func__);
+        RESSCHED_LOGW("%{public}s, PluginMgr has Initialized!", __func__);
         return;
     }
 
@@ -71,7 +71,7 @@ void PluginMgr::Init(bool isRssExe)
         pluginSwitch_ = make_unique<PluginSwitch>();
         std::string realPath = GetRealConfigPath(PLUGIN_SWITCH_FILE_NAME);
         if (realPath.empty() || !pluginSwitch_->LoadFromConfigFile(realPath, isRssExe)) {
-            PLGMGR_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
+            RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
             HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "configure error",
@@ -83,7 +83,7 @@ void PluginMgr::Init(bool isRssExe)
         configReader_ = make_unique<ConfigReader>();
         std::string realPath = GetRealConfigPath(CONFIG_FILE_NAME);
         if (realPath.empty() || !configReader_->LoadFromCustConfigFile(realPath)) {
-            PLGMGR_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
+            RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
             HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "configure error",
@@ -105,17 +105,17 @@ void PluginMgr::Init(bool isRssExe)
             dispatcher_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
         }
         if (!dispatcher_) {
-            PLGMGR_LOGI("create dispatcher failed");
+            RESSCHED_LOGI("create dispatcher failed");
         }
 #endif
     }
-    PLGMGR_LOGI("PluginMgr::Init success!");
+    RESSCHED_LOGI("PluginMgr::Init success!");
 }
 
 void PluginMgr::LoadPlugin()
 {
     if (!pluginSwitch_) {
-        PLGMGR_LOGW("%{public}s, configReader null!", __func__);
+        RESSCHED_LOGW("%{public}s, configReader null!", __func__);
         return;
     }
 
@@ -131,7 +131,7 @@ void PluginMgr::LoadPlugin()
         std::lock_guard<std::mutex> autoLock(pluginMutex_);
         pluginLibMap_.emplace(info.libPath, *libInfoPtr);
 
-        PLGMGR_LOGI("%{public}s, init %{private}s success!", __func__, info.libPath.c_str());
+        RESSCHED_LOGI("%{public}s, init %{private}s success!", __func__, info.libPath.c_str());
     }
 }
 
@@ -139,7 +139,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
 {
     auto pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
     if (!pluginHandle) {
-        PLGMGR_LOGE("%{public}s, not find plugin lib !", __func__);
+        RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", info.libPath,
                         "ERR_TYPE", "plugin failure",
@@ -149,7 +149,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
 
     auto onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(pluginHandle, "OnPluginInit"));
     if (!onPluginInitFunc) {
-        PLGMGR_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
+        RESSCHED_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", info.libPath,
                         "ERR_TYPE", "plugin failure",
@@ -160,7 +160,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
 
     auto onPluginDisableFunc = reinterpret_cast<OnPluginDisableFunc>(dlsym(pluginHandle, "OnPluginDisable"));
     if (!onPluginDisableFunc) {
-        PLGMGR_LOGE("%{public}s, dlsym OnPluginDisable failed!", __func__);
+        RESSCHED_LOGE("%{public}s, dlsym OnPluginDisable failed!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", info.libPath,
                         "ERR_TYPE", "plugin failure",
@@ -170,7 +170,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     }
 
     if (!onPluginInitFunc(const_cast<std::string&>(info.libPath))) {
-        PLGMGR_LOGE("%{public}s, %{private}s init failed!", __func__, info.libPath.c_str());
+        RESSCHED_LOGE("%{public}s, %{private}s init failed!", __func__, info.libPath.c_str());
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", info.libPath,
                         "ERR_TYPE", "plugin failure",
@@ -234,7 +234,7 @@ bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>&
     std::lock_guard<std::mutex> autoLock(resTypeMutex_);
     auto iter = resTypeLibMap_.find(resType);
     if (iter == resTypeLibMap_.end()) {
-        PLGMGR_LOGD("%{public}s, PluginMgr resType no lib register!", __func__);
+        RESSCHED_LOGD("%{public}s, PluginMgr resType no lib register!", __func__);
         return false;
     }
     pluginList = iter->second;
@@ -263,7 +263,7 @@ std::string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resDat
 void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 {
     if (!resData) {
-        PLGMGR_LOGE("%{public}s, failed, null res data.", __func__);
+        RESSCHED_LOGE("%{public}s, failed, null res data.", __func__);
         return;
     }
     std::list<std::string> pluginList;
@@ -279,7 +279,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     std::string libNameAll = "";
     string trace_str = BuildDispatchTrace(resData, libNameAll, __func__, pluginList);
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    PLGMGR_LOGD("%{public}s, PluginMgr, resType = %{public}d, value = %{public}lld, pluginlist is %{public}s.",
+    RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, value = %{public}lld, pluginlist is %{public}s.",
         __func__, resData->resType, (long long)resData->value, libNameAll.c_str());
     FinishTrace(HITRACE_TAG_OHOS);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
@@ -298,7 +298,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 void PluginMgr::SubscribeResource(const std::string& pluginLib, uint32_t resType)
 {
     if (pluginLib.size() == 0) {
-        PLGMGR_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
+        RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
         return;
     }
     std::lock_guard<std::mutex> autoLock(resTypeMutex_);
@@ -308,13 +308,13 @@ void PluginMgr::SubscribeResource(const std::string& pluginLib, uint32_t resType
 void PluginMgr::UnSubscribeResource(const std::string& pluginLib, uint32_t resType)
 {
     if (pluginLib.size() == 0) {
-        PLGMGR_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
+        RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
         return;
     }
     std::lock_guard<std::mutex> autoLock(resTypeMutex_);
     auto iter = resTypeLibMap_.find(resType);
     if (iter == resTypeLibMap_.end()) {
-        PLGMGR_LOGE("%{public}s, PluginMgr failed, res type has no plugin subscribe.", __func__);
+        RESSCHED_LOGE("%{public}s, PluginMgr failed, res type has no plugin subscribe.", __func__);
         return;
     }
 
@@ -403,7 +403,7 @@ std::string PluginMgr::GetRealConfigPath(const char* configName)
     char tmpPath[PATH_MAX + 1] = {0};
     if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
         !realpath(configFilePath, tmpPath)) {
-        PLGMGR_LOGE("%{public}s load config file wrong !", __func__);
+        RESSCHED_LOGE("%{public}s load config file wrong !", __func__);
         return "";
     }
     return std::string(tmpPath);
@@ -421,12 +421,12 @@ void PluginMgr::RepairPlugin(TimePoint endTime, const std::string& pluginLib, Pl
     auto& timeOutTime = pluginStat_[pluginLib].timeOutTime;
     int32_t crash_time = (int32_t)((endTime - timeOutTime.front()) / std::chrono::milliseconds(1));
     timeOutTime.emplace_back(endTime);
-    PLGMGR_LOGW("%{public}s %{public}s crash %{public}d times in %{public}d ms!", __func__,
+    RESSCHED_LOGW("%{public}s %{public}s crash %{public}d times in %{public}d ms!", __func__,
         pluginLib.c_str(), (int32_t)timeOutTime.size(), crash_time);
     if ((int32_t)timeOutTime.size() >= MAX_PLUGIN_TIMEOUT_TIMES) {
         if (crash_time < DISABLE_PLUGIN_TIME) {
             // disable plugin forever
-            PLGMGR_LOGE("%{public}s, %{public}s disable it forever.", __func__, pluginLib.c_str());
+            RESSCHED_LOGE("%{public}s, %{public}s disable it forever.", __func__, pluginLib.c_str());
             if (libInfo.onPluginDisableFunc_) {
                 libInfo.onPluginDisableFunc_();
             }
@@ -443,7 +443,7 @@ void PluginMgr::RepairPlugin(TimePoint endTime, const std::string& pluginLib, Pl
     }
 
     if (libInfo.onPluginDisableFunc_ && libInfo.onPluginInitFunc_) {
-        PLGMGR_LOGW("%{public}s, %{public}s disable and enable it.", __func__, pluginLib.c_str());
+        RESSCHED_LOGW("%{public}s, %{public}s disable and enable it.", __func__, pluginLib.c_str());
         libInfo.onPluginDisableFunc_();
         libInfo.onPluginInitFunc_(const_cast<std::string&>(pluginLib));
     }
@@ -459,14 +459,14 @@ void PluginMgr::DeliverResourceToPluginSync(const std::list<std::string>& plugin
             std::lock_guard<std::mutex> autoLock(pluginMutex_);
             auto itMap = pluginLibMap_.find(pluginLib);
             if (itMap == pluginLibMap_.end()) {
-                PLGMGR_LOGE("%{public}s, no plugin %{public}s !", __func__, pluginLib.c_str());
+                RESSCHED_LOGE("%{public}s, no plugin %{public}s !", __func__, pluginLib.c_str());
                 continue;
             }
             libInfo = itMap->second;
         }
         OnDispatchResourceFunc pluginDispatchFunc = libInfo.onDispatchResourceFunc_;
         if (!pluginDispatchFunc) {
-            PLGMGR_LOGE("%{public}s, no DispatchResourceFun !", __func__);
+            RESSCHED_LOGE("%{public}s, no DispatchResourceFun !", __func__);
             continue;
         }
 
@@ -482,7 +482,7 @@ void PluginMgr::DeliverResourceToPluginSync(const std::list<std::string>& plugin
 
         if (costTime > DISPATCH_TIME_OUT) {
             // dispatch resource use too long time, unload it
-            PLGMGR_LOGE("%{public}s, ERROR :%{public}s cost time(%{public}dms) over %{public}d ms! disable it.",
+            RESSCHED_LOGE("%{public}s, ERROR :%{public}s cost time(%{public}dms) over %{public}d ms! disable it.",
                 __func__, pluginLib.c_str(), costTime, DISPATCH_TIME_OUT);
             auto task = [endTime, pluginLib, libInfo, this] {
                 RepairPlugin(endTime, pluginLib, libInfo);
@@ -494,7 +494,7 @@ void PluginMgr::DeliverResourceToPluginSync(const std::list<std::string>& plugin
             }
 #endif
         } else if (costTime > DISPATCH_WARNING_TIME) {
-            PLGMGR_LOGW("%{public}s, WARNING :%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
+            RESSCHED_LOGW("%{public}s, WARNING :%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
                 __func__, pluginLib.c_str(), costTime, DISPATCH_WARNING_TIME);
         }
     }
@@ -510,14 +510,14 @@ void PluginMgr::DeliverResourceToPluginAsync(const std::list<std::string>& plugi
             std::lock_guard<std::mutex> autoLock(pluginMutex_);
             auto itMap = pluginLibMap_.find(pluginLib);
             if (itMap == pluginLibMap_.end()) {
-                PLGMGR_LOGE("%{public}s, no plugin %{public}s !", __func__, pluginLib.c_str());
+                RESSCHED_LOGE("%{public}s, no plugin %{public}s !", __func__, pluginLib.c_str());
                 continue;
             }
             libInfo = itMap->second;
         }
         OnDispatchResourceFunc pluginDispatchFunc = libInfo.onDispatchResourceFunc_;
         if (!pluginDispatchFunc) {
-            PLGMGR_LOGE("%{public}s, no DispatchResourceFun !", __func__);
+            RESSCHED_LOGE("%{public}s, no DispatchResourceFun !", __func__);
             continue;
         }
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
@@ -563,7 +563,7 @@ void PluginMgr::OnDestroy()
 #endif
 }
 
-void PluginMgr::SetResTypeStrMap(std::map<uint32_t, std::string> resTypeStr)
+void PluginMgr::SetResTypeStrMap(const std::map<uint32_t, std::string>& resTypeStr)
 {
     resTypeStrMap_ = resTypeStr;
 }

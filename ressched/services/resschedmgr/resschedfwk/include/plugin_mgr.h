@@ -140,7 +140,7 @@ public:
 
     PluginConfig GetConfig(const std::string& pluginName, const std::string& configName);
 
-    void SetResTypeStrMap(std::map<uint32_t, std::string> resTypeStr);
+    void SetResTypeStrMap(const std::map<uint32_t, std::string>& resTypeStr);
 
 private:
     PluginMgr() = default;

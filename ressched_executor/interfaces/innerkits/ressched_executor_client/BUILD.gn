@@ -16,7 +16,10 @@ import("//build/test.gni")
 import("../../../ressched_executor.gni")
 
 config("client_private_config") {
-  include_dirs = [ "${resschedexe_common}/include" ]
+  include_dirs = [
+    "${ressched_common}/include",
+    "${resschedexe_common}/include",
+  ]
 }
 
 config("client_public_config") {

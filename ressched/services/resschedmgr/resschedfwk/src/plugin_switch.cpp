@@ -15,7 +15,7 @@
 
 #include "plugin_switch.h"
 
-#include "plugin_mgr_log.h"
+#include "res_sched_log.h"
 
 using namespace std;
 
@@ -47,7 +47,7 @@ bool PluginSwitch::FillinPluginInfo(const xmlNode* currNode, PluginInfo& info, b
         attrValue = xmlGetProp(currNode, reinterpret_cast<const xmlChar*>(XML_ATTR_LIB_PATH_EXE));
     }
     if (!attrValue) {
-        PLGMGR_LOGW("%{public}s, libPath null!", __func__);
+        RESSCHED_LOGW("%{public}s, libPath null!", __func__);
         return false;
     }
     info.libPath = reinterpret_cast<const char*>(attrValue);
@@ -70,13 +70,13 @@ bool PluginSwitch::LoadFromConfigFile(const string& configFile, bool isRssExe)
     xmlDocPtr xmlDocPtr = xmlReadFile(configFile.c_str(), nullptr,
         XML_PARSE_NOBLANKS | XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!xmlDocPtr) {
-        PLGMGR_LOGE("%{public}s, xmlReadFile error!", __func__);
+        RESSCHED_LOGE("%{public}s, xmlReadFile error!", __func__);
         return false;
     }
     xmlNodePtr rootNodePtr = xmlDocGetRootElement(xmlDocPtr);
     if (!rootNodePtr || !rootNodePtr->name ||
         xmlStrcmp(rootNodePtr->name, reinterpret_cast<const xmlChar*>(XML_TAG_PLUGIN_LIST)) != 0) {
-        PLGMGR_LOGE("%{public}s, root element tag wrong!", __func__);
+        RESSCHED_LOGE("%{public}s, root element tag wrong!", __func__);
         xmlFreeDoc(xmlDocPtr);
         return false;
     }
@@ -89,14 +89,14 @@ bool PluginSwitch::LoadFromConfigFile(const string& configFile, bool isRssExe)
         }
 
         if (xmlStrcmp(currNodePtr->name, reinterpret_cast<const xmlChar*>(XML_TAG_PLUGIN)) != 0) {
-            PLGMGR_LOGW("%{public}s, plugin (%{public}s) config wrong!", __func__, currNodePtr->name);
+            RESSCHED_LOGW("%{public}s, plugin (%{public}s) config wrong!", __func__, currNodePtr->name);
             xmlFreeDoc(xmlDocPtr);
             return false;
         }
 
         PluginInfo info;
         if (!FillinPluginInfo(currNodePtr, info, isRssExe)) {
-            PLGMGR_LOGW("%{public}s, fill in pluginInfo error!", __func__);
+            RESSCHED_LOGW("%{public}s, fill in pluginInfo error!", __func__);
             continue;
         }
         pluginInfoList.emplace_back(info);

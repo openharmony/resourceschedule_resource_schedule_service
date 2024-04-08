@@ -14,6 +14,8 @@
 resourcescheduleservice_path =
     "//foundation/resourceschedule/resource_schedule_service"
 
+ressched_common = "${resourcescheduleservice_path}/ressched/common"
+
 resschedexe_common = "${resourcescheduleservice_path}/ressched_executor/common"
 
 resschedexe_interfaces =

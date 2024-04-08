@@ -17,10 +17,10 @@
 #include "ipc_types.h"
 #include "iremote_object.h"
 
+#include "ipc_utils.h"
 #include "res_exe_type.h"
 #include "res_sched_exe_common_utils.h"
 #include "res_sched_exe_constants.h"
-#include "res_sched_exe_ipc_utils.h"
 #include "res_sched_exe_log.h"
 
 namespace OHOS {
@@ -89,7 +89,7 @@ int32_t ResSchedExeServiceProxy::SendDebugCommand(MessageOption& option)
     WRITE_PARCEL(data, Uint32, ResExeType::RES_TYPE_DEBUG, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     uint64_t curr = ResSchedExeCommonUtils::GetCurrentTimestampUs();
     WRITE_PARCEL(data, Uint64, curr, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
-    RSSEXE_LOGD("IPC debug: client send request, current timestamp is %{public}llu.", curr);
+    RSSEXE_LOGD("IPC debug: client send request, current timestamp is %{public}lld.", (long long)curr);
 
     nlohmann::json reply;
     SendRequestInner(ResIpcType::REQUEST_DEBUG, data, option, reply);

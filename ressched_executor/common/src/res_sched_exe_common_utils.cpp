@@ -43,12 +43,12 @@ uint64_t ResSchedExeCommonUtils::GetCurrentTimestampUs()
     return static_cast<uint64_t>(ms.count());
 }
 
-bool ResSchedExeCommonUtils::CheckDeviceMode()
+bool ResSchedExeCommonUtils::IsDebugMode()
 {
     return OHOS::system::GetIntParameter("const.debuggable", 0) != 0;
 }
 
-bool ResSchedExeCommonUtils::CheckPermission(std::string permission)
+bool ResSchedExeCommonUtils::CheckPermission(const std::string& permission)
 {
     Security::AccessToken::AccessTokenID tokenId = IPCSkeleton::GetCallingTokenID();
     auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);

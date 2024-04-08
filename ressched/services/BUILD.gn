@@ -29,7 +29,6 @@ config("resschedsvc_public_config") {
     "${ressched_common}/include",
     "resschedmgr/resschedfwk/include",
     "resschedmgr/pluginbase/include",
-    "resschedmgr/plugincommon/include",
   ]
 }
 

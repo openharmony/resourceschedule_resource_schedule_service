@@ -47,7 +47,7 @@ void ResSchedExeService::ReportData(uint32_t resType, int64_t value, const nlohm
 
 bool ResSchedExeService::AllowDump()
 {
-    if (!ResSchedExeCommonUtils::CheckDeviceMode()) {
+    if (!ResSchedExeCommonUtils::IsDebugMode()) {
         RSSEXE_LOGE("Not eng mode");
         return false;
     }

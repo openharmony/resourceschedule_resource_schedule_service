@@ -17,10 +17,10 @@
 
 #include "ipc_skeleton.h"
 
+#include "ipc_utils.h"
 #include "res_exe_type.h"
 #include "res_sched_exe_common_utils.h"
 #include "res_sched_exe_constants.h"
-#include "res_sched_exe_ipc_utils.h"
 #include "res_sched_exe_log.h"
 
 namespace OHOS {
@@ -116,8 +116,8 @@ int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data, MessagePar
     uint64_t curr = ResSchedExeCommonUtils::GetCurrentTimestampUs();
     uint64_t start;
     READ_PARCEL(data, Uint64, start, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
-    RSSEXE_LOGD("IPC debug: server recieve request, current timestamp is %{public}llu.", curr);
-    RSSEXE_LOGD("IPC debug: server recieve request, cost tome is %{public}llu.", curr - start);
+    RSSEXE_LOGD("IPC debug: server recieve request, current timestamp is %{public}lld.", (long long)curr);
+    RSSEXE_LOGD("IPC debug: server recieve request, cost tome is %{public}lld.", (long long)(curr - start));
     return ResErrCode::RSSEXE_NO_ERR;
 }
 

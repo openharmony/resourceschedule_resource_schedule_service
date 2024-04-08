@@ -48,7 +48,7 @@ public:
      *
      * @return device is eng mode or not
      */
-    static bool CheckDeviceMode();
+    static bool IsDebugMode();
 
     /**
      * @brief check process has permission
@@ -56,7 +56,7 @@ public:
      * @param permission permission name to check
      * @return process has permission or not
      */
-    static bool CheckPermission(std::string permission);
+    static bool CheckPermission(const std::string& permission);
 
     /**
      * @brief convert string to json

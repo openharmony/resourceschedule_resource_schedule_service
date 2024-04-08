@@ -48,7 +48,7 @@ public:
      * @return function result
      */
     int32_t SendResRequest(uint32_t resType, int64_t value,
-        const std::unordered_map<std::string, std::string>& context, std::string reply);
+        const std::unordered_map<std::string, std::string>& context, std::string& reply);
 
     /**
      * @brief Report resource data to the ressched_executor through inter-process communication.
@@ -90,7 +90,7 @@ private:
 
     int32_t TryConnect();
     int32_t SendRequestInner(bool isSync, uint32_t resType, int64_t value,
-        const std::unordered_map<std::string, std::string>& context, std::string reply);
+        const std::unordered_map<std::string, std::string>& context, std::string& reply);
     nlohmann::json ConvertMapTojson(const std::unordered_map<std::string, std::string>& context);
 
     std::mutex mutex_;
