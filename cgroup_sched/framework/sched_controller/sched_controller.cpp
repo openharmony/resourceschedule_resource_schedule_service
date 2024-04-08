@@ -327,8 +327,8 @@ void SchedController::SubscribeWindowState()
             if (OHOS::Rosen::WindowManagerLite::GetInstance().
             RegisterFocusChangedListener(windowStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of window focus change failed.");
+                                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                                "ERR_MSG", "Register a listener of window focus change failed.");
             }
         }
     }
@@ -349,9 +349,9 @@ void SchedController::SubscribeWindowState()
             if (OHOS::Rosen::WindowManagerLite::GetInstance().
                 RegisterDrawingContentChangedListener(windowDrawingContentObserver_) != OHOS::Rosen::WMError::WM_OK) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
-                        HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of window draw content change failed.");
+                                    HiviewDFX::HiSysEvent::EventType::FAULT,
+                                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                                    "ERR_MSG", "Register a listener of window draw content change failed.");
             }
         }
     }
@@ -361,9 +361,9 @@ void SchedController::SubscribeWindowState()
             if (OHOS::Rosen::WindowManagerLite::GetInstance().
                 RegisterWindowModeChangedListener(windowModeObserver_) != OHOS::Rosen::WMError::WM_OK) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS,
-                        "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of window mode content change failed.");
+                                    "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                                    "ERR_MSG", "Register a listener of window mode content change failed.");
             }
         }
     }
