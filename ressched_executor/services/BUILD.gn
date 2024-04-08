@@ -17,6 +17,7 @@ import("../ressched_executor.gni")
 
 config("service_public_config") {
   include_dirs = [
+    "${ressched_common}/include",
     "${resschedexe_common}/include",
     "${resschedexe_plugins}/pluginbase/include",
     "${resschedexe_plugins}/resschedfwk/include",
