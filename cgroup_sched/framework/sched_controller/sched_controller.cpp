@@ -338,8 +338,8 @@ void SchedController::SubscribeWindowState()
             if (OHOS::Rosen::WindowManagerLite::GetInstance().
             RegisterVisibilityChangedListener(windowVisibilityObserver_) != OHOS::Rosen::WMError::WM_OK) {
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of window visibility change failed.");
+                                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                                "ERR_MSG", "Register a listener of window visibility change failed.");
             }
         }
     }
