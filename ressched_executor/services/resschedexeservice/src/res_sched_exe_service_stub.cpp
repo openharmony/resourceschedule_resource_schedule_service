@@ -17,7 +17,7 @@
 
 #include "ipc_skeleton.h"
 
-#include "ipc_utils.h"
+#include "ipc_util.h"
 #include "res_exe_type.h"
 #include "res_sched_exe_common_utils.h"
 #include "res_sched_exe_constants.h"
