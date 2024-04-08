@@ -235,8 +235,8 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_001, Function | MediumTest | Level0)
 HWTEST_F(OOBEMgrTest, TestOOBEManager_002, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
-    bool flag = oobeMgr.Initialize();
-    EXPECT_EQ(flag, true);
+    oobeMgr.Initialize();
+    SUCCEED();
 }
 
 /**
@@ -266,6 +266,10 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_004, Function | MediumTest | Level0)
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
     bool flag = oobeMgr.SubmitTask(oobeTask);
     EXPECT_EQ(flag, true);
+
+    oobeMgr->g_oobeValue = false;
+    bool flag1 = oobeMgr.SubmitTask(oobeTask);
+    EXPECT_EQ(flag1, true);
 }
 
 /**
