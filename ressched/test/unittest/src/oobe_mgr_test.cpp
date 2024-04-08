@@ -66,7 +66,7 @@ void OOBEMgrTest::TearDown() {}
 HWTEST_F(OOBEMgrTest, TestDataShareUtils_001, Function | MediumTest | Level0)
 {
     int32_t result = 0;
-    ResourceSchedule::DataShareUtils.GetInstance().GetValue(KEYWORD, result);
+    ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
     EXPECT_NE(result, 0);
 }
 
@@ -80,7 +80,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_001, Function | MediumTest | Level0)
 HWTEST_F(OOBEMgrTest, TestDataShareUtils_002, Function | MediumTest | Level0)
 {
     int64_t result = 0;
-    ResourceSchedule::DataShareUtils.GetInstance().GetValue(KEYWORD, result);
+    ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
     EXPECT_NE(result, 0);
 }
 
@@ -94,7 +94,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_002, Function | MediumTest | Level0)
 HWTEST_F(OOBEMgrTest, TestDataShareUtils_003, Function | MediumTest | Level0)
 {
     std::string result;
-    ResourceSchedule::DataShareUtils.GetInstance().GetValue(KEYWORD, result);
+    ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
     EXPECT_NE(result, "");
 }
 
@@ -108,7 +108,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_003, Function | MediumTest | Level0)
 HWTEST_F(OOBEMgrTest, TestDataShareUtils_004, Function | MediumTest | Level0)
 {
     bool result;
-    int32_t ret = ResourceSchedule::DataShareUtils.GetInstance().GetValue(KEYWORD, result);
+    int32_t ret = ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
     EXPECT_EQ(ret, ERR_INVALID_OPERATION);
 }
 
@@ -122,16 +122,16 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_004, Function | MediumTest | Level0)
 HWTEST_F(OOBEMgrTest, TestDataShareUtils_005, Function | MediumTest | Level0)
 {
     std::string result;
-    int32_t ret1 = ResourceSchedule::DataShareUtils.GetInstance().GetStringValue(KEYWORD, result);
+    int32_t ret1 = ResourceSchedule::DataShareUtils::GetInstance().GetStringValue(KEYWORD, result);
     EXPECT_EQ(ret1, ERR_OK);
 
-    int32_t ret2 = ResourceSchedule::DataShareUtils.GetInstance().GetStringValue("", result);
+    int32_t ret2 = ResourceSchedule::DataShareUtils::GetInstance().GetStringValue("", result);
     EXPECT_NE(ret2, ERR_OK);
 
-    int32_t ret3 = ResourceSchedule::DataShareUtils.GetInstance().GetStringValue("test", result);
+    int32_t ret3 = ResourceSchedule::DataShareUtils::GetInstance().GetStringValue("test", result);
     EXPECT_NE(ret3, ERR_OK);
 
-    int32_t ret4 = ResourceSchedule::DataShareUtils.GetInstance().GetStringValue("123", result);
+    int32_t ret4 = ResourceSchedule::DataShareUtils::GetInstance().GetStringValue("123", result);
     EXPECT_NE(ret4, ERR_OK);
 }
 
@@ -293,6 +293,7 @@ HWTEST_F(OOBEMgrTest, TestResDataAbilityProvider_001, Function | MediumTest | Le
 {
     ResDataAbilityProvider& resDataProvider = ResDataAbilityProvider::GetInstance();
     ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
+    resDataProvider.UnregisterObserver(KEYWORD, updateFunc);
     int32_t ret = resDataProvider.RegisterObserver(KEYWORD, updateFunc);
     EXPECT_EQ(ret, ERR_OK);
 }
