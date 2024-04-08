@@ -65,16 +65,21 @@ void ResSchedExeCommonUtils::StringToJson(const std::string& str, nlohmann::json
     if (str.empty()) {
         return;
     }
-    payload = nlohmann::json::parse(str, nullptr, false);
-    if (payload.is_discarded()) {
+
+    auto jsonObj = nlohmann::json::parse(str, nullptr, false);
+    if (jsonObj.is_discarded()) {
         RSSEXE_LOGE("parse string to json failed.");
         RSSEXE_LOGD("string: %{private}s.", str.c_str());
         return;
     }
-    if (!payload.is_object()) {
+    if (!jsonObj.is_object()) {
         RSSEXE_LOGE("convert string result is not a jsonobj.");
         RSSEXE_LOGD("string: %{private}s.", str.c_str());
         return;
+    }
+
+    for (auto& [key, value] : jsonObj.items()) {
+        payload[key] = value;
     }
 }
 } // namespace ResourceSchedule

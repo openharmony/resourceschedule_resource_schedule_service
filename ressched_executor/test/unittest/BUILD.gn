@@ -16,15 +16,12 @@ import("../../ressched_executor.gni")
 
 group("unittest") {
   testonly = true
-  deps = [
-    ":resschedexeclient_test",
-    ":resschedexeservice_test",
-  ]
+  deps = [ ":resschedexefwk_test" ]
 }
 
 module_output_path = "resource_schedule_service/ressched_executor"
 
-ohos_unittest("resschedexeservice_test") {
+ohos_unittest("resschedexefwk_test") {
   module_out_path = module_output_path
 
   include_dirs = [
@@ -33,7 +30,10 @@ ohos_unittest("resschedexeservice_test") {
     "${resschedexe_interfaces}/innerkits/ressched_executor_client/include",
   ]
 
-  sources = [ "res_sched_exe_service_test.cpp" ]
+  sources = [
+    "res_sched_exe_client_test.cpp",
+    "res_sched_exe_service_test.cpp",
+  ]
 
   deps = [
     "${resschedexe_services}:resschedexesvc_static",
@@ -57,31 +57,4 @@ ohos_unittest("resschedexeservice_test") {
   }
 
   branch_protector_ret = "pac_ret"
-}
-
-ohos_unittest("resschedexeclient_test") {
-  module_out_path = module_output_path
-
-  include_dirs = [
-    "${ressched_common}/include",
-    "${resschedexe_common}/include",
-    "${resschedexe_interfaces}/innerkits/ressched_executor_client/include",
-  ]
-
-  sources = [ "res_sched_exe_client_test.cpp" ]
-
-  deps = [
-    "${resschedexe_services}:resschedexesvc_static",
-    "//third_party/googletest:gtest_main",
-  ]
-
-  external_deps = [
-    "ability_runtime:ability_manager",
-    "access_token:libaccesstoken_sdk",
-    "access_token:libnativetoken",
-    "access_token:libtoken_setproc",
-    "c_utils:utils",
-    "ffrt:libffrt",
-    "ipc:ipc_single",
-  ]
 }
