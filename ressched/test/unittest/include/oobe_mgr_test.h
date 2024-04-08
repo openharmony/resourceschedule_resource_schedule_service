@@ -21,7 +21,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-class PluginMgrTest : public testing::Test {
+class OOBEMgrTest : public testing::Test {
 public:
     static void SetUpTestCase();
     static void TearDownTestCase();
