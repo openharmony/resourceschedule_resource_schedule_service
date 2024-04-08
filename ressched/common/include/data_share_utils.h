@@ -53,7 +53,7 @@ ErrCode DataShareUtils::GetValue(const std::string& key, T& value)
         RESSCHED_LOGW("resultSet->GetString return not ok, ret=%{public}d", ret);
         return ERR_INVALID_VALUE;
     }
-    using ValueType = std::remove_reference_t<std::remove_referece_t<T>>;
+    using ValueType = std::remove_cv_t<std::remove_reference_t<T>>;
     if constexpr (std::is_same_v<std::string, ValueType>) {
         value = result;
     } else if constexpr (std::is_same_v<int64_t, ValueType>) {
