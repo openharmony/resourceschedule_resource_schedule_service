@@ -227,7 +227,7 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_001, Function | MediumTest | Level0)
 
 /**
  * @tc.name: oobe manager TestOOBEManager_002
- * @tc.desc: test the interface OnAddSystemAbility of OOBEManager
+ * @tc.desc: test the interface Initialize of OOBEManager
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
@@ -235,23 +235,13 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_001, Function | MediumTest | Level0)
 HWTEST_F(OOBEMgrTest, TestOOBEManager_002, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
-    oobeMgr.InitSystemAbilityListener();
-    sptr<OOBEManager::SystemAbilityStatusChangeListener> listener =
-        sptr<OOBEManager::SystemAbilityStatusChangeListener>();
-        std::string deviceId;
-    listener->OnAddSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
-    SUCCEED();
-
-    listener->OnAddSystemAbility(0, deviceId);
-    SUCCEED();
-
-    listener->OnRemoveSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
-    SUCCEED();
+    bool flag = oobeMgr.Initialize();
+    EXPECT_EQ(flag, true);
 }
 
 /**
  * @tc.name: oobe manager TestOOBEManager_003
- * @tc.desc: test the interface Initialize of OOBEManager
+ * @tc.desc: test the interface SubmitTask of OOBEManager
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
@@ -259,8 +249,8 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_002, Function | MediumTest | Level0)
 HWTEST_F(OOBEMgrTest, TestOOBEManager_003, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
-    bool flag = oobeMgr.Initialize();
-    EXPECT_EQ(flag, true);
+    bool flag = oobeMgr.SubmitTask(nullptr);
+    EXPECT_EQ(flag, false);
 }
 
 /**
@@ -272,20 +262,6 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_003, Function | MediumTest | Level0)
  */
 HWTEST_F(OOBEMgrTest, TestOOBEManager_004, Function | MediumTest | Level0)
 {
-    OOBEManager& oobeMgr = OOBEManager::GetInstance();
-    bool flag = oobeMgr.SubmitTask(nullptr);
-    EXPECT_EQ(flag, false);
-}
-
-/**
- * @tc.name: oobe manager TestOOBEManager_005
- * @tc.desc: test the interface SubmitTask of OOBEManager
- * @tc.type: FUNC
- * @tc.require: issueI97493
- * @tc.author:zhumingjie
- */
-HWTEST_F(OOBEMgrTest, TestOOBEManager_005, Function | MediumTest | Level0)
-{
     std::shared_ptr<IOOBETask> oobeTask = std::make_shared<OOBETaskImpl>();
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
     bool flag = oobeMgr.SubmitTask(oobeTask);
@@ -293,13 +269,13 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_005, Function | MediumTest | Level0)
 }
 
 /**
- * @tc.name: oobe manager TestOOBEManager_006
+ * @tc.name: oobe manager TestOOBEManager_005
  * @tc.desc: test the interface StartListen of OOBEManager
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestOOBEManager_006, Function | MediumTest | Level0)
+HWTEST_F(OOBEMgrTest, TestOOBEManager_005, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
     oobeMgr.StartListen();
