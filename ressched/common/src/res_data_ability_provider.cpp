@@ -88,7 +88,7 @@ ErrCode ResDataAbilityProvider::UnregisterObserver(const std::string& key, ResDa
     DataShareUtils::GetInstance().ReleaseDataShareHelper(helper);
     IPCSkeleton::SetCallingIdentity(callingIdentity);
     RESSCHED_LOGI("succeed to register observer of uri=%{public}s", uri.ToString().c_str());
-    observers_.earse(key);
+    observers_.erase(key);
     return ERR_OK;
 }
 } // namespace ResourceSchedule
