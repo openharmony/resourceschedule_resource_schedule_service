@@ -48,6 +48,7 @@ ohos_unittest("resschedexefwk_test") {
     "c_utils:utils",
     "ffrt:libffrt",
     "ipc:ipc_single",
+    "hilog:libhilog",
   ]
 
   sanitize = {
