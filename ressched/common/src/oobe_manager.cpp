@@ -64,11 +64,12 @@ void OOBEManager::InitSystemAbilityListener()
     sptr<ISystemAbilityManager> systemAbilityManager
         = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (systemAbilityManager == nullptr) {
+        sysAbilityListener_ = nullptr;
         RESSCHED_LOGI("systemAbilityManager is null");
         return;
     }
-    int32_t ret = systemAbilityManager
-        ->SubscribeSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, sysAbilityListener_);
+    int32_t ret = systemAbilityManager->
+        SubscribeSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, sysAbilityListener_);
     if (ret != ERR_OK) {
         RESSCHED_LOGI("subscribe system ability id: %{public}d faild", DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID);
         sysAbilityListener_ = nullptr;
@@ -101,6 +102,7 @@ void OOBEManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
 
 void OOBEManager::Initialize()
 {
+    InitSystemAbilityListener();
     int resultValue = 0;
     auto dataShareUtils = ResourceSchedule::DataShareUtils::GetInstance();
     dataShareUtils.GetValue(KEYWORD, resultValue);
@@ -122,8 +124,7 @@ bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
         return true;
     }
     oobeTasks_.push_back(task);
-    InitSystemAbilityListener();
-    return g_oobeValue;
+    return true;
 }
 
 void OOBEManager::StartListen()

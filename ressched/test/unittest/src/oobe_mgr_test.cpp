@@ -264,12 +264,16 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_004, Function | MediumTest | Level0)
 {
     std::shared_ptr<IOOBETask> oobeTask = std::make_shared<OOBETaskImpl>();
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
+    oobeMgr.g_oobeValue = true;
     bool flag = oobeMgr.SubmitTask(oobeTask);
     EXPECT_EQ(flag, true);
 
-    oobeMgr->g_oobeValue = false;
+    oobeMgr.g_oobeValue = false;
     bool flag1 = oobeMgr.SubmitTask(oobeTask);
     EXPECT_EQ(flag1, true);
+
+    bool flag2 = oobeMgr.SubmitTask(nullptr);
+    EXPECT_EQ(flag2, false);
 }
 
 /**

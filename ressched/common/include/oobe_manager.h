@@ -32,7 +32,7 @@ public:
     bool SubmitTask(const std::shared_ptr<IOOBETask>& task);
 
 private:
-    g_oobeValue = false;
+    bool g_oobeValue = false;
     static OOBEManager* oobeInstance_;
     static std::mutex mutex_;
     static std::vector<std::shared_ptr<IOOBETask>> oobeTasks_;
