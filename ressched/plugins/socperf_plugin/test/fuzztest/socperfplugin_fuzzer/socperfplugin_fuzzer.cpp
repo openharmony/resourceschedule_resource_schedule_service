@@ -18,8 +18,6 @@
 
 #include "socperfplugin_fuzzer.h"
 #include <dlfcn.h>
-#include <stddef.h>
-#include <stdint.h>
 #include "res_type.h"
 #include "res_data.h"
 #include "socperf_plugin.h"
