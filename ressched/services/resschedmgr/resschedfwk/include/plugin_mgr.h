@@ -142,6 +142,8 @@ public:
 
     void SetResTypeStrMap(const std::map<uint32_t, std::string>& resTypeStr);
 
+    void ClearResTypeStrMap();
+
 private:
     PluginMgr() = default;
     std::string GetRealConfigPath(const char* configName);
@@ -165,6 +167,7 @@ private:
     int32_t GetExtTypeByResPayload(const std::shared_ptr<ResData>& resData);
 #endif
     std::list<std::string> SortPluginList(const std::list<std::string>& pluginList);
+    std::string GetStrFromResTypeStrMap(uint32_t resType);
 
     // plugin crash 3 times in 60s, will be disable forever
     const int32_t MAX_PLUGIN_TIMEOUT_TIMES = 3;
@@ -177,6 +180,8 @@ private:
 
     // mutex for resTypeMap_
     std::mutex resTypeMutex_;
+    // mutex for resTypeStrMap_
+    std::mutex resTypeStrMutex_;
     std::mutex pluginMutex_;
     std::mutex dispatcherHandlerMutex_;
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;

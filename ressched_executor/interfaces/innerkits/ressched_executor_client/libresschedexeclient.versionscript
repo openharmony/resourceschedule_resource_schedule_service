@@ -15,8 +15,8 @@
   global:
     *IResSchedExeService*;
     *ResSchedExeClient*GetInstance*;
-    *ResSchedExeClient*SendResRequest*;
-    *ResSchedExeClient*ReportData*;
+    *ResSchedExeClient*SendRequestSync*;
+    *ResSchedExeClient*SendRequestAsync*;
     *ResSchedExeClient*StopRemoteObject*;
     *ResSchedExeClient*SendDebugCommand*;
     *ResSchedExeServiceProxy*;

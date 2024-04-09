@@ -50,32 +50,32 @@ void ResSchedExeClientTest::SetUp() {}
 void ResSchedExeClientTest::TearDown() {}
 
 /**
- * @tc.name: SendResRequest001
+ * @tc.name: SendRequestSync001
  * @tc.desc: send res request stable test
  * @tc.type: FUNC
  */
-HWTEST_F(ResSchedExeClientTest, SendResRequest001, Function | MediumTest | Level0)
+HWTEST_F(ResSchedExeClientTest, SendRequestSync001, Function | MediumTest | Level0)
 {
     std::unordered_map<std::string, std::string> context;
     context["message"] = "test";
     std::string reply;
     for (int i = 0; i < 100; i++) {
-        ResSchedExeClient::GetInstance().SendResRequest(ResExeType::RES_TYPE_DEBUG, 0, context, reply);
+        ResSchedExeClient::GetInstance().SendRequestSync(ResExeType::RES_TYPE_DEBUG, 0, context, reply);
     }
     EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);
 }
 
 /**
- * @tc.name: ReportData001
+ * @tc.name: SendRequestAsync001
  * @tc.desc: report data stable test
  * @tc.type: FUNC
  */
-HWTEST_F(ResSchedExeClientTest, ReportData001, Function | MediumTest | Level0)
+HWTEST_F(ResSchedExeClientTest, SendRequestAsync001, Function | MediumTest | Level0)
 {
     std::unordered_map<std::string, std::string> context;
     context["message"] = "test";
     for (int i = 0; i < 100; i++) {
-        ResSchedExeClient::GetInstance().ReportData(ResExeType::RES_TYPE_DEBUG, 0, context);
+        ResSchedExeClient::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_DEBUG, 0, context);
     }
     EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);
 }

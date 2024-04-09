@@ -26,7 +26,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-using namespace AppExecFwk;
 
 IMPLEMENT_SINGLE_INSTANCE(ResSchedExeMgr);
 
@@ -39,19 +38,31 @@ void ResSchedExeMgr::Init()
 void ResSchedExeMgr::Stop()
 {
     PluginMgr::GetInstance().Stop();
+    PluginMgr::GetInstance().ClearResTypeStrMap();
 }
 
-int32_t ResSchedExeMgr::SendResRequest(uint32_t resType, int64_t value,
+int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     nlohmann::json& reply, const nlohmann::json& payload)
+{
+    // plugin sync dispatch resource function is coding...
+    RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
+    if (!payload) {
+        RSSEXE_LOGD("receive payload = %{public}s.",
+            payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
+    }
+    reply["result"] = std::to_string(ResErrCode::RSSEXE_NO_ERR);
+    return ResErrCode::RSSEXE_NO_ERR;
+}
+
+void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
     std::string trace_str(__func__);
     trace_str.append(",resType[").append(std::to_string(resType)).append("]");
     trace_str.append(",value[").append(std::to_string(value)).append("]");
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload, reply));
+    PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
     FinishTrace(HITRACE_TAG_OHOS);
-    return ResErrCode::RSSEXE_NO_ERR;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

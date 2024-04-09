@@ -33,16 +33,15 @@ namespace {
     const std::string DUMP_PERMISSION = "ohos.permission.DUMP";
 }
 
-int32_t ResSchedExeService::SendResRequest(uint32_t resType, int64_t value,
+int32_t ResSchedExeService::SendRequestSync(uint32_t resType, int64_t value,
     const nlohmann::json& context, nlohmann::json& reply)
 {
-    return ResSchedExeMgr::GetInstance().SendResRequest(resType, value, reply, context);
+    return ResSchedExeMgr::GetInstance().SendRequestSync(resType, value, reply, context);
 }
 
-void ResSchedExeService::ReportData(uint32_t resType, int64_t value, const nlohmann::json& context)
+void ResSchedExeService::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& context)
 {
-    nlohmann::json reply;
-    ResSchedExeMgr::GetInstance().SendResRequest(resType, value, reply, context);
+    ResSchedExeMgr::GetInstance().SendRequestAsync(resType, value, context);
 }
 
 bool ResSchedExeService::AllowDump()

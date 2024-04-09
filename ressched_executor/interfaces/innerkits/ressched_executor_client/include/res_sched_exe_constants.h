@@ -21,8 +21,8 @@
 namespace OHOS {
 namespace ResourceSchedule {
 enum ResIpcType : uint32_t {
-    RES_REQUEST = 0,
-    REPORT_DATA,
+    REQUEST_SYNC = 0,
+    REQUEST_ASYNC,
     REQUEST_DEBUG,
 };
 

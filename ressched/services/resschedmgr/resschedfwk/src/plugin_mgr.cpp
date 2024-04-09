@@ -251,8 +251,7 @@ std::string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resDat
     }
     libNameAll.append("]");
     string trace_str(funcName);
-    string resTypeString =
-        resTypeStrMap_.count(resData->resType) ? resTypeStrMap_.at(resData->resType) : "UNKNOWN";
+    string resTypeString = GetStrFromResTypeStrMap(resData->resType);
     trace_str.append(" PluginMgr ,resType[").append(std::to_string(resData->resType)).append("]");
     trace_str.append(",resTypeStr[").append(resTypeString).append("]");
     trace_str.append(",value[").append(std::to_string(resData->value)).append("]");
@@ -411,7 +410,6 @@ std::string PluginMgr::GetRealConfigPath(const char* configName)
 
 void PluginMgr::ClearResource()
 {
-    resTypeStrMap_.clear();
     std::lock_guard<std::mutex> autoLock(resTypeMutex_);
     resTypeLibMap_.clear();
 }
@@ -472,8 +470,7 @@ void PluginMgr::DeliverResourceToPluginSync(const std::list<std::string>& plugin
 
         StartTrace(HITRACE_TAG_OHOS, pluginLib);
         auto beginTime = Clock::now();
-        pluginDispatchFunc(std::make_shared<ResData>(resData->resType,
-            resData->value, resData->payload, resData->reply));
+        pluginDispatchFunc(std::make_shared<ResData>(resData->resType, resData->value, resData->payload));
         auto endTime = Clock::now();
         FinishTrace(HITRACE_TAG_OHOS);
         int32_t costTimeUs = (endTime - beginTime) / std::chrono::microseconds(1);
@@ -524,8 +521,7 @@ void PluginMgr::DeliverResourceToPluginAsync(const std::list<std::string>& plugi
         dispatchers_[pluginLib]->submit(
             [pluginLib, resData, pluginDispatchFunc] {
                 StartTrace(HITRACE_TAG_OHOS, pluginLib);
-                pluginDispatchFunc(std::make_shared<ResData>(resData->resType,
-                    resData->value, resData->payload, resData->reply));
+                pluginDispatchFunc(std::make_shared<ResData>(resData->resType, resData->value, resData->payload));
                 FinishTrace(HITRACE_TAG_OHOS);
             });
     }
@@ -565,7 +561,20 @@ void PluginMgr::OnDestroy()
 
 void PluginMgr::SetResTypeStrMap(const std::map<uint32_t, std::string>& resTypeStr)
 {
+    std::lock_guard<std::mutex> autoLock(resTypeStrMutex_);
     resTypeStrMap_ = resTypeStr;
+}
+
+void PluginMgr::ClearResTypeStrMap()
+{
+    std::lock_guard<std::mutex> autoLock(resTypeStrMutex_);
+    resTypeStrMap_.clear();
+}
+
+std::string PluginMgr::GetStrFromResTypeStrMap(uint32_t resType)
+{
+    std::lock_guard<std::mutex> autoLock(resTypeStrMutex_);
+    return resTypeStrMap_.count(resType) ? resTypeStrMap_.at(resType) : "UNKNOWN";
 }
 
 std::list<std::string> PluginMgr::SortPluginList(const std::list<std::string>& pluginList)

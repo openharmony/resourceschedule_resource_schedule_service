@@ -132,67 +132,67 @@ HWTEST_F(ResSchedExeServiceTest, ServiceDump001, Function | MediumTest | Level0)
 }
 
 /**
- * @tc.name: Ressched_executor service SendResRequest001
- * @tc.desc: Verify if Ressched_executor service SendResRequest is success.
+ * @tc.name: Ressched_executor service SendRequestSync001
+ * @tc.desc: Verify if Ressched_executor service SendRequestSync is success.
  * @tc.type: FUNC
  */
-HWTEST_F(ResSchedExeServiceTest, SendResRequest001, Function | MediumTest | Level0)
+HWTEST_F(ResSchedExeServiceTest, SendRequestSync001, Function | MediumTest | Level0)
 {
     nlohmann::json payload;
     nlohmann::json reply;
     EXPECT_TRUE(resSchedExeService_ != nullptr);
-    resSchedExeService_->SendResRequest(0, 0, payload, reply);
+    resSchedExeService_->SendRequestSync(0, 0, payload, reply);
 }
 
-static void SendResRequestTask()
+static void SendRequestSyncTask()
 {
     std::shared_ptr<ResSchedExeService> resSchedExeService_ = make_shared<ResSchedExeService>();
     nlohmann::json payload;
     nlohmann::json reply;
     EXPECT_TRUE(resSchedExeService_ != nullptr);
-    resSchedExeService_->SendResRequest(0, 0, payload, reply);
+    resSchedExeService_->SendRequestSync(0, 0, payload, reply);
 }
 
 /**
- * @tc.name: Ressched_executor service SendResRequest002
- * @tc.desc: Test Ressched_executor service SendResRequest in multithreading.
+ * @tc.name: Ressched_executor service SendRequestSync002
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
  * @tc.type: FUNC
  */
-HWTEST_F(ResSchedExeServiceTest, SendResRequest002, Function | MediumTest | Level0)
+HWTEST_F(ResSchedExeServiceTest, SendRequestSync002, Function | MediumTest | Level0)
 {
     SET_THREAD_NUM(10);
-    GTEST_RUN_TASK(SendResRequestTask);
+    GTEST_RUN_TASK(SendRequestSyncTask);
 }
 
 /**
- * @tc.name: Ressched_executor service ReportData001
- * @tc.desc: Verify if Ressched_executor service ReportData is success.
+ * @tc.name: Ressched_executor service SendRequestAsync001
+ * @tc.desc: Verify if Ressched_executor service SendRequestAsync is success.
  * @tc.type: FUNC
  */
-HWTEST_F(ResSchedExeServiceTest, ReportData001, Function | MediumTest | Level0)
+HWTEST_F(ResSchedExeServiceTest, SendRequestAsync001, Function | MediumTest | Level0)
 {
     nlohmann::json payload;
     EXPECT_TRUE(resSchedExeService_ != nullptr);
-    resSchedExeService_->ReportData(0, 0, payload);
+    resSchedExeService_->SendRequestAsync(0, 0, payload);
 }
 
-static void ReportDataTask()
+static void SendRequestAsyncTask()
 {
     std::shared_ptr<ResSchedExeService> resSchedExeService_ = make_shared<ResSchedExeService>();
     nlohmann::json payload;
     EXPECT_TRUE(resSchedExeService_ != nullptr);
-    resSchedExeService_->ReportData(0, 0, payload);
+    resSchedExeService_->SendRequestAsync(0, 0, payload);
 }
 
 /**
- * @tc.name: Ressched_executor service ReportData002
- * @tc.desc: Test Ressched_executor service ReportData in multithreading.
+ * @tc.name: Ressched_executor service SendRequestAsync002
+ * @tc.desc: Test Ressched_executor service SendRequestAsync in multithreading.
  * @tc.type: FUNC
  */
-HWTEST_F(ResSchedExeServiceTest, ReportData002, Function | MediumTest | Level0)
+HWTEST_F(ResSchedExeServiceTest, SendRequestAsync002, Function | MediumTest | Level0)
 {
     SET_THREAD_NUM(10);
-    GTEST_RUN_TASK(ReportDataTask);
+    GTEST_RUN_TASK(SendRequestAsyncTask);
 }
 
 /**
@@ -239,11 +239,11 @@ class TestResSchedExeServiceStub : public ResSchedExeServiceStub {
 public:
     TestResSchedExeServiceStub() : ResSchedExeServiceStub() {}
 
-    void ReportData(uint32_t restype, int64_t value, const nlohmann::json& context) override
+    void SendRequestAsync(uint32_t restype, int64_t value, const nlohmann::json& context) override
     {
     }
 
-    int32_t SendResRequest(uint32_t restype, int64_t value,
+    int32_t SendRequestSync(uint32_t restype, int64_t value,
         const nlohmann::json& context, nlohmann::json& reply) override
     {
         return 0;
@@ -354,11 +354,11 @@ HWTEST_F(ResSchedExeServiceTest, RemoteRequest001, Function | MediumTest | Level
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     MessageOption option;
     MessageParcel reply;
-    int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REPORT_DATA, reply, reply, option);
+    int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SYNC, reply, reply, option);
+    EXPECT_TRUE(res);
+    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_ASYNC, reply, reply, option);
     EXPECT_TRUE(res);
     res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_DEBUG, reply, reply, option);
-    EXPECT_TRUE(res);
-    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::RES_REQUEST, reply, reply, option);
     EXPECT_TRUE(res);
 }
 
@@ -367,11 +367,11 @@ static void RemoteRequestTask()
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     MessageOption option;
     MessageParcel reply;
-    int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REPORT_DATA, reply, reply, option);
+    int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SYNC, reply, reply, option);
+    EXPECT_TRUE(res);
+    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_ASYNC, reply, reply, option);
     EXPECT_TRUE(res);
     res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_DEBUG, reply, reply, option);
-    EXPECT_TRUE(res);
-    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::RES_REQUEST, reply, reply, option);
     EXPECT_TRUE(res);
 }
 

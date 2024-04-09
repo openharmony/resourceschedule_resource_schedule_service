@@ -25,10 +25,10 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-int32_t ResSchedExeServiceProxy::SendResRequest(uint32_t resType, int64_t value,
+int32_t ResSchedExeServiceProxy::SendRequestSync(uint32_t resType, int64_t value,
     const nlohmann::json& context, nlohmann::json& reply)
 {
-    RSSEXE_LOGD("SendResRequest start.");
+    RSSEXE_LOGD("SendRequestSync start.");
     MessageOption option = { MessageOption::TF_SYNC };
     if (resType != ResExeType::RES_TYPE_DEBUG) {
         SendDebugCommand(option);
@@ -36,12 +36,12 @@ int32_t ResSchedExeServiceProxy::SendResRequest(uint32_t resType, int64_t value,
     }
     MessageParcel data;
     MakeUpParcel(data, resType, value, context);
-    return SendRequestInner(ResIpcType::RES_REQUEST, data, option, reply);
+    return SendRequestInner(ResIpcType::REQUEST_SYNC, data, option, reply);
 }
 
-void ResSchedExeServiceProxy::ReportData(uint32_t resType, int64_t value, const nlohmann::json& context)
+void ResSchedExeServiceProxy::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& context)
 {
-    RSSEXE_LOGD("ReportData start.");
+    RSSEXE_LOGD("SendRequestAsync start.");
     MessageOption option = { MessageOption::TF_ASYNC };
     if (resType != ResExeType::RES_TYPE_DEBUG) {
         SendDebugCommand(option);
@@ -50,7 +50,7 @@ void ResSchedExeServiceProxy::ReportData(uint32_t resType, int64_t value, const 
     nlohmann::json reply;
     MessageParcel data;
     MakeUpParcel(data, resType, value, context);
-    SendRequestInner(ResIpcType::REPORT_DATA, data, option, reply);
+    SendRequestInner(ResIpcType::REQUEST_ASYNC, data, option, reply);
 }
 
 

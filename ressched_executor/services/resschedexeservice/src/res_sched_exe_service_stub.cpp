@@ -87,9 +87,9 @@ int32_t ResSchedExeServiceStub::ReportRequestInner(MessageParcel& data, MessageP
         context["callingUid"] = std::to_string(uid);
         context["clientPid"] = std::to_string(clientPid);
         if (IsTypeSync(resType)) {
-            ret = SendResRequest(resType, value, context, result);
+            ret = SendRequestSync(resType, value, context, result);
         } else {
-            ReportData(resType, value, context);
+            SendRequestAsync(resType, value, context);
             ret = ResErrCode::RSSEXE_NO_ERR;
         }
     } else {
@@ -129,9 +129,9 @@ int32_t ResSchedExeServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &da
     RSSEXE_LOGD("code = %{public}u, flags = %{public}d.", code, option.GetFlags());
 
     switch (code) {
-        case ResIpcType::RES_REQUEST:
+        case ResIpcType::REQUEST_SYNC:
             return ReportRequestInner(data, reply);
-        case ResIpcType::REPORT_DATA:
+        case ResIpcType::REQUEST_ASYNC:
             return ReportRequestInner(data, reply);
         case ResIpcType::REQUEST_DEBUG:
             return ReportDebugInner(data, reply);

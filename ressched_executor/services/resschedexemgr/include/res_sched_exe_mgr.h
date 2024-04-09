@@ -41,15 +41,24 @@ public:
     void Stop();
 
     /**
-     * Report data inner, will report resource data.
+     * Send request sync inner, will report resource schedule executor data.
      *
      * @param resType Resource type.
      * @param value bit64 content.
      * @param reply Reply content.
      * @param payload Extra content.
      */
-    int32_t SendResRequest(uint32_t resType, int64_t value,
+    int32_t SendRequestSync(uint32_t resType, int64_t value,
         nlohmann::json& reply, const nlohmann::json& payload = nullptr);
+
+    /**
+     * Send request async inner, will report resource schedule executor data.
+     *
+     * @param resType Resource type.
+     * @param value bit64 content.
+     * @param payload Extra content.
+     */
+    void SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& payload = nullptr);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -42,13 +42,13 @@ ResSchedExeClient::~ResSchedExeClient()
     StopRemoteObject();
 }
 
-int32_t ResSchedExeClient::SendResRequest(uint32_t resType, int64_t value,
+int32_t ResSchedExeClient::SendRequestSync(uint32_t resType, int64_t value,
     const std::unordered_map<std::string, std::string>& context, std::string& reply)
 {
     return SendRequestInner(true, resType, value, context, reply);
 }
 
-void ResSchedExeClient::ReportData(uint32_t resType, int64_t value,
+void ResSchedExeClient::SendRequestAsync(uint32_t resType, int64_t value,
     const std::unordered_map<std::string, std::string>& context)
 {
     std::string reply;
@@ -73,11 +73,11 @@ int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64
     nlohmann::json payload = ConvertMapToJson(context);
     nlohmann::json result;
     if (isSync) {
-        int32_t ret = resSchedExe_->SendResRequest(resType, value, payload, result);
+        int32_t ret = resSchedExe_->SendRequestSync(resType, value, payload, result);
         reply.append(result.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
         return ret;
     } else {
-        resSchedExe_->ReportData(resType, value, payload);
+        resSchedExe_->SendRequestAsync(resType, value, payload);
         return ResErrCode::RSSEXE_NO_ERR;
     }
 }

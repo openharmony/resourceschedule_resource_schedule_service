@@ -26,7 +26,7 @@ public:
     DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ResourceSchedule.ResSchedExeService");
 
     /**
-     * @brief Send request data to the ressched_executor through inter-process communication.
+     * @brief Send request sync to the ressched_executor through inter-process communication.
      *
      * @param resType Indicates the resource type, all of the type have listed in res_type.h.
      * @param value Indicates the value of the resource type, defined by the developers.
@@ -34,17 +34,17 @@ public:
      * @param reply Indicates the context info of the ipc reply.
      * @return function result
      */
-    virtual int32_t SendResRequest(uint32_t resType, int64_t value,
+    virtual int32_t SendRequestSync(uint32_t resType, int64_t value,
         const nlohmann::json& payload, nlohmann::json& reply) = 0;
 
     /**
-     * @brief Report resource data to the ressched_executor through inter-process communication.
+     * @brief Send request async to the ressched_executor through inter-process communication.
      *
      * @param resType Indicates the resource type, all of the type have listed in res_type.h.
      * @param value Indicates the value of the resource type, defined by the developers.
      * @param payload Indicates the context info of the resource type event.
      */
-    virtual void ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload) = 0;
+    virtual void SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& payload) = 0;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

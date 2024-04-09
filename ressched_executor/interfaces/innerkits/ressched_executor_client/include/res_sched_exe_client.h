@@ -39,7 +39,7 @@ public:
     static ResSchedExeClient& GetInstance();
 
     /**
-     * @brief Send request data to the ressched_executor through inter-process communication.
+     * @brief Send request sync to the ressched_executor through inter-process communication.
      *
      * @param resType Indicates the resource type, all of the type have listed in res_type.h.
      * @param value Indicates the value of the resource type, defined by the developers.
@@ -47,17 +47,18 @@ public:
      * @param reply Indicates the context info of the ipc reply.
      * @return function result
      */
-    int32_t SendResRequest(uint32_t resType, int64_t value,
+    int32_t SendRequestSync(uint32_t resType, int64_t value,
         const std::unordered_map<std::string, std::string>& context, std::string& reply);
 
     /**
-     * @brief Report resource data to the ressched_executor through inter-process communication.
+     * @brief Send request async to the ressched_executor through inter-process communication.
      *
      * @param resType Indicates the resource type, all of the type have listed in res_type.h.
      * @param value Indicates the value of the resource type, defined by the developers.
      * @param context Indicates the context info of the resource type event.
      */
-    void ReportData(uint32_t resType, int64_t value, const std::unordered_map<std::string, std::string>& context);
+    void SendRequestAsync(uint32_t resType, int64_t value,
+        const std::unordered_map<std::string, std::string>& context);
 
     /**
      * @brief Stop remote Object, reset ResSchedExeClient.
