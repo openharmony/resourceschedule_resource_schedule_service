@@ -71,8 +71,8 @@ int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64
 
     RSSEXE_LOGD("send request.");
     nlohmann::json payload = ConvertMapToJson(context);
-    nlohmann::json result;
     if (isSync) {
+        nlohmann::json result;
         int32_t ret = resSchedExe_->SendRequestSync(resType, value, payload, result);
         reply.append(result.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
         return ret;
