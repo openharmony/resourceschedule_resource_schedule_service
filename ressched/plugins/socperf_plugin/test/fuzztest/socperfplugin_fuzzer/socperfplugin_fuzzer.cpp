@@ -34,7 +34,8 @@ namespace {
     using OnDispatchResourceFunc = void (*)(const std::shared_ptr<ResData>& data);
 }
 
-bool TestWindowFocus(const uint8_t *data, size_t size) {
+bool TestWindowFocus(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_WINDOW_FOCUS, value,
         nullptr);
@@ -42,7 +43,8 @@ bool TestWindowFocus(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestClickRecognize(const uint8_t *data, size_t size) {
+bool TestClickRecognize(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_CLICK_RECOGNIZE, value,
         nullptr);
@@ -50,7 +52,8 @@ bool TestClickRecognize(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestLoadPage(const uint8_t *data, size_t size) {
+bool TestLoadPage(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_LOAD_PAGE, value,
         nullptr);
@@ -58,7 +61,8 @@ bool TestLoadPage(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestSlideRecognize(const uint8_t *data, size_t size) {
+bool TestSlideRecognize(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_SLIDE_RECOGNIZE, value,
         nullptr);
@@ -66,7 +70,8 @@ bool TestSlideRecognize(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestWebGesture(const uint8_t *data, size_t size) {
+bool TestWebGesture(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_WEB_GESTURE, value,
         nullptr);
@@ -74,7 +79,8 @@ bool TestWebGesture(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestPopPage(const uint8_t *data, size_t size) {
+bool TestPopPage(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_POP_PAGE, value,
         nullptr);
@@ -82,7 +88,8 @@ bool TestPopPage(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestAppAbilityStart(const uint8_t *data, size_t size) {
+bool TestAppAbilityStart(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START, value,
         nullptr);
@@ -90,7 +97,8 @@ bool TestAppAbilityStart(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestResizeWindow(const uint8_t *data, size_t size) {
+bool TestResizeWindow(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_RESIZE_WINDOW, value,
         nullptr);
@@ -98,7 +106,8 @@ bool TestResizeWindow(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestMoveWindow(const uint8_t *data, size_t size) {
+bool TestMoveWindow(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_MOVE_WINDOW, value,
         nullptr);
@@ -106,7 +115,8 @@ bool TestMoveWindow(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestShowRemoteAnimation(const uint8_t *data, size_t size) {
+bool TestShowRemoteAnimation(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_SHOW_REMOTE_ANIMATION, value,
         nullptr);
@@ -114,7 +124,8 @@ bool TestShowRemoteAnimation(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestDragStatusBar(const uint8_t *data, size_t size) {
+bool TestDragStatusBar(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_DRAG_STATUS_BAR, value,
         nullptr);
@@ -122,7 +133,8 @@ bool TestDragStatusBar(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestWebGestureMove(const uint8_t *data, size_t size) {
+bool TestWebGestureMove(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_WEB_GESTURE_MOVE, value,
         nullptr);
@@ -130,7 +142,8 @@ bool TestWebGestureMove(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestWebSlideNormal(const uint8_t *data, size_t size) {
+bool TestWebSlideNormal(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_WEB_SLIDE_NORMAL, value,
         nullptr);
@@ -138,7 +151,8 @@ bool TestWebSlideNormal(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestLoadUrl(const uint8_t *data, size_t size) {
+bool TestLoadUrl(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_LOAD_URL, value,
         nullptr);
@@ -146,7 +160,8 @@ bool TestLoadUrl(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestMouseWheel(const uint8_t *data, size_t size) {
+bool TestMouseWheel(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_MOUSEWHEEL, value,
         nullptr);
@@ -154,7 +169,8 @@ bool TestMouseWheel(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestAppStateChange(const uint8_t *data, size_t size) {
+bool TestAppStateChange(const uint8_t *data, size_t size)
+{
     int64_t value = *(reinterpret_cast<const int64_t *>(data));
     const std::shared_ptr<ResData> &resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_STATE_CHANGE, value,
         nullptr);
@@ -162,7 +178,8 @@ bool TestAppStateChange(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestUseBySo(const uint8_t *data, size_t size) {
+bool TestUseBySo(const uint8_t *data, size_t size)
+{
     auto handle = dlopen(SOCPERF_PLUBIN_LIB_NAME.c_str(), RTLD_NOW);
     OnPluginInitFunc onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(handle, "OnPluginInit"));
     onPluginInitFunc(SOCPERF_PLUBIN_LIB_NAME);
@@ -185,7 +202,8 @@ bool TestUseBySo(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool TestFeatureInit(const uint8_t *data, size_t size) {
+bool TestFeatureInit(const uint8_t *data, size_t size)
+{
     std::string featureName((const char*) data, size);
     OHOS::ResourceSchedule::SocPerfPlugin::GetInstance().InitFeatureSwitch(featureName);
     return true;

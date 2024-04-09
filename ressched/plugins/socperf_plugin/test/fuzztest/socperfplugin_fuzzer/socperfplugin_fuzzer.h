@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+#ifndef RESSCHED_PLUGINS_SOCPERF_PLUGIN_FUZZER_H
+#define RESSCHED_PLUGINS_SOCPERF_PLUGIN_FUZZER_H
 #include <cstdint>
 #include <unistd.h>
 #include <climits>
@@ -21,4 +23,5 @@
 #include <fcntl.h>
 
 #define FUZZ_PROJECT_NAME "socperfplugin_fuzzer"
+#endif
 
