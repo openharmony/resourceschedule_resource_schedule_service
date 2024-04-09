@@ -24,7 +24,7 @@ namespace ResourceSchedule {
 #define LOG_TAG "ResSchedExe"
 
 #undef LOG_DOMAIN
-#define LOG_DOMAIN 0xD001700
+#define LOG_DOMAIN 0xD001740
 
 #define RSSEXE_LOGF(fmt, ...) HILOG_FATAL(LOG_CORE, "[%{public}s]" fmt, __FUNCTION__, ##__VA_ARGS__)
 #define RSSEXE_LOGE(fmt, ...) HILOG_ERROR(LOG_CORE, "[%{public}s]" fmt, __FUNCTION__, ##__VA_ARGS__)
