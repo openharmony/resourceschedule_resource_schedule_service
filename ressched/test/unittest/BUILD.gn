@@ -34,10 +34,9 @@ ohos_unittest("resschedservice_test") {
   ]
 
   sources = [
-    "${ressched_common}/src/data_share_utils.cpp",
+    "${ressched_common}/src/oobe_datashare_utils.cpp",
     "${ressched_common}/src/oobe_manager.cpp",
-    "${ressched_common}/src/res_data_ability_observer.cpp",
-    "${ressched_common}/src/res_data_ability_provider.cpp",
+    "src/oobe_datashare_utils_test.cpp",
     "src/oobe_mgr_test.cpp",
     "src/res_sched_service_test.cpp",
   ]
@@ -48,7 +47,6 @@ ohos_unittest("resschedservice_test") {
   ]
 
   external_deps = [
-    "ability_base:want",
     "ability_base:zuri",
     "ability_runtime:ability_manager",
     "ability_runtime:dataobs_manager",

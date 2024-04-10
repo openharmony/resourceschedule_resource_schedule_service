@@ -14,7 +14,6 @@
  */
 
 #include "data_share_utils.h"
-#include "res_data_ability_provider.h"
 #include "res_sched_log.h"
 #include "oobe_manager.h"
 #include <vector>
@@ -26,6 +25,7 @@ namespace ResourceSchedule {
 OOBEManager* OOBEManager::oobeInstance_;
 std::mutex OOBEManager::mutex_;
 std::vector<std::shared_ptr<IOOBETask>> OOBEManager::oobeTasks_;
+sptr<OOBEManager::ResDataAbilityObserver> OOBEManager::observer_;
 namespace {
 const std::string KEYWORD = "basic_statement_agreed";
 } // namespace
@@ -51,27 +51,76 @@ OOBEManager& OOBEManager::GetInstance()
     return *oobeInstance_;
 }
 
-void OOBEManager::InitSystemAbilityListener()
+ErrCode OOBEManager::RegisterObserver(const std::string& key, ResDataAbilityObserver::UpdateFunc& func)
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto uri = DataShareUtils::GetInstance().AssembleUri(key);
+    auto helper = DataShareUtils::GetInstance().CreateDataShareHelper();
+    if (helper == nullptr) {
+        RESSCHED_LOGE("RegisterObserver: helper does not created!");
+        return ERR_NO_INIT;
+    }
+    if (!observer_) {
+        helper->UnregisterObserver(uri, observer_);
+        observer_ = nullptr;
+    }
+    observer_ = new ResDataAbilityObserver();
+    observer_->SetUpdateFunc(func);
+    helper->RegisterObserver(uri, observer_);
+    DataShareUtils::GetInstance().ReleaseDataShareHelper(helper);
+    RESSCHED_LOGI("succeed to register observer of uri=%{public}s", uri.ToString().c_str());
+    return ERR_OK;
+}
+    
+ErrCode OOBEManager::UnregisterObserver(const std::string& key)
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto uri = DataShareUtils::GetInstance().AssembleUri(key);
+    auto helper = DataShareUtils::GetInstance().CreateDataShareHelper();
+    if (helper == nullptr) {
+        RESSCHED_LOGE("UnregisterObserver: helper does not created!");
+        return ERR_NO_INIT;
+    }
+    helper->UnregisterObserver(uri, observer_);
+    DataShareUtils::GetInstance().ReleaseDataShareHelper(helper);
+    observer_ = nullptr;
+    RESSCHED_LOGI("succeed to register observer of uri=%{public}s", uri.ToString().c_str());
+    return ERR_OK;
+}
+
+void OOBEManager::ResDataAbilityObserver::OnChange()
+{
+    if (update_) {
+        update_();
+    }
+}
+
+void OOBEManager::ResDataAbilityObserver::SetUpdateFunc(UpdateFunc& func)
+{
+    update_ = func;
+}
+
+void OOBEManager::InitSysAbilityListener()
 {
     if (sysAbilityListener_ != nullptr) {
         return;
     }
     sysAbilityListener_ = new (std::nothrow) SystemAbilityStatusChangeListener();
     if (sysAbilityListener_ == nullptr) {
-        RESSCHED_LOGI("Failed to create statusChangeListener due to no memory");
+        RESSCHED_LOGE("Failed to create statusChangeListener due to no memory");
         return;
     }
     sptr<ISystemAbilityManager> systemAbilityManager
         = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (systemAbilityManager == nullptr) {
         sysAbilityListener_ = nullptr;
-        RESSCHED_LOGI("systemAbilityManager is null");
+        RESSCHED_LOGE("systemAbilityManager is null");
         return;
     }
     int32_t ret = systemAbilityManager->
         SubscribeSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, sysAbilityListener_);
     if (ret != ERR_OK) {
-        RESSCHED_LOGI("subscribe system ability id: %{public}d faild", DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID);
+        RESSCHED_LOGE("subscribe system ability id: %{public}d faild", DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID);
         sysAbilityListener_ = nullptr;
     }
 }
@@ -79,9 +128,9 @@ void OOBEManager::InitSystemAbilityListener()
 void OOBEManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
-    RESSCHED_LOGI("OOBEManager add system ability systemAbilityId:%{public}d", systemAbilityId);
     switch (systemAbilityId) {
         case DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID: {
+            RESSCHED_LOGI("DataShare SystemAbility start successfully! begin to listen Database.");
             OOBEManager::GetInstance().StartListen();
             break;
         }
@@ -95,14 +144,22 @@ void OOBEManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
 void OOBEManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
-    ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
-    ResDataAbilityProvider::GetInstance().UnregisterObserver(KEYWORD, updateFunc);
-    RESSCHED_LOGI("OOBEManager remove system ability systemAbilityId:%{public}d", systemAbilityId);
+    switch (systemAbilityId) {
+        case DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID: {
+            RESSCHED_LOGI("Begin to UnregisterObserver for Database.");
+            OOBEManager::GetInstance().UnregisterObserver(KEYWORD);
+            break;
+        }
+        default: {
+            RESSCHED_LOGI("Unhandled systemAbilityId:%{public}d", systemAbilityId);
+            break;
+        }
+    }
 }
 
 void OOBEManager::Initialize()
 {
-    InitSystemAbilityListener();
+    InitSysAbilityListener();
     int resultValue = 0;
     auto dataShareUtils = ResourceSchedule::DataShareUtils::GetInstance();
     dataShareUtils.GetValue(KEYWORD, resultValue);
@@ -139,9 +196,11 @@ void OOBEManager::StartListen()
             for (auto task : oobeTasks_) {
                 task->ExcutingTask();
             }
+        }else {
+            g_oobeValue = false;
         }
     };
-    ResDataAbilityProvider::GetInstance().RegisterObserver(KEYWORD, updateFunc);
+    RegisterObserver(KEYWORD, updateFunc);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -18,11 +18,10 @@
 #include "datashare_result_set.h"
 #include "data_share_utils.h"
 #include "datashare_values_bucket.h"
-#include "ipc_skeleton.h"
-#include "uri.h"
 #include "res_sched_log.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
+#include "uri.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -55,7 +54,6 @@ ErrCode DataShareUtils::GetStringValue(const std::string& key, std::string& valu
     std::string callingIdentity = IPCSkeleton::ResetCallingIdentity();
     auto helper = CreateDataShareHelper();
     if (helper == nullptr) {
-        IPCSkeleton::SetCallingIdentity(callingIdentity);
         return ERR_NO_INIT;
     }
     std::vector<std::string> columns = {SETTING_COLUMN_VALUE};
@@ -67,14 +65,12 @@ ErrCode DataShareUtils::GetStringValue(const std::string& key, std::string& valu
     ReleaseDataShareHelper(helper);
     if (resultSet == nullptr) {
         RESSCHED_LOGE("helper->Query return nullptr");
-        IPCSkeleton::SetCallingIdentity(callingIdentity);
         return ERR_INVALID_OPERATION;
     }
     int32_t count;
     resultSet->GetRowCount(count);
     if (count == 0) {
         RESSCHED_LOGW("not found value, key=%{public}s, count=%{public}d", key.c_str(), count);
-        IPCSkeleton::SetCallingIdentity(callingIdentity);
         return ERR_NAME_NOT_FOUND;
     }
     const int32_t INDEX = 0;
@@ -82,11 +78,9 @@ ErrCode DataShareUtils::GetStringValue(const std::string& key, std::string& valu
     int32_t ret = resultSet->GetString(INDEX, value);
     if (ret != DataShare::E_OK) {
         RESSCHED_LOGW("resultSet->GetString return not ok, ret=%{public}d", ret);
-        IPCSkeleton::SetCallingIdentity(callingIdentity);
         return ERR_INVALID_VALUE;
     }
     resultSet->Close();
-    IPCSkeleton::SetCallingIdentity(callingIdentity);
     return ERR_OK;
 }
 
@@ -108,6 +102,7 @@ std::shared_ptr<DataShare::DataShareHelper> DataShareUtils::CreateDataShareHelpe
 bool DataShareUtils::ReleaseDataShareHelper(std::shared_ptr<DataShare::DataShareHelper>& helper)
 {
     if (helper == nullptr) {
+        RESSCHED_LOGW("release helper fail, helper is null!");
         return false;
     }
     if (!helper->Release()) {

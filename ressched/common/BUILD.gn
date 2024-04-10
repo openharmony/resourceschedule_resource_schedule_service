@@ -23,25 +23,21 @@ config("common_public_config") {
   include_dirs = [ "include" ]
 }
 
-ohos_shared_library("resschedsvc_common") {
+ohos_shared_library("ressched_common_utils") {
   configs = [ ":common_public_config" ]
 
   public_configs = [ ":common_private_config" ]
 
   sources = [
-    "../common/src/data_share_utils.cpp",
+    "../common/src/oobe_datashare_utils.cpp",
     "../common/src/oobe_manager.cpp",
-    "../common/src/res_data_ability_observer.cpp",
-    "../common/src/res_data_ability_provider.cpp",
   ]
 
   deps = []
 
   external_deps = [
-    "ability_base:want",
     "ability_base:zuri",
     "ability_runtime:dataobs_manager",
-    "ability_runtime:extension_manager",
     "c_utils:utils",
     "data_share:datashare_common",
     "data_share:datashare_consumer",

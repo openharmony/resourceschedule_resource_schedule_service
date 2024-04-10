@@ -73,7 +73,7 @@
         "fwk_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi:systemload",
-          "//foundation/resourceschedule/resource_schedule_service/ressched/common:resschedsvc_common"
+          "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
         ],
         "service_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc",
@@ -140,11 +140,9 @@
           "header": {
             "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/common/include",
             "header_files": [
-              "data_share_utils.h",
               "ioobe_task.h",
-              "oobe_manager.h",
-              "res_data_ability_observer.h",
-              "res_data_ability_provider.h"
+              "oobe_datashare_utils.h",
+              "oobe_manager.h"
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/common:resschedsvc_common"

@@ -12,24 +12,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef RESOURCE_SCHEDULE_SERVICE_RESSCHED_RES_DATA_ABILITY_OBSERVER_H
-#define RESOURCE_SCHEDULE_SERVICE_RESSCHED_RES_DATA_ABILITY_OBSERVER_H
 
-#include "data_ability_observer_stub.h"
+
+#ifndef RESSCHED_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_OOBE_DATASHARE_UTILS_TEST_H
+#define RESSCHED_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_OOBE_DATASHARE_UTILS_TEST_H
+
+#include "gtest/gtest.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-class ResDataAbilityObserver : public AAFwk::DataAbilityObserverStub {
+class OOBEDataShareUtilsTest : public testing::Test {
 public:
-    ResDataAbilityObserver();
-    ~ResDataAbilityObserver() override;
-    void OnChange() override;
-
-    using UpdateFunc = std::function<void()>;
-    void SetUpdateFunc(UpdateFunc& func);
-private:
-    UpdateFunc update_ = nullptr;
+    static void SetUpTestCase();
+    static void TearDownTestCase();
+    void SetUp();
+    void TearDown();
 };
-} // ResourceSchedule
-} // OHOS
-#endif // RESOURCE_SCHEDULE_SERVICE_RESSCHED_RES_DATA_ABILITY_OBSERVER_H
+} // namespace ResourceSchedule
+} // namespace OHOS
+
+#endif // RESSCHED_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_OOBE_DATASHARE_UTILS_TEST_H

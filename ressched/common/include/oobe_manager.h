@@ -13,15 +13,16 @@
  * limitations under the License.
  */
 
-#ifndef RESOURCE_SCHEDULE_SERVICE_OOBE_MANAGER_H
-#define RESOURCE_SCHEDULE_SERVICE_OOBE_MANAGER_H
+#ifndef RESOURCE_SCHEDULE_SERVICE_RESSCHED_COMMON_OOBE_MANAGER_H
+#define RESOURCE_SCHEDULE_SERVICE_RESSCHED_COMMON_OOBE_MANAGER_H
 
+#include "data_ability_observer_stub.h"
 #include "errors.h"
 #include "mutex"
-#include <vector>
 #include "ioobe_task.h"
 #include "if_system_ability_manager.h"
 #include "system_ability_status_change_stub.h"
+#include <vector>
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -32,23 +33,39 @@ public:
     bool SubmitTask(const std::shared_ptr<IOOBETask>& task);
 
 private:
-    bool g_oobeValue = false;
-    static OOBEManager* oobeInstance_;
-    static std::mutex mutex_;
-    static std::vector<std::shared_ptr<IOOBETask>> oobeTasks_;
-    OOBEManager();
-    ~OOBEManager();
-    void Initialize();
-    void InitSystemAbilityListener();
-    void StartListen();
+    class ResDataAbilityObserver : public AAFwk::DataAbilityObserverStub {
+    public:
+        ResDataAbilityObserver() = default;
+        ~ResDataAbilityObserver()  = default;
+        void OnChange() override;
+
+        using UpdateFunc = std::function<void()>;
+        void SetUpdateFunc(UpdateFunc& func);
+    private:
+        UpdateFunc update_ = nullptr;
+    };
+
     class SystemAbilityStatusChangeListener : public OHOS::SystemAbilityStatusChangeStub {
     public:
         SystemAbilityStatusChangeListener() {};
         virtual void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
         virtual void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
     };
+
+    bool g_oobeValue = false;
+    static OOBEManager* oobeInstance_;
+    static std::mutex mutex_;
+    static std::vector<std::shared_ptr<IOOBETask>> oobeTasks_;
+    static sptr<OOBEManager::ResDataAbilityObserver> observer_;
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
+    OOBEManager();
+    ~OOBEManager();
+    void Initialize();
+    void InitSysAbilityListener();
+    void StartListen();
+    ErrCode RegisterObserver(const std::string& key, ResDataAbilityObserver::UpdateFunc& func);
+    ErrCode UnregisterObserver(const std::string& key);
 };
 } // ResourceSchedule
 } // OHOS
-#endif //RESOURCE_SCHEDULE_SERVICE_OOBE_MANAGER_H
+#endif //RESOURCE_SCHEDULE_SERVICE_RESSCHED_COMMON_OOBE_MANAGER_H

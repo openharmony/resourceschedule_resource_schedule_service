@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef RESOURCE_SCHEDULE_SERVICE_DATASHARE_UTILS_H
-#define RESOURCE_SCHEDULE_SERVICE_DATASHARE_UTILS_H
+#ifndef RESOURCE_SCHEDULE_SERVICE_RESSCHED_COMMON_OOBE_DATASHARE_UTILS_H
+#define RESOURCE_SCHEDULE_SERVICE_RESSCHED_COMMON_OOBE_DATASHARE_UTILS_H
 
 #include "datashare_helper.h"
 #include "errors.h"
@@ -67,4 +67,4 @@ ErrCode DataShareUtils::GetValue(const std::string& key, T& value)
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // RESOURCE_SCHEDULE_SERVICE_DATASHARE_UTILS_H
+#endif // RESOURCE_SCHEDULE_SERVICE_RESSCHED_COMMON_OOBE_DATASHARE_UTILS_H
