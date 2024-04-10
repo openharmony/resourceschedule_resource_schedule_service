@@ -130,7 +130,7 @@ ohos_static_library("resschedexesvc_static") {
     "samgr:samgr_proxy",
   ]
 
-  if (ressched_executor_with_ffrt_enable) {
+  if (resource_schedule_service_with_ffrt_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE" ]
   }
 
