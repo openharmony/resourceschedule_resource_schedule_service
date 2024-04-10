@@ -37,7 +37,6 @@ public:
     static void TearDownTestCase(void);
     void SetUp();
     void TearDown();
-    void MockProcess(int32_t uid);
 };
 
 
