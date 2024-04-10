@@ -46,6 +46,11 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
 {
     // plugin sync dispatch resource function is coding...
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
+    if (payload != nullptr) {
+        std::string context = payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
+        RSSEXE_LOGD("receive payload = %{private}s.", context.c_str());
+    }
+    reply["result"] = std::to_string(ResErrCode::RSSEXE_NO_ERR);
     return ResErrCode::RSSEXE_NO_ERR;
 }
 

@@ -14,8 +14,6 @@
 resourcescheduleservice_path =
     "//foundation/resourceschedule/resource_schedule_service"
 
-ressched_common = "${resourcescheduleservice_path}/ressched/common"
-
 resschedexe_common = "${resourcescheduleservice_path}/ressched_executor/common"
 
 resschedexe_interfaces =
@@ -26,7 +24,3 @@ resschedexe_services =
 
 resschedexe_plugins =
     "${resourcescheduleservice_path}/ressched/services/resschedmgr"
-
-declare_args() {
-  ressched_executor_with_ffrt_enable = false
-}

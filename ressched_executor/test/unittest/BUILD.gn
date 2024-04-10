@@ -13,6 +13,7 @@
 
 import("//build/test.gni")
 import("../../ressched_executor.gni")
+import("../../../ressched/ressched.gni")
 
 group("unittest") {
   testonly = true
