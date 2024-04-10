@@ -18,24 +18,25 @@
 
 #include <functional>
 #include <list>
-#include <map>
-#include <memory>
 #include <string>
+#include <memory>
+#include <map>
 #include <vector>
-
 #include "datetime_ex.h"
 #include "event_handler.h"
+#include "config_reader.h"
+#include "plugin_switch.h"
+#include "plugin.h"
+#include "nocopyable.h"
+#include "res_data.h"
+#include "single_instance.h"
+#include "config_info.h"
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt.h"
 #endif
-#include "nocopyable.h"
-#include "single_instance.h"
-
-#include "config_info.h"
-#include "config_reader.h"
-#include "plugin.h"
-#include "plugin_switch.h"
-#include "res_data.h"
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+#include "res_type.h"
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {

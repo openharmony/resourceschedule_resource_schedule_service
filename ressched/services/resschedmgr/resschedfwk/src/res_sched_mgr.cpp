@@ -14,16 +14,12 @@
  */
 
 #include "res_sched_mgr.h"
-
 #include <cinttypes>
-
-#include "hitrace_meter.h"
-
 #include "cgroup_sched.h"
 #include "notifier_mgr.h"
-#include "plugin_mgr.h"
 #include "res_sched_log.h"
-#include "res_type.h"
+#include "plugin_mgr.h"
+#include "hitrace_meter.h"
 
 namespace OHOS {
 namespace ResourceSchedule {

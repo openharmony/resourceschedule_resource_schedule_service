@@ -14,15 +14,13 @@
  */
 
 #include "plugin_mgr.h"
-
-#include <algorithm>
 #include <cinttypes>
+#include <algorithm>
 #include <cstdint>
 #include <dlfcn.h>
 #include <iostream>
 #include <string>
 #include <string_ex.h>
-
 #include "config_policy_utils.h"
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt_inner.h"
@@ -30,10 +28,9 @@
 #include "event_runner.h"
 #endif
 #include "hisysevent.h"
-#include "hitrace_meter.h"
 #include "refbase.h"
-
 #include "res_sched_log.h"
+#include "hitrace_meter.h"
 
 using namespace std;
 

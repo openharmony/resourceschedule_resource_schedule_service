@@ -111,7 +111,7 @@ ErrCode ResSchedExeClient::TryConnect()
         return ResIpcErrCode::RSSEXE_GET_SERVICE_FAIL;
     }
 
-    remoteObject_ = systemManager->CheckSystemAbility(RES_SCHED_SYS_ABILITY_ID);
+    remoteObject_ = systemManager->CheckSystemAbility(RES_SCHED_EXE_ABILITY_ID);
     if (!remoteObject_) {
         RSSEXE_LOGE("Fail to connect resource schedule executor.");
         return ResIpcErrCode::RSSEXE_GET_SERVICE_FAIL;
