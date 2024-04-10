@@ -145,7 +145,7 @@
               "oobe_manager.h"
             ]
           },
-          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/common:resschedsvc_common"
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
         }
       ],
       "test": [

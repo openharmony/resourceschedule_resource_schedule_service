@@ -196,7 +196,7 @@ void OOBEManager::StartListen()
             for (auto task : oobeTasks_) {
                 task->ExcutingTask();
             }
-        }else {
+        } else {
             g_oobeValue = false;
         }
     };
