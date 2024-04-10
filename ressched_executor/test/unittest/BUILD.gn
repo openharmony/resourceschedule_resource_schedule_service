@@ -12,8 +12,8 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("../../ressched_executor.gni")
 import("../../../ressched/ressched.gni")
+import("../../ressched_executor.gni")
 
 group("unittest") {
   testonly = true

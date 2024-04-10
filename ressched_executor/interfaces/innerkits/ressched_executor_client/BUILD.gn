@@ -13,8 +13,8 @@
 
 import("//build/ohos.gni")
 import("//build/test.gni")
-import("../../../ressched_executor.gni")
 import("../../../../ressched/ressched.gni")
+import("../../../ressched_executor.gni")
 
 config("client_private_config") {
   include_dirs = [
