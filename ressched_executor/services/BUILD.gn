@@ -70,7 +70,6 @@ ohos_shared_library("resschedexesvc") {
     "hisysevent:libhisyseventmanager",
     "hitrace:hitrace_meter",
     "init:libbegetutil",
-    "input:libmmi-client",
     "ipc:ipc_single",
     "libxml2:libxml2",
     "request:request_native",
