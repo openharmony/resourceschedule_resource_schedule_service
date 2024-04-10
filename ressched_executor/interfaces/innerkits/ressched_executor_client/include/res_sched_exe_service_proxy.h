@@ -66,8 +66,6 @@ public:
     virtual ~ResSchedExeServiceProxy() {}
 
 private:
-    int32_t SendRequestInner(uint32_t ipcType, MessageParcel& data,
-        MessageOption& option, nlohmann::json& reply);
     int32_t MakeUpParcel(MessageParcel& data, uint32_t resType, int64_t value, const nlohmann::json& context);
     int32_t SendDebugCommand(MessageOption& option);
 

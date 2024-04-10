@@ -30,43 +30,40 @@ int32_t ResSchedExeServiceProxy::SendRequestSync(uint32_t resType, int64_t value
 {
     RSSEXE_LOGD("SendRequestSync start.");
     MessageOption option = { MessageOption::TF_SYNC };
-    if (resType != ResExeType::RES_TYPE_DEBUG) {
+    if (resType == ResExeType::RES_TYPE_DEBUG) {
         SendDebugCommand(option);
         return ResErrCode::RSSEXE_NO_ERR;
     }
     MessageParcel data;
     MakeUpParcel(data, resType, value, context);
-    return SendRequestInner(ResIpcType::REQUEST_SYNC, data, option, reply);
+    MessageParcel response;
+    int32_t error = Remote()->SendRequest(ResIpcType::REQUEST_SYNC, data, response, option);
+    if (error != NO_ERROR) {
+        RSSEXE_LOGE("Send request error: %{public}d.", error);
+        return ResIpcErrCode::RSSEXE_SEND_REQUEST_FAIL;
+    }
+    RSSEXE_LOGD("SendRequestSync success.");
+    ResSchedExeCommonUtils::StringToJson(response.ReadString(), reply);
+    return response.ReadInt32();
 }
 
 void ResSchedExeServiceProxy::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& context)
 {
     RSSEXE_LOGD("SendRequestAsync start.");
     MessageOption option = { MessageOption::TF_ASYNC };
-    if (resType != ResExeType::RES_TYPE_DEBUG) {
+    if (resType == ResExeType::RES_TYPE_DEBUG) {
         SendDebugCommand(option);
         return;
     }
-    nlohmann::json reply;
     MessageParcel data;
     MakeUpParcel(data, resType, value, context);
-    SendRequestInner(ResIpcType::REQUEST_ASYNC, data, option, reply);
-}
-
-
-int32_t ResSchedExeServiceProxy::SendRequestInner(uint32_t ipcType, MessageParcel& data,
-    MessageOption& option, nlohmann::json& reply)
-{
-    RSSEXE_LOGD("SendRequestInner start.");
     MessageParcel response;
-    int32_t error = Remote()->SendRequest(ipcType, data, response, option);
+    int32_t error = Remote()->SendRequest(ResIpcType::REQUEST_ASYNC, data, response, option);
     if (error != NO_ERROR) {
         RSSEXE_LOGE("Send request error: %{public}d.", error);
-        return ResIpcErrCode::RSSEXE_SEND_REQUEST_FAIL;
+        return;
     }
-    RSSEXE_LOGD("SendRequestInner success.");
-    ResSchedExeCommonUtils::StringToJson(response.ReadString(), reply);
-    return response.ReadInt32();
+    RSSEXE_LOGD("SendRequestAsync success.");
 }
 
 int32_t ResSchedExeServiceProxy::MakeUpParcel(MessageParcel& data,
@@ -83,6 +80,7 @@ int32_t ResSchedExeServiceProxy::MakeUpParcel(MessageParcel& data,
 
 int32_t ResSchedExeServiceProxy::SendDebugCommand(MessageOption& option)
 {
+    RSSEXE_LOGD("SendDebugCommand start.");
     MessageParcel data;
     WRITE_PARCEL(data, InterfaceToken, ResSchedExeServiceProxy::GetDescriptor(),
         ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
@@ -91,8 +89,13 @@ int32_t ResSchedExeServiceProxy::SendDebugCommand(MessageOption& option)
     WRITE_PARCEL(data, Uint64, curr, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     RSSEXE_LOGD("IPC debug: client send request, current timestamp is %{public}lld.", (long long)curr);
 
-    nlohmann::json reply;
-    SendRequestInner(ResIpcType::REQUEST_DEBUG, data, option, reply);
+    MessageParcel response;
+    int32_t error = Remote()->SendRequest(ResIpcType::REQUEST_DEBUG, data, response, option);
+    if (error != NO_ERROR) {
+        RSSEXE_LOGE("Send request error: %{public}d.", error);
+        return ResIpcErrCode::RSSEXE_SEND_REQUEST_FAIL;
+    }
+    RSSEXE_LOGD("SendDebugCommand success.");
     return ResErrCode::RSSEXE_NO_ERR;
 }
 

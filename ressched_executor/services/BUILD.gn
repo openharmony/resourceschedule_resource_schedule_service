@@ -140,7 +140,6 @@ ohos_static_library("resschedexesvc_static") {
     "hisysevent:libhisyseventmanager",
     "hitrace:hitrace_meter",
     "init:libbegetutil",
-    "input:libmmi-client",
     "ipc:ipc_single",
     "libxml2:libxml2",
     "request:request_native",
