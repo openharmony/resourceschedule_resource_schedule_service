@@ -28,7 +28,7 @@ public:
     /**
      * @brief Send request sync to the ressched_executor through inter-process communication.
      *
-     * @param resType Indicates the resource type, all of the type have listed in res_type.h.
+     * @param resType Indicates the resource type, all of the type have listed in res_exe_type.h.
      * @param value Indicates the value of the resource type, defined by the developers.
      * @param payload Indicates the context info of the resource type event.
      * @param reply Indicates the context info of the ipc reply.
@@ -40,7 +40,7 @@ public:
     /**
      * @brief Send request async to the ressched_executor through inter-process communication.
      *
-     * @param resType Indicates the resource type, all of the type have listed in res_type.h.
+     * @param resType Indicates the resource type, all of the type have listed in res_exe_type.h.
      * @param value Indicates the value of the resource type, defined by the developers.
      * @param payload Indicates the context info of the resource type event.
      */
