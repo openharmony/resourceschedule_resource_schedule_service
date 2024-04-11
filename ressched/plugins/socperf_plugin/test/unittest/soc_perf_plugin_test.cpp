@@ -470,10 +470,14 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_018, Function | MediumTes
 {
     const std::shared_ptr<ResData>& scbAnimationEndData = std::make_shared<ResData>(
         ResType::RES_TYPE_SCENE_BOARD_ID, ResType::ShowRemoteAnimationStatus::ANIMATION_END, nullptr);
-    SocPerfPlugin::GetInstance().HandleSocperfSceneBoard(scbAnimationEndData);
+    bool ret = SocPerfPlugin::GetInstance().HandleSocperfSceneBoard(scbAnimationEndData);
+    EXPECT_TRUE(ret);
     const std::shared_ptr<ResData>& scbAnimationBeginData = std::make_shared<ResData>(
         ResType::RES_TYPE_SCENE_BOARD_ID, ResType::ShowRemoteAnimationStatus::ANIMATION_BEGIN, nullptr);
-    SocPerfPlugin::GetInstance().HandleSocperfSceneBoard(scbAnimationBeginData);
+    ret = SocPerfPlugin::GetInstance().HandleSocperfSceneBoard(scbAnimationBeginData);
+    EXPECT_TRUE(ret);
+    ret = SocPerfPlugin::GetInstance().HandleSocperfSceneBoard(nullptr);
+    EXPECT_FALSE(ret);
 }
 } // namespace SOCPERF
 } // namespace OHOS
