@@ -35,13 +35,13 @@ namespace {
 const std::string KEYWORD = "basic_statement_agreed";
 } // namespace
 
-void OOBEMgrTest::SetUpTestCase() {}
+void OOBEDataShareUtilsTest::SetUpTestCase() {}
 
-void OOBEMgrTest::TearDownTestCase() {}
+void OOBEDataShareUtilsTest::TearDownTestCase() {}
 
-void OOBEMgrTest::SetUp() {}
+void OOBEDataShareUtilsTest::SetUp() {}
 
-void OOBEMgrTest::TearDown() {}
+void OOBEDataShareUtilsTest::TearDown() {}
 
 /**
  * @tc.name: oobe dataShareUtils TestDataShareUtils_001
