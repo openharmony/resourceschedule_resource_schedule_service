@@ -28,7 +28,9 @@ namespace {
     const std::string LIB_NAME = "libsocperf_plugin.z.so";
     const std::string PLUGIN_NAME = "SOCPERF";
     const std::string CONFIG_NAME_SOCPERF_FEATURE_SWITCH = "socperfFeatureSwitch";
+    const std::string CONFIG_NAME_SOCPERF_EVENT_ID = "socperfEventId";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND = "socperf_on_demand";
+    const std::string SOCPERF_TYPE_ID = "socperf_type_id";
     const std::string EXTENSION_TYPE_KEY = "extensionType";
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
     const int32_t INVALID_VALUE                             = -1;
@@ -56,12 +58,25 @@ IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
 void SocPerfPlugin::Init()
 {
+    InitEventId();
     InitFunctionMap();
     InitResTypes();
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
     SOC_PERF_LOGI("SocPerfPlugin::Init success");
+}
+
+void SocPerfPlugin::InitEventId()
+{
+    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_EVENT_ID);
+    for (const Item& item : itemLists.itemList) {
+        for (SubItem sub : item.subItemList) {
+            if (sub.name == SOCPERF_TYPE_ID) {
+                RES_TYPE_SCENE_BOARD_ID = atoi(sub.value.c_str());
+            }
+        }
+    }
 }
 
 void SocPerfPlugin::InitFunctionMap()
@@ -101,6 +116,8 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
         { RES_TYPE_DEVICE_MODE_STATUS,
             [this](const std::shared_ptr<ResData>& data) { HandleDeviceModeStatusChange(data); } },
+        { RES_TYPE_SCENE_BOARD_ID,
+            [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); } },
     };
 }
 
@@ -124,6 +141,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_MOUSEWHEEL,
         RES_TYPE_APP_STATE_CHANGE,
         RES_TYPE_DEVICE_MODE_STATUS,
+        RES_TYPE_SCENE_BOARD_ID,
     };
 }
 
@@ -368,6 +386,20 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
     bool status = (data->value == DeviceModeStatus::MODE_ENTER);
     OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceMode, status);
     SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceMode.c_str(), status);
+}
+
+bool SocPerfPlugin::HandleSocperfSceneBoard(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->ANIMATION: %{public}lld", (long long)data->value);
+    if (data->value == ShowRemoteAnimationStatus::ANIMATION_BEGIN) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, true, "");
+    } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, false, "");
+    }
+    return true;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
