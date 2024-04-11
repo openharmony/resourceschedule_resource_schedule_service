@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "data_share_utils.h"
+#include "oobe_datashare_utils.h"
 #include "res_sched_log.h"
 #include "oobe_manager.h"
 #include <vector>
