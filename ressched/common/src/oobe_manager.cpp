@@ -18,6 +18,7 @@
 #include "oobe_manager.h"
 #include <vector>
 #include "iservice_registry.h"
+#include "ipc_skeleton.h"
 #include "system_ability_definition.h"
 
 namespace OHOS {
@@ -54,9 +55,11 @@ OOBEManager& OOBEManager::GetInstance()
 ErrCode OOBEManager::RegisterObserver(const std::string& key, ResDataAbilityObserver::UpdateFunc& func)
 {
     std::lock_guard<std::mutex> lock(mutex_);
+    std::string callingIdentity = IPCSkeleton::ResetCallingIdentity();
     auto uri = DataShareUtils::GetInstance().AssembleUri(key);
     auto helper = DataShareUtils::GetInstance().CreateDataShareHelper();
     if (helper == nullptr) {
+        IPCSkeleton::SetCallingIdentity(callingIdentity);
         RESSCHED_LOGE("RegisterObserver: helper does not created!");
         return ERR_NO_INIT;
     }
@@ -68,6 +71,7 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, ResDataAbilityObse
     observer_->SetUpdateFunc(func);
     helper->RegisterObserver(uri, observer_);
     DataShareUtils::GetInstance().ReleaseDataShareHelper(helper);
+    IPCSkeleton::SetCallingIdentity(callingIdentity);
     RESSCHED_LOGI("succeed to register observer of uri=%{public}s", uri.ToString().c_str());
     return ERR_OK;
 }
@@ -75,15 +79,18 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, ResDataAbilityObse
 ErrCode OOBEManager::UnregisterObserver(const std::string& key)
 {
     std::lock_guard<std::mutex> lock(mutex_);
+    std::string callingIdentity = IPCSkeleton::ResetCallingIdentity();
     auto uri = DataShareUtils::GetInstance().AssembleUri(key);
     auto helper = DataShareUtils::GetInstance().CreateDataShareHelper();
     if (helper == nullptr) {
+        IPCSkeleton::SetCallingIdentity(callingIdentity);
         RESSCHED_LOGE("UnregisterObserver: helper does not created!");
         return ERR_NO_INIT;
     }
     helper->UnregisterObserver(uri, observer_);
     DataShareUtils::GetInstance().ReleaseDataShareHelper(helper);
     observer_ = nullptr;
+    IPCSkeleton::SetCallingIdentity(callingIdentity);
     RESSCHED_LOGI("succeed to register observer of uri=%{public}s", uri.ToString().c_str());
     return ERR_OK;
 }
