@@ -186,7 +186,7 @@ bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
 
 void OOBEManager::StartListen()
 {
-    ResourceSchedule::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {
+    OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {
         int result = 0;
         ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
         if (result != 0) {

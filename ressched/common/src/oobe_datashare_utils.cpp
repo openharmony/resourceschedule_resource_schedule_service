@@ -16,7 +16,7 @@
 #include "datashare_errno.h"
 #include "datashare_predicates.h"
 #include "datashare_result_set.h"
-#include "data_share_utils.h"
+#include "oobe_datashare_utils.h"
 #include "datashare_values_bucket.h"
 #include "res_sched_log.h"
 #include "iservice_registry.h"
