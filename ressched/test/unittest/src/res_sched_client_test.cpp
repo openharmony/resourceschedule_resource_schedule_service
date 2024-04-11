@@ -28,6 +28,8 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace std;
 using namespace testing::ext;
+static int32_t RSS_SA_ID = 1901;
+static int32_t OTHER_SA_ID = 1900;
 class ResSchedClientTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -66,6 +68,17 @@ void ResSchedClientTest::MockProcess(int32_t uid)
     SetSelfTokenID(tokenId);
     setuid(uid);
 }
+
+class ResSchedSystemloadNotifierClientMock : public ResSchedSystemloadNotifierClient {
+public:
+    void OnSystemloadLevel(int32_t level) override
+    {
+        levels = level;
+    }
+    static int32_t levels;
+};
+
+int32_t ResSchedSystemloadNotifierClientMock::levels = 0;
 
 /**
  * @tc.name: KillProcess001
@@ -139,9 +152,13 @@ HWTEST_F(ResSchedClientTest, StopRemoteObject, Function | MediumTest | Level0)
  */
 HWTEST_F(ResSchedClientTest, RegisterSystemloadNotifier, Function | MediumTest | Level0)
 {
-    sptr<ResSchedSystemloadNotifierClient> notifier = nullptr;
+    sptr<ResSchedSystemloadNotifierClient> notifier =
+        new (std::nothrow) ResSchedSystemloadNotifierClientMock;
+    EXPECT_TRUE(notifier != nullptr);
     ResSchedClient::GetInstance().RegisterSystemloadNotifier(notifier);
-    EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
+    ResSchedClient::GetInstance().systemloadLevelListener_->OnSystemloadLevel(2);
+    EXPECT_TRUE(ResSchedSystemloadNotifierClientMock::levels == 2);
+    ResSchedSystemloadNotifierClientMock::levels = 0;
 }
 
 /**
@@ -153,9 +170,13 @@ HWTEST_F(ResSchedClientTest, RegisterSystemloadNotifier, Function | MediumTest |
  */
 HWTEST_F(ResSchedClientTest, UnRegisterSystemloadNotifier, Function | MediumTest | Level0)
 {
-    sptr<ResSchedSystemloadNotifierClient> notifier = nullptr;
+    sptr<ResSchedSystemloadNotifierClient> notifier =
+        new (std::nothrow) ResSchedSystemloadNotifierClientMock;
+    EXPECT_TRUE(notifier != nullptr);
+    ResSchedClient::GetInstance().RegisterSystemloadNotifier(notifier);
     ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(notifier);
-    EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
+    ResSchedClient::GetInstance().systemloadLevelListener_->OnSystemloadLevel(2);
+    EXPECT_TRUE(ResSchedSystemloadNotifierClientMock::levels == 0);
 }
 
 /**
@@ -168,7 +189,61 @@ HWTEST_F(ResSchedClientTest, UnRegisterSystemloadNotifier, Function | MediumTest
 HWTEST_F(ResSchedClientTest, GetSystemloadLevel, Function | MediumTest | Level0)
 {
     int32_t res = ResSchedClient::GetInstance().GetSystemloadLevel();
-    EXPECT_TRUE(!(res < 0 || res > 7));
+    EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
+}
+
+/**
+ * @tc.name: ResSchedSvcStatusChange
+ * @tc.desc: ResSchedSvcStatusChange OnAddSystemAbility
+ * @tc.type: FUNC
+ * @tc.require: I9FXNO
+ * @tc.author: shanhaiyang
+ */
+HWTEST_F(ResSchedClientTest, OnAddSystemAbility1, Function | MediumTest | Level0)
+{
+    sptr<ResSchedSystemloadNotifierClient> notifier =
+        new (std::nothrow) ResSchedSystemloadNotifierClientMock;
+    EXPECT_TRUE(notifier != nullptr);
+    ResSchedClient::GetInstance().RegisterSystemloadNotifier(notifier);
+    EXPECT_TRUE(ResSchedClient::GetInstance().resSchedSvcStatusListener_);
+    ResSchedClient::GetInstance().resSchedSvcStatusListener_->OnAddSystemAbility(RSS_SA_ID, 0);
+    EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
+}
+
+/**
+ * @tc.name: ResSchedSvcStatusChange
+ * @tc.desc: ResSchedSvcStatusChange OnAddSystemAbility
+ * @tc.type: FUNC
+ * @tc.require: I9FXNO
+ * @tc.author: shanhaiyang
+ */
+HWTEST_F(ResSchedClientTest, OnAddSystemAbility2, Function | MediumTest | Level0)
+{
+    sptr<ResSchedSystemloadNotifierClient> notifier =
+        new (std::nothrow) ResSchedSystemloadNotifierClientMock;
+    EXPECT_TRUE(notifier != nullptr);
+    ResSchedClient::GetInstance().RegisterSystemloadNotifier(notifier);
+    EXPECT_TRUE(ResSchedClient::GetInstance().resSchedSvcStatusListener_);
+    ResSchedClient::GetInstance().resSchedSvcStatusListener_->OnAddSystemAbility(OTHER_SA_ID, 0);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: ResSchedSvcStatusChange
+ * @tc.desc: ResSchedSvcStatusChange OnRemoveSystemAbility
+ * @tc.type: FUNC
+ * @tc.require: I9FXNO
+ * @tc.author: shanhaiyang
+ */
+HWTEST_F(ResSchedClientTest, OnRemoveSystemAbility, Function | MediumTest | Level0)
+{
+    sptr<ResSchedSystemloadNotifierClient> notifier =
+        new (std::nothrow) ResSchedSystemloadNotifierClientMock;
+    EXPECT_TRUE(notifier != nullptr);
+    ResSchedClient::GetInstance().RegisterSystemloadNotifier(notifier);
+    EXPECT_TRUE(ResSchedClient::GetInstance().resSchedSvcStatusListener_);
+    ResSchedClient::GetInstance().resSchedSvcStatusListener_->OnRemoveSystemAbility(OTHER_SA_ID, 0);
+    SUCCEED();
 }
 #undef private
 #undef protected

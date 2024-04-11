@@ -15,9 +15,6 @@
 
 #include "notifier_mgr_test.h"
 
-#define private public
-#define protected public
-
 #include "ipc_skeleton.h"
 #include "notifier_mgr.h"
 #include "res_sched_notifier_death_recipient.h"
@@ -282,7 +279,5 @@ HWTEST_F(NotifierMgrTest, Dump002, Function | MediumTest | Level0)
     res = NotifierMgr::GetInstance().DumpRegisterInfo();
     EXPECT_TRUE(res.size() == 0);
 }
-#undef private
-#undef protected
 } // namespace ResourceSchedule
 } // namespace OHOS
