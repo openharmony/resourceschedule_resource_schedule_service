@@ -608,6 +608,7 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
     if (!ResSchedUtils::GetInstance().CheckTidIsInPid(pid, keyTid)) {
         return;
     }
+
     if (value == ResType::ReportChangeStatus::CREATE) {
         procRecord->keyThreadRoleMap_.emplace(keyTid, role);
     } else {

@@ -206,7 +206,6 @@ void ResSchedService::DumpProcessWindowInfo(std::string &result)
                     .append(", isVisible:").append(ToString(windows->isVisible_))
                     .append(", isFocus:").append(ToString(windows->isFocused_))
                     .append(", topWebRenderUid:").append(ToString(windows->topWebviewRenderUid_))
-                    .append(", topWebRenderPid:")
                     .append("\n");
             }
         }
