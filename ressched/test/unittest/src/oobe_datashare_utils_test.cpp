@@ -164,12 +164,29 @@ HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_008, Function | MediumTest |
 
 /**
  * @tc.name: oobe dataShareUtils TestDataShareUtils_009
- * @tc.desc: test the interface AssembleUri of dataShareUtils
+ * @tc.desc: test the interface ReleaseDataShareHelper of dataShareUtils
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
 HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_009, Function | MediumTest | Level0)
+{
+    DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
+    dataShareUtils.InitSystemAbilityManager();
+    std::shared_ptr<DataShare::DataShareHelper> helper = dataShareUtils.CreateDataShareHelper();
+    helper = nullptr;
+    bool flag = dataShareUtils.ReleaseDataShareHelper(helper);
+    EXPECT_EQ(flag, false);
+}
+
+/**
+ * @tc.name: oobe dataShareUtils TestDataShareUtils_010
+ * @tc.desc: test the interface AssembleUri of dataShareUtils
+ * @tc.type: FUNC
+ * @tc.require: issueI97493
+ * @tc.author:zhumingjie
+ */
+HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_010, Function | MediumTest | Level0)
 {
     DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
     dataShareUtils.AssembleUri(KEYWORD);

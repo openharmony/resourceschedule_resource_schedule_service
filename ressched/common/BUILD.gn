@@ -12,7 +12,6 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//build/test.gni")
 import("../ressched.gni")
 
 config("common_private_config") {
@@ -39,7 +38,6 @@ ohos_shared_library("ressched_common_utils") {
     "ability_base:zuri",
     "ability_runtime:dataobs_manager",
     "c_utils:utils",
-    "data_share:datashare_common",
     "data_share:datashare_consumer",
     "hilog:libhilog",
     "ipc:ipc_core",

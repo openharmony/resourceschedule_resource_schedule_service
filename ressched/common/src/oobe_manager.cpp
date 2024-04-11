@@ -182,7 +182,7 @@ bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
         RESSCHED_LOGE("Bad task passed!");
         return false;
     }
-    if (g_oobeValue == true) {
+    if (g_oobeValue) {
         task->ExcutingTask();
         return true;
     }

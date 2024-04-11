@@ -128,7 +128,7 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_005, Function | MediumTest | Level0)
 
 /**
  * @tc.name: oobe manager TestOOBEManager_006
- * @tc.desc: test the interface Initialize of OOBEManager
+ * @tc.desc: test the interface OnAddSystemAbility and OnRemoveSystemAbility of OOBEManager
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
@@ -136,18 +136,40 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_005, Function | MediumTest | Level0)
 HWTEST_F(OOBEMgrTest, TestOOBEManager_006, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
-    oobeMgr.Initialize();
+    oobeMgr.InitSysAbilityListener();
+    std::string deviceId;
+    oobeMgr.sysAbilityListener_->OnAddSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
+    SUCCEED();
+
+    oobeMgr.sysAbilityListener_->OnAddSystemAbility(-1, deviceId);
+    SUCCEED();
+
+    oobeMgr.sysAbilityListener_->OnRemoveSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
     SUCCEED();
 }
 
 /**
  * @tc.name: oobe manager TestOOBEManager_007
- * @tc.desc: test the interface SubmitTask of OOBEManager
+ * @tc.desc: test the interface Initialize of OOBEManager
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
 HWTEST_F(OOBEMgrTest, TestOOBEManager_007, Function | MediumTest | Level0)
+{
+    OOBEManager& oobeMgr = OOBEManager::GetInstance();
+    oobeMgr.Initialize();
+    SUCCEED();
+}
+
+/**
+ * @tc.name: oobe manager TestOOBEManager_008
+ * @tc.desc: test the interface SubmitTask of OOBEManager
+ * @tc.type: FUNC
+ * @tc.require: issueI97493
+ * @tc.author:zhumingjie
+ */
+HWTEST_F(OOBEMgrTest, TestOOBEManager_008, Function | MediumTest | Level0)
 {
     std::shared_ptr<IOOBETask> oobeTask = std::make_shared<OOBETaskImpl>();
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
@@ -165,13 +187,13 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_007, Function | MediumTest | Level0)
 }
 
 /**
- * @tc.name: oobe manager TestOOBEManager_008
+ * @tc.name: oobe manager TestOOBEManager_009
  * @tc.desc: test the interface SubmitTask of OOBEManager
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestOOBEManager_008, Function | MediumTest | Level0)
+HWTEST_F(OOBEMgrTest, TestOOBEManager_009, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
     oobeMgr.StartListen();
