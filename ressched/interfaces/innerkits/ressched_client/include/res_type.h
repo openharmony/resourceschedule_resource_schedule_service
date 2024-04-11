@@ -198,8 +198,6 @@ enum : uint32_t {
     RES_TYPE_REPORT_DISTRIBUTE_TID = 81,
     // report frame rate
     RES_TYPE_FRAME_RATE_REPORT = 82,
-    // report web drag resize
-    RES_TYPE_WEB_DRAG_RESIZE = 86,
 
     // report web screen capture, value 0 start, value 1 stop
     RES_TYPE_WEBVIEW_SCREEN_CAPTURE = 83,
@@ -215,6 +213,8 @@ enum : uint32_t {
     RES_TYPE_SYSTEMLOAD_LEVEL = 88,
     // report distribute component change
     RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE = 89,
+    // report web drag resize
+    RES_TYPE_WEB_DRAG_RESIZE = 90,
     //last resType
     RES_TYPE_LAST,
 };
