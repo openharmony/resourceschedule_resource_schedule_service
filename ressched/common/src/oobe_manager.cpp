@@ -177,7 +177,6 @@ bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
     }
     if (g_oobeValue == true) {
         task->ExcutingTask();
-        RESSCHED_LOGD("OOBE agreed, task has excuted!");
         return true;
     }
     oobeTasks_.push_back(task);
@@ -197,6 +196,7 @@ void OOBEManager::StartListen()
                 task->ExcutingTask();
             }
         } else {
+            RESSCHED_LOGI("User does not consent authorization!");
             g_oobeValue = false;
         }
     };
