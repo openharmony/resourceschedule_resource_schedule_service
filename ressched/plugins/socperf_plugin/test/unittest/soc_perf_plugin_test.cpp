@@ -459,5 +459,21 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_017, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(maxLenPayload);
     SUCCEED();
 }
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_018
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_018, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& scbAnimationEndData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SCENE_BOARD_ID, ResType::ShowRemoteAnimationStatus::ANIMATION_END, nullptr);
+    SocPerfPlugin::GetInstance().HandleSocperfSceneBoard(scbAnimationEndData);
+    const std::shared_ptr<ResData>& scbAnimationBeginData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SCENE_BOARD_ID, ResType::ShowRemoteAnimationStatus::ANIMATION_BEGIN, nullptr);
+    SocPerfPlugin::GetInstance().HandleSocperfSceneBoard(scbAnimationBeginData);
+}
 } // namespace SOCPERF
 } // namespace OHOS
