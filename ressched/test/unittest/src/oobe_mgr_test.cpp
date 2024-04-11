@@ -49,7 +49,7 @@ void OOBEMgrTest::TearDown() {}
 
 /**
  * @tc.name: oobe manager TestOOBEManager_001
- * @tc.desc: test the interface InitSystemAbilityListener of OOBEManager
+ * @tc.desc: test the interface InitSysAbilityListener of OOBEManager
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
@@ -57,9 +57,9 @@ void OOBEMgrTest::TearDown() {}
 HWTEST_F(OOBEMgrTest, TestOOBEManager_001, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
-    oobeMgr.InitSystemAbilityListener();
+    oobeMgr.InitSysAbilityListener();
 
-    oobeMgr.InitSystemAbilityListener();
+    oobeMgr.InitSysAbilityListener();
     SUCCEED();
 }
 
@@ -122,7 +122,7 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_005, Function | MediumTest | Level0)
     SUCCEED();
 
     OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
-    oobeObserver->SetUpdateFunc();
+    oobeObserver->SetUpdateFunc(updateFunc);
     SUCCEED();
 }
 

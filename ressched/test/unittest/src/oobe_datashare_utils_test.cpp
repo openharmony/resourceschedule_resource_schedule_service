@@ -50,7 +50,7 @@ void OOBEMgrTest::TearDown() {}
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestDataShareUtils_001, Function | MediumTest | Level0)
+HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_001, Function | MediumTest | Level0)
 {
     int32_t result = 0;
     ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
@@ -64,7 +64,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_001, Function | MediumTest | Level0)
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestDataShareUtils_002, Function | MediumTest | Level0)
+HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_002, Function | MediumTest | Level0)
 {
     int64_t result = 0;
     ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
@@ -78,7 +78,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_002, Function | MediumTest | Level0)
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestDataShareUtils_003, Function | MediumTest | Level0)
+HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_003, Function | MediumTest | Level0)
 {
     std::string result;
     ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
@@ -92,7 +92,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_003, Function | MediumTest | Level0)
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestDataShareUtils_004, Function | MediumTest | Level0)
+HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_004, Function | MediumTest | Level0)
 {
     bool result;
     int32_t ret = ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
@@ -106,7 +106,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_004, Function | MediumTest | Level0)
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestDataShareUtils_005, Function | MediumTest | Level0)
+HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_005, Function | MediumTest | Level0)
 {
     std::string result;
     int32_t ret1 = ResourceSchedule::DataShareUtils::GetInstance().GetStringValue(KEYWORD, result);
@@ -123,7 +123,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_005, Function | MediumTest | Level0)
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestDataShareUtils_006, Function | MediumTest | Level0)
+HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_006, Function | MediumTest | Level0)
 {
     DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
     dataShareUtils.remoteObj_ = nullptr;
@@ -138,7 +138,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_006, Function | MediumTest | Level0)
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestDataShareUtils_007, Function | MediumTest | Level0)
+HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_007, Function | MediumTest | Level0)
 {
     DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
     dataShareUtils.InitSystemAbilityManager();
@@ -153,7 +153,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_007, Function | MediumTest | Level0)
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestDataShareUtils_008, Function | MediumTest | Level0)
+HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_008, Function | MediumTest | Level0)
 {
     DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
     dataShareUtils.InitSystemAbilityManager();
@@ -169,7 +169,7 @@ HWTEST_F(OOBEMgrTest, TestDataShareUtils_008, Function | MediumTest | Level0)
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestDataShareUtils_009, Function | MediumTest | Level0)
+HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_009, Function | MediumTest | Level0)
 {
     DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
     dataShareUtils.AssembleUri(KEYWORD);
