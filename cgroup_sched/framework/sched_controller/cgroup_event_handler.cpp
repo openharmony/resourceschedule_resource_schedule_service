@@ -595,24 +595,19 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
     int32_t keyTid = 0;
     int32_t role = 0;
 
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+    std::shared_ptr<Application> app = nullptr;
+    std::shared_ptr<ProcessRecord> procRecord = nullptr;
+    if (!GetProcInfoByPayload(uid, pid, app, procRecord, payload)) {
         return;
     }
 
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
-        !ParseValue(keyTid, "tid", payload) || !ParseValue(role, "role", payload)) {
+    if (!ParseValue(keyTid, "tid", payload) || !ParseValue(role, "role", payload)) {
         return;
     }
 
-    if (uid <= 0 || pid <= 0) {
-        return;
-    }
     if (!ResSchedUtils::GetInstance().CheckTidIsInPid(pid, keyTid)) {
         return;
     }
-    auto app = supervisor_->GetAppRecordNonNull(uid);
-    auto procRecord = app->GetProcessRecordNonNull(pid);
     if (value == ResType::ReportChangeStatus::CREATE) {
         procRecord->keyThreadRoleMap_.emplace(keyTid, role);
     } else {
@@ -636,25 +631,17 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     int32_t state = 0;
     int32_t nowSerialNum = -1;
 
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+    std::shared_ptr<Application> app = nullptr;
+    std::shared_ptr<ProcessRecord> procRecord = nullptr;
+    if (!GetProcInfoByPayload(uid, pid, app, procRecord, payload)) {
         return;
     }
 
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
-        !ParseValue(windowId, "windowId", payload) || !ParseValue(state, "state", payload) ||
+    if (!ParseValue(windowId, "windowId", payload) || !ParseValue(state, "state", payload) ||
         !ParseValue(nowSerialNum, "serialNum", payload)) {
         CGS_LOGW("%{public}s : param is not valid or not exist", __func__);
         return;
     }
-    if (uid <= 0 || pid <= 0) {
-        CGS_LOGW("%{public}s : uid or pid invalid, uid: %{public}d, pid: %{public}d!",
-            __func__, uid, pid);
-        return;
-    }
-
-    auto app = supervisor_->GetAppRecordNonNull(uid);
-    auto procRecord = app->GetProcessRecordNonNull(pid);
     CGS_LOGD("%{public}s : render process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, state);
     if (nowSerialNum <= procRecord->serialNum_ &&
@@ -667,6 +654,7 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
         procRecord->linkedWindowId_ = windowId;
         procRecord->isActive_ = true;
     } else {
+        procRecord->linkedWindowId_ = -1;
         procRecord->isActive_ = false;
     }
     auto mainProcRecord = app->GetMainProcessRecord();
@@ -692,7 +680,6 @@ void CgroupEventHandler::UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, in
     }
     auto win = proc->GetWindowInfoNonNull(windowId);
     win->topWebviewRenderUid_ = uid;
-    win->topWebviewRenderPid_ = pid;
 }
 
 void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload)
