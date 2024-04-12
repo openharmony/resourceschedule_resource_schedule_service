@@ -32,8 +32,9 @@ void ResSchedSystemloadNotifierProxy::OnSystemloadLevel(int32_t level)
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
-    WRITE_PARCEL(data, InterfaceToken, ResSchedSystemloadNotifierProxy::GetDescriptor(), , ResSchedServiceProxy);
-    WRITE_PARCEL(data, Int32, level, , ResSchedServiceProxy);
+    WRITE_PARCEL(
+        data, InterfaceToken, ResSchedSystemloadNotifierProxy::GetDescriptor(), void(), ResSchedServiceProxy);
+    WRITE_PARCEL(data, Int32, level, void(), ResSchedServiceProxy);
     int32_t errCode = Remote()->SendRequest(static_cast<uint32_t>
         (ResourceSceduleSystemloadNotifierCode::SYSTEMLOAD_LEVEL), data, reply, option);
     RESSCHED_LOGD("result = %{public}d", errCode);
