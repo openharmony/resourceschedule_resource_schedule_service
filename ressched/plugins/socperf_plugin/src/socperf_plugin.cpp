@@ -53,6 +53,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_DRAG_STATUS_BAR       = 10034;
     const int32_t PERF_REQUEST_CMD_ID_LOAD_URL              = 10070;
     const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
+    const int32_t PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE       = 10073;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -116,6 +117,8 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
         { RES_TYPE_DEVICE_MODE_STATUS,
             [this](const std::shared_ptr<ResData>& data) { HandleDeviceModeStatusChange(data); } },
+        { RES_TYPE_WEB_DRAG_RESIZE,
+            [this](const std::shared_ptr<ResData>& data) { HandleWebDragResize(data); } },
         { RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); } },
     };
@@ -141,6 +144,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_MOUSEWHEEL,
         RES_TYPE_APP_STATE_CHANGE,
         RES_TYPE_DEVICE_MODE_STATUS,
+        RES_TYPE_WEB_DRAG_RESIZE,
         RES_TYPE_SCENE_BOARD_ID,
     };
 }
@@ -386,6 +390,19 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
     bool status = (data->value == DeviceModeStatus::MODE_ENTER);
     OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceMode, status);
     SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceMode.c_str(), status);
+}
+
+void SocPerfPlugin::HandleWebDragResize(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->WEB_DRAG_RESIZE: %{public}lld", (long long)data->value);
+    if (data->value == WebDragResizeStatus::WEB_DRAG_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE, "");
+    } else if (data->value == WebDragResizeStatus::WEB_DRAG_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE, false, "");
+    }
 }
 
 bool SocPerfPlugin::HandleSocperfSceneBoard(const std::shared_ptr<ResData> &data)

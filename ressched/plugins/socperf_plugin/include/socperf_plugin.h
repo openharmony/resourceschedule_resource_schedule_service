@@ -59,6 +59,7 @@ private:
     void HandleMousewheel(const std::shared_ptr<ResData>& data);
     bool HandleAppStateChange(const std::shared_ptr<ResData>& data);
     void HandleDeviceModeStatusChange(const std::shared_ptr<ResData>& data);
+    void HandleWebDragResize(const std::shared_ptr<ResData>& data);
     bool HandleSocperfSceneBoard(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
