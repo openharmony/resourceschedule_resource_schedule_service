@@ -77,29 +77,46 @@ int32_t ResSchedClient::KillProcess(const std::unordered_map<std::string, std::s
 
 void ResSchedClient::RegisterSystemloadNotifier(const sptr<ResSchedSystemloadNotifierClient>& callbackObj)
 {
-    RESSCHED_LOGI("ResSchedClient::RegisterSystemloadNotifier receive mission.");
-    std::lock_guard<std::mutex> lock(mutex_);
-    if (InitListenersLocked() != ERR_OK) {
-        RESSCHED_LOGE("ResSchedClient::RegisterSystemloadNotifier init listener failed.");
+    if (TryConnect() != ERR_OK) {
         return;
     }
-    systemloadLevelListener_->RegisterSystemloadLevelCb(callbackObj);
-    if (!systemloadCbRegistered_ && !systemloadLevelListener_->IsSystemloadCbArrayEmpty() && rss_) {
-        rss_->RegisterSystemloadNotifier(systemloadLevelListener_);
-        systemloadCbRegistered_ = true;
+    RESSCHED_LOGD("ResSchedClient::RegisterSystemloadNotifier receive mission.");
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (rss_ == nullptr) {
+        RESSCHED_LOGE("ResSchedClient::RegisterSystemloadNotifier fail to get resource schedule service.");
+        return;
+    }
+    if (systemloadLevelListener_ == nullptr) {
+        systemloadLevelListener_ = new (std::nothrow) SystemloadLevelListener;
+        if (systemloadLevelListener_ != nullptr) {
+            rss_->RegisterSystemloadNotifier(systemloadLevelListener_);
+        }
+    }
+    if (systemloadLevelListener_ != nullptr) {
+        systemloadLevelListener_->RegisterSystemloadLevelCb(callbackObj);
     }
 }
 
 void ResSchedClient::UnRegisterSystemloadNotifier(const sptr<ResSchedSystemloadNotifierClient>& callbackObj)
 {
-    RESSCHED_LOGD("ResSchedClient::UnRegisterSystemloadNotifier receive mission.");
-    std::lock_guard<std::mutex> lock(mutex_);
-    if (systemloadLevelListener_ == nullptr) {
-        RESSCHED_LOGE("ResSchedClient::UnRegisterSystemloadNotifier systemloadLevelListener is null.");
+    if (TryConnect() != ERR_OK) {
         return;
     }
-    systemloadLevelListener_->UnRegisterSystemloadLevelCb(callbackObj);
-    UnRegisterListenersLocked();
+    RESSCHED_LOGD("ResSchedClient::UnRegisterSystemloadNotifier receive mission.");
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (rss_ == nullptr) {
+        RESSCHED_LOGE("ResSchedClient::UnRegisterSystemloadNotifier fail to get resource schedule service.");
+        return;
+    }
+    if (systemloadLevelListener_ != nullptr) {
+        systemloadLevelListener_->UnRegisterSystemloadLevelCb(callbackObj);
+        if (systemloadLevelListener_->IsSystemloadCbArrayEmpty()) {
+            rss_->UnRegisterSystemloadNotifier();
+            systemloadLevelListener_ = nullptr;
+        }
+    }
 }
 
 int32_t ResSchedClient::GetSystemloadLevel()
@@ -146,12 +163,6 @@ ErrCode ResSchedClient::TryConnect()
         return GET_RES_SCHED_SERVICE_FAILED;
     }
     rss_->AsObject()->AddDeathRecipient(recipient_);
-    if (resSchedSvcStatusListener_ == nullptr) {
-        resSchedSvcStatusListener_ = new (std::nothrow) ResSchedSvcStatusChange;
-        if (resSchedSvcStatusListener_ != nullptr) {
-            systemManager->SubscribeSystemAbility(RES_SCHED_SYS_ABILITY_ID, resSchedSvcStatusListener_);
-        }
-    }
     RESSCHED_LOGD("ResSchedClient::Connect resource schedule service success.");
     return ERR_OK;
 }
@@ -163,47 +174,7 @@ void ResSchedClient::StopRemoteObject()
         rss_->AsObject()->RemoveDeathRecipient(recipient_);
     }
     rss_ = nullptr;
-    systemloadCbRegistered_ = false;
-}
-
-void ResSchedClient::OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
-{
-    if (systemAbilityId != RES_SCHED_SYS_ABILITY_ID) {
-        RESSCHED_LOGE("ResSchedClient::OnAddSystemAbility is not res sa id.");
-        return;
-    }
-    if (TryConnect() != ERR_OK) {
-        return;
-    }
-    std::lock_guard<std::mutex> lock(mutex_);
-    if (InitListenersLocked() != ERR_OK) {
-        RESSCHED_LOGE("ResSchedClient::OnAddSystemAbility init listener failed.");
-        return;
-    }
-    if (!systemloadCbRegistered_ && !systemloadLevelListener_->IsSystemloadCbArrayEmpty() && rss_) {
-        rss_->RegisterSystemloadNotifier(systemloadLevelListener_);
-        systemloadCbRegistered_ = true;
-    }
-}
-
-int32_t ResSchedClient::InitListenersLocked()
-{
-    if (systemloadLevelListener_ == nullptr) {
-        systemloadLevelListener_ = new (std::nothrow) SystemloadLevelListener;
-        if (systemloadLevelListener_ == nullptr) {
-            RESSCHED_LOGW("ResSchedClient::InitListenersLocked new listener error.");
-            return RES_SCHED_DATA_ERROR;
-        }
-    }
-    return ERR_OK;
-}
-
-void ResSchedClient::UnRegisterListenersLocked()
-{
-    if (systemloadLevelListener_->IsSystemloadCbArrayEmpty() && rss_) {
-        rss_->UnRegisterSystemloadNotifier();
-        systemloadCbRegistered_ = false;
-    }
+    systemloadLevelListener_ = nullptr;
 }
 
 ResSchedClient::ResSchedDeathRecipient::ResSchedDeathRecipient(ResSchedClient &resSchedClient)
@@ -237,7 +208,6 @@ void ResSchedClient::SystemloadLevelListener::RegisterSystemloadLevelCb(
     }
     RESSCHED_LOGD("Client has registered %{public}d listeners.", static_cast<int32_t>(systemloadLevelCbs_.size()));
 }
-
 void ResSchedClient::SystemloadLevelListener::UnRegisterSystemloadLevelCb(
     const sptr<ResSchedSystemloadNotifierClient>& callbackObj)
 {
@@ -268,17 +238,6 @@ void ResSchedClient::SystemloadLevelListener::OnSystemloadLevel(int32_t level)
             notifier->OnSystemloadLevel(level);
         }
     }
-}
-
-void ResSchedSvcStatusChange::OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
-{
-    RESSCHED_LOGD("ResSchedSvcStatusChange::OnAddSystemAbility called, said : %{public}d.", systemAbilityId);
-    ResSchedClient::GetInstance().OnAddSystemAbility(systemAbilityId, deviceId);
-}
-
-void ResSchedSvcStatusChange::OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
-{
-    RESSCHED_LOGD("ResSchedSvcStatusChange::OnRemoveSystemAbility called.");
 }
 
 extern "C" void ReportData(uint32_t resType, int64_t value,

@@ -28,24 +28,15 @@
 #include "refbase.h"                                // for sptr, wptr
 #include "res_sched_systemload_notifier_client.h"   // for ResSchedSystemloadNotifierClient
 #include "res_sched_systemload_notifier_stub.h"     // for ResSchedSystemloadNotifierStub
-#include "system_ability_status_change_stub.h"      // for SystemAbilityStatusChangeStub
 
 namespace OHOS {
 namespace ResourceSchedule {
-class ResSchedSvcStatusChange : public SystemAbilityStatusChangeStub {
-public:
-    ResSchedSvcStatusChange() = default;
-    ~ResSchedSvcStatusChange() = default;
-    void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
-    void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
-};
 /*
  * this class wraped the functions of IResSchedService,effect is the same.
  * but through ResSchedClient, you don't need to get IResSchedService from samgr,
  * just use the functions is ok.
  */
 class ResSchedClient {
-    friend ResSchedSvcStatusChange;
 public:
     /**
      * @brief Get the Instance object.
@@ -99,9 +90,6 @@ protected:
     virtual ~ResSchedClient();
 
 private:
-    void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId);
-    int32_t InitListenersLocked();
-    void UnRegisterListenersLocked();
     class SystemloadLevelListener : public ResSchedSystemloadNotifierStub {
     public:
         SystemloadLevelListener() = default;
@@ -131,8 +119,6 @@ private:
     sptr<IRemoteObject> remoteObject_;
     sptr<IResSchedService> rss_;
     sptr<SystemloadLevelListener> systemloadLevelListener_;
-    sptr<ResSchedSvcStatusChange> resSchedSvcStatusListener_;
-    bool systemloadCbRegistered_ = false;
     DISALLOW_COPY_AND_MOVE(ResSchedClient);
 };
 } // namespace ResourceSchedule

@@ -18,6 +18,7 @@
 
 #include <map>
 #include <mutex>
+#include <set>
 #include <string>
 
 #include "ffrt.h"
@@ -33,9 +34,7 @@ class NotifierMgr {
 public:
     struct NotifierInfo {
         sptr<IRemoteObject> notifier = nullptr;
-        bool foreground = true;
         bool hapApp = false;
-        int32_t level = ResType::SystemloadLevel::LOW;
     };
     using NotifierMap = std::map<int32_t, NotifierInfo>;
     void Init();
@@ -57,6 +56,8 @@ private:
     bool initialized_ = false;
     std::mutex notifierMutex_;
     NotifierMap notifierMap_;
+    std::mutex pidSetMutex_;
+    std::set<int32_t> fgPidSet_;
     ResType::SystemloadLevel systemloadLevel_ = ResType::SystemloadLevel::LOW;
     sptr<IRemoteObject::DeathRecipient> notifierDeathRecipient_ = nullptr;
     std::shared_ptr<ffrt::queue> notifierHandler_ = nullptr;
