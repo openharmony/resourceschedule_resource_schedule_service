@@ -87,7 +87,7 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_002, Function | MediumTest | Level0)
 HWTEST_F(OOBEMgrTest, TestOOBEManager_003, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
-    int32_t ret = oobeMgr.UnregisterObserver(KEYWORD);
+    int32_t ret = oobeMgr.UnregisterObserver();
     EXPECT_EQ(ret, ERR_OK);
 }
 
