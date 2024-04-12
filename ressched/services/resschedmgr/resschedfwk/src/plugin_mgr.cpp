@@ -267,7 +267,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     int32_t extType = GetExtTypeByResPayload(resData);
     if (extType != DEFAULT_VALUE) {
-        resData->resType = extType;
+        resData->resType = (uint32_t)extType;
     }
 #endif
     if (!GetPluginListByResType(resData->resType, pluginList)) {

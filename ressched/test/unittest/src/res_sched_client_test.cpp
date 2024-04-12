@@ -15,8 +15,6 @@
 
 #include "gtest/gtest.h"
 
-#define private public
-#define protected public
 #include <unordered_map>
 #include <vector>
 #include "nativetoken_kit.h"

@@ -16,8 +16,6 @@
 #include "gtest/gtest.h"
 #include "gtest/hwext/gtest-multithread.h"
 
-#define private public
-#define protected public
 #include <vector>
 #include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
@@ -717,7 +715,5 @@ HWTEST_F(ResSchedServiceTest, StubGetSystemloadLevel001, Function | MediumTest |
     MessageParcel emptyData;
     EXPECT_TRUE(resSchedServiceStub_->GetSystemloadLevelInner(emptyData, reply));
 }
-#undef private
-#undef protected
 } // namespace ResourceSchedule
 } // namespace OHOS

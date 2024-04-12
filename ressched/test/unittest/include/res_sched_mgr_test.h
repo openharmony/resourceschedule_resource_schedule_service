@@ -19,11 +19,9 @@
 
 #include <memory>
 #include "gtest/gtest.h"
-#define private public
 #include "plugin_mgr.h"
 #include "res_type.h"
 #include "res_sched_mgr.h"
-#undef private
 
 namespace OHOS {
 namespace ResourceSchedule {
