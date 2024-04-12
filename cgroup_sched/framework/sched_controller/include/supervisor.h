@@ -53,9 +53,8 @@ public:
     int32_t windowType_ = 0;
     uint64_t displayId_ = 0;
     std::shared_ptr<AbilityInfo> ability_ = nullptr;
-    // webview render process corresponding with top tab page in this window
+    // webview app corresponding with top tab page in this window
     uid_t topWebviewRenderUid_ = 0;
-    pid_t topWebviewRenderPid_ = 0;
 };
 
 class AbilityInfo {
