@@ -13,13 +13,11 @@
  * limitations under the License.
  */
 
-#define private public
 #include <dlfcn.h>
 #include "plugin_mgr.h"
 #include "res_type.h"
 #include "plugin_mgr_test.h"
 #include "socperf_plugin.h"
-#undef private
 #include "mock_plugin_mgr.h"
 #include "res_data.h"
 #include "res_type.h"

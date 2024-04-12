@@ -459,5 +459,27 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_017, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(maxLenPayload);
     SUCCEED();
 }
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_018
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_018, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& scbAnimationEndData = std::make_shared<ResData>(
+        SocPerfPlugin::GetInstance().RES_TYPE_SCENE_BOARD_ID,
+        ResType::ShowRemoteAnimationStatus::ANIMATION_END, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleSocperfSceneBoard(scbAnimationEndData);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& scbAnimationBeginData = std::make_shared<ResData>(
+        SocPerfPlugin::GetInstance().RES_TYPE_SCENE_BOARD_ID,
+        ResType::ShowRemoteAnimationStatus::ANIMATION_BEGIN, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleSocperfSceneBoard(scbAnimationBeginData);
+    EXPECT_TRUE(ret);
+    ret = SocPerfPlugin::GetInstance().HandleSocperfSceneBoard(nullptr);
+    EXPECT_FALSE(ret);
+}
 } // namespace SOCPERF
 } // namespace OHOS

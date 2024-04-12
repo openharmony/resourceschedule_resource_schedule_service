@@ -27,6 +27,10 @@ module_output_path = "resource_schedule_service/ressched"
 
 ohos_unittest("resschedservice_test") {
   module_out_path = module_output_path
+  cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
   include_dirs = [
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
@@ -59,6 +63,10 @@ ohos_unittest("resschedservice_test") {
 
 ohos_unittest("resschedclient_test") {
   module_out_path = module_output_path
+  cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
   include_dirs = [
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
@@ -85,6 +93,10 @@ ohos_unittest("resschedclient_test") {
 ohos_unittest("resschedfwk_test") {
   module_out_path = module_output_path
   resource_config_file = "${ressched_test}/resource/resschedfwk/ohos_test.xml"
+  cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
   include_dirs = [
     "include",
     "${ressched_common}/include",

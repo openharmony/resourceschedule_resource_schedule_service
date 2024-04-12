@@ -37,6 +37,8 @@ public:
 private:
     std::set<uint32_t> resTypes;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
+    int32_t RES_TYPE_SCENE_BOARD_ID;
+    void InitEventId();
     void InitFunctionMap();
     void InitResTypes();
     void HandleWindowFocus(const std::shared_ptr<ResData>& data);
@@ -58,6 +60,7 @@ private:
     bool HandleAppStateChange(const std::shared_ptr<ResData>& data);
     void HandleDeviceModeStatusChange(const std::shared_ptr<ResData>& data);
     void HandleWebDragResize(const std::shared_ptr<ResData>& data);
+    bool HandleSocperfSceneBoard(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
