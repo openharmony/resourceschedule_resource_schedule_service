@@ -111,6 +111,7 @@ namespace {
         ResType::RES_TYPE_FRAME_RATE_REPORT,
         ResType::RES_TYPE_LOCATION_STATUS_CHANGE,
         ResType::RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE,
+        ResType::RES_TYPE_FORM_STATE_CHANGE_EVENT,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";

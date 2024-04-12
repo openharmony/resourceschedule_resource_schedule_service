@@ -215,6 +215,8 @@ enum : uint32_t {
     RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE = 89,
     // report web drag resize
     RES_TYPE_WEB_DRAG_RESIZE = 90,
+    // report formCard create start/end
+    RES_TYPE_FORM_STATE_CHANGE_EVENT = 91,
     //last resType
     RES_TYPE_LAST,
 };
@@ -311,6 +313,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_DEVICE_MODE_STATUS, "RES_TYPE_DEVICE_MODE_STATUS"},
     { RES_TYPE_SYSTEMLOAD_LEVEL, "RES_TYPE_SYSTEMLOAD_LEVEL"},
     { RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE, "RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE"},
+    { RES_TYPE_FORM_STATE_CHANGE_EVENT, "RES_TYPE_FORM_STATE_CHANGE_EVENT"},
 };
 
 /**
@@ -768,6 +771,14 @@ enum WebVideoState : int64_t {
 enum LocationStatus : int64_t {
     APP_LOCATION_STATUE_CHANGE = 0,
     LOCATION_SWTICH_CHANGE = 1,
+};
+
+/**
+ * @brief form create state
+ */
+enum FormCreateStatus : int64_t {
+    FormCreateStart = 0,
+    FormCreateEnd = 1,
 };
 
 /**
