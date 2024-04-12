@@ -213,6 +213,8 @@ enum : uint32_t {
     RES_TYPE_SYSTEMLOAD_LEVEL = 88,
     // report distribute component change
     RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE = 89,
+    // report formCard create start/end
+    RES_TYPE_FORM_STATE_CHANGE_EVENT = 90,
     //last resType
     RES_TYPE_LAST,
 };
@@ -308,6 +310,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_DEVICE_MODE_STATUS, "RES_TYPE_DEVICE_MODE_STATUS"},
     { RES_TYPE_SYSTEMLOAD_LEVEL, "RES_TYPE_SYSTEMLOAD_LEVEL"},
     { RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE, "RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE"},
+    { RES_TYPE_FORM_STATE_CHANGE_EVENT, "RES_TYPE_FORM_STATE_CHANGE_EVENT"},
 };
 
 /**
@@ -767,6 +770,13 @@ enum LocationStatus : int64_t {
     LOCATION_SWTICH_CHANGE = 1,
 };
 
+/**
+ * @brief form create state
+ */
+enum FormCreateStatus : int64_t {
+    FormCreateStart = 0,
+    FormCreateEnd = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
