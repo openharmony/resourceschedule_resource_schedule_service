@@ -36,6 +36,7 @@ public:
     void OnApplicationStateChanged(const AppStateData &appStateData) override;
     void OnProcessStateChanged(const ProcessData &processData) override;
     void OnAppStateChanged(const AppStateData &appStateData) override;
+    void OnAppCacheStateChanged(const AppStateData &appStateData) override;
 
 private:
     inline bool ValidateAppStateData(const AppStateData &appStateData) const

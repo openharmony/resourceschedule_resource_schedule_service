@@ -213,8 +213,10 @@ enum : uint32_t {
     RES_TYPE_SYSTEMLOAD_LEVEL = 88,
     // report distribute component change
     RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE = 89,
+    // report web drag resize
+    RES_TYPE_WEB_DRAG_RESIZE = 90,
     // report formCard create start/end
-    RES_TYPE_FORM_STATE_CHANGE_EVENT = 90,
+    RES_TYPE_FORM_STATE_CHANGE_EVENT = 91,
     //last resType
     RES_TYPE_LAST,
 };
@@ -303,6 +305,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_FLOATING_WINDOW, "RES_TYPE_FLOATING_WINDOW" },
     { RES_TYPE_REPORT_DISTRIBUTE_TID, "RES_TYPE_REPORT_DISTRIBUTE_TID"},
     { RES_TYPE_FRAME_RATE_REPORT, "RES_TYPE_FRAME_RATE_REPORT"},
+    { RES_TYPE_WEB_DRAG_RESIZE, "RES_TYPE_WEB_DRAG_RESIZE"},
     { RES_TYPE_WEBVIEW_SCREEN_CAPTURE, "RES_TYPE_WEBVIEW_SCREEN_CAPTURE"},
     { RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, "RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE"},
     { RES_TYPE_LOCATION_STATUS_CHANGE, "RES_TYPE_LOCATION_STATUS_CHANGE"},
@@ -777,6 +780,15 @@ enum FormCreateStatus : int64_t {
     FormCreateStart = 0,
     FormCreateEnd = 1,
 };
+
+/**
+ * @brief drag web window resize status
+ */
+enum WebDragResizeStatus : int64_t {
+    WEB_DRAG_START = 0,
+    WEB_DRAG_END = 1,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
