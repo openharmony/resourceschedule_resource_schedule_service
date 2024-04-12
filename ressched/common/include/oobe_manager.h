@@ -20,8 +20,6 @@
 #include "errors.h"
 #include "mutex"
 #include "ioobe_task.h"
-#include "if_system_ability_manager.h"
-#include "system_ability_status_change_stub.h"
 #include <vector>
 
 namespace OHOS {
@@ -31,6 +29,8 @@ class OOBEManager {
 public:
     static OOBEManager& GetInstance();
     bool SubmitTask(const std::shared_ptr<IOOBETask>& task);
+    void StartListen();
+    ErrCode UnregisterObserver();
 
 private:
     class ResDataAbilityObserver : public AAFwk::DataAbilityObserverStub {
@@ -45,26 +45,15 @@ private:
         UpdateFunc update_ = nullptr;
     };
 
-    class SystemAbilityStatusChangeListener : public OHOS::SystemAbilityStatusChangeStub {
-    public:
-        SystemAbilityStatusChangeListener() {};
-        virtual void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
-        virtual void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
-    };
-
     bool g_oobeValue = false;
     static OOBEManager* oobeInstance_;
     static std::mutex mutex_;
     static std::vector<std::shared_ptr<IOOBETask>> oobeTasks_;
     static sptr<OOBEManager::ResDataAbilityObserver> observer_;
-    sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
     OOBEManager();
     ~OOBEManager();
     void Initialize();
-    void InitSysAbilityListener();
-    void StartListen();
     ErrCode RegisterObserver(const std::string& key, ResDataAbilityObserver::UpdateFunc& func);
-    ErrCode UnregisterObserver(const std::string& key);
 };
 } // ResourceSchedule
 } // OHOS

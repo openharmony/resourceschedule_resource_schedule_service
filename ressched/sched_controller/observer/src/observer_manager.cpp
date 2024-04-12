@@ -30,6 +30,7 @@
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
 #include "telephony_observer_client.h"
 #endif
+#include "oobe_manager.h"
 #include "system_ability_definition.h"
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
 #include "movement_client.h"
@@ -78,6 +79,8 @@ void ObserverManager::InitObserverCbMap()
         { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::InitMMiEventObserver, std::placeholders::_1) },
         { DISPLAY_MANAGER_SERVICE_ID, std::bind(&ObserverManager::InitDisplayModeObserver, std::placeholders::_1) },
         { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::InitConnectionSubscriber, std::placeholders::_1) },
+        { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID,
+            std::bind(&ObserverManager::InitDataShareObserver, std::placeholders::_1) },
 #ifndef RESOURCE_REQUEST_REQUEST
         { DOWNLOAD_SERVICE_ID, std::bind(&ObserverManager::InitDownloadUploadObserver, std::placeholders::_1) },
 #endif
@@ -96,6 +99,8 @@ void ObserverManager::InitObserverCbMap()
         { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::DisableMMiEventObserver, std::placeholders::_1) },
         { DISPLAY_MANAGER_SERVICE_ID, std::bind(&ObserverManager::DisableDisplayModeObserver, std::placeholders::_1) },
         { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::DisableConnectionSubscriber, std::placeholders::_1) },
+        { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID,
+            std::bind(&ObserverManager::DisableDataShareObserver, std::placeholders::_1) },
 #ifndef RESOURCE_REQUEST_REQUEST
         { DOWNLOAD_SERVICE_ID, std::bind(&ObserverManager::DisableDownloadUploadObserver, std::placeholders::_1) },
 #endif
@@ -135,6 +140,7 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(MULTIMODAL_INPUT_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(DISPLAY_MANAGER_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(ABILITY_MGR_SERVICE_ID, systemAbilityManager);
+    AddItemToSysAbilityListener(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, systemAbilityManager);
 #ifndef RESOURCE_REQUEST_REQUEST
     AddItemToSysAbilityListener(DOWNLOAD_SERVICE_ID, systemAbilityManager);
 #endif
@@ -572,6 +578,17 @@ void ObserverManager::DisableConnectionSubscriber()
     connectionSubscriber_ = nullptr;
 }
 
+void ObserverManager::InitDataShareObserver()
+{
+    RESSCHED_LOGD("ObserverManager Init dataShare observer.");
+    OOBEManager::GetInstance().StartListen();
+}
+
+void ObserverManager::DisableDataShareObserver()
+{
+    RESSCHED_LOGI("Disable dataShare observer.");
+    OOBEManager::GetInstance().UnregisterObserver();
+}
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 void ObserverManager::InitAVSessionStateChangeListener()
 {
