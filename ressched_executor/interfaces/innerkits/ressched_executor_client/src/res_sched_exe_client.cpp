@@ -43,20 +43,20 @@ ResSchedExeClient::~ResSchedExeClient()
 }
 
 int32_t ResSchedExeClient::SendRequestSync(uint32_t resType, int64_t value,
-    const std::unordered_map<std::string, std::string>& context, std::string& reply)
+    const nlohmann::json& context, nlohmann::json& reply)
 {
     return SendRequestInner(true, resType, value, context, reply);
 }
 
 void ResSchedExeClient::SendRequestAsync(uint32_t resType, int64_t value,
-    const std::unordered_map<std::string, std::string>& context)
+    const nlohmann::json& context)
 {
-    std::string reply;
+    nlohmann::json reply;
     SendRequestInner(false, resType, value, context, reply);
 }
 
 int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64_t value,
-    const std::unordered_map<std::string, std::string>& context, std::string& reply)
+    const nlohmann::json& context, nlohmann::json& reply)
 {
     if (TryConnect() != ResErrCode::RSSEXE_NO_ERR) {
         return ResIpcErrCode::RSSEXE_CONNECT_FAIL;
@@ -70,32 +70,18 @@ int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64
     }
 
     RSSEXE_LOGD("send request.");
-    nlohmann::json payload = ConvertMapToJson(context);
     if (isSync) {
-        nlohmann::json result;
-        int32_t ret = resSchedExe_->SendRequestSync(resType, value, payload, result);
-        reply.append(result.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
-        return ret;
+        return resSchedExe_->SendRequestSync(resType, value, context, reply);
     } else {
-        resSchedExe_->SendRequestAsync(resType, value, payload);
+        resSchedExe_->SendRequestAsync(resType, value, context);
         return ResErrCode::RSSEXE_NO_ERR;
     }
 }
 
-nlohmann::json ResSchedExeClient::ConvertMapToJson(const std::unordered_map<std::string, std::string>& context)
-{
-    nlohmann::json payload;
-    for (auto it = context.begin(); it != context.end(); ++it) {
-        payload[it->first] = it->second;
-    }
-    return payload;
-}
-
 void ResSchedExeClient::SendDebugCommand(bool isSync)
 {
-    std::unordered_map<std::string, std::string> context;
-    std::string reply;
-    SendRequestInner(isSync, ResExeType::RES_TYPE_DEBUG, 0, context, reply);
+    nlohmann::json tempJson;
+    SendRequestInner(isSync, ResExeType::RES_TYPE_DEBUG, 0, tempJson, tempJson);
 }
 
 ErrCode ResSchedExeClient::TryConnect()

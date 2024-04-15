@@ -31,6 +31,13 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace std;
 using namespace testing::ext;
+
+namespace {
+    constexpr int32_t SYNC_THREAD_NUM_TEN = 10;
+    constexpr int32_t SYNC_THREAD_NUM_HUNDRED = 100;
+    constexpr int32_t SYNC_INTERNAL_TIME = 10000;
+}
+
 class ResSchedExeClientTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -55,11 +62,12 @@ void ResSchedExeClientTest::TearDown() {}
  */
 HWTEST_F(ResSchedExeClientTest, SendRequestSync001, Function | MediumTest | Level0)
 {
-    std::unordered_map<std::string, std::string> context;
+    nlohmann::json context;
     context["message"] = "test";
-    std::string reply;
-    for (int i = 0; i < 100; i++) {
+    nlohmann::json reply;
+    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
         ResSchedExeClient::GetInstance().SendRequestSync(ResExeType::RES_TYPE_DEBUG, 0, context, reply);
+        usleep(SYNC_INTERNAL_TIME);
     }
     EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);
 }
@@ -71,10 +79,11 @@ HWTEST_F(ResSchedExeClientTest, SendRequestSync001, Function | MediumTest | Leve
  */
 HWTEST_F(ResSchedExeClientTest, SendRequestAsync001, Function | MediumTest | Level0)
 {
-    std::unordered_map<std::string, std::string> context;
+    nlohmann::json context;
     context["message"] = "test";
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
         ResSchedExeClient::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_DEBUG, 0, context);
+        usleep(SYNC_INTERNAL_TIME);
     }
     EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);
 }
@@ -86,7 +95,7 @@ HWTEST_F(ResSchedExeClientTest, SendRequestAsync001, Function | MediumTest | Lev
  */
 HWTEST_F(ResSchedExeClientTest, SendDebugCommand001, Function | MediumTest | Level0)
 {
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM_TEN; i++) {
         ResSchedExeClient::GetInstance().SendDebugCommand(true);
     }
     EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);
@@ -99,7 +108,7 @@ HWTEST_F(ResSchedExeClientTest, SendDebugCommand001, Function | MediumTest | Lev
  */
 HWTEST_F(ResSchedExeClientTest, SendDebugCommand002, Function | MediumTest | Level0)
 {
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM_TEN; i++) {
         ResSchedExeClient::GetInstance().SendDebugCommand(false);
     }
     EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);

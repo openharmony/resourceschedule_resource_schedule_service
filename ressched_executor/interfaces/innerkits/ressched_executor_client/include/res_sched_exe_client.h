@@ -47,8 +47,7 @@ public:
      * @param reply Indicates the context info of the ipc reply.
      * @return function result
      */
-    int32_t SendRequestSync(uint32_t resType, int64_t value,
-        const std::unordered_map<std::string, std::string>& context, std::string& reply);
+    int32_t SendRequestSync(uint32_t resType, int64_t value, const nlohmann::json& context, nlohmann::json& reply);
 
     /**
      * @brief Send request async to the ressched_executor through inter-process communication.
@@ -57,8 +56,7 @@ public:
      * @param value Indicates the value of the resource type, defined by the developers.
      * @param context Indicates the context info of the resource type event.
      */
-    void SendRequestAsync(uint32_t resType, int64_t value,
-        const std::unordered_map<std::string, std::string>& context);
+    void SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& context);
 
     /**
      * @brief Stop remote Object, reset ResSchedExeClient.
@@ -91,8 +89,7 @@ private:
 
     int32_t TryConnect();
     int32_t SendRequestInner(bool isSync, uint32_t resType, int64_t value,
-        const std::unordered_map<std::string, std::string>& context, std::string& reply);
-    nlohmann::json ConvertMapToJson(const std::unordered_map<std::string, std::string>& context);
+        const nlohmann::json& context, nlohmann::json& reply);
 
     std::mutex mutex_;
     sptr<IRemoteObject> remoteObject_;

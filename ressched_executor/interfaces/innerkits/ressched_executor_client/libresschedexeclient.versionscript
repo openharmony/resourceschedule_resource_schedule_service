@@ -20,7 +20,6 @@
     *ResSchedExeClient*StopRemoteObject*;
     *ResSchedExeClient*SendDebugCommand*;
     *ResSchedExeServiceProxy*;
-    *ResSchedExeCommonUtils*;
   local:
     *;
 };

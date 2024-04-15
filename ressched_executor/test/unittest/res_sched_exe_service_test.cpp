@@ -38,6 +38,12 @@ using namespace std;
 using namespace testing::ext;
 using namespace testing::mt;
 using namespace Security::AccessToken;
+
+namespace {
+    constexpr int32_t SYNC_THREAD_NUM_HUNDRED = 100;
+    constexpr int32_t SYNC_INTERNAL_TIME = 10000;
+}
+
 class ResSchedExeServiceTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -112,7 +118,7 @@ HWTEST_F(ResSchedExeServiceTest, ServiceDump001, Function | MediumTest | Level0)
     int res = resSchedExeService_->Dump(wrongFd, argsNull);
     EXPECT_TRUE(!res);
 
-    int32_t correctFd = -1;
+    int32_t correctFd = 0;
     res = resSchedExeService_->Dump(correctFd, argsNull);
 
     std::vector<std::u16string> argsHelp = {to_utf16("-h")};
@@ -150,7 +156,10 @@ static void SendRequestSyncTask()
     nlohmann::json payload;
     nlohmann::json reply;
     EXPECT_TRUE(resSchedExeService_ != nullptr);
-    resSchedExeService_->SendRequestSync(0, 0, payload, reply);
+    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+        resSchedExeService_->SendRequestSync(0, 0, payload, reply);
+        usleep(SYNC_INTERNAL_TIME);
+    }
 }
 
 /**
@@ -180,8 +189,11 @@ static void SendRequestAsyncTask()
 {
     std::shared_ptr<ResSchedExeService> resSchedExeService_ = make_shared<ResSchedExeService>();
     nlohmann::json payload;
-    EXPECT_TRUE(resSchedExeService_ != nullptr);
-    resSchedExeService_->SendRequestAsync(0, 0, payload);
+    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+        EXPECT_TRUE(resSchedExeService_ != nullptr);
+        resSchedExeService_->SendRequestAsync(0, 0, payload);
+        usleep(SYNC_INTERNAL_TIME);
+    }
 }
 
 /**
@@ -209,8 +221,11 @@ HWTEST_F(ResSchedExeServiceTest, OnStart001, Function | MediumTest | Level0)
 static void OnStartTask()
 {
     std::shared_ptr<ResSchedExeServiceAbility> resSchedExeServiceAbility_ = make_shared<ResSchedExeServiceAbility>();
-    resSchedExeServiceAbility_->OnStart();
-    EXPECT_TRUE(resSchedExeServiceAbility_->service_ != nullptr);
+    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+        resSchedExeServiceAbility_->OnStart();
+        EXPECT_TRUE(resSchedExeServiceAbility_->service_ != nullptr);
+        usleep(SYNC_INTERNAL_TIME);
+    }
 }
 
 /**
@@ -276,15 +291,18 @@ static void ReportRequestInnerTask()
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     resSchedExeServiceStub_->Init();
     MessageParcel reply;
-    MessageParcel emptyData;
-    EXPECT_TRUE(resSchedExeServiceStub_->ReportRequestInner(emptyData, reply));
+    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+        MessageParcel emptyData;
+        EXPECT_TRUE(resSchedExeServiceStub_->ReportRequestInner(emptyData, reply));
 
-    MessageParcel reportData;
-    reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
-    reportData.WriteUint32(1);
-    reportData.WriteInt64(1);
-    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_TRUE(!resSchedExeServiceStub_->ReportRequestInner(reportData, reply));
+        MessageParcel reportData;
+        reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
+        reportData.WriteUint32(1);
+        reportData.WriteInt64(1);
+        reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
+        EXPECT_TRUE(!resSchedExeServiceStub_->ReportRequestInner(reportData, reply));
+        usleep(SYNC_INTERNAL_TIME);
+    }
 }
 
 /**
@@ -323,14 +341,17 @@ static void ReportDebugInnerTask()
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     resSchedExeServiceStub_->Init();
     MessageParcel reply;
-    MessageParcel emptyData;
-    EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(emptyData, reply));
+    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+        MessageParcel emptyData;
+        EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(emptyData, reply));
 
-    MessageParcel reportData;
-    reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
-    reportData.WriteUint32(ResExeType::RES_TYPE_DEBUG);
-    reportData.WriteUint64(ResSchedExeCommonUtils::GetCurrentTimestampUs());
-    EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData, reply));
+        MessageParcel reportData;
+        reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
+        reportData.WriteUint32(ResExeType::RES_TYPE_DEBUG);
+        reportData.WriteUint64(ResSchedExeCommonUtils::GetCurrentTimestampUs());
+        EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData, reply));
+        usleep(SYNC_INTERNAL_TIME);
+    }
 }
 
 /**
@@ -367,12 +388,15 @@ static void RemoteRequestTask()
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     MessageOption option;
     MessageParcel reply;
-    int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SYNC, reply, reply, option);
-    EXPECT_TRUE(res);
-    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_ASYNC, reply, reply, option);
-    EXPECT_TRUE(res);
-    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_DEBUG, reply, reply, option);
-    EXPECT_TRUE(res);
+    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+        int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SYNC, reply, reply, option);
+        EXPECT_TRUE(res);
+        res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_ASYNC, reply, reply, option);
+        EXPECT_TRUE(res);
+        res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_DEBUG, reply, reply, option);
+        EXPECT_TRUE(res);
+        usleep(SYNC_INTERNAL_TIME);
+    }
 }
 
 /**
@@ -416,15 +440,18 @@ static void ParseParcelTask()
     uint32_t resType = 0;
     int64_t value = 0;
     nlohmann::json context;
-    MessageParcel emptyData;
-    EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
+    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+        MessageParcel emptyData;
+        EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
 
-    MessageParcel reportData;
-    reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
-    reportData.WriteUint32(1);
-    reportData.WriteInt64(1);
-    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_TRUE(resSchedExeServiceStub_->ParseParcel(reportData, resType, value, context));
+        MessageParcel reportData;
+        reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
+        reportData.WriteUint32(1);
+        reportData.WriteInt64(1);
+        reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
+        EXPECT_TRUE(resSchedExeServiceStub_->ParseParcel(reportData, resType, value, context));
+        usleep(SYNC_INTERNAL_TIME);
+    }
 }
 
 /**

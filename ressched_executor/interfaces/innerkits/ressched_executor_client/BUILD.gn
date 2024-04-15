@@ -12,7 +12,6 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//build/test.gni")
 import("../../../../ressched/ressched.gni")
 import("../../../ressched_executor.gni")
 
