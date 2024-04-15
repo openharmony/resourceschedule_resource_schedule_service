@@ -97,7 +97,7 @@ namespace ResourceSchedule {
         int32_t uid = GetData<int32_t>();
         int32_t pid = GetData<int32_t>();
         std::string packageName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t));
-        auto transientTaskAppInfo = 
+        auto transientTaskAppInfo =
             std::make_shared<TransientTaskAppInfo>(packageName, uid, pid);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
         backgroundTaskObserver->OnTransientTaskStart(transientTaskAppInfo);
@@ -124,7 +124,7 @@ namespace ResourceSchedule {
         int32_t uid = GetData<int32_t>();
         int32_t pid = GetData<int32_t>();
         std::string packageName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t));
-        auto transientTaskAppInfo = 
+        auto transientTaskAppInfo =
         std::make_shared<TransientTaskAppInfo>(packageName, uid, pid);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
         backgroundTaskObserver->OnTransientTaskEnd(transientTaskAppInfo);
@@ -152,7 +152,7 @@ namespace ResourceSchedule {
         int32_t creatorUid = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
         std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
-        auto continuousTaskCallbackInfo = 
+        auto continuousTaskCallbackInfo =
             std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
         backgroundTaskObserver->OnContinuousTaskStart(continuousTaskCallbackInfo);
