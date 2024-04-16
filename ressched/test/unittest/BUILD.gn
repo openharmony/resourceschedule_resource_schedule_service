@@ -133,4 +133,11 @@ ohos_unittest("resschedfwk_test") {
     external_deps += [ "soc_perf:socperf_client" ]
     defines += [ "RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE" ]
   }
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  branch_protector_ret = "pac_ret"
 }

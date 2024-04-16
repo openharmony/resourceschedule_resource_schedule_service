@@ -56,14 +56,8 @@ NotifierMgr& NotifierMgr::GetInstance()
 
 NotifierMgr::~NotifierMgr()
 {
-    {
-        std::lock_guard<std::mutex> autoLock(notifierMutex_);
-        notifierMap_.clear();
-    }
-    {
-        std::lock_guard<std::mutex> autoLock(pidSetMutex_);
-        fgPidSet_.clear();
-    }
+    std::lock_guard<std::mutex> autoLock(notifierMutex_);
+    notifierMap_.clear();
 }
 
 void NotifierMgr::Init()
@@ -91,6 +85,10 @@ void NotifierMgr::Init()
 void NotifierMgr::RegisterNotifier(int32_t pid, const sptr<IRemoteObject>& notifier)
 {
     RESSCHED_LOGD("RegisterNotifier called, pid = %{public}d.", pid);
+    if (notifier == nullptr) {
+        RESSCHED_LOGE("RegisterNotifier notifier is null");
+        return;
+    }
     if (notifierDeathRecipient_ == nullptr) {
         RESSCHED_LOGE("RegisterNotifier error due to notifierDeathRecipient null");
         return;
@@ -154,14 +152,28 @@ void NotifierMgr::OnDeviceLevelChanged(int32_t type, int32_t level)
 void NotifierMgr::OnApplicationStateChange(int32_t state, int32_t pid)
 {
     RESSCHED_LOGD("OnApplicationStateChange called, state: %{public}d, pid : %{public}d .", state, pid);
-    std::lock_guard<std::mutex> autoLock(pidSetMutex_);
+    std::lock_guard<std::mutex> autoLock(notifierMutex_);
+    auto iter = notifierMap_.find(pid);
+    if (iter == notifierMap_.end()) {
+        return;
+    }
+    auto& info = iter->second;
+    if (!info.hapApp) {
+        RESSCHED_LOGW("OnApplicationStateChange called, not app.");
+        return;
+    }
     if (state == static_cast<int32_t>(ApplicationState::APP_STATE_FOREGROUND)) {
-        fgPidSet_.insert(pid);
+        info.foreground = true;
+        if (systemloadLevel_ != info.level) {
+            info.level = systemloadLevel_;
+            std::vector<sptr<IRemoteObject>> vec{ info.notifier };
+            HandleDeviceLevelChange(vec, systemloadLevel_);
+        }
     }
     if (state == static_cast<int32_t>(ApplicationState::APP_STATE_BACKGROUND)
         || state == static_cast<int32_t>(ApplicationState::APP_STATE_TERMINATED)
         || state == static_cast<int32_t>(ApplicationState::APP_STATE_END)) {
-        fgPidSet_.erase(pid);
+        info.foreground = false;
     }
 }
 
@@ -191,11 +203,14 @@ void NotifierMgr::OnDeviceLevelChangedLock(int32_t level)
     {
         std::lock_guard<std::mutex> autoLock(notifierMutex_);
         for (auto& notifiers : notifierMap_) {
-            if (fgPidSet_.count(notifiers.first) == 0 && notifiers.second.hapApp) {
-                RESSCHED_LOGD("app on background, pid = %{public}d .", notifiers.first);
+            auto pid = notifiers.first;
+            auto& info = notifiers.second;
+            if (info.hapApp && !info.foreground) {
+                RESSCHED_LOGD("app on background, pid = %{public}d .", pid);
                 continue;
             }
-            notifierArray.push_back(notifiers.second.notifier);
+            info.level = level;
+            notifierArray.push_back(info.notifier);
         }
     }
     HandleDeviceLevelChange(notifierArray, level);
