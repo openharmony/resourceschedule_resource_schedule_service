@@ -15,14 +15,6 @@
   global:
     *PluginMgr*GetConfig*;
     *PluginMgr*GetInstance*;
-    *PluginMgr*Init*;
     *PluginMgr*SubscribeResource*;
     *PluginMgr*UnSubscribeResource*;
-    *PluginMgr*GetRunner*;
-    *Marshalling*;
-    *Subscrib*;
-    *Observer*;
-    *Listener*;
-  local:
-    *;
 };

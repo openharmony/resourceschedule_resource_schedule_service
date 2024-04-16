@@ -40,7 +40,7 @@ using namespace testing::mt;
 using namespace Security::AccessToken;
 
 namespace {
-    constexpr int32_t SYNC_THREAD_NUM_HUNDRED = 100;
+    constexpr int32_t SYNC_THREAD_NUM = 100;
     constexpr int32_t SYNC_INTERNAL_TIME = 10000;
 }
 
@@ -156,7 +156,7 @@ static void SendRequestSyncTask()
     nlohmann::json payload;
     nlohmann::json reply;
     EXPECT_TRUE(resSchedExeService_ != nullptr);
-    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
         resSchedExeService_->SendRequestSync(0, 0, payload, reply);
         usleep(SYNC_INTERNAL_TIME);
     }
@@ -189,7 +189,7 @@ static void SendRequestAsyncTask()
 {
     std::shared_ptr<ResSchedExeService> resSchedExeService_ = make_shared<ResSchedExeService>();
     nlohmann::json payload;
-    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
         EXPECT_TRUE(resSchedExeService_ != nullptr);
         resSchedExeService_->SendRequestAsync(0, 0, payload);
         usleep(SYNC_INTERNAL_TIME);
@@ -221,7 +221,7 @@ HWTEST_F(ResSchedExeServiceTest, OnStart001, Function | MediumTest | Level0)
 static void OnStartTask()
 {
     std::shared_ptr<ResSchedExeServiceAbility> resSchedExeServiceAbility_ = make_shared<ResSchedExeServiceAbility>();
-    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
         resSchedExeServiceAbility_->OnStart();
         EXPECT_TRUE(resSchedExeServiceAbility_->service_ != nullptr);
         usleep(SYNC_INTERNAL_TIME);
@@ -291,7 +291,7 @@ static void ReportRequestInnerTask()
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     resSchedExeServiceStub_->Init();
     MessageParcel reply;
-    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
         MessageParcel emptyData;
         EXPECT_TRUE(resSchedExeServiceStub_->ReportRequestInner(emptyData, reply));
 
@@ -341,7 +341,7 @@ static void ReportDebugInnerTask()
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     resSchedExeServiceStub_->Init();
     MessageParcel reply;
-    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
         MessageParcel emptyData;
         EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(emptyData, reply));
 
@@ -388,7 +388,7 @@ static void RemoteRequestTask()
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     MessageOption option;
     MessageParcel reply;
-    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
         int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SYNC, reply, reply, option);
         EXPECT_TRUE(res);
         res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_ASYNC, reply, reply, option);
@@ -440,7 +440,7 @@ static void ParseParcelTask()
     uint32_t resType = 0;
     int64_t value = 0;
     nlohmann::json context;
-    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
         MessageParcel emptyData;
         EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
 

@@ -33,8 +33,7 @@ using namespace std;
 using namespace testing::ext;
 
 namespace {
-    constexpr int32_t SYNC_THREAD_NUM_TEN = 10;
-    constexpr int32_t SYNC_THREAD_NUM_HUNDRED = 100;
+    constexpr int32_t SYNC_THREAD_NUM = 100;
     constexpr int32_t SYNC_INTERNAL_TIME = 10000;
 }
 
@@ -65,7 +64,7 @@ HWTEST_F(ResSchedExeClientTest, SendRequestSync001, Function | MediumTest | Leve
     nlohmann::json context;
     context["message"] = "test";
     nlohmann::json reply;
-    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
         ResSchedExeClient::GetInstance().SendRequestSync(ResExeType::RES_TYPE_DEBUG, 0, context, reply);
         usleep(SYNC_INTERNAL_TIME);
     }
@@ -81,7 +80,7 @@ HWTEST_F(ResSchedExeClientTest, SendRequestAsync001, Function | MediumTest | Lev
 {
     nlohmann::json context;
     context["message"] = "test";
-    for (int i = 0; i < SYNC_THREAD_NUM_HUNDRED; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
         ResSchedExeClient::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_DEBUG, 0, context);
         usleep(SYNC_INTERNAL_TIME);
     }
@@ -95,7 +94,7 @@ HWTEST_F(ResSchedExeClientTest, SendRequestAsync001, Function | MediumTest | Lev
  */
 HWTEST_F(ResSchedExeClientTest, SendDebugCommand001, Function | MediumTest | Level0)
 {
-    for (int i = 0; i < SYNC_THREAD_NUM_TEN; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
         ResSchedExeClient::GetInstance().SendDebugCommand(true);
     }
     EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);
@@ -108,7 +107,7 @@ HWTEST_F(ResSchedExeClientTest, SendDebugCommand001, Function | MediumTest | Lev
  */
 HWTEST_F(ResSchedExeClientTest, SendDebugCommand002, Function | MediumTest | Level0)
 {
-    for (int i = 0; i < SYNC_THREAD_NUM_TEN; i++) {
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
         ResSchedExeClient::GetInstance().SendDebugCommand(false);
     }
     EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);
