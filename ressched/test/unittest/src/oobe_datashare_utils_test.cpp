@@ -15,9 +15,6 @@
 
 #include "oobe_datashare_utils_test.h"
 
-#define private public
-#define protected public
-
 #include "errors.h"
 #include "datashare_predicates.h"
 #include "datashare_result_set.h"

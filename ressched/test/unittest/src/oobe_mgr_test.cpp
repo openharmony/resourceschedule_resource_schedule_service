@@ -15,9 +15,6 @@
 
 #include "oobe_mgr_test.h"
 
-#define private public
-#define protected public
-
 #include "errors.h"
 #include "oobe_datashare_utils.h"
 #include "ioobe_task.h"
