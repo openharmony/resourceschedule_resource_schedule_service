@@ -40,6 +40,7 @@ ohos_shared_library("resschedexesvc") {
   include_dirs = []
 
   sources = [
+    "${resschedexe_common}/src/res_sched_exe_common_utils.cpp",
     "${resschedexe_plugins}/resschedfwk/src/config_reader.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_mgr.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_switch.cpp",
@@ -101,6 +102,7 @@ ohos_static_library("resschedexesvc_static") {
   include_dirs = []
 
   sources = [
+    "${resschedexe_common}/src/res_sched_exe_common_utils.cpp",
     "${resschedexe_plugins}/resschedfwk/src/config_reader.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_mgr.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_switch.cpp",
