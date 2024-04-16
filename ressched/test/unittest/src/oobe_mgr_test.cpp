@@ -59,6 +59,9 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_001, Function | MediumTest | Level0)
     OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
     int32_t ret = oobeMgr.RegisterObserver(KEYWORD, updateFunc);
     EXPECT_EQ(ret, ERR_OK);
+
+    int32_t ret1 = oobeMgr.UnregisterObserver();
+    EXPECT_EQ(ret1, ERR_OK);
 }
 
 /**
@@ -75,30 +78,19 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_002, Function | MediumTest | Level0)
     oobeMgr.observer_ = new OOBEManager::ResDataAbilityObserver();
     int32_t ret = oobeMgr.RegisterObserver(KEYWORD, updateFunc);
     EXPECT_EQ(ret, ERR_OK);
+
+    int32_t ret1 = oobeMgr.UnregisterObserver();
+    EXPECT_EQ(ret1, ERR_OK);
 }
 
 /**
  * @tc.name: oobe manager TestOOBEManager_003
- * @tc.desc: test the interface UnregisterObserver of OOBEManager
- * @tc.type: FUNC
- * @tc.require: issueI97493
- * @tc.author:zhumingjie
- */
-HWTEST_F(OOBEMgrTest, TestOOBEManager_003, Function | MediumTest | Level0)
-{
-    OOBEManager& oobeMgr = OOBEManager::GetInstance();
-    int32_t ret = oobeMgr.UnregisterObserver();
-    EXPECT_EQ(ret, ERR_OK);
-}
-
-/**
- * @tc.name: oobe manager TestOOBEManager_004
  * @tc.desc: test the interface OnChange and SetUpdateFunc of ResDataShareAbilityObserver
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestOOBEManager_004, Function | MediumTest | Level0)
+HWTEST_F(OOBEMgrTest, TestOOBEManager_003, Function | MediumTest | Level0)
 {
     sptr<OOBEManager::ResDataAbilityObserver> oobeObserver = new OOBEManager::ResDataAbilityObserver();
     oobeObserver->OnChange();
@@ -110,13 +102,13 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_004, Function | MediumTest | Level0)
 }
 
 /**
- * @tc.name: oobe manager TestOOBEManager_005
+ * @tc.name: oobe manager TestOOBEManager_004
  * @tc.desc: test the interface Initialize of OOBEManager
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestOOBEManager_005, Function | MediumTest | Level0)
+HWTEST_F(OOBEMgrTest, TestOOBEManager_004, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
     oobeMgr.Initialize();
@@ -124,13 +116,13 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_005, Function | MediumTest | Level0)
 }
 
 /**
- * @tc.name: oobe manager TestOOBEManager_007
+ * @tc.name: oobe manager TestOOBEManager_005
  * @tc.desc: test the interface SubmitTask of OOBEManager
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestOOBEManager_007, Function | MediumTest | Level0)
+HWTEST_F(OOBEMgrTest, TestOOBEManager_005, Function | MediumTest | Level0)
 {
     std::shared_ptr<IOOBETask> oobeTask = std::make_shared<OOBETaskImpl>();
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
@@ -148,13 +140,13 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_007, Function | MediumTest | Level0)
 }
 
 /**
- * @tc.name: oobe manager TestOOBEManager_008
+ * @tc.name: oobe manager TestOOBEManager_006
  * @tc.desc: test the interface SubmitTask of OOBEManager
  * @tc.type: FUNC
  * @tc.require: issueI97493
  * @tc.author:zhumingjie
  */
-HWTEST_F(OOBEMgrTest, TestOOBEManager_008, Function | MediumTest | Level0)
+HWTEST_F(OOBEMgrTest, TestOOBEManager_006, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
     oobeMgr.StartListen();

@@ -24,7 +24,7 @@ namespace ResourceSchedule {
 OOBEManager* OOBEManager::oobeInstance_;
 std::mutex OOBEManager::mutex_;
 std::vector<std::shared_ptr<IOOBETask>> OOBEManager::oobeTasks_;
-sptr<OOBEManager::ResDataAbilityObserver> OOBEManager::observer_;
+sptr<OOBEManager::ResDataAbilityObserver> OOBEManager::observer_ = nullptr;
 namespace {
 const std::string KEYWORD = "basic_statement_agreed";
 } // namespace
@@ -61,9 +61,9 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, ResDataAbilityObse
         RESSCHED_LOGE("RegisterObserver: helper does not created!");
         return ERR_NO_INIT;
     }
-    if (!observer_) {
-        helper->UnregisterObserver(uri, observer_);
-        observer_ = nullptr;
+    if (observer_ != nullptr) {
+        RESSCHED_LOGE("Secondary RegisterObserver!");
+        UnregisterObserver();
     }
     observer_ = new ResDataAbilityObserver();
     observer_->SetUpdateFunc(func);
@@ -76,7 +76,6 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, ResDataAbilityObse
     
 ErrCode OOBEManager::UnregisterObserver()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
     std::string callingIdentity = IPCSkeleton::ResetCallingIdentity();
     auto uri = DataShareUtils::GetInstance().AssembleUri(KEYWORD);
     auto helper = DataShareUtils::GetInstance().CreateDataShareHelper();

@@ -50,8 +50,8 @@ ErrCode DataShareUtils::GetValue(const std::string& key, T& value)
     std::string result;
     int32_t ret = GetStringValue(key, result);
     if (ret != ERR_OK) {
-        RESSCHED_LOGW("resultSet->GetString return not ok, ret=%{public}d", ret);
-        return ERR_INVALID_VALUE;
+        RESSCHED_LOGW("resultSet->GetStringValue return not ok, ret=%{public}d", ret);
+        return ret;
     }
     using ValueType = std::remove_cv_t<std::remove_reference_t<T>>;
     if constexpr (std::is_same_v<std::string, ValueType>) {
@@ -61,6 +61,7 @@ ErrCode DataShareUtils::GetValue(const std::string& key, T& value)
     } else if constexpr (std::is_same_v<int32_t, ValueType>) {
         value = static_cast<int32_t>(strtoll(result.c_str(), nullptr, PARAM_NUM_TEN));
     } else {
+        RESSCHED_LOGE("GetValue: invalid operation!");
         return ERR_INVALID_OPERATION;
     }
     return ERR_OK;

@@ -580,7 +580,7 @@ void ObserverManager::DisableConnectionSubscriber()
 
 void ObserverManager::InitDataShareObserver()
 {
-    RESSCHED_LOGD("ObserverManager Init dataShare observer.");
+    RESSCHED_LOGI("ObserverManager Init dataShare observer.");
     OOBEManager::GetInstance().StartListen();
 }
 
