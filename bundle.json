@@ -74,8 +74,7 @@
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
           "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client:resschedexe_client",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi:systemload",
-          "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils",
-          "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client:resschedexe_client"
+          "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
         ],
         "service_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc",
