@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -188,6 +188,34 @@ namespace ResourceSchedule {
         return true;
     }
 
+    bool ContinuousTaskUpdateFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= sizeof(int32_t) + sizeof(int32_t) + sizeof(pid_t)) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        int32_t typeId = GetData<int32_t>();
+        int32_t creatorUid = GetData<int32_t>();
+        pid_t creatorPid = GetData<pid_t>();
+        std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
+        auto continuousTaskCallbackInfo =
+            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
+        auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
+        backgroundTaskObserver->OnContinuousTaskUpdate(continuousTaskCallbackInfo);
+
+        return true;
+    }
+
     bool RemoteDiedFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -217,6 +245,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::TransientTaskEndFuzzTest(data, size);
     OHOS::ResourceSchedule::ContinuousTaskStartFuzzTest(data, size);
     OHOS::ResourceSchedule::ContinuousTaskStopFuzzTest(data, size);
+    OHOS::ResourceSchedule::ContinuousTaskUpdateFuzzTest(data, size);
     OHOS::ResourceSchedule::RemoteDiedFuzzTest(data, size);
     return 0;
 }
