@@ -29,11 +29,13 @@
 #include "plugin.h"
 #include "nocopyable.h"
 #include "res_data.h"
-#include "res_type.h"
 #include "single_instance.h"
 #include "config_info.h"
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt.h"
+#endif
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+#include "res_type.h"
 #endif
 
 namespace OHOS {
@@ -89,8 +91,10 @@ public:
 
     /**
      * Init pluginmanager, load xml config file, construct plugin instances.
+     *
+     * @param isRssExe Calling service is resource schedule executor.
      */
-    void Init();
+    void Init(bool isRssExe = false);
 
     /**
      * Disable all plugins, maybe service exception happens or stopped.
@@ -137,6 +141,10 @@ public:
 
     PluginConfig GetConfig(const std::string& pluginName, const std::string& configName);
 
+    void SetResTypeStrMap(const std::map<uint32_t, std::string>& resTypeStr);
+
+    void ClearResTypeStrMap();
+
 private:
     PluginMgr() = default;
     std::string GetRealConfigPath(const char* configName);
@@ -159,6 +167,8 @@ private:
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     int32_t GetExtTypeByResPayload(const std::shared_ptr<ResData>& resData);
 #endif
+    std::list<std::string> SortPluginList(const std::list<std::string>& pluginList);
+    std::string GetStrFromResTypeStrMap(uint32_t resType);
 
     // plugin crash 3 times in 60s, will be disable forever
     const int32_t MAX_PLUGIN_TIMEOUT_TIMES = 3;
@@ -171,9 +181,12 @@ private:
 
     // mutex for resTypeMap_
     std::mutex resTypeMutex_;
+    // mutex for resTypeStrMap_
+    std::mutex resTypeStrMutex_;
     std::mutex pluginMutex_;
     std::mutex dispatcherHandlerMutex_;
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
+    std::map<uint32_t, std::string> resTypeStrMap_;
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::map<std::string, std::shared_ptr<ffrt::queue>> dispatchers_;

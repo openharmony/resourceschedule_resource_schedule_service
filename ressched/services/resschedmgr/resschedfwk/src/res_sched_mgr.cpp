@@ -30,6 +30,7 @@ IMPLEMENT_SINGLE_INSTANCE(ResSchedMgr);
 void ResSchedMgr::Init()
 {
     PluginMgr::GetInstance().Init();
+    PluginMgr::GetInstance().SetResTypeStrMap(ResType::resTypeToStr);
 
     if (!killProcess_) {
         killProcess_ = std::make_shared<KillProcess>();
@@ -39,6 +40,7 @@ void ResSchedMgr::Init()
 void ResSchedMgr::Stop()
 {
     PluginMgr::GetInstance().Stop();
+    PluginMgr::GetInstance().ClearResTypeStrMap();
 }
 
 void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
