@@ -23,6 +23,7 @@ namespace ResourceSchedule {
 class KillReason {
 public:
     static constexpr char CPU_HIGHLOAD[] = "Kill Reason:CPU Highload";
+    static constexpr char CPU_EXT_HIGHLOAD[] = "Kill Reason:CPU_EXT Highload";
     static constexpr char IO_MANAGE_CONTROL[] = "Kill Reason:IO Manage Control";
     static constexpr char MEMORY_DETERIORATION[] = "Kill Reason:App Memory Deterioration";
     static constexpr char MEMORY_PRESSURE[] = "Kill Reason:Memory Pressure";

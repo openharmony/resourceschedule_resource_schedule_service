@@ -258,6 +258,10 @@ void Systemload::CompleteCb(napi_env env, napi_status status, void* data)
 bool Systemload::CheckCallbackParam(napi_env env, napi_callback_info info,
                                     std::string &cbType, napi_value *jsCallback)
 {
+    if (jsCallback == nullptr) {
+        RESSCHED_LOGE("Input callback is nullptr.");
+        return false;
+    }
     size_t argc = ARG_COUNT_TWO;
     napi_value argv[ARG_COUNT_TWO] = { 0 };
     NAPI_CALL_BASE(env, napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr), false);
@@ -271,7 +275,7 @@ bool Systemload::CheckCallbackParam(napi_env env, napi_callback_info info,
     }
 
     *jsCallback = argv[ARG_COUNT_ONE];
-    if (jsCallback == nullptr) {
+    if (*jsCallback == nullptr) {
         RESSCHED_LOGE("listenerObj is nullptr");
         return false;
     }

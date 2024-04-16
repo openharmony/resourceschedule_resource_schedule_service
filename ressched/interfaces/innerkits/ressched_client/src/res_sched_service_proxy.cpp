@@ -71,8 +71,8 @@ void ResSchedServiceProxy::RegisterSystemloadNotifier(const sptr<IRemoteObject>&
     MessageParcel data;
     MessageParcel reply;
     MessageOption option = { MessageOption::TF_SYNC };
-    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), , ResSchedServiceProxy);
-    WRITE_PARCEL(data, RemoteObject, notifier, , ResSchedServiceProxy);
+    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), void(), ResSchedServiceProxy);
+    WRITE_PARCEL(data, RemoteObject, notifier, void(), ResSchedServiceProxy);
     error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::REGISTER_SYSTEMLOAD_NOTIFIER),
         data, reply, option);
     if (error != NO_ERROR) {
@@ -88,9 +88,9 @@ void ResSchedServiceProxy::UnRegisterSystemloadNotifier()
     MessageParcel data;
     MessageParcel reply;
     MessageOption option = { MessageOption::TF_SYNC };
-    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), , ResSchedServiceProxy);
-    error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::UNREGISTER_SYSTEMLOAD_NOTIFIER),
-        data, reply, option);
+    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), void(), ResSchedServiceProxy);
+    error = Remote()->SendRequest(
+        static_cast<uint32_t>(ResourceScheduleInterfaceCode::UNREGISTER_SYSTEMLOAD_NOTIFIER), data, reply, option);
     if (error != NO_ERROR) {
         RESSCHED_LOGE("Send request error: %{public}d.", error);
         return;

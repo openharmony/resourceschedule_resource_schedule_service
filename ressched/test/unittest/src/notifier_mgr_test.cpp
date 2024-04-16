@@ -15,9 +15,6 @@
 
 #include "notifier_mgr_test.h"
 
-#define private public
-#define protected public
-
 #include "ipc_skeleton.h"
 #include "notifier_mgr.h"
 #include "res_sched_notifier_death_recipient.h"
@@ -29,6 +26,8 @@ using namespace testing::ext;
 
 namespace OHOS {
 namespace ResourceSchedule {
+static constexpr int32_t APP_STATE_EXIT = 4;
+
 class TestNotifierSystemloadListener : public ResSchedSystemloadNotifierStub {
 public:
     TestNotifierSystemloadListener() = default;
@@ -55,7 +54,7 @@ void NotifierMgrTest::SetUp() {}
 void NotifierMgrTest::TearDown()
 {
     NotifierMgr::GetInstance().UnRegisterNotifier(IPCSkeleton::GetCallingPid());
-    NotifierMgr::GetInstance().OnApplicationStateChange(4, IPCSkeleton::GetCallingPid());
+    NotifierMgr::GetInstance().OnApplicationStateChange(APP_STATE_EXIT, IPCSkeleton::GetCallingPid());
     TestNotifierSystemloadListener::testSystemloadLevel = 0;
 }
 
@@ -128,7 +127,7 @@ HWTEST_F(NotifierMgrTest, TestNotifierSystemloadListener004, Function | MediumTe
     NotifierMgr::GetInstance().OnDeviceLevelChanged(0, 2);
     sleep(1);
     EXPECT_TRUE(TestNotifierSystemloadListener::testSystemloadLevel == 2);
-    NotifierMgr::GetInstance().OnApplicationStateChange(4, 111111);
+    NotifierMgr::GetInstance().OnApplicationStateChange(APP_STATE_EXIT, 111111);
 }
 
 /**
@@ -148,6 +147,28 @@ HWTEST_F(NotifierMgrTest, TestNotifierSystemloadListener005, Function | MediumTe
     NotifierMgr::GetInstance().OnDeviceLevelChanged(0, 2);
     sleep(1);
     EXPECT_TRUE(TestNotifierSystemloadListener::testSystemloadLevel == 0);
+}
+
+/**
+ * @tc.name: notifier manager TestNotifierSystemloadListener 006
+ * @tc.desc: test the interface TestNotifierSystemloadListener
+ * @tc.type: FUNC
+ * @tc.require: issueI9G149
+ * @tc.author:shanhaiyang
+ */
+HWTEST_F(NotifierMgrTest, TestNotifierSystemloadListener006, Function | MediumTest | Level0)
+{
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestNotifierSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    auto callingPid = IPCSkeleton::GetCallingPid();
+    NotifierMgr::GetInstance().RegisterNotifier(callingPid, notifier);
+    auto& info = NotifierMgr::GetInstance().notifierMap_[callingPid];
+    info.hapApp = true;
+    NotifierMgr::GetInstance().OnApplicationStateChange(APP_STATE_EXIT, callingPid);
+    NotifierMgr::GetInstance().OnDeviceLevelChanged(0, 2);
+    NotifierMgr::GetInstance().OnApplicationStateChange(2, callingPid);
+    sleep(1);
+    EXPECT_TRUE(TestNotifierSystemloadListener::testSystemloadLevel == 2);
 }
 
 /**
@@ -282,7 +303,5 @@ HWTEST_F(NotifierMgrTest, Dump002, Function | MediumTest | Level0)
     res = NotifierMgr::GetInstance().DumpRegisterInfo();
     EXPECT_TRUE(res.size() == 0);
 }
-#undef private
-#undef protected
 } // namespace ResourceSchedule
 } // namespace OHOS

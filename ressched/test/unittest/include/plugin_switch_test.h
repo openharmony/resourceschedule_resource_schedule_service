@@ -20,9 +20,7 @@
 #include <map>
 #include <memory>
 #include "gtest/gtest.h"
-#define private public
 #include "plugin_switch.h"
-#undef private
 
 namespace OHOS {
 namespace ResourceSchedule {

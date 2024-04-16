@@ -53,9 +53,8 @@ public:
     int32_t windowType_ = 0;
     uint64_t displayId_ = 0;
     std::shared_ptr<AbilityInfo> ability_ = nullptr;
-    // webview render process corresponding with top tab page in this window
+    // webview app corresponding with top tab page in this window
     uid_t topWebviewRenderUid_ = 0;
-    pid_t topWebviewRenderPid_ = 0;
 };
 
 class AbilityInfo {
@@ -196,6 +195,8 @@ public:
         uintptr_t token);
     void SearchWindowId(std::shared_ptr<Application> &application, std::shared_ptr<ProcessRecord> &procRecord,
         uint32_t windowId);
+    void SetSystemLoadLevelState(int32_t level);
+    int32_t GetSystemLoadLevel();
 
     int32_t sceneBoardPid_ = -1;
     std::shared_ptr<Application> focusedApp_ = nullptr;
@@ -207,6 +208,7 @@ public:
 
 private:
     std::map<int32_t, std::shared_ptr<Application>> uidsMap_;
+    int32_t systemLoadLevel_ = -1;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

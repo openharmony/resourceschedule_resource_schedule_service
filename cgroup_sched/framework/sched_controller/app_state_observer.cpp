@@ -110,6 +110,7 @@ void RmsApplicationStateObserver::MarshallingProcessData(const ProcessData &proc
     payload["state"] = std::to_string(static_cast<uint32_t>(processData.state));
     payload["extensionType"] = std::to_string(static_cast<uint32_t>(processData.extensionType));
     payload["isTestMode"] = std::to_string(processData.isTestMode);
+    payload["processName"] = processData.processName;
 }
 
 void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processData)
@@ -208,6 +209,20 @@ void RmsApplicationStateObserver::OnAppStateChanged(const AppStateData &appState
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_ON_APP_STATE_CHANGED, appStateData.state,
         payload);
     ResSchedUtils::GetInstance().ReportAppStateInProcess(appStateData.state, appStateData.pid);
+}
+
+void RmsApplicationStateObserver::OnAppCacheStateChanged(const AppStateData &appStateData)
+{
+    if (!ValidateAppStateData(appStateData)) {
+        CGS_LOGE("%{public}s : validate app state data failed!", __func__);
+        return;
+    }
+
+    nlohmann::json payload;
+    MarshallingAppStateData(appStateData, payload);
+    const int RES_TYPE_EXT_ON_APP_CACHED_STATE_CHANGED = 10008;
+    payload["extType"] = std::to_string(RES_TYPE_EXT_ON_APP_CACHED_STATE_CHANGED);
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_KEY_PERF_SCENE, appStateData.state, payload);
 }
 
 void RmsApplicationStateObserver::OnProcessStateChanged(const ProcessData &processData)
