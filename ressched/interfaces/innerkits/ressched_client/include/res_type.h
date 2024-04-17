@@ -217,6 +217,8 @@ enum : uint32_t {
     RES_TYPE_WEB_DRAG_RESIZE = 90,
     // report formCard create start/end
     RES_TYPE_FORM_STATE_CHANGE_EVENT = 91,
+    // report power mode changed
+    RES_TYPE_POWER_MODE_CHANGED = 92,
     //last resType
     RES_TYPE_LAST,
 };
@@ -314,6 +316,7 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_SYSTEMLOAD_LEVEL, "RES_TYPE_SYSTEMLOAD_LEVEL"},
     { RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE, "RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE"},
     { RES_TYPE_FORM_STATE_CHANGE_EVENT, "RES_TYPE_FORM_STATE_CHANGE_EVENT"},
+    { RES_TYPE_POWER_MODE_CHANGED, "RES_TYPE_POWER_MODE_CHANGED" },
 };
 
 /**
