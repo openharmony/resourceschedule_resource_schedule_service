@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-OOBEManager* OOBEManager::oobeInstance_;
 std::mutex OOBEManager::mutex_;
 std::vector<std::shared_ptr<IOOBETask>> OOBEManager::oobeTasks_;
 sptr<OOBEManager::ResDataAbilityObserver> OOBEManager::observer_ = nullptr;
@@ -41,13 +40,8 @@ OOBEManager::~OOBEManager()
 
 OOBEManager& OOBEManager::GetInstance()
 {
-    if (oobeInstance_ == nullptr) {
-        std::lock_guard<std::mutex> lock(mutex_);
-        if (oobeInstance_ == nullptr) {
-            oobeInstance_ = new OOBEManager();
-        }
-    }
-    return *oobeInstance_;
+    static OOBEManager instance;
+    return instance;
 }
 
 ErrCode OOBEManager::RegisterObserver(const std::string& key, ResDataAbilityObserver::UpdateFunc& func)
@@ -65,7 +59,11 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, ResDataAbilityObse
         RESSCHED_LOGE("Secondary RegisterObserver!");
         UnregisterObserver();
     }
-    observer_ = new ResDataAbilityObserver();
+    observer_ = new (std::nothrow)ResDataAbilityObserver();
+    if (observer_ == nullptr) {
+        IPCSkeleton::SetCallingIdentity(callingIdentity);
+        return ERR_INVALID_OPERATION;
+    }
     observer_->SetUpdateFunc(func);
     helper->RegisterObserver(uri, observer_);
     DataShareUtils::GetInstance().ReleaseDataShareHelper(helper);

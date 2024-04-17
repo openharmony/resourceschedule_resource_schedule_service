@@ -18,6 +18,7 @@
 
 #include "datashare_helper.h"
 #include "errors.h"
+#include "ipc_skeleton.h"
 #include "res_sched_log.h"
 #include <map>
 #include "mutex"
@@ -38,7 +39,6 @@ public:
 private:
     static constexpr int32_t PARAM_NUM_TEN = 10;
     static sptr<IRemoteObject> remoteObj_;
-    static DataShareUtils* instance_;
     static std::mutex mutex_;
     ErrCode GetStringValue(const std::string& key, std::string& value);
     void InitSystemAbilityManager();
@@ -48,7 +48,9 @@ template <typename T>
 ErrCode DataShareUtils::GetValue(const std::string& key, T& value)
 {
     std::string result;
+    std::string callingIdentity = IPCSkeleton::ResetCallingIdentity();
     int32_t ret = GetStringValue(key, result);
+    IPCSkeleton::SetCallingIdentity(callingIdentity);
     if (ret != ERR_OK) {
         RESSCHED_LOGW("resultSet->GetStringValue return not ok, ret=%{public}d", ret);
         return ret;

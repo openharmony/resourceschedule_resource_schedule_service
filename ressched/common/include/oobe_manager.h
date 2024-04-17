@@ -46,7 +46,6 @@ private:
     };
 
     bool g_oobeValue = false;
-    static OOBEManager* oobeInstance_;
     static std::mutex mutex_;
     static std::vector<std::shared_ptr<IOOBETask>> oobeTasks_;
     static sptr<OOBEManager::ResDataAbilityObserver> observer_;

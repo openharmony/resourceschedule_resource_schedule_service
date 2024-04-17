@@ -17,7 +17,6 @@
 #include "datashare_predicates.h"
 #include "datashare_result_set.h"
 #include "datashare_values_bucket.h"
-#include "ipc_skeleton.h"
 #include "iservice_registry.h"
 #include "oobe_datashare_utils.h"
 #include "res_sched_log.h"
@@ -26,7 +25,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-DataShareUtils* DataShareUtils::instance_;
 sptr<IRemoteObject> DataShareUtils::remoteObj_;
 std::mutex DataShareUtils::mutex_;
 namespace {
@@ -40,42 +38,32 @@ DataShareUtils::~DataShareUtils() = default;
 
 DataShareUtils& DataShareUtils::GetInstance()
 {
-    if (instance_ == nullptr) {
-        std::lock_guard<std::mutex> lock(mutex_);
-        if (instance_ == nullptr) {
-            instance_ = new DataShareUtils();
-            instance_->InitSystemAbilityManager();
-        }
-    }
-    return *instance_;
+    static DataShareUtils instance;
+    return instance;
 }
 
 ErrCode DataShareUtils::GetStringValue(const std::string& key, std::string& value)
 {
-    std::string callingIdentity = IPCSkeleton::ResetCallingIdentity();
     auto helper = CreateDataShareHelper();
     if (helper == nullptr) {
-        IPCSkeleton::SetCallingIdentity(callingIdentity);
         RESSCHED_LOGE("DataShareUtils: helper does not created!");
         return ERR_NO_INIT;
     }
     std::vector<std::string> columns = {SETTING_COLUMN_VALUE};
     DataShare::DataSharePredicates predicates;
     predicates.EqualTo(SETTING_COLUMN_KEYWORD, key);
-    RESSCHED_LOGD("key=%{public}s", key.c_str());
+    RESSCHED_LOGD("keyWord=%{public}s", key.c_str());
     Uri uri(AssembleUri(key));
     auto resultSet = helper->Query(uri, predicates, columns);
     ReleaseDataShareHelper(helper);
     if (resultSet == nullptr) {
         RESSCHED_LOGE("helper->Query return nullptr");
-        IPCSkeleton::SetCallingIdentity(callingIdentity);
         return ERR_INVALID_OPERATION;
     }
     int32_t count;
     resultSet->GetRowCount(count);
     if (count == 0) {
-        RESSCHED_LOGW("not found value, key=%{public}s, count=%{public}d", key.c_str(), count);
-        IPCSkeleton::SetCallingIdentity(callingIdentity);
+        RESSCHED_LOGW("not found value, keyWord=%{public}s, count=%{public}d", key.c_str(), count);
         return ERR_NAME_NOT_FOUND;
     }
     const int32_t INDEX = 0;
@@ -83,11 +71,9 @@ ErrCode DataShareUtils::GetStringValue(const std::string& key, std::string& valu
     int32_t ret = resultSet->GetString(INDEX, value);
     if (ret != DataShare::E_OK) {
         RESSCHED_LOGW("resultSet->GetString return not ok, ret=%{public}d", ret);
-        IPCSkeleton::SetCallingIdentity(callingIdentity);
         return ERR_INVALID_VALUE;
     }
     resultSet->Close();
-    IPCSkeleton::SetCallingIdentity(callingIdentity);
     return ERR_OK;
 }
 
