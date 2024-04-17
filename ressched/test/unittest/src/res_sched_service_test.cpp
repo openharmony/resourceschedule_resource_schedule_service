@@ -617,9 +617,11 @@ HWTEST_F(ResSchedServiceTest, RemoteRequest001, Function | MediumTest | Level0)
     auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
     MessageOption option;
     MessageParcel reply;
-    int32_t res = resSchedServiceStub_->OnRemoteRequest(1, reply, reply, option);
+    int32_t res = resSchedServiceStub_->OnRemoteRequest(
+        static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA), reply, reply, option);
     EXPECT_TRUE(res);
-    res = resSchedServiceStub_->OnRemoteRequest(2, reply, reply, option);
+    res = resSchedServiceStub_->OnRemoteRequest(
+        static_cast<uint32_t>(ResourceScheduleInterfaceCode::KILL_PROCESS), reply, reply, option);
     EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(0, reply, reply, option);
     EXPECT_TRUE(res);
@@ -639,9 +641,11 @@ static void RemoteRequestTask()
     auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
     MessageOption option;
     MessageParcel reply;
-    int32_t res = resSchedServiceStub_->OnRemoteRequest(1, reply, reply, option);
+    int32_t res = resSchedServiceStub_->OnRemoteRequest(
+        static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA), reply, reply, option);
     EXPECT_TRUE(res);
-    res = resSchedServiceStub_->OnRemoteRequest(2, reply, reply, option);
+    res = resSchedServiceStub_->OnRemoteRequest(
+        static_cast<uint32_t>(ResourceScheduleInterfaceCode::KILL_PROCESS), reply, reply, option);
     EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(0, reply, reply, option);
     EXPECT_TRUE(res);
