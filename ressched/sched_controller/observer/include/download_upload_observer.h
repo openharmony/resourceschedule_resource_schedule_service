@@ -23,6 +23,8 @@ public:
     DownLoadUploadObserver() = default;
     ~DownLoadUploadObserver() = default;
     virtual void OnRunningTaskCountUpdate(int count) override;
+private:
+    bool isReportScene = false;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
