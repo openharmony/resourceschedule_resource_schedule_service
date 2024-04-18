@@ -256,7 +256,7 @@ void EventController::handleEvent(int32_t userId, const std::string &action, nlo
         return;
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_SAVE_MODE_CHANGED) {
-        ReportDataInProcess(ResType::RES_TYPE_POWER_SAVE_MODE_CHANGED, static_cast<int64_t>(userId), payload);
+        ReportDataInProcess(ResType::RES_TYPE_POWER_MODE_CHANGED, static_cast<int64_t>(userId), payload);
         return;
     }
 }
