@@ -27,8 +27,6 @@ namespace OHOS {
 namespace ResourceSchedule {
 class DataShareUtils {
 public:
-    DataShareUtils ();
-    ~DataShareUtils ();
     static DataShareUtils& GetInstance();
     template <typename T>
     ErrCode GetValue(const std::string& key, T& value);
@@ -37,6 +35,8 @@ public:
     std::shared_ptr<DataShare::DataShareHelper> CreateDataShareHelper();
 
 private:
+    DataShareUtils ();
+    ~DataShareUtils ();
     static constexpr int32_t PARAM_NUM_TEN = 10;
     static sptr<IRemoteObject> remoteObj_;
     static std::mutex mutex_;
