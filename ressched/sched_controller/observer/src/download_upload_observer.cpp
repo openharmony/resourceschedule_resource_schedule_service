@@ -31,8 +31,8 @@ void DownLoadUploadObserver::OnRunningTaskCountUpdate(int count)
         return;
     }
     if (count == 0 && isReportScene) {
-            ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
-        ResType::KeyUploadOrDownloadStatus::EXIT_UPLOAD_DOWNLOAD_SCENE, payload);
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
+            ResType::KeyUploadOrDownloadStatus::EXIT_UPLOAD_DOWNLOAD_SCENE, payload);
         isReportScene = false;
     }
 }
