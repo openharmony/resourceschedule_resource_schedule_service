@@ -39,6 +39,7 @@ DataShareUtils::~DataShareUtils() = default;
 DataShareUtils& DataShareUtils::GetInstance()
 {
     static DataShareUtils instance;
+    instance.InitSystemAbilityManager();
     return instance;
 }
 
