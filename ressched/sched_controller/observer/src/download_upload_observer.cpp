@@ -30,9 +30,11 @@ void DownLoadUploadObserver::OnRunningTaskCountUpdate(int count)
         isReportScene = true;
         return;
     }
-    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
+    if (count == 0 && isReportScene) {
+            ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
         ResType::KeyUploadOrDownloadStatus::EXIT_UPLOAD_DOWNLOAD_SCENE, payload);
-    isReportScene = false;
+        isReportScene = false;
+    }
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
