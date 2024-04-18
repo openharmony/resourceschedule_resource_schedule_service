@@ -408,7 +408,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
         procRecord = app->GetProcessRecordNonNull(pid);
         auto win = procRecord->GetWindowInfoNonNull(windowId);
         auto abi = procRecord->GetAbilityInfo(abilityToken);
-        procRecord->linkedWindowId_ = windowId;
+        procRecord->linkedWindowId_ = (int32_t)(windowId);
         win->windowType_ = (int32_t)(windowType);
         win->isFocused_ = true;
         win->displayId_ = displayId;
@@ -680,7 +680,7 @@ void CgroupEventHandler::UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, in
         return;
     }
     auto win = proc->GetWindowInfoNonNull(windowId);
-    win->topWebviewRenderUid_ = uid;
+    win->topWebviewRenderUid_ = (uint32_t)(uid);
 }
 
 void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload)
