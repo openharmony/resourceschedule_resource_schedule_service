@@ -31,10 +31,10 @@ void ResSchedServiceProxy::ReportData(uint32_t resType, int64_t value, const nlo
     MessageParcel data;
     MessageParcel reply;
     MessageOption option = { MessageOption::TF_ASYNC };
-    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), , ResSchedServiceProxy);
-    WRITE_PARCEL(data, Uint32, resType, , ResSchedServiceProxy);
-    WRITE_PARCEL(data, Int64, value, , ResSchedServiceProxy);
-    WRITE_PARCEL(data, String, payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace), ,
+    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), void(), ResSchedServiceProxy);
+    WRITE_PARCEL(data, Uint32, resType, void(), ResSchedServiceProxy);
+    WRITE_PARCEL(data, Int64, value, void(), ResSchedServiceProxy);
+    WRITE_PARCEL(data, String, payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace), void(),
         ResSchedServiceProxy);
     error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA),
         data, reply, option);
