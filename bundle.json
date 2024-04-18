@@ -37,6 +37,7 @@
         "common_event_service",
         "config_policy",
         "core_service",
+        "data_share",
         "eventhandler",
         "ffrt",
         "frame_aware_sched",
@@ -72,7 +73,8 @@
         "fwk_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
           "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client:resschedexe_client",
-          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi:systemload"
+          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi:systemload",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
         ],
         "service_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc",
@@ -161,6 +163,17 @@
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group:libprocess_group"
+        },
+        {
+          "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/common/include",
+            "header_files": [
+              "ioobe_task.h",
+              "oobe_datashare_utils.h",
+              "oobe_manager.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
         }
       ],
       "test": [

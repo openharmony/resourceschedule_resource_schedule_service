@@ -78,6 +78,8 @@ public:
     void InitConnectionSubscriber();
     void DisableConnectionSubscriber();
     void GetReportFunc();
+    void InitDataShareObserver();
+    void DisableDataShareObserver();
 #ifndef RESOURCE_REQUEST_REQUEST
     void InitDownloadUploadObserver();
     void DisableDownloadUploadObserver();
