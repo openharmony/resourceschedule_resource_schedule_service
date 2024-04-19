@@ -366,7 +366,7 @@ void SchedController::SubscribeWindowModeChange()
         if (windowModeObserver_) {
             if (OHOS::Rosen::WindowManagerLite::GetInstance().
                 RegisterWindowModeChangedListener(windowModeObserver_) != OHOS::Rosen::WMError::WM_OK) {
-                CGS_LOGI("RegisterWindowModeChangedListener fail");
+                    CGS_LOGI("RegisterWindowModeChangedListener fail");
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS,
                                     "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                                     "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
