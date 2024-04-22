@@ -150,6 +150,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USB_DEVICE_DETACHED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_CALL_STATE_CHANGED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_WIFI_P2P_STATE_CHANGED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_SAVE_MODE_CHANGED);
     matchingSkills.AddEvent("common.event.UNLOCK_SCREEN");
     matchingSkills.AddEvent("common.event.LOCK_SCREEN");
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
@@ -252,6 +253,10 @@ void EventController::handleEvent(int32_t userId, const std::string &action, nlo
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_WIFI_P2P_STATE_CHANGED) {
         ReportDataInProcess(ResType::RES_TYPE_WIFI_P2P_STATE_CHANGED, static_cast<int64_t>(userId), payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_SAVE_MODE_CHANGED) {
+        ReportDataInProcess(ResType::RES_TYPE_POWER_MODE_CHANGED, static_cast<int64_t>(userId), payload);
         return;
     }
 }
