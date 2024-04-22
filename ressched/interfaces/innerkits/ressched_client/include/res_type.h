@@ -219,6 +219,10 @@ enum : uint32_t {
     RES_TYPE_FORM_STATE_CHANGE_EVENT = 91,
     // report power mode changed
     RES_TYPE_POWER_MODE_CHANGED = 92,
+    // report boot completed
+    RES_TYPE_BOOT_COMPLETED = 93,
+    // report continuous application startup
+    RES_TYPE_CONTINUOUS_STARTUP = 94,
     //last resType
     RES_TYPE_LAST,
 };
@@ -317,6 +321,8 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE, "RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE"},
     { RES_TYPE_FORM_STATE_CHANGE_EVENT, "RES_TYPE_FORM_STATE_CHANGE_EVENT"},
     { RES_TYPE_POWER_MODE_CHANGED, "RES_TYPE_POWER_MODE_CHANGED" },
+    {RES_TYPE_BOOT_COMPLETED, "RES_TYPE_BOOT_COMPLETED"},
+    {RES_TYPE_CONTINUOUS_STARTUP, "RES_TYPE_CONTINUOUS_STARTUP"},
 };
 
 /**
@@ -790,6 +796,22 @@ enum FormCreateStatus : int64_t {
 enum WebDragResizeStatus : int64_t {
     WEB_DRAG_START = 0,
     WEB_DRAG_END = 1,
+};
+
+/**
+ * @brief boot completed status
+ */
+enum BootComPletedStatus : int64_t {
+    START_BOOT_COMPLETED = 0,
+    STOP_BOOT_COMPLETED = 1,
+};
+
+/**
+ * @brief continuous startUp status
+ */
+enum ContinuousStartUpStatus : int64_t {
+    START_CONTINUOUS_STARTUP = 0,
+    STOP_CONTINUOUS_STARTUP = 1,
 };
 
 } // namespace ResType

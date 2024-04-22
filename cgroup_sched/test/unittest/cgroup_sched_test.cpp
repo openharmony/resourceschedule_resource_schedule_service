@@ -23,6 +23,7 @@
 #include "window_manager.h"
 #include "wm_common.h"
 #include "sched_policy.h"
+#include "app_state_observer.h"
 
 #undef private
 #undef protected
@@ -155,6 +156,41 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_001, Function | Medium
     SUCCEED();
     schedController.UnsubscribeWindowState();
     SUCCEED();
+}
+
+/**
+ * @tc.name: CGroupSchedTest_RmsApplicationStateObserver_001
+ * @tc.desc: application state observer Test
+ * @tc.type: FUNC
+ * @tc.require: issuesI9IR2I
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_RmsApplicationStateObserver_001, Function | MediumTest | Level1)
+{
+    auto rmsApplicationStateObserver = std::make_shared<RmsApplicationStateObserver>();
+    std::string bundleName = "test101";
+    rmsApplicationStateObserver->startIgnorePkgs_.emplace("bundleName");
+    std::string uid = "101";
+    rmsApplicationStateObserver->recordIsContinuousStartUp(uid, bundleName);
+    uid = "102";
+    bundleName = "test102";
+    rmsApplicationStateObserver->recordIsContinuousStartUp(uid, bundleName);
+    uid = "103";
+    bundleName = "test103";
+    rmsApplicationStateObserver->recordIsContinuousStartUp(uid, bundleName);
+    uid = "104";
+    bundleName = "test104";
+    rmsApplicationStateObserver->recordIsContinuousStartUp(uid, bundleName);
+    rmsApplicationStateObserver->recordIsContinuousStartUp(uid, bundleName);
+    uid = "105";
+    bundleName = "test105";
+    rmsApplicationStateObserver->recordIsContinuousStartUp(uid, bundleName);
+    uid = "106";
+    bundleName = "test106";
+    rmsApplicationStateObserver->recordIsContinuousStartUp(uid, bundleName);
+    rmsApplicationStateObserver->cleanRecordSceneData();
+    rmsApplicationStateObserver->recordIsContinuousStartUp(uid, bundleName);
+    success();
 }
 
 

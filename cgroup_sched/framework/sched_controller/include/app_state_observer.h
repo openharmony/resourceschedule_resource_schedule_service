@@ -18,6 +18,12 @@
 
 #include "nlohmann/json.hpp"
 #include "application_state_observer_stub.h"
+#include <string>
+#include <unordered_set>
+#include <mutex>
+#include <memory>
+#include <atomic>
+#include "ffrt.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -28,6 +34,8 @@ using OHOS::AppExecFwk::ProcessData;
 
 class RmsApplicationStateObserver : public ApplicationStateObserverStub {
 public:
+    RmsApplicationStateObserver();
+    ~RmsApplicationStateObserver();
     void OnForegroundApplicationChanged(const AppStateData &appStateData) override;
     void OnAbilityStateChanged(const AbilityStateData &abilityStateData) override;
     void OnExtensionStateChanged(const AbilityStateData &abilityStateData) override;
@@ -60,6 +68,19 @@ private:
     }
     void MarshallingProcessData(const ProcessData &processData, nlohmann::json &payload);
     void MarshallingAppStateData(const AppStateData &appStateData, nlohmann::json &payload);
+    void recordIsContinuousStartUp(std::string uid, std::string bundleName);
+    void cleanRecordSceneData();
+    void updateAppStartupNum(std::string uid, int64_t curTime,std::string bundleName);
+    bool isContinuousStartUp();
+    int64_t lastAppStartTime_ = 0;
+    std::atomic_bool isReportContinuousStartUp_ = false;
+    std::string lastStartUid_ = "";
+    std:vector<std::string> startPkgs_;
+    std::unordered_set<std::string> startUidSet_;
+    std::unordered_set<std::string> startIgnorePkgs_;
+    std::shared_ptr<ffrt::queue> ffrtQueue_ = nullptr;
+    ffrt::task_handle exitContinuousStartUpTask;
+    ffrt::mutex mutex_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
