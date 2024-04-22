@@ -118,6 +118,22 @@ int32_t ResSchedClient::GetSystemloadLevel()
     return rss_->GetSystemloadLevel();
 }
 
+bool ResSchedClient::IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode)
+{
+    if (TryConnect() != ERR_OK) {
+        return false;
+    }
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (rss_ == nullptr) {
+        RESSCHED_LOGE("ResSchedClient::IsAllowedAppPreload fail to get resource schedule service.");
+        return false;
+    }
+
+    RESSCHED_LOGD("App preload bundleName %{public}s, preloadMode %{public}d", bundleName.c_str(), preloadMode);
+    return rss_->IsAllowedAppPreload(bundleName, preloadMode);
+}
+
 ErrCode ResSchedClient::TryConnect()
 {
     std::lock_guard<std::mutex> lock(mutex_);

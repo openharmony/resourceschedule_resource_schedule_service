@@ -253,5 +253,19 @@ HWTEST_F(ResSchedClientTest, OnRemoveSystemAbility001, Function | MediumTest | L
     ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(notifier);
     SUCCEED();
 }
+
+/**
+ * @tc.name: IsAllowedAppPreload
+ * @tc.desc: Is allowed application preload
+ * @tc.type: FUNC
+ * @tc.require: issueI9C9JN
+ * @tc.author: xiaoshun
+ */
+HWTEST_F(ResSchedClientTest, IsAllowedAppPreload, Function | MediumTest | Level0)
+{
+    std::string bundleName = "com.ohos.test";
+    EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
+    EXPECT_TRUE(!ResSchedClient::GetInstance().IsAllowedAppPreload(bundleName, 0));
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

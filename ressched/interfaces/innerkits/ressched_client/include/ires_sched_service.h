@@ -57,6 +57,13 @@ public:
      * @brief client get systemload level.
      */
     virtual int32_t GetSystemloadLevel() = 0;
+
+    /**
+     * @brief is allowed appliacation preload through resource scheduling services.
+     *
+     * @param bundleName bundleName of the application.
+     */
+    virtual bool IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode) = 0;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -46,6 +46,7 @@ using OnPluginInitFunc = bool (*)(std::string&);
 using OnDispatchResourceFunc = void (*)(const std::shared_ptr<ResData>&);
 using OnDumpFunc = void (*)(const std::vector<std::string>&, std::string&);
 using OnPluginDisableFunc = void (*)();
+using OnIsAllowedAppPreloadFunc = bool (*)(const std::string&, int32_t preloadMode);
 
 constexpr int32_t DISPATCH_TIME_OUT = 50; // ms
 constexpr int32_t DISPATCH_TIME_OUT_US = DISPATCH_TIME_OUT * 1000; // us
@@ -145,6 +146,8 @@ public:
 
     void ClearResTypeStrMap();
 
+    std::shared_ptr<PluginLib> GetPluginLib(const std::string& libPath);
+
 private:
     PluginMgr() = default;
     std::string GetRealConfigPath(const char* configName);
@@ -185,6 +188,7 @@ private:
     std::mutex resTypeStrMutex_;
     std::mutex pluginMutex_;
     std::mutex dispatcherHandlerMutex_;
+    std::mutex libPathMutex_;
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
     std::map<uint32_t, std::string> resTypeStrMap_;
 
