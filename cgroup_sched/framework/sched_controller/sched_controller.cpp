@@ -355,11 +355,18 @@ void SchedController::SubscribeWindowState()
             }
         }
     }
+    SubscribeWindowModeChange();
+    CGS_LOGI("%{public}s success.", __func__);
+}
+
+void SchedController::SubscribeWindowModeChange()
+{
     if (!windowModeObserver_) {
         windowModeObserver_ = new (std::nothrow)WindowModeObserver();
         if (windowModeObserver_) {
             if (OHOS::Rosen::WindowManagerLite::GetInstance().
                 RegisterWindowModeChangedListener(windowModeObserver_) != OHOS::Rosen::WMError::WM_OK) {
+                    CGS_LOGE("RegisterWindowModeChangedListener fail");
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS,
                                     "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                                     "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
@@ -367,7 +374,6 @@ void SchedController::SubscribeWindowState()
             }
         }
     }
-    CGS_LOGI("%{public}s success.", __func__);
 }
 
 void SchedController::UnsubscribeWindowState()
@@ -388,11 +394,17 @@ void SchedController::UnsubscribeWindowState()
             UnregisterDrawingContentChangedListener(windowDrawingContentObserver_);
         windowDrawingContentObserver_ = nullptr;
     }
+    UnsubscribeWindowModeChange();
+}
+
+void SchedController::UnsubscribeWindowModeChange()
+{
     if (windowModeObserver_) {
         OHOS::Rosen::WindowManagerLite::GetInstance().
             UnregisterWindowModeChangedListener(windowModeObserver_);
         windowModeObserver_ = nullptr;
     }
+    CGS_LOGI("UnsubscribeWindowModeChange success");
 }
 
 #ifdef POWER_MANAGER_ENABLE

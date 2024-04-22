@@ -49,6 +49,8 @@ public:
     void UnsubscribeBackgroundTask();
     void SubscribeWindowState();
     void UnsubscribeWindowState();
+    void SubscribeWindowModeChange();
+    void UnsubscribeWindowModeChange();
     void UnregisterStateObservers();
     int GetProcessGroup(pid_t pid);
     void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status);
