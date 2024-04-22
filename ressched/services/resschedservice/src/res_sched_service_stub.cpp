@@ -94,7 +94,6 @@ namespace {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_MMI_INPUT_STATE,
         ResType::RES_TYPE_ANCO_CUST,
-        ResType::RES_TYPE_ANCO_APP_FRONT,
         ResType::RES_TYPE_TIMEZONE_CHANGED,
         ResType::RES_TYPE_APP_ASSOCIATED_START,
         ResType::RES_TYPE_THERMAL_STATE,
