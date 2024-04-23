@@ -37,15 +37,16 @@ AppStartupSceneRec::~AppStartupSceneRec()
     startUidSet_.clear();
     startIgnorePkgs_.clear();
 }
-AppStartupSceneRec& AppStartupSceneRec::GetInstance(){
+AppStartupSceneRec& AppStartupSceneRec::GetInstance()
+{
     static AppStartupSceneRec instance;
     return instance;
 }
 
-void AppStartupSceneRec::recordIsContinuousStartUp(std::string uid, std::string bundleName)
+void AppStartupSceneRec::RecordIsContinuousStartUp(std::string uid, std::string bundleName)
 {
     if (startIgnorePkg_.find(bundleName) != startIgnorePkgs_.end()) {
-        CGS_LOGE("recordIsContinuousStartUp bundleName: %{public}s is IgnorePkg",bundleName.c_str());
+        CGS_LOGE("recordIsContinuousStartUp bundleName: %{public}s is IgnorePkg", bundleName.c_str());
         return;
     }
     if (exitContinuousStartUpTask != nullptr) {
@@ -73,7 +74,7 @@ void AppStartupSceneRec::recordIsContinuousStartUp(std::string uid, std::string 
         cleanRecordSceneData();
     }, ffrt_task_attr().delay(CONTINUOUS_START_TIME_OUT);
 }
-void AppStartupSceneRec::cleanRecordSceneData()
+void AppStartupSceneRec::CleanRecordSceneData()
 {
     CGS_LOGI("cleanRecordSceneData");
     std::unique_lock<ffrt_mutex> lock(mutex_);
@@ -88,7 +89,7 @@ void AppStartupSceneRec::cleanRecordSceneData()
         isReportContinuousStartUp_ = false;
     }
 }
-void AppStartupSceneRec::updateAppStartupNum(std::string uid, int64_t curTime, std::string bundleName)
+void AppStartupSceneRec::UpdateAppStartupNum(std::string uid, int64_t curTime, std::string bundleName)
 {
     std::unique_lock<ffrt_mutex> lock(mutex_);
     lastAppStartTime_ = curTime;
@@ -100,7 +101,7 @@ void AppStartupSceneRec::updateAppStartupNum(std::string uid, int64_t curTime, s
     startPkgs_.emplace_back(bundleName);
     startUidSet_.insert(uid);
 }
-bool AppStartupSceneRec::isContinuousStartUp()
+bool AppStartupSceneRec::IsContinuousStartUp()
 {
     std::unique_lock<ffrt_mutex> lock(mutex_);
     if (startPkgs_.size() >= MAX_CONTINUOUS_START_NUM && startUidSet_.size() >= MAX_NO_REPEAT_APP_COUNT) {
@@ -108,7 +109,6 @@ bool AppStartupSceneRec::isContinuousStartUp()
     }
     return false;
 }
-
 }
 }
 }
