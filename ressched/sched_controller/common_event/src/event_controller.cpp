@@ -200,19 +200,10 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         ReportDataInProcess(ResType::RES_TYPE_USER_REMOVE, static_cast<int64_t>(userId), payload);
         return;
     }
-    if (action == "common.event.LOCK_SCREEN") {
-        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_LOCK, payload);
-        return;
-    }
-
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_CALL_STATE_CHANGED) {
         int32_t state = want.GetIntParam("state", -1);
         payload["state"] = state;
         ReportDataInProcess(ResType::RES_TYPE_CALL_STATE_CHANGED, static_cast<int64_t>(data.GetCode()), payload);
-        return;
-    }
-    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED) {
-        isBootCompleted_ = true;
         return;
     }
     handleEvent(data.GetCode(), action, payload);
@@ -260,13 +251,25 @@ void EventController::handleEvent(int32_t userId, const std::string &action, nlo
         ReportDataInProcess(ResType::RES_TYPE_POWER_MODE_CHANGED, static_cast<int64_t>(userId), payload);
         return;
     }
+    handleOtherEvent(userId, action, payload);
+}
+
+void EventController::handleOtherEvent(int32_t userId, const std::string &action, nlohmann::json &payload)
+{
     if (action == "common.event.UNLOCK_SCREEN") {
         ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_UNLOCK, payload);
         if (isBootCompleted_) {
-            ReportDataInProcess(ResType::RES_TYPE_BOOT_COMPLETED,
-                ResType::BootComPletedStatus::START_BOOT_COMPLETED), payload);
+            ReportDataInProcess(ResType::RES_TYPE_BOOT_COMPLETED,ResType::BootComPletedStatus::START_BOOT_COMPLETED), payload);
             isBootCompleted_ = false;
         }
+        return;
+    }
+    if (action == "common.event.LOCK_SCREEN") {
+        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_LOCK, payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED) {
+        isBootCompleted_ = true;
         return;
     }
 }

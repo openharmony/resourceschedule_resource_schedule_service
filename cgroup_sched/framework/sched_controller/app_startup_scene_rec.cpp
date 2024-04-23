@@ -14,7 +14,7 @@
  */
 #include "res_type.h"
 #include "ressched_utils.h"
-#include "app_startup_scene_rec.h"
+#include "app_Startup_scene_rec.h"
 #include "cgroup_sched_log.h"
 namespace OHOS {
 namespace ResourceSchedule {
@@ -22,7 +22,7 @@ static const int32_t CONTINUOUS_START_TIME_OUT = 15 * 1000 * 1000;
 static const int32_t MAX_NO_REPEAT_APP_COUNT = 4;
 static const int32_t MAX_CONTINUOUS_START_NUM = 5;
 static const int32_t APP_START_UP = 0;
-static const std::string RUNNER_NAME = "AppStartUpSceneRecQueue";
+static const std::string RUNNER_NAME = "AppStartupSceneRecQueue";
 class AppStartupSceneRec {
 AppStartupSceneRec::AppStartupSceneRec()
 {
@@ -31,7 +31,7 @@ AppStartupSceneRec::AppStartupSceneRec()
 }
 AppStartupSceneRec::~AppStartupSceneRec()
 {
-    exitContinuousStartUpTask = nullptr;
+    exitContinuousStartupTask = nullptr;
     ffrtQueue_ = nullptr;
     startPkgs_.clear();
     startUidSet_.clear();
@@ -43,34 +43,34 @@ AppStartupSceneRec& AppStartupSceneRec::GetInstance()
     return instance;
 }
 
-void AppStartupSceneRec::RecordIsContinuousStartUp(std::string uid, std::string bundleName)
+void AppStartupSceneRec::RecordIsContinuousStartup(std::string uid, std::string bundleName)
 {
     if (startIgnorePkg_.find(bundleName) != startIgnorePkgs_.end()) {
-        CGS_LOGE("recordIsContinuousStartUp bundleName: %{public}s is IgnorePkg", bundleName.c_str());
+        CGS_LOGE("recordIsContinuousStartup bundleName: %{public}s is IgnorePkg", bundleName.c_str());
         return;
     }
-    if (exitContinuousStartUpTask != nullptr) {
-        ffrtQueue_->cancel(exitContinuousStartUpTask);
+    if (exitContinuousStartupTask != nullptr) {
+        ffrtQueue_->cancel(exitContinuousStartupTask);
     }
     auto tarEndTimePoint = std::chrono:system_clock::now();
     auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
     int64_t curTime = tarDuration.count();
-    CGS_LOGI("recordIsContinuousStartUp uid: %{public}s bundleName: %{public}s curTime:%{public}ld",
+    CGS_LOGI("recordIsContinuousStartup uid: %{public}s bundleName: %{public}s curTime:%{public}ld",
         uid.c_str(), bundleName.c_str(), curTime);
     if (curTime - lastAppStartTime_ >= CONTINUOUS_START_TIME_OUT) {
         cleanRecordSceneData();
     }
     updateAppStartupNum(uid, curTime, bundleName);
-    if (isContinuousStartUp()) {
-        if (isReportContinuousStartUp_.load()) {
+    if (isContinuousStartup()) {
+        if (isReportContinuousStartup_.load()) {
             return;
         }
         nlohmann::json payload;
         ResSchedUtils::GetInstance().ReportDataInProcess(
-            ResType::RES_TYPE_CONTINUOUS_STARTUP, ResType::ContinuousStartUpStatus::START_CONTINUOUS_STARTUP, payload);
-        isReportContinuousStartUp_ = true;
+            ResType::RES_TYPE_CONTINUOUS_Startup, ResType::ContinuousStartupStatus::START_CONTINUOUS_Startup, payload);
+        isReportContinuousStartup_ = true;
     }
-    exitContinuousStartUpTask = ffrtQueue_->submit_h([this]) {
+    exitContinuousStartupTask = ffrtQueue_->submit_h([this]) {
         cleanRecordSceneData();
     }, ffrt_task_attr().delay(CONTINUOUS_START_TIME_OUT);
 }
@@ -82,11 +82,11 @@ void AppStartupSceneRec::CleanRecordSceneData()
     startPkgs_.clear();
     startUidSet_.clear();
     startIgnorePkgs_.clear();
-    if (isReportContinuousStartUp_.load()) {
+    if (isReportContinuousStartup_.load()) {
         nlohmann::json payload;
         ResSchedUtils::GetInstance().ReportDataInProcess(
-            ResType::RES_TYPE_CONTINUOUS_STARTUP, ResType::ContinuousStartUpStatus::STOP_CONTINUOUS_STARTUP, payload);
-        isReportContinuousStartUp_ = false;
+            ResType::RES_TYPE_CONTINUOUS_Startup, ResType::ContinuousStartupStatus::STOP_CONTINUOUS_Startup, payload);
+        isReportContinuousStartup_ = false;
     }
 }
 void AppStartupSceneRec::UpdateAppStartupNum(std::string uid, int64_t curTime, std::string bundleName)
@@ -94,14 +94,14 @@ void AppStartupSceneRec::UpdateAppStartupNum(std::string uid, int64_t curTime, s
     std::unique_lock<ffrt_mutex> lock(mutex_);
     lastAppStartTime_ = curTime;
     if (lastStartUid_ == uid) {
-        CGS_LOGE("same uid: %{public}s, not update app startUp", uid.c_str());
+        CGS_LOGE("same uid: %{public}s, not update app Startup", uid.c_str());
         return;
     }
     lastStartUid_ = uid;
     startPkgs_.emplace_back(bundleName);
     startUidSet_.insert(uid);
 }
-bool AppStartupSceneRec::IsContinuousStartUp()
+bool AppStartupSceneRec::IsContinuousStartup()
 {
     std::unique_lock<ffrt_mutex> lock(mutex_);
     if (startPkgs_.size() >= MAX_CONTINUOUS_START_NUM && startUidSet_.size() >= MAX_NO_REPEAT_APP_COUNT) {

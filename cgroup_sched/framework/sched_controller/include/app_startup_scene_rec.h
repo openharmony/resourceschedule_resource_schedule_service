@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #ifndef CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_APP_STARTUP_SCENE_REC_H_
 #define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_APP_STARTUP_SCENE_REC_H_
 
@@ -27,21 +28,21 @@ namespace ResourceSchedule {
 class AppStartupSceneRec {
 public:
     static AppStartupSceneRec &GetInstance();
-    void recordIsContinuousStartUp(std::string uid, std::string bundleName);
+    void RecordIsContinuousStartup(std::string uid, std::string bundleName);
 private:
     AppStartupSceneRec();
     ~AppStartupSceneRec();
-    void cleanRecordSceneData();
-    void updateAppStartupNum(std::string uid, int64_t curTime, std::string bundleName);
-    bool isContinuousStartUp();
+    void CleanRecordSceneData();
+    void UpdateAppStartupNum(std::string uid, int64_t curTime, std::string bundleName);
+    bool IsContinuousStartup();
     int64_t lastAppStartTime_ = 0;
-    std::atomic_bool isReportContinuousStartUp_ = false;
+    std::atomic_bool isReportContinuousStartup_ = false;
     std::string lastStartUid_ = "";
     std:vector<std::string> startPkgs_;
     std::unordered_set<std::string> startUidSet_;
     std::unordered_set<std::string> startIgnorePkgs_;
     std::shared_ptr<ffrt::queue> ffrtQueue_ = nullptr;
-    ffrt::task_handle exitContinuousStartUpTask;
+    ffrt::task_handle exitContinuousStartupTask;
     ffrt::mutex mutex_;
 }
 }

@@ -73,7 +73,7 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         std::string uid = std::to_string(abilityStateData.uid);
         std::string bundleName = abilityStateData.bundleName;
         ffrt::submit([uid, bundleName, this]() {
-            AppStartupSceneRec::GetInstance().recordIsContinuousStartUp(uid, bundleName);
+            AppStartupSceneRec::GetInstance().recordIsContinuousStartup(uid, bundleName);
         });
     }
 }
