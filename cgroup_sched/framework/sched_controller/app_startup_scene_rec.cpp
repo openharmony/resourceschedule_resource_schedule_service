@@ -68,10 +68,10 @@ void AppStartupSceneRec::recordIsContinuousStartUp(std::string uid, std::string 
         ResSchedUtils::GetInstance().ReportDataInProcess(
             ResType::RES_TYPE_CONTINUOUS_STARTUP, ResType::ContinuousStartUpStatus::START_CONTINUOUS_STARTUP, payload);
         isReportContinuousStartUp_ = true;
-        exitContinuousStartUpTask = ffrtQueue_->submit_h([this]) {
-            cleanRecordSceneData();
-        }, ffrt_task_attr().delay(CONTINUOUS_START_TIME_OUT);
     }
+    exitContinuousStartUpTask = ffrtQueue_->submit_h([this]) {
+        cleanRecordSceneData();
+    }, ffrt_task_attr().delay(CONTINUOUS_START_TIME_OUT);
 }
 void AppStartupSceneRec::cleanRecordSceneData()
 {
