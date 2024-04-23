@@ -40,7 +40,6 @@ typedef int errno_t;
 
 #define APP_MGR_SERVICE_ID              501
 #define WINDOW_MANAGER_SERVICE_ID       4606
-#define APP_MGR_SERVICE_ID              1903
 #define DEFAULT                         1904
 
 namespace OHOS {
