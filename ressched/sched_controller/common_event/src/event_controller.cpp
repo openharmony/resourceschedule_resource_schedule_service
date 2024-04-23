@@ -95,6 +95,10 @@ int32_t EventController::GetUid(const int32_t &userId, const std::string &bundle
         return -1;
     }
     sptr<AppExecFwk::IBundleMgr> bundleMgr = iface_cast<AppExecFwk::IBundleMgr>(remoteObject);
+    if (bundleMgr == nullptr) {
+        RESSCHED_LOGE("Failed to get uid due to get bundleMgr is null.");
+        return -1;
+    }
     bundleMgr->GetApplicationInfo(bundleName, AppExecFwk::ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, info);
     return static_cast<int32_t>(info.uid);
 }
