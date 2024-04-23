@@ -24,13 +24,17 @@ void DownLoadUploadObserver::OnRunningTaskCountUpdate(int count)
 {
     RESSCHED_LOGI("download upload on running task count %{public}d", count);
     const nlohmann::json payload = nlohmann::json::object();
-    if (count > 0) {
+    if (count > 0 && !isReportScene) {
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
             ResType::KeyUploadOrDownloadStatus::ENTER_UPLOAD_DOWNLOAD_SCENE, payload);
+        isReportScene = true;
         return;
     }
-    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
-        ResType::KeyUploadOrDownloadStatus::EXIT_UPLOAD_DOWNLOAD_SCENE, payload);
+    if (count == 0 && isReportScene) {
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
+            ResType::KeyUploadOrDownloadStatus::EXIT_UPLOAD_DOWNLOAD_SCENE, payload);
+        isReportScene = false;
+    }
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
