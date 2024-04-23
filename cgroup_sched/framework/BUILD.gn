@@ -28,13 +28,13 @@ ohos_shared_library("cgroup_sched") {
   public_configs = [ ":cgroup_sched_public_config" ]
   sources = [
     "${cgroup_sched_common}/cgroup_sched_log.cpp",
+    "sched_controller/app_startup_scene_rec.cpp",
     "sched_controller/app_state_observer.cpp",
     "sched_controller/cgroup_adjuster.cpp",
     "sched_controller/cgroup_event_handler.cpp",
     "sched_controller/sched_controller.cpp",
     "sched_controller/supervisor.cpp",
     "sched_controller/window_state_observer.cpp",
-    "sched_controller/app_startup_scene_rec.cpp",
     "utils/ressched_utils.cpp",
   ]
 
