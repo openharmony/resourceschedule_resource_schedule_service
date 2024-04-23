@@ -34,6 +34,7 @@ ohos_shared_library("cgroup_sched") {
     "sched_controller/sched_controller.cpp",
     "sched_controller/supervisor.cpp",
     "sched_controller/window_state_observer.cpp",
+    "sched_controller/app_startup_scene_rec.cpp",
     "utils/ressched_utils.cpp",
   ]
 
@@ -49,6 +50,7 @@ ohos_shared_library("cgroup_sched") {
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
     "eventhandler:libeventhandler",
+    "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",

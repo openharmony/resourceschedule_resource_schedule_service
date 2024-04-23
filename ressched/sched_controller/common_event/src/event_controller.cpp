@@ -200,14 +200,6 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         ReportDataInProcess(ResType::RES_TYPE_USER_REMOVE, static_cast<int64_t>(userId), payload);
         return;
     }
-    if (action == "common.event.UNLOCK_SCREEN") {
-        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_UNLOCK, payload);
-        if(isBootCompleted_) {
-            ReportDataInProcess(ResType::RES_TYPE_BOOT_COMPLETED, ResType::BootComPletedStatus::START_BOOT_COMPLETED), payload);
-            isBootCompleted_ = false;
-        }
-        return;
-    }
     if (action == "common.event.LOCK_SCREEN") {
         ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_LOCK, payload);
         return;
@@ -266,6 +258,15 @@ void EventController::handleEvent(int32_t userId, const std::string &action, nlo
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_SAVE_MODE_CHANGED) {
         ReportDataInProcess(ResType::RES_TYPE_POWER_MODE_CHANGED, static_cast<int64_t>(userId), payload);
+        return;
+    }
+    if (action == "common.event.UNLOCK_SCREEN") {
+        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_UNLOCK, payload);
+        if (isBootCompleted_) {
+            ReportDataInProcess(ResType::RES_TYPE_BOOT_COMPLETED,
+                ResType::BootComPletedStatus::START_BOOT_COMPLETED), payload);
+            isBootCompleted_ = false;
+        }
         return;
     }
 }

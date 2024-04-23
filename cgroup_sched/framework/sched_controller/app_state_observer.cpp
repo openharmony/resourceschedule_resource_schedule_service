@@ -20,6 +20,7 @@
 #include "cgroup_sched_log.h"
 #include "ressched_utils.h"
 #include "res_type.h"
+#include "ffrt.h"
 #include "supervisor.h"
 
 #undef LOG_TAG
@@ -27,25 +28,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-static const int32_t CONTINUOUS_START_TIME_OUT = 15 * 1000 * 1000;
-static const int32_t MAX_NO_REPEAT_APP_COUNT = 4;
-static const int32_t MAX_CONTINUOUS_START_NUM = 5;
-static const int32_t APP_START_UP = 0;
-static const std::string RUNNER_NAME = "RmsApplicationStateObserverQueue";
-RmsApplicationStateObserver::RmsApplicationStateObserver()
-{
-    ffrtQueue_ = std::make_shared<ffrt::queue>(RUNNER_NAME.c_str(),
-        ffrt::queue_attr().qos(ffrt::qos_user_initiated));
-}
-RmsApplicationStateObserver::~RmsApplicationStateObserver()
-{
-    exitContinuousStartUpTask = nullptr;
-    ffrtQueue_ = nullptr;
-    startPkgs_.clear();
-    startUidSet_.clear();
-    startIgnorePkgs_.clear();
-}
-
 void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateData &appStateData)
 {
     if (!ValidateAppStateData(appStateData)) {
@@ -90,8 +72,8 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     if (abilityStateData.abilityState == APP_START_UP) {
         std::string uid = std::to_string(abilityStateData.uid);
         std::string bundleName = abilityStateData.bundleName;
-        ffrtQueue_->submit([uid, bundleName, this]() {
-            recordIsContinuousStartUp(uid, bundleName);
+        ffrt::submit([uid, bundleName, this]() {
+            AppStartupSceneRec::GetInstance().recordIsContinuousStartUp(uid, bundleName);
         });
     }
 }
@@ -273,72 +255,6 @@ void RmsApplicationStateObserver::OnProcessStateChanged(const ProcessData &proce
     MarshallingProcessData(processData, payload);
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_PROCESS_STATE_CHANGE, static_cast<int32_t>(processData.state), payload);
-}
-
-void RmsApplicationStateObserver::recordIsContinuousStartUp(std::string uid, std::string bundleName)
-{
-    if(startIgnorePkg_.find(bundleName) != startIgnorePkgs_.end()) {
-        return;
-    }
-    if (exitContinuousStartUpTask != nullptr) {
-        ffrtQueue_->cancel(exitContinuousStartUpTask);
-    }
-    auto tarEndTimePoint = std::chrono:system_clock::now();
-    auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
-    int64_t curTime = tarDuration.count();
-    CGS_LOGI("recordIsContinuousStartUp uid: %{public}s bundleName: %{public}s curTime:%{public}ld",
-        uid.c_str(), bundleName.c_str(), curTime);
-    if (curTime - lastAppStartTime_ >= CONTINUOUS_START_TIME_OUT) {
-        cleanRecordSceneData();
-    }
-    updateAppStartupNum(uid, curTime, bundleName);
-    if (isContinuousStartUp()) {
-        if (isReportContinuousStartUp_.load()) {
-            return;
-        }
-        nlohmann::json payload;
-        ResSchedUtils::GetInstance().ReportDataInProcess(
-            ResType::RES_TYPE_CONTINUOUS_STARTUP, ResType::ContinuousStartUpStatus::START_CONTINUOUS_STARTUP, payload);
-        isReportContinuousStartUp_ = true;
-        exitContinuousStartUpTask = ffrtQueue_->submit_h([this]) {
-            cleanRecordSceneData();
-        }, ffrt_task_attr().delay(CONTINUOUS_START_TIME_OUT);
-    }
-}
-void RmsApplicationStateObserver::cleanRecordSceneData()
-{
-    CGS_LOGI("cleanRecordSceneData");
-    std::unique_lock<ffrt_mutex> lock(mutex_);
-    lastStartUid_ = "";
-    startPkgs_.clear();
-    startUidSet_.clear();
-    startIgnorePkgs_.clear();
-    if (isReportContinuousStartUp_.load()) {
-        nlohmann::json payload;
-        ResSchedUtils::GetInstance().ReportDataInProcess(
-            ResType::RES_TYPE_CONTINUOUS_STARTUP, ResType::ContinuousStartUpStatus::STOP_CONTINUOUS_STARTUP, payload);
-        isReportContinuousStartUp_ = false;
-    }
-}
-void RmsApplicationStateObserver::updateAppStartupNum(std::string uid, int64_t curTime,std::string bundleName)
-{
-    std::unique_lock<ffrt_mutex> lock(mutex_);
-    lastAppStartTime_ = curTime;
-    if (lastStartUid_ == uid) {
-        CGS_LOGE("same uid: %{public}s, not update app startUp", uid.c_str());
-        return;
-    }
-    lastStartUid_ = uid;
-    startPkgs_.emplace_back(bundleName);
-    startUidSet_.insert(uid);
-}
-bool RmsApplicationStateObserver::isContinuousStartUp()
-{
-    std::unique_lock<ffrt_mutex> lock(mutex_);
-    if (startPkgs_.size() >= MAX_CONTINUOUS_START_NUM && startUidSet_.size() >= MAX_NO_REPEAT_APP_COUNT) {
-        return true;
-    }
-    return false;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
