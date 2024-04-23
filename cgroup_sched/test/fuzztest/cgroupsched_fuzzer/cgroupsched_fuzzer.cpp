@@ -387,7 +387,7 @@ namespace ResourceSchedule {
         // getdata
         uid_t uid = GetData<uid_t>();
         pid_t pid = GetData<pid_t>();
-        uint32_t typeIds = GetData<uint32_t>();
+        uint32_t typeId = GetData<uint32_t>();
         int32_t abilityId = GetData<int32_t>();
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
