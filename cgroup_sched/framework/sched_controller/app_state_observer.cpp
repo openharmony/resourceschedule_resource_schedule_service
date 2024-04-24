@@ -21,6 +21,7 @@
 #include "ressched_utils.h"
 #include "res_type.h"
 #include "ffrt.h"
+#include "app_startup_scene_rec.h"
 #include "supervisor.h"
 
 #undef LOG_TAG
@@ -28,6 +29,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+static const int32_t APP_START_UP = 0;
 void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateData &appStateData)
 {
     if (!ValidateAppStateData(appStateData)) {
@@ -73,7 +75,7 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         std::string uid = std::to_string(abilityStateData.uid);
         std::string bundleName = abilityStateData.bundleName;
         ffrt::submit([uid, bundleName, this]() {
-            AppStartupSceneRec::GetInstance().recordIsContinuousStartup(uid, bundleName);
+            AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
         });
     }
 }

@@ -35,16 +35,17 @@ private:
     void CleanRecordSceneData();
     void UpdateAppStartupNum(std::string uid, int64_t curTime, std::string bundleName);
     bool IsContinuousStartup();
+    int64_t appStartCount_ = 0;
     int64_t lastAppStartTime_ = 0;
     std::atomic_bool isReportContinuousStartup_ = false;
     std::string lastStartUid_ = "";
-    std:vector<std::string> startPkgs_;
+    std::vector<std::string> startPkgs_;
     std::unordered_set<std::string> startUidSet_;
     std::unordered_set<std::string> startIgnorePkgs_;
     std::shared_ptr<ffrt::queue> ffrtQueue_ = nullptr;
     ffrt::task_handle exitContinuousStartupTask;
     ffrt::mutex mutex_;
-}
+};
 }
 }
 #endif // CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_APP_STARTUP_SCENE_REC_H

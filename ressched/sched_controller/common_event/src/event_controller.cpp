@@ -260,7 +260,7 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_UNLOCK, payload);
         if (isBootCompleted_) {
             ReportDataInProcess(ResType::RES_TYPE_BOOT_COMPLETED,
-                ResType::BootComPletedStatus::START_BOOT_COMPLETED), payload);
+                ResType::BootCompletedStatus::START_BOOT_COMPLETED, payload);
             isBootCompleted_ = false;
         }
         return;

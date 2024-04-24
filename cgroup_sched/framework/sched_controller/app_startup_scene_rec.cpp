@@ -12,9 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "res_type.h"
 #include "ressched_utils.h"
-#include "app_Startup_scene_rec.h"
+#include "app_startup_scene_rec.h"
 #include "cgroup_sched_log.h"
 namespace OHOS {
 namespace ResourceSchedule {
@@ -23,7 +24,6 @@ static const int32_t MAX_NO_REPEAT_APP_COUNT = 4;
 static const int32_t MAX_CONTINUOUS_START_NUM = 5;
 static const int32_t APP_START_UP = 0;
 static const std::string RUNNER_NAME = "AppStartupSceneRecQueue";
-class AppStartupSceneRec {
 AppStartupSceneRec::AppStartupSceneRec()
 {
     ffrtQueue_ = std::make_shared<ffrt::queue>(RUNNER_NAME.c_str(),
@@ -32,7 +32,7 @@ AppStartupSceneRec::AppStartupSceneRec()
 AppStartupSceneRec::~AppStartupSceneRec()
 {
     exitContinuousStartupTask = nullptr;
-    ffrtQueue_ = nullptr;
+    ffrtQueue_->reset();
     startPkgs_.clear();
     startUidSet_.clear();
     startIgnorePkgs_.clear();
@@ -45,7 +45,7 @@ AppStartupSceneRec& AppStartupSceneRec::GetInstance()
 
 void AppStartupSceneRec::RecordIsContinuousStartup(std::string uid, std::string bundleName)
 {
-    if (startIgnorePkg_.find(bundleName) != startIgnorePkgs_.end()) {
+    if (startIgnorePkgs_.find(bundleName) != startIgnorePkgs_.end()) {
         CGS_LOGE("recordIsContinuousStartup bundleName: %{public}s is IgnorePkg", bundleName.c_str());
         return;
     }
@@ -58,57 +58,62 @@ void AppStartupSceneRec::RecordIsContinuousStartup(std::string uid, std::string 
     CGS_LOGI("recordIsContinuousStartup uid: %{public}s bundleName: %{public}s curTime:%{public}ld",
         uid.c_str(), bundleName.c_str(), curTime);
     if (curTime - lastAppStartTime_ >= CONTINUOUS_START_TIME_OUT) {
-        cleanRecordSceneData();
+        CleanRecordSceneData();
     }
-    updateAppStartupNum(uid, curTime, bundleName);
-    if (isContinuousStartup()) {
+    UpdateAppStartupNum(uid, curTime, bundleName);
+    if (IsContinuousStartup()) {
         if (isReportContinuousStartup_.load()) {
             return;
         }
         nlohmann::json payload;
         ResSchedUtils::GetInstance().ReportDataInProcess(
-            ResType::RES_TYPE_CONTINUOUS_Startup, ResType::ContinuousStartupStatus::START_CONTINUOUS_Startup, payload);
+            ResType::RES_TYPE_CONTINUOUS_STARTUP, ResType::ContinuousStartupStatus::START_CONTINUOUS_STARTUP, payload);
         isReportContinuousStartup_ = true;
     }
-    exitContinuousStartupTask = ffrtQueue_->submit_h([this]) {
-        cleanRecordSceneData();
-    }, ffrt_task_attr().delay(CONTINUOUS_START_TIME_OUT);
+    exitContinuousStartupTask = ffrtQueue_->submit_h([this] {
+        CleanRecordSceneData();
+    }, ffrt::task_attr().delay(CONTINUOUS_START_TIME_OUT));
 }
 void AppStartupSceneRec::CleanRecordSceneData()
 {
-    CGS_LOGI("cleanRecordSceneData");
-    std::unique_lock<ffrt_mutex> lock(mutex_);
+    CGS_LOGI("CleanRecordSceneData");
+    std::unique_lock<ffrt::mutex> lock(mutex_);
     lastStartUid_ = "";
     startPkgs_.clear();
     startUidSet_.clear();
     startIgnorePkgs_.clear();
+    exitContinuousStartupTask = nullptr;
     if (isReportContinuousStartup_.load()) {
         nlohmann::json payload;
         ResSchedUtils::GetInstance().ReportDataInProcess(
-            ResType::RES_TYPE_CONTINUOUS_Startup, ResType::ContinuousStartupStatus::STOP_CONTINUOUS_Startup, payload);
+            ResType::RES_TYPE_CONTINUOUS_STARTUP, ResType::ContinuousStartupStatus::STOP_CONTINUOUS_STARTUP, payload);
         isReportContinuousStartup_ = false;
     }
 }
 void AppStartupSceneRec::UpdateAppStartupNum(std::string uid, int64_t curTime, std::string bundleName)
 {
-    std::unique_lock<ffrt_mutex> lock(mutex_);
+    std::unique_lock<ffrt::mutex> lock(mutex_);
     lastAppStartTime_ = curTime;
+    appStartCount_++;
     if (lastStartUid_ == uid) {
         CGS_LOGE("same uid: %{public}s, not update app Startup", uid.c_str());
         return;
     }
     lastStartUid_ = uid;
+    if (isReportContinuousStartup_.load()) {
+        CGS_LOGI("UpdateAppStartupNum appStartCount_:%{public}ld", appStartCount_);
+        return;
+    }
     startPkgs_.emplace_back(bundleName);
     startUidSet_.insert(uid);
 }
 bool AppStartupSceneRec::IsContinuousStartup()
 {
-    std::unique_lock<ffrt_mutex> lock(mutex_);
+    std::unique_lock<ffrt::mutex> lock(mutex_);
     if (startPkgs_.size() >= MAX_CONTINUOUS_START_NUM && startUidSet_.size() >= MAX_NO_REPEAT_APP_COUNT) {
         return true;
     }
     return false;
-}
 }
 }
 }

@@ -801,7 +801,7 @@ enum WebDragResizeStatus : int64_t {
 /**
  * @brief boot completed status
  */
-enum BootComPletedStatus : int64_t {
+enum BootCompletedStatus : int64_t {
     START_BOOT_COMPLETED = 0,
     STOP_BOOT_COMPLETED = 1,
 };
@@ -809,7 +809,7 @@ enum BootComPletedStatus : int64_t {
 /**
  * @brief continuous startUp status
  */
-enum ContinuousStartUpStatus : int64_t {
+enum ContinuousStartupStatus : int64_t {
     START_CONTINUOUS_STARTUP = 0,
     STOP_CONTINUOUS_STARTUP = 1,
 };
