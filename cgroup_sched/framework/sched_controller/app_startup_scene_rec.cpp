@@ -52,7 +52,7 @@ void AppStartupSceneRec::RecordIsContinuousStartup(std::string uid, std::string 
     if (exitContinuousStartupTask != nullptr) {
         ffrtQueue_->cancel(exitContinuousStartupTask);
     }
-    auto tarEndTimePoint = std::chrono:system_clock::now();
+    auto tarEndTimePoint = std::chrono::system_clock::now();
     auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
     int64_t curTime = tarDuration.count();
     CGS_LOGI("recordIsContinuousStartup uid: %{public}s bundleName: %{public}s curTime:%{public}ld",
@@ -78,10 +78,10 @@ void AppStartupSceneRec::CleanRecordSceneData()
 {
     CGS_LOGI("CleanRecordSceneData");
     std::unique_lock<ffrt::mutex> lock(mutex_);
+    appStartCount_ = 0;
     lastStartUid_ = "";
     startPkgs_.clear();
     startUidSet_.clear();
-    startIgnorePkgs_.clear();
     exitContinuousStartupTask = nullptr;
     if (isReportContinuousStartup_.load()) {
         nlohmann::json payload;
@@ -94,11 +94,11 @@ void AppStartupSceneRec::UpdateAppStartupNum(std::string uid, int64_t curTime, s
 {
     std::unique_lock<ffrt::mutex> lock(mutex_);
     lastAppStartTime_ = curTime;
-    appStartCount_++;
     if (lastStartUid_ == uid) {
         CGS_LOGE("same uid: %{public}s, not update app Startup", uid.c_str());
         return;
     }
+    appStartCount_++;
     lastStartUid_ = uid;
     if (isReportContinuousStartup_.load()) {
         CGS_LOGI("UpdateAppStartupNum appStartCount_:%{public}ld", appStartCount_);

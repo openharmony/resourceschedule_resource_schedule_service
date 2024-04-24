@@ -281,11 +281,11 @@ HWTEST_F(EventControllerTest, bootCompleted_001, testing::ext::TestSize.Level1)
     want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
     data.SetWant(want);
     EventController::GetInstance().OnReceiveEvent(data);
-    SUCCESS();
-    want.SetAction(action == "common.event.UNLOCK_SCREEN");
+    SUCCEED();
+    want.SetAction("common.event.UNLOCK_SCREEN");
     data.SetWant(want);
     EventController::GetInstance().OnReceiveEvent(data);
-    SUCCESS();
+    SUCCEED();
 }
 }
 }
