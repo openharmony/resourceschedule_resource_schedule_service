@@ -116,5 +116,38 @@ int32_t ResSchedServiceProxy::GetSystemloadLevel()
     return reply.ReadInt32();
 }
 
+bool ResSchedServiceProxy::IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option = { MessageOption::TF_SYNC };
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        return false;
+    }
+
+    WRITE_PARCEL(data, String, bundleName, false, ResSchedServiceProxy);
+    WRITE_PARCEL(data, Int32, preloadMode, false, ResSchedServiceProxy);
+
+    auto remote = Remote();
+    if (!remote) {
+        RESSCHED_LOGE("Get remote failed");
+        return false;
+    }
+
+    int32_t error = remote->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::TOUCH_DOWN_APP_PRELOAD),
+        data, reply, option);
+    if (error != NO_ERROR) {
+        RESSCHED_LOGE("Send request error: %{public}d.", error);
+        return false;
+    }
+
+    bool isAllowedPreload = false;
+    if (!reply.ReadBool(isAllowedPreload)) {
+        RESSCHED_LOGE("Read result failed");
+        return false;
+    }
+    RESSCHED_LOGD("%{public}s, success.", __func__);
+    return isAllowedPreload;
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

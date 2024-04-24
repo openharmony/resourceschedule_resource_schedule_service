@@ -14,6 +14,7 @@
  */
 
 #include <cstdint>
+#include <dlfcn.h>
 #include "res_sched_service.h"
 #include <file_ex.h>
 #include <parameters.h>
@@ -37,6 +38,7 @@ namespace {
     constexpr int32_t DUMP_OPTION = 0;
     constexpr int32_t DUMP_PARAM_INDEX = 1;
     const int32_t ENG_MODE = OHOS::system::GetIntParameter("const.debuggable", 0);
+    const std::string APP_PRELOAD_PLIGIN_NAME = "libapp_preload_plugin.z.so";
 }
 
 void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -79,6 +81,35 @@ void ResSchedService::OnDeviceLevelChanged(int32_t type, int32_t level)
     nlohmann::json payload;
     payload["systemloadLevel"] = std::to_string(level);
     ResSchedUtils::GetInstance().ReportDataInProcess(type, level, payload);
+}
+
+bool ResSchedService::IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode)
+{
+    LoadAppPreloadPlugin();
+    if (!appPreloadFunc_) {
+        RESSCHED_LOGE("%{public}s, no allow AppPreload !", __func__, errno);
+        return false;
+    }
+    return appPreloadFunc_(bundleName, preloadMode);
+}
+
+void ResSchedService::LoadAppPreloadPlugin()
+{
+    std::shared_ptr<PluginLib> libInfoPtr = PluginMgr::GetInstance().GetPluginLib(APP_PRELOAD_PLIGIN_NAME);
+    if (libInfoPtr == nullptr) {
+        RESSCHED_LOGE("ResSchedService::LoadAppPreloadPlugin libInfoPtr nullptr");
+        isLoadAppPreloadPlugin_ = false;
+        return;
+    }
+
+    if (isLoadAppPreloadPlugin_) {
+        RESSCHED_LOGI("ResSchedService::LoadAppPreloadPlugin, already loaded AppPreloadPlugin");
+        return;
+    }
+
+    appPreloadFunc_ = reinterpret_cast<OnIsAllowedAppPreloadFunc>(dlsym(libInfoPtr->handle.get(),
+        "OnIsAllowedAppPreload"));
+    isLoadAppPreloadPlugin_ = true;
 }
 
 bool ResSchedService::AllowDump()
