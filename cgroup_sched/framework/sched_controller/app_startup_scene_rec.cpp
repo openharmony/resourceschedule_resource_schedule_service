@@ -32,7 +32,7 @@ AppStartupSceneRec::AppStartupSceneRec()
 AppStartupSceneRec::~AppStartupSceneRec()
 {
     exitContinuousStartupTask = nullptr;
-    ffrtQueue_->reset();
+    ffrtQueue_.reset();
     startPkgs_.clear();
     startUidSet_.clear();
     startIgnorePkgs_.clear();
