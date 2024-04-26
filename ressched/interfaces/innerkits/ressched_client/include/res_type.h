@@ -217,6 +217,8 @@ enum : uint32_t {
     RES_TYPE_FORM_STATE_CHANGE_EVENT = 91,
     // report power mode changed
     RES_TYPE_POWER_MODE_CHANGED = 92,
+    // report thermal scenario changed
+    RES_TYPE_THERMAL_SCENARIO_REPORT = 93,
     //last resType
     RES_TYPE_LAST,
 };
