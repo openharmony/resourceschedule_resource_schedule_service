@@ -202,7 +202,7 @@ bool TestUseBySo(const uint8_t *data, size_t size)
 
 bool TestFeatureInit(const uint8_t *data, size_t size)
 {
-    std::string featureName((const char*) data, size);
+    std::string featureName(reinterpret_cast<const char *>(data), size);
     OHOS::ResourceSchedule::SocPerfPlugin::GetInstance().InitFeatureSwitch(featureName);
     return true;
 }
