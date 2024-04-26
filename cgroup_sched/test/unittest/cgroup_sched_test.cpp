@@ -180,12 +180,15 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_AppStartupSceneRec_001, Function | Med
     uid = "104";
     bundleName = "test104";
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
     uid = "105";
     bundleName = "test105";
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-    
+    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
+    uid = "106";
+    bundleName = "test106";
+    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
     SUCCEED();
+
 }
 
 /**
@@ -200,7 +203,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_AppStartupSceneRec_002, Function | Med
     AppStartupSceneRec::GetInstance();
     std::string bundleName = "test101";
     std::string uid = "101";
-    AppStartupSceneRec::GetInstance().startIgnorePkgs_.emplace("bundleName");
+    AppStartupSceneRec::GetInstance().startIgnorePkgs_.emplace("test101");
     uid = "106";
     bundleName = "test106";
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
