@@ -98,6 +98,13 @@ ohos_unittest("resschedclient_test") {
     "ffrt:libffrt",
     "ipc:ipc_single",
   ]
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  branch_protector_ret = "pac_ret"
 }
 
 ohos_unittest("resschedfwk_test") {
