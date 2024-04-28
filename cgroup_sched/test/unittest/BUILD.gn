@@ -35,7 +35,10 @@ ohos_unittest("ProcessGroupSubTest") {
     "process_group_sub_test.cpp",
   ]
 
-  cflags = []
+  cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
 
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
