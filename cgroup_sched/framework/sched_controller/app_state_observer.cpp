@@ -72,14 +72,14 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     payload["bundleName"] = bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
         abilityStateData.abilityState, payload);
-    if (isAppStartUp(abilityStateData.abilityState)) {
+    if (IsAppStartUp(abilityStateData.abilityState)) {
         ffrt::submit([uid, bundleName, this]() {
             AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
         });
     }
 }
 
-void RmsApplicationStateObserver::isAppStartUp(int32_t abilityState)
+bool RmsApplicationStateObserver::IsAppStartUp(int32_t abilityState)
 {
     return abilityState == APP_START_UP;
 }
