@@ -61,7 +61,7 @@ private:
 
     bool IsAppStartUp(int32_t abilityState);
     void MarshallingProcessData(const ProcessData &processData, nlohmann::json &payload);
-    void MarshallisgAppStateData(const AppStateData &appStateData, nlohmann::json &payload);
+    void MarshallingAppStateData(const AppStateData &appStateData, nlohmann::json &payload);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
