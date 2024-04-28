@@ -28,6 +28,8 @@
 #include "res_sched_service.h"
 #include "singleton.h"
 #include "system_ability_definition.h"
+#include "res_sched_client.h"
+#include "res_schedd_service_stub.h"
 
 #define private public
 #define protected public
@@ -42,6 +44,9 @@ typedef int errno_t;
 
 namespace OHOS {
 namespace ResourceSchedule {
+namespace {
+    static const int32_t TWO_PARAMETERS = 2;
+}
     constexpr int32_t MAX_CODE = 5;
     constexpr int32_t MIN_LEN = 4;
     std::mutex mutexLock;
@@ -69,6 +74,24 @@ namespace ResourceSchedule {
         g_pos += objectSize;
         return object;
     }
+
+    std::string GetStringFromData(int strlen)
+    {
+        if (strlen <= 0) {
+            return "";
+        }
+        char cstr[strlen];
+        cstr[strlen - 1] = '\0';
+        for (int i = 0; i < strlen - 1; i++) {
+            char tmp = GetData<char>();
+            if (tmp == '\0') {
+                tmp = '1';
+            }
+            cstr[i] = tmp;
+        }
+        std::string str(cstr);
+        return str;
+    } 
 
     bool DoInit()
     {
@@ -145,6 +168,34 @@ namespace ResourceSchedule {
             fuzzData, fuzzReply, fuzzOption);
         return true;
     }
+
+    bool ResSchedClientFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= sizeof(uint32_t) + sizeof(int64_t) + TWO_PARAMETERS * sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
+        std::unorder_map<std::string, std::string> mapPayload;
+        mapPayload["pid"] = GetStringFromData(int(size) - sizeof(uint32_t) - sizeof(int64_t));
+        mapPayload["processName"] = GetStringFromData(int(size) - sizeof(std::string) -
+        sizeof(uint32_t) - sizeof(int64_t));
+
+        ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
+        ResSchedClient::GetInstance().KillProcess(mapPayload);
+        ResSchedClient::GetInstance().StopRemoteObject();
+        return true;
+    }
 } // namespace ResourceSchedule
 } // namespace OHOS
 
@@ -154,5 +205,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     /* Run your code on data */
     OHOS::ResourceSchedule::DoSomethingInterestingWithMyAPI(data, size);
     OHOS::ResourceSchedule::OnRemoteRequest(data, size);
+    OHOS::ResourceSchedule::ResSchedClientFuzzTest(data, size);
     return 0;
 }

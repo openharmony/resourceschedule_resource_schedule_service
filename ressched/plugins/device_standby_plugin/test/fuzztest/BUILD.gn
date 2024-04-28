@@ -13,9 +13,5 @@
 
 group("fuzztest") {
   testonly = true
-
-  deps = [
-    "resschedobserver_fuzzer:fuzztest",
-    "resschedcommonevent_fuzzer:fuzztest"
-   ]
+  deps = [ "devicestandbyplugin_fuzzer:fuzztest" ]
 }
