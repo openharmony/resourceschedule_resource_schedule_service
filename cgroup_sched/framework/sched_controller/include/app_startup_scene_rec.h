@@ -28,6 +28,8 @@ namespace ResourceSchedule {
 class AppStartupSceneRec {
 public:
     static AppStartupSceneRec &GetInstance();
+    void Init();
+    void Deinit();
     void RecordIsContinuousStartup(std::string uid, std::string bundleName);
 private:
     AppStartupSceneRec();

@@ -26,12 +26,21 @@ static const int32_t APP_START_UP = 0;
 static const std::string RUNNER_NAME = "AppStartupSceneRecQueue";
 AppStartupSceneRec::AppStartupSceneRec()
 {
-    ffrtQueue_ = std::make_shared<ffrt::queue>(RUNNER_NAME.c_str(),
-        ffrt::queue_attr().qos(ffrt::qos_user_initiated));
 }
 AppStartupSceneRec::~AppStartupSceneRec()
 {
-    exitContinuousStartupTask = nullptr;
+}
+void AppStartupSceneRec::Init()
+{
+    ffrtQueue_ = std::make_shared<ffrt::queue>(RUNNER_NAME.c_str(),
+        ffrt::queue_attr().qos(ffrt::qos_user_initiated));
+}
+void AppStartupSceneRec::Deinit()
+{
+    if (exitContinuousStartupTask != nullptr) {
+        ffrtQueue_->cancel(exitContinuousStartupTask);
+        exitContinuousStartupTask = nullptr;
+    }
     ffrtQueue_.reset();
     startPkgs_.clear();
     startUidSet_.clear();
@@ -51,6 +60,7 @@ void AppStartupSceneRec::RecordIsContinuousStartup(std::string uid, std::string 
     }
     if (exitContinuousStartupTask != nullptr) {
         ffrtQueue_->cancel(exitContinuousStartupTask);
+        exitContinuousStartupTask = nullptr;
     }
     auto tarEndTimePoint = std::chrono::system_clock::now();
     auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
