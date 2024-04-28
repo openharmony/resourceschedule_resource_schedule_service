@@ -19,16 +19,14 @@ import("//foundation/resourceschedule/resource_schedule_service/ressched/ressche
 ##############################fuzztest##########################################
 
 module_output_path = "resource_schedule_service/resource_schedule_service"
-ressched_device_standby_plugin = "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/device_standby_plugin"
-
 
 ohos_fuzztest("DeviceStandByPluginFuzzTest") {
   module_out_path = module_output_path
   fuzz_config_file =
-      "${ressched_device_standby_plugin}/test/fuzztest/devicestandbyplugin_fuzzer"
+      "${ressched_plugins}/device_standby_plugin/test/fuzztest/devicestandbyplugin_fuzzer"
 
   include_dirs = [
-    "${ressched_device_standby_plugin}/include",
+    "${ressched_plugins}/device_standby_plugin/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
     "${ressched_common}/include",
     "${ressched_services}/resschedmgr/pluginbase/include",
@@ -45,7 +43,7 @@ ohos_fuzztest("DeviceStandByPluginFuzzTest") {
 
   sources = [ "devicestandbyplugin_fuzzer.cpp" ]
 
-  deps = [ "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/device_standby_plugin:device_standby_plugin" ]
+  deps = [ "${ressched_plugins}/device_standby_plugin:device_standby_plugin" ]
 
   external_deps = [
     "ability_base:want",
