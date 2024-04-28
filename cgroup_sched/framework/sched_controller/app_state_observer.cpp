@@ -50,10 +50,10 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         return;
     }
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    std::string uid = std::to_string(abilityStateData.uid);
+    std::string bundleName = std::to_string(abilityStateData.uid);
     if (cgHandler) {
-        auto uid = abilityStateData.uid;
         auto pid = abilityStateData.pid;
-        auto bundleName = abilityStateData.bundleName;
         auto abilityName = abilityStateData.abilityName;
         auto token = reinterpret_cast<uintptr_t>(abilityStateData.token.GetRefPtr());
         auto abilityState = abilityStateData.abilityState;
@@ -66,18 +66,22 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     }
 
     nlohmann::json payload;
+    
     payload["pid"] = std::to_string(abilityStateData.pid);
-    payload["uid"] = std::to_string(abilityStateData.uid);
-    payload["bundleName"] = abilityStateData.bundleName;
+    payload["uid"] = uid;
+    payload["bundleName"] = bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
         abilityStateData.abilityState, payload);
-    if (abilityStateData.abilityState == APP_START_UP) {
-        std::string uid = std::to_string(abilityStateData.uid);
-        std::string bundleName = abilityStateData.bundleName;
+    if (isAppStartUp(abilityStateData.abilityState)) {
         ffrt::submit([uid, bundleName, this]() {
             AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
         });
     }
+}
+
+void RmsApplicationStateObserver::isAppStartUp(int32_t abilityState)
+{
+    return abilityState == APP_START_UP;
 }
 
 void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData &abilityStateData)

@@ -58,6 +58,8 @@ private:
         return processData.uid > 0 && processData.pid >= 0
             && processData.bundleName.size() > 0;
     }
+
+    bool isAppStartUp(int32_t abilityState);
     void MarshallingProcessData(const ProcessData &processData, nlohmann::json &payload);
     void MarshallingAppStateData(const AppStateData &appStateData, nlohmann::json &payload);
 };
