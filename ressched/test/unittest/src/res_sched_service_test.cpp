@@ -517,6 +517,11 @@ public:
     {
         return 0;
     }
+
+    bool IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode) override
+    {
+        return true;
+    }
 };
 
 /**
@@ -718,6 +723,27 @@ HWTEST_F(ResSchedServiceTest, StubGetSystemloadLevel001, Function | MediumTest |
     MessageParcel reply;
     MessageParcel emptyData;
     EXPECT_TRUE(resSchedServiceStub_->GetSystemloadLevelInner(emptyData, reply));
+}
+
+/**
+ * @tc.name: ResSchedServicesStub IsAllowedAppPreloadInner 001
+ * @tc.desc: Verify resschedstub allowedAppPreloadInner.
+ * @tc.type: FUNC
+ * @tc.require: issueI9C9JN
+ * @tc.author:xiaoshun
+ */
+HWTEST_F(ResSchedServiceTest, IsAllowedAppPreloadInner001, Function | MediumTest | Level0)
+{
+    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
+    resSchedServiceStub_->Init();
+    MessageParcel reply;
+    MessageParcel emptyData;
+    EXPECT_TRUE(!resSchedServiceStub_->IsAllowedAppPreloadInner(emptyData, reply));
+
+    MessageParcel reportData;
+    reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
+    reportData.WriteString("com.ohos.sceneboard");
+    EXPECT_TRUE(resSchedServiceStub_->IsAllowedAppPreloadInner(reportData, reply));
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

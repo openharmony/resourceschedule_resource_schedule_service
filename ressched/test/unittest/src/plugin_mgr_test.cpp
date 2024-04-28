@@ -508,5 +508,31 @@ HWTEST_F(PluginMgrTest, DispatchResource005, TestSize.Level1)
     PluginMgr::GetInstance().DispatchResource(dataWithExtType);
     SUCCEED();
 }
+
+/**
+ * @tc.name: Plugin mgr test GetPluginLib 001
+ * @tc.desc: Verify if can get pluginlib with wrong env.
+ * @tc.type: FUNC
+ * @tc.require: issueI9C9JN
+ * @tc.author:xiaoshun
+ */
+HWTEST_F(PluginMgrTest, GetPluginLib001, TestSize.Level0)
+{
+    std::shared_ptr<PluginLib> libInfoPtr = pluginMgr_->GetPluginLib("test");
+    EXPECT_TRUE(libInfoPtr == nullptr);
+}
+
+/**
+ * @tc.name: Plugin mgr test GetPluginLib 002
+ * @tc.desc: Verify if can get pluginlib
+ * @tc.type: FUNC
+ * @tc.require: issueI9C9JN
+ * @tc.author:xiaoshun
+ */
+HWTEST_F(PluginMgrTest, GetPluginLib002, TestSize.Level0)
+{
+    std::shared_ptr<PluginLib> libInfoPtr = pluginMgr_->GetPluginLib("libapp_preload_plugin.z.so");
+    SUCCEED();
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

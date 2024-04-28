@@ -16,6 +16,7 @@
 #ifndef RESSCHED_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_SERVICE_H
 #define RESSCHED_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_SERVICE_H
 
+#include "plugin_mgr.h"
 #include "res_sched_service_stub.h"
 
 namespace OHOS {
@@ -37,6 +38,10 @@ public:
 
     void OnDeviceLevelChanged(int32_t type, int32_t level);
 
+    bool IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode) override;
+
+    void LoadAppPreloadPlugin();
+
     int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
 
     void DumpProcessRunningLock(std::string& result);
@@ -53,6 +58,9 @@ private:
     void DumpAllInfo(std::string &result);
     void DumpUsage(std::string &result);
     bool AllowDump();
+
+    OnIsAllowedAppPreloadFunc appPreloadFunc_ = nullptr;
+    bool isLoadAppPreloadPlugin_ = false;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

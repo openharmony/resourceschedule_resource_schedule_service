@@ -16,17 +16,12 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
-#define private public
-#define protected public
 #include "sched_controller.h"
 #include "window_state_observer.h"
 #include "app_startup_scene_rec.h"
 #include "window_manager.h"
 #include "wm_common.h"
 #include "sched_policy.h"
-
-#undef private
-#undef protected
 
 using namespace testing::ext;
 using namespace OHOS::ResourceSchedule::CgroupSetting;

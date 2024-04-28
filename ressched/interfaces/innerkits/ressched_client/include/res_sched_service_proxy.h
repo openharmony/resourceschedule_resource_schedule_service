@@ -60,6 +60,13 @@ public:
      * @brief client get systemload level.
      */
     int32_t GetSystemloadLevel() override;
+
+    /**
+     * @brief is allowed appliacation preload through resource scheduling services.
+     *
+     * @param bundleName bundleName of the application.
+     */
+    bool IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode) override;
 public:
     /**
      * @brief Construct a new ResSchedServiceProxy object.

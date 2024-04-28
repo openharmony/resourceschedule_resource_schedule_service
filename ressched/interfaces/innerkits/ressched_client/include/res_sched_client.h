@@ -94,6 +94,13 @@ public:
      */
     int32_t GetSystemloadLevel();
 
+    /**
+     * @brief is allowed appliacation preload through resource scheduling services.
+     *
+     * @param bundleName bundleName of the application.
+     */
+    bool IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode);
+
 protected:
     ResSchedClient() = default;
     virtual ~ResSchedClient();

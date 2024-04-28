@@ -184,7 +184,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     auto onDumpFunc = reinterpret_cast<OnDumpFunc>(dlsym(pluginHandle, "OnDump"));
 
     PluginLib libInfo;
-    libInfo.handle = nullptr;
+    libInfo.handle = std::shared_ptr<void>(pluginHandle, dlclose);
     libInfo.onPluginInitFunc_ = onPluginInitFunc;
     libInfo.onDispatchResourceFunc_ = onDispatchResourceFunc;
     libInfo.onDumpFunc_ = onDumpFunc;
@@ -236,6 +236,17 @@ bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>&
     }
     pluginList = iter->second;
     return true;
+}
+
+std::shared_ptr<PluginLib> PluginMgr::GetPluginLib(const std::string& libPath)
+{
+    std::lock_guard<std::mutex> autoLock(libPathMutex_);
+    auto iter = pluginLibMap_.find(libPath);
+    if (iter == pluginLibMap_.end()) {
+        RESSCHED_LOGE("%{public}s, PluginMgr libPath no lib register!", __func__);
+        return nullptr;
+    }
+    return make_shared<PluginLib>(iter->second);
 }
 
 std::string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,

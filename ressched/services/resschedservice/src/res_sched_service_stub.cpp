@@ -31,6 +31,7 @@ namespace {
     #define PAYLOAD_MAX_SIZE 4096
     constexpr int32_t MEMMGR_UID = 1111;
     constexpr int32_t SAMGR_UID = 5555;
+    constexpr int32_t FOUNDATION_UID = 5523;
     static const std::unordered_set<uint32_t> scbRes = {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
@@ -94,7 +95,6 @@ namespace {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_MMI_INPUT_STATE,
         ResType::RES_TYPE_ANCO_CUST,
-        ResType::RES_TYPE_ANCO_APP_FRONT,
         ResType::RES_TYPE_TIMEZONE_CHANGED,
         ResType::RES_TYPE_APP_ASSOCIATED_START,
         ResType::RES_TYPE_THERMAL_STATE,
@@ -283,6 +283,35 @@ int32_t ResSchedServiceStub::GetSystemloadLevelInner(MessageParcel& data, Messag
     return ERR_OK;
 }
 
+bool ResSchedServiceStub::IsAllowedAppPreloadInner(MessageParcel& data, MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        return false;
+    }
+
+    AccessToken::AccessTokenID tokenId = IPCSkeleton::GetCallingTokenID();
+    int32_t uid = IPCSkeleton::GetCallingUid();
+    AccessToken::ATokenTypeEnum tokenTypeFlag = AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
+    if (uid != FOUNDATION_UID || tokenTypeFlag != AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
+        RESSCHED_LOGE("Invalid calling token");
+        return false;
+    }
+
+    std::string bundleName {""};
+    int32_t preloadMode {0};
+    if (!data.ReadString(bundleName) || !data.ReadInt32(preloadMode)) {
+        RESSCHED_LOGE("IsAllowedAppPreloadInner ReadParcelable failed");
+        return false;
+    }
+
+    bool isAllowedPreload = IsAllowedAppPreload(bundleName, preloadMode);
+    if (!reply.WriteBool(isAllowedPreload)) {
+        RESSCHED_LOGE("IsAllowedAppPreloadInner write isAllowedPreload failed");
+        return false;
+    }
+    return true;
+}
+
 int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
@@ -303,6 +332,8 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
             return ERR_OK;
         case static_cast<uint32_t>(ResourceScheduleInterfaceCode::GET_SYSTEMLOAD_LEVEL):
             return GetSystemloadLevelInner(data, reply);
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::TOUCH_DOWN_APP_PRELOAD):
+            return IsAllowedAppPreloadInner(data, reply);
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }

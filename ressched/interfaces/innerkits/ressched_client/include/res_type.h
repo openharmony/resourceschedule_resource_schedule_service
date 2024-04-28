@@ -133,8 +133,6 @@ enum : uint32_t {
     RES_TYPE_MMI_INPUT_STATE = 47,
     // report anco load protect file config
     RES_TYPE_ANCO_CUST = 48,
-    // report anco app is front
-    RES_TYPE_ANCO_APP_FRONT = 49,
     // report time zone changed
     RES_TYPE_TIMEZONE_CHANGED = 50,
     // report connection status
@@ -219,10 +217,13 @@ enum : uint32_t {
     RES_TYPE_FORM_STATE_CHANGE_EVENT = 91,
     // report power mode changed
     RES_TYPE_POWER_MODE_CHANGED = 92,
+    // report thermal scenario changed
+    RES_TYPE_THERMAL_SCENARIO_REPORT = 93,
     // report boot completed
-    RES_TYPE_BOOT_COMPLETED = 93,
+    RES_TYPE_BOOT_COMPLETED = 94,
     // report continuous application startup
-    RES_TYPE_CONTINUOUS_STARTUP = 94,
+    RES_TYPE_CONTINUOUS_STARTUP = 95,
+
     //last resType
     RES_TYPE_LAST,
 };
@@ -277,7 +278,6 @@ inline const std::map<uint32_t, std::string> resTypeToStr = {
     { RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, "RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE" },
     { RES_TYPE_MMI_INPUT_STATE, "RES_TYPE_MMI_INPUT_STATE" },
     { RES_TYPE_ANCO_CUST, "RES_TYPE_ANCO_CUST" },
-    { RES_TYPE_ANCO_APP_FRONT, "RES_TYPE_ANCO_APP_FRONT" },
     { RES_TYPE_TIMEZONE_CHANGED, "RES_TYPE_TIMEZONE_CHANGED" },
     { RES_TYPE_TIME_CHANGED, "RES_TYPE_TIME_CHANGED" },
     { RES_TYPE_NITZ_TIME_CHANGED, "RES_TYPE_NITZ_TIME_CHANGED" },
