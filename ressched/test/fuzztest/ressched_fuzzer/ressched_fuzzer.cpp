@@ -91,7 +91,7 @@ namespace {
         }
         std::string str(cstr);
         return str;
-    } 
+    }
 
     bool DoInit()
     {
