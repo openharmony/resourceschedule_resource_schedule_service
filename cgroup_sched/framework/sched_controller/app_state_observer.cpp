@@ -50,9 +50,9 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         return;
     }
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    std::string uid = std::to_string(abilityStateData.uid);
-    std::string bundleName = std::to_string(abilityStateData.uid);
+    std::string bundleName = abilityStateData.bundleName;
     if (cgHandler) {
+        auto uid = abilityStateData.uid;
         auto pid = abilityStateData.pid;
         auto abilityName = abilityStateData.abilityName;
         auto token = reinterpret_cast<uintptr_t>(abilityStateData.token.GetRefPtr());
@@ -66,7 +66,7 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     }
 
     nlohmann::json payload;
-    
+    std::string uid = std::to_string(abilityStateData.uid);
     payload["pid"] = std::to_string(abilityStateData.pid);
     payload["uid"] = uid;
     payload["bundleName"] = bundleName;
