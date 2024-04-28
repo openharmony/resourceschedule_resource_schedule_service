@@ -167,28 +167,48 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_001, Function | Medium
  */
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_AppStartupSceneRec_001, Function | MediumTest | Level1)
 {
-    AppStartupSceneRec::GetInstance();
+    AppStartupSceneRec::GetInstance().CleanRecordSceneData();
+    ffrt::wait();
     std::string bundleName = "test101";
     std::string uid = "101";
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
+    ffrt::wait();
+    bool isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
     uid = "102";
     bundleName = "test102";
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
+    ffrt::wait();
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
     uid = "103";
     bundleName = "test103";
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
+    ffrt::wait();
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
     uid = "104";
     bundleName = "test104";
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
+    ffrt::wait();
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
     uid = "105";
     bundleName = "test105";
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
+    ffrt::wait();
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, true);
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
+    ffrt::wait();
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, true);
     uid = "106";
     bundleName = "test106";
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-    SUCCEED();
-
+    ffrt::wait();
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, true);
 }
 
 /**
@@ -200,19 +220,24 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_AppStartupSceneRec_001, Function | Med
  */
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_AppStartupSceneRec_002, Function | MediumTest | Level1)
 {
-    AppStartupSceneRec::GetInstance();
+    AppStartupSceneRec::GetInstance().CleanRecordSceneData();
+    ffrt::wait();
+    bool isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
     std::string bundleName = "test101";
     std::string uid = "101";
     AppStartupSceneRec::GetInstance().startIgnorePkgs_.emplace("test101");
     uid = "106";
     bundleName = "test106";
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-    AppStartupSceneRec::GetInstance().CleanRecordSceneData();
+    ffrt::wait();
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-    SUCCEED();
+    ffrt::wait();
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
 }
-
-
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
