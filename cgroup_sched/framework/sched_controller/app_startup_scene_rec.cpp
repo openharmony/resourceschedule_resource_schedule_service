@@ -65,7 +65,7 @@ void AppStartupSceneRec::RecordIsContinuousStartup(std::string uid, std::string 
     auto tarEndTimePoint = std::chrono::system_clock::now();
     auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
     int64_t curTime = tarDuration.count();
-    CGS_LOGI("recordIsContinuousStartup uid: %{public}s bundleName: %{public}s curTime:%{public}ld",
+    CGS_LOGI("recordIsContinuousStartup uid: %{public}s bundleName: %{public}s curTime:%{public}lld",
         uid.c_str(), bundleName.c_str(), curTime);
     if (curTime - lastAppStartTime_ >= CONTINUOUS_START_TIME_OUT) {
         CleanRecordSceneData();
@@ -111,7 +111,7 @@ void AppStartupSceneRec::UpdateAppStartupNum(std::string uid, int64_t curTime, s
     appStartCount_++;
     lastStartUid_ = uid;
     if (isReportContinuousStartup_.load()) {
-        CGS_LOGI("UpdateAppStartupNum appStartCount_:%{public}ld", appStartCount_);
+        CGS_LOGI("UpdateAppStartupNum appStartCount_:%{public}d", appStartCount_);
         return;
     }
     startPkgs_.emplace_back(bundleName);
