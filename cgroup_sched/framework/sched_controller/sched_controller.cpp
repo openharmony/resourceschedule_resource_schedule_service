@@ -20,6 +20,7 @@
 #include "system_ability_definition.h"
 #include "app_mgr_interface.h"
 #include "app_state_observer.h"
+#include "app_startup_scene_rec.h"
 #ifdef CONFIG_BGTASK_MGR
 #include "background_task_mgr_helper.h"
 #include "background_task_observer.h"
@@ -76,6 +77,7 @@ void SchedController::Init()
     InitCgroupAdjuster();
     // init dispatch resource function map
     InitDispatchResFuncMap();
+    InitAppStartupSceneRec();
 }
 
 void SchedController::Deinit()
@@ -87,7 +89,9 @@ void SchedController::Deinit()
     if (supervisor_) {
         supervisor_ = nullptr;
     }
+    DeinitAppStartupSceneRec();
 }
+
 
 void SchedController::UnregisterStateObservers()
 {
@@ -204,6 +208,15 @@ inline void SchedController::InitSupervisor()
     supervisor_ = std::make_shared<Supervisor>();
 }
 
+inline void SchedController::InitAppStartupSceneRec()
+{
+    AppStartupSceneRec::GetInstance().Init();
+}
+
+inline void SchedController::DeinitAppStartupSceneRec()
+{
+    AppStartupSceneRec::GetInstance().Deinit();
+}
 void SchedController::InitDispatchResFuncMap()
 {
     dispatchResFuncMap_ = {
