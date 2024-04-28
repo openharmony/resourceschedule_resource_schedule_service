@@ -263,7 +263,6 @@ namespace {
             EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED, want, payload);
         return true;
     }
-#endif // DEVICE_MOVEMENT_PERCEPTION_ENABLE
 } // namespace ResourceSchedule
 } // namespace OHOS
 
