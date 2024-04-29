@@ -30,6 +30,7 @@
 #include "system_ability_definition.h"
 #include "res_sched_client.h"
 #include "res_sched_service_stub.h"
+#include "res_sched_systemload_notifier_client.h"
 
 #define private public
 #define protected public
