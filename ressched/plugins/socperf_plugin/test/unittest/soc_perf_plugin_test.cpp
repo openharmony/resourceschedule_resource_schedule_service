@@ -536,7 +536,6 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_021, Function | MediumTes
         ResType::RES_TYPE_SOCPERF_CUST_EVENT_END, -1, nullptr);
     ret = SocPerfPlugin::GetInstance().HandleCustEventEnd(socPerfCustEventEndDataInvalid);
     EXPECT_FALSE(ret);
-
 }
 } // namespace SOCPERF
 } // namespace OHOS
