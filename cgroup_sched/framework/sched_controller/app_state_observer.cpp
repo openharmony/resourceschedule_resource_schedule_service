@@ -74,13 +74,6 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     ffrt::submit([abilityStateData.abilityState, uid, bundleName, this]() {
         AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(
             abilityStateData.abilityState, uid, bundleName);
-
-
-}
-
-bool RmsApplicationStateObserver::IsAppStartUp(int32_t abilityState)
-{
-    return abilityState == APP_START_UP;
 }
 
 void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData &abilityStateData)
