@@ -498,7 +498,6 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_019, Function | MediumTes
         ResType::RES_TYPE_ANCO_CUST, -1, nullptr);
     ret = SocPerfPlugin::GetInstance().HandleCustEvent(ancoEvnetDataInvalid);
     EXPECT_FALSE(ret);
-
 }
 
 /*
@@ -517,7 +516,6 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_020, Function | MediumTes
         ResType::RES_TYPE_SOCPERF_CUST_EVENT_BEGIN, -1, nullptr);
     ret = SocPerfPlugin::GetInstance().HandleCustEventBegin(socPerfCustEventBeginDataInvalid);
     EXPECT_FALSE(ret);
-
 }
 
 /*
