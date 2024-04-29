@@ -492,11 +492,11 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_019, Function | MediumTes
 {
     const std::shared_ptr<ResData>& ancoEvnetData = std::make_shared<ResData>(
         ResType::RES_TYPE_ANCO_CUST, 1001, nullptr);
-    bool ret = SocPerfPlugin::GetInstance().HandleAncoEvent(ancoEvnetData);
+    bool ret = SocPerfPlugin::GetInstance().HandleCustEvent(ancoEvnetData);
     EXPECT_TRUE(ret);
     const std::shared_ptr<ResData>& ancoEvnetDataInvalid = std::make_shared<ResData>(
         ResType::RES_TYPE_ANCO_CUST, -1, nullptr);
-    ret = SocPerfPlugin::GetInstance().HandleAncoEvent(ancoEvnetDataInvalid);
+    ret = SocPerfPlugin::GetInstance().HandleCustEvent(ancoEvnetDataInvalid);
     EXPECT_FALSE(ret);
 
 }

@@ -122,7 +122,7 @@ void SocPerfPlugin::InitFunctionMap()
         { RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); } },
         { RES_TYPE_ANCO_CUST,
-            [this](const std::shared_ptr<ResData>& data) { HandleAncoEvent(data); } },
+            [this](const std::shared_ptr<ResData>& data) { HandleCustEvent(data); } },
         { RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
             [this](const std::shared_ptr<ResData>& data) { HandleCustEventBegin(data); } },
         { RES_TYPE_SOCPERF_CUST_EVENT_END,
@@ -428,7 +428,7 @@ bool SocPerfPlugin::HandleSocperfSceneBoard(const std::shared_ptr<ResData> &data
     return true;
 }
 
-bool SocPerfPlugin::HandleAncoEvent(const std::shared_ptr<ResData> &data)
+bool SocPerfPlugin::HandleCustEvent(const std::shared_ptr<ResData> &data)
 {
     if (data == nullptr || data->value <= 0) {
         return false;
