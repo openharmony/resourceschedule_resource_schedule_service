@@ -267,5 +267,21 @@ HWTEST_F(EventControllerTest, connectivityChange_00110, testing::ext::TestSize.L
     bool b4 = EventController::GetInstance().HandlePkgCommonEvent(action3, want, payload);
     EXPECT_EQ(b4, true);
 }
+
+/**
+ * @tc.name: bootCompleted_001
+ * @tc.desc: test the boot bootCompleted_001
+ * @tc.type: FUNC
+ * @tc.require: issuesI9IR2I
+ */
+HWTEST_F(EventControllerTest, bootCompleted_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    SUCCEED();
+}
 }
 }

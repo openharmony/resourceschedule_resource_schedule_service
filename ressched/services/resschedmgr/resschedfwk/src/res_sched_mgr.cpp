@@ -73,7 +73,7 @@ void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const n
 
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    ResSchedMgr::GetInstance().ReportDataInner(resType, value, payload);
+    ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 
 extern "C" void ReportAppStateInProcess(int32_t state, int32_t pid)

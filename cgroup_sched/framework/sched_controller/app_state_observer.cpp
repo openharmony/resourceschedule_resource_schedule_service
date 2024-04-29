@@ -20,6 +20,8 @@
 #include "cgroup_sched_log.h"
 #include "ressched_utils.h"
 #include "res_type.h"
+#include "ffrt.h"
+#include "app_startup_scene_rec.h"
 #include "supervisor.h"
 
 #undef LOG_TAG
@@ -47,13 +49,13 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         return;
     }
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    std::string bundleName = abilityStateData.bundleName;
+    int32_t abilityState = abilityStateData.abilityState;
     if (cgHandler) {
         auto uid = abilityStateData.uid;
         auto pid = abilityStateData.pid;
-        auto bundleName = abilityStateData.bundleName;
         auto abilityName = abilityStateData.abilityName;
         auto token = reinterpret_cast<uintptr_t>(abilityStateData.token.GetRefPtr());
-        auto abilityState = abilityStateData.abilityState;
         auto abilityType = abilityStateData.abilityType;
 
         cgHandler->PostTask([cgHandler, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
@@ -63,11 +65,16 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     }
 
     nlohmann::json payload;
+    std::string uid = std::to_string(abilityStateData.uid);
     payload["pid"] = std::to_string(abilityStateData.pid);
-    payload["uid"] = std::to_string(abilityStateData.uid);
-    payload["bundleName"] = abilityStateData.bundleName;
+    payload["uid"] = uid;
+    payload["bundleName"] = bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
-        abilityStateData.abilityState, payload);
+        abilityState, payload);
+    ffrt::submit([abilityState, uid, bundleName, this]() {
+        AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(
+            abilityState, uid, bundleName);
+    });
 }
 
 void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData &abilityStateData)
