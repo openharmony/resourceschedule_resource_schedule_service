@@ -491,7 +491,7 @@ namespace {
 
         auto connectionSubscriber = std::make_unique<ConnectionSubscriber>();
         connectionSubscriber->OnDlpAbilityOpened(targetConnectionData);
-        connectionSubscriber->OnExtensionDisconnected(targetConnectionData);
+        connectionSubscriber->OnDlpAbilityClosed(targetConnectionData);
         connectionSubscriber->OnServiceDied();
         return true;
     }
@@ -538,7 +538,7 @@ namespace {
         g_pos = 0;
 
         AudioStandard::AudioRingerMode ringerMode = AudioStandard::AudioRingerMode(GetData<int32_t>());
-        auto audioObserver->std::make_unique<AudioObserver>();
+        auto audioObserver = std::make_unique<AudioObserver>();
         audioObserver->OnRingerModeUpdated(ringerMode);
         return true;
     }
@@ -560,7 +560,7 @@ namespace {
         volumeEvent.updateUi = GetData<bool>();
         volumeEvent.volumeGroupId = GetData<int32_t>();
 
-        audio audioObserver = std::make_unique<AudioObserver>();
+        auto audioObserver = std::make_unique<AudioObserver>();
         audioObserver->OnVolumeKeyEvent(volumeEvent);
         return true;
     }

@@ -29,7 +29,7 @@
 #include "singleton.h"
 #include "system_ability_definition.h"
 #include "res_sched_client.h"
-#include "res_schedd_service_stub.h"
+#include "res_sched_service_stub.h"
 
 #define private public
 #define protected public
@@ -186,14 +186,23 @@ namespace {
 
         uint32_t resType = GetData<uint32_t>();
         int64_t value = GetData<int64_t>();
+        int32_t preloadMode = GetData<int32_t>();
         std::unorder_map<std::string, std::string> mapPayload;
         mapPayload["pid"] = GetStringFromData(int(size) - sizeof(uint32_t) - sizeof(int64_t));
         mapPayload["processName"] = GetStringFromData(int(size) - sizeof(std::string) -
+        sizeof(uint32_t) - sizeof(int64_t));
+        std::string bundleName = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(std::string) -
         sizeof(uint32_t) - sizeof(int64_t));
 
         ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
         ResSchedClient::GetInstance().KillProcess(mapPayload);
         ResSchedClient::GetInstance().StopRemoteObject();
+
+        sptr<ResSchedSystemloadNotifierClient> callbackObj = new (std::nothrow) ResSchedSystemloadNotifierClientMock;
+        ResSchedClient::GetInstance().RegisterSystemloadNotifier(callbackObj);
+        ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(callbackObj);
+        ResSchedClient::GetInstance().GetSystemloadLevel();
+        ResSchedClient::GetInstance().IsAllowedAppPreload(bundleName, preloadMode);
         return true;
     }
 } // namespace ResourceSchedule

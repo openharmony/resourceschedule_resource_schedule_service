@@ -70,7 +70,7 @@ namespace {
     std::string GetStringFromData(int strlen)
     {
         if (strlen <= 0) {
-            return u"";
+            return "";
         }
         char cstr[strlen];
         cstr[strlen - 1] = '\0';
@@ -91,7 +91,7 @@ namespace {
             return false;
         }
 
-        if (size <= SIX_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+        if (size <= sizeof(int32_t) + sizeof(std::string)) {
             return false;
         }
 
@@ -180,7 +180,7 @@ namespace {
         AAFwk::Want want;
         EventFwk::CommonEventData commonEventData;
         want.SetAction(action);
-        want.SetParm("NetType", value);
+        want.SetParam("NetType", value);
         commonEventData.SetWant(want);
         commonEventData.SetData(eventData);
         commonEventData.SetCode(code);
@@ -214,7 +214,7 @@ namespace {
         AAFwk::Want want;
         EventFwk::CommonEventData commonEventData;
         want.SetAction(action);
-        want.SetParm("NetType", value);
+        want.SetParam("NetType", value);
         commonEventData.SetWant(want);
         commonEventData.SetData(eventData);
         commonEventData.SetCode(code);
