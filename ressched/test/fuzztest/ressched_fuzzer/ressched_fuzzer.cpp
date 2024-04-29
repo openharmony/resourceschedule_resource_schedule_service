@@ -187,7 +187,7 @@ namespace {
         uint32_t resType = GetData<uint32_t>();
         int64_t value = GetData<int64_t>();
         int32_t preloadMode = GetData<int32_t>();
-        std::unorder_map<std::string, std::string> mapPayload;
+        std::unordered_map<std::string, std::string> mapPayload;
         mapPayload["pid"] = GetStringFromData(int(size) - sizeof(uint32_t) - sizeof(int64_t));
         mapPayload["processName"] = GetStringFromData(int(size) - sizeof(std::string) -
         sizeof(uint32_t) - sizeof(int64_t));
@@ -198,7 +198,7 @@ namespace {
         ResSchedClient::GetInstance().KillProcess(mapPayload);
         ResSchedClient::GetInstance().StopRemoteObject();
 
-        sptr<ResSchedSystemloadNotifierClient> callbackObj = new (std::nothrow) ResSchedSystemloadNotifierClientMock;
+        sptr<ResSchedSystemloadNotifierClient> callbackObj = new (std::nothrow) ResSchedSystemloadNotifierClient;
         ResSchedClient::GetInstance().RegisterSystemloadNotifier(callbackObj);
         ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(callbackObj);
         ResSchedClient::GetInstance().GetSystemloadLevel();

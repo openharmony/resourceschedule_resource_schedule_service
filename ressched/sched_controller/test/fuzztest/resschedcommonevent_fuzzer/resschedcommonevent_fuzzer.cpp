@@ -245,7 +245,7 @@ namespace {
         AAFwk::Want want;
         EventFwk::CommonEventData commonEventData;
         want.SetAction(action);
-        want.SetParm("NetType", value);
+        want.SetParam("NetType", value);
         commonEventData.SetWant(want);
         commonEventData.SetData(eventData);
         commonEventData.SetCode(code);
