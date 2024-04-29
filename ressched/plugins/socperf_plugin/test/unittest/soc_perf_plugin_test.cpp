@@ -481,5 +481,62 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_018, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().HandleSocperfSceneBoard(nullptr);
     EXPECT_FALSE(ret);
 }
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_019
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_019, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResData>& ancoEvnetData = std::make_shared<ResData>(
+        SocPerfPlugin::GetInstance().RES_TYPE_ANCO_CUST, 1001, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleAncoEvent(scbAnimationEndData);
+    EXPECT_TRUE(ret);
+    ancoEvnetData = std::make_shared<ResData>(
+        SocPerfPlugin::GetInstance().RES_TYPE_ANCO_CUST, -1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleAncoEvent(scbAnimationEndData);
+    EXPECT_FALSE(ret);
+
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_020
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_020, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResData>& socPerfCustEventBegin = std::make_shared<ResData>(
+        SocPerfPlugin::GetInstance().RES_TYPE_SOCPERF_CUST_EVENT_BEGIN, 1001, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleCustEventBegin(scbAnimationEndData);
+    EXPECT_TRUE(ret);
+    socPerfCustEventBegin = std::make_shared<ResData>(
+        SocPerfPlugin::GetInstance().RES_TYPE_SOCPERF_CUST_EVENT_BEGIN, -1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleCustEventBegin(scbAnimationEndData);
+    EXPECT_FALSE(ret);
+
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_021
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_021, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResData>& socPerfCustEventEnd = std::make_shared<ResData>(
+        SocPerfPlugin::GetInstance().RES_TYPE_SOCPERF_CUST_EVENT_END, 1001, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleCustEventEnd(scbAnimationEndData);
+    EXPECT_TRUE(ret);
+    socPerfCustEventEnd = std::make_shared<ResData>(
+        SocPerfPlugin::GetInstance().RES_TYPE_SOCPERF_CUST_EVENT_END, -1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleCustEventEnd(scbAnimationEndData);
+    EXPECT_FALSE(ret);
+
+}
 } // namespace SOCPERF
 } // namespace OHOS
