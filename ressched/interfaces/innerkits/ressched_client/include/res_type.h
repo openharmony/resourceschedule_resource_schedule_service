@@ -218,6 +218,10 @@ enum : uint32_t {
     RES_TYPE_POWER_MODE_CHANGED = 92,
     // report thermal scenario changed
     RES_TYPE_THERMAL_SCENARIO_REPORT = 93,
+    // report boot completed
+    RES_TYPE_BOOT_COMPLETED = 94,
+    // report continuous application startup
+    RES_TYPE_CONTINUOUS_STARTUP = 95,
     //last resType
     RES_TYPE_LAST,
 };
@@ -693,6 +697,22 @@ enum FormCreateStatus : int64_t {
 enum WebDragResizeStatus : int64_t {
     WEB_DRAG_START = 0,
     WEB_DRAG_END = 1,
+};
+
+/**
+ * @brief boot completed status
+ */
+enum BootCompletedStatus : int64_t {
+    START_BOOT_COMPLETED = 0,
+    STOP_BOOT_COMPLETED = 1,
+};
+
+/**
+ * @brief continuous startUp status
+ */
+enum ContinuousStartupStatus : int64_t {
+    START_CONTINUOUS_STARTUP = 0,
+    STOP_CONTINUOUS_STARTUP = 1,
 };
 
 } // namespace ResType

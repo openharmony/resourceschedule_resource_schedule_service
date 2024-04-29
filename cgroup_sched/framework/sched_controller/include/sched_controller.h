@@ -97,6 +97,8 @@ private:
     inline void InitCgroupHandler();
     inline void InitCgroupAdjuster();
     inline void InitSupervisor();
+    inline void InitAppStartupSceneRec();
+    inline void DeinitAppStartupSceneRec();
     void InitDispatchResFuncMap();
 };
 } // namespace ResourceSchedule

@@ -18,6 +18,7 @@
 #include <memory>
 #include "sched_controller.h"
 #include "window_state_observer.h"
+#include "app_startup_scene_rec.h"
 #include "window_manager.h"
 #include "wm_common.h"
 #include "sched_policy.h"
@@ -29,6 +30,9 @@ using OHOS::Rosen::IWindowModeChangedListener;
 
 namespace OHOS {
 namespace ResourceSchedule {
+namespace {
+    static const int32_t APP_START_UP = 0;
+}
 namespace CgroupSetting {
 class CGroupSchedTest : public testing::Test {
 public:
@@ -48,10 +52,12 @@ void CGroupSchedTest::TearDownTestCase(void)
 
 void CGroupSchedTest::SetUp(void)
 {
+    AppStartupSceneRec::GetInstance().Init();
 }
 
 void CGroupSchedTest::TearDown(void)
 {
+    AppStartupSceneRec::GetInstance().Deinit();
 }
 
 /**
@@ -152,7 +158,77 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_001, Function | Medium
     SUCCEED();
 }
 
+/**
+ * @tc.name: CGroupSchedTest_AppStartupSceneRec_001
+ * @tc.desc: application startup scene Test
+ * @tc.type: FUNC
+ * @tc.require: issuesI9IR2I
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_AppStartupSceneRec_001, Function | MediumTest | Level1)
+{
+    AppStartupSceneRec::GetInstance().CleanRecordSceneData();
+    std::string bundleName = "test101";
+    std::string uid = "101";
+    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(-1, uid, bundleName);
+    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(APP_START_UP, uid, bundleName);
+    bool isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
+    uid = "102";
+    bundleName = "test102";
+    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(APP_START_UP, uid, bundleName);
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
+    uid = "103";
+    bundleName = "test103";
+    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(APP_START_UP, uid, bundleName);
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
+    uid = "104";
+    bundleName = "test104";
+    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(APP_START_UP, uid, bundleName);
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
+    uid = "105";
+    bundleName = "test105";
+    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(APP_START_UP, uid, bundleName);
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, true);
+    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(APP_START_UP, uid, bundleName);
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, true);
+    uid = "106";
+    bundleName = "test106";
+    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(APP_START_UP, uid, bundleName);
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, true);
+}
 
+/**
+ * @tc.name: CGroupSchedTest_AppStartupSceneRec_002
+ * @tc.desc: application startup scene Test
+ * @tc.type: FUNC
+ * @tc.require: issuesI9IR2I
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_AppStartupSceneRec_002, Function | MediumTest | Level1)
+{
+    AppStartupSceneRec::GetInstance().CleanRecordSceneData();
+    bool isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
+    std::string bundleName = "test101";
+    std::string uid = "101";
+    AppStartupSceneRec::GetInstance().startIgnorePkgs_.emplace("test101");
+    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(APP_START_UP, uid, bundleName);
+    uid = "106";
+    bundleName = "test106";
+    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(APP_START_UP, uid, bundleName);
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
+    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(APP_START_UP, uid, bundleName);
+    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
+    EXPECT_EQ(isReportContinuousStartup, false);
+}
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

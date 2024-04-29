@@ -28,6 +28,7 @@ ohos_shared_library("cgroup_sched") {
   public_configs = [ ":cgroup_sched_public_config" ]
   sources = [
     "${cgroup_sched_common}/cgroup_sched_log.cpp",
+    "sched_controller/app_startup_scene_rec.cpp",
     "sched_controller/app_state_observer.cpp",
     "sched_controller/cgroup_adjuster.cpp",
     "sched_controller/cgroup_event_handler.cpp",
@@ -49,6 +50,7 @@ ohos_shared_library("cgroup_sched") {
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
     "eventhandler:libeventhandler",
+    "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",
