@@ -50,12 +50,12 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     }
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
     std::string bundleName = abilityStateData.bundleName;
+    int32_t abilityState = abilityStateData.abilityState;
     if (cgHandler) {
         auto uid = abilityStateData.uid;
         auto pid = abilityStateData.pid;
         auto abilityName = abilityStateData.abilityName;
         auto token = reinterpret_cast<uintptr_t>(abilityStateData.token.GetRefPtr());
-        auto abilityState = abilityStateData.abilityState;
         auto abilityType = abilityStateData.abilityType;
 
         cgHandler->PostTask([cgHandler, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
@@ -70,10 +70,11 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     payload["uid"] = uid;
     payload["bundleName"] = bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
-        abilityStateData.abilityState, payload);
-    ffrt::submit([abilityStateData.abilityState, uid, bundleName, this]() {
+        abilityState, payload);
+    ffrt::submit([abilityState, uid, bundleName, this]() {
         AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(
-            abilityStateData.abilityState, uid, bundleName);
+            abilityState, uid, bundleName);
+    });
 }
 
 void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData &abilityStateData)
