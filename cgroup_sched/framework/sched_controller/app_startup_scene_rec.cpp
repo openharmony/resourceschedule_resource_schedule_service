@@ -59,7 +59,8 @@ bool AppStartupSceneRec::IsAppStartUp(int32_t abilityState)
 
 void AppStartupSceneRec::RecordIsContinuousStartup(int32_t abilityState, std::string uid, std::string bundleName)
 {
-    if (!IsAppStartUp(abilityState)){
+    if (!IsAppStartUp(abilityState)) {
+        CGS_LOGE("abilityState is not app startUp");
         return;
     }
     if (startIgnorePkgs_.find(bundleName) != startIgnorePkgs_.end()) {
