@@ -29,7 +29,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-static const int32_t APP_START_UP = 0;
 void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateData &appStateData)
 {
     if (!ValidateAppStateData(appStateData)) {
@@ -72,11 +71,11 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     payload["bundleName"] = bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
         abilityStateData.abilityState, payload);
-    if (IsAppStartUp(abilityStateData.abilityState)) {
-        ffrt::submit([uid, bundleName, this]() {
-            AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-        });
-    }
+    ffrt::submit([abilityStateData.abilityState, uid, bundleName, this]() {
+        AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(
+            abilityStateData.abilityState, uid, bundleName);
+
+
 }
 
 bool RmsApplicationStateObserver::IsAppStartUp(int32_t abilityState)

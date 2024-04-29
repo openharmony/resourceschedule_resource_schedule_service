@@ -52,8 +52,16 @@ AppStartupSceneRec& AppStartupSceneRec::GetInstance()
     return instance;
 }
 
-void AppStartupSceneRec::RecordIsContinuousStartup(std::string uid, std::string bundleName)
+bool AppStartupSceneRec::IsAppStartUp(int32_t abilityState)
 {
+    return abilityState == APP_START_UP;
+}
+
+void AppStartupSceneRec::RecordIsContinuousStartup(int32_t abilityState, std::string uid, std::string bundleName)
+{
+    if (!IsAppStartUp(abilityState)){
+        return;
+    }
     if (startIgnorePkgs_.find(bundleName) != startIgnorePkgs_.end()) {
         CGS_LOGE("recordIsContinuousStartup bundleName: %{public}s is IgnorePkg", bundleName.c_str());
         return;

@@ -42,7 +42,6 @@ public:
     nlohmann::json payload_;
 
 private:
-    bool isBootCompleted_ = false;
 class SystemAbilityStatusChangeListener : public OHOS::SystemAbilityStatusChangeStub {
 public:
     SystemAbilityStatusChangeListener() {};

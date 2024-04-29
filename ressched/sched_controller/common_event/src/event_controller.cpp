@@ -204,6 +204,14 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         ReportDataInProcess(ResType::RES_TYPE_USER_REMOVE, static_cast<int64_t>(userId), payload);
         return;
     }
+    if (action == "common.event.UNLOCK_SCREEN") {
+        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_UNLOCK, payload);
+        return;
+    }
+    if (action == "common.event.LOCK_SCREEN") {
+        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_LOCK, payload);
+        return;
+    }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_CALL_STATE_CHANGED) {
         int32_t state = want.GetIntParam("state", -1);
         payload["state"] = state;
@@ -260,21 +268,10 @@ void EventController::handleEvent(int32_t userId, const std::string &action, nlo
 
 void EventController::handleOtherEvent(int32_t userId, const std::string &action, nlohmann::json &payload)
 {
-    if (action == "common.event.UNLOCK_SCREEN") {
-        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_UNLOCK, payload);
-        if (isBootCompleted_) {
-            ReportDataInProcess(ResType::RES_TYPE_BOOT_COMPLETED,
-                ResType::BootCompletedStatus::START_BOOT_COMPLETED, payload);
-            isBootCompleted_ = false;
-        }
-        return;
-    }
-    if (action == "common.event.LOCK_SCREEN") {
-        ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_LOCK, payload);
-        return;
-    }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED) {
-        isBootCompleted_ = true;
+        RESSCHED_LOGI("report boot completed");
+        ReportDataInProcess(ResType::RES_TYPE_BOOT_COMPLETED,
+            ResType::BootCompletedStatus::START_BOOT_COMPLETED, payload);
         return;
     }
 }

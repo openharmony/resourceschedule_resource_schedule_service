@@ -30,10 +30,11 @@ public:
     static AppStartupSceneRec &GetInstance();
     void Init();
     void Deinit();
-    void RecordIsContinuousStartup(std::string uid, std::string bundleName);
+    void RecordIsContinuousStartup(int32_t abilityState, std::string uid, std::string bundleName);
 private:
     AppStartupSceneRec();
     ~AppStartupSceneRec();
+    bool IsAppStartUp(int32_t abilityState);
     void CleanRecordSceneData();
     void UpdateAppStartupNum(std::string uid, int64_t curTime, std::string bundleName);
     bool IsContinuousStartup();

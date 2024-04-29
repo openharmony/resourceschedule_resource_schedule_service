@@ -281,23 +281,6 @@ HWTEST_F(EventControllerTest, bootCompleted_001, testing::ext::TestSize.Level1)
     want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
     data.SetWant(want);
     EventController::GetInstance().OnReceiveEvent(data);
-    EXPECT_EQ(EventController::GetInstance().isBootCompleted_, true);
-}
-
-/**
- * @tc.name: bootCompleted_002
- * @tc.desc: test the boot bootCompleted_002
- * @tc.type: FUNC
- * @tc.require: issuesI9IR2I
- */
-HWTEST_F(EventControllerTest, bootCompleted_002, testing::ext::TestSize.Level1)
-{
-    AAFwk::Want want;
-    EventFwk::CommonEventData data;
-    want.SetAction("common.event.UNLOCK_SCREEN");
-    data.SetWant(want);
-    EventController::GetInstance().isBootCompleted_ = true;
-    EventController::GetInstance().OnReceiveEvent(data);
     SUCCEED();
 }
 }
