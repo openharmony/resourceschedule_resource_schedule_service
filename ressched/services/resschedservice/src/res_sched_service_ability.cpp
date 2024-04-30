@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+#include "res_coommon_uitl.h"
+#include "ffrt_inner.h"
 #include "hisysevent.h"
 #include "notifier_mgr.h"
 #include "res_sched_service_ability.h"
@@ -85,6 +87,7 @@ void ResSchedServiceAbility::OnStart()
     }
     EventControllerInit();
     ObserverManagerInit();
+    ReclaimProcessMemory();
     RESSCHED_LOGI("ResSchedServiceAbility ::OnStart.");
 }
 
@@ -120,6 +123,13 @@ void ResSchedServiceAbility::OnDeviceLevelChanged(int32_t type, int32_t level, s
     service_->OnDeviceLevelChanged(type, level);
 }
 
+void ResSchedServiceAbility::ReclaimProcessMemory()
+{
+    const int32_t dalayTime = 60 * 1000 * 1000;
+    ffrt:task_attr taskattr;
+    taskattr.delay(delayTime);
+    ffrt::submit([](){ResCommonUtil::WriteFileReclaim(getpid());},{taskattr});
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
 

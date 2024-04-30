@@ -17,6 +17,11 @@
 #define RESSCHED_COMMON_INCLUDE_RES_COMMON_UTIL_H
 
 #include <string>
+#include <iostream>
+#include <fcntl.h> 
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -43,6 +48,14 @@ public:
             }
         }
         return true;
+    }
+    static void WriteFileReclaim(int32_t pid)
+    {
+        std::string path = "/proc/" + std::to_string(pid) + "/reclaim";
+        std::string contentStr = "1";
+        int fd = open(path.c_str, O_WRONLY);
+        write(fd, contentStr.c_str, contentStr.length());
+        close(fd);
     }
 };
 } // namespace ResourceSchedule
