@@ -53,8 +53,8 @@ public:
     {
         std::string path = "/proc/" + std::to_string(pid) + "/reclaim";
         std::string contentStr = "1";
-        int fd = open(path.c_str, O_WRONLY);
-        write(fd, contentStr.c_str, contentStr.length());
+        int fd = open(path.c_str(), O_WRONLY);
+        write(fd, contentStr.c_str(), contentStr.length());
         close(fd);
     }
 };

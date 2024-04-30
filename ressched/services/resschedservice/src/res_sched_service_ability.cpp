@@ -125,8 +125,8 @@ void ResSchedServiceAbility::OnDeviceLevelChanged(int32_t type, int32_t level, s
 
 void ResSchedServiceAbility::ReclaimProcessMemory()
 {
-    const int32_t dalayTime = 60 * 1000 * 1000;
-    ffrt:task_attr taskattr;
+    const int32_t delayTime = 60 * 1000 * 1000;
+    ffrt::task_attr taskattr;
     taskattr.delay(delayTime);
     ffrt::submit([]() {ResCommonUtil::WriteFileReclaim(getpid());}, {taskattr});
 }
