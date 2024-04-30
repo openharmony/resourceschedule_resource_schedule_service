@@ -98,11 +98,10 @@ namespace ResourceSchedule {
         int32_t resType = GetData<int32_t>();
         int32_t appStartType = GetData<int32_t>();
         std::shared_ptr<ResData> resData = std::make_shared<ResData>(resType, appStartType, nullptr);
-        std::shared_ptr<DeviceStandbyPlugin> deviceStandbyPlugin = std::make_shared<DeviceStandbyPlugin>();
 
-        deviceStandbyPlugin->Init();
-        deviceStandbyPlugin->DispatchResource(resData);
-        deviceStandbyPlugin->Disable();
+        DeviceStandbyPlugin::GetInstance.Init();
+        DeviceStandbyPlugin::GetInstance.DispatchResource(resData);
+        DeviceStandbyPlugin::GetInstance.Disable();
         return true;
     }
 #endif // RSS_DEVICE_STANDBY_ENABLE
