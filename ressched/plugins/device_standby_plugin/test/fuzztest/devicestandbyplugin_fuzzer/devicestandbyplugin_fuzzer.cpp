@@ -64,7 +64,7 @@ namespace ResourceSchedule {
     std::string GetStringFromData(int strlen)
     {
         if (strlen <= 0) {
-            return u"";
+            return "";
         }
         char cstr[strlen];
         cstr[strlen - 1] = '\0';
@@ -98,11 +98,11 @@ namespace ResourceSchedule {
         int32_t resType = GetData<int32_t>();
         int32_t appStartType = GetData<int32_t>();
         std::shared_ptr<ResData> resData = std::make_shared<ResData>(resType, appStartType, nullptr);
-        std::shared_ptr<DevicesStandbyPlugin> devicesStandbyPlugin = std::make_shared<DevicesStandbyPlugin>();
+        std::shared_ptr<DeviceStandbyPlugin> deviceStandbyPlugin = std::make_shared<DeviceStandbyPlugin>();
 
-        devicesStandbyPlugin->Init();
-        devicesStandbyPlugin->DispatchResource(resData);
-        devicesStandbyPlugin->Disable();
+        deviceStandbyPlugin->Init();
+        deviceStandbyPlugin->DispatchResource(resData);
+        deviceStandbyPlugin->Disable();
         return true;
     }
 #endif // RSS_DEVICE_STANDBY_ENABLE
