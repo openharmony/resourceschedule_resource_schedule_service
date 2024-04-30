@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "res_coommon_uitl.h"
+#include "res_common_uitl.h"
 #include "ffrt_inner.h"
 #include "hisysevent.h"
 #include "notifier_mgr.h"
