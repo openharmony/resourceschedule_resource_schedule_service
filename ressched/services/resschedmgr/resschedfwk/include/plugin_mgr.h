@@ -47,6 +47,7 @@ using OnDispatchResourceFunc = void (*)(const std::shared_ptr<ResData>&);
 using OnDumpFunc = void (*)(const std::vector<std::string>&, std::string&);
 using OnPluginDisableFunc = void (*)();
 using OnIsAllowedAppPreloadFunc = bool (*)(const std::string&, int32_t preloadMode);
+using GetExtConfigFunc = int32_t (*)(int32_t, std::string&);
 
 constexpr int32_t DISPATCH_TIME_OUT = 50; // ms
 constexpr int32_t DISPATCH_TIME_OUT_US = DISPATCH_TIME_OUT * 1000; // us
@@ -148,11 +149,14 @@ public:
 
     std::shared_ptr<PluginLib> GetPluginLib(const std::string& libPath);
 
+    std::string GetRealConfigPath(const char* configName);
+
 private:
     PluginMgr() = default;
-    std::string GetRealConfigPath(const char* configName);
     void OnDestroy();
     void LoadPlugin();
+    void LoadGetExtConfigFunc();
+    void GetConfigContent();
     std::shared_ptr<PluginLib> LoadOnePlugin(const PluginInfo& info);
     void UnLoadPlugin();
     void ClearResource();
@@ -199,6 +203,7 @@ private:
 #endif
 
     std::map<std::string, PluginStat> pluginStat_;
+    GetExtConfigFunc getExtConfigFunc_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

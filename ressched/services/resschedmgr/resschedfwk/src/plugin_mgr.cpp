@@ -41,9 +41,13 @@ using namespace HiviewDFX;
 
 namespace {
     const int32_t DISPATCH_WARNING_TIME = 10; // ms
+    const int32_t PLUGIN_SWITCH_FILE_IDX = 0;
+    const int32_t CONFIG_FILE_IDX = 1;
+    const int32_t MAX_FILE_LENGTH = 32 * 1024 * 1024;
     const std::string RUNNER_NAME = "rssDispatcher";
     const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
     const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
+    const char* EXT_CONFIG_LIB = "libsuspend_manager_service.z.o";
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     const int32_t DEFAULT_VALUE = -1;
     const char* EXT_RES_KEY = "extType";
@@ -63,11 +67,13 @@ void PluginMgr::Init(bool isRssExe)
         RESSCHED_LOGW("%{public}s, PluginMgr has Initialized!", __func__);
         return;
     }
-
+    LoadGetExtConfigFunc();
     if (!pluginSwitch_) {
         pluginSwitch_ = make_unique<PluginSwitch>();
         std::string realPath = GetRealConfigPath(PLUGIN_SWITCH_FILE_NAME);
-        if (realPath.empty() || !pluginSwitch_->LoadFromConfigFile(realPath, isRssExe)) {
+        std::string content;
+        GetConfigContent(PLUGIN_SWITCH_FILE_IDX, realPath, content);
+        if (realPath.empty() || !pluginSwitch_->LoadFromConfigContent(content)) {
             RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
             HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
@@ -79,7 +85,9 @@ void PluginMgr::Init(bool isRssExe)
     if (!configReader_) {
         configReader_ = make_unique<ConfigReader>();
         std::string realPath = GetRealConfigPath(CONFIG_FILE_NAME);
-        if (realPath.empty() || !configReader_->LoadFromCustConfigFile(realPath)) {
+        std::string content;
+        GetConfigContent(CONFIG_FILE_IDX, realPath, content);
+        if (realPath.empty() || !configReader_->LoadFromCustConfigContent(content)) {
             RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
             HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
@@ -107,6 +115,39 @@ void PluginMgr::Init(bool isRssExe)
 #endif
     }
     RESSCHED_LOGI("PluginMgr::Init success!");
+}
+
+void PluginMgr::LoadGetExtConfigFunc()
+{
+    auto handle = dlopen(EXT_CONFIG_LIB, RTLD_NOW);
+    if (!handle) {
+        RESSCHED_LOGE("not find lib");
+    }
+    getExtConfigFunc_ = reinterpret_cast<OnPluginInitFunc>(dlsym(handle, "GetExtConfig"));
+    if (!getExtConfigFunc_) {
+        RESSCHED_LOGE("dlsym getExtConfig func failed!");
+        dlclose(handle)
+    }
+}
+
+void PluginMgr::GetConfigContent(int32_t configIdx, std::string realPath, std::string &content)
+{
+    if (getExtConfigFunc_) {
+        getExtConfigFunc_(configIdx, content);
+        return;
+    }
+    std::ifstream ifs;
+    ifs.open(realPath, std::ios::in | std::ios::binary);
+    ifs.seekg(0, std::ios::end);
+    int32_t len = ifs.tellg();
+    if (len > MAX_FILE_LENGTH) {
+        RESSCHED_LOGE("file is too large");
+        return;
+    }
+    ifs.seekg(0, std::ios::beg);
+    std::stringstream contentData;
+    contentData << ifs.rdbuf();
+    content = contentData.str();
 }
 
 void PluginMgr::LoadPlugin()
