@@ -15,14 +15,14 @@
 import("//build/config/features.gni")
 import("//build/ohos.gni")
 import("//build/test.gni")
-import("//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
+import(
+    "//foundation/resourceschedule/resource_schedule_service/ressched/ressched.gni")
 module_output_path = "resource_schedule_service/resource_schedule_service"
 
 ##############################fuzztest##########################################
 ohos_fuzztest("DeviceStandByPluginFuzzTest") {
   module_out_path = module_output_path
-  fuzz_config_file =
-      "${ressched_plugins}/device_standby_plugin/test/fuzztest/devicestandbyplugin_fuzzer"
+  fuzz_config_file = "${ressched_plugins}/device_standby_plugin/test/fuzztest/devicestandbyplugin_fuzzer"
 
   include_dirs = [
     "${ressched_plugins}/device_standby_plugin/include",

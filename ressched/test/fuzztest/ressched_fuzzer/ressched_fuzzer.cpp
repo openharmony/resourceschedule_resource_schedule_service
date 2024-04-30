@@ -199,7 +199,7 @@ namespace {
         ResSchedClient::GetInstance().KillProcess(mapPayload);
         ResSchedClient::GetInstance().StopRemoteObject();
 
-        sptr<ResSchedSystemloadNotifierClient> callbackObj = new (std::nothrow) ResSchedSystemloadNotifierClient;
+        sptr<ResSchedSystemloadNotifierClient> callbackObj;
         ResSchedClient::GetInstance().RegisterSystemloadNotifier(callbackObj);
         ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(callbackObj);
         ResSchedClient::GetInstance().GetSystemloadLevel();
