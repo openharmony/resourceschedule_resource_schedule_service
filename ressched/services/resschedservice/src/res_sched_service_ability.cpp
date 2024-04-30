@@ -128,7 +128,7 @@ void ResSchedServiceAbility::ReclaimProcessMemory()
     const int32_t dalayTime = 60 * 1000 * 1000;
     ffrt:task_attr taskattr;
     taskattr.delay(delayTime);
-    ffrt::submit([](){ResCommonUtil::WriteFileReclaim(getpid());},{taskattr});
+    ffrt::submit([]() {ResCommonUtil::WriteFileReclaim(getpid());}, {taskattr});
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
