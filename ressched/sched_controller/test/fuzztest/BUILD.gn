@@ -15,6 +15,7 @@ group("fuzztest") {
   testonly = true
 
   deps = [
+    "resschedcommonevent_fuzzer:fuzztest",
     "resschedobserver_fuzzer:fuzztest",
-    "resschedcommonevent_fuzzer:fuzztest"]
+  ]
 }
