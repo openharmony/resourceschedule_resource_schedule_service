@@ -14,7 +14,7 @@
  */
 
 #include "res_common_util.h"
-#include "ffrt_inner.h"
+#include "ffrt.h"
 #include "hisysevent.h"
 #include "notifier_mgr.h"
 #include "res_sched_service_ability.h"
