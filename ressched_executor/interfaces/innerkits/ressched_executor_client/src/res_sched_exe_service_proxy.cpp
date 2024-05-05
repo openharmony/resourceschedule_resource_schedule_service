@@ -66,12 +66,12 @@ void ResSchedExeServiceProxy::SendRequestAsync(uint32_t resType, int64_t value, 
     RSSEXE_LOGD("SendRequestAsync success.");
 }
 
-void ResSchedExeServiceProxy::KillProcess(pid_t pid)
+int32_t ResSchedExeServiceProxy::KillProcess(pid_t pid)
 {
     RSSEXE_LOGD("KillProcess start.");
     MessageOption option = { MessageOption::TF_SYNC };
     MessageParcel data;
-    MakeUpParcel(data, pid);
+    WRITE_PARCEL(data, Int32, pid, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     MessageParcel response;
     int32_t error = Remote()->SendRequest(ResIpcType::REQUEST_KILL_PROCESS, data, response, option);
     if (error != NO_ERROR) {

@@ -31,7 +31,6 @@ namespace ResourceSchedule {
 using namespace std;
 namespace {
     constexpr int32_t MAX_INDEX = 22;
-    constexpr int32_t SIGNAL_KILL = 9;
     constexpr int32_t START_TIME_INDEX = 19;
     const std::string UNKNOWN_PROCESS = "unknown_process";
 }

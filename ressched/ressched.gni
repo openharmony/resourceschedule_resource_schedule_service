@@ -30,6 +30,9 @@ ressched_test =
 
 ressched_sched_controller = "${resourceschedule_path}/resource_schedule_service/ressched/sched_controller"
 
+resschedexe_interfaces =
+    "${resourceschedule_path}/resource_schedule_service/ressched_executor/interfaces"
+
 declare_args() {
   device_movement_perception_enable = true
   ressched_with_telephony_state_registry_enable = true

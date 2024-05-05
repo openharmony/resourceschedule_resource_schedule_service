@@ -16,6 +16,7 @@
 #include "res_sched_exe_mgr.h"
 
 #include <cinttypes>
+#include <csignal>  
 
 #include "hitrace_meter.h"
 
@@ -26,6 +27,10 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+
+namespace {
+    constexpr int32_t SIGNAL_KILL = 9;
+}
 
 IMPLEMENT_SINGLE_INSTANCE(ResSchedExeMgr);
 
@@ -57,11 +62,6 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
 int32_t ResSchedExeMgr::KillProcess(pid_t pid)
 {
     int32_t killRes = kill(pid, SIGNAL_KILL);
-    if (killRes < 0) {
-        RESSCHED_LOGE("kill process %{public}d:%{public}s failed", pid, processName.c_str());
-    } else {
-        RESSCHED_LOGI("kill process %{public}d:%{public}s success", pid, processName.c_str());
-    }
     return killRes;
 }
 

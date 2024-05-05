@@ -27,6 +27,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     constexpr int32_t PAYLOAD_MAX_SIZE = 4096;
+    constexpr int32_t KILL_PROCESS_FAILED = -1;
 
     bool IsValidToken(MessageParcel& data)
     {
@@ -105,19 +106,16 @@ int32_t ResSchedExeServiceStub::ReportRequestInner(MessageParcel& data, MessageP
 int32_t ResSchedExeServiceStub::KillProcessInner(MessageParcel& data, MessageParcel& reply)
 {
     pid_t pid = -1;
-    if (!ParseParcel(data, pid)) {
-        result["errorNo"] = std::to_string(ResIpcErrCode::RSSEXE_DATA_ERROR);
-        reply.WriteString(result.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
-        reply.WriteInt32(ResIpcErrCode::RSSEXE_DATA_ERROR);
+    READ_PARCEL(data, Int32, pid, false, ResSchedExeServiceStub);
+    if (pid <= 0) {
+        reply.WriteInt32(KILL_PROCESS_FAILED);
         return ResIpcErrCode::RSSEXE_DATA_ERROR;
     }
 
     int32_t ret = 0;
     ret = KillProcess(pid);
-    result["errorNo"] = std::to_string(ret);
-    reply.WriteString(result.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
     reply.WriteInt32(ret);
-    return ret;
+    return 0;
 }
 
 int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data, MessageParcel& reply)
