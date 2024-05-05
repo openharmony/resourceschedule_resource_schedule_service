@@ -151,12 +151,13 @@ public:
 
     std::string GetRealConfigPath(const char* configName);
 
+    void GetConfigContent(int32_t configIdx, std::string realPath, std::string &content);
+
 private:
     PluginMgr() = default;
     void OnDestroy();
     void LoadPlugin();
     void LoadGetExtConfigFunc();
-    void GetConfigContent();
     std::shared_ptr<PluginLib> LoadOnePlugin(const PluginInfo& info);
     void UnLoadPlugin();
     void ClearResource();

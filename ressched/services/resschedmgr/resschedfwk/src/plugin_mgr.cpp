@@ -73,7 +73,7 @@ void PluginMgr::Init(bool isRssExe)
         std::string realPath = GetRealConfigPath(PLUGIN_SWITCH_FILE_NAME);
         std::string content;
         GetConfigContent(PLUGIN_SWITCH_FILE_IDX, realPath, content);
-        if (realPath.empty() || !pluginSwitch_->LoadFromConfigContent(content)) {
+        if (realPath.empty() || !pluginSwitch_->LoadFromConfigContent(content, isRssExe)) {
             RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
             HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
@@ -132,7 +132,7 @@ void PluginMgr::LoadGetExtConfigFunc()
 
 void PluginMgr::GetConfigContent(int32_t configIdx, std::string realPath, std::string &content)
 {
-    if (getExtConfigFunc_) {
+    if (configIdx != -1 && getExtConfigFunc_) {
         getExtConfigFunc_(configIdx, content);
         return;
     }

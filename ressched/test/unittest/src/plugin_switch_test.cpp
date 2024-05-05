@@ -14,6 +14,7 @@
  */
 
 #include "plugin_switch_test.h"
+#include "plugin_mgr.h"
 
 using namespace std;
 using namespace testing::ext;
@@ -52,7 +53,9 @@ void PluginSwitchTest::TearDown()
 HWTEST_F(PluginSwitchTest, LoadConfig001, TestSize.Level1)
 {
     pluginSwitch_ = make_unique<PluginSwitch>();
-    bool ret = pluginSwitch_->LoadFromConfigFile(TEST_PREFIX_SWITCH_PATH + "fileNotExist");
+    std::string content;
+    PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_SWITCH_PATH + "fileNotExist", content);
+    bool ret = pluginSwitch_->LoadFromConfigContent(content);
     EXPECT_TRUE(!ret);
 }
 
@@ -66,7 +69,9 @@ HWTEST_F(PluginSwitchTest, LoadConfig001, TestSize.Level1)
 HWTEST_F(PluginSwitchTest, LoadConfig002, TestSize.Level1)
 {
     pluginSwitch_ = make_unique<PluginSwitch>();
-    bool ret = pluginSwitch_->LoadFromConfigFile(TEST_PREFIX_SWITCH_PATH + "not_exist_plugin.xml");
+    std::string content;
+    PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_SWITCH_PATH + "not_exist_plugin.xml", content);
+    bool ret = pluginSwitch_->LoadFromConfigContent(content);
     EXPECT_TRUE(!ret);
 }
 
@@ -79,7 +84,9 @@ HWTEST_F(PluginSwitchTest, LoadConfig002, TestSize.Level1)
  */
 HWTEST_F(PluginSwitchTest, LoadConfig003, TestSize.Level1)
 {
-    bool ret = pluginSwitch_->LoadFromConfigFile(TEST_PREFIX_SWITCH_PATH + "invalid_format.xml");
+    std::string content;
+    PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_SWITCH_PATH + "invalid_format.xml", content);
+    bool ret = pluginSwitch_->LoadFromConfigContent(content);
     EXPECT_TRUE(!ret);
 }
 
@@ -92,7 +99,9 @@ HWTEST_F(PluginSwitchTest, LoadConfig003, TestSize.Level1)
  */
 HWTEST_F(PluginSwitchTest, LoadConfig004, TestSize.Level1)
 {
-    bool ret = pluginSwitch_->LoadFromConfigFile(TEST_PREFIX_SWITCH_PATH + "root_element_wrong.xml");
+    std::string content;
+    PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_SWITCH_PATH + "root_element_wrong.xml", content);
+    bool ret = pluginSwitch_->LoadFromConfigContent(content);
     EXPECT_TRUE(!ret);
 }
 } // namespace ResourceSchedule

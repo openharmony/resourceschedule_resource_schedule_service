@@ -14,6 +14,7 @@
  */
 
 #include "config_reader_test.h"
+#include "plugin_mgr.h"
 
 using namespace std;
 using namespace testing::ext;
@@ -48,7 +49,9 @@ void ConfigReaderTest::TearDown()
 
 bool ConfigReaderTest::ParseConfigFile(const string& fileName)
 {
-    bool ret = configReader_->LoadFromCustConfigFile(TEST_PREFIX_RES_PATH + fileName);
+    std::string content;
+    PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_RES_PATH + fileName, content);
+    bool ret = configReader_->LoadFromCustConfigContent(content);
     return ret;
 }
 
@@ -61,11 +64,14 @@ bool ConfigReaderTest::ParseConfigFile(const string& fileName)
  */
 HWTEST_F(ConfigReaderTest, LoadConfigFile001, TestSize.Level1)
 {
+    std::string content;
+    PluginMgr::GetInstance().GetConfigContent(-1, "fileNotExist", content);
+    
     /**
      * @tc.steps: step1. load not exist config file
      * @tc.expected: step1. return false when load not exist file
      */
-    bool ret = configReader_->LoadFromCustConfigFile("fileNotExist");
+    bool ret = configReader_->LoadFromCustConfigContent(content);
     EXPECT_TRUE(!ret);
 }
 

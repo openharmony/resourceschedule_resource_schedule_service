@@ -64,7 +64,7 @@ bool PluginSwitch::FillinPluginInfo(const xmlNode* currNode, PluginInfo& info, b
     return true;
 }
 
-bool PluginSwitch::LoadFromConfigFile(const string& content, bool isRssExe)
+bool PluginSwitch::LoadFromConfigContent(const string& content, bool isRssExe)
 {
     // skip the empty string, else you will get empty node
     xmlDocPtr xmlDocPtr = xmlReadMemory(content.c_str(), content.length(), nullptr, nullptr,
