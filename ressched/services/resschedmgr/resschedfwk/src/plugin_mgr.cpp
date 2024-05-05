@@ -21,6 +21,7 @@
 #include <iostream>
 #include <string>
 #include <string_ex.h>
+#include <fstream>
 #include "config_policy_utils.h"
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt_inner.h"
@@ -123,10 +124,10 @@ void PluginMgr::LoadGetExtConfigFunc()
     if (!handle) {
         RESSCHED_LOGE("not find lib");
     }
-    getExtConfigFunc_ = reinterpret_cast<OnPluginInitFunc>(dlsym(handle, "GetExtConfig"));
+    getExtConfigFunc_ = reinterpret_cast<GetExtConfigFunc>(dlsym(handle, "GetExtConfig"));
     if (!getExtConfigFunc_) {
         RESSCHED_LOGE("dlsym getExtConfig func failed!");
-        dlclose(handle)
+        dlclose(handle);
     }
 }
 
