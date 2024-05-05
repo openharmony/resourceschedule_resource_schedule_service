@@ -54,7 +54,7 @@ public:
         if (!pluginSwitch_) {
             pluginSwitch_ = std::make_unique<PluginSwitch>();
             std::string content;
-            GetConfigContent(-1, TEST_PREFIX_RES_SWITCH_PATH, content)
+            GetConfigContent(-1, TEST_PREFIX_RES_SWITCH_PATH, content);
             bool loadRet = pluginSwitch_->LoadFromConfigContent(content);
             if (!loadRet) {
                 initStatus = LOAD_CONFIG_FAIL;
