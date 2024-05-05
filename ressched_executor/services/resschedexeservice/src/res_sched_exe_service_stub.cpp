@@ -102,6 +102,24 @@ int32_t ResSchedExeServiceStub::ReportRequestInner(MessageParcel& data, MessageP
     return ret;
 }
 
+int32_t ResSchedExeServiceStub::KillProcessInner(MessageParcel& data, MessageParcel& reply)
+{
+    pid_t pid = -1;
+    if (!ParseParcel(data, pid)) {
+        result["errorNo"] = std::to_string(ResIpcErrCode::RSSEXE_DATA_ERROR);
+        reply.WriteString(result.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
+        reply.WriteInt32(ResIpcErrCode::RSSEXE_DATA_ERROR);
+        return ResIpcErrCode::RSSEXE_DATA_ERROR;
+    }
+
+    int32_t ret = 0;
+    ret = KillProcess(pid);
+    result["errorNo"] = std::to_string(ret);
+    reply.WriteString(result.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
+    reply.WriteInt32(ret);
+    return ret;
+}
+
 int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data, MessageParcel& reply)
 {
     if (!IsValidToken(data)) {
@@ -133,6 +151,8 @@ int32_t ResSchedExeServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &da
             return ReportRequestInner(data, reply);
         case ResIpcType::REQUEST_ASYNC:
             return ReportRequestInner(data, reply);
+        case ResIpcType::REQUEST_KILL_PROCESS:
+            return KillProcessInner(data, reply);
         case ResIpcType::REQUEST_DEBUG:
             return ReportDebugInner(data, reply);
         default:

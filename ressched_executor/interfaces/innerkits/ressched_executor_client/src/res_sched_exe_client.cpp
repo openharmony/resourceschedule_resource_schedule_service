@@ -55,6 +55,21 @@ void ResSchedExeClient::SendRequestAsync(uint32_t resType, int64_t value,
     SendRequestInner(false, resType, value, context, reply);
 }
 
+int32_t ResSchedExeClient::KillProcess(pid_t pid)
+{
+    if (TryConnect() != ResErrCode::RSSEXE_NO_ERR) {
+        RSSEXE_LOGE("connect executor failed!");
+        return ResIpcErrCode::RSSEXE_CONNECT_FAIL;
+    }
+    RSSEXE_LOGD("kill process receive pid = %{public}d", pid);
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (resSchedExe_ == nullptr) {
+        RSSEXE_LOGD("fail to get resource schedule executor.");
+        return ResIpcErrCode::RSSEXE_REQUEST_FAIL;
+    }
+    return resSchedExe_->KillProcess(pid);
+}
+
 int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64_t value,
     const nlohmann::json& context, nlohmann::json& reply)
 {

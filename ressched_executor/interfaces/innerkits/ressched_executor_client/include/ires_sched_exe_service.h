@@ -45,6 +45,13 @@ public:
      * @param payload Indicates the context info of the resource type event.
      */
     virtual void SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& payload) = 0;
+
+    /**
+     * @brief Send kill process request async to the ressched_executor.
+     *
+     * @param pid the pid whiche will be killed.
+     */
+    virtual int32_t KillProcess(pid_t pid) = 0;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

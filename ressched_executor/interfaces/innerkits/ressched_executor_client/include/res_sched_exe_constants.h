@@ -23,6 +23,7 @@ namespace ResourceSchedule {
 enum ResIpcType : uint32_t {
     REQUEST_SYNC = 0,
     REQUEST_ASYNC,
+    REQUEST_KILL_PROCESS,
     REQUEST_DEBUG,
 };
 

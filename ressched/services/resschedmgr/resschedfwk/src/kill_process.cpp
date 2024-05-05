@@ -21,6 +21,7 @@
 #include "ability_manager_client.h"
 #include "exit_reason.h"
 #include "res_sched_errors.h"
+#include "res_sched_exe_client.h"
 #include "res_sched_kill_reason.h"
 #include "res_sched_log.h"
 #include "string_ex.h"
@@ -65,7 +66,7 @@ int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload)
         return RES_SCHED_KILL_PROCESS_FAIL;
     }
 
-    int32_t killRes = kill(pid, SIGNAL_KILL);
+    int32_t killRes = ResSchedExeClient::GetInstance().KillProcess(pid);
     if (killRes < 0) {
         RESSCHED_LOGE("kill process %{public}d:%{public}s failed", pid, processName.c_str());
     } else {
