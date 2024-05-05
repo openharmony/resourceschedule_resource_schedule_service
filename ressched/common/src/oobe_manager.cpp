@@ -44,7 +44,8 @@ OOBEManager& OOBEManager::GetInstance()
     return instance;
 }
 
-bool OOBEManager::GetOOBValue(){
+bool OOBEManager::GetOOBValue()
+{
     std::lock_guard<std::mutex> lock(mutex_);
     return g_oobeValue;
 }
