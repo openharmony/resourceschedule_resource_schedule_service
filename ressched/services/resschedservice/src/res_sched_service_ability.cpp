@@ -14,9 +14,7 @@
  */
 
 #include "res_common_util.h"
-#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt_inner.h"
-#endif
 #include "hisysevent.h"
 #include "notifier_mgr.h"
 #include "res_sched_service_ability.h"
@@ -127,12 +125,10 @@ void ResSchedServiceAbility::OnDeviceLevelChanged(int32_t type, int32_t level, s
 
 void ResSchedServiceAbility::ReclaimProcessMemory()
 {
-#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     const int32_t delayTime = 60 * 1000 * 1000;
     ffrt::task_attr taskattr;
     taskattr.delay(delayTime);
-    ffrt::submit([]() {ResCommonUtil::WriteFileReclaim(getpid());}, {taskattr});
-#endif
+    ffrt::submit([]() {ResCommonUtil::WriteFileReclaim(getpid());}, {}, {}, {taskattr});
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
