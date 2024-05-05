@@ -44,6 +44,11 @@ OOBEManager& OOBEManager::GetInstance()
     return instance;
 }
 
+bool OOBEManager::GetOOBValue(){
+    std::lock_guard<std::mutex> lock(mutex_);
+    return g_oobeValue;
+}
+
 ErrCode OOBEManager::RegisterObserver(const std::string& key, ResDataAbilityObserver::UpdateFunc& func)
 {
     std::lock_guard<std::mutex> lock(mutex_);
