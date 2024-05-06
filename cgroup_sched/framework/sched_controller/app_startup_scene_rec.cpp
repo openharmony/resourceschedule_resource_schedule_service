@@ -83,8 +83,8 @@ void AppStartupSceneRec::RecordIsContinuousStartup(int32_t abilityState, std::st
     if (IsContinuousStartup()) {
         if (!isReportContinuousStartup_.load()) {
             nlohmann::json payload;
-            ResSchedUtils::GetInstance().ReportDataInProcess(
-                ResType::RES_TYPE_CONTINUOUS_STARTUP, ResType::ContinuousStartupStatus::START_CONTINUOUS_STARTUP, payload);
+            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CONTINUOUS_STARTUP,
+                ResType::ContinuousStartupStatus::START_CONTINUOUS_STARTUP, payload);
             isReportContinuousStartup_ = true;
         }
     }
