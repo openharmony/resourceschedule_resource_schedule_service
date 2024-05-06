@@ -15,10 +15,10 @@
 
 #ifdef RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE
 #include "socperf_plugin.h"
-#include "dlfcn.h"
-#include "fcntl.h"
 #include "app_mgr_constants.h"
 #include "config_info.h"
+#include "dlfcn.h"
+#include "fcntl.h"
 #include "plugin_mgr.h"
 #include "res_type.h"
 #include "socperf_log.h"
@@ -264,8 +264,6 @@ static int32_t ParsePayload(const std::shared_ptr<ResData>& data, const std::str
 void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 {
     if (data->value == AppStartType::APP_COLD_START) {
-        SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
         int32_t appType = INVALID_VALUE;
         if (reqAppTypeFunc != nullptr && data->payload != nullptr && data->payload.contains(BUNDLE_NAME)) {
             std::string bundleName = data->payload[BUNDLE_NAME].get<std::string>().c_str();
@@ -274,6 +272,9 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
         if (appType == APP_TYPE_GAME) {
             SOC_PERF_LOGI("SocPerfPlugin: socperf->Game cold start");
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_GAME_START, "");
+        } else {
+            SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
         }
     } else if (data->value == AppStartType::APP_WARM_START) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_WARM_START");
@@ -382,9 +383,9 @@ void SocPerfPlugin::HandleRemoteAnimation(const std::shared_ptr<ResData>& data)
     } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, false, "");
-    } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_BEGIN) {
+    } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_UNLOCK_BEGIN) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_UNLOCK, true, "");
-    } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
+    } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_UNLOCK_END) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_UNLOCK, false, "");
     }
 }
