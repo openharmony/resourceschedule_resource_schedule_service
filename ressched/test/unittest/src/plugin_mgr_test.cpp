@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -299,7 +299,9 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_001, TestSize.Level1)
 
     /* HandleEventClick */
     data->resType = ResType::RES_TYPE_CLICK_RECOGNIZE;
-    data->value = ResType::ClickEventType::TOUCH_EVENT;
+    data->value = ResType::ClickEventType::TOUCH_EVENT_DOWN;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+    data->value = ResType::ClickEventType::TOUCH_EVENT_UP;
     SocPerfPlugin::GetInstance().DispatchResource(data);
     data->value = ResType::ClickEventType::CLICK_EVENT;
     SocPerfPlugin::GetInstance().DispatchResource(data);
