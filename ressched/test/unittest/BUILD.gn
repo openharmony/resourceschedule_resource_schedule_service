@@ -37,11 +37,11 @@ ohos_unittest("resschedservice_test") {
   ]
 
   sources = [
-    "src/res_sched_client_test.cpp",
     "${ressched_common}/src/oobe_datashare_utils.cpp",
     "${ressched_common}/src/oobe_manager.cpp",
     "src/oobe_datashare_utils_test.cpp",
     "src/oobe_mgr_test.cpp",
+    "src/res_sched_client_test.cpp",
     "src/res_sched_service_test.cpp",
   ]
 
