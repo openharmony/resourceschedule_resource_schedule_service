@@ -481,5 +481,59 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_018, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().HandleSocperfSceneBoard(nullptr);
     EXPECT_FALSE(ret);
 }
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_019
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_019, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& ancoEvnetData = std::make_shared<ResData>(
+        ResType::RES_TYPE_ANCO_CUST, 1001, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleCustEvent(ancoEvnetData);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& ancoEvnetDataInvalid = std::make_shared<ResData>(
+        ResType::RES_TYPE_ANCO_CUST, -1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleCustEvent(ancoEvnetDataInvalid);
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_020
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_020, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& socPerfCustEventBeginData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SOCPERF_CUST_EVENT_BEGIN, 1001, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleCustEventBegin(socPerfCustEventBeginData);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& socPerfCustEventBeginDataInvalid = std::make_shared<ResData>(
+        ResType::RES_TYPE_SOCPERF_CUST_EVENT_BEGIN, -1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleCustEventBegin(socPerfCustEventBeginDataInvalid);
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_021
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_021, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& socPerfCustEventEndData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SOCPERF_CUST_EVENT_END, 1001, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleCustEventEnd(socPerfCustEventEndData);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& socPerfCustEventEndDataInvalid = std::make_shared<ResData>(
+        ResType::RES_TYPE_SOCPERF_CUST_EVENT_END, -1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleCustEventEnd(socPerfCustEventEndDataInvalid);
+    EXPECT_FALSE(ret);
+}
 } // namespace SOCPERF
 } // namespace OHOS

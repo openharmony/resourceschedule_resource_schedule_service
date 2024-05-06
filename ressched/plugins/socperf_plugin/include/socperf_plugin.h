@@ -61,6 +61,9 @@ private:
     void HandleDeviceModeStatusChange(const std::shared_ptr<ResData>& data);
     void HandleWebDragResize(const std::shared_ptr<ResData>& data);
     bool HandleSocperfSceneBoard(const std::shared_ptr<ResData>& data);
+    bool HandleCustEvent(const std::shared_ptr<ResData>& data);
+    bool HandleCustEventBegin(const std::shared_ptr<ResData>& data);
+    bool HandleCustEventEnd(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

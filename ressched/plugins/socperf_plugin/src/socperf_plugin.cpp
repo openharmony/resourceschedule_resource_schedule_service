@@ -121,6 +121,12 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleWebDragResize(data); } },
         { RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); } },
+        { RES_TYPE_ANCO_CUST,
+            [this](const std::shared_ptr<ResData>& data) { HandleCustEvent(data); } },
+        { RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
+            [this](const std::shared_ptr<ResData>& data) { HandleCustEventBegin(data); } },
+        { RES_TYPE_SOCPERF_CUST_EVENT_END,
+            [this](const std::shared_ptr<ResData>& data) { HandleCustEventEnd(data); } },
     };
 }
 
@@ -146,6 +152,9 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_DEVICE_MODE_STATUS,
         RES_TYPE_WEB_DRAG_RESIZE,
         RES_TYPE_SCENE_BOARD_ID,
+        RES_TYPE_ANCO_CUST,
+        RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
+        RES_TYPE_SOCPERF_CUST_EVENT_END,
     };
 }
 
@@ -416,6 +425,36 @@ bool SocPerfPlugin::HandleSocperfSceneBoard(const std::shared_ptr<ResData> &data
     } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, false, "");
     }
+    return true;
+}
+
+bool SocPerfPlugin::HandleCustEvent(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr || data->value <= 0) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->Anco: %{public}lld", (long long)data->value);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(data->value, "");
+    return true;
+}
+
+bool SocPerfPlugin::HandleCustEventBegin(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr || data->value <= 0) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->SOCPERF_CUST_EVENT_BEGIN: %{public}lld", (long long)data->value);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(data->value, true, "");
+    return true;
+}
+
+bool SocPerfPlugin::HandleCustEventEnd(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr || data->value <= 0) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->SOCPERF_CUST_EVENT_END: %{public}lld", (long long)data->value);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(data->value, false, "");
     return true;
 }
 
