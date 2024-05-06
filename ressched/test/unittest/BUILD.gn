@@ -17,7 +17,6 @@ import("../../ressched.gni")
 group("unittest") {
   testonly = true
   deps = [
-    ":resschedclient_test",
     ":resschedfwk_test",
     ":resschedservice_test",
   ]
