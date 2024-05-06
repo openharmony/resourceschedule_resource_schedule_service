@@ -45,11 +45,11 @@ public:
      *
      * @param resType Resource type.
      * @param value bit64 content.
-     * @param reply Reply content.
      * @param payload Extra content.
+     * @param reply Reply content.
      */
     int32_t SendRequestSync(uint32_t resType, int64_t value,
-        nlohmann::json& reply, const nlohmann::json& payload = nullptr);
+        const nlohmann::json& payload, nlohmann::json& reply);
 
     /**
      * Send request async inner, will report resource schedule executor data.

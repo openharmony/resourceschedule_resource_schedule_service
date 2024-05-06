@@ -17,8 +17,6 @@
 #define RESSCHED_EXECUTOR_INTERFACES_INNERKITS_RESSCHED_EXECUTOR_CLIENT_INCLUDE_RES_EXE_TYPE_H
 
 #include <cstdint>
-#include <map>
-#include <string>
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -26,8 +24,8 @@ namespace ResExeType {
 enum : uint32_t {
     // first resType, please add resType after
     RES_TYPE_FIRST = 0,
-    // kill process
-    RES_TYPE_KILL_PROCESS = RES_TYPE_FIRST,
+    // common resType for plugin
+    RES_TYPE_COMMON_SYNC = RES_TYPE_FIRST,
     // thermal aware event sync
     RES_TYPE_THERMAL_AWARE_SYNC_EVENT,
     // last sync resType, please add sync resType before
@@ -35,19 +33,16 @@ enum : uint32_t {
 
     // first async resType, please add async resType after
     RES_TYPE_ASYNC_FIRST = RES_TYPE_SYNC_END,
+    // common resType for plugin
+    RES_TYPE_COMMON_ASYNC = RES_TYPE_ASYNC_FIRST,
     // thermal aware event async
     RES_TYPE_THERMAL_AWARE_ASYNC_EVENT,
     // last resType, please add resType before
-    RES_TYPE_LAST,
+    RES_TYPE_END_MAX = 1000,
     // resType for debug ipc
-    RES_TYPE_DEBUG = RES_TYPE_LAST,
-};
-
-inline const std::map<uint32_t, std::string> resTypeToStr = {
-    { RES_TYPE_KILL_PROCESS, "KILL_PROCESS" },
-    { RES_TYPE_THERMAL_AWARE_SYNC_EVENT, "THERMAL_AWARE_SYNC_EVENT" },
-    { RES_TYPE_THERMAL_AWARE_ASYNC_EVENT, "THERMAL_AWARE_ASYNC_EVENT" },
-    { RES_TYPE_DEBUG, "DEBUG_COMMAND" },
+    RES_TYPE_DEBUG = RES_TYPE_END_MAX,
+    // last resType
+    RES_TYPE_LAST = 2000,
 };
 } // namespace ResExeType
 } // namespace ResourceSchedule

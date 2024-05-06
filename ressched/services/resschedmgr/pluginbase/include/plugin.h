@@ -41,6 +41,13 @@ public:
      * @param data the resource interested.
      */
     virtual void DispatchResource(const std::shared_ptr<ResData>& data) = 0;
+
+    /**
+     * Deliver resource data to plugin has subscribed resid.
+     *
+     * @param data the resource interested.
+     */
+    virtual int32_t DeliverResource(const std::shared_ptr<ResData>& data) = 0;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

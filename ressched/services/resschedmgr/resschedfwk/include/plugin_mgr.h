@@ -44,6 +44,7 @@ using Clock = std::chrono::high_resolution_clock;
 using TimePoint = std::chrono::time_point<Clock>;
 using OnPluginInitFunc = bool (*)(std::string&);
 using OnDispatchResourceFunc = void (*)(const std::shared_ptr<ResData>&);
+using OnDeliverResourceFunc = void (*)(const std::shared_ptr<ResData>&);
 using OnDumpFunc = void (*)(const std::vector<std::string>&, std::string&);
 using OnPluginDisableFunc = void (*)();
 using OnIsAllowedAppPreloadFunc = bool (*)(const std::string&, int32_t preloadMode);
@@ -80,6 +81,7 @@ struct PluginLib {
     std::shared_ptr<void> handle = nullptr;
     OnPluginInitFunc onPluginInitFunc_;
     OnDispatchResourceFunc onDispatchResourceFunc_;
+    OnDeliverResourceFunc onDeliverResourceFunc_;
     OnDumpFunc onDumpFunc_;
     OnPluginDisableFunc onPluginDisableFunc_;
 };
@@ -110,6 +112,13 @@ public:
     void DispatchResource(const std::shared_ptr<ResData>& resData);
 
     /**
+     * receive all reported sync resource data, then deliver to plugins.
+     *
+     * @param resData Reported resource data.
+     */
+    int32_t DeliverResource(const std::shared_ptr<ResData>& resData);
+
+    /**
      * Subscribe resource type from plugin.
      *
      * @param pluginLib The lib name of plugin.
@@ -124,6 +133,22 @@ public:
      * @param resType interested in resource type.
      */
     void UnSubscribeResource(const std::string& pluginLib, uint32_t resType);
+
+    /**
+     * Subscribe sync resource type from plugin.
+     *
+     * @param pluginLib The lib name of plugin.
+     * @param resType interested in resource type.
+     */
+    void SubscribeSyncResource(const std::string& pluginLib, uint32_t resType);
+
+    /**
+     * Unsubscribe sync resource type from plugin.
+     *
+     * @param pluginLib The lib name of plugin.
+     * @param resType interested in resource type.
+     */
+    void UnSubscribeSyncResource(const std::string& pluginLib, uint32_t resType);
 
     /**
      * Kill process by pid.
@@ -156,9 +181,9 @@ private:
     std::shared_ptr<PluginLib> LoadOnePlugin(const PluginInfo& info);
     void UnLoadPlugin();
     void ClearResource();
-    void DeliverResourceToPluginSync(const std::list<std::string>& pluginList, const std::shared_ptr<ResData>& resData);
+    void DispatchResourceToPluginSync(const std::list<std::string>& pluginList, const std::shared_ptr<ResData>& resData);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-    void DeliverResourceToPluginAsync(const std::list<std::string>& pluginList,
+    void DispatchResourceToPluginAsync(const std::list<std::string>& pluginList,
         const std::shared_ptr<ResData>& resData);
 #endif
     void RepairPlugin(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo);
@@ -184,12 +209,15 @@ private:
 
     // mutex for resTypeMap_
     std::mutex resTypeMutex_;
+    // mutex for resTypeLibSyncMap_
+    std::mutex resTypeSyncMutex_;
     // mutex for resTypeStrMap_
     std::mutex resTypeStrMutex_;
     std::mutex pluginMutex_;
     std::mutex dispatcherHandlerMutex_;
     std::mutex libPathMutex_;
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
+    std::map<uint32_t, std::string> resTypeLibSyncMap_;
     std::map<uint32_t, std::string> resTypeStrMap_;
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
