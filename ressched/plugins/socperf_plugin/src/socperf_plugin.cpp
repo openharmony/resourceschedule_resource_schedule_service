@@ -85,16 +85,16 @@ void SocPerfPlugin::InitPerfCrucialSo()
     for (const Item& item : itemLists.itemList) {
         for (SubItem sub : item.subItemList) {
             if (sub.name == SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_PATH) {
-                perfReqAppTypeSoPath = sub.value;
+                perfReqAppTypeSoPath_ = sub.value;
             }
             if (sub.name == SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_FUNC) {
-                perfReqAppTypeSoFunc = sub.value;
+                perfReqAppTypeSoFunc_ = sub.value;
             }
         }
     }
 
-    if (!perfReqAppTypeSoPath.empty() && !perfReqAppTypeSoFunc.empty()) {
-        InitPerfCrucialFunc(perfReqAppTypeSoPath.c_str(), perfReqAppTypeSoFunc.c_str());
+    if (!perfReqAppTypeSoPath_.empty() && !perfReqAppTypeSoFunc_.empty()) {
+        InitPerfCrucialFunc(perfReqAppTypeSoPath_.c_str(), perfReqAppTypeSoFunc_.c_str());
     }
 }
 
@@ -103,17 +103,17 @@ void SocPerfPlugin::InitPerfCrucialFunc(const char* perfSoPath, const char* perf
     if (!perfSoPath || !perfSoFunc) {
         return;
     }
-    handle = dlopen(perfSoPath, RTLD_NOW);
-    if (!handle) {
+    handle_ = dlopen(perfSoPath, RTLD_NOW);
+    if (!handle_) {
         SOC_PERF_LOGE("perf so doesn't exist");
         return;
     }
 
-    reqAppTypeFunc = reinterpret_cast<ReqAppTypeFunc>(dlsym(handle, perfSoFunc));
-    if (!reqAppTypeFunc) {
+    reqAppTypeFunc_ = reinterpret_cast<ReqAppTypeFunc>(dlsym(handle_, perfSoFunc));
+    if (!reqAppTypeFunc_) {
         SOC_PERF_LOGE("perf func req app type doesn't exist");
-        dlclose(handle);
-        handle = nullptr;
+        dlclose(handle_);
+        handle_ = nullptr;
     }
 }
 
@@ -214,9 +214,9 @@ void SocPerfPlugin::Disable()
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
     resTypes.clear();
-    if (handle != nullptr) {
-        dlclose(handle);
-        handle = nullptr;
+    if (handle_ != nullptr) {
+        dlclose(handle_);
+        handle_ = nullptr;
     }
     SOC_PERF_LOGI("SocPerfPlugin::Disable success");
 }
@@ -263,9 +263,9 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 {
     if (data->value == AppStartType::APP_COLD_START) {
         int32_t appType = INVALID_VALUE;
-        if (reqAppTypeFunc != nullptr && data->payload != nullptr && data->payload.contains(BUNDLE_NAME)) {
+        if (reqAppTypeFunc_ != nullptr && data->payload != nullptr && data->payload.contains(BUNDLE_NAME)) {
             std::string bundleName = data->payload[BUNDLE_NAME].get<std::string>().c_str();
-            appType = reqAppTypeFunc(bundleName);
+            appType = reqAppTypeFunc_(bundleName);
         }
         if (appType == APP_TYPE_GAME) {
             SOC_PERF_LOGI("SocPerfPlugin: socperf->Game cold start");

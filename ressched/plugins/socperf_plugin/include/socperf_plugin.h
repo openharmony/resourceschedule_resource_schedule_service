@@ -38,10 +38,10 @@ private:
     using ReqAppTypeFunc = int32_t (*)(const std::string &bundleName);
     std::set<uint32_t> resTypes;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
-    std::string perfReqAppTypeSoPath;
-    std::string perfReqAppTypeSoFunc;
-    void* handle = nullptr;
-    ReqAppTypeFunc reqAppTypeFunc = nullptr;
+    std::string perfReqAppTypeSoPath_;
+    std::string perfReqAppTypeSoFunc_;
+    void* handle_ = nullptr;
+    ReqAppTypeFunc reqAppTypeFunc_ = nullptr;
     int32_t RES_TYPE_SCENE_BOARD_ID;
     void InitEventId();
     void InitFunctionMap();
