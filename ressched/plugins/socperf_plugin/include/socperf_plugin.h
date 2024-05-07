@@ -47,7 +47,7 @@ private:
     void InitFunctionMap();
     void InitResTypes();
     void InitPerfCrucialSo();
-    void InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc, uint32_t funcId);
+    void InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc);
     void HandleWindowFocus(const std::shared_ptr<ResData>& data);
     void HandleEventClick(const std::shared_ptr<ResData>& data);
     void HandleLoadPage(const std::shared_ptr<ResData>& data);
