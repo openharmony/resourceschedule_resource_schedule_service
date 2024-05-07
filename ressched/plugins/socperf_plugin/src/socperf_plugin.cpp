@@ -94,32 +94,26 @@ void SocPerfPlugin::InitPerfCrucialSo()
     }
 
     if (!perfReqAppTypeSoPath.empty() && !perfReqAppTypeSoFunc.empty()) {
-        InitPerfCrucialFunc(perfReqAppTypeSoPath.c_str(), perfReqAppTypeSoFunc.c_str(), REQ_APP_TYPE_FUNC);
+        InitPerfCrucialFunc(perfReqAppTypeSoPath.c_str(), perfReqAppTypeSoFunc.c_str());
     }
 }
 
-void SocPerfPlugin::InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc, uint32_t funcId)
+void SocPerfPlugin::InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc)
 {
     if (!perfSoPath || !perfSoFunc) {
         return;
     }
-    auto handle = dlopen(perfSoPath, RTLD_NOW);
+    handle = dlopen(perfSoPath, RTLD_NOW);
     if (!handle) {
         SOC_PERF_LOGE("perf so doesn't exist");
         return;
     }
 
-    switch (funcId) {
-        case REQ_APP_TYPE_FUNC: {
-            reqAppTypeFunc = reinterpret_cast<ReqAppTypeFunc>(dlsym(handle, perfSoFunc));
-            if (!reqAppTypeFunc) {
-                SOC_PERF_LOGE("perf func req app type doesn't exist");
-                dlclose(handle);
-            }
-            break;
-        }
-        default:
-            break;
+    reqAppTypeFunc = reinterpret_cast<ReqAppTypeFunc>(dlsym(handle, perfSoFunc));
+    if (!reqAppTypeFunc) {
+        SOC_PERF_LOGE("perf func req app type doesn't exist");
+        dlclose(handle);
+        handle = nullptr;
     }
 }
 
@@ -220,6 +214,9 @@ void SocPerfPlugin::Disable()
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
     resTypes.clear();
+    if (handle != nullptr) {
+        dlclose(handle);
+    }
     SOC_PERF_LOGI("SocPerfPlugin::Disable success");
 }
 

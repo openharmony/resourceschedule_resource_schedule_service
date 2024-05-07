@@ -44,6 +44,7 @@ private:
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
     std::string perfReqAppTypeSoPath;
     std::string perfReqAppTypeSoFunc;
+    void* handle = nullptr;
     ReqAppTypeFunc reqAppTypeFunc = nullptr;
     int32_t RES_TYPE_SCENE_BOARD_ID;
     void InitEventId();
