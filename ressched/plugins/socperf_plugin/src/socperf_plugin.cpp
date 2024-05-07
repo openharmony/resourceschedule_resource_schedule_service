@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,8 @@
 #include "socperf_plugin.h"
 #include "app_mgr_constants.h"
 #include "config_info.h"
+#include "dlfcn.h"
+#include "fcntl.h"
 #include "plugin_mgr.h"
 #include "res_type.h"
 #include "socperf_log.h"
@@ -30,10 +32,15 @@ namespace {
     const std::string CONFIG_NAME_SOCPERF_FEATURE_SWITCH = "socperfFeatureSwitch";
     const std::string CONFIG_NAME_SOCPERF_EVENT_ID = "socperfEventId";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND = "socperf_on_demand";
+    const std::string CNOFIG_NAME_SOCPERF_CRUCIAL_FUNC = "socperfCrucialFunc";
+    const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_PATH = "socperf_req_apptype_path";
+    const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_FUNC = "socperf_req_apptype_func";
+    const std::string BUNDLE_NAME = "bundleName";
     const std::string SOCPERF_TYPE_ID = "socperf_type_id";
     const std::string EXTENSION_TYPE_KEY = "extensionType";
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
     const int32_t INVALID_VALUE                             = -1;
+    const int32_t APP_TYPE_GAME                             = 20;
     const int32_t PERF_REQUEST_CMD_ID_APP_START             = 10000;
     const int32_t PERF_REQUEST_CMD_ID_WARM_START            = 10001;
     const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH         = 10002;
@@ -41,7 +48,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_LOAD_PAGE_START       = 10007;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE           = 10008;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER      = 10009;
-    const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH           = 10010;
+    const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN      = 10010;
     const int32_t PERF_REQUEST_CMD_ID_LOAD_PAGE_COMPLETE    = 10011;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE     = 10012;
     const int32_t PERF_REQUEST_CMD_ID_POP_PAGE              = 10016;
@@ -51,6 +58,9 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_WEB_SLIDE_NORMAL      = 10025;
     const int32_t PERF_REQUEST_CMD_ID_REMOTE_ANIMATION      = 10030;
     const int32_t PERF_REQUEST_CMD_ID_DRAG_STATUS_BAR       = 10034;
+    const int32_t PERF_REQUEST_CMD_ID_GAME_START            = 10035;
+    const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH_UP        = 10036;
+    const int32_t PERF_REQUEST_CMD_ID_REMOTE_UNLOCK         = 10037;
     const int32_t PERF_REQUEST_CMD_ID_LOAD_URL              = 10070;
     const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
     const int32_t PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE       = 10073;
@@ -65,7 +75,46 @@ void SocPerfPlugin::Init()
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
+    InitPerfCrucialSo();
     SOC_PERF_LOGI("SocPerfPlugin::Init success");
+}
+
+void SocPerfPlugin::InitPerfCrucialSo()
+{
+    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, CNOFIG_NAME_SOCPERF_CRUCIAL_FUNC);
+    for (const Item& item : itemLists.itemList) {
+        for (SubItem sub : item.subItemList) {
+            if (sub.name == SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_PATH) {
+                perfReqAppTypeSoPath_ = sub.value;
+            }
+            if (sub.name == SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_FUNC) {
+                perfReqAppTypeSoFunc_ = sub.value;
+            }
+        }
+    }
+
+    if (!perfReqAppTypeSoPath_.empty() && !perfReqAppTypeSoFunc_.empty()) {
+        InitPerfCrucialFunc(perfReqAppTypeSoPath_.c_str(), perfReqAppTypeSoFunc_.c_str());
+    }
+}
+
+void SocPerfPlugin::InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc)
+{
+    if (!perfSoPath || !perfSoFunc) {
+        return;
+    }
+    handle_ = dlopen(perfSoPath, RTLD_NOW);
+    if (!handle_) {
+        SOC_PERF_LOGE("perf so doesn't exist");
+        return;
+    }
+
+    reqAppTypeFunc_ = reinterpret_cast<ReqAppTypeFunc>(dlsym(handle_, perfSoFunc));
+    if (!reqAppTypeFunc_) {
+        SOC_PERF_LOGE("perf func req app type doesn't exist");
+        dlclose(handle_);
+        handle_ = nullptr;
+    }
 }
 
 void SocPerfPlugin::InitEventId()
@@ -165,6 +214,10 @@ void SocPerfPlugin::Disable()
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
     resTypes.clear();
+    if (handle_ != nullptr) {
+        dlclose(handle_);
+        handle_ = nullptr;
+    }
     SOC_PERF_LOGI("SocPerfPlugin::Disable success");
 }
 
@@ -209,8 +262,18 @@ static int32_t ParsePayload(const std::shared_ptr<ResData>& data, const std::str
 void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 {
     if (data->value == AppStartType::APP_COLD_START) {
-        SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+        int32_t appType = INVALID_VALUE;
+        if (reqAppTypeFunc_ != nullptr && data->payload != nullptr && data->payload.contains(BUNDLE_NAME)) {
+            std::string bundleName = data->payload[BUNDLE_NAME].get<std::string>().c_str();
+            appType = reqAppTypeFunc_(bundleName);
+        }
+        if (appType == APP_TYPE_GAME) {
+            SOC_PERF_LOGI("SocPerfPlugin: socperf->Game cold start");
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_GAME_START, "");
+        } else {
+            SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+        }
     } else if (data->value == AppStartType::APP_WARM_START) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_WARM_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WARM_START, "");
@@ -228,8 +291,11 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
 void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 {
     SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK: %{public}lld", (long long)data->value);
-    if (data->value == ClickEventType::TOUCH_EVENT) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH, "");
+    // touch down event
+    if (data->value == ClickEventType::TOUCH_EVENT_DOWN) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
+    } else if (data->value == ClickEventType::TOUCH_EVENT_UP) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_UP, "");
     } else if (data->value == ClickEventType::CLICK_EVENT) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
     }
@@ -308,12 +374,17 @@ void SocPerfPlugin::HandleMoveWindow(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleRemoteAnimation(const std::shared_ptr<ResData>& data)
 {
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
     if (data->value == ShowRemoteAnimationStatus::ANIMATION_BEGIN) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, true, "");
     } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, false, "");
+    } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_UNLOCK_BEGIN) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_UNLOCK, true, "");
+    } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_UNLOCK_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_UNLOCK, false, "");
     }
 }
 

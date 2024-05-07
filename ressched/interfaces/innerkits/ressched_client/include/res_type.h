@@ -324,8 +324,10 @@ enum SlideEventStatus : int64_t {
  */
 enum ClickEventType : int64_t {
     INVALID_EVENT = 0,
-    TOUCH_EVENT = 1,
+    // touch down event
+    TOUCH_EVENT_DOWN = 1,
     CLICK_EVENT = 2,
+    TOUCH_EVENT_UP = 3,
 };
 
 /**
@@ -366,6 +368,8 @@ enum WindowMoveType : int64_t {
 enum ShowRemoteAnimationStatus : int64_t {
     ANIMATION_BEGIN = 0,
     ANIMATION_END = 1,
+    ANIMATION_UNLOCK_BEGIN = 2,
+    ANIMATION_UNLOCK_END = 3,
 };
 
 /**

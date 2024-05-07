@@ -132,12 +132,15 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_002, Function | MediumTes
  */
 HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_003, Function | MediumTest | Level0)
 {
-    const std::shared_ptr<ResData>& touchData = std::make_shared<ResData>(ResType::RES_TYPE_CLICK_RECOGNIZE,
-        ResType::ClickEventType::TOUCH_EVENT, nullptr);
-    SocPerfPlugin::GetInstance().HandleEventClick(touchData);
+    const std::shared_ptr<ResData>& touchDownData = std::make_shared<ResData>(ResType::RES_TYPE_CLICK_RECOGNIZE,
+        ResType::ClickEventType::TOUCH_EVENT_DOWN, nullptr);
+    SocPerfPlugin::GetInstance().HandleEventClick(touchDownData);
     const std::shared_ptr<ResData>& clickData = std::make_shared<ResData>(ResType::RES_TYPE_CLICK_RECOGNIZE,
         ResType::ClickEventType::CLICK_EVENT, nullptr);
     SocPerfPlugin::GetInstance().HandleEventClick(clickData);
+    const std::shared_ptr<ResData>& touchUpData = std::make_shared<ResData>(ResType::RES_TYPE_CLICK_RECOGNIZE,
+        ResType::ClickEventType::TOUCH_EVENT_UP, nullptr);
+    SocPerfPlugin::GetInstance().HandleEventClick(touchUpData);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleEventClick(invalidData);
     SUCCEED();
@@ -262,7 +265,14 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_009, Function | MediumTes
     const std::shared_ptr<ResData>& animationBeginData = std::make_shared<ResData>(
         ResType::RES_TYPE_SHOW_REMOTE_ANIMATION, ResType::ShowRemoteAnimationStatus::ANIMATION_BEGIN, nullptr);
     SocPerfPlugin::GetInstance().HandleRemoteAnimation(animationBeginData);
+    const std::shared_ptr<ResData>& unlockEndData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SHOW_REMOTE_ANIMATION, ResType::ShowRemoteAnimationStatus::ANIMATION_UNLOCK_END, nullptr);
+    SocPerfPlugin::GetInstance().HandleRemoteAnimation(unlockEndData);
+    const std::shared_ptr<ResData>& unlockBeginData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SHOW_REMOTE_ANIMATION, ResType::ShowRemoteAnimationStatus::ANIMATION_UNLOCK_BEGIN, nullptr);
+    SocPerfPlugin::GetInstance().HandleRemoteAnimation(unlockBeginData);
     SocPerfPlugin::GetInstance().HandleRemoteAnimation(animationEndData);
+    SocPerfPlugin::GetInstance().HandleRemoteAnimation(unlockEndData);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleRemoteAnimation(invalidData);
     SUCCEED();
