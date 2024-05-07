@@ -28,7 +28,7 @@ struct ResData {
     ResData(uint32_t type, int64_t value, const nlohmann::json& payload) : resType(type),
         value(value), payload(payload) {}
 
-    ResData(uint32_t type, int64_t value, const nlohmann::json& payload, nlohmann::json& payload) : resType(type),
+    ResData(uint32_t type, int64_t value, const nlohmann::json& payload, nlohmann::json& reply) : resType(type),
         value(value), payload(payload), reply(reply) {}
 
     uint32_t resType = 0;

@@ -59,7 +59,7 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     trace_str.append(",resType[").append(std::to_string(resType)).append("]");
     trace_str.append(",value[").append(std::to_string(value)).append("]");
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    int32_t ret = PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload, reply));
+    int32_t ret = PluginMgr::GetInstance().DeliverResource(std::make_shared<ResData>(resType, value, payload, reply));
     FinishTrace(HITRACE_TAG_OHOS);
     return ret;
 }
