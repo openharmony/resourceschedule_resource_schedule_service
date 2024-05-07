@@ -48,7 +48,7 @@ namespace {
     const std::string RUNNER_NAME = "rssDispatcher";
     const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
     const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
-    const char* EXT_CONFIG_LIB = "libsuspend_manager_service.z.o";
+    const char* EXT_CONFIG_LIB = "libsuspend_manager_service.z.so";
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     const int32_t DEFAULT_VALUE = -1;
     const char* EXT_RES_KEY = "extType";
@@ -77,9 +77,8 @@ void PluginMgr::Init(bool isRssExe)
         if (realPath.empty() || !pluginSwitch_->LoadFromConfigContent(content, isRssExe)) {
             RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
             HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "configure error",
-                        "ERR_MSG", "PluginMgr load switch config file failed!");
+                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
+                "ERR_MSG", "PluginMgr load switch config file failed!");
         }
     }
 
@@ -91,9 +90,8 @@ void PluginMgr::Init(bool isRssExe)
         if (realPath.empty() || !configReader_->LoadFromCustConfigContent(content)) {
             RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
             HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "configure error",
-                        "ERR_MSG", "PluginMgr load parameter config file failed!");
+                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
+                "ERR_MSG", "PluginMgr load parameter config file failed!");
         }
     }
     LoadPlugin();
