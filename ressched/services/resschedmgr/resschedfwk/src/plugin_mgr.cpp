@@ -41,6 +41,7 @@ using namespace HiviewDFX;
 
 namespace {
     const int32_t DISPATCH_WARNING_TIME = 10; // ms
+    const int32_t PLUGIN_REQUEST_ERROR = -1;
     const std::string RUNNER_NAME = "rssDispatcher";
     const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
     const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
@@ -307,16 +308,16 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
 {
     if (!resData) {
         RESSCHED_LOGE("%{public}s, failed, null res data.", __func__);
-        return DEFAULT_VALUE;
+        return PLUGIN_REQUEST_ERROR;
     }
 
     std::string pluginLib;
     {
         std::lock_guard<std::mutex> autoLock(resTypeSyncMutex_);
-        auto iter = resTypeLibSyncMap_.find(resType);
+        auto iter = resTypeLibSyncMap_.find(resData->resType);
         if (iter == resTypeLibSyncMap_.end()) {
             RESSCHED_LOGD("%{public}s, PluginMgr resType no lib register!", __func__);
-            return DEFAULT_VALUE;
+            return PLUGIN_REQUEST_ERROR;
         }
         pluginLib = iter->second;
     }
@@ -338,7 +339,7 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
         auto itMap = pluginLibMap_.find(pluginLib);
         if (itMap == pluginLibMap_.end()) {
             RESSCHED_LOGE("%{public}s, no plugin %{public}s !", __func__, pluginLib.c_str());
-            return DEFAULT_VALUE;
+            return PLUGIN_REQUEST_ERROR;
         }
         libInfo = itMap->second;
     }
@@ -346,7 +347,7 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
     OnDeliverResourceFunc pluginDeliverFunc = libInfo.onDeliverResourceFunc_;
     if (!pluginDeliverFunc) {
         RESSCHED_LOGE("%{public}s, no DeliverResourceFunc !", __func__);
-        return DEFAULT_VALUE;
+        return PLUGIN_REQUEST_ERROR;
     }
     return pluginDeliverFunc(std::make_shared<ResData>(resData->resType,
         resData->value, resData->payload, resData->reply));
