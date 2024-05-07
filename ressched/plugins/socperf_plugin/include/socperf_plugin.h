@@ -36,10 +36,6 @@ public:
 
 private:
     using ReqAppTypeFunc = int32_t (*)(const std::string &bundleName);
-    enum SocPerfCrucialFunc : uint32_t {
-        REQ_APP_TYPE_FUNC = 0
-    };
-
     std::set<uint32_t> resTypes;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
     std::string perfReqAppTypeSoPath;

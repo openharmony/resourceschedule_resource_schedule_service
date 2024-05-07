@@ -216,6 +216,7 @@ void SocPerfPlugin::Disable()
     resTypes.clear();
     if (handle != nullptr) {
         dlclose(handle);
+        handle = nullptr;
     }
     SOC_PERF_LOGI("SocPerfPlugin::Disable success");
 }
