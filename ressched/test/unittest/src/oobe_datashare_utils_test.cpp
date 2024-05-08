@@ -40,6 +40,17 @@ void OOBEDataShareUtilsTest::SetUp() {}
 
 void OOBEDataShareUtilsTest::TearDown() {}
 
+void OOBEDataShareUtilsTest::QueryDatabaseBeforeAssertions(int32_t res)
+{
+    std::string stringValue;
+    DataShareUtils::GetInstance().GetStringValue(KEYWORD, stringValue);
+    if (stringValue.empty()) {
+        EXPECT_NE(res, ERR_OK);
+    } else {
+        EXPECT_EQ(res, ERR_OK);
+    }
+}
+
 /**
  * @tc.name: oobe dataShareUtils TestDataShareUtils_001
  * @tc.desc: test the interface GetValue of dataShareUtils
@@ -50,16 +61,8 @@ void OOBEDataShareUtilsTest::TearDown() {}
 HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_001, Function | MediumTest | Level0)
 {
     int32_t result = 0;
-    std::string stringValue;
-    DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
-    dataShareUtils.GetStringValue(KEYWORD, stringValue);
-    if (stringValue.empty()) {
-        int32_t res = dataShareUtils.GetValue(KEYWORD, result);
-        EXPECT_NE(res, ERR_OK);
-    } else {
-        int32_t res1 = dataShareUtils.GetValue(KEYWORD, result);
-        EXPECT_EQ(res1, ERR_OK);
-    }
+    int32_t res = DataShareUtils::GetInstance().GetValue(KEYWORD, result);
+    QueryDatabaseBeforeAssertions(res);
 }
 
 /**
@@ -72,16 +75,8 @@ HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_001, Function | MediumTest |
 HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_002, Function | MediumTest | Level0)
 {
     int64_t result = 0;
-    std::string stringValue;
-    DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
-    dataShareUtils.GetStringValue(KEYWORD, stringValue);
-    if (stringValue.empty()) {
-        int32_t res = dataShareUtils.GetValue(KEYWORD, result);
-        EXPECT_NE(res, ERR_OK);
-    } else {
-        int32_t res1 = dataShareUtils.GetValue(KEYWORD, result);
-        EXPECT_EQ(res1, ERR_OK);
-    }
+    int32_t res = DataShareUtils::GetInstance().GetValue(KEYWORD, result);
+    QueryDatabaseBeforeAssertions(res);
 }
 
 /**
@@ -94,16 +89,8 @@ HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_002, Function | MediumTest |
 HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_003, Function | MediumTest | Level0)
 {
     std::string result;
-    std::string stringValue;
-    DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
-    dataShareUtils.GetStringValue(KEYWORD, stringValue);
-    if (stringValue.empty()) {
-        int32_t res = dataShareUtils.GetValue(KEYWORD, result);
-        EXPECT_NE(res, ERR_OK);
-    } else {
-        int32_t res1 = dataShareUtils.GetValue(KEYWORD, result);
-        EXPECT_EQ(res1, ERR_OK);
-    }
+    int32_t res = DataShareUtils::GetInstance().GetValue(KEYWORD, result);
+    QueryDatabaseBeforeAssertions(res);
 }
 
 /**

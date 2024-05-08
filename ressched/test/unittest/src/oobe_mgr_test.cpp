@@ -152,6 +152,26 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_006, Function | MediumTest | Level0)
     oobeMgr.StartListen();
     SUCCEED();
 }
+
+/**
+ * @tc.name: oobe manager TestOOBEManager_007
+ * @tc.desc: test the interface SubmitTask of OOBEManager
+ * @tc.type: FUNC
+ * @tc.require: issueI97493
+ * @tc.author:zhumingjie
+ */
+HWTEST_F(OOBEMgrTest, TestOOBEManager_007, Function | MediumTest | Level0)
+{
+    OOBEManager& oobeMgr = OOBEManager::GetInstance();
+    bool flag = oobeMgr.GetOOBValue();
+    std::string stringValue;
+    int32_t res = DataShareUtils::GetInstance().GetStringValue(KEYWORD, stringValue);
+    if (stringValue.empty()) {
+        EXPECT_EQ(flag, false);
+    } else {
+        EXPECT_EQ(flag, true);
+    }
+}
 #undef private
 #undef protected
 } // namespace ResourceSchedule
