@@ -69,10 +69,10 @@ void PluginMgr::Init(bool isRssExe)
         return;
     }
     LoadGetExtConfigFunc();
+    std::string content;
     if (!pluginSwitch_) {
         pluginSwitch_ = make_unique<PluginSwitch>();
         std::string realPath = GetRealConfigPath(PLUGIN_SWITCH_FILE_NAME);
-        std::string content;
         GetConfigContent(PLUGIN_SWITCH_FILE_IDX, realPath, content);
         if (realPath.empty() || !pluginSwitch_->LoadFromConfigContent(content, isRssExe)) {
             RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
@@ -85,7 +85,6 @@ void PluginMgr::Init(bool isRssExe)
     if (!configReader_) {
         configReader_ = make_unique<ConfigReader>();
         std::string realPath = GetRealConfigPath(CONFIG_FILE_NAME);
-        std::string content;
         GetConfigContent(CONFIG_FILE_IDX, realPath, content);
         if (realPath.empty() || !configReader_->LoadFromCustConfigContent(content)) {
             RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
