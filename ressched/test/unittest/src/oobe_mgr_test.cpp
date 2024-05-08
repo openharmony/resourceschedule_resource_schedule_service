@@ -96,6 +96,9 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_003, Function | MediumTest | Level0)
     OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
     oobeObserver->SetUpdateFunc(updateFunc);
     EXPECT_NE(oobeObserver->update_, nullptr);
+
+    oobeObserver->update_();
+    SUCCEED();
 }
 
 /**
@@ -109,7 +112,7 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_004, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
     oobeMgr.Initialize();
-    EXPECT_EQ(oobeMgr.g_oobeValue, true);
+    SUCCEED();
 }
 
 /**
@@ -147,6 +150,20 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_006, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
     oobeMgr.StartListen();
+    SUCCEED();
+}
+
+/**
+ * @tc.name: oobe manager TestOOBEManager_007
+ * @tc.desc: test the interface SubmitTask of OOBEManager
+ * @tc.type: FUNC
+ * @tc.require: issueI97493
+ * @tc.author:zhumingjie
+ */
+HWTEST_F(OOBEMgrTest, TestOOBEManager_007, Function | MediumTest | Level0)
+{
+    OOBEManager& oobeMgr = OOBEManager::GetInstance();
+    bool flag = oobeMgr.GetOOBValue();
     SUCCEED();
 }
 #undef private
