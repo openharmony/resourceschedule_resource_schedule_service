@@ -43,6 +43,7 @@ void DeviceStandbyPlugin::Init()
     resTypes_.insert(RES_TYPE_CALL_STATE_CHANGED);
     resTypes_.insert(RES_TYPE_WIFI_P2P_STATE_CHANGED);
     resTypes_.insert(RES_TYPE_POWER_MODE_CHANGED);
+    resTypes_.insert(RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED);
 
     for (auto resType : resTypes_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
