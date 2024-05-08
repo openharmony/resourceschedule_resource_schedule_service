@@ -349,8 +349,7 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
         RESSCHED_LOGE("%{public}s, no DeliverResourceFunc !", __func__);
         return PLUGIN_REQUEST_ERROR;
     }
-    return pluginDeliverFunc(std::make_shared<ResData>(resData->resType,
-        resData->value, resData->payload, resData->reply));
+    return pluginDeliverFunc(std::move(resData));
 }
 
 void PluginMgr::SubscribeResource(const std::string& pluginLib, uint32_t resType)

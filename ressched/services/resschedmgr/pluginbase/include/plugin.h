@@ -47,7 +47,10 @@ public:
      *
      * @param data the resource interested.
      */
-    virtual int32_t DeliverResource(const std::shared_ptr<ResData>& data) = 0;
+    virtual int32_t DeliverResource(const std::shared_ptr<ResData>& data)
+    {
+        return 0;
+    };
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

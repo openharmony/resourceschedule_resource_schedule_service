@@ -38,11 +38,9 @@ enum : uint32_t {
     // thermal aware event async
     RES_TYPE_THERMAL_AWARE_ASYNC_EVENT,
     // last resType, please add resType before
-    RES_TYPE_END_MAX = 1000,
+    RES_TYPE_LAST = 1000,
     // resType for debug ipc
-    RES_TYPE_DEBUG = RES_TYPE_END_MAX,
-    // last resType
-    RES_TYPE_LAST = 2000,
+    RES_TYPE_DEBUG = RES_TYPE_LAST,
 };
 } // namespace ResExeType
 } // namespace ResourceSchedule
