@@ -16,6 +16,9 @@ resourceschedule_path = "//foundation/resourceschedule"
 ressched_services =
     "${resourceschedule_path}/resource_schedule_service/ressched/services"
 
+resschedexe_interfaces =
+    "${resourceschedule_path}/resource_schedule_service/ressched_executor/interfaces"
+
 ressched_common =
     "${resourceschedule_path}/resource_schedule_service/ressched/common"
 
@@ -29,9 +32,6 @@ ressched_test =
     "${resourceschedule_path}/resource_schedule_service/ressched/test"
 
 ressched_sched_controller = "${resourceschedule_path}/resource_schedule_service/ressched/sched_controller"
-
-resschedexe_interfaces =
-    "${resourceschedule_path}/resource_schedule_service/ressched_executor/interfaces"
 
 declare_args() {
   device_movement_perception_enable = true
