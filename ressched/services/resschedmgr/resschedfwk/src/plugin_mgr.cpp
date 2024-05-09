@@ -394,7 +394,7 @@ void PluginMgr::SubscribeSyncResource(const std::string& pluginLib, uint32_t res
     auto iter = resTypeLibSyncMap_.find(resType);
     if (iter != resTypeLibSyncMap_.end()) {
         RESSCHED_LOGW("%{public}s, resType[%{public}d] subcribed by [%{public}s], replace by [%{public}s].",
-            __func__, iter->second, pluginLib);
+            __func__, resType, iter->second.c_str(), pluginLib.c_str());
     }
     resTypeLibSyncMap_[resType] = pluginLib;
 }
