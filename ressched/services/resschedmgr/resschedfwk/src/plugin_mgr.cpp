@@ -391,7 +391,8 @@ void PluginMgr::SubscribeSyncResource(const std::string& pluginLib, uint32_t res
         return;
     }
     std::lock_guard<std::mutex> autoLock(resTypeSyncMutex_);
-    if (auto iter = resTypeLibSyncMap_.find(resType) != resTypeLibSyncMap_.end()) {
+    auto iter = resTypeLibSyncMap_.find(resType);
+    if (iter != resTypeLibSyncMap_.end()) {
         RESSCHED_LOGW("%{public}s, resType[%{public}d] subcribed by [%{public}s], replace by [%{public}s].",
             __func__, iter->second, pluginLib);
     }
