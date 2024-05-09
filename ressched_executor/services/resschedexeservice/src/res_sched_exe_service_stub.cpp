@@ -89,7 +89,8 @@ int32_t ResSchedExeServiceStub::ReportRequestInner(MessageParcel& data, MessageP
     int64_t value = 0;
     nlohmann::json context;
     if (!ParseParcel(data, resType, value, context)) {
-        reply.WriteInt32(ResIpcErrCode::RSSEXE_DATA_ERROR);
+        WRITE_PARCEL(reply, Int32, ResIpcErrCode::RSSEXE_DATA_ERROR,
+            ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
         return ResIpcErrCode::RSSEXE_DATA_ERROR;
     }
 
@@ -98,33 +99,38 @@ int32_t ResSchedExeServiceStub::ReportRequestInner(MessageParcel& data, MessageP
     RSSEXE_LOGD("receive data from ipc resType: %{public}u, value: %{public}lld, uid: %{public}d, pid: %{public}d",
         resType, (long long)value, uid, clientPid);
 
+    if (context.size() > PAYLOAD_MAX_SIZE) {
+        RSSEXE_LOGE("The payload is too long. DoS.");
+        WRITE_PARCEL(reply, Int32, ResIpcErrCode::RSSEXE_DATA_ERROR,
+            ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
+        return ResIpcErrCode::RSSEXE_DATA_ERROR;
+    }
+
+    bool isSync = IsTypeSync(resType);
+    if (!GetExtResType(resType, context)) {
+        WRITE_PARCEL(reply, Int32, ResIpcErrCode::RSSEXE_DATA_ERROR,
+            ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
+        return ResIpcErrCode::RSSEXE_DATA_ERROR;
+    }
+    context["callingUid"] = std::to_string(uid);
+    context["clientPid"] = std::to_string(clientPid);
+
     int32_t ret = 0;
     nlohmann::json result;
-    if (context.size() <= PAYLOAD_MAX_SIZE) {
-        context["callingUid"] = std::to_string(uid);
-        context["clientPid"] = std::to_string(clientPid);
-        bool isSync = IsTypeSync(resType);
-        if (!GetExtResType(resType, context)) {
-            reply.WriteInt32(ResIpcErrCode::RSSEXE_DATA_ERROR);
-            return ResIpcErrCode::RSSEXE_DATA_ERROR;
-        }
-        if (isSync) {
-            ret = SendRequestSync(resType, value, context, result);
-        } else {
-            SendRequestAsync(resType, value, context);
-            ret = ResErrCode::RSSEXE_NO_ERR;
-        }
+    if (isSync) {
+        ret = SendRequestSync(resType, value, context, result);
     } else {
-        RSSEXE_LOGE("The payload is too long. DoS.");
-        ret = ResIpcErrCode::RSSEXE_DATA_ERROR;
+        SendRequestAsync(resType, value, context);
+        ret = ResErrCode::RSSEXE_NO_ERR;
     }
     result["errorNo"] = std::to_string(ret);
-    reply.WriteInt32(ret);
-    reply.WriteString(result.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
+    WRITE_PARCEL(reply, Int32, ret, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
+    WRITE_PARCEL(reply, String, result.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace),
+        ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
     return ret;
 }
 
-int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data, MessageParcel& reply)
+int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data)
 {
     uint32_t resType = 0;
     READ_PARCEL(data, Uint32, resType, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
@@ -145,7 +151,8 @@ int32_t ResSchedExeServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &da
 {
     if (!IsValidToken(data)) {
         RSSEXE_LOGE("token is invalid");
-        reply.WriteInt32(ResIpcErrCode::RSSEXE_DATA_ERROR);
+        WRITE_PARCEL(reply, Int32, ResIpcErrCode::RSSEXE_DATA_ERROR,
+            ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
         return ResIpcErrCode::RSSEXE_DATA_ERROR;
     }
 
@@ -157,7 +164,7 @@ int32_t ResSchedExeServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &da
         case ResIpcType::REQUEST_ASYNC:
             return ReportRequestInner(data, reply);
         case ResIpcType::REQUEST_DEBUG:
-            return ReportDebugInner(data, reply);
+            return ReportDebugInner(data);
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }

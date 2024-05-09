@@ -322,17 +322,6 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
         pluginLib = iter->second;
     }
 
-    string trace_str(__func__);
-    string resTypeString = GetStrFromResTypeStrMap(resData->resType);
-    trace_str.append(" PluginMgr ,resType[").append(std::to_string(resData->resType)).append("]");
-    trace_str.append(",resTypeStr[").append(resTypeString).append("]");
-    trace_str.append(",value[").append(std::to_string(resData->value)).append("]");
-    trace_str.append(",plugin:").append(pluginLib);
-    StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, value = %{public}lld, plugin is %{public}s.",
-        __func__, resData->resType, (long long)resData->value, pluginLib.c_str());
-    FinishTrace(HITRACE_TAG_OHOS);
-
     PluginLib libInfo;
     {
         std::lock_guard<std::mutex> autoLock(pluginMutex_);
@@ -349,7 +338,21 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
         RESSCHED_LOGE("%{public}s, no DeliverResourceFunc !", __func__);
         return PLUGIN_REQUEST_ERROR;
     }
-    return pluginDeliverFunc(std::move(resData));
+    std::string libName = "";
+    std::list<std::string> pluginList = { pluginLib };
+    StartTrace(HITRACE_TAG_OHOS, BuildDispatchTrace(resData, libName, __func__, pluginList), -1);
+    RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, value = %{public}lld, plugin is %{public}s.",
+        __func__, resData->resType, (long long)resData->value, pluginLib.c_str());
+    auto beginTime = Clock::now();
+    int32_t ret = pluginDeliverFunc(std::move(resData));
+    auto endTime = Clock::now();
+    FinishTrace(HITRACE_TAG_OHOS);
+    int32_t costTime = (endTime - beginTime) / std::chrono::microseconds(1) / 1000;
+    if (costTime > DISPATCH_WARNING_TIME) {
+        RESSCHED_LOGW("%{public}s, WARNING :%{public}s plugin cost time(%{public}d ms) over %{public}d ms!",
+            __func__, pluginLib.c_str(), costTime, DISPATCH_WARNING_TIME);
+    }
+    return ret;
 }
 
 void PluginMgr::SubscribeResource(const std::string& pluginLib, uint32_t resType)
@@ -388,6 +391,10 @@ void PluginMgr::SubscribeSyncResource(const std::string& pluginLib, uint32_t res
         return;
     }
     std::lock_guard<std::mutex> autoLock(resTypeSyncMutex_);
+    if (auto iter = resTypeLibSyncMap_.find(resType) != resTypeLibSyncMap_.end()) {
+        RESSCHED_LOGW("%{public}s, resType[%{public}d] subcribed by [%{public}s], replace by [%{public}s].",
+            __func__, iter->second, pluginLib);
+    }
     resTypeLibSyncMap_[resType] = pluginLib;
 }
 
