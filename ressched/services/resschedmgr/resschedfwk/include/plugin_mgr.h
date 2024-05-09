@@ -199,6 +199,21 @@ private:
     std::list<std::string> SortPluginList(const std::list<std::string>& pluginList);
     std::string GetStrFromResTypeStrMap(uint32_t resType);
 
+    class InnerTraceUtil {
+    public:
+        InnerTraceUtil(const std::string trace);
+        ~InnerTraceUtil();
+    };
+    class InnerTimeUtil {
+    public:
+        InnerTimeUtil(const std::string func, const std::string plugin);
+        ~InnerTimeUtil();
+    private:
+        TimePoint beginTime;
+        std::string functionName;
+        std::string pluginName;
+    };
+
     // plugin crash 3 times in 60s, will be disable forever
     const int32_t MAX_PLUGIN_TIMEOUT_TIMES = 3;
     const int32_t DISABLE_PLUGIN_TIME = 60000;
