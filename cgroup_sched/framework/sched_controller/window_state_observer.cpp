@@ -195,6 +195,7 @@ uint8_t WindowModeObserver::MarshallingWindowModeType(const WindowModeType mode)
             nowWindowMode = RSSWindowMode::WINDOW_MODE_SPLIT;
             break;
         case Rosen::WindowModeType::WINDOW_MODE_FLOATING:
+        case Rosen::WindowModeType::WINDOW_MODE_FULLSCREEN_FLOATING:
             nowWindowMode = RSSWindowMode::WINDOW_MODE_FLOATING;
             break;
         case Rosen::WindowModeType::WINDOW_MODE_SPLIT_FLOATING:
