@@ -16,7 +16,7 @@
 #include "res_sched_exe_mgr.h"
 
 #include <cinttypes>
-#include <csignal>  
+#include <csignal>
 
 #include "hitrace_meter.h"
 

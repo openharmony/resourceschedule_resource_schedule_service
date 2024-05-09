@@ -263,6 +263,10 @@ public:
     {
         return 0;
     }
+
+    int32_t ResSchedExeService::KillProcess(pid_t pid) {
+        return 0;
+    }
 };
 
 /**
