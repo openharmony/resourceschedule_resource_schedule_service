@@ -237,7 +237,7 @@ HWTEST_F(PluginMgrTest, UnSubscribeSyncResource001, TestSize.Level1)
 {
     pluginMgr_->Init();
     pluginMgr_->SubscribeSyncResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
-    pluginMgr_->UnSubscribeResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
+    pluginMgr_->UnSubscribeSyncResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
     auto iter = pluginMgr_->resTypeLibSyncMap_.find(ResType::RES_TYPE_SCREEN_STATUS);
     EXPECT_TRUE(iter == pluginMgr_->resTypeLibSyncMap_.end());
 }
