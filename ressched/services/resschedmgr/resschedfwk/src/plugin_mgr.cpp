@@ -338,13 +338,14 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
         RESSCHED_LOGE("%{public}s, no DeliverResourceFunc !", __func__);
         return PLUGIN_REQUEST_ERROR;
     }
+
     std::string libName = "";
     std::list<std::string> pluginList = { pluginLib };
     StartTrace(HITRACE_TAG_OHOS, BuildDispatchTrace(resData, libName, __func__, pluginList), -1);
     RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, value = %{public}lld, plugin is %{public}s.",
         __func__, resData->resType, (long long)resData->value, pluginLib.c_str());
     auto beginTime = Clock::now();
-    int32_t ret = pluginDeliverFunc(std::move(resData));
+    int32_t ret = pluginDeliverFunc(resData);
     auto endTime = Clock::now();
     FinishTrace(HITRACE_TAG_OHOS);
     int32_t costTime = (endTime - beginTime) / std::chrono::microseconds(1) / 1000;
