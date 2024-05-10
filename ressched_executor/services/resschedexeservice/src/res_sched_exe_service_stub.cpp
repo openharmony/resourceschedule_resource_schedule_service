@@ -146,7 +146,7 @@ int32_t ResSchedExeServiceStub::KillProcessInner(MessageParcel& data, MessagePar
     return 0;
 }
 
-int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data, MessageParcel& reply)
+int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data)
 {
     uint32_t resType = 0;
     READ_PARCEL(data, Uint32, resType, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
