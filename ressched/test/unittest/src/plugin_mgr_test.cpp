@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -215,6 +215,51 @@ HWTEST_F(PluginMgrTest, SubscribeResource001, TestSize.Level1)
 }
 
 /**
+ * @tc.name: Plugin mgr test SubscribeSyncResource 001
+ * @tc.desc: Verify if can stop success.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, SubscribeSyncResource001, TestSize.Level1)
+{
+    pluginMgr_->Init();
+    pluginMgr_->SubscribeSyncResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
+    auto iter = pluginMgr_->resTypeLibSyncMap_.find(ResType::RES_TYPE_SCREEN_STATUS);
+    string libName = iter->second;
+    EXPECT_EQ(libName.compare(LIB_NAME), 0);
+}
+
+/**
+ * @tc.name: Plugin mgr test UnSubscribeSyncResource 001
+ * @tc.desc: Verify if can stop success.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, UnSubscribeSyncResource001, TestSize.Level1)
+{
+    pluginMgr_->Init();
+    pluginMgr_->SubscribeSyncResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
+    pluginMgr_->UnSubscribeSyncResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
+    auto iter = pluginMgr_->resTypeLibSyncMap_.find(ResType::RES_TYPE_SCREEN_STATUS);
+    EXPECT_TRUE(iter == pluginMgr_->resTypeLibSyncMap_.end());
+}
+
+/**
+ * @tc.name: Plugin mgr test DeliverResource 001
+ * @tc.desc: Verify if can DeliverResource
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, DeliverResource001, TestSize.Level1)
+{
+    pluginMgr_->Init();
+    nlohmann::json payload;
+    nlohmann::json reply;
+    auto data = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload, reply);
+    pluginMgr_->DeliverResource(data);
+    pluginMgr_->DeliverResource(nullptr);
+    SUCCEED();
+}
+
+/**
  * @tc.name: Plugin mgr test Dump 001
  * @tc.desc: Verify if dump commands is success.
  * @tc.type: FUNC
@@ -299,7 +344,9 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_001, TestSize.Level1)
 
     /* HandleEventClick */
     data->resType = ResType::RES_TYPE_CLICK_RECOGNIZE;
-    data->value = ResType::ClickEventType::TOUCH_EVENT;
+    data->value = ResType::ClickEventType::TOUCH_EVENT_DOWN;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+    data->value = ResType::ClickEventType::TOUCH_EVENT_UP;
     SocPerfPlugin::GetInstance().DispatchResource(data);
     data->value = ResType::ClickEventType::CLICK_EVENT;
     SocPerfPlugin::GetInstance().DispatchResource(data);

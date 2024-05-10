@@ -15,6 +15,8 @@
 
 #include "res_sched_exe_service_stub.h"
 
+#include <string_ex.h>
+
 #include "ipc_skeleton.h"
 
 #include "ipc_util.h"
@@ -28,6 +30,7 @@ namespace ResourceSchedule {
 namespace {
     constexpr int32_t PAYLOAD_MAX_SIZE = 4096;
     constexpr int32_t KILL_PROCESS_FAILED = -1;
+    const std::string RES_TYPE_EXT = "extType";
 
     bool IsValidToken(MessageParcel& data)
     {
@@ -50,6 +53,22 @@ namespace {
     {
         return type == ResExeType::RES_TYPE_DEBUG;
     }
+
+    bool GetExtResType(uint32_t& resType, const nlohmann::json& context)
+    {
+        if (resType != ResExeType::RES_TYPE_COMMON_SYNC && resType != ResExeType::RES_TYPE_COMMON_ASYNC) {
+            return true;
+        }
+        int type = 0;
+        if (!context.contains(RES_TYPE_EXT) || !context[RES_TYPE_EXT].is_string()
+            || !StrToInt(context[RES_TYPE_EXT], type)) {
+            RSSEXE_LOGE("use extend resType, but not send resTypeExt with payload");
+            return false;
+        }
+        resType = (uint32_t)type;
+        RSSEXE_LOGD("use extend resType = %{public}d.", resType);
+        return true;
+    }
 }
 
 ResSchedExeServiceStub::ResSchedExeServiceStub()
@@ -70,11 +89,9 @@ int32_t ResSchedExeServiceStub::ReportRequestInner(MessageParcel& data, MessageP
     uint32_t resType = 0;
     int64_t value = 0;
     nlohmann::json context;
-    nlohmann::json result;
     if (!ParseParcel(data, resType, value, context)) {
-        result["errorNo"] = std::to_string(ResIpcErrCode::RSSEXE_DATA_ERROR);
-        reply.WriteString(result.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
-        reply.WriteInt32(ResIpcErrCode::RSSEXE_DATA_ERROR);
+        WRITE_PARCEL(reply, Int32, ResIpcErrCode::RSSEXE_DATA_ERROR,
+            ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
         return ResIpcErrCode::RSSEXE_DATA_ERROR;
     }
 
@@ -83,23 +100,34 @@ int32_t ResSchedExeServiceStub::ReportRequestInner(MessageParcel& data, MessageP
     RSSEXE_LOGD("receive data from ipc resType: %{public}u, value: %{public}lld, uid: %{public}d, pid: %{public}d",
         resType, (long long)value, uid, clientPid);
 
-    int32_t ret = 0;
-    if (context.size() <= PAYLOAD_MAX_SIZE) {
-        context["callingUid"] = std::to_string(uid);
-        context["clientPid"] = std::to_string(clientPid);
-        if (IsTypeSync(resType)) {
-            ret = SendRequestSync(resType, value, context, result);
-        } else {
-            SendRequestAsync(resType, value, context);
-            ret = ResErrCode::RSSEXE_NO_ERR;
-        }
-    } else {
+    if (context.size() > PAYLOAD_MAX_SIZE) {
         RSSEXE_LOGE("The payload is too long. DoS.");
-        ret = ResIpcErrCode::RSSEXE_DATA_ERROR;
+        WRITE_PARCEL(reply, Int32, ResIpcErrCode::RSSEXE_DATA_ERROR,
+            ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
+        return ResIpcErrCode::RSSEXE_DATA_ERROR;
+    }
+
+    bool isSync = IsTypeSync(resType);
+    if (!GetExtResType(resType, context)) {
+        WRITE_PARCEL(reply, Int32, ResIpcErrCode::RSSEXE_DATA_ERROR,
+            ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
+        return ResIpcErrCode::RSSEXE_DATA_ERROR;
+    }
+    context["callingUid"] = std::to_string(uid);
+    context["clientPid"] = std::to_string(clientPid);
+
+    int32_t ret = 0;
+    nlohmann::json result;
+    if (isSync) {
+        ret = SendRequestSync(resType, value, context, result);
+    } else {
+        SendRequestAsync(resType, value, context);
+        ret = ResErrCode::RSSEXE_NO_ERR;
     }
     result["errorNo"] = std::to_string(ret);
-    reply.WriteString(result.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
-    reply.WriteInt32(ret);
+    WRITE_PARCEL(reply, Int32, ret, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
+    WRITE_PARCEL(reply, String, result.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace),
+        ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
     return ret;
 }
 
@@ -120,11 +148,6 @@ int32_t ResSchedExeServiceStub::KillProcessInner(MessageParcel& data, MessagePar
 
 int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data, MessageParcel& reply)
 {
-    if (!IsValidToken(data)) {
-        RSSEXE_LOGE("token is invalid");
-        return ResIpcErrCode::RSSEXE_DATA_ERROR;
-    }
-
     uint32_t resType = 0;
     READ_PARCEL(data, Uint32, resType, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
     if (!IsTypeDebug(resType)) {
@@ -135,13 +158,20 @@ int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data, MessagePar
     uint64_t start;
     READ_PARCEL(data, Uint64, start, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
     RSSEXE_LOGD("IPC debug: server recieve request, current timestamp is %{public}lld.", (long long)curr);
-    RSSEXE_LOGD("IPC debug: server recieve request, cost tome is %{public}lld.", (long long)(curr - start));
+    RSSEXE_LOGD("IPC debug: server recieve request, cost time is %{public}lld.", (long long)(curr - start));
     return ResErrCode::RSSEXE_NO_ERR;
 }
 
 int32_t ResSchedExeServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
+    if (!IsValidToken(data)) {
+        RSSEXE_LOGE("token is invalid");
+        WRITE_PARCEL(reply, Int32, ResIpcErrCode::RSSEXE_DATA_ERROR,
+            ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
+        return ResIpcErrCode::RSSEXE_DATA_ERROR;
+    }
+
     RSSEXE_LOGD("code = %{public}u, flags = %{public}d.", code, option.GetFlags());
 
     switch (code) {
@@ -152,7 +182,7 @@ int32_t ResSchedExeServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &da
         case ResIpcType::REQUEST_KILL_PROCESS:
             return KillProcessInner(data, reply);
         case ResIpcType::REQUEST_DEBUG:
-            return ReportDebugInner(data, reply);
+            return ReportDebugInner(data);
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -161,11 +191,6 @@ int32_t ResSchedExeServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &da
 bool ResSchedExeServiceStub::ParseParcel(MessageParcel& data,
     uint32_t& resType, int64_t& value, nlohmann::json& context)
 {
-    if (!IsValidToken(data)) {
-        RSSEXE_LOGE("token is invalid");
-        return false;
-    }
-
     READ_PARCEL(data, Uint32, resType, false, ResSchedExeServiceStub);
     if (!IsTypeVaild(resType)) {
         RSSEXE_LOGE("type:%{public}d is invalid", resType);

@@ -1,0 +1,84 @@
+# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#####################hydra-fuzz###################
+import("//build/config/features.gni")
+import("//build/ohos.gni")
+import("//build/test.gni")
+import("../../../../../ressched.gni")
+module_output_path = "resource_schedule_service/resource_schedule_service"
+
+##############################fuzztest##########################################
+ohos_fuzztest("DeviceStandByPluginFuzzTest") {
+  module_out_path = module_output_path
+  fuzz_config_file = "${ressched_plugins}/device_standby_plugin/test/fuzztest/devicestandbyplugin_fuzzer"
+
+  include_dirs = [
+    "${ressched_plugins}/device_standby_plugin/include",
+    "${ressched_interfaces}/innerkits/ressched_client/include",
+    "${ressched_common}/include",
+    "${ressched_services}/resschedmgr/pluginbase/include",
+  ]
+
+  cflags = [
+    "-g",
+    "-O0",
+    "-Wno-unused-variable",
+    "-fno-omit-frame-pointer",
+  ]
+
+  sources = [ "devicestandbyplugin_fuzzer.cpp" ]
+
+  deps = [ "${ressched_plugins}/device_standby_plugin:device_standby_plugin" ]
+
+  external_deps = [
+    "ability_base:want",
+    "ability_runtime:abilitykit_native",
+    "ability_runtime:app_manager",
+    "ability_runtime:connection_obs_manager",
+    "ability_runtime:wantagent_innerkits",
+    "bundle_framework:appexecfwk_base",
+    "c_utils:utils",
+    "common_event_service:cesfwk_innerkits",
+    "eventhandler:libeventhandler",
+    "hilog:libhilog",
+    "hisysevent:libhisysevent",
+    "hisysevent:libhisyseventmanager",
+    "hitrace:hitrace_meter",
+    "input:libmmi-client",
+    "ipc:ipc_single",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+    "window_manager:libwm",
+  ]
+
+  defines = []
+
+  if (rss_device_standby_enable) {
+    defines += [ "RSS_DEVICE_STANDBY_ENABLE" ]
+  }
+
+  part_name = "resource_schedule_service"
+  subsystem_name = "resourceschedule"
+}
+
+###############################################################################
+group("fuzztest") {
+  testonly = true
+  deps = []
+  deps += [
+    # deps file
+    ":DeviceStandByPluginFuzzTest",
+  ]
+}
+###############################################################################

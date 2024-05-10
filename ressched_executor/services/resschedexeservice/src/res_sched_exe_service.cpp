@@ -36,7 +36,7 @@ namespace {
 int32_t ResSchedExeService::SendRequestSync(uint32_t resType, int64_t value,
     const nlohmann::json& context, nlohmann::json& reply)
 {
-    return ResSchedExeMgr::GetInstance().SendRequestSync(resType, value, reply, context);
+    return ResSchedExeMgr::GetInstance().SendRequestSync(resType, value, context, reply);
 }
 
 void ResSchedExeService::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& context)
@@ -65,7 +65,7 @@ bool ResSchedExeService::AllowDump()
 int32_t ResSchedExeService::Dump(int32_t fd, const std::vector<std::u16string>& args)
 {
     if (!AllowDump()) {
-        return ResErrCode::RSSEXE_PERMISSIOM_DENIED;
+        return ResErrCode::RSSEXE_PERMISSION_DENIED;
     }
     RSSEXE_LOGI("%{public}s Dump service.", __func__);
     std::vector<std::string> argsInStr;

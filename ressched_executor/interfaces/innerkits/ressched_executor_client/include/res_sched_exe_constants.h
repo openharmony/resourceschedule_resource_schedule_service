@@ -34,7 +34,7 @@ enum ResErrCode : int32_t {
     // no error
     RSSEXE_NO_ERR = 0,
     // permission denied
-    RSSEXE_PERMISSIOM_DENIED,
+    RSSEXE_PERMISSION_DENIED,
     // last error code, unesd, please add error code before
     RSSEXE_LAST_ERR,
 };

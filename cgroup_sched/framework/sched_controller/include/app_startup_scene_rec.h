@@ -41,7 +41,6 @@ private:
     int32_t appStartCount_ = 0;
     int64_t lastAppStartTime_ = 0;
     std::atomic_bool isReportContinuousStartup_ = false;
-    std::string lastStartUid_ = "";
     std::vector<std::string> startPkgs_;
     std::unordered_set<std::string> startUidSet_;
     std::unordered_set<std::string> startIgnorePkgs_;
