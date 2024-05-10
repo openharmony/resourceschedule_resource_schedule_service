@@ -59,6 +59,9 @@ public:
      * @param payload Extra content.
      */
     void SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& payload = nullptr);
+
+private:
+    std::string BuildTraceStr(const std::string& func, uint32_t resType, int64_t value);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

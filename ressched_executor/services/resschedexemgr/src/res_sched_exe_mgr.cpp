@@ -55,24 +55,23 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     const nlohmann::json& payload, nlohmann::json& reply)
 {
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
-    std::string trace_str(__func__);
-    trace_str.append(",resType[").append(std::to_string(resType)).append("]");
-    trace_str.append(",value[").append(std::to_string(value)).append("]");
-    StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    int32_t ret = PluginMgr::GetInstance().DeliverResource(std::make_shared<ResData>(resType, value, payload, reply));
-    FinishTrace(HITRACE_TAG_OHOS);
-    return ret;
+    HitraceScoped hitrace(HITRACE_TAG_OHOS, BuildTraceStr(__func__, resType, value));
+    return PluginMgr::GetInstance().DeliverResource(std::make_shared<ResData>(resType, value, payload, reply));
 }
 
 void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
-    std::string trace_str(__func__);
+    HitraceScoped hitrace(HITRACE_TAG_OHOS, BuildTraceStr(__func__, resType, value));
+    PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
+}
+
+std::string ResSchedExeMgr::BuildTraceStr(const std::string& func, uint32_t resType, int64_t value)
+{
+    std::string trace_str(func);
     trace_str.append(",resType[").append(std::to_string(resType)).append("]");
     trace_str.append(",value[").append(std::to_string(value)).append("]");
-    StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
-    FinishTrace(HITRACE_TAG_OHOS);
+    return trace_str;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
