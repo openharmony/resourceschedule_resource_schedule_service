@@ -43,8 +43,11 @@ int32_t ResSchedExeServiceProxy::SendRequestSync(uint32_t resType, int64_t value
         return ResIpcErrCode::RSSEXE_SEND_REQUEST_FAIL;
     }
     RSSEXE_LOGD("SendRequestSync success.");
-    ResSchedExeCommonUtils::StringToJson(response.ReadString(), reply);
-    return response.ReadInt32();
+    int32_t ret = response.ReadInt32();
+    if (ret == ResErrCode::RSSEXE_NO_ERR) {
+        ResSchedExeCommonUtils::StringToJson(response.ReadString(), reply);
+    }
+    return ret;
 }
 
 void ResSchedExeServiceProxy::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& context)

@@ -16,6 +16,7 @@
 #include "res_sched_exe_mgr.h"
 
 #include <cinttypes>
+#include <map>
 
 #include "hitrace_meter.h"
 
@@ -26,13 +27,22 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+namespace {
+    const std::map<uint32_t, std::string> resTypeToStr = {
+        { ResExeType::RES_TYPE_COMMON_SYNC, "RES_TYPE_COMMON_SYNC" },
+        { ResExeType::RES_TYPE_COMMON_ASYNC, "RES_TYPE_COMMON_ASYNC" },
+        { ResExeType::RES_TYPE_THERMAL_AWARE_SYNC_EVENT, "THERMAL_AWARE_SYNC_EVENT" },
+        { ResExeType::RES_TYPE_THERMAL_AWARE_ASYNC_EVENT, "THERMAL_AWARE_ASYNC_EVENT" },
+        { ResExeType::RES_TYPE_DEBUG, "DEBUG_COMMAND" },
+    };
+}
 
 IMPLEMENT_SINGLE_INSTANCE(ResSchedExeMgr);
 
 void ResSchedExeMgr::Init()
 {
     PluginMgr::GetInstance().Init(true);
-    PluginMgr::GetInstance().SetResTypeStrMap(ResExeType::resTypeToStr);
+    PluginMgr::GetInstance().SetResTypeStrMap(resTypeToStr);
 }
 
 void ResSchedExeMgr::Stop()
@@ -42,27 +52,26 @@ void ResSchedExeMgr::Stop()
 }
 
 int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
-    nlohmann::json& reply, const nlohmann::json& payload)
+    const nlohmann::json& payload, nlohmann::json& reply)
 {
-    // plugin sync dispatch resource function is coding...
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
-    if (payload != nullptr) {
-        std::string context = payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
-        RSSEXE_LOGD("receive payload = %{private}s.", context.c_str());
-    }
-    reply["result"] = std::to_string(ResErrCode::RSSEXE_NO_ERR);
-    return ResErrCode::RSSEXE_NO_ERR;
+    HitraceScoped hitrace(HITRACE_TAG_OHOS, BuildTraceStr(__func__, resType, value));
+    return PluginMgr::GetInstance().DeliverResource(std::make_shared<ResData>(resType, value, payload, reply));
 }
 
 void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
-    std::string trace_str(__func__);
+    HitraceScoped hitrace(HITRACE_TAG_OHOS, BuildTraceStr(__func__, resType, value));
+    PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
+}
+
+std::string ResSchedExeMgr::BuildTraceStr(const std::string& func, uint32_t resType, int64_t value)
+{
+    std::string trace_str(func);
     trace_str.append(",resType[").append(std::to_string(resType)).append("]");
     trace_str.append(",value[").append(std::to_string(value)).append("]");
-    StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
-    FinishTrace(HITRACE_TAG_OHOS);
+    return trace_str;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
