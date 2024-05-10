@@ -142,7 +142,7 @@ int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data)
     uint64_t start;
     READ_PARCEL(data, Uint64, start, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
     RSSEXE_LOGD("IPC debug: server recieve request, current timestamp is %{public}lld.", (long long)curr);
-    RSSEXE_LOGD("IPC debug: server recieve request, cost tome is %{public}lld.", (long long)(curr - start));
+    RSSEXE_LOGD("IPC debug: server recieve request, cost time is %{public}lld.", (long long)(curr - start));
     return ResErrCode::RSSEXE_NO_ERR;
 }
 

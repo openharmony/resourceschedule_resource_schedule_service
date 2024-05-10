@@ -345,7 +345,7 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
     {
         std::string libName = "";
         std::list<std::string> pluginList = { pluginLib };
-        InnerTraceUtil traceUtil(BuildDispatchTrace(resData, libName, __func__, pluginList));
+        HitraceScoped hitrace(HITRACE_TAG_OHOS, BuildDispatchTrace(resData, libName, __func__, pluginList));
         InnerTimeUtil timeUtil(__func__, pluginLib);
         ret = pluginDeliverFunc(resData);
     }
@@ -383,7 +383,7 @@ void PluginMgr::UnSubscribeResource(const std::string& pluginLib, uint32_t resTy
 
 void PluginMgr::SubscribeSyncResource(const std::string& pluginLib, uint32_t resType)
 {
-    if (pluginLib.size() == 0) {
+    if (pluginLib.empty()) {
         RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
         return;
     }
@@ -398,7 +398,7 @@ void PluginMgr::SubscribeSyncResource(const std::string& pluginLib, uint32_t res
 
 void PluginMgr::UnSubscribeSyncResource(const std::string& pluginLib, uint32_t resType)
 {
-    if (pluginLib.size() == 0) {
+    if (pluginLib.empty()) {
         RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
         return;
     }
@@ -677,32 +677,22 @@ std::list<std::string> PluginMgr::SortPluginList(const std::list<std::string>& p
     return sortPluginList;
 }
 
-PluginMgr::InnerTraceUtil::InnerTraceUtil(const std::string trace)
+PluginMgr::InnerTimeUtil::InnerTimeUtil(const std::string& func, const std::string& plugin)
 {
-    StartTrace(HITRACE_TAG_OHOS, trace, -1);
-}
-
-PluginMgr::InnerTraceUtil::~InnerTraceUtil()
-{
-    FinishTrace(HITRACE_TAG_OHOS);
-}
-
-PluginMgr::InnerTimeUtil::InnerTimeUtil(const std::string func, const std::string plugin)
-{
-    beginTime = Clock::now();
-    functionName = func;
-    pluginName = plugin;
+    beginTime_ = Clock::now();
+    functionName_ = func;
+    pluginName_ = plugin;
 }
 
 PluginMgr::InnerTimeUtil::~InnerTimeUtil()
 {
     auto endTime = Clock::now();
-    int32_t costTime = (endTime - beginTime) / std::chrono::milliseconds(1);
+    int32_t costTime = (endTime - beginTime_) / std::chrono::milliseconds(1);
     RESSCHED_LOGD("%{public}s, %{public}s plugin cost time(%{public}d ms).",
-        functionName.c_str(), pluginName.c_str(), costTime);
+        functionName_.c_str(), pluginName_.c_str(), costTime);
     if (costTime > DISPATCH_WARNING_TIME) {
         RESSCHED_LOGW("%{public}s, WARNING :%{public}s plugin cost time(%{public}d ms) over %{public}d ms!",
-            functionName.c_str(), pluginName.c_str(), costTime, DISPATCH_WARNING_TIME);
+            functionName_.c_str(), pluginName_.c_str(), costTime, DISPATCH_WARNING_TIME);
     }
 }
 } // namespace ResourceSchedule
