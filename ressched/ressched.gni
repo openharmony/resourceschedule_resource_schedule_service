@@ -13,11 +13,11 @@
 
 resourceschedule_path = "//foundation/resourceschedule"
 
-ressched_services =
-    "${resourceschedule_path}/resource_schedule_service/ressched/services"
-
 resschedexe_interfaces =
     "${resourceschedule_path}/resource_schedule_service/ressched_executor/interfaces"
+
+ressched_services =
+    "${resourceschedule_path}/resource_schedule_service/ressched/services"
 
 ressched_common =
     "${resourceschedule_path}/resource_schedule_service/ressched/common"

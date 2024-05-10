@@ -264,7 +264,7 @@ public:
         return 0;
     }
 
-    int32_t KillProcess(pid_t pid)
+    int32_t KillProcess(pid_t pid) override
     {
         return 0;
     }
