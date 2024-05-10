@@ -50,6 +50,7 @@ public:
 
 private:
     int32_t ReportRequestInner(MessageParcel& data, MessageParcel& reply);
+    int32_t KillProcessInner(MessageParcel& data, MessageParcel& reply);
     int32_t ReportDebugInner(MessageParcel& data);
     bool ParseParcel(MessageParcel& data, uint32_t& resType, int64_t& value, nlohmann::json& context);
     void Init();

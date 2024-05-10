@@ -29,6 +29,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     constexpr int32_t PAYLOAD_MAX_SIZE = 4096;
+    constexpr int32_t KILL_PROCESS_FAILED = -1;
     const std::string RES_TYPE_EXT = "extType";
 
     bool IsValidToken(MessageParcel& data)
@@ -130,6 +131,21 @@ int32_t ResSchedExeServiceStub::ReportRequestInner(MessageParcel& data, MessageP
     return ret;
 }
 
+int32_t ResSchedExeServiceStub::KillProcessInner(MessageParcel& data, MessageParcel& reply)
+{
+    pid_t pid = -1;
+    READ_PARCEL(data, Int32, pid, false, ResSchedExeServiceStub);
+    if (pid <= 0) {
+        reply.WriteInt32(KILL_PROCESS_FAILED);
+        return ResIpcErrCode::RSSEXE_DATA_ERROR;
+    }
+
+    int32_t ret = 0;
+    ret = KillProcess(pid);
+    reply.WriteInt32(ret);
+    return 0;
+}
+
 int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data)
 {
     uint32_t resType = 0;
@@ -163,6 +179,8 @@ int32_t ResSchedExeServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &da
             return ReportRequestInner(data, reply);
         case ResIpcType::REQUEST_ASYNC:
             return ReportRequestInner(data, reply);
+        case ResIpcType::REQUEST_KILL_PROCESS:
+            return KillProcessInner(data, reply);
         case ResIpcType::REQUEST_DEBUG:
             return ReportDebugInner(data);
         default:

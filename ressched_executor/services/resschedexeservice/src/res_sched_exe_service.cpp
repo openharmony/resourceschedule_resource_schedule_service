@@ -44,6 +44,11 @@ void ResSchedExeService::SendRequestAsync(uint32_t resType, int64_t value, const
     ResSchedExeMgr::GetInstance().SendRequestAsync(resType, value, context);
 }
 
+int32_t ResSchedExeService::KillProcess(pid_t pid)
+{
+    return ResSchedExeMgr::GetInstance().KillProcess(pid);
+}
+
 bool ResSchedExeService::AllowDump()
 {
     if (!ResSchedExeCommonUtils::IsDebugMode()) {

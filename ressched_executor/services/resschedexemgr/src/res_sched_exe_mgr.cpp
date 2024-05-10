@@ -16,6 +16,7 @@
 #include "res_sched_exe_mgr.h"
 
 #include <cinttypes>
+#include <csignal>
 #include <map>
 
 #include "hitrace_meter.h"
@@ -35,6 +36,10 @@ namespace {
         { ResExeType::RES_TYPE_THERMAL_AWARE_ASYNC_EVENT, "THERMAL_AWARE_ASYNC_EVENT" },
         { ResExeType::RES_TYPE_DEBUG, "DEBUG_COMMAND" },
     };
+}
+
+namespace {
+    constexpr int32_t SIGNAL_KILL = 9;
 }
 
 IMPLEMENT_SINGLE_INSTANCE(ResSchedExeMgr);
@@ -57,6 +62,12 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
     HitraceScoped hitrace(HITRACE_TAG_OHOS, BuildTraceStr(__func__, resType, value));
     return PluginMgr::GetInstance().DeliverResource(std::make_shared<ResData>(resType, value, payload, reply));
+}
+
+int32_t ResSchedExeMgr::KillProcess(pid_t pid)
+{
+    int32_t killRes = kill(pid, SIGNAL_KILL);
+    return killRes;
 }
 
 void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& payload)

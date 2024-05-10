@@ -69,6 +69,22 @@ void ResSchedExeServiceProxy::SendRequestAsync(uint32_t resType, int64_t value, 
     RSSEXE_LOGD("SendRequestAsync success.");
 }
 
+int32_t ResSchedExeServiceProxy::KillProcess(pid_t pid)
+{
+    RSSEXE_LOGD("KillProcess start.");
+    MessageOption option = { MessageOption::TF_SYNC };
+    MessageParcel data;
+    WRITE_PARCEL(data, Int32, pid, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
+    MessageParcel response;
+    int32_t error = Remote()->SendRequest(ResIpcType::REQUEST_KILL_PROCESS, data, response, option);
+    if (error != NO_ERROR) {
+        RSSEXE_LOGE("Send request error: %{public}d.", error);
+        return ResIpcErrCode::RSSEXE_SEND_REQUEST_FAIL;
+    }
+    RSSEXE_LOGD("KillProcess success.");
+    return response.ReadInt32();
+}
+
 int32_t ResSchedExeServiceProxy::MakeUpParcel(MessageParcel& data,
     uint32_t resType, int64_t value, const nlohmann::json& context)
 {
