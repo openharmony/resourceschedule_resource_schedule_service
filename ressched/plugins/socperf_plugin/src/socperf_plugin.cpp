@@ -40,7 +40,7 @@ namespace {
     const std::string EXTENSION_TYPE_KEY = "extensionType";
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
     const int32_t INVALID_VALUE                             = -1;
-    const int32_t APP_TYPE_GAME                             = 20;
+    const int32_t APP_TYPE_GAME                             = 2;
     const int32_t PERF_REQUEST_CMD_ID_APP_START             = 10000;
     const int32_t PERF_REQUEST_CMD_ID_WARM_START            = 10001;
     const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH         = 10002;
@@ -262,6 +262,8 @@ static int32_t ParsePayload(const std::shared_ptr<ResData>& data, const std::str
 void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 {
     if (data->value == AppStartType::APP_COLD_START) {
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
         int32_t appType = INVALID_VALUE;
         if (reqAppTypeFunc_ != nullptr && data->payload != nullptr && data->payload.contains(BUNDLE_NAME)) {
             std::string bundleName = data->payload[BUNDLE_NAME].get<std::string>().c_str();
@@ -270,9 +272,6 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
         if (appType == APP_TYPE_GAME) {
             SOC_PERF_LOGI("SocPerfPlugin: socperf->Game cold start");
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_GAME_START, "");
-        } else {
-            SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
-            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
         }
     } else if (data->value == AppStartType::APP_WARM_START) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_WARM_START");
