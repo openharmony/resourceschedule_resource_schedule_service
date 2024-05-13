@@ -28,7 +28,7 @@
 #ifdef POWER_MANAGER_ENABLE
 #include "power_mgr_client.h"
 #endif
-#include "window_manager.h"
+#include "window_manager_lite.h"
 
 #undef LOG_TAG
 #define LOG_TAG "CgroupEventHandler"
@@ -337,39 +337,53 @@ void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, const std:
     procRecord->runningTransientTask_ = false;
 }
 
-void CgroupEventHandler::HandleContinuousTaskStart(uid_t uid, pid_t pid, int32_t typeId,
-    const std::string& abilityName)
+void CgroupEventHandler::HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
+    const std::vector<uint32_t>& typeIds, int32_t abilityId)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}s",
-        __func__, uid, pid, typeId, abilityName.c_str());
-    ChronoScope cs("HandleContinuousTaskStart");
+    ChronoScope cs("HandleContinuousTaskUpdate");
     auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecordNonNull(pid);
-    procRecord->continuousTaskFlag_ |= (1U << typeId);
+    procRecord->continuousTaskFlag_ = 0;
+    procRecord->abilityIdAndContinuousTaskFlagMap_[abilityId] = typeIds;
+    for (const auto& typeId : typeIds) {
+        CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, abilityId %{public}d,",
+            __func__, uid, pid, typeId, abilityId);
+    }
+    for (const auto& ablityIdAndcontinuousTaskFlag : procRecord->abilityIdAndContinuousTaskFlagMap_) {
+        for (const auto& typeId : ablityIdAndcontinuousTaskFlag.second) {
+            procRecord->continuousTaskFlag_ |= (1U << typeId);
+        }
+    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_CONTINUOUS_BEGIN);
 }
 
 void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId,
-    const std::string& abilityName)
+    int32_t abilityId)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}s",
-        __func__, uid, pid, typeId, abilityName.c_str());
+    CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d",
+        __func__, uid, pid, typeId, abilityId);
     ChronoScope cs("HandleContinuousTaskCancel");
     auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecord(pid);
     if (!procRecord) {
         return;
     }
-    procRecord->continuousTaskFlag_ &= ~(1U << typeId);
+    procRecord->abilityIdAndContinuousTaskFlagMap_.erase(abilityId);
+    procRecord->continuousTaskFlag_ = 0;
+    for (const auto& ablityIdAndcontinuousTaskFlag : procRecord->abilityIdAndContinuousTaskFlagMap_) {
+        for (const auto& typeId : ablityIdAndcontinuousTaskFlag.second) {
+            procRecord->continuousTaskFlag_ |= (1U << typeId);
+        }
+    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_CONTINUOUS_END);
 }
@@ -394,6 +408,7 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
         procRecord = app->GetProcessRecordNonNull(pid);
         auto win = procRecord->GetWindowInfoNonNull(windowId);
         auto abi = procRecord->GetAbilityInfo(abilityToken);
+        procRecord->linkedWindowId_ = (int32_t)(windowId);
         win->windowType_ = (int32_t)(windowType);
         win->isFocused_ = true;
         win->displayId_ = displayId;
@@ -580,22 +595,20 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
     int32_t keyTid = 0;
     int32_t role = 0;
 
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+    std::shared_ptr<Application> app = nullptr;
+    std::shared_ptr<ProcessRecord> procRecord = nullptr;
+    if (!GetProcInfoByPayload(uid, pid, app, procRecord, payload)) {
         return;
     }
 
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
-        !ParseValue(keyTid, "tid", payload) || !ParseValue(role, "role", payload)) {
+    if (!ParseValue(keyTid, "tid", payload) || !ParseValue(role, "role", payload)) {
         return;
     }
 
-    if (uid <= 0 || pid <= 0) {
+    if (!ResSchedUtils::GetInstance().CheckTidIsInPid(pid, keyTid)) {
         return;
     }
 
-    auto app = supervisor_->GetAppRecordNonNull(uid);
-    auto procRecord = app->GetProcessRecordNonNull(pid);
     if (value == ResType::ReportChangeStatus::CREATE) {
         procRecord->keyThreadRoleMap_.emplace(keyTid, role);
     } else {
@@ -619,22 +632,17 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     int32_t state = 0;
     int32_t nowSerialNum = -1;
 
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+    std::shared_ptr<Application> app = nullptr;
+    std::shared_ptr<ProcessRecord> procRecord = nullptr;
+    if (!GetProcInfoByPayload(uid, pid, app, procRecord, payload)) {
         return;
     }
 
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
-        !ParseValue(windowId, "windowId", payload) || !ParseValue(state, "state", payload) ||
+    if (!ParseValue(windowId, "windowId", payload) || !ParseValue(state, "state", payload) ||
         !ParseValue(nowSerialNum, "serialNum", payload)) {
+        CGS_LOGW("%{public}s : param is not valid or not exist", __func__);
         return;
     }
-    if (uid <= 0 || pid <= 0) {
-        return;
-    }
-
-    auto app = supervisor_->GetAppRecordNonNull(uid);
-    auto procRecord = app->GetProcessRecordNonNull(pid);
     CGS_LOGD("%{public}s : render process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, state);
     if (nowSerialNum <= procRecord->serialNum_ &&
@@ -654,12 +662,25 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     if (!mainProcRecord) {
         return;
     }
+    UpdateActivepWebRenderInfo(uid, pid, windowId, state, mainProcRecord);
     if (CheckVisibilityForRenderProcess(*(procRecord.get()), *mainProcRecord)) {
         CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d is not visible but active",
             __func__, app->GetName().c_str(), uid, pid);
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
         AdjustSource::ADJS_REPORT_WINDOW_STATE_CHANGED);
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+        ResType::RES_TYPE_REPORT_WINDOW_STATE, state);
+}
+
+void CgroupEventHandler::UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, int32_t windowId, int32_t state,
+    const std::shared_ptr<ProcessRecord>& proc)
+{
+    if (state != ResType::WindowStates::ACTIVE) {
+        return;
+    }
+    auto win = proc->GetWindowInfoNonNull(windowId);
+    win->topWebviewRenderUid_ = (uint32_t)(uid);
 }
 
 void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -687,9 +708,9 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
     if (!app || !procRecord) {
         return;
     }
-    procRecord->audioState_ = static_cast<int32_t>(value);
+    procRecord->audioPlayingState_ = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
-        __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
+        __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
@@ -707,25 +728,31 @@ void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t
         return;
     }
 
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "clientPid", payload)) {
         return;
     }
     if (uid <= 0 || pid <= 0) {
+        CGS_LOGW("%{public}s : uid or pid invalid, uid: %{public}d, pid: %{public}d!",
+            __func__, uid, pid);
         return;
     }
 
     std::shared_ptr<ProcessRecord> procRecord = supervisor_->FindProcessRecord(pid);
     if (!procRecord) {
+        CGS_LOGW("%{public}s : proc record is not exist, uid: %{public}d, pid: %{public}d",
+            __func__, uid, pid);
         return;
     }
 
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(procRecord->GetUid());
-    procRecord->audioState_ = static_cast<int32_t>(value);
+    procRecord->audioPlayingState_ = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
-        __func__, app->GetName().c_str(), uid, pid, procRecord->audioState_);
+        __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-        AdjustSource::ADJS_REPORT_WEBVIEW_STATE_CHANGED);
+        AdjustSource::ADJS_REPORT_WEBVIEW_AUDIO_STATE_CHANGED);
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+        resType, static_cast<int32_t>(value));
 }
 
 void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -875,7 +902,7 @@ void CgroupEventHandler::HandleSceneBoardState(uint32_t resType, int64_t value, 
     if (sceneBoardPid <= 0) {
         return;
     }
-    
+
     supervisor_->sceneBoardPid_ = sceneBoardPid;
     CGS_LOGD("%{public}s : set sceneboard pid: %{public}d", __func__, sceneBoardPid);
 }
@@ -883,6 +910,82 @@ void CgroupEventHandler::HandleSceneBoardState(uint32_t resType, int64_t value, 
 bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc)
 {
     return pr.isRenderProcess_ && pr.isActive_ && !mainProc.GetWindowInfoNonNull(pr.linkedWindowId_)->isVisible_;
+}
+
+void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+    std::shared_ptr<Application> app = nullptr;
+    std::shared_ptr<ProcessRecord> procRecord = nullptr;
+
+    if (!GetProcInfoByPayload(uid, pid, app, procRecord, payload)) {
+        return;
+    }
+
+    procRecord->screenCaptureState_= (value == ResType::WebScreenCapture::WEB_SCREEN_CAPTURE_START);
+    CGS_LOGD("%{public}s : screen capture process: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+        __func__, app->GetName().c_str(), uid, pid, procRecord->screenCaptureState_);
+
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_REPORT_WEBVIEW_SCREEN_CAPTURE);
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType,
+        procRecord->screenCaptureState_);
+}
+
+void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+    std::shared_ptr<Application> app = nullptr;
+    std::shared_ptr<ProcessRecord> procRecord = nullptr;
+
+    if (!GetProcInfoByPayload(uid, pid, app, procRecord, payload)) {
+        return;
+    }
+
+    procRecord->videoState_ = (value == ResType::WebVideoState::WEB_VIDEO_PLAYING_START);
+    CGS_LOGD("%{public}s : video process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+        __func__, app->GetName().c_str(), uid, pid, procRecord->videoState_);
+
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType,
+        procRecord->videoState_);
+}
+
+bool CgroupEventHandler::GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::shared_ptr<Application>& app,
+    std::shared_ptr<ProcessRecord>& procRecord, const nlohmann::json& payload)
+{
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return false;
+    }
+
+    if (!ParsePayload(uid, pid, payload)) {
+        CGS_LOGW("%{public}s : uid or pid invalid, uid: %{public}d, pid: %{public}d!",
+            __func__, uid, pid);
+        return false;
+    }
+    app = supervisor_->GetAppRecord(uid);
+    if (app) {
+        procRecord = app->GetProcessRecord(pid);
+    }
+    if (!app || !procRecord) {
+        CGS_LOGW("%{public}s : app record or proc record is not exist, uid: %{public}d, pid: %{public}d!",
+            __func__, uid, pid);
+        return false;
+    }
+    return true;
+}
+
+bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, const nlohmann::json& payload)
+{
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+        return false;
+    }
+    if (uid <= 0 || pid <= 0) {
+        return false;
+    }
+    return true;
 }
 
 bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,

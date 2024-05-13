@@ -17,7 +17,6 @@ import("../../ressched.gni")
 group("unittest") {
   testonly = true
   deps = [
-    ":resschedclient_test",
     ":resschedfwk_test",
     ":resschedservice_test",
   ]
@@ -27,12 +26,24 @@ module_output_path = "resource_schedule_service/ressched"
 
 ohos_unittest("resschedservice_test") {
   module_out_path = module_output_path
+  cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
   include_dirs = [
+    "./include",
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
   ]
 
-  sources = [ "src/res_sched_service_test.cpp" ]
+  sources = [
+    "${ressched_common}/src/oobe_datashare_utils.cpp",
+    "${ressched_common}/src/oobe_manager.cpp",
+    "src/oobe_datashare_utils_test.cpp",
+    "src/oobe_mgr_test.cpp",
+    "src/res_sched_client_test.cpp",
+    "src/res_sched_service_test.cpp",
+  ]
 
   deps = [
     "${ressched_services}:resschedsvc_static",
@@ -40,12 +51,15 @@ ohos_unittest("resschedservice_test") {
   ]
 
   external_deps = [
+    "ability_base:zuri",
     "ability_runtime:ability_manager",
     "access_token:libaccesstoken_sdk",
     "access_token:libnativetoken",
     "access_token:libtoken_setproc",
     "c_utils:utils",
+    "data_share:datashare_consumer",
     "ffrt:libffrt",
+    "hilog:libhilog",
     "ipc:ipc_single",
   ]
 
@@ -57,34 +71,13 @@ ohos_unittest("resschedservice_test") {
   branch_protector_ret = "pac_ret"
 }
 
-ohos_unittest("resschedclient_test") {
-  module_out_path = module_output_path
-  include_dirs = [
-    "${ressched_common}/include",
-    "${ressched_interfaces}/innerkits/ressched_client/include",
-  ]
-
-  sources = [ "src/res_sched_client_test.cpp" ]
-
-  deps = [
-    "${ressched_services}:resschedsvc_static",
-    "//third_party/googletest:gtest_main",
-  ]
-
-  external_deps = [
-    "ability_runtime:ability_manager",
-    "access_token:libaccesstoken_sdk",
-    "access_token:libnativetoken",
-    "access_token:libtoken_setproc",
-    "c_utils:utils",
-    "ffrt:libffrt",
-    "ipc:ipc_single",
-  ]
-}
-
 ohos_unittest("resschedfwk_test") {
   module_out_path = module_output_path
   resource_config_file = "${ressched_test}/resource/resschedfwk/ohos_test.xml"
+  cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
   include_dirs = [
     "include",
     "${ressched_common}/include",
@@ -94,6 +87,7 @@ ohos_unittest("resschedfwk_test") {
 
   sources = [
     "src/config_reader_test.cpp",
+    "src/notifier_mgr_test.cpp",
     "src/plugin_mgr_test.cpp",
     "src/plugin_switch_test.cpp",
     "src/res_sched_mgr_test.cpp",
@@ -120,4 +114,11 @@ ohos_unittest("resschedfwk_test") {
     external_deps += [ "soc_perf:socperf_client" ]
     defines += [ "RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE" ]
   }
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  branch_protector_ret = "pac_ret"
 }

@@ -47,8 +47,9 @@ public:
     void HandleProcessDied(uid_t uid, pid_t pid, const std::string& bundleName);
     void HandleTransientTaskStart(uid_t uid, pid_t pid, const std::string& packageName);
     void HandleTransientTaskEnd(uid_t uid, pid_t pid, const std::string& packageName);
-    void HandleContinuousTaskStart(uid_t uid, pid_t pid, int32_t typeId, const std::string& abilityName);
-    void HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId, const std::string& abilityName);
+    void HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId, int32_t abilityId);
+    void HandleContinuousTaskUpdate(
+        uid_t uid, pid_t pid, const std::vector<uint32_t>& typeIds, int32_t abilityId);
     void HandleFocusedWindow(uint32_t windowId, uintptr_t abilityToken,
         WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
     void HandleUnfocusedWindow(uint32_t windowId, uintptr_t abilityToken,
@@ -67,11 +68,18 @@ public:
     void HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportAvCodecEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleSceneBoardState(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleReportWebviewVideoState(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
     bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);
+    bool GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::shared_ptr<Application>& app,
+        std::shared_ptr<ProcessRecord>& procRecord, const nlohmann::json& payload);
+    bool ParsePayload(int32_t& uid, int32_t& pid, const nlohmann::json& payload);
     bool ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid, int64_t value, const nlohmann::json& payload);
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
+    void UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, int32_t windowId, int32_t state,
+        const std::shared_ptr<ProcessRecord>& proc);
     std::shared_ptr<Supervisor> supervisor_;
 };
 } // namespace ResourceSchedule

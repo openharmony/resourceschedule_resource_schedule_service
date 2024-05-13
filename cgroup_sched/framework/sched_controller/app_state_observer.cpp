@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,8 @@
 #include "cgroup_sched_log.h"
 #include "ressched_utils.h"
 #include "res_type.h"
+#include "ffrt.h"
+#include "app_startup_scene_rec.h"
 #include "supervisor.h"
 
 #undef LOG_TAG
@@ -47,13 +49,13 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         return;
     }
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    std::string bundleName = abilityStateData.bundleName;
+    int32_t abilityState = abilityStateData.abilityState;
     if (cgHandler) {
         auto uid = abilityStateData.uid;
         auto pid = abilityStateData.pid;
-        auto bundleName = abilityStateData.bundleName;
         auto abilityName = abilityStateData.abilityName;
         auto token = reinterpret_cast<uintptr_t>(abilityStateData.token.GetRefPtr());
-        auto abilityState = abilityStateData.abilityState;
         auto abilityType = abilityStateData.abilityType;
 
         cgHandler->PostTask([cgHandler, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
@@ -63,11 +65,16 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     }
 
     nlohmann::json payload;
+    std::string uid = std::to_string(abilityStateData.uid);
     payload["pid"] = std::to_string(abilityStateData.pid);
-    payload["uid"] = std::to_string(abilityStateData.uid);
-    payload["bundleName"] = abilityStateData.bundleName;
+    payload["uid"] = uid;
+    payload["bundleName"] = bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
-        abilityStateData.abilityState, payload);
+        abilityState, payload);
+    ffrt::submit([abilityState, uid, bundleName, this]() {
+        AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(
+            abilityState, uid, bundleName);
+    });
 }
 
 void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData &abilityStateData)
@@ -110,6 +117,7 @@ void RmsApplicationStateObserver::MarshallingProcessData(const ProcessData &proc
     payload["state"] = std::to_string(static_cast<uint32_t>(processData.state));
     payload["extensionType"] = std::to_string(static_cast<uint32_t>(processData.extensionType));
     payload["isTestMode"] = std::to_string(processData.isTestMode);
+    payload["processName"] = processData.processName;
 }
 
 void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processData)
@@ -182,8 +190,9 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     payload["pid"] = std::to_string(appStateData.pid);
     payload["uid"] = std::to_string(appStateData.uid);
     payload["bundleName"] = appStateData.bundleName;
-    payload["extensionType"] = static_cast<uint32_t>(appStateData.extensionType);
+    payload["extensionType"] = std::to_string(static_cast<uint32_t>(appStateData.extensionType));
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);
+    ResSchedUtils::GetInstance().ReportAppStateInProcess(appStateData.state, appStateData.pid);
 }
 
 void RmsApplicationStateObserver::MarshallingAppStateData(const AppStateData &appStateData, nlohmann::json &payload)
@@ -206,6 +215,21 @@ void RmsApplicationStateObserver::OnAppStateChanged(const AppStateData &appState
     MarshallingAppStateData(appStateData, payload);
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_ON_APP_STATE_CHANGED, appStateData.state,
         payload);
+    ResSchedUtils::GetInstance().ReportAppStateInProcess(appStateData.state, appStateData.pid);
+}
+
+void RmsApplicationStateObserver::OnAppCacheStateChanged(const AppStateData &appStateData)
+{
+    if (!ValidateAppStateData(appStateData)) {
+        CGS_LOGE("%{public}s : validate app state data failed!", __func__);
+        return;
+    }
+
+    nlohmann::json payload;
+    MarshallingAppStateData(appStateData, payload);
+    const int RES_TYPE_EXT_ON_APP_CACHED_STATE_CHANGED = 10008;
+    payload["extType"] = std::to_string(RES_TYPE_EXT_ON_APP_CACHED_STATE_CHANGED);
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_KEY_PERF_SCENE, appStateData.state, payload);
 }
 
 void RmsApplicationStateObserver::OnProcessStateChanged(const ProcessData &processData)

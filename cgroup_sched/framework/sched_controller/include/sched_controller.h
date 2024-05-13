@@ -32,6 +32,7 @@ class WindowStateObserver;
 class WindowVisibilityObserver;
 class WindowUpdateStateObserver;
 class WindowDrawingContentObserver;
+class WindowModeObserver;
 class Supervisor;
 class CgroupAdjuster;
 class CgroupEventHandler;
@@ -48,6 +49,8 @@ public:
     void UnsubscribeBackgroundTask();
     void SubscribeWindowState();
     void UnsubscribeWindowState();
+    void SubscribeWindowModeChange();
+    void UnsubscribeWindowModeChange();
     void UnregisterStateObservers();
     int GetProcessGroup(pid_t pid);
     void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status);
@@ -87,10 +90,16 @@ private:
     sptr<WindowStateObserver> windowStateObserver_;
     sptr<WindowVisibilityObserver> windowVisibilityObserver_;
     sptr<WindowDrawingContentObserver> windowDrawingContentObserver_;
+    sptr<WindowModeObserver> windowModeObserver_;
+    std::unordered_map<uint32_t, std::function<void(std::shared_ptr<CgroupEventHandler>,
+        uint32_t, int64_t, const nlohmann::json&)>> dispatchResFuncMap_;
 
     inline void InitCgroupHandler();
     inline void InitCgroupAdjuster();
     inline void InitSupervisor();
+    inline void InitAppStartupSceneRec();
+    inline void DeinitAppStartupSceneRec();
+    void InitDispatchResFuncMap();
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

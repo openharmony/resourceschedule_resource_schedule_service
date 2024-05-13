@@ -95,6 +95,10 @@ int32_t EventController::GetUid(const int32_t &userId, const std::string &bundle
         return -1;
     }
     sptr<AppExecFwk::IBundleMgr> bundleMgr = iface_cast<AppExecFwk::IBundleMgr>(remoteObject);
+    if (bundleMgr == nullptr) {
+        RESSCHED_LOGE("Failed to get uid due to get bundleMgr is null.");
+        return -1;
+    }
     bundleMgr->GetApplicationInfo(bundleName, AppExecFwk::ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, info);
     return static_cast<int32_t>(info.uid);
 }
@@ -150,8 +154,10 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USB_DEVICE_DETACHED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_CALL_STATE_CHANGED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_WIFI_P2P_STATE_CHANGED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_SAVE_MODE_CHANGED);
     matchingSkills.AddEvent("common.event.UNLOCK_SCREEN");
     matchingSkills.AddEvent("common.event.LOCK_SCREEN");
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
     if (CommonEventManager::SubscribeCommonEvent(subscriber_)) {
@@ -206,7 +212,6 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         ReportDataInProcess(ResType::RES_TYPE_SCREEN_LOCK, ResType::ScreenLockStatus::SCREEN_LOCK, payload);
         return;
     }
-
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_CALL_STATE_CHANGED) {
         int32_t state = want.GetIntParam("state", -1);
         payload["state"] = state;
@@ -252,6 +257,21 @@ void EventController::handleEvent(int32_t userId, const std::string &action, nlo
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_WIFI_P2P_STATE_CHANGED) {
         ReportDataInProcess(ResType::RES_TYPE_WIFI_P2P_STATE_CHANGED, static_cast<int64_t>(userId), payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_SAVE_MODE_CHANGED) {
+        ReportDataInProcess(ResType::RES_TYPE_POWER_MODE_CHANGED, static_cast<int64_t>(userId), payload);
+        return;
+    }
+    handleOtherEvent(userId, action, payload);
+}
+
+void EventController::handleOtherEvent(int32_t userId, const std::string &action, nlohmann::json &payload)
+{
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED) {
+        RESSCHED_LOGI("report boot completed");
+        ReportDataInProcess(ResType::RES_TYPE_BOOT_COMPLETED,
+            ResType::BootCompletedStatus::START_BOOT_COMPLETED, payload);
         return;
     }
 }

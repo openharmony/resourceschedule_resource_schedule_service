@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,13 +13,11 @@
  * limitations under the License.
  */
 
-#define private public
 #include <dlfcn.h>
 #include "plugin_mgr.h"
 #include "res_type.h"
 #include "plugin_mgr_test.h"
 #include "socperf_plugin.h"
-#undef private
 #include "mock_plugin_mgr.h"
 #include "res_data.h"
 #include "res_type.h"
@@ -217,6 +215,51 @@ HWTEST_F(PluginMgrTest, SubscribeResource001, TestSize.Level1)
 }
 
 /**
+ * @tc.name: Plugin mgr test SubscribeSyncResource 001
+ * @tc.desc: Verify if can stop success.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, SubscribeSyncResource001, TestSize.Level1)
+{
+    pluginMgr_->Init();
+    pluginMgr_->SubscribeSyncResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
+    auto iter = pluginMgr_->resTypeLibSyncMap_.find(ResType::RES_TYPE_SCREEN_STATUS);
+    string libName = iter->second;
+    EXPECT_EQ(libName.compare(LIB_NAME), 0);
+}
+
+/**
+ * @tc.name: Plugin mgr test UnSubscribeSyncResource 001
+ * @tc.desc: Verify if can stop success.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, UnSubscribeSyncResource001, TestSize.Level1)
+{
+    pluginMgr_->Init();
+    pluginMgr_->SubscribeSyncResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
+    pluginMgr_->UnSubscribeSyncResource(LIB_NAME, ResType::RES_TYPE_SCREEN_STATUS);
+    auto iter = pluginMgr_->resTypeLibSyncMap_.find(ResType::RES_TYPE_SCREEN_STATUS);
+    EXPECT_TRUE(iter == pluginMgr_->resTypeLibSyncMap_.end());
+}
+
+/**
+ * @tc.name: Plugin mgr test DeliverResource 001
+ * @tc.desc: Verify if can DeliverResource
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, DeliverResource001, TestSize.Level1)
+{
+    pluginMgr_->Init();
+    nlohmann::json payload;
+    nlohmann::json reply;
+    auto data = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload, reply);
+    pluginMgr_->DeliverResource(data);
+    pluginMgr_->DeliverResource(nullptr);
+    SUCCEED();
+}
+
+/**
  * @tc.name: Plugin mgr test Dump 001
  * @tc.desc: Verify if dump commands is success.
  * @tc.type: FUNC
@@ -301,7 +344,9 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_001, TestSize.Level1)
 
     /* HandleEventClick */
     data->resType = ResType::RES_TYPE_CLICK_RECOGNIZE;
-    data->value = ResType::ClickEventType::TOUCH_EVENT;
+    data->value = ResType::ClickEventType::TOUCH_EVENT_DOWN;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+    data->value = ResType::ClickEventType::TOUCH_EVENT_UP;
     SocPerfPlugin::GetInstance().DispatchResource(data);
     data->value = ResType::ClickEventType::CLICK_EVENT;
     SocPerfPlugin::GetInstance().DispatchResource(data);
@@ -414,6 +459,32 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_004, Function | MediumTes
     SUCCEED();
 }
 
+/*
+ * @tc.name: SocPerfSubTest_DispatchResource_005
+ * @tc.desc: DispatchResource Plugin
+ * @tc.type FUNC
+ * @tc.author:fangdinggeng
+ * @tc.require: issueI5VWUI
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_005, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto data = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
+        ResType::DeviceModeStatus::MODE_ENTER, payload);
+    /* Init */
+    SocPerfPlugin::GetInstance().Init();
+
+    /* HandleDeviceModeStatusChange */
+    data->payload["deviceMode"] = "test";
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+    data->value = ResType::DeviceModeStatus::MODE_QUIT;
+    SocPerfPlugin::GetInstance().DispatchResource(data);
+
+    /* DeInit */
+    SocPerfPlugin::GetInstance().Disable();
+    SUCCEED();
+}
+
 /**
  * @tc.name: Plugin mgr test DumPluginInfoAppend_001
  * @tc.desc: test the interface DumpluginInfoAppend
@@ -482,6 +553,32 @@ HWTEST_F(PluginMgrTest, DispatchResource005, TestSize.Level1)
     PluginMgr::GetInstance().SubscribeResource("test", 10000);
     SUCCEED();
     PluginMgr::GetInstance().DispatchResource(dataWithExtType);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: Plugin mgr test GetPluginLib 001
+ * @tc.desc: Verify if can get pluginlib with wrong env.
+ * @tc.type: FUNC
+ * @tc.require: issueI9C9JN
+ * @tc.author:xiaoshun
+ */
+HWTEST_F(PluginMgrTest, GetPluginLib001, TestSize.Level0)
+{
+    std::shared_ptr<PluginLib> libInfoPtr = pluginMgr_->GetPluginLib("test");
+    EXPECT_TRUE(libInfoPtr == nullptr);
+}
+
+/**
+ * @tc.name: Plugin mgr test GetPluginLib 002
+ * @tc.desc: Verify if can get pluginlib
+ * @tc.type: FUNC
+ * @tc.require: issueI9C9JN
+ * @tc.author:xiaoshun
+ */
+HWTEST_F(PluginMgrTest, GetPluginLib002, TestSize.Level0)
+{
+    std::shared_ptr<PluginLib> libInfoPtr = pluginMgr_->GetPluginLib("libapp_preload_plugin.z.so");
     SUCCEED();
 }
 } // namespace ResourceSchedule

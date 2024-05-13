@@ -87,8 +87,11 @@ void BackgroundTaskObserver::MarshallingContinuousTaskCallbackInfo(
     payload["pid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorPid());
     payload["uid"] = std::to_string(continuousTaskCallbackInfo->GetCreatorUid());
     payload["abilityName"] = continuousTaskCallbackInfo->GetAbilityName();
+    payload["isBatchApi"] =  std::to_string(continuousTaskCallbackInfo->IsBatchApi());
     payload["typeId"] = std::to_string(continuousTaskCallbackInfo->GetTypeId());
+    payload["abilityId"] = std::to_string(continuousTaskCallbackInfo->GetAbilityId());
     payload["isFromWebview"] = continuousTaskCallbackInfo->IsFromWebview();
+    payload["typeIds"] = continuousTaskCallbackInfo->GetTypeIds();
 }
 
 void BackgroundTaskObserver::OnContinuousTaskStart(
@@ -102,11 +105,10 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
     if (cgHandler) {
         auto uid = continuousTaskCallbackInfo->GetCreatorUid();
         auto pid = continuousTaskCallbackInfo->GetCreatorPid();
-        auto typeId = continuousTaskCallbackInfo->GetTypeId();
-        auto abilityName = continuousTaskCallbackInfo->GetAbilityName();
-
-        cgHandler->PostTask([cgHandler, uid, pid, typeId, abilityName] {
-            cgHandler->HandleContinuousTaskStart(uid, pid, typeId, abilityName);
+        auto abilityId = continuousTaskCallbackInfo->GetAbilityId();
+        auto typeIds = continuousTaskCallbackInfo->GetTypeIds();
+        cgHandler->PostTask([cgHandler, uid, pid, typeIds, abilityId] {
+            cgHandler->HandleContinuousTaskUpdate(uid, pid, typeIds, abilityId);
         });
     }
 
@@ -128,10 +130,10 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
         auto uid = continuousTaskCallbackInfo->GetCreatorUid();
         auto pid = continuousTaskCallbackInfo->GetCreatorPid();
         auto typeId = continuousTaskCallbackInfo->GetTypeId();
-        auto abilityName = continuousTaskCallbackInfo->GetAbilityName();
+        auto abilityId = continuousTaskCallbackInfo->GetAbilityId();
 
-        cgHandler->PostTask([cgHandler, uid, pid, typeId, abilityName] {
-            cgHandler->HandleContinuousTaskCancel(uid, pid, typeId, abilityName);
+        cgHandler->PostTask([cgHandler, uid, pid, typeId, abilityId] {
+            cgHandler->HandleContinuousTaskCancel(uid, pid, typeId, abilityId);
         });
     }
 
@@ -139,6 +141,31 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
     MarshallingContinuousTaskCallbackInfo(continuousTaskCallbackInfo, payload);
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_END, payload);
+}
+
+void BackgroundTaskObserver::OnContinuousTaskUpdate(
+    const std::shared_ptr<ContinuousTaskCallbackInfo> &continuousTaskCallbackInfo)
+{
+    if (!ValidateTaskInfo(continuousTaskCallbackInfo)) {
+        CGS_LOGE("%{public}s failed, invalid event data!", __func__);
+        return;
+    }
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler) {
+        auto uid = continuousTaskCallbackInfo->GetCreatorUid();
+        auto pid = continuousTaskCallbackInfo->GetCreatorPid();
+        auto typeIds = continuousTaskCallbackInfo->GetTypeIds();
+        auto abilityId = continuousTaskCallbackInfo->GetAbilityId();
+
+        cgHandler->PostTask([cgHandler, uid, pid, typeIds, abilityId] {
+            cgHandler->HandleContinuousTaskUpdate(uid, pid, typeIds, abilityId);
+        });
+    }
+
+    nlohmann::json payload;
+    MarshallingContinuousTaskCallbackInfo(continuousTaskCallbackInfo, payload);
+    ResSchedUtils::GetInstance().ReportDataInProcess(
+        ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_UPDATE, payload);
 }
 
 void BackgroundTaskObserver::OnRemoteDied(const wptr<IRemoteObject> &object)

@@ -13,6 +13,8 @@
 
 resourceschedule_path = "//foundation/resourceschedule"
 
+resschedexe_interfaces = "${resourceschedule_path}/resource_schedule_service/ressched_executor/interfaces"
+
 ressched_services =
     "${resourceschedule_path}/resource_schedule_service/ressched/services"
 
@@ -85,5 +87,10 @@ declare_args() {
   if (defined(global_parts_info) &&
       !defined(global_parts_info.resourceschedule_device_standby)) {
     rss_device_standby_enable = false
+  }
+  rss_request_enable = true
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.request_request)) {
+    rss_request_enable = false
   }
 }

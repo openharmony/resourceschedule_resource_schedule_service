@@ -23,6 +23,13 @@ config("device_standby_plugin_config") {
 }
 
 ohos_shared_library("device_standby_plugin") {
+  branch_protector_ret = "pac_ret"
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+
   configs = [ ":device_standby_plugin_config" ]
 
   sources = [ "src/device_standby_plugin.cpp" ]

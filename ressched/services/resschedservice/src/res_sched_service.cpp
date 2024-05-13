@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,12 +14,14 @@
  */
 
 #include <cstdint>
+#include <dlfcn.h>
 #include "res_sched_service.h"
 #include <file_ex.h>
 #include <parameters.h>
 #include <string_ex.h>
 #include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
+#include "notifier_mgr.h"
 #include "plugin_mgr.h"
 #include "res_sched_errors.h"
 #include "res_sched_log.h"
@@ -27,6 +29,7 @@
 #include "tokenid_kit.h"
 #include "sched_controller.h"
 #include "supervisor.h"
+#include "ressched_utils.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -35,16 +38,19 @@ namespace {
     constexpr int32_t DUMP_OPTION = 0;
     constexpr int32_t DUMP_PARAM_INDEX = 1;
     const int32_t ENG_MODE = OHOS::system::GetIntParameter("const.debuggable", 0);
+    const std::string APP_PRELOAD_PLIGIN_NAME = "libapp_preload_plugin.z.so";
 }
 
 void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    RESSCHED_LOGD("ResSchedService::ReportData from ipc receive data resType = %{public}u, value = %{public}lld.",
-                  resType, (long long)value);
+    int32_t clientPid = IPCSkeleton::GetCallingPid();
+    RESSCHED_LOGD("ResSchedService receive data from ipc resType: %{public}u, value: %{public}lld, pid: %{public}d",
+                  resType, (long long)value, clientPid);
     const nlohmann::json* payloadP = &payload;
     int32_t callingUid = IPCSkeleton::GetCallingUid();
     nlohmann::json* payloadM = const_cast<nlohmann::json*>(payloadP);
     (*payloadM)["callingUid"] = std::to_string(callingUid);
+    (*payloadM)["clientPid"] = std::to_string(clientPid);
     ResSchedMgr::GetInstance().ReportData(resType, value, *payloadM);
 }
 
@@ -52,6 +58,58 @@ int32_t ResSchedService::KillProcess(const nlohmann::json& payload)
 {
     return ResSchedMgr::GetInstance().KillProcessByClient(payload);
 
+}
+
+void ResSchedService::RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier)
+{
+    NotifierMgr::GetInstance().RegisterNotifier(IPCSkeleton::GetCallingPid(), notifier);
+}
+
+void ResSchedService::UnRegisterSystemloadNotifier()
+{
+    NotifierMgr::GetInstance().UnRegisterNotifier(IPCSkeleton::GetCallingPid());
+}
+
+int32_t ResSchedService::GetSystemloadLevel()
+{
+    return NotifierMgr::GetInstance().GetSystemloadLevel();
+}
+
+void ResSchedService::OnDeviceLevelChanged(int32_t type, int32_t level)
+{
+    NotifierMgr::GetInstance().OnDeviceLevelChanged(type, level);
+    nlohmann::json payload;
+    payload["systemloadLevel"] = std::to_string(level);
+    ResSchedUtils::GetInstance().ReportDataInProcess(type, level, payload);
+}
+
+bool ResSchedService::IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode)
+{
+    LoadAppPreloadPlugin();
+    if (!appPreloadFunc_) {
+        RESSCHED_LOGE("%{public}s, no allow AppPreload !", __func__, errno);
+        return false;
+    }
+    return appPreloadFunc_(bundleName, preloadMode);
+}
+
+void ResSchedService::LoadAppPreloadPlugin()
+{
+    std::shared_ptr<PluginLib> libInfoPtr = PluginMgr::GetInstance().GetPluginLib(APP_PRELOAD_PLIGIN_NAME);
+    if (libInfoPtr == nullptr) {
+        RESSCHED_LOGE("ResSchedService::LoadAppPreloadPlugin libInfoPtr nullptr");
+        isLoadAppPreloadPlugin_ = false;
+        return;
+    }
+
+    if (isLoadAppPreloadPlugin_) {
+        RESSCHED_LOGI("ResSchedService::LoadAppPreloadPlugin, already loaded AppPreloadPlugin");
+        return;
+    }
+
+    appPreloadFunc_ = reinterpret_cast<OnIsAllowedAppPreloadFunc>(dlsym(libInfoPtr->handle.get(),
+        "OnIsAllowedAppPreload"));
+    isLoadAppPreloadPlugin_ = true;
 }
 
 bool ResSchedService::AllowDump()
@@ -100,6 +158,8 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
             DumpProcessEventState(result);
         } else if (argsInStr[DUMP_OPTION] == "getProcessWindowInfo") {
             DumpProcessWindowInfo(result);
+        } else if (argsInStr[DUMP_OPTION] == "getSystemloadInfo") {
+            DumpSystemLoadInfo(result);
         } else {
             result.append("Error params.");
         }
@@ -175,7 +235,9 @@ void ResSchedService::DumpProcessWindowInfo(std::string &result)
                 result.append("    windowId:").append(ToString(windows->windowId_))
                     .append(", visibilityState:").append(ToString(windows->visibilityState_))
                     .append(", isVisible:").append(ToString(windows->isVisible_))
-                    .append(", isFocus:").append(ToString(windows->isFocused_)).append("\n");
+                    .append(", isFocus:").append(ToString(windows->isFocused_))
+                    .append(", topWebRenderUid:").append(ToString(windows->topWebviewRenderUid_))
+                    .append("\n");
             }
         }
     }
@@ -197,9 +259,6 @@ void ResSchedService::DumpProcessEventState(std::string &result)
         for (auto pidIt = pidMap.begin(); pidIt != pidMap.end(); pidIt++) {
             int32_t pid = pidIt->first;
             std::shared_ptr<ProcessRecord> process = pidIt->second;
-            if (process->isRenderProcess_) {
-                continue;
-            }
             result.append("uid:").append(ToString(uid))
                 .append(", pid:").append(ToString(pid))
                 .append(", processState:").append(ToString(process->processState_))
@@ -208,10 +267,36 @@ void ResSchedService::DumpProcessEventState(std::string &result)
                 .append(", mmiState:").append(ToString(process->mmiStatus_))
                 .append(", camearaStatus:").append(ToString(process->cameraState_))
                 .append(", bluetoothStatus:").append(ToString(process->bluetoothState_))
-                .append(", wifiStatus:").append(ToString(process->wifiState_)).append("\n")
-                .append(", screenCaptureStatus:").append(ToString(process->screenCaptureState_)).append("\n");
+                .append(", wifiStatus:").append(ToString(process->wifiState_))
+                .append(", screenCaptureState:").append(ToString(process->screenCaptureState_))
+                .append(", videoState:").append(ToString(process->videoState_))
+                .append(", audioPlayingState:").append(ToString(process->audioPlayingState_))
+                .append(", isActive:").append(ToString(process->isActive_))
+                .append(", linkedWindowId:").append(ToString(process->linkedWindowId_))
+                .append("\n");
         }
     }
+}
+
+void ResSchedService::DumpSystemLoadInfo(std::string &result)
+{
+    result.append("systemloadLevel:")
+        .append(ToString(NotifierMgr::GetInstance().GetSystemloadLevel()))
+        .append("\n");
+    auto notifierInfo = NotifierMgr::GetInstance().DumpRegisterInfo();
+    std::string native("natives:");
+    std::string hap("apps:");
+    for (auto& info : notifierInfo) {
+        std::string str = ToString(info.first).append(" ");
+        if (info.second) {
+            hap.append(str);
+        } else {
+            native.append(str);
+        }
+    }
+    hap.append("\n");
+    native.append("\n");
+    result.append(native).append(hap);
 }
 
 void ResSchedService::DumpUsage(std::string &result)

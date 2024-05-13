@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,6 +31,7 @@ namespace {
     #define PAYLOAD_MAX_SIZE 4096
     constexpr int32_t MEMMGR_UID = 1111;
     constexpr int32_t SAMGR_UID = 5555;
+    constexpr int32_t FOUNDATION_UID = 5523;
     static const std::unordered_set<uint32_t> scbRes = {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
@@ -53,6 +54,11 @@ namespace {
         ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
         ResType::RES_TYPE_REPORT_RENDER_THREAD,
         ResType::RES_TYPE_LONG_FRAME,
+        ResType::RES_TYPE_REPORT_DISTRIBUTE_TID,
+        ResType::RES_TYPE_WEB_DRAG_RESIZE,
+        ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE,
+        ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
+        ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
     };
     static const std::unordered_set<uint32_t> saRes_ = {
         ResType::RES_TYPE_SCREEN_STATUS,
@@ -89,7 +95,6 @@ namespace {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_MMI_INPUT_STATE,
         ResType::RES_TYPE_ANCO_CUST,
-        ResType::RES_TYPE_ANCO_APP_FRONT,
         ResType::RES_TYPE_TIMEZONE_CHANGED,
         ResType::RES_TYPE_APP_ASSOCIATED_START,
         ResType::RES_TYPE_THERMAL_STATE,
@@ -99,6 +104,18 @@ namespace {
         ResType::RES_TYPE_CAST_SCREEN,
         ResType::RES_TYPR_SCREEN_COLLABROATION,
         ResType::RES_TYPE_SA_CONTROL_APP_EVENT,
+        ResType::RES_TYPE_SYSTEM_CPU_LOAD,
+        ResType::RES_TYPE_UPLOAD_DOWNLOAD,
+        ResType::RES_TYPE_SPLIT_SCREEN,
+        ResType::RES_TYPE_FLOATING_WINDOW,
+        ResType::RES_TYPE_FRAME_RATE_REPORT,
+        ResType::RES_TYPE_LOCATION_STATUS_CHANGE,
+        ResType::RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE,
+        ResType::RES_TYPE_FORM_STATE_CHANGE_EVENT,
+        ResType::RES_TYPE_THERMAL_SCENARIO_REPORT,
+        ResType::RES_TYPE_BOOT_COMPLETED,
+        ResType::RES_TYPE_CONTINUOUS_STARTUP,
+        ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
@@ -167,7 +184,7 @@ namespace {
     }
 }
 
-ResSchedServiceStub::ResSchedServiceStub()
+ResSchedServiceStub::ResSchedServiceStub(bool serialInvokeFlag) : IRemoteStub(serialInvokeFlag)
 {
     Init();
 }
@@ -229,6 +246,74 @@ int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel
     return ERR_OK;
 }
 
+void ResSchedServiceStub::RegisterSystemloadNotifierInner(MessageParcel& data,
+                                                          [[maybe_unused]] MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        RESSCHED_LOGE("Register invalid token.");
+        return;
+    }
+    sptr<IRemoteObject> notifier = data.ReadRemoteObject();
+    if (notifier == nullptr) {
+        RESSCHED_LOGE("ResSchedServiceStub Read notifier fail.");
+        return;
+    }
+    RegisterSystemloadNotifier(notifier);
+}
+
+void ResSchedServiceStub::UnRegisterSystemloadNotifierInner(MessageParcel& data,
+                                                            [[maybe_unused]] MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        RESSCHED_LOGE("UnRegister invalid token.");
+        return;
+    }
+    UnRegisterSystemloadNotifier();
+}
+
+int32_t ResSchedServiceStub::GetSystemloadLevelInner(MessageParcel& data, MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        RESSCHED_LOGE("GetSystemload level invalid token.");
+        return ERR_RES_SCHED_PARCEL_ERROR;
+    }
+    int32_t level = GetSystemloadLevel();
+    if (!reply.WriteInt32(level)) {
+        RESSCHED_LOGE("GetSystemload level write reply failed.");
+        return ERR_RES_SCHED_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+bool ResSchedServiceStub::IsAllowedAppPreloadInner(MessageParcel& data, MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        return false;
+    }
+
+    AccessToken::AccessTokenID tokenId = IPCSkeleton::GetCallingTokenID();
+    int32_t uid = IPCSkeleton::GetCallingUid();
+    AccessToken::ATokenTypeEnum tokenTypeFlag = AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
+    if (uid != FOUNDATION_UID || tokenTypeFlag != AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
+        RESSCHED_LOGE("Invalid calling token");
+        return false;
+    }
+
+    std::string bundleName {""};
+    int32_t preloadMode {0};
+    if (!data.ReadString(bundleName) || !data.ReadInt32(preloadMode)) {
+        RESSCHED_LOGE("IsAllowedAppPreloadInner ReadParcelable failed");
+        return false;
+    }
+
+    bool isAllowedPreload = IsAllowedAppPreload(bundleName, preloadMode);
+    if (!reply.WriteBool(isAllowedPreload)) {
+        RESSCHED_LOGE("IsAllowedAppPreloadInner write isAllowedPreload failed");
+        return false;
+    }
+    return true;
+}
+
 int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
@@ -241,6 +326,16 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
             return ReportDataInner(data, reply);
         case static_cast<uint32_t>(ResourceScheduleInterfaceCode::KILL_PROCESS):
             return KillProcessInner(data, reply);
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::REGISTER_SYSTEMLOAD_NOTIFIER):
+            RegisterSystemloadNotifierInner(data, reply);
+            return ERR_OK;
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::UNREGISTER_SYSTEMLOAD_NOTIFIER):
+            UnRegisterSystemloadNotifierInner(data, reply);
+            return ERR_OK;
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::GET_SYSTEMLOAD_LEVEL):
+            return GetSystemloadLevelInner(data, reply);
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::TOUCH_DOWN_APP_PRELOAD):
+            return IsAllowedAppPreloadInner(data, reply);
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }

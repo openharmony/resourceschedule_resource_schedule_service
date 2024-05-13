@@ -1,4 +1,4 @@
-# Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -49,19 +49,22 @@ ohos_shared_library("resschedsvc") {
   include_dirs = [
     "${cgroup_sched_framework}/sched_controller/include",
     "${cgroup_sched_framework}/process_group/include",
-    "//foundation/ability/ability_runtime/interfaces/inner_api/connectionobs_manager/include/",
     "${cgroup_sched_framework}/utils/include/",
+    "../common/include",
   ]
 
   sources = [
     "../sched_controller/common_event/src/event_controller.cpp",
     "../sched_controller/observer/src/audio_observer.cpp",
     "../sched_controller/observer/src/connection_subscriber.cpp",
+    "../sched_controller/observer/src/download_upload_observer.cpp",
+    "../sched_controller/observer/src/fold_display_mode_observer.cpp",
     "../sched_controller/observer/src/hisysevent_observer.cpp",
     "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
     "resschedmgr/resschedfwk/src/config_reader.cpp",
     "resschedmgr/resschedfwk/src/kill_process.cpp",
+    "resschedmgr/resschedfwk/src/notifier_mgr.cpp",
     "resschedmgr/resschedfwk/src/plugin_mgr.cpp",
     "resschedmgr/resschedfwk/src/plugin_switch.cpp",
     "resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
@@ -73,7 +76,8 @@ ohos_shared_library("resschedsvc") {
   deps = [
     "${cgroup_sched_framework}:cgroup_sched",
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
-    "//third_party/libxml2:xml2",
+    "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
+    "../common:ressched_common_utils",
   ]
 
   external_deps = [
@@ -98,8 +102,10 @@ ohos_shared_library("resschedsvc") {
     "init:libbegetutil",
     "input:libmmi-client",
     "ipc:ipc_single",
+    "libxml2:libxml2",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
+    "window_manager:libdm",
   ]
 
   if (device_movement_perception_enable) {
@@ -137,6 +143,10 @@ ohos_shared_library("resschedsvc") {
   if (resource_schedule_service_with_ext_res_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
   }
+  if (rss_request_enable) {
+    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    external_deps += [ "request:request_native" ]
+  }
 
   version_script = "libresschedsvc.versionscript"
   shlib_type = "sa"
@@ -163,7 +173,7 @@ ohos_static_library("resschedsvc_static") {
   defines = []
 
   include_dirs = [
-    "//foundation/ability/ability_runtime/interfaces/inner_api/connectionobs_manager/include/",
+    "../common/include",
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/utils/include/",
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/sched_controller/include/",
     "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group/include/",
@@ -173,11 +183,14 @@ ohos_static_library("resschedsvc_static") {
     "../sched_controller/common_event/src/event_controller.cpp",
     "../sched_controller/observer/src/audio_observer.cpp",
     "../sched_controller/observer/src/connection_subscriber.cpp",
+    "../sched_controller/observer/src/download_upload_observer.cpp",
+    "../sched_controller/observer/src/fold_display_mode_observer.cpp",
     "../sched_controller/observer/src/hisysevent_observer.cpp",
     "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
     "resschedmgr/resschedfwk/src/config_reader.cpp",
     "resschedmgr/resschedfwk/src/kill_process.cpp",
+    "resschedmgr/resschedfwk/src/notifier_mgr.cpp",
     "resschedmgr/resschedfwk/src/plugin_mgr.cpp",
     "resschedmgr/resschedfwk/src/plugin_switch.cpp",
     "resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
@@ -189,13 +202,15 @@ ohos_static_library("resschedsvc_static") {
   deps = [
     "${cgroup_sched_framework}:cgroup_sched",
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
-    "//third_party/libxml2:xml2",
+    "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
+    "../common:ressched_common_utils",
   ]
 
   external_deps = [
     "ability_base:want",
     "ability_runtime:app_manager",
     "ability_runtime:connection_obs_manager",
+    "ability_runtime:dataobs_manager",
     "ability_runtime:wantagent_innerkits",
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
@@ -213,8 +228,10 @@ ohos_static_library("resschedsvc_static") {
     "init:libbegetutil",
     "input:libmmi-client",
     "ipc:ipc_single",
+    "libxml2:libxml2",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
+    "window_manager:libdm",
   ]
 
   if (device_movement_perception_enable) {
@@ -248,6 +265,10 @@ ohos_static_library("resschedsvc_static") {
   }
   if (resource_schedule_service_with_ext_res_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
+  }
+  if (rss_request_enable) {
+    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    external_deps += [ "request:request_native" ]
   }
 
   subsystem_name = "resourceschedule"

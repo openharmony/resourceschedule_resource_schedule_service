@@ -37,6 +37,7 @@
         "common_event_service",
         "config_policy",
         "core_service",
+        "data_share",
         "eventhandler",
         "ffrt",
         "frame_aware_sched",
@@ -47,7 +48,9 @@
         "init",
         "ipc",
         "movement",
+        "napi",
         "input",
+        "request",
         "samgr",
         "safwk",
         "soc_perf",
@@ -55,9 +58,7 @@
         "window_manager",
         "device_standby",
         "power_manager",
-        "av_session"
-      ],
-      "third_party": [
+        "av_session",
         "json",
         "libxml2"
       ]
@@ -70,7 +71,10 @@
           "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/profiles:process_group_config"
         ],
         "fwk_group" : [
-          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"
+          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
+          "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client:resschedexe_client",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi:systemload",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
         ],
         "service_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc",
@@ -79,6 +83,9 @@
           "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/device_standby_plugin:device_standby_plugin",
           "//foundation/resourceschedule/resource_schedule_service/ressched/sa_profile:ressched_sa_profile",
           "//foundation/resourceschedule/resource_schedule_service/ressched/etc/init:resource_schedule_service.cfg",
+          "//foundation/resourceschedule/resource_schedule_service/ressched_executor/services:resschedexesvc",
+          "//foundation/resourceschedule/resource_schedule_service/ressched_executor/sa_profile:resschedexe_sa_profile",
+          "//foundation/resourceschedule/resource_schedule_service/ressched_executor/etc/init:resource_schedule_executor.cfg",
           "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework:cgroup_sched",
           "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group:libprocess_group"
         ]
@@ -94,7 +101,9 @@
               "res_sched_service_proxy.h",
               "res_type.h",
               "res_sched_ipc_interface_code.h",
-              "res_sched_kill_reason.h"
+              "res_sched_kill_reason.h",
+              "res_sched_systemload_notifier_client.h",
+              "res_sched_systemload_notifier_stub.h"
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"
@@ -109,6 +118,30 @@
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc"
+        },
+        {
+          "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client/include",
+            "header_files": [
+              "ires_sched_exe_service.h",
+              "res_sched_exe_client.h",
+              "res_sched_exe_constants.h",
+              "res_sched_exe_service_proxy.h",
+              "res_exe_type.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client:resschedexe_client"
+        },
+        {
+          "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/pluginbase/include",
+            "header_files": [
+              "config_info.h",
+              "plugin.h",
+              "res_data.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/services:resschedexesvc"
         },
         {
           "header": {
@@ -130,17 +163,32 @@
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group:libprocess_group"
+        },
+        {
+          "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/common/include",
+            "header_files": [
+              "ioobe_task.h",
+              "oobe_datashare_utils.h",
+              "oobe_manager.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
         }
       ],
       "test": [
         "//foundation/resourceschedule/resource_schedule_service/ressched/test/unittest:unittest",
+        "//foundation/resourceschedule/resource_schedule_service/ressched_executor/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/frame_aware_plugin/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/socperf_plugin/test/unittest:unittest",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/socperf_plugin/test/fuzztest:fuzztest",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/device_standby_plugin/test/fuzztest:fuzztest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/test/fuzztest:fuzztest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/test/testutil:ressched_test",
         "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/test/fuzztest:fuzztest",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/test/unittest/systemload_jsunittest:js_unittest",
         "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/test/fuzztest:fuzztest"
       ]
     },

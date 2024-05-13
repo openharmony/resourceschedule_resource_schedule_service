@@ -1,0 +1,108 @@
+# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#####################hydra-fuzz###################
+import("//build/config/features.gni")
+import("//build/ohos.gni")
+import("//build/test.gni")
+import("../../../../ressched.gni")
+module_output_path = "resource_schedule_service/resource_schedule_service"
+
+##############################fuzztest##########################################
+ohos_fuzztest("ResSchedCommonEventFuzzTest") {
+  module_out_path = module_output_path
+  fuzz_config_file =
+      "${ressched_sched_controller}/test/fuzztest/resschedcommonevent_fuzzer"
+
+  include_dirs = [
+    "${ressched_sched_controller}/observer/include",
+    "${ressched_interfaces}/innerkits/ressched_client/include",
+    "${ressched_common}/include",
+    "${ressched_sched_controller}/../resschedmgr/resschedfwk/include",
+    "${ressched_sched_controller}/../resschedmgr/pluginbase/include",
+  ]
+
+  cflags = [
+    "-g",
+    "-O0",
+    "-Wno-unused-variable",
+    "-fno-omit-frame-pointer",
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
+
+  sources = [ "resschedcommonevent_fuzzer.cpp" ]
+
+  deps = [ "${ressched_services}:resschedsvc_static" ]
+
+  external_deps = [
+    "ability_base:want",
+    "ability_runtime:abilitykit_native",
+    "ability_runtime:app_manager",
+    "ability_runtime:connection_obs_manager",
+    "ability_runtime:wantagent_innerkits",
+    "bundle_framework:appexecfwk_base",
+    "c_utils:utils",
+    "common_event_service:cesfwk_innerkits",
+    "eventhandler:libeventhandler",
+    "hilog:libhilog",
+    "hisysevent:libhisysevent",
+    "hisysevent:libhisyseventmanager",
+    "hitrace:hitrace_meter",
+    "input:libmmi-client",
+    "ipc:ipc_single",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+    "window_manager:libwm",
+  ]
+
+  defines = []
+
+  if (device_movement_perception_enable) {
+    defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
+    external_deps += [ "movement:movement_client" ]
+  }
+  if (ressched_with_telephony_state_registry_enable) {
+    defines += [ "RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE" ]
+    external_deps += [
+      "core_service:tel_core_service_api",
+      "state_registry:tel_state_registry_api",
+    ]
+  }
+  if (communication_bluetooth_perception_enable) {
+    defines += [ "RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE" ]
+    external_deps += [ "bluetooth:btframework" ]
+  }
+  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
+    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
+    external_deps += [ "audio_framework:audio_client" ]
+  }
+  if (rss_request_enable) {
+    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    external_deps += [ "request:request_native" ]
+  }
+
+  part_name = "resource_schedule_service"
+  subsystem_name = "resourceschedule"
+}
+
+###############################################################################
+group("fuzztest") {
+  testonly = true
+  deps = []
+  deps += [
+    # deps file
+    ":ResSchedCommonEventFuzzTest",
+  ]
+}
+###############################################################################

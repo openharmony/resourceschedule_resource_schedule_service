@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,6 +24,14 @@ namespace ResourceSchedule {
     enum class ResourceScheduleInterfaceCode {
         REPORT_DATA = 1,
         KILL_PROCESS = 2,
+        REGISTER_SYSTEMLOAD_NOTIFIER = 3,
+        UNREGISTER_SYSTEMLOAD_NOTIFIER = 4,
+        GET_SYSTEMLOAD_LEVEL = 5,
+        TOUCH_DOWN_APP_PRELOAD = 6,
+    };
+
+    enum class ResourceSceduleSystemloadNotifierCode {
+        SYSTEMLOAD_LEVEL = 1,
     };
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -25,9 +25,51 @@ config("process_group_module_private_config") {
 ohos_unittest("ProcessGroupSubTest") {
   module_out_path = process_group_module_output_path
 
-  include_dirs = [ "../../framework/process_group/include" ]
+  include_dirs = [
+    "../../framework/process_group/include",
+    "../../framework/sched_controller/include",
+  ]
 
-  sources = [ "process_group_sub_test.cpp" ]
+  sources = [
+    "cgroup_sched_test.cpp",
+    "process_group_sub_test.cpp",
+  ]
+
+  cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
+
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+
+  configs = [ ":process_group_module_private_config" ]
+
+  deps = [
+    "../../framework:cgroup_sched",
+    "../../framework/process_group:libprocess_group",
+    "//third_party/googletest:gtest_main",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "ffrt:libffrt",
+    "hilog:libhilog",
+    "samgr:samgr_proxy",
+    "window_manager:libwm",
+  ]
+}
+
+ohos_unittest("ResschedUtilsTest") {
+  module_out_path = process_group_module_output_path
+
+  include_dirs = [
+    "../../framework/utils/include",
+    "../../framework/sched_controller/include",
+  ]
+
+  sources = [ "ressched_utils_test.cpp" ]
 
   cflags = []
 
@@ -38,13 +80,14 @@ ohos_unittest("ProcessGroupSubTest") {
   configs = [ ":process_group_module_private_config" ]
 
   deps = [
-    "../../framework/process_group:libprocess_group",
     "//third_party/googletest:gtest_main",
+    "//third_party/json:nlohmann_json_static",
   ]
 
   external_deps = [
     "c_utils:utils",
     "hilog:libhilog",
+    "resource_schedule_service:cgroup_sched",
   ]
 }
 
@@ -68,5 +111,8 @@ ohos_executable("process_proup_test") {
 
 group("unittest") {
   testonly = true
-  deps = [ ":ProcessGroupSubTest" ]
+  deps = [
+    ":ProcessGroupSubTest",
+    ":ResschedUtilsTest",
+  ]
 }

@@ -1,0 +1,147 @@
+# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//build/test.gni")
+import("../../ressched/ressched.gni")
+import("../ressched_executor.gni")
+
+config("service_public_config") {
+  include_dirs = [
+    "${ressched_common}/include",
+    "${resschedexe_common}/include",
+    "${resschedexe_plugins}/pluginbase/include",
+    "${resschedexe_plugins}/resschedfwk/include",
+    "resschedexemgr/include",
+  ]
+}
+
+config("service_private_config") {
+  include_dirs = [ "resschedexeservice/include" ]
+}
+
+ohos_shared_library("resschedexesvc") {
+  configs = [ ":service_private_config" ]
+
+  public_configs = [ ":service_public_config" ]
+
+  defines = []
+
+  include_dirs = []
+
+  sources = [
+    "${resschedexe_plugins}/resschedfwk/src/config_reader.cpp",
+    "${resschedexe_plugins}/resschedfwk/src/plugin_mgr.cpp",
+    "${resschedexe_plugins}/resschedfwk/src/plugin_switch.cpp",
+    "resschedexemgr/src/res_sched_exe_mgr.cpp",
+    "resschedexeservice/src/res_sched_exe_service.cpp",
+    "resschedexeservice/src/res_sched_exe_service_ability.cpp",
+    "resschedexeservice/src/res_sched_exe_service_stub.cpp",
+  ]
+
+  deps = [ "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client" ]
+
+  external_deps = [
+    "access_token:libaccesstoken_sdk",
+    "access_token:libtokenid_sdk",
+    "c_utils:utils",
+    "config_policy:configpolicy_util",
+    "eventhandler:libeventhandler",
+    "ffrt:libffrt",
+    "hilog:libhilog",
+    "hisysevent:libhisysevent",
+    "hisysevent:libhisyseventmanager",
+    "hitrace:hitrace_meter",
+    "init:libbegetutil",
+    "ipc:ipc_single",
+    "libxml2:libxml2",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+  ]
+
+  if (resource_schedule_service_with_ffrt_enable) {
+    defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE" ]
+  }
+
+  version_script = "libresschedexeservice.versionscript"
+  shlib_type = "sa"
+  subsystem_name = "resourceschedule"
+  part_name = "resource_schedule_service"
+
+  branch_protector_ret = "pac_ret"
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+}
+
+# for unittest
+ohos_static_library("resschedexesvc_static") {
+  configs = []
+
+  public_configs = [
+    ":service_private_config",
+    ":service_public_config",
+  ]
+
+  defines = []
+
+  include_dirs = []
+
+  sources = [
+    "${resschedexe_plugins}/resschedfwk/src/config_reader.cpp",
+    "${resschedexe_plugins}/resschedfwk/src/plugin_mgr.cpp",
+    "${resschedexe_plugins}/resschedfwk/src/plugin_switch.cpp",
+    "resschedexemgr/src/res_sched_exe_mgr.cpp",
+    "resschedexeservice/src/res_sched_exe_service.cpp",
+    "resschedexeservice/src/res_sched_exe_service_ability.cpp",
+    "resschedexeservice/src/res_sched_exe_service_stub.cpp",
+  ]
+
+  deps = [ "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client" ]
+
+  external_deps = [
+    "access_token:libaccesstoken_sdk",
+    "access_token:libtokenid_sdk",
+    "c_utils:utils",
+    "config_policy:configpolicy_util",
+    "eventhandler:libeventhandler",
+    "ffrt:libffrt",
+    "hilog:libhilog",
+    "hisysevent:libhisysevent",
+    "hisysevent:libhisyseventmanager",
+    "hitrace:hitrace_meter",
+    "init:libbegetutil",
+    "ipc:ipc_single",
+    "libxml2:libxml2",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+  ]
+
+  if (resource_schedule_service_with_ffrt_enable) {
+    defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE" ]
+  }
+
+  subsystem_name = "resourceschedule"
+  part_name = "resource_schedule_service"
+
+  branch_protector_ret = "pac_ret"
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+}

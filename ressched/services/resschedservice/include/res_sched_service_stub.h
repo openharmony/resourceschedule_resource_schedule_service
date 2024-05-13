@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,7 +28,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 class ResSchedServiceStub : public IRemoteStub<IResSchedService> {
 public:
-    ResSchedServiceStub();
+    ResSchedServiceStub(bool serialInvokeFlag = true);
     ~ResSchedServiceStub();
     DISALLOW_COPY_AND_MOVE(ResSchedServiceStub);
     int32_t OnRemoteRequest(
@@ -37,6 +37,10 @@ public:
 private:
     int32_t ReportDataInner(MessageParcel& data, MessageParcel& reply);
     int32_t KillProcessInner(MessageParcel& data, MessageParcel& reply);
+    void RegisterSystemloadNotifierInner(MessageParcel& data, MessageParcel& reply);
+    void UnRegisterSystemloadNotifierInner(MessageParcel& data, MessageParcel& reply);
+    int32_t GetSystemloadLevelInner(MessageParcel& data, MessageParcel& reply);
+    bool IsAllowedAppPreloadInner(MessageParcel& data, MessageParcel& reply);
     nlohmann::json StringToJsonObj(const std::string& str);
 
     void Init();

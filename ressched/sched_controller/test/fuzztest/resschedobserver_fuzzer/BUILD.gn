@@ -37,6 +37,8 @@ ohos_fuzztest("ResSchedObserverFuzzTest") {
     "-O0",
     "-Wno-unused-variable",
     "-fno-omit-frame-pointer",
+    "-Dprivate=public",
+    "-Dprotected=public",
   ]
 
   sources = [ "resschedobserver_fuzzer.cpp" ]
@@ -84,6 +86,10 @@ ohos_fuzztest("ResSchedObserverFuzzTest") {
   if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
     defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
     external_deps += [ "audio_framework:audio_client" ]
+  }
+  if (rss_request_enable) {
+    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    external_deps += [ "request:request_native" ]
   }
 
   part_name = "resource_schedule_service"

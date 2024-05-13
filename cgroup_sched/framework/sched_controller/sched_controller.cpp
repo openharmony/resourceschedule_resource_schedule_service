@@ -20,6 +20,7 @@
 #include "system_ability_definition.h"
 #include "app_mgr_interface.h"
 #include "app_state_observer.h"
+#include "app_startup_scene_rec.h"
 #ifdef CONFIG_BGTASK_MGR
 #include "background_task_mgr_helper.h"
 #include "background_task_observer.h"
@@ -74,6 +75,9 @@ void SchedController::Init()
     InitCgroupHandler();
     // Init cgroup adjuster thread
     InitCgroupAdjuster();
+    // init dispatch resource function map
+    InitDispatchResFuncMap();
+    InitAppStartupSceneRec();
 }
 
 void SchedController::Deinit()
@@ -85,7 +89,9 @@ void SchedController::Deinit()
     if (supervisor_) {
         supervisor_ = nullptr;
     }
+    DeinitAppStartupSceneRec();
 }
+
 
 void SchedController::UnregisterStateObservers()
 {
@@ -126,44 +132,14 @@ void SchedController::DispatchResource(uint32_t resType, int64_t value, const nl
     if (!handler) {
         return;
     }
-    handler->PostTask([handler, resType, value, payload] {
-        switch (resType) {
-            case ResType::RES_TYPE_REPORT_MMI_PROCESS: {
-                handler->HandleReportMMIProcess(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_REPORT_RENDER_THREAD: {
-                handler->HandleReportRenderThread(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_REPORT_KEY_THREAD: {
-                handler->HandleReportKeyThread(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_REPORT_WINDOW_STATE: {
-                handler->HandleReportWindowState(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE: {
-                handler->HandleReportWebviewAudioState(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE: {
-                handler->HandleReportAudioState(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_RUNNINGLOCK_STATE: {
-                handler->HandleReportRunningLockEvent(resType, value, payload);
-                break;
-            }
-            case ResType::RES_TYPE_REPORT_SCENE_BOARD: {
-                handler->HandleSceneBoardState(resType, value, payload);
-                break;
-            }
-            default: {
-                break;
-            }
-        }
+
+    auto iter = dispatchResFuncMap_.find(resType);
+    if (iter == dispatchResFuncMap_.end()) {
+        DispatchOtherResource(resType, value, payload);
+        return;
+    }
+    handler->PostTask([func = iter->second, handler, resType, value, payload] {
+        func(handler, resType, value, payload);
     });
     DispatchOtherResource(resType, value, payload);
 }
@@ -230,6 +206,51 @@ inline void SchedController::InitCgroupAdjuster()
 inline void SchedController::InitSupervisor()
 {
     supervisor_ = std::make_shared<Supervisor>();
+}
+
+inline void SchedController::InitAppStartupSceneRec()
+{
+    AppStartupSceneRec::GetInstance().Init();
+}
+
+inline void SchedController::DeinitAppStartupSceneRec()
+{
+    AppStartupSceneRec::GetInstance().Deinit();
+}
+void SchedController::InitDispatchResFuncMap()
+{
+    dispatchResFuncMap_ = {
+        { ResType::RES_TYPE_REPORT_MMI_PROCESS, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportMMIProcess(resType, value, payload); } },
+        { ResType::RES_TYPE_REPORT_RENDER_THREAD, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportRenderThread(resType, value, payload); } },
+        { ResType::RES_TYPE_REPORT_KEY_THREAD, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportKeyThread(resType, value, payload); } },
+        { ResType::RES_TYPE_REPORT_WINDOW_STATE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportWindowState(resType, value, payload); } },
+        { ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportWebviewAudioState(resType, value, payload); } },
+        { ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportAudioState(resType, value, payload); } },
+        { ResType::RES_TYPE_RUNNINGLOCK_STATE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportRunningLockEvent(resType, value, payload); } },
+        { ResType::RES_TYPE_REPORT_SCENE_BOARD, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleSceneBoardState(resType, value, payload); } },
+        { ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleWebviewScreenCapture(resType, value, payload); } },
+        { ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportWebviewVideoState(resType, value, payload); } },
+    };
 }
 
 bool SchedController::SubscribeAppState()
@@ -316,59 +337,87 @@ void SchedController::SubscribeWindowState()
     if (!windowStateObserver_) {
         windowStateObserver_ = new (std::nothrow)WindowStateObserver();
         if (windowStateObserver_) {
-            if (OHOS::Rosen::WindowManager::GetInstance().RegisterFocusChangedListener(windowStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
+            if (OHOS::Rosen::WindowManagerLite::GetInstance().
+            RegisterFocusChangedListener(windowStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of window focus change failed.");
+                                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                                "ERR_MSG", "Register a listener of window focus change failed.");
             }
         }
     }
     if (!windowVisibilityObserver_) {
         windowVisibilityObserver_ = new (std::nothrow)WindowVisibilityObserver();
         if (windowVisibilityObserver_) {
-            if(OHOS::Rosen::WindowManager::GetInstance().RegisterVisibilityChangedListener(windowVisibilityObserver_) != OHOS::Rosen::WMError::WM_OK) {
+            if (OHOS::Rosen::WindowManagerLite::GetInstance().
+            RegisterVisibilityChangedListener(windowVisibilityObserver_) != OHOS::Rosen::WMError::WM_OK) {
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of window visibility change failed.");
+                                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                                "ERR_MSG", "Register a listener of window visibility change failed.");
             }
         }
     }
     if (!windowDrawingContentObserver_) {
         windowDrawingContentObserver_ = new (std::nothrow)WindowDrawingContentObserver();
         if (windowDrawingContentObserver_) {
-            if (OHOS::Rosen::WindowManager::GetInstance().
+            if (OHOS::Rosen::WindowManagerLite::GetInstance().
                 RegisterDrawingContentChangedListener(windowDrawingContentObserver_) != OHOS::Rosen::WMError::WM_OK) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
-                        HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of window draw content change failed.");
+                                    HiviewDFX::HiSysEvent::EventType::FAULT,
+                                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                                    "ERR_MSG", "Register a listener of window draw content change failed.");
             }
         }
     }
+    SubscribeWindowModeChange();
     CGS_LOGI("%{public}s success.", __func__);
+}
+
+void SchedController::SubscribeWindowModeChange()
+{
+    if (!windowModeObserver_) {
+        windowModeObserver_ = new (std::nothrow)WindowModeObserver();
+        if (windowModeObserver_) {
+            if (OHOS::Rosen::WindowManagerLite::GetInstance().
+                RegisterWindowModeChangedListener(windowModeObserver_) != OHOS::Rosen::WMError::WM_OK) {
+                    CGS_LOGE("RegisterWindowModeChangedListener fail");
+                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS,
+                                    "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                                    "ERR_MSG", "Register a listener of window mode content change failed.");
+            }
+        }
+    }
 }
 
 void SchedController::UnsubscribeWindowState()
 {
     if (windowStateObserver_) {
         // unregister windowStateObserver_
-        OHOS::Rosen::WindowManager::GetInstance().UnregisterFocusChangedListener(windowStateObserver_);
+        OHOS::Rosen::WindowManagerLite::GetInstance().UnregisterFocusChangedListener(windowStateObserver_);
         windowStateObserver_ = nullptr;
     }
 
     if (windowVisibilityObserver_) {
-        OHOS::Rosen::WindowManager::GetInstance().UnregisterVisibilityChangedListener(windowVisibilityObserver_);
+        OHOS::Rosen::WindowManagerLite::GetInstance().UnregisterVisibilityChangedListener(windowVisibilityObserver_);
         windowVisibilityObserver_ = nullptr;
     }
 
     if (windowDrawingContentObserver_) {
-        OHOS::Rosen::WindowManager::GetInstance().
+        OHOS::Rosen::WindowManagerLite::GetInstance().
             UnregisterDrawingContentChangedListener(windowDrawingContentObserver_);
         windowDrawingContentObserver_ = nullptr;
     }
+    UnsubscribeWindowModeChange();
+}
+
+void SchedController::UnsubscribeWindowModeChange()
+{
+    if (windowModeObserver_) {
+        OHOS::Rosen::WindowManagerLite::GetInstance().
+            UnregisterWindowModeChangedListener(windowModeObserver_);
+        windowModeObserver_ = nullptr;
+    }
+    CGS_LOGI("UnsubscribeWindowModeChange success");
 }
 
 #ifdef POWER_MANAGER_ENABLE

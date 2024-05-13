@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
+#include "res_common_util.h"
+#include "ffrt_inner.h"
 #include "hisysevent.h"
+#include "notifier_mgr.h"
 #include "res_sched_service_ability.h"
 #include "observer_manager_intf.h"
 #include "res_sched_log.h"
@@ -39,6 +42,7 @@ ResSchedServiceAbility::~ResSchedServiceAbility()
 void ResSchedServiceAbility::OnStart()
 {
     ResSchedMgr::GetInstance().Init();
+    NotifierMgr::GetInstance().Init();
     if (!service_) {
         service_ = new (std::nothrow) ResSchedService();
     }
@@ -83,6 +87,7 @@ void ResSchedServiceAbility::OnStart()
     }
     EventControllerInit();
     ObserverManagerInit();
+    ReclaimProcessMemory();
     RESSCHED_LOGI("ResSchedServiceAbility ::OnStart.");
 }
 
@@ -107,6 +112,23 @@ void ResSchedServiceAbility::OnAddSystemAbility(int32_t systemAbilityId, const s
 void ResSchedServiceAbility::OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
 {
     ReportAbilityStatus(systemAbilityId, deviceId, 0);
+}
+
+void ResSchedServiceAbility::OnDeviceLevelChanged(int32_t type, int32_t level, std::string& action)
+{
+    if (service_ == nullptr) {
+        RESSCHED_LOGE("On Device Level Changed failed due to service nullptr!");
+        return;
+    }
+    service_->OnDeviceLevelChanged(type, level);
+}
+
+void ResSchedServiceAbility::ReclaimProcessMemory()
+{
+    const int32_t delayTime = 60 * 1000 * 1000;
+    ffrt::task_attr taskattr;
+    taskattr.delay(delayTime);
+    ffrt::submit([]() {ResCommonUtil::WriteFileReclaim(getpid());}, {}, {}, {taskattr});
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

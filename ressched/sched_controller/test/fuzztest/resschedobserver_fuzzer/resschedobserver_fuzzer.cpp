@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-#define private public
 
 #include "resschedobserver_fuzzer.h"
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
@@ -33,6 +32,8 @@
 #include "observer_manager.h"
 #include "system_ability_definition.h"
 #include "res_sched_service.h"
+#include "mmi_observer.h"
+#include "connection_subscriber.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -358,6 +359,213 @@ namespace {
         return true;
     }
 
+    bool HisysEventOnEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <=  TWO_PARAMETERS * sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        nlohmann::json sysEvent;
+        sysEvent["UID"] = GetData<int32_t>();
+        sysEvent["PID"] = GetData<int32_t>();
+        sysEvent["domain_"] = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t));
+        std::string eventName = GetStringFromData(int(size) -
+        TWO_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
+        sysEvent["name_"] = eventName;
+
+        std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
+        hisysEventObserver_->OnEvent(std::make_shared<HiviewDFX::HiSysEventRecord>(
+            sysEvent.dump(GetData<int32_t>())));
+        return true;
+    }
+
+    bool HiSysEventOnServiceDiedFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+        std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
+        hisysEventObserver_->OnServiceDied();
+        return true;
+    }
+
+    bool MmiObserverSyncBundleNameFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <=  THREE_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        int32_t pid = GetData<int32_t>();
+        int32_t uid = GetData<int32_t>();
+        int32_t syncStatus = GetData<int32_t>();
+
+        std::string bundleName = GetStringFromData(int(size) - THREE_PARAMETERS * sizeof(int32_t));
+        auto mmiObserver = std::make_shared<MmiObserver>();
+        mmiObserver->SyncBundleName(pid, uid, bundleName, syncStatus);
+        return true;
+    }
+
+    bool ConnectionSubscriberExtensionFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= FIVE_PARAMETERS * sizeof(int32_t) + THREE_PARAMETERS * sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        AbilityRuntime::ConnectionData connectionData;
+        connectionData.extensionPid = GetData<int32_t>();
+        connectionData.extensionUid = GetData<int32_t>();
+        connectionData.callerPid = GetData<int32_t>();
+        connectionData.callerUid = GetData<int32_t>();
+        connectionData.extensionType = AppExecFwk::ExtensionAbilityType(GetData<int32_t>());
+        connectionData.extensionBundleName = GetStringFromData(int(size) - FIVE_PARAMETERS * sizeof(int32_t));
+        connectionData.extensionModuleName = GetStringFromData(int(size) -
+         FIVE_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
+        connectionData.extensionName = GetStringFromData(int(size) -
+        FIVE_PARAMETERS * sizeof(int32_t) - TWO_PARAMETERS * sizeof(std::string));
+        connectionData.callerName = GetStringFromData(int(size) -
+        FIVE_PARAMETERS * sizeof(int32_t) - THREE_PARAMETERS * sizeof(std::string));
+
+        auto connectionSubscriber = std::make_unique<ConnectionSubscriber>();
+        connectionSubscriber->OnExtensionConnected(connectionData);
+        connectionSubscriber->OnExtensionDisconnected(connectionData);
+        return true;
+    }
+
+    bool ConnectionSubscriberDlpAbilityFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= FIVE_PARAMETERS * sizeof(int32_t) + THREE_PARAMETERS * sizeof(std::string)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        AbilityRuntime::DlpStateData targetConnectionData;
+        targetConnectionData.targetPid = GetData<int32_t>();
+        targetConnectionData.callerPid = GetData<int32_t>();
+        targetConnectionData.callerUid = GetData<int32_t>();
+        targetConnectionData.callerName = GetStringFromData(int(size) - THREE_PARAMETERS * sizeof(int32_t));
+        targetConnectionData.targetBundleName = GetStringFromData(int(size) -
+        THREE_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
+        targetConnectionData.targetModuleName = GetStringFromData(int(size) -
+        THREE_PARAMETERS * sizeof(int32_t) - TWO_PARAMETERS * sizeof(std::string));
+        targetConnectionData.targetAbilityName = GetStringFromData(int(size) -
+        THREE_PARAMETERS * sizeof(int32_t) - THREE_PARAMETERS * sizeof(std::string));
+
+        auto connectionSubscriber = std::make_unique<ConnectionSubscriber>();
+        connectionSubscriber->OnDlpAbilityOpened(targetConnectionData);
+        connectionSubscriber->OnDlpAbilityClosed(targetConnectionData);
+        connectionSubscriber->OnServiceDied();
+        return true;
+    }
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    bool AudioObserverStateChangeFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= FIVE_PARAMETERS * sizeof(int32_t)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        nlohmann::json payload;
+        std::unique_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo;
+        std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> audioRendererChangeInfos;
+
+        audioRendererChangeInfo->clientUID = GetData<int32_t>();
+        audioRendererChangeInfo->sessionId = GetData<int32_t>();
+        audioRendererChangeInfo->rendererState = AudioStandard::RendererState(GetData<int32_t>());
+        audioRendererChangeInfo->rendererInfo.contentType = AudioStandard::ContentType(GetData<int32_t>());
+        audioRendererChangeInfo->rendererInfo.streamUsage = AudioStandard::StreamUsage(GetData<int32_t>());
+        auto audioObserver = std::make_unique<AudioObserver>();
+        audioObserver->MarshallingAudioRendererChangeInfo(audioRendererChangeInfo, payload);
+        audioObserver->OnRendererStateChange(audioRendererChangeInfos);
+        return true;
+    }
+    
+    bool AudioObserverModeUpdatedFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        AudioStandard::AudioRingerMode ringerMode = AudioStandard::AudioRingerMode(GetData<int32_t>());
+        auto audioObserver = std::make_unique<AudioObserver>();
+        audioObserver->OnRingerModeUpdated(ringerMode);
+        return true;
+    }
+
+    bool AudioObserverEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        AudioStandard::VolumeEvent volumeEvent;
+        volumeEvent.volumeType = AudioStandard::AudioVolumeType(GetData<int32_t>());
+        volumeEvent.volume = GetData<int32_t>();
+        volumeEvent.updateUi = GetData<bool>();
+        volumeEvent.volumeGroupId = GetData<int32_t>();
+
+        auto audioObserver = std::make_unique<AudioObserver>();
+        audioObserver->OnVolumeKeyEvent(volumeEvent);
+        return true;
+    }
+#endif
+
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     bool OnCallStateUpdatedFuzzTest(const uint8_t* data, size_t size)
     {
@@ -454,6 +662,17 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::HisysEventScreenCaptureEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ProcessHiSysEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ObserverManagerFuzzTest(data, size);
+    OHOS::ResourceSchedule::MmiObserverSyncBundleNameFuzzTest(data, size);
+    OHOS::ResourceSchedule::ConnectionSubscriberExtensionFuzzTest(data, size);
+    OHOS::ResourceSchedule::ConnectionSubscriberDlpAbilityFuzzTest(data, size);
+    OHOS::ResourceSchedule::HisysEventOnEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::HiSysEventOnServiceDiedFuzzTest(data, size);
+
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    OHOS::ResourceSchedule::AudioObserverStateChangeFuzzTest(data, size);
+    OHOS::ResourceSchedule::AudioObserverEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::AudioObserverModeUpdatedFuzzTest(data, size);
+#endif
     /* Run your code on data */
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     OHOS::ResourceSchedule::OnCallStateUpdatedFuzzTest(data, size);

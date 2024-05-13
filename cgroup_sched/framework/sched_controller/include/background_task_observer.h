@@ -38,6 +38,7 @@ public:
     void OnTransientTaskEnd(const std::shared_ptr<TransientTaskAppInfo>& info) override;
     void OnContinuousTaskStart(const std::shared_ptr<ContinuousTaskCallbackInfo> &continuousTaskCallbackInfo) override;
     void OnContinuousTaskStop(const std::shared_ptr<ContinuousTaskCallbackInfo> &continuousTaskCallbackInfo) override;
+    void OnContinuousTaskUpdate(const std::shared_ptr<ContinuousTaskCallbackInfo> &continuousTaskCallbackInfo) override;
     void OnRemoteDied(const wptr<IRemoteObject> &object) override;
     virtual void OnAppEfficiencyResourcesApply(
         const std::shared_ptr<BackgroundTaskMgr::ResourceCallbackInfo> &resourceInfo) override;

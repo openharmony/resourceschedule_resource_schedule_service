@@ -12,33 +12,23 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("../../ressched/ressched.gni")
 import("../cgroup_sched.gni")
 
 config("cgroup_sched_public_config") {
   include_dirs = [
-    "../interfaces/innerkits/include",
-    "sched_controller/include",
-    "process_group/include",
-  ]
-}
-
-config("cgroup_sched_private_config") {
-  include_dirs = [
-    "../../ressched/interfaces/innerkits/ressched_client/include",
     "../common/include",
+    "../interfaces/innerkits/include",
     "./utils/include",
-    "${ressched_common}/include",
+    "process_group/include",
+    "sched_controller/include",
   ]
 }
 
 ohos_shared_library("cgroup_sched") {
   public_configs = [ ":cgroup_sched_public_config" ]
-
-  configs = [ ":cgroup_sched_private_config" ]
-
   sources = [
     "${cgroup_sched_common}/cgroup_sched_log.cpp",
+    "sched_controller/app_startup_scene_rec.cpp",
     "sched_controller/app_state_observer.cpp",
     "sched_controller/cgroup_adjuster.cpp",
     "sched_controller/cgroup_event_handler.cpp",
@@ -48,7 +38,10 @@ ohos_shared_library("cgroup_sched") {
     "utils/ressched_utils.cpp",
   ]
 
-  deps = [ "./process_group:libprocess_group" ]
+  deps = [
+    "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
+    "./process_group:libprocess_group",
+  ]
 
   external_deps = [
     "ability_runtime:app_manager",
@@ -57,12 +50,14 @@ ohos_shared_library("cgroup_sched") {
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
     "eventhandler:libeventhandler",
+    "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",
     "ipc:ipc_single",
     "samgr:samgr_proxy",
-    "window_manager:libwm",
+    "window_manager:libwm_lite",
+    "window_manager:libwmutil_base",
   ]
 
   if (has_bg_task_mgr) {
@@ -71,7 +66,7 @@ ohos_shared_library("cgroup_sched") {
     external_deps += [ "background_task_mgr:bgtaskmgr_innerkits" ]
   }
 
-  if (ressched_power_manager_enable) {
+  if (cgroup_ressched_power_manager_enable) {
     external_deps += [ "power_manager:powermgr_client" ]
     defines += [ "POWER_MANAGER_ENABLE" ]
   }

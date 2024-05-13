@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,8 +17,7 @@
 #define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_TYPE_H
 
 #include <cstdint>
-#include <map>
-#include <string>
+#include <vector>
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -133,8 +132,6 @@ enum : uint32_t {
     RES_TYPE_MMI_INPUT_STATE = 47,
     // report anco load protect file config
     RES_TYPE_ANCO_CUST = 48,
-    // report anco app is front
-    RES_TYPE_ANCO_APP_FRONT = 49,
     // report time zone changed
     RES_TYPE_TIMEZONE_CHANGED = 50,
     // report connection status
@@ -186,88 +183,47 @@ enum : uint32_t {
     RES_TYPR_SCREEN_COLLABROATION = 75,
     // report sa control app event, eg: start app or stop app
     RES_TYPE_SA_CONTROL_APP_EVENT = 76,
+    // report CPU load of the entire machine，payload:cpuPercent
+    RES_TYPE_SYSTEM_CPU_LOAD = 77,
+    // report download or upload scene,value 0 enter scene 1 exit scene.
+    RES_TYPE_UPLOAD_DOWNLOAD = 78,
+    // report main screen split，value 0 enter scene 1 exit scene.
+    RES_TYPE_SPLIT_SCREEN = 79,
+    // report main screen floating window，value 0 enter scene 1 exit scene.
+    RES_TYPE_FLOATING_WINDOW = 80,
+    // report event distribute tid, value tid, payload uid, pid.
+    RES_TYPE_REPORT_DISTRIBUTE_TID = 81,
+    // report frame rate
+    RES_TYPE_FRAME_RATE_REPORT = 82,
+
+    // report web screen capture, value 0 start, value 1 stop
+    RES_TYPE_WEBVIEW_SCREEN_CAPTURE = 83,
+    // report video state. value 0 start playing, value 1 stop playing
+    RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE = 84,
+    // report location status. value 0 app status, value 1 switch status
+    RES_TYPE_LOCATION_STATUS_CHANGE = 85,
+    // report silent playback
+    RES_TYPE_AUDIO_SILENT_PLAYBACK = 86,
+    // report display mode event, value status, payload mode.
+    RES_TYPE_DEVICE_MODE_STATUS = 87,
+    // report systemload level
+    RES_TYPE_SYSTEMLOAD_LEVEL = 88,
+    // report distribute component change
+    RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE = 89,
+    // report web drag resize
+    RES_TYPE_WEB_DRAG_RESIZE = 90,
+    // report formCard create start/end
+    RES_TYPE_FORM_STATE_CHANGE_EVENT = 91,
+    // report power mode changed
+    RES_TYPE_POWER_MODE_CHANGED = 92,
+    // report thermal scenario changed
+    RES_TYPE_THERMAL_SCENARIO_REPORT = 93,
+    // report boot completed
+    RES_TYPE_BOOT_COMPLETED = 94,
+    // report continuous application startup
+    RES_TYPE_CONTINUOUS_STARTUP = 95,
     //last resType
     RES_TYPE_LAST,
-};
-
-inline const std::map<uint32_t, std::string> resTypeToStr = {
-    { RES_TYPE_SCREEN_STATUS, "SCREEN_STATUS" },
-    { RES_TYPE_APP_STATE_CHANGE, "APP_STATE_CHANGE" },
-    { RES_TYPE_ABILITY_STATE_CHANGE, "ABILITY_STATE_CHANGE" },
-    { RES_TYPE_EXTENSION_STATE_CHANGE, "EXTENSION_STATE_CHANGE" },
-    { RES_TYPE_PROCESS_STATE_CHANGE, "PROCESS_STATE_CHANGE" },
-    { RES_TYPE_WINDOW_FOCUS, "WINDOW_FOCUS" },
-    { RES_TYPE_TRANSIENT_TASK, "TRANSIENT_TASK" },
-    { RES_TYPE_CONTINUOUS_TASK, "CONTINUOUS_TASK" },
-    { RES_TYPE_CGROUP_ADJUSTER, "CGROUP_ADJUSTER" },
-    { RES_TYPE_CLICK_RECOGNIZE, "CLICK_RECOGNIZE" },
-    { RES_TYPE_PUSH_PAGE, "PUSH_PAGE" },
-    { RES_TYPE_SLIDE_RECOGNIZE, "SLIDE_RECOGNIZE" },
-    { RES_TYPE_WINDOW_VISIBILITY_CHANGE, "WINDOW_VISIBILITY_CHANGE" },
-    { RES_TYPE_REPORT_MMI_PROCESS, "REPORT_MMI_PROCESS" },
-    { RES_TYPE_REPORT_RENDER_THREAD, "REPORT_RENDER_THREAD" },
-    { RES_TYPE_APP_INSTALL_UNINSTALL, "APP_INSTALL_UNINSTALL" },
-    { RES_TYPE_WIFI_CONNECT_STATE_CHANGE, "WIFI_CONNECT_STATE_CHANGE" },
-    { RES_TYPE_USER_SWITCH, "USER_SWITCH" },
-    { RES_TYPE_USER_REMOVE, "USER_REMOVE" },
-    { RES_TYPE_SCREEN_LOCK, "SCREEN_LOCK" },
-    { RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE, "BLUETOOTH_A2DP_CONNECT_STATE_CHANGE" },
-    { RES_TYPE_NETWORK_LATENCY_REQUEST, "NETWORK_LATENCY_REQUEST" },
-    { RES_TYPE_CALL_STATE_UPDATE, "CALL_STATE_UPDATE" },
-    { RES_TYPE_THREAD_QOS_CHANGE, "THREAD_QOS_CHANGE" },
-    { RES_TYPE_AUDIO_RENDER_STATE_CHANGE, "AUDIO_RENDER_STATE_CHANGE" },
-    { RES_TYPE_AUDIO_RING_MODE_CHANGE, "AUDIO_RING_MODE_CHANGE" },
-    { RES_TYPE_AUDIO_VOLUME_KEY_CHANGE, "AUDIO_VOLUME_KEY_CHANGE" },
-    { RES_TYPE_APP_ABILITY_START, "APP_ABILITY_START" },
-    { RES_TYPE_POP_PAGE, "POP_PAGE" },
-    { RES_TYPE_WEB_GESTURE, "WEB_GESTURE" },
-    { RES_TYPE_DEVICE_STILL_STATE_CHANGE, "DEVICE_STILL_STATE_CHANGE" },
-    { RES_TYPE_RESIZE_WINDOW, "RES_TYPE_RESIZE_WINDOW" },
-    { RES_TYPE_MOVE_WINDOW, "RES_TYPE_MOVE_WINDOW" },
-    { RES_TYPE_SHOW_REMOTE_ANIMATION, "RES_TYPE_SHOW_REMOTE_ANIMATION" },
-    { RES_TYPE_LOAD_PAGE, "RES_TYPE_LOAD_PAGE" },
-    { RES_TYPE_REPORT_CAMERA_STATE, "RES_TYPE_REPORT_CAMERA_STATE" },
-    { RES_TYPE_RUNNINGLOCK_STATE, "RES_TYPE_RUNNINGLOCK_STATE" },
-    { RES_TYPE_DRAG_STATUS_BAR, "RES_TYPE_DRAG_STATUS_BAR" },
-    { RES_TYPE_REPORT_SCENE_BOARD, "RES_TYPE_REPORT_SCENE_BOARD" },
-    { RES_TYPE_REPORT_KEY_THREAD, "RES_TYPE_REPORT_KEY_THREAD" },
-    { RES_TYPE_REPORT_WINDOW_STATE, "RES_TYPE_REPORT_WINDOW_STATE" },
-    { RES_TYPE_REPORT_SCENE_SCHED, "RES_TYPE_REPORT_SCENE_SCHED" },
-    { RES_TYPE_WEB_GESTURE_MOVE, "RES_TYPE_WEB_GESTURE_MOVE" },
-    { RES_TYPE_WEB_SLIDE_NORMAL, "RES_TYPE_WEB_SLIDE_NORMAL" },
-    { RES_TYPE_LOAD_URL, "RES_TYPE_LOAD_URL" },
-    { RES_TYPE_MOUSEWHEEL, "RES_TYPE_MOUSEWHEEL" },
-    { RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, "RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE" },
-    { RES_TYPE_MMI_INPUT_STATE, "RES_TYPE_MMI_INPUT_STATE" },
-    { RES_TYPE_ANCO_CUST, "RES_TYPE_ANCO_CUST" },
-    { RES_TYPE_ANCO_APP_FRONT, "RES_TYPE_ANCO_APP_FRONT" },
-    { RES_TYPE_TIMEZONE_CHANGED, "RES_TYPE_TIMEZONE_CHANGED" },
-    { RES_TYPE_TIME_CHANGED, "RES_TYPE_TIME_CHANGED" },
-    { RES_TYPE_NITZ_TIME_CHANGED, "RES_TYPE_NITZ_TIME_CHANGED" },
-    { RES_TYPE_NITZ_TIMEZONE_CHANGED, "RES_TYPE_NITZ_TIMEZONE_CHANGED" },
-    { RES_TYPE_CHARGING_DISCHARGING, "RES_TYPE_CHARGING_DISCHARGING" },
-    { RES_TYPE_USB_DEVICE, "RES_TYPE_USB_DEVICE" },
-    { RES_TYPE_CALL_STATE_CHANGED, "RES_TYPE_CALL_STATE_CHANGED" },
-    { RES_TYPE_WIFI_P2P_STATE_CHANGED, "RES_TYPE_WIFI_P2P_STATE_CHANGED" },
-    { RES_TYPE_CONNECTION_OBSERVER, "RES_TYPE_CONNECTION_OBSERVER" },
-    { RES_TYPE_AV_SESSION_ON_SESSION_CREATE, "RES_TYPE_AV_SESSION_ON_SESSION_CREATE" },
-    { RES_TYPE_AV_SESSION_ON_SESSION_RELEASE, "RES_TYPE_AV_SESSION_ON_SESSION_RELEASE" },
-    { RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE, "RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE" },
-    { RES_TYPE_ON_APP_STATE_CHANGED, "RES_TYPE_ON_APP_STATE_CHANGED" },
-    { RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED, "RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED" },
-    { RES_TYPE_AV_CODEC_STATE, "RES_TYPE_AV_CODEC_STATE" },
-    { RES_TYPE_APP_ASSOCIATED_START, "RES_TYPE_APP_ASSOCIATED_START" },
-    { RES_TYPE_THERMAL_STATE, "RES_TYPE_THERMAL_STATE"},
-    { RES_TYPE_SOCPERF_CUST_EVENT_BEGIN, "RES_TYPE_SOCPERF_CUST_EVENT_BEGIN" },
-    { RES_TYPE_SOCPERF_CUST_EVENT_END, "RES_TYPE_SOCPERF_CUST_EVENT_END" },
-    { RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE, "RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE" },
-    { RES_TYPE_REPORT_SCREEN_CAPTURE, "RES_TYPE_REPORT_SCREEN_CAPTURE" },
-    { RES_TYPE_LONG_FRAME, "RES_TYPE_LONG_FRAME" },
-    { RES_TYPE_KEY_PERF_SCENE, "RES_TYPE_KEY_PERF_SCENE" },
-    { RES_TYPE_SUPER_LAUNCHER, "RES_TYPE_SUPER_LAUNCHER" },
-    { RES_TYPE_CAST_SCREEN, "RES_TYPE_CAST_SCREEN" },
-    { RES_TYPR_SCREEN_COLLABROATION, "RES_TYPR_SCREEN_COLLABROATION" },
-    { RES_TYPE_SA_CONTROL_APP_EVENT, "RES_TYPE_SA_CONTROL_APP_EVENT" },
 };
 
 /**
@@ -324,6 +280,7 @@ enum TransientTaskStatus : int64_t {
 enum ContinuousTaskStatus : int64_t {
     CONTINUOUS_TASK_START = 0,
     CONTINUOUS_TASK_END = 1,
+    CONTINUOUS_TASK_UPDATE = 2,
 };
 
 /**
@@ -367,8 +324,10 @@ enum SlideEventStatus : int64_t {
  */
 enum ClickEventType : int64_t {
     INVALID_EVENT = 0,
-    TOUCH_EVENT = 1,
+    // touch down event
+    TOUCH_EVENT_DOWN = 1,
     CLICK_EVENT = 2,
+    TOUCH_EVENT_UP = 3,
 };
 
 /**
@@ -409,6 +368,8 @@ enum WindowMoveType : int64_t {
 enum ShowRemoteAnimationStatus : int64_t {
     ANIMATION_BEGIN = 0,
     ANIMATION_END = 1,
+    ANIMATION_UNLOCK_BEGIN = 2,
+    ANIMATION_UNLOCK_END = 3,
 };
 
 /**
@@ -452,6 +413,7 @@ enum ThreadRole : int64_t {
     IMPORTANT_DISPLAY = 2,
     NORMAL_AUDIO = 3,
     IMPORTANT_AUDIO = 4,
+    IMAGE_DECODE = 5,
 };
 
 /**
@@ -484,6 +446,8 @@ enum WebScene : int64_t {
     WEB_SCENE_RESIZE = 1004,
     WEB_SCENE_VISIBLE = 1005,
     WEB_SCENE_KEYBOARD_CLICK = 1006,
+    WEB_SCENE_KEY_TASK = 1007,
+    WEB_SCENE_IMAGE_DECODE = 1008,
 };
 
 /**
@@ -627,9 +591,134 @@ enum CollabroationServiceStatus : int64_t {
  * @brief sa control app status
  */
 enum SaControlAppStatus : int64_t {
-    SA_START_APP = 0,
-    SA_STOP_APP = 0,
+    SA_START_APP,
+    SA_STOP_APP,
 };
+
+/**
+ * @brief Key Download Scene status
+ */
+enum KeyUploadOrDownloadStatus : int64_t {
+    ENTER_UPLOAD_DOWNLOAD_SCENE = 0,
+    EXIT_UPLOAD_DOWNLOAD_SCENE = 1,
+};
+
+
+/**
+ * @brief Key Split Screen Scene status
+ */
+enum KeySplitScreenStatus : int64_t {
+    ENTER_SPLIT_SCREEN_SCENE = 0,
+    EXIT_SPLIT_SCREEN_SCENE = 1,
+};
+
+/**
+ * @brief Key Floating Window Scene status
+ */
+enum KeyFloatingWindowStatus : int64_t {
+    ENTER_FLOATING_WINDOW_SCENE = 0,
+    EXIT_FLOATING_WINDOW_SCENE = 1,
+};
+
+/**
+ * @brief ui sensitive extension
+ */
+const std::vector<int32_t > UI_SENSITIVE_EXTENSION = {
+    2, // INPUT_EXTENSION_TYPE
+    255, // UNSPECIFIED_EXTENSION_TYPE
+    256, // UI_EXTENSION_TYPE
+    500 // SYS_COMMON_UI_TYPE
+};
+
+/**
+ * @brief systemload level
+ */
+enum SystemloadLevel : int64_t {
+    LOW = 0,
+    NORMAL = 1,
+    MEDIUM = 2,
+    HIGH = 3,
+    OVERHEATED = 4,
+    WARNING = 5,
+    EMERGENCY = 6,
+    ESCAPE = 7,
+};
+
+/**
+ * @brief Device status
+ */
+enum DeviceStatus : int64_t {
+    SYSTEMLOAD_LEVEL = 0,
+    POWER_FOOTAGE = 1,
+    THERMAL = 2,
+    MEMORY_LEVEL = 3,
+    HIGH_LOAD = 4,
+};
+
+/**
+ * @brief Device mode status
+ */
+enum DeviceModeStatus : int64_t {
+    MODE_ENTER = 0,
+    MODE_QUIT = 1,
+};
+
+/**
+ * @brief web screen capture start
+ */
+enum WebScreenCapture : int64_t {
+    WEB_SCREEN_CAPTURE_START = 0,
+    WEB_SCREEN_CAPTURE_STOP = 1,
+};
+
+/**
+ * @brief web video state
+ */
+enum WebVideoState : int64_t {
+    WEB_VIDEO_PLAYING_START = 0,
+    WEB_VIDEO_PLAYING_STOP = 1,
+};
+
+/**
+ * @brief location state
+ */
+enum LocationStatus : int64_t {
+    APP_LOCATION_STATUE_CHANGE = 0,
+    LOCATION_SWTICH_CHANGE = 1,
+};
+
+/**
+ * @brief form create state
+ */
+enum FormCreateStatus : int64_t {
+    FormCreateStart = 0,
+    FormCreateEnd = 1,
+};
+
+/**
+ * @brief drag web window resize status
+ */
+enum WebDragResizeStatus : int64_t {
+    WEB_DRAG_START = 0,
+    WEB_DRAG_END = 1,
+};
+
+/**
+ * @brief boot completed status
+ */
+enum BootCompletedStatus : int64_t {
+    START_BOOT_COMPLETED = 0,
+    STOP_BOOT_COMPLETED = 1,
+};
+
+/**
+ * @brief continuous startUp status
+ */
+enum ContinuousStartupStatus : int64_t {
+    START_CONTINUOUS_STARTUP = 0,
+    STOP_CONTINUOUS_STARTUP = 1,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
