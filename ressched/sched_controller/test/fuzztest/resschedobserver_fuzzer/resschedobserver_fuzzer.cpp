@@ -512,7 +512,8 @@ namespace {
         g_pos = 0;
 
         nlohmann::json payload;
-        std::unique_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo;
+        std::unique_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo =
+            std::make_unique<AudioStandard::AudioRendererChangeInfo>();
         std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> audioRendererChangeInfos;
 
         audioRendererChangeInfo->clientUID = GetData<int32_t>();
@@ -522,6 +523,7 @@ namespace {
         audioRendererChangeInfo->rendererInfo.streamUsage = AudioStandard::StreamUsage(GetData<int32_t>());
         auto audioObserver = std::make_unique<AudioObserver>();
         audioObserver->MarshallingAudioRendererChangeInfo(audioRendererChangeInfo, payload);
+        audioRendererChangeInfos.push_back(move(audioRendererChangeInfo));
         audioObserver->OnRendererStateChange(audioRendererChangeInfos);
         return true;
     }
