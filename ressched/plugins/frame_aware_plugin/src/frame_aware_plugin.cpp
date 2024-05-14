@@ -268,7 +268,7 @@ void FrameAwarePlugin::HandleScreenStatus(const std::shared_ptr<ResData>& data)
 
 void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
-    RME_LOGI("FrameAwarePlugin:DispatchResource type:%{public}u, value:%{public}lld",
+    RME_LOGD("FrameAwarePlugin:DispatchResource type:%{public}u, value:%{public}lld",
              data->resType, (long long)data->value);
     auto funcIter = functionMap.find(data->resType);
     if (funcIter != functionMap.end()) {
