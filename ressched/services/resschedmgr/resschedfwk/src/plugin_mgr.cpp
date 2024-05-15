@@ -129,7 +129,7 @@ void PluginMgr::LoadGetExtConfigFunc()
     }
 }
 
-void PluginMgr::GetConfigContent(int32_t configIdx, std::string realPath, std::string &content)
+void PluginMgr::GetConfigContent(int32_t configIdx,const std::string realPath, std::string &content)
 {
     if (configIdx != -1 && getExtConfigFunc_) {
         getExtConfigFunc_(configIdx, content);
@@ -141,12 +141,14 @@ void PluginMgr::GetConfigContent(int32_t configIdx, std::string realPath, std::s
     int32_t len = ifs.tellg();
     if (len > MAX_FILE_LENGTH) {
         RESSCHED_LOGE("file is too large");
+        ifs.close();
         return;
     }
     ifs.seekg(0, std::ios::beg);
     std::stringstream contentData;
     contentData << ifs.rdbuf();
     content = contentData.str();
+    ifs.close();
 }
 
 void PluginMgr::LoadPlugin()
