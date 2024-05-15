@@ -59,6 +59,13 @@ public:
     void SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& context);
 
     /**
+     * @brief Send kill process request async to the ressched_executor.
+     *
+     * @param pid the pid whiche will be killed.
+     */
+    int32_t KillProcess(pid_t pid);
+
+    /**
      * @brief Stop remote Object, reset ResSchedExeClient.
      */
     void StopRemoteObject();

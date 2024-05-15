@@ -263,6 +263,11 @@ public:
     {
         return 0;
     }
+
+    int32_t KillProcess(pid_t pid) override
+    {
+        return 0;
+    }
 };
 
 /**
@@ -325,31 +330,29 @@ HWTEST_F(ResSchedExeServiceTest, ReportDebugInner001, Function | MediumTest | Le
 {
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     resSchedExeServiceStub_->Init();
-    MessageParcel reply;
     MessageParcel emptyData;
-    EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(emptyData, reply));
+    EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(emptyData));
 
     MessageParcel reportData;
     reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
     reportData.WriteUint32(ResExeType::RES_TYPE_DEBUG);
     reportData.WriteUint64(ResSchedExeCommonUtils::GetCurrentTimestampUs());
-    EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData, reply));
+    EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData));
 }
 
 static void ReportDebugInnerTask()
 {
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     resSchedExeServiceStub_->Init();
-    MessageParcel reply;
     for (int i = 0; i < SYNC_THREAD_NUM; i++) {
         MessageParcel emptyData;
-        EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(emptyData, reply));
+        EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(emptyData));
 
         MessageParcel reportData;
         reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
         reportData.WriteUint32(ResExeType::RES_TYPE_DEBUG);
         reportData.WriteUint64(ResSchedExeCommonUtils::GetCurrentTimestampUs());
-        EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData, reply));
+        EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData));
         usleep(SYNC_INTERNAL_TIME);
     }
 }

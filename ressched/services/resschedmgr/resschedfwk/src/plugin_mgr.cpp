@@ -45,6 +45,7 @@ namespace {
     const int32_t PLUGIN_SWITCH_FILE_IDX = 0;
     const int32_t CONFIG_FILE_IDX = 1;
     const int32_t MAX_FILE_LENGTH = 32 * 1024 * 1024;
+    const int32_t PLUGIN_REQUEST_ERROR = -1;
     const std::string RUNNER_NAME = "rssDispatcher";
     const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
     const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
@@ -177,8 +178,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     if (!pluginHandle) {
         RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", info.libPath,
-                        "ERR_TYPE", "plugin failure",
+                        "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "PluginMgr dlopen " + info.libPath + " failed!");
         return nullptr;
     }
@@ -187,8 +187,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     if (!onPluginInitFunc) {
         RESSCHED_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", info.libPath,
-                        "ERR_TYPE", "plugin failure",
+                        "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "PluginMgr don't found dlsym " + info.libPath + "!");
         dlclose(pluginHandle);
         return nullptr;
@@ -198,8 +197,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     if (!onPluginDisableFunc) {
         RESSCHED_LOGE("%{public}s, dlsym OnPluginDisable failed!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", info.libPath,
-                        "ERR_TYPE", "plugin failure",
+                        "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "PluginMgr don't found dlsym " + info.libPath + "!");
         dlclose(pluginHandle);
         return nullptr;
@@ -208,8 +206,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     if (!onPluginInitFunc(const_cast<std::string&>(info.libPath))) {
         RESSCHED_LOGE("%{public}s, %{private}s init failed!", __func__, info.libPath.c_str());
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", info.libPath,
-                        "ERR_TYPE", "plugin failure",
+                        "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "Plugin " + info.libPath + " init failed!");
         dlclose(pluginHandle);
         return nullptr;
@@ -219,6 +216,10 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     auto onDispatchResourceFunc = reinterpret_cast<OnDispatchResourceFunc>(dlsym(pluginHandle,
         "OnDispatchResource"));
 
+    // OnDeliverResource is not necessary for plugin
+    auto onDeliverResourceFunc = reinterpret_cast<OnDeliverResourceFunc>(dlsym(pluginHandle,
+        "OnDeliverResource"));
+
     // OnDispatchResource is not necessary for plugin
     auto onDumpFunc = reinterpret_cast<OnDumpFunc>(dlsym(pluginHandle, "OnDump"));
 
@@ -226,6 +227,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     libInfo.handle = std::shared_ptr<void>(pluginHandle, dlclose);
     libInfo.onPluginInitFunc_ = onPluginInitFunc;
     libInfo.onDispatchResourceFunc_ = onDispatchResourceFunc;
+    libInfo.onDeliverResourceFunc_ = onDeliverResourceFunc;
     libInfo.onDumpFunc_ = onDumpFunc;
     libInfo.onPluginDisableFunc_ = onPluginDisableFunc;
 
@@ -329,16 +331,64 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         __func__, resData->resType, (long long)resData->value, libNameAll.c_str());
     FinishTrace(HITRACE_TAG_OHOS);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-    DeliverResourceToPluginAsync(pluginList, resData);
+    DispatchResourceToPluginAsync(pluginList, resData);
 #else
     std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) {
         dispatcher_->PostTask(
             [pluginList, resData, this] {
-                DeliverResourceToPluginSync(pluginList, resData);
+                DispatchResourceToPluginSync(pluginList, resData);
             });
     }
 #endif
+}
+
+int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
+{
+    if (!resData) {
+        RESSCHED_LOGE("%{public}s, failed, null res data.", __func__);
+        return PLUGIN_REQUEST_ERROR;
+    }
+
+    std::string pluginLib;
+    {
+        std::lock_guard<std::mutex> autoLock(resTypeSyncMutex_);
+        auto iter = resTypeLibSyncMap_.find(resData->resType);
+        if (iter == resTypeLibSyncMap_.end()) {
+            RESSCHED_LOGD("%{public}s, PluginMgr resType no lib register!", __func__);
+            return PLUGIN_REQUEST_ERROR;
+        }
+        pluginLib = iter->second;
+    }
+
+    PluginLib libInfo;
+    {
+        std::lock_guard<std::mutex> autoLock(pluginMutex_);
+        auto itMap = pluginLibMap_.find(pluginLib);
+        if (itMap == pluginLibMap_.end()) {
+            RESSCHED_LOGE("%{public}s, no plugin %{public}s !", __func__, pluginLib.c_str());
+            return PLUGIN_REQUEST_ERROR;
+        }
+        libInfo = itMap->second;
+    }
+
+    OnDeliverResourceFunc pluginDeliverFunc = libInfo.onDeliverResourceFunc_;
+    if (!pluginDeliverFunc) {
+        RESSCHED_LOGE("%{public}s, no DeliverResourceFunc !", __func__);
+        return PLUGIN_REQUEST_ERROR;
+    }
+    RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, value = %{public}lld, plugin is %{public}s.",
+        __func__, resData->resType, (long long)resData->value, pluginLib.c_str());
+
+    int32_t ret;
+    {
+        std::string libName = "";
+        std::list<std::string> pluginList = { pluginLib };
+        HitraceScoped hitrace(HITRACE_TAG_OHOS, BuildDispatchTrace(resData, libName, __func__, pluginList));
+        InnerTimeUtil timeUtil(__func__, pluginLib);
+        ret = pluginDeliverFunc(resData);
+    }
+    return ret;
 }
 
 void PluginMgr::SubscribeResource(const std::string& pluginLib, uint32_t resType)
@@ -368,6 +418,36 @@ void PluginMgr::UnSubscribeResource(const std::string& pluginLib, uint32_t resTy
     if (iter->second.empty()) {
         resTypeLibMap_.erase(iter);
     }
+}
+
+void PluginMgr::SubscribeSyncResource(const std::string& pluginLib, uint32_t resType)
+{
+    if (pluginLib.empty()) {
+        RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
+        return;
+    }
+    std::lock_guard<std::mutex> autoLock(resTypeSyncMutex_);
+    auto iter = resTypeLibSyncMap_.find(resType);
+    if (iter != resTypeLibSyncMap_.end()) {
+        RESSCHED_LOGW("%{public}s, resType[%{public}d] subcribed by [%{public}s], replace by [%{public}s].",
+            __func__, resType, iter->second.c_str(), pluginLib.c_str());
+    }
+    resTypeLibSyncMap_[resType] = pluginLib;
+}
+
+void PluginMgr::UnSubscribeSyncResource(const std::string& pluginLib, uint32_t resType)
+{
+    if (pluginLib.empty()) {
+        RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
+        return;
+    }
+    std::lock_guard<std::mutex> autoLock(resTypeSyncMutex_);
+    auto iter = resTypeLibSyncMap_.find(resType);
+    if (iter == resTypeLibSyncMap_.end()) {
+        RESSCHED_LOGE("%{public}s, PluginMgr failed, res type has no plugin subscribe.", __func__);
+        return;
+    }
+    resTypeLibSyncMap_.erase(iter);
 }
 
 void PluginMgr::DumpAllPlugin(std::string &result)
@@ -494,7 +574,7 @@ void PluginMgr::RepairPlugin(TimePoint endTime, const std::string& pluginLib, Pl
     }
 }
 
-void PluginMgr::DeliverResourceToPluginSync(const std::list<std::string>& pluginList,
+void PluginMgr::DispatchResourceToPluginSync(const std::list<std::string>& pluginList,
     const std::shared_ptr<ResData>& resData)
 {
     auto sortPluginList = SortPluginList(pluginList);
@@ -545,7 +625,7 @@ void PluginMgr::DeliverResourceToPluginSync(const std::list<std::string>& plugin
 }
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-void PluginMgr::DeliverResourceToPluginAsync(const std::list<std::string>& pluginList,
+void PluginMgr::DispatchResourceToPluginAsync(const std::list<std::string>& pluginList,
     const std::shared_ptr<ResData>& resData)
 {
     for (auto& pluginLib : pluginList) {
@@ -634,6 +714,25 @@ std::list<std::string> PluginMgr::SortPluginList(const std::list<std::string>& p
         return pluginStat_[a].AverageTime() < pluginStat_[b].AverageTime();
     });
     return sortPluginList;
+}
+
+PluginMgr::InnerTimeUtil::InnerTimeUtil(const std::string& func, const std::string& plugin)
+{
+    beginTime_ = Clock::now();
+    functionName_ = func;
+    pluginName_ = plugin;
+}
+
+PluginMgr::InnerTimeUtil::~InnerTimeUtil()
+{
+    auto endTime = Clock::now();
+    int32_t costTime = (endTime - beginTime_) / std::chrono::milliseconds(1);
+    RESSCHED_LOGD("%{public}s, %{public}s plugin cost time(%{public}d ms).",
+        functionName_.c_str(), pluginName_.c_str(), costTime);
+    if (costTime > DISPATCH_WARNING_TIME) {
+        RESSCHED_LOGW("%{public}s, WARNING :%{public}s plugin cost time(%{public}d ms) over %{public}d ms!",
+            functionName_.c_str(), pluginName_.c_str(), costTime, DISPATCH_WARNING_TIME);
+    }
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

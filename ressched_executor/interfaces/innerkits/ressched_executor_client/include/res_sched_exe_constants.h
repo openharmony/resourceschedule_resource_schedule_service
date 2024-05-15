@@ -23,6 +23,7 @@ namespace ResourceSchedule {
 enum ResIpcType : uint32_t {
     REQUEST_SYNC = 0,
     REQUEST_ASYNC,
+    REQUEST_KILL_PROCESS,
     REQUEST_DEBUG,
 };
 
@@ -33,7 +34,7 @@ enum ResErrCode : int32_t {
     // no error
     RSSEXE_NO_ERR = 0,
     // permission denied
-    RSSEXE_PERMISSIOM_DENIED,
+    RSSEXE_PERMISSION_DENIED,
     // last error code, unesd, please add error code before
     RSSEXE_LAST_ERR,
 };

@@ -27,6 +27,7 @@ public:
     static void TearDownTestCase();
     void SetUp();
     void TearDown();
+    void QueryDatabaseBeforeAssertions(int32_t res);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

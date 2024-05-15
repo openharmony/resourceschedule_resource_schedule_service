@@ -40,6 +40,8 @@ private:
 
     void OnDeviceLevelChanged(int32_t type, int32_t level, std::string& action) override;
 
+    void ReclaimProcessMemory();
+
     sptr<ResSchedService> service_;
 
     DISALLOW_COPY_AND_MOVE(ResSchedServiceAbility);

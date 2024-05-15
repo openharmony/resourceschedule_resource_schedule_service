@@ -31,6 +31,7 @@ public:
     bool SubmitTask(const std::shared_ptr<IOOBETask>& task);
     void StartListen();
     ErrCode UnregisterObserver();
+    bool GetOOBValue();
 
 private:
     class ResDataAbilityObserver : public AAFwk::DataAbilityObserverStub {
