@@ -129,7 +129,7 @@ void PluginMgr::LoadGetExtConfigFunc()
     }
 }
 
-void PluginMgr::GetConfigContent(int32_t configIdx,const std::string realPath, std::string &content)
+void PluginMgr::GetConfigContent(int32_t configIdx, const std::string realPath, std::string &content)
 {
     if (configIdx != -1 && getExtConfigFunc_) {
         getExtConfigFunc_(configIdx, content);
