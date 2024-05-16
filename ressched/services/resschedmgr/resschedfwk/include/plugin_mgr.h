@@ -174,8 +174,6 @@ public:
 
     std::shared_ptr<PluginLib> GetPluginLib(const std::string& libPath);
 
-    std::string GetRealConfigPath(const char* configName);
-
     void GetConfigContent(int32_t configIdx, std::string realPath, std::string &content);
 
 private:
@@ -203,6 +201,8 @@ private:
 #endif
     std::list<std::string> SortPluginList(const std::list<std::string>& pluginList);
     std::string GetStrFromResTypeStrMap(uint32_t resType);
+
+    std::string GetRealConfigPath(const char* configName);
 
     class InnerTimeUtil {
     public:
