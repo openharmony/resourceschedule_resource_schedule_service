@@ -276,6 +276,8 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t proc
     } else if (processType == static_cast<int32_t>(ProcessType::EXTENSION)) {
         procRecord->isExtensionProcess_ = true;
         procRecord->extensionType_ = extensionType;
+    } else if (processType == static_cast<int32_t>(ProcessType::GPU)) {
+        procRecord->isGPUProcess_ = true;
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_CREATE);

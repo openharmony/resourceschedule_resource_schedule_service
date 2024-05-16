@@ -101,6 +101,7 @@ public:
     SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
     bool isRenderProcess_ = false;
+    bool isGPUProcess_ = false;
     bool runningTransientTask_ = false;
     bool isActive_ {false};
     bool inSelfRenderCgroup_ = false;
