@@ -531,7 +531,11 @@ namespace {
         g_size = size;
         g_pos = 0;
 
-        AVSession::AVSessionDescriptor& descriptor;
+        AVSession::AVSessionDescriptor descriptor;
+        descriptor.sessionId_ = GetStringFromData(int(size));
+        descriptor.pid_ = GetData<pid_t>();
+        descriptor.uid_ = GetData<pid_t>();
+        
         auto avSessionStateListener = std::make_unique<AvSessionStateListener>();
         avSessionStateListener->OnSessionCreate(descriptor);
         avSessionStateListener->OnSessionRelease(descriptor);
