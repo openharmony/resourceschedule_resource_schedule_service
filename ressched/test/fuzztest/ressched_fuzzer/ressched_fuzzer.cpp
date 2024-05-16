@@ -217,8 +217,10 @@ namespace {
         g_pos = 0;
 
         int32_t level = GetData<int32_t>();
-        sptr<IRemoteObject> notifier;
-        auto resSchedSystemloadNotifierProxy = std::make_unique<ResSchedSystemloadNotifierProxy>(notifier);
+        if (!DoInit()) {
+            return false;
+        }
+        auto resSchedSystemloadNotifierProxy = std::make_unique<ResSchedSystemloadNotifierProxy>(remoteObj);
         resSchedSystemloadNotifierProxy->OnSystemloadLevel(level);
         return true;
     }
@@ -238,12 +240,14 @@ namespace {
         int32_t type = GetData<int32_t>();
         int32_t level = GetData<int32_t>();
         int32_t state = GetData<int32_t>();
-        sptr<IRemoteObject> notifier;
+        if (!DoInit()) {
+            return false;
+        }
 
         NotifierMgr::GetInstance().Init();
-        NotifierMgr::GetInstance().RegisterNotifier(pid, notifier);
+        NotifierMgr::GetInstance().RegisterNotifier(pid, remoteObj);
         NotifierMgr::GetInstance().UnRegisterNotifier(pid);
-        NotifierMgr::GetInstance().OnRemoteNotifierDied(notifier);
+        NotifierMgr::GetInstance().OnRemoteNotifierDied(remoteObj);
         NotifierMgr::GetInstance().OnDeviceLevelChanged(type, level);
         NotifierMgr::GetInstance().OnApplicationStateChange(state, level);
         NotifierMgr::GetInstance().GetSystemloadLevel();
