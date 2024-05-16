@@ -27,6 +27,9 @@
 #ifdef RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE
 #include "bluetooth_def.h"
 #endif
+#ifndef RESOURCE_REQUEST_REQUEST
+#include "download_upload_observer.h"
+#endif
 
 #include "hisysevent_observer.h"
 #include "observer_manager.h"
@@ -34,6 +37,8 @@
 #include "res_sched_service.h"
 #include "mmi_observer.h"
 #include "connection_subscriber.h"
+#include "fold_display_mode_observer.h"
+#include "av_session_state_listener.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -59,6 +64,8 @@ namespace {
     static const int32_t FOUR_PARAMETERS = 4;
     static const int32_t FIVE_PARAMETERS = 5;
     static const int32_t SIX_PARAMETERS = 6;
+    static const int32_t ENUM_MAX = 4;
+    static const int32_t ENUM_MIN = 0;
 }
     const uint8_t* g_data = nullptr;
     size_t g_size = 0;
@@ -495,6 +502,43 @@ namespace {
         connectionSubscriber->OnServiceDied();
         return true;
     }
+
+    bool FoldDisplayModeObserverFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        FoldDisplayMode diplayMode = static_cast<FoldDisplayMode>(GetData<uint32_t>() % (ENUM_MAX - ENUM_MIN + 1));
+        auto foldDisplayModeObserver = std::make_unique<FoldDisplayModeObserver>();
+        foldDisplayModeObserver->OnDisplayModeChanged(diplayMode);
+        return true;
+    }
+
+    bool AvSessionStateListenerFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        AVSession::AVSessionDescriptor& descriptor;
+        auto avSessionStateListener = std::make_unique<AvSessionStateListener>();
+        avSessionStateListener->OnSessionCreate(descriptor);
+        avSessionStateListener->OnSessionRelease(descriptor);
+        avSessionStateListener->OnTopSessionChange(descriptor);
+        return true;
+    }
+
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
     bool AudioObserverStateChangeFuzzTest(const uint8_t* data, size_t size)
     {
@@ -645,10 +689,27 @@ namespace {
         fuzzData.RewindRead(0);
         auto deviceMovementObserver = std::make_unique<DeviceMovementObserver>();
         deviceMovementObserver->OnReceiveDeviceMovementEvent(fuzzData);
-
         return true;
     }
 #endif // DEVICE_MOVEMENT_PERCEPTION_ENABLE
+
+#ifndef RESOURCE_REQUEST_REQUEST
+    bool DownLoadUploadObserverFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        int count = GetData<int>();
+        auto downLoadUploadObserver = std::make_shared<DownLoadUploadObserver>();
+        downLoadUploadObserver->OnRunningTaskCountUpdate(count);
+        return true;
+    }
+#endif
 } // namespace ResourceSchedule
 } // namespace OHOS
 
@@ -669,6 +730,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::ConnectionSubscriberDlpAbilityFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventOnEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HiSysEventOnServiceDiedFuzzTest(data, size);
+    OHOS::ResourceSchedule::FoldDisplayModeObserverFuzzTest(data, size);
+    OHOS::ResourceSchedule::AvSessionStateListenerFuzzTest(data, size);
 
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
     OHOS::ResourceSchedule::AudioObserverStateChangeFuzzTest(data, size);
@@ -682,6 +745,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
     OHOS::ResourceSchedule::OnRemoteRequestFuzzTest(data, size);
     OHOS::ResourceSchedule::OnReceiveDeviceMovementEventFuzzTest(data, size);
+#endif
+#ifndef RESOURCE_REQUEST_REQUEST
+    OHOS::ResourceSchedule::DownLoadUploadObserverFuzzTest(data, size);
 #endif
     return 0;
 }

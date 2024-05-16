@@ -31,6 +31,8 @@
 #include "res_sched_client.h"
 #include "res_sched_service_stub.h"
 #include "res_sched_systemload_notifier_client.h"
+#include "res_sched_systemload_notifier_proxy.h"
+#include "notifier_mgr.h"
 
 #define private public
 #define protected public
@@ -187,12 +189,9 @@ namespace {
 
         uint32_t resType = GetData<uint32_t>();
         int64_t value = GetData<int64_t>();
-        int32_t preloadMode = GetData<int32_t>();
         std::unordered_map<std::string, std::string> mapPayload;
         mapPayload["pid"] = GetStringFromData(int(size) - sizeof(uint32_t) - sizeof(int64_t));
         mapPayload["processName"] = GetStringFromData(int(size) - sizeof(std::string) -
-        sizeof(uint32_t) - sizeof(int64_t));
-        std::string bundleName = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(std::string) -
         sizeof(uint32_t) - sizeof(int64_t));
 
         ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
@@ -203,7 +202,52 @@ namespace {
         ResSchedClient::GetInstance().RegisterSystemloadNotifier(callbackObj);
         ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(callbackObj);
         ResSchedClient::GetInstance().GetSystemloadLevel();
-        ResSchedClient::GetInstance().IsAllowedAppPreload(bundleName, preloadMode);
+        return true;
+    }
+
+    bool OnSystemloadLevelFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        int32_t level = GetData<int32_t>();
+        sptr<IRemoteObject> notifier;
+        auto resSchedSystemloadNotifierProxy = std::make_unique<ResSchedSystemloadNotifierProxy>(notifier);
+        resSchedSystemloadNotifierProxy->OnSystemloadLevel(level);
+        return true;
+    }
+
+    bool NotifierMgrFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        int32_t pid = GetData<int32_t>();
+        int32_t type = GetData<int32_t>();
+        int32_t level = GetData<int32_t>();
+        int32_t state = GetData<int32_t>();
+        sptr<IRemoteObject> notifier;
+
+        NotifierMgr::GetInstance().Init();
+        NotifierMgr::GetInstance().RegisterNotifier(pid, notifier);
+        NotifierMgr::GetInstance().UnRegisterNotifier(pid);
+        NotifierMgr::GetInstance().OnRemoteNotifierDied(notifier);
+        NotifierMgr::GetInstance().OnDeviceLevelChanged(type, level);
+        NotifierMgr::GetInstance().OnApplicationStateChange(state, level);
+        NotifierMgr::GetInstance().GetSystemloadLevel();
+        NotifierMgr::GetInstance().DumpRegisterInfo();
         return true;
     }
 } // namespace ResourceSchedule
@@ -216,5 +260,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::DoSomethingInterestingWithMyAPI(data, size);
     OHOS::ResourceSchedule::OnRemoteRequest(data, size);
     OHOS::ResourceSchedule::ResSchedClientFuzzTest(data, size);
+    OHOS::ResourceSchedule::OnSystemloadLevelFuzzTest(data, size);
+    OHOS::ResourceSchedule::NotifierMgrFuzzTest(data, size);
     return 0;
 }
