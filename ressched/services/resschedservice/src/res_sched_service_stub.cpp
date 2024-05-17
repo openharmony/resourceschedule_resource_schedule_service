@@ -155,7 +155,7 @@ namespace {
     bool IsThirdPartType(uint32_t type, std::unordered_set<uint32_t> thirdPartRes)
     {
         if (thirdPartRes.find(type) == thirdPartRes.end()) {
-            RESSCHED_LOGE("resType:%{public}d not hap app report", type);
+            RESSCHED_LOGD("resType:%{public}d not hap app report", type);
             return false;
         }
         AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
@@ -353,8 +353,8 @@ nlohmann::json ResSchedServiceStub::StringToJsonObj(const std::string& payload)
         return jsonObj;
     }
     if (!jsonTmp.is_object()) {
-        RESSCHED_LOGE("%{public}s payload converted result is not a jsonObj: %{public}s.", __func__, payload.c_str());
-        return jsonObj;
+        RESSCHED_LOGD("%{public}s payload converted result is not a jsonObj: %{public}s.", __func__, payload.c_str());
+        return jsonObj; 
     }
     return jsonTmp;
 }

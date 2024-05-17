@@ -370,7 +370,7 @@ void HiSysEventObserver::ProcessScreenCaptureEvent(const nlohmann::json& root, c
     if (root.contains("APP_UID") && root.at("APP_UID").is_number_integer()) {
         payload["uid"] = std::to_string(root.at("APP_UID").get<std::int32_t>());
     } else {
-        RESSCHED_LOGE("screen capture uid format error!");
+        RESSCHED_LOGD("screen capture uid format error!");
         return;
     }
     if (root.contains("APP_PID") && root.at("APP_PID").is_number_integer()) {
