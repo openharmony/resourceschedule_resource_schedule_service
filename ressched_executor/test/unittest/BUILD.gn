@@ -53,6 +53,11 @@ ohos_unittest("resschedexefwk_test") {
 
   public_external_deps = [ "json:nlohmann_json_static" ]
 
+  cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
+
   sanitize = {
     cfi = true
     cfi_cross_dso = true

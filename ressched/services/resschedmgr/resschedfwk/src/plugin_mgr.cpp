@@ -358,7 +358,7 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
         std::lock_guard<std::mutex> autoLock(resTypeSyncMutex_);
         auto iter = resTypeLibSyncMap_.find(resData->resType);
         if (iter == resTypeLibSyncMap_.end()) {
-            RESSCHED_LOGD("%{public}s, PluginMgr resType no lib register!", __func__);
+            RESSCHED_LOGE("%{public}s, PluginMgr resType no lib register!", __func__);
             return PLUGIN_REQUEST_ERROR;
         }
         pluginLib = iter->second;
@@ -540,8 +540,18 @@ std::string PluginMgr::GetRealConfigPath(const char* configName)
 
 void PluginMgr::ClearResource()
 {
-    std::lock_guard<std::mutex> autoLock(resTypeMutex_);
-    resTypeLibMap_.clear();
+    {
+        std::lock_guard<std::mutex> autoLock(resTypeMutex_);
+        resTypeLibMap_.clear();
+    }
+    {
+        std::lock_guard<std::mutex> autoLock(resTypeSyncMutex_);
+        resTypeLibSyncMap_.clear();
+    }
+    {
+        std::lock_guard<std::mutex> autoLock(resTypeStrMutex_);
+        resTypeStrMap_.clear();
+    }
 }
 
 void PluginMgr::RepairPlugin(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo)
@@ -693,12 +703,6 @@ void PluginMgr::SetResTypeStrMap(const std::map<uint32_t, std::string>& resTypeS
 {
     std::lock_guard<std::mutex> autoLock(resTypeStrMutex_);
     resTypeStrMap_ = resTypeStr;
-}
-
-void PluginMgr::ClearResTypeStrMap()
-{
-    std::lock_guard<std::mutex> autoLock(resTypeStrMutex_);
-    resTypeStrMap_.clear();
 }
 
 std::string PluginMgr::GetStrFromResTypeStrMap(uint32_t resType)

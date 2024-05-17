@@ -67,12 +67,12 @@ int32_t ResSchedExeService::Dump(int32_t fd, const std::vector<std::u16string>& 
     if (!AllowDump()) {
         return ResErrCode::RSSEXE_PERMISSION_DENIED;
     }
-    RSSEXE_LOGI("%{public}s Dump service.", __func__);
+    RSSEXE_LOGI("Dump service.");
     std::vector<std::string> argsInStr;
     std::transform(args.begin(), args.end(), std::back_inserter(argsInStr),
         [](const std::u16string &arg) {
         std::string ret = Str16ToStr8(arg);
-        RSSEXE_LOGI("%{public}s arg: %{public}s.", __func__, ret.c_str());
+        RSSEXE_LOGI("arg: %{public}s.", ret.c_str());
         return ret;
     });
     std::string result;
@@ -106,7 +106,7 @@ int32_t ResSchedExeService::Dump(int32_t fd, const std::vector<std::u16string>& 
 
 void ResSchedExeService::DumpUsage(std::string &result)
 {
-    result.append("usage: resource schedule service dump [<options>]\n")
+    result.append("usage: resource schedule executor dump [<options>]\n")
         .append("    -h: show the help.\n")
         .append("    -a: show all info.\n")
         .append("    -p: show the all plugin info.\n")

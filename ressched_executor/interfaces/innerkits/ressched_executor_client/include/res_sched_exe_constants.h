@@ -21,10 +21,10 @@
 namespace OHOS {
 namespace ResourceSchedule {
 enum ResIpcType : uint32_t {
-    REQUEST_SYNC = 0,
-    REQUEST_ASYNC,
+    REQUEST_SEND_SYNC = 0,
+    REQUEST_SEND_ASYNC,
     REQUEST_KILL_PROCESS,
-    REQUEST_DEBUG,
+    REQUEST_SEND_DEBUG,
 };
 
 /**
@@ -43,6 +43,8 @@ enum ResErrCode : int32_t {
  * ipc error code
  */
 enum ResIpcErrCode : int32_t {
+    // plugin deliever res error
+    RSSEXE_PLUGIN_ERROR = -1,
     // ipc send data read/write error
     RSSEXE_DATA_ERROR = ResErrCode::RSSEXE_LAST_ERR,
     // client call proxy error

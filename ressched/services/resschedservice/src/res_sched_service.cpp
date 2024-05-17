@@ -24,6 +24,7 @@
 #include "notifier_mgr.h"
 #include "plugin_mgr.h"
 #include "res_sched_errors.h"
+#include "res_sched_exe_client.h"
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "tokenid_kit.h"
@@ -57,7 +58,6 @@ void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann
 int32_t ResSchedService::KillProcess(const nlohmann::json& payload)
 {
     return ResSchedMgr::GetInstance().KillProcessByClient(payload);
-
 }
 
 void ResSchedService::RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier)
@@ -160,6 +160,8 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
             DumpProcessWindowInfo(result);
         } else if (argsInStr[DUMP_OPTION] == "getSystemloadInfo") {
             DumpSystemLoadInfo(result);
+        } else if (argsInStr[DUMP_OPTION] == "sendDebugToExecutor") {
+            DumpExecutorDebugCommand(argsInStr, result);
         } else {
             result.append("Error params.");
         }
@@ -168,6 +170,8 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
             std::vector<std::string> argsInStrToPlugin;
             argsInStrToPlugin.assign(argsInStr.begin() + DUMP_PARAM_INDEX + 1, argsInStr.end());
             PluginMgr::GetInstance().DumpOnePlugin(result, argsInStr[DUMP_PARAM_INDEX], argsInStrToPlugin);
+        } else if (argsInStr[DUMP_OPTION] == "sendDebugToExecutor") {
+            DumpExecutorDebugCommand(argsInStr, result);
         }
     }
 
@@ -313,6 +317,26 @@ void ResSchedService::DumpAllInfo(std::string &result)
 {
     result.append("================Resource Schedule Service Infos================\n");
     PluginMgr::GetInstance().DumpAllPlugin(result);
+}
+
+void ResSchedService::DumpExecutorDebugCommand(const std::vector<std::string>& args, std::string &result)
+{
+    // hidumper -s said 'sendDebugToExecutor [isSync times]' isSync - 0/1(default 0), times - 1~...(default 1)
+    result.append("Send debug command to resource_schedule_executor.\n");
+    bool isSync = true;
+    int times = 1;
+    if (args.size() > DUMP_PARAM_INDEX + 1) {
+        int arg = atoi(args[DUMP_PARAM_INDEX + 1].c_str());
+        times = arg > 0 ? arg : times;
+    }
+    if (args.size() > DUMP_PARAM_INDEX) {
+        isSync = atoi(args[DUMP_PARAM_INDEX].c_str()) == 0;
+    }
+    uint32_t internal = 200;
+    for (int i = 0; i < times; i++) {
+        ResSchedExeClient::GetInstance().SendDebugCommand(isSync);
+        usleep(internal);
+    }
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

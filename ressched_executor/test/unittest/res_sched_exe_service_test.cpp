@@ -16,8 +16,6 @@
 #include "gtest/gtest.h"
 #include "gtest/hwext/gtest-multithread.h"
 
-#define private public
-#define protected public
 #include <vector>
 
 #include "accesstoken_kit.h"
@@ -284,7 +282,6 @@ HWTEST_F(ResSchedExeServiceTest, ReportRequestInner001, Function | MediumTest | 
     EXPECT_TRUE(resSchedExeServiceStub_->ReportRequestInner(emptyData, reply));
 
     MessageParcel reportData;
-    reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
@@ -301,7 +298,6 @@ static void ReportRequestInnerTask()
         EXPECT_TRUE(resSchedExeServiceStub_->ReportRequestInner(emptyData, reply));
 
         MessageParcel reportData;
-        reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
         reportData.WriteUint32(1);
         reportData.WriteInt64(1);
         reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
@@ -334,7 +330,6 @@ HWTEST_F(ResSchedExeServiceTest, ReportDebugInner001, Function | MediumTest | Le
     EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(emptyData));
 
     MessageParcel reportData;
-    reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
     reportData.WriteUint32(ResExeType::RES_TYPE_DEBUG);
     reportData.WriteUint64(ResSchedExeCommonUtils::GetCurrentTimestampUs());
     EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData));
@@ -349,7 +344,6 @@ static void ReportDebugInnerTask()
         EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(emptyData));
 
         MessageParcel reportData;
-        reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
         reportData.WriteUint32(ResExeType::RES_TYPE_DEBUG);
         reportData.WriteUint64(ResSchedExeCommonUtils::GetCurrentTimestampUs());
         EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData));
@@ -467,7 +461,5 @@ HWTEST_F(ResSchedExeServiceTest, ParseParcel002, Function | MediumTest | Level0)
     SET_THREAD_NUM(10);
     GTEST_RUN_TASK(ParseParcelTask);
 }
-#undef private
-#undef protected
 } // namespace ResourceSchedule
 } // namespace OHOS
