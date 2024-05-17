@@ -372,11 +372,11 @@ HWTEST_F(ResSchedExeServiceTest, RemoteRequest001, Function | MediumTest | Level
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     MessageOption option;
     MessageParcel reply;
-    int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SYNC, reply, reply, option);
+    int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SEND_SYNC, reply, reply, option);
     EXPECT_TRUE(res);
-    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_ASYNC, reply, reply, option);
+    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SEND_ASYNC, reply, reply, option);
     EXPECT_TRUE(res);
-    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_DEBUG, reply, reply, option);
+    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SEND_DEBUG, reply, reply, option);
     EXPECT_TRUE(res);
 }
 
@@ -386,11 +386,11 @@ static void RemoteRequestTask()
     MessageOption option;
     MessageParcel reply;
     for (int i = 0; i < SYNC_THREAD_NUM; i++) {
-        int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SYNC, reply, reply, option);
+        int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SEND_SYNC, reply, reply, option);
         EXPECT_TRUE(res);
-        res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_ASYNC, reply, reply, option);
+        res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SEND_ASYNC, reply, reply, option);
         EXPECT_TRUE(res);
-        res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_DEBUG, reply, reply, option);
+        res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SEND_DEBUG, reply, reply, option);
         EXPECT_TRUE(res);
         usleep(SYNC_INTERNAL_TIME);
     }
