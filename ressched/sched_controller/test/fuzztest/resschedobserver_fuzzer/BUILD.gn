@@ -92,6 +92,11 @@ ohos_fuzztest("ResSchedObserverFuzzTest") {
     external_deps += [ "request:request_native" ]
   }
 
+  if (ressched_with_resourceschedule_multimedia_av_session_enable) {
+    defines += [ "RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE" ]
+    external_deps += [ "av_session:avsession_client" ]
+  }
+
   part_name = "resource_schedule_service"
   subsystem_name = "resourceschedule"
 }

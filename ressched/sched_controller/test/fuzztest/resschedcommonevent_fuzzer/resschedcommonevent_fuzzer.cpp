@@ -105,8 +105,10 @@ namespace {
 
         std::shared_ptr<EventController> eventController = std::make_shared<EventController>();
         eventController->Init();
-        eventController->sysAbilityListener_->OnAddSystemAbility(systemAbilityId, deviceId);
-        eventController->sysAbilityListener_->OnRemoveSystemAbility(systemAbilityId, deviceId);
+        if (eventController->sysAbilityListener_ != nullptr) {
+            eventController->sysAbilityListener_->OnAddSystemAbility(systemAbilityId, deviceId);
+            eventController->sysAbilityListener_->OnRemoveSystemAbility(systemAbilityId, deviceId);
+        }
         eventController->Stop();
         return true;
     }
