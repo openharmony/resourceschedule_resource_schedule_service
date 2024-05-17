@@ -120,7 +120,8 @@ void PluginMgr::LoadGetExtConfigFunc()
 {
     auto handle = dlopen(EXT_CONFIG_LIB, RTLD_NOW);
     if (!handle) {
-        RESSCHED_LOGE("not find lib");
+        RESSCHED_LOGE("not find lib,errno: %{public}d", errno);
+        return;
     }
     getExtConfigFunc_ = reinterpret_cast<GetExtConfigFunc>(dlsym(handle, "GetExtConfig"));
     if (!getExtConfigFunc_) {
@@ -129,7 +130,7 @@ void PluginMgr::LoadGetExtConfigFunc()
     }
 }
 
-void PluginMgr::GetConfigContent(int32_t configIdx, const std::string realPath, std::string &content)
+void PluginMgr::GetConfigContent(int32_t configIdx, const std::string& realPath, std::string& content)
 {
     if (configIdx != -1 && getExtConfigFunc_) {
         getExtConfigFunc_(configIdx, content);
