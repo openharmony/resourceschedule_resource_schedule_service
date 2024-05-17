@@ -64,10 +64,10 @@ bool PluginSwitch::FillinPluginInfo(const xmlNode* currNode, PluginInfo& info, b
     return true;
 }
 
-bool PluginSwitch::LoadFromConfigFile(const string& configFile, bool isRssExe)
+bool PluginSwitch::LoadFromConfigContent(const string& content, bool isRssExe)
 {
     // skip the empty string, else you will get empty node
-    xmlDocPtr xmlDocPtr = xmlReadFile(configFile.c_str(), nullptr,
+    xmlDocPtr xmlDocPtr = xmlReadMemory(content.c_str(), content.length(), nullptr, nullptr,
         XML_PARSE_NOBLANKS | XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!xmlDocPtr) {
         RESSCHED_LOGE("%{public}s, xmlReadFile error!", __func__);

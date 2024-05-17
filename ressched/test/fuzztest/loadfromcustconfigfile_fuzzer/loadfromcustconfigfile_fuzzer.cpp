@@ -16,6 +16,7 @@
 #include "loadfromcustconfigfile_fuzzer.h"
 
 #include "config_reader.h"
+#include "plugin_mgr.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -41,7 +42,9 @@ namespace ResourceSchedule {
         pFile = nullptr;
 
         std::shared_ptr<ConfigReader> configReader = std::make_shared<ConfigReader>();
-        bool ret = configReader->LoadFromCustConfigFile(fuzzedFile);
+        std::string content;
+        PluginMgr::GetInstance().GetConfigContent(-1, fuzzedFile, content);
+        bool ret = configReader->LoadFromCustConfigContent(content);
         return ret;
     }
 } // namespace ResourceSchedule

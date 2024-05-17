@@ -32,7 +32,7 @@ public:
      * @param configFile The xml filepath.
      * @return Returns true if parse successfully.
      */
-    bool LoadFromCustConfigFile(const std::string& configFile);
+    bool LoadFromCustConfigContent(const std::string& content);
 
     /**
      * Xml parse successfully, the config object has resolved.

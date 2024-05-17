@@ -16,6 +16,7 @@
 #include "loadfromconfigfile_fuzzer.h"
 
 #include "plugin_switch.h"
+#include "plugin_mgr.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -41,7 +42,9 @@ namespace ResourceSchedule {
         pFile = nullptr;
 
         std::shared_ptr<PluginSwitch> pluginSwitch = std::make_shared<PluginSwitch>();
-        bool ret = pluginSwitch->LoadFromConfigFile(fuzzedFile);
+        std::string content;
+        PluginMgr::GetInstance().GetConfigContent(-1, fuzzedFile, content);
+        bool ret = pluginSwitch->LoadFromConfigContent(content);
         return ret;
     }
 } // namespace ResourceSchedule

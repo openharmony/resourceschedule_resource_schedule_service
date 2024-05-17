@@ -48,6 +48,7 @@ using OnDeliverResourceFunc = int32_t (*)(const std::shared_ptr<ResData>&);
 using OnDumpFunc = void (*)(const std::vector<std::string>&, std::string&);
 using OnPluginDisableFunc = void (*)();
 using OnIsAllowedAppPreloadFunc = bool (*)(const std::string&, int32_t preloadMode);
+using GetExtConfigFunc = int32_t (*)(int32_t, std::string&);
 
 constexpr int32_t DISPATCH_TIME_OUT = 50; // ms
 constexpr int32_t DISPATCH_TIME_OUT_US = DISPATCH_TIME_OUT * 1000; // us
@@ -173,11 +174,13 @@ public:
 
     std::shared_ptr<PluginLib> GetPluginLib(const std::string& libPath);
 
+    void GetConfigContent(int32_t configIdx, const std::string& realPath, std::string& content);
+
 private:
     PluginMgr() = default;
-    std::string GetRealConfigPath(const char* configName);
     void OnDestroy();
     void LoadPlugin();
+    void LoadGetExtConfigFunc();
     std::shared_ptr<PluginLib> LoadOnePlugin(const PluginInfo& info);
     void UnLoadPlugin();
     void ClearResource();
@@ -198,6 +201,8 @@ private:
 #endif
     std::list<std::string> SortPluginList(const std::list<std::string>& pluginList);
     std::string GetStrFromResTypeStrMap(uint32_t resType);
+
+    std::string GetRealConfigPath(const char* configName);
 
     class InnerTimeUtil {
     public:
@@ -238,6 +243,7 @@ private:
 #endif
 
     std::map<std::string, PluginStat> pluginStat_;
+    GetExtConfigFunc getExtConfigFunc_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

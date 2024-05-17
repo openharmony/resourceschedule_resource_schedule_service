@@ -40,7 +40,7 @@ public:
      * @param isRssExe Calling service is resource schedule executor.
      * @return Returns true if parse successfully.
      */
-    bool LoadFromConfigFile(const std::string& configFile, bool isRssExe = false);
+    bool LoadFromConfigContent(const std::string& content, bool isRssExe = false);
 
     /**
      * Get all plugin info, about plugin switch status.
