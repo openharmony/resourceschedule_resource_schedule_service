@@ -354,7 +354,7 @@ nlohmann::json ResSchedServiceStub::StringToJsonObj(const std::string& payload)
     }
     if (!jsonTmp.is_object()) {
         RESSCHED_LOGD("%{public}s payload converted result is not a jsonObj: %{public}s.", __func__, payload.c_str());
-        return jsonObj; 
+        return jsonObj;
     }
     return jsonTmp;
 }
