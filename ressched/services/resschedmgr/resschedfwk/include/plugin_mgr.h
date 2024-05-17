@@ -174,7 +174,7 @@ public:
 
     std::shared_ptr<PluginLib> GetPluginLib(const std::string& libPath);
 
-    void GetConfigContent(int32_t configIdx, std::string realPath, std::string &content);
+    void GetConfigContent(int32_t configIdx, std::string& realPath, std::string& content);
 
 private:
     PluginMgr() = default;
