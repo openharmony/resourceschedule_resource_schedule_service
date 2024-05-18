@@ -74,8 +74,6 @@ void AppStartupSceneRec::RecordIsContinuousStartup(int32_t abilityState, std::st
     auto tarEndTimePoint = std::chrono::system_clock::now();
     auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
     int64_t curTime = tarDuration.count();
-    CGS_LOGI("recordIsContinuousStartup uid: %{public}s bundleName: %{public}s curTime:%{public}lld",
-        uid.c_str(), bundleName.c_str(), curTime);
     if (curTime - lastAppStartTime_ >= CONTINUOUS_START_TIME_OUT) {
         CleanRecordSceneData();
     }
