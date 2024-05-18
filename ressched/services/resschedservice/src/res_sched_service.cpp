@@ -319,7 +319,7 @@ void ResSchedService::DumpAllInfo(std::string &result)
     PluginMgr::GetInstance().DumpAllPlugin(result);
 }
 
-void ResSchedService::DumpExecutorDebugCommand(const std::vector<std::string>& args, std::string &result)
+void ResSchedService::DumpExecutorDebugCommand(const std::vector<std::string>& args, std::string& result)
 {
     // hidumper -s said 'sendDebugToExecutor [isSync times]' isSync - 0/1(default 0), times - 1~...(default 1)
     result.append("Send debug command to resource_schedule_executor.\n");
