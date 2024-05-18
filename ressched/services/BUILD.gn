@@ -75,7 +75,6 @@ ohos_shared_library("resschedsvc") {
 
   deps = [
     "${cgroup_sched_framework}:cgroup_sched",
-    "${ressched_executor_client}/innerkits/ressched_executor_client:resschedexe_client",
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
     "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
     "../common:ressched_common_utils",
@@ -202,7 +201,6 @@ ohos_static_library("resschedsvc_static") {
 
   deps = [
     "${cgroup_sched_framework}:cgroup_sched",
-    "${ressched_executor_client}/innerkits/ressched_executor_client:resschedexe_client",
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
     "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
     "../common:ressched_common_utils",
