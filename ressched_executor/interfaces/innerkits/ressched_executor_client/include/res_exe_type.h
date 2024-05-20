@@ -28,6 +28,8 @@ enum : uint32_t {
     RES_TYPE_COMMON_SYNC = RES_TYPE_FIRST,
     // thermal aware event sync
     RES_TYPE_THERMAL_AWARE_SYNC_EVENT,
+    // socperf wirte node sync
+    EWS_TYPE_SOCPERF_EXECUTOR_SYNC_EVENT,
     // last sync resType, please add sync resType before
     RES_TYPE_SYNC_END,
 
@@ -37,6 +39,8 @@ enum : uint32_t {
     RES_TYPE_COMMON_ASYNC = RES_TYPE_ASYNC_FIRST,
     // thermal aware event async
     RES_TYPE_THERMAL_AWARE_ASYNC_EVENT,
+    // socperf wirte node async
+    EWS_TYPE_SOCPERF_EXECUTOR_ASYNC_EVENT,
     // last resType, please add resType before
     RES_TYPE_LAST = 1000,
     // resType for debug ipc
