@@ -170,8 +170,6 @@ public:
 
     void SetResTypeStrMap(const std::map<uint32_t, std::string>& resTypeStr);
 
-    void ClearResTypeStrMap();
-
     std::shared_ptr<PluginLib> GetPluginLib(const std::string& libPath);
 
     void GetConfigContent(int32_t configIdx, const std::string& realPath, std::string& content);

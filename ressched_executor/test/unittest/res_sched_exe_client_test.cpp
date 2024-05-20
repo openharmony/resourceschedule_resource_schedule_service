@@ -15,8 +15,6 @@
 
 #include "gtest/gtest.h"
 
-#define private public
-#define protected public
 #include <unordered_map>
 #include <vector>
 
@@ -123,7 +121,5 @@ HWTEST_F(ResSchedExeClientTest, StopRemoteObject001, Function | MediumTest | Lev
     ResSchedExeClient::GetInstance().StopRemoteObject();
     EXPECT_TRUE(nullptr == ResSchedExeClient::GetInstance().resSchedExe_);
 }
-#undef private
-#undef protected
 } // namespace ResourceSchedule
 } // namespace OHOS

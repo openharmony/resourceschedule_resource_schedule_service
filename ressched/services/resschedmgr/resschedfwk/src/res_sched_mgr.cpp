@@ -143,7 +143,6 @@ void ResSchedMgr::Init()
 void ResSchedMgr::Stop()
 {
     PluginMgr::GetInstance().Stop();
-    PluginMgr::GetInstance().ClearResTypeStrMap();
 }
 
 void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)

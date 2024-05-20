@@ -53,7 +53,6 @@ void ResSchedExeMgr::Init()
 void ResSchedExeMgr::Stop()
 {
     PluginMgr::GetInstance().Stop();
-    PluginMgr::GetInstance().ClearResTypeStrMap();
 }
 
 int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
@@ -61,7 +60,12 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
 {
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
     HitraceScoped hitrace(HITRACE_TAG_OHOS, BuildTraceStr(__func__, resType, value));
-    return PluginMgr::GetInstance().DeliverResource(std::make_shared<ResData>(resType, value, payload, reply));
+    auto resData = std::make_shared<ResData>(resType, value, payload, reply);
+    int32_t ret = PluginMgr::GetInstance().DeliverResource(resData);
+    if (ret != ResIpcErrCode::RSSEXE_PLUGIN_ERROR) {
+        reply["retCode"] = std::to_string(ret);
+    }
+    return ResErrCode::RSSEXE_NO_ERR;
 }
 
 int32_t ResSchedExeMgr::KillProcess(pid_t pid)

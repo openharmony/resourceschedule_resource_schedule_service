@@ -64,7 +64,7 @@ int32_t ResSchedExeClient::KillProcess(pid_t pid)
     RSSEXE_LOGD("kill process receive pid = %{public}d", pid);
     std::lock_guard<std::mutex> lock(mutex_);
     if (resSchedExe_ == nullptr) {
-        RSSEXE_LOGD("fail to get resource schedule executor.");
+        RSSEXE_LOGE("fail to get resource schedule executor.");
         return ResIpcErrCode::RSSEXE_REQUEST_FAIL;
     }
     return resSchedExe_->KillProcess(pid);
@@ -76,11 +76,11 @@ int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64
     if (TryConnect() != ResErrCode::RSSEXE_NO_ERR) {
         return ResIpcErrCode::RSSEXE_CONNECT_FAIL;
     }
-    RSSEXE_LOGD("SendRequestInner receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
+    RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
 
     std::lock_guard<std::mutex> lock(mutex_);
     if (resSchedExe_ == nullptr) {
-        RSSEXE_LOGD("fail to get resource schedule executor.");
+        RSSEXE_LOGE("fail to get resource schedule executor.");
         return ResIpcErrCode::RSSEXE_REQUEST_FAIL;
     }
 
