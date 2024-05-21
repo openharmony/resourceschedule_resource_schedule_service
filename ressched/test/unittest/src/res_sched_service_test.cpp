@@ -124,7 +124,7 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
     int32_t wrongFd = -1;
     std::vector<std::u16string> argsNull;
     int res = resSchedService_->Dump(wrongFd, argsNull);
-    EXPECT_TRUE(!res);
+    EXPECT_NE(res, ERR_OK);
 
     int32_t correctFd = -1;
     res = resSchedService_->Dump(correctFd, argsNull);
@@ -544,7 +544,7 @@ HWTEST_F(ResSchedServiceTest, ReportDataInner001, Function | MediumTest | Level0
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    SUCCESS();
+    SUCCEED();
 }
 
 static void ReportDataInnerTask()
@@ -560,7 +560,7 @@ static void ReportDataInnerTask()
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    SUCCESS();
+    SUCCEED();
 }
 
 /**
