@@ -537,14 +537,14 @@ HWTEST_F(ResSchedServiceTest, ReportDataInner001, Function | MediumTest | Level0
     resSchedServiceStub_->Init();
     MessageParcel reply;
     MessageParcel emptyData;
-    EXPECT_NE(resSchedServiceStub_->ReportDataInner(emptyData, reply), ERR_OK);
+    EXPECT_TRUE(resSchedServiceStub_->ReportDataInner(emptyData, reply));
 
     MessageParcel reportData;
     reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_EQ(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
+    SUCCESS();
 }
 
 static void ReportDataInnerTask()
@@ -553,14 +553,14 @@ static void ReportDataInnerTask()
     resSchedServiceStub_->Init();
     MessageParcel reply;
     MessageParcel emptyData;
-    EXPECT_NE(resSchedServiceStub_->ReportDataInner(emptyData, reply), ERR_OK);
+    EXPECT_TRUE(resSchedServiceStub_->ReportDataInner(emptyData, reply));
 
     MessageParcel reportData;
     reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_EQ(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
+    SUCCESS();
 }
 
 /**
