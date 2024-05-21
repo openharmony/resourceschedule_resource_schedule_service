@@ -155,6 +155,9 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
 
     std::vector<std::u16string> argsOnePlugin4 = {to_utf16("getSystemloadInfo")};
     res = resSchedService_->Dump(correctFd, argsOnePlugin4);
+
+    std::vector<std::u16string> argsOnePlugin5 = {to_utf16("sendDebugToExecutor")};
+    res = resSchedService_->Dump(correctFd, argsOnePlugin5);
 }
 
 /**
