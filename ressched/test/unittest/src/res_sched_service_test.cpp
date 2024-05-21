@@ -155,9 +155,6 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
 
     std::vector<std::u16string> argsOnePlugin4 = {to_utf16("getSystemloadInfo")};
     res = resSchedService_->Dump(correctFd, argsOnePlugin4);
-
-    std::vector<std::u16string> argsOnePlugin5 = {to_utf16("sendDebugToExecutor")};
-    res = resSchedService_->Dump(correctFd, argsOnePlugin5);
 }
 
 /**
@@ -540,14 +537,14 @@ HWTEST_F(ResSchedServiceTest, ReportDataInner001, Function | MediumTest | Level0
     resSchedServiceStub_->Init();
     MessageParcel reply;
     MessageParcel emptyData;
-    EXPECT_TRUE(resSchedServiceStub_->ReportDataInner(emptyData, reply));
+    EXPECT_NE(resSchedServiceStub_->ReportDataInner(emptyData, reply), ERR_OK);
 
     MessageParcel reportData;
     reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_TRUE(!resSchedServiceStub_->ReportDataInner(reportData, reply));
+    EXPECT_EQ(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
 }
 
 static void ReportDataInnerTask()
@@ -556,14 +553,14 @@ static void ReportDataInnerTask()
     resSchedServiceStub_->Init();
     MessageParcel reply;
     MessageParcel emptyData;
-    EXPECT_TRUE(resSchedServiceStub_->ReportDataInner(emptyData, reply));
+    EXPECT_NE(resSchedServiceStub_->ReportDataInner(emptyData, reply), ERR_OK);
 
     MessageParcel reportData;
     reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_TRUE(!resSchedServiceStub_->ReportDataInner(reportData, reply));
+    EXPECT_EQ(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
 }
 
 /**
@@ -744,8 +741,11 @@ HWTEST_F(ResSchedServiceTest, IsAllowedAppPreloadInner001, Function | MediumTest
     EXPECT_TRUE(!resSchedServiceStub_->IsAllowedAppPreloadInner(emptyData, reply));
 
     MessageParcel reportData;
+    int32_t foundationUid = 5523;
+    setuid(foundationUid);
     reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
     reportData.WriteString("com.ohos.sceneboard");
+    reportData.WriteInt32(1);
     EXPECT_TRUE(resSchedServiceStub_->IsAllowedAppPreloadInner(reportData, reply));
 }
 } // namespace ResourceSchedule

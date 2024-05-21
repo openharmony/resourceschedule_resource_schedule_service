@@ -41,8 +41,8 @@ ohos_unittest("resschedservice_test") {
     "${ressched_common}/src/oobe_manager.cpp",
     "src/oobe_datashare_utils_test.cpp",
     "src/oobe_mgr_test.cpp",
-    "src/res_sched_client_test.cpp",
     "src/res_sched_service_test.cpp",
+    "src/res_sched_client_test.cpp",
   ]
 
   deps = [
