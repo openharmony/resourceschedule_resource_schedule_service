@@ -34,7 +34,7 @@ struct ResData {
     uint32_t resType = 0;
     int64_t value = 0;
     nlohmann::json payload;
-    nlohmann::json* reply = nullptr;
+    nlohmann::json* reply{nullptr};
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

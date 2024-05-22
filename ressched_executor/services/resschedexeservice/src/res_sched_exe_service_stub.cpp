@@ -30,7 +30,7 @@ namespace ResourceSchedule {
 namespace {
     constexpr int32_t PAYLOAD_MAX_SIZE = 4096;
     constexpr int32_t KILL_PROCESS_FAILED = -1;
-    constexpr int32_t RSS_UID = 0;
+    constexpr int32_t RSS_UID = 1096;
     const std::string RES_TYPE_EXT = "extType";
 
     bool IsValidToken(MessageParcel& data)

@@ -32,7 +32,7 @@ using namespace testing::ext;
 
 namespace {
     constexpr int32_t SYNC_THREAD_NUM = 100;
-    constexpr int32_t SYNC_INTERNAL_TIME = 10000;
+    constexpr int32_t SYNC_INTERNAL_TIME = 200;
 }
 
 class ResSchedExeClientTest : public testing::Test {
@@ -41,6 +41,9 @@ public:
     static void TearDownTestCase(void);
     void SetUp();
     void TearDown();
+
+private:
+    ResSchedExeClient& client = ResSchedExeClient::GetInstance();
 };
 
 
@@ -63,10 +66,10 @@ HWTEST_F(ResSchedExeClientTest, SendRequestSync001, Function | MediumTest | Leve
     context["message"] = "test";
     nlohmann::json reply;
     for (int i = 0; i < SYNC_THREAD_NUM; i++) {
-        ResSchedExeClient::GetInstance().SendRequestSync(ResExeType::RES_TYPE_DEBUG, 0, context, reply);
+        client.SendRequestSync(ResExeType::RES_TYPE_DEBUG, 0, context, reply);
         usleep(SYNC_INTERNAL_TIME);
     }
-    EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);
+    EXPECT_TRUE(client.resSchedExe_);
 }
 
 /**
@@ -79,10 +82,10 @@ HWTEST_F(ResSchedExeClientTest, SendRequestAsync001, Function | MediumTest | Lev
     nlohmann::json context;
     context["message"] = "test";
     for (int i = 0; i < SYNC_THREAD_NUM; i++) {
-        ResSchedExeClient::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_DEBUG, 0, context);
+        client.SendRequestAsync(ResExeType::RES_TYPE_DEBUG, 0, context);
         usleep(SYNC_INTERNAL_TIME);
     }
-    EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);
+    EXPECT_TRUE(client.resSchedExe_);
 }
 
 /**
@@ -93,9 +96,10 @@ HWTEST_F(ResSchedExeClientTest, SendRequestAsync001, Function | MediumTest | Lev
 HWTEST_F(ResSchedExeClientTest, SendDebugCommand001, Function | MediumTest | Level0)
 {
     for (int i = 0; i < SYNC_THREAD_NUM; i++) {
-        ResSchedExeClient::GetInstance().SendDebugCommand(true);
+        client.SendDebugCommand(true);
+        usleep(SYNC_INTERNAL_TIME);
     }
-    EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);
+    EXPECT_TRUE(client.resSchedExe_);
 }
 
 /**
@@ -106,9 +110,10 @@ HWTEST_F(ResSchedExeClientTest, SendDebugCommand001, Function | MediumTest | Lev
 HWTEST_F(ResSchedExeClientTest, SendDebugCommand002, Function | MediumTest | Level0)
 {
     for (int i = 0; i < SYNC_THREAD_NUM; i++) {
-        ResSchedExeClient::GetInstance().SendDebugCommand(false);
+        client.SendDebugCommand(false);
+        usleep(SYNC_INTERNAL_TIME);
     }
-    EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);
+    EXPECT_TRUE(client.resSchedExe_);
 }
 
 /**
@@ -118,8 +123,8 @@ HWTEST_F(ResSchedExeClientTest, SendDebugCommand002, Function | MediumTest | Lev
  */
 HWTEST_F(ResSchedExeClientTest, StopRemoteObject001, Function | MediumTest | Level0)
 {
-    ResSchedExeClient::GetInstance().StopRemoteObject();
-    EXPECT_TRUE(nullptr == ResSchedExeClient::GetInstance().resSchedExe_);
+    client.StopRemoteObject();
+    EXPECT_TRUE(nullptr == client.resSchedExe_);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
