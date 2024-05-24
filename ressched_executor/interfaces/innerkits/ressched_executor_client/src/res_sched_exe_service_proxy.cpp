@@ -74,6 +74,8 @@ int32_t ResSchedExeServiceProxy::KillProcess(pid_t pid)
     RSSEXE_LOGD("KillProcess start.");
     MessageOption option = { MessageOption::TF_SYNC };
     MessageParcel data;
+    WRITE_PARCEL(data, InterfaceToken, ResSchedExeServiceProxy::GetDescriptor(),
+        ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     WRITE_PARCEL(data, Int32, pid, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     MessageParcel response;
     int32_t error = Remote()->SendRequest(ResIpcType::REQUEST_KILL_PROCESS, data, response, option);
