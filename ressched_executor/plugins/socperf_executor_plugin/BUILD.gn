@@ -42,6 +42,8 @@ ohos_shared_library("socperf_executor_plugin") {
     "libxml2:libxml2",
   ]
 
+  public_external_deps = [ "json:nlohmann_json_static" ]
+
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
 
