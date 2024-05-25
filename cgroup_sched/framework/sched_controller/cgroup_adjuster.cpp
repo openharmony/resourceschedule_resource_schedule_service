@@ -74,17 +74,12 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
     /* Let the sched group of render process follow the sched group of main process */
     for (const auto &iter : app.GetPidsMap()) {
         const auto &procRecord = iter.second;
-        if (procRecord && procRecord->isRenderProcess_) {
+        if (procRecord && (procRecord->isRenderProcess_ || procRecord->isGPUProcess_)) {
             CGS_LOGI("%{public}s for %{public}d, source : %{public}d for render process",
                 __func__, procRecord->GetPid(), source);
             procRecord->setSchedGroup_ = mainProcRecord->curSchedGroup_;
             ResSchedUtils::GetInstance().ReportArbitrationResult(app, *(procRecord.get()),
                 AdjustSource::ADJS_SELF_RENDER_THREAD);
-            ApplyProcessGroup(app, *procRecord);
-        } else if (procRecord && procRecord->isGPUProcess_) {
-            CGS_LOGI("%{public}s for %{public}d, source : %{public}d for gpu process",
-                __func__, procRecord->GetPid(), source);
-            procRecord->setSchedGroup_ = mainProcRecord->curSchedGroup_;
             ApplyProcessGroup(app, *procRecord);
         }
     }
