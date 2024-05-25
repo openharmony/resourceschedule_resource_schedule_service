@@ -14,16 +14,11 @@
 import("//build/ohos.gni")
 import("../../ressched_executor.gni")
 
-socperf_server_path = "//foundation/resourceschedule/soc_perf"
-
-socperf_server_common = "${socperf_server_path}/common"
-
 config("socperf_executor_plugin_config") {
   include_dirs = [
     "framework/include",
     "${resschedexe_common}/include",
     "${resschedexe_interfaces}/innerkits/ressched_executor_client/include",
-    "${socperf_server_common}/include",
   ]
 }
 
