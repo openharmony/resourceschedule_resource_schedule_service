@@ -79,6 +79,7 @@
         "service_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc",
           "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/socperf_plugin:socperf_plugin",
+          "//foundation/resourceschedule/resource_schedule_service/ressched_executor/plugins/socperf_executor_plugin:socperf_executor_plugin",
           "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/frame_aware_plugin:frame_aware_plugin",
           "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/device_standby_plugin:device_standby_plugin",
           "//foundation/resourceschedule/resource_schedule_service/ressched/sa_profile:ressched_sa_profile",
