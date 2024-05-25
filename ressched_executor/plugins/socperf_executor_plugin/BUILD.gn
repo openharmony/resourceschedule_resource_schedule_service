@@ -28,18 +28,18 @@ ohos_shared_library("socperf_executor_plugin") {
   defines = []
 
   sources = [
-    "framework/src/socperf_executor_plugin.cpp",
     "framework/src/socperf_executor_config.cpp",
+    "framework/src/socperf_executor_plugin.cpp",
     "framework/src/socperf_executor_wirte_node.cpp",
   ]
 
   deps = [ "${resschedexe_services}:resschedexesvc" ]
 
   external_deps = [
-    "hilog:libhilog",
     "config_policy:configpolicy_util",
-    "libxml2:libxml2",
+    "hilog:libhilog",
     "hitrace:hitrace_meter",
+    "libxml2:libxml2",
   ]
 
   subsystem_name = "resourceschedule"
