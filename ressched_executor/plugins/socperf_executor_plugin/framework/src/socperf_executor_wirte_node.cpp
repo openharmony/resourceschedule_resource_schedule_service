@@ -19,7 +19,7 @@
 #include <string>
 #include <unistd.h>          // for open, write
 #include <fcntl.h>           // for O_RDWR, O_CLOEXEC
-#include "res_sched_exe_log.h"
+#include "socperf_log.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -60,9 +60,9 @@ void SocPerfExecutorWirteNode::InitResourceNodeInfo(std::shared_ptr<ResourceNode
 
 void SocPerfExecutorWirteNode::WriteNodeThreadWraps(std::vector<int32_t>& resIdVec, std::vector<int64_t>& valueVec)
 {
-    size len = qosId.size();
-    for (size i = 0; i < len; i++) {
-        UpdateCurrentValue(qosId[i], value[i]);
+    int32_t len = (int32_t)resIdVec.size();
+    for (int32_t i = 0; i < len; i++) {
+        UpdateCurrentValue(resIdVec[i], valueVec[i]);
     }
 }
 
@@ -73,14 +73,14 @@ void SocPerfExecutorWirteNode::UpdateCurrentValue(int32_t resId, int64_t currVal
             std::static_pointer_cast<GovResNode>(socPerfConfig_.resourceNodeInfo_[resId]);
         if (govResNode->persistMode != REPORT_TO_PERFSO &&
             govResNode->levelToStr.find(currValue) != govResNode->levelToStr.end()) {
-            std::vector<std::string> targetStrs = govResNode->levelToStr[resStatusInfo_[resId]->currentValue];
+            std::vector<std::string> targetStrs = govResNode->levelToStr[currValue];
             for (int32_t i = 0; i < (int32_t)govResNode->paths.size(); i++) {
                 WriteNode(resId, govResNode->paths[i], targetStrs[i]);
             }
         }
     } else {
         std::shared_ptr<ResNode> resNode = std::static_pointer_cast<ResNode>(socPerfConfig_.resourceNodeInfo_[resId]);
-        WriteNode(resId, resNode->path, std::to_string(resStatusInfo_[resId]->currentValue));
+        WriteNode(resId, resNode->path, std::to_string(currValue));
     }
 }
 

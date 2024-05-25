@@ -20,8 +20,8 @@
 #include "config_policy_utils.h"
 #include "hisysevent.h"
 #include "hitrace_meter.h"
-#include "res_sched_exe_log.h"
 #include "socperf_common.h"
+#include "socperf_log.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -51,12 +51,12 @@ SocPerfConfig::~SocPerfConfig()
 
 bool SocPerfConfig::Init()
 {
-    if (!LoadConfigXmlFile(resourceConfigXml)) {
-        RSSEXE_LOGE("Failed to load %{public}s", resourceConfigXml.c_str());
+    if (!LoadConfigXmlFile(SOCPERF_RESOURCE_CONFIG_XML)) {
+        SOC_PERF_LOGE("Failed to load %{public}s", SOCPERF_RESOURCE_CONFIG_XML.c_str());
         return false;
     }
     PrintCachedInfo();
-    RSSEXE_LOGD("SocPerf Init SUCCESS!");
+    SOC_PERF_LOGD("SocPerf exe Init SUCCESS!");
     return true;
 }
 
@@ -84,7 +84,7 @@ std::string SocPerfConfig::GetRealConfigPath(const std::string& configFile)
     char tmpPath[PATH_MAX + 1] = {0};
     if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
         !realpath(configFilePath, tmpPath)) {
-        RSSEXE_LOGE("load %{public}s file fail", configFile.c_str());
+        SOC_PERF_LOGE("load %{public}s file fail", configFile.c_str());
         return "";
     }
     return std::string(tmpPath);
@@ -99,12 +99,12 @@ bool SocPerfConfig::LoadConfigXmlFile(const std::string& configFile)
     xmlKeepBlanksDefault(0);
     xmlDoc* file = xmlReadFile(realConfigFile.c_str(), nullptr, XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!file) {
-        RSSEXE_LOGE("Failed to open xml file");
+        SOC_PERF_LOGE("Failed to open xml file");
         return false;
     }
     xmlNode* rootNode = xmlDocGetRootElement(file);
     if (!rootNode) {
-        RSSEXE_LOGE("Failed to get xml file's RootNode");
+        SOC_PERF_LOGE("Failed to get xml file's RootNode");
         xmlFreeDoc(file);
         return false;
     }
@@ -117,12 +117,12 @@ bool SocPerfConfig::LoadConfigXmlFile(const std::string& configFile)
             }
         }
     } else {
-        RSSEXE_LOGE("Wrong format for xml file");
+        SOC_PERF_LOGE("Wrong format for xml file");
         xmlFreeDoc(file);
         return false;
     }
     xmlFreeDoc(file);
-    RSSEXE_LOGD("Success to Load %{public}s", configFile.c_str());
+    SOC_PERF_LOGD("Success to Load %{public}s", configFile.c_str());
     return true;
 }
 
@@ -223,7 +223,7 @@ bool SocPerfConfig::LoadFreqResourceContent(int32_t persistMode, xmlNode* greatG
     xmlFree(def);
     xmlFree(path);
     if (node && !LoadResourceAvailable(resNode, node)) {
-        RSSEXE_LOGE("Invalid resource node for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource node for %{public}s", configFile.c_str());
         xmlFree(node);
         return false;
     }
@@ -288,7 +288,7 @@ bool SocPerfConfig::TraversalGovResource(int32_t persistMode, xmlNode* greatGran
         if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("default"))) {
             char* def = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
             if (!def || !IsNumber(def)) {
-                RSSEXE_LOGE("Invalid governor resource default for %{public}s", configFile.c_str());
+                SOC_PERF_LOGE("Invalid governor resource default for %{public}s", configFile.c_str());
                 xmlFree(def);
                 return false;
             }
@@ -298,7 +298,7 @@ bool SocPerfConfig::TraversalGovResource(int32_t persistMode, xmlNode* greatGran
             !xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("path"))) {
             char* path = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
             if (!path) {
-                RSSEXE_LOGE("Invalid governor resource path for %{public}s", configFile.c_str());
+                SOC_PERF_LOGE("Invalid governor resource path for %{public}s", configFile.c_str());
                 return false;
             }
             govResNode->paths.push_back(path);
@@ -310,7 +310,7 @@ bool SocPerfConfig::TraversalGovResource(int32_t persistMode, xmlNode* greatGran
             char* node = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
             if (!level || !IsNumber(level) || !node
                 || !LoadGovResourceAvailable(govResNode, level, node)) {
-                RSSEXE_LOGE("Invalid governor resource node for %{public}s", configFile.c_str());
+                SOC_PERF_LOGE("Invalid governor resource node for %{public}s", configFile.c_str());
                 xmlFree(level);
                 xmlFree(node);
                 return false;
@@ -339,19 +339,19 @@ bool SocPerfConfig::CheckResourceTag(const char* id, const char* name, const cha
     const char* persistMode, const std::string& configFile) const
 {
     if (!id || !IsNumber(id) || !IsValidRangeResId(atoi(id))) {
-        RSSEXE_LOGE("Invalid resource id for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource id for %{public}s", configFile.c_str());
         return false;
     }
     if (!name) {
-        RSSEXE_LOGE("Invalid resource name for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource name for %{public}s", configFile.c_str());
         return false;
     }
     if (pair && (!IsNumber(pair) || !IsValidRangeResId(atoi(pair)))) {
-        RSSEXE_LOGE("Invalid resource pair for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource pair for %{public}s", configFile.c_str());
         return false;
     }
     if (mode && !IsNumber(mode)) {
-        RSSEXE_LOGE("Invalid resource mode for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource mode for %{public}s", configFile.c_str());
         return false;
     }
     return CheckResourcePersistMode(persistMode, configFile);
@@ -360,7 +360,7 @@ bool SocPerfConfig::CheckResourceTag(const char* id, const char* name, const cha
 bool SocPerfConfig::CheckResourcePersistMode(const char* persistMode, const std::string& configFile) const
 {
     if (persistMode && (!IsNumber(persistMode) || !IsValidPersistMode(atoi(persistMode)))) {
-        RSSEXE_LOGE("Invalid resource persistMode for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource persistMode for %{public}s", configFile.c_str());
         return false;
     }
     return true;
@@ -370,11 +370,11 @@ bool SocPerfConfig::CheckResourceTag(int32_t persistMode, const char* def,
     const char* path, const std::string& configFile) const
 {
     if (!def || !IsNumber(def)) {
-        RSSEXE_LOGE("Invalid resource default for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource default for %{public}s", configFile.c_str());
         return false;
     }
     if (persistMode != REPORT_TO_PERFSO && !path) {
-        RSSEXE_LOGE("Invalid resource path for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource path for %{public}s", configFile.c_str());
         return false;
     }
     return true;
@@ -404,7 +404,7 @@ bool SocPerfConfig::CheckPairResIdValid() const
         std::shared_ptr<ResNode> resNode = std::static_pointer_cast<ResNode>(iter->second);
         int32_t pairResId = resNode->pair;
         if (pairResId != INVALID_VALUE && resourceNodeInfo_.find(pairResId) == resourceNodeInfo_.end()) {
-            RSSEXE_LOGE("resId[%{public}d]'s pairResId[%{public}d] is not valid", resId, pairResId);
+            SOC_PERF_LOGE("resId[%{public}d]'s pairResId[%{public}d] is not valid", resId, pairResId);
             return false;
         }
     }
@@ -418,7 +418,7 @@ bool SocPerfConfig::CheckDefValid() const
         std::shared_ptr<ResourceNode> resourceNode = iter->second;
         int64_t def = resourceNode->def;
         if (!resourceNode->available.empty() && resourceNode->available.find(def) == resourceNode->available.end()) {
-            RSSEXE_LOGE("resId[%{public}d]'s def[%{public}lld] is not valid", resId, (long long)def);
+            SOC_PERF_LOGE("resId[%{public}d]'s def[%{public}lld] is not valid", resId, (long long)def);
             return false;
         }
     }
@@ -429,15 +429,15 @@ bool SocPerfConfig::CheckGovResourceTag(const char* id, const char* name,
     const char* persistMode, const std::string& configFile) const
 {
     if (!id || !IsNumber(id) || !IsValidRangeResId(atoi(id))) {
-        RSSEXE_LOGE("Invalid governor resource id for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid governor resource id for %{public}s", configFile.c_str());
         return false;
     }
     if (!name) {
-        RSSEXE_LOGE("Invalid governor resource name for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid governor resource name for %{public}s", configFile.c_str());
         return false;
     }
     if (persistMode && (!IsNumber(persistMode) || !IsValidPersistMode(atoi(persistMode)))) {
-        RSSEXE_LOGE("Invalid governor resource persistMode for %{public}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid governor resource persistMode for %{public}s", configFile.c_str());
         return false;
     }
     return true;
@@ -450,7 +450,7 @@ bool SocPerfConfig::LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResN
     std::string nodeStr = node;
     std::vector<std::string> result = Split(nodeStr, SPLIT_OR);
     if (result.size() != govResNode->paths.size()) {
-        RSSEXE_LOGE("Invalid governor resource node matches paths");
+        SOC_PERF_LOGE("Invalid governor resource node matches paths");
         return false;
     }
     govResNode->levelToStr.insert(std::pair<int32_t, std::vector<std::string>>(atoll(level), result));
@@ -459,12 +459,12 @@ bool SocPerfConfig::LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResN
 
 void SocPerfConfig::PrintCachedInfo() const
 {
-    RSSEXE_LOGD("------------------------------------");
-    RSSEXE_LOGD("resourceNodeInfo_(%{public}d)", (int32_t)resourceNodeInfo_.size());
+    SOC_PERF_LOGD("------------------------------------");
+    SOC_PERF_LOGD("resourceNodeInfo_(%{public}d)", (int32_t)resourceNodeInfo_.size());
     for (auto iter = resourceNodeInfo_.begin(); iter != resourceNodeInfo_.end(); ++iter) {
         iter->second->PrintString();
     }
-    RSSEXE_LOGD("------------------------------------");
+    SOC_PERF_LOGD("------------------------------------");
 }
 } // namespace SOCPERF
 } // namespace OHOS

@@ -22,47 +22,20 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
-#include "res_sched_exe_log.h"
+#include "socperf_log.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-enum EventType {
-    EVENT_INVALID = -1,
-    EVENT_OFF,
-    EVENT_ON
-};
 
 const std::string SOCPERF_RESOURCE_CONFIG_XML = "etc/soc_perf/socperf_resource_config.xml";
-const int64_t MAX_INT_VALUE                       = 0x7FFFFFFFFFFFFFFF;
-const int64_t MIN_INT_VALUE                       = 0x8000000000000000;
 const int32_t INVALID_VALUE                       = INT_MIN;
-const int32_t RESET_VALUE                         = -1;
-/*
- * Divide all resource id into five sections, resource of each section is processed in an individual queue.
- * threadWrapId = resourceId / RES_ID_NUMS_PER_TYPE - 1
- * Resource section:    [1000, 1999]   [2000, 2999]   [3000, 3999]   [4000, 4999]   [5000, 5999]
- * queue: socperfThreadWraps[0] socperfThreadWraps[1] socperfThreadWraps[2] socperfThreadWraps[3] socperfThreadWraps[4]
- */
-const int32_t MAX_QUEUE_NUM                 = 5;
 const int32_t MIN_RESOURCE_ID                     = 1000;
 const int32_t MAX_RESOURCE_ID                     = 5999;
-const int32_t RES_ID_ADDITION                     = 10000;
-const int32_t RES_ID_AND_VALUE_PAIR               = 2;
 const int32_t RES_ID_NUMS_PER_TYPE                = 1000;
 const int32_t RES_ID_NUMS_PER_TYPE_EXT            = 10000;
 const int32_t WRITE_NODE                          = 0;
 const int32_t REPORT_TO_PERFSO                    = 1;
-const int32_t INVALID_THERMAL_CMD_ID              = -1;
-const int32_t MIN_THERMAL_LVL                     = 0;
-const int32_t RES_MODE_AND_ID_PAIR                = 2;
-const int32_t MAX_RES_MODE_LEN                    = 64;
 const int32_t MAX_FREQUE_NODE                     = 1;
-
-const std::unordered_map<std::string, std::vector<std::string>> MUTEX_MODE = {
-    {"displaySub", {"displayMain", "displayFull"}},
-    {"displayMain", {"displaySub", "displayFull"}},
-    {"displayFull", {"displayMain", "displaySub"}}
-};
 
 class ResourceNode {
 public:
@@ -211,7 +184,7 @@ static inline bool IsValidPersistMode(int32_t persistMode)
     return true;
 }
 
-static std::vector<std::string> Split(const std::string& str, const std::string& pattern)
+static std::vector<std::string> SplitEx(const std::string& str, const std::string& pattern)
 {
     int32_t position;
     std::vector<std::string> result;
@@ -228,7 +201,13 @@ static std::vector<std::string> Split(const std::string& str, const std::string&
     }
     return result;
 }
-} // namespace SOCPERF
+
+static inline std::vector<std::string> Split(const std::string& str, const std::string& pattern)
+{
+    return SplitEx(str, pattern);
+}
+
+} // namespace ResourceSchedule
 } // namespace OHOS
 
-#endif // SOC_PERF_SERVICES_CORE_INCLUDE_COMMON_H
+#endif // RESSCHED_EXECUTOR_PLUGINS_FRAMEWORK_SOCPERF_EXECUTOR_PLUGIN_INCLUDE_SOCPERF_COMMON_H

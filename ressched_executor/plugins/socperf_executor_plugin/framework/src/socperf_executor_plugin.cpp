@@ -21,13 +21,15 @@
 
 #include "plugin_mgr.h"
 #include "res_exe_type.h"
-#include "res_sched_exe_log.h"
 #include "socperf_executor_wirte_node.h"
+#include "socperf_log.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     const std::string LIB_NAME = "libsocperf_executor_plugin.z.so";
+    const std::string QOSID_STRING = "qosId";
+    const std::string VALUE_STRING = "value";
 }
 
 IMPLEMENT_SINGLE_INSTANCE(SocPerfExecutorPlugin)
@@ -39,12 +41,12 @@ void SocPerfExecutorPlugin::Init()
     };
     functionMap_ = {
         { ResExeType::EWS_TYPE_SOCPERF_EXECUTOR_ASYNC_EVENT,
-            [this](const std::shared_ptr<ResData> &data) { HandleSocperfWriteNode(data); }, },
+            [this](const std::shared_ptr<ResData> &data) { HandleSocperfWirteNode(data); }, },
     };
     for (auto resType : resType_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
-    RSSEXE_LOGI("Init success");
+    SOC_PERF_LOGI("Init success");
 }
 
 void SocPerfExecutorPlugin::Disable()
@@ -54,10 +56,10 @@ void SocPerfExecutorPlugin::Disable()
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
     resType_.clear();
-    RSSEXE_LOGI("Disable success");
+    SOC_PERF_LOGI("Disable success");
 }
 
-void SocPerfExecutorPlugin::Disable()
+void SocPerfExecutorPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
     if (data == nullptr || data->value <= 0) {
         return;
@@ -91,29 +93,30 @@ void SocPerfExecutorPlugin::SocPerfInitNode(const std::shared_ptr<ResData>& data
     if (data == nullptr || data->value <= 0) {
         return;
     }
-    RSSEXE_LOGI("SocPerfInitNode OK")
+    SocPerfExecutorWirteNode::GetInstance().InitThreadWraps();
+    SOC_PERF_LOGI("SocPerfInitNode OK");
 }
 
 void SocPerfExecutorPlugin::SocPerfWirteNode(const std::shared_ptr<ResData>& data)
 {
     if (data == nullptr || data->value <= 0 || data->payload == nullptr ||
-        data->payload["qosId"].is_null() || data->payload["value"].is_null()) {
-        RSSEXE_LOGE("SocPerfWirteNode bad data")
+        data->payload[QOSID_STRING].is_null() || data->payload[VALUE_STRING].is_null()) {
+        SOC_PERF_LOGE("SocPerfWirteNode bad data");
         return;
     }
-    std::vector<int32_t> resIdVec = data->payload["qosId"];
-    std::vector<int64_t> valueVec = data->payload["value"];
+    std::vector<int32_t> resIdVec = data->payload[QOSID_STRING];
+    std::vector<int64_t> valueVec = data->payload[VALUE_STRING];
     if (resIdVec.size() != valueVec.size()) {
-        RSSEXE_LOGE("SocPerfWirteNode bad data size")
+        SOC_PERF_LOGE("SocPerfWirteNode bad data size");
         return;
     }
-    SocPerfExecutorWirteNode::GetInstance.WriteNodeThreadWraps(resIdVec, valueVec);
+    SocPerfExecutorWirteNode::GetInstance().WriteNodeThreadWraps(resIdVec, valueVec);
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
 {
     if (libName != LIB_NAME) {
-        RSSEXE_LOGE("lib name is not match");
+        SOC_PERF_LOGE("lib name is not match");
         return false;
     }
     SocPerfExecutorPlugin::GetInstance().Init();

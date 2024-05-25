@@ -32,8 +32,8 @@ public:
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
 private:
     void HandleSocperfWirteNode(const std::shared_ptr<ResData> &data);
-    void SocperfInitNode(const std::shared_ptr<ResData> &data);
-    void SocperfWirteNode(const std::shared_ptr<ResData> &data);
+    void SocPerfInitNode(const std::shared_ptr<ResData> &data);
+    void SocPerfWirteNode(const std::shared_ptr<ResData> &data);
 private:
     std::set<uint32_t> resType_;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap_;

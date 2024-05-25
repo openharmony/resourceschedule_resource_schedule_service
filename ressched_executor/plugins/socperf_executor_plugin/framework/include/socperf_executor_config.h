@@ -61,6 +61,6 @@ private:
     bool CheckActionResIdAndValueValid(const std::string& configFile);
     void PrintCachedInfo() const;
 };
-} // namespace SOCPERF
+} // namespace ResourceSchedule
 } // namespace OHOS
-#endif // SOC_PERF_SERVICES_CORE_INCLUDE_SOCPERF_H
+#endif // RESSCHED_EXECUTOR_PLUGINS_FRAMEWORK_SOCPERF_EXECUTOR_PLUGIN_INCLUDE_SOCPERF_EXECUTOR_CONFIG_H
