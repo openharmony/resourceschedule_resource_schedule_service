@@ -71,12 +71,12 @@ void SchedController::Init()
     ChronoScope cs("Init SchedController.");
     // Init supervisor which contains cached data for ccgroup controller.
     InitSupervisor();
+    // init dispatch resource function map
+    InitDispatchResFuncMap();
     // Init cgroup handler thread
     InitCgroupHandler();
     // Init cgroup adjuster thread
     InitCgroupAdjuster();
-    // init dispatch resource function map
-    InitDispatchResFuncMap();
     InitAppStartupSceneRec();
 }
 
