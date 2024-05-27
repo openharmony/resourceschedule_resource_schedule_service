@@ -66,6 +66,7 @@ namespace {
     static const int32_t SIX_PARAMETERS = 6;
     static const int32_t ENUM_MAX = 4;
     static const int32_t ENUM_MIN = 0;
+    const int32_t INDENT = -1;
 }
     const uint8_t* g_data = nullptr;
     size_t g_size = 0;
@@ -388,10 +389,10 @@ namespace {
         std::string eventName = GetStringFromData(int(size) -
         TWO_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
         sysEvent["name_"] = eventName;
+        std::string tmp = sysEvent.dump(INDENT, ' ', false, nlohmann::json::error_handler_t::replace);
 
         std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
-        hisysEventObserver_->OnEvent(std::make_shared<HiviewDFX::HiSysEventRecord>(
-            sysEvent.dump(GetData<int32_t>())));
+        hisysEventObserver_->OnEvent(std::make_shared<HiviewDFX::HiSysEventRecord>(tmp));
         return true;
     }
 
