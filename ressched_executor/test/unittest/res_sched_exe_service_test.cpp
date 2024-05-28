@@ -423,6 +423,7 @@ HWTEST_F(ResSchedExeServiceTest, ParseParcel001, Function | MediumTest | Level0)
     EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
 
     MessageParcel reportData;
+    reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
@@ -441,6 +442,7 @@ static void ParseParcelTask()
         EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
 
         MessageParcel reportData;
+        reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
         reportData.WriteUint32(1);
         reportData.WriteInt64(1);
         reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
