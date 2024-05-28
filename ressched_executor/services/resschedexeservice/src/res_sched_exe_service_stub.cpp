@@ -79,7 +79,7 @@ namespace {
     }
 }
 
-ResSchedExeServiceStub::ResSchedExeServiceStub()
+ResSchedExeServiceStub::ResSchedExeServiceStub(bool isSaSerial) : IRemoteStub(isSaSerial)
 {
     Init();
 }
