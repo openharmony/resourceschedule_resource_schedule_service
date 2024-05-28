@@ -212,7 +212,7 @@ bool TestFeatureInit(const uint8_t *data, size_t size)
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     if (data == nullptr || size < sizeof()) {
-        return false;
+        return 0;
     }
     OHOS::ResourceSchedule::SocPerfPlugin::GetInstance().Init();
     OHOS::ResourceSchedule::TestFeatureInit(data, size);
