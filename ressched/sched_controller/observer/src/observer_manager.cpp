@@ -37,6 +37,7 @@
 #include "movement_data_utils.h"
 #endif
 #include "input_manager.h"
+#include "os_account_manager.h"
 #include "sched_controller.h"
 #include "supervisor.h"
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
@@ -87,6 +88,8 @@ void ObserverManager::InitObserverCbMap()
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
         { AVSESSION_SERVICE_ID, std::bind(&ObserverManager::InitAVSessionStateChangeListener, std::placeholders::_1) },
 #endif
+        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN,
+            std::bind(&ObserverManager::InitAccountObserver, std::placeholders::_1) },
     };
 
     removeObserverMap_ = {
@@ -108,6 +111,9 @@ void ObserverManager::InitObserverCbMap()
         { AVSESSION_SERVICE_ID,
           std::bind(&ObserverManager::DisableAVSessionStateChangeListener, std::placeholders::_1) },
 #endif
+        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN,
+            std::bind(&ObserverManager::DisableAccountObserver, std::placeholders::_1) },
+        }
     };
 }
 
@@ -147,6 +153,7 @@ void ObserverManager::InitSysAbilityListener()
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
     AddItemToSysAbilityListener(AVSESSION_SERVICE_ID, systemAbilityManager);
 #endif
+    AddItemToSysAbilityListener(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, systemAbilityManager);
 }
 
 inline void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId,
@@ -640,6 +647,40 @@ void ObserverManager::DisableDownloadUploadObserver()
     downLoadUploadObserver_ = nullptr;
 }
 #endif
+
+void ObserverManager::InitAccountObserver()
+{
+    RESSCHED_LOGI("InitAccountObserver");
+    if (!accountObserver_) {
+        AccountSA::OsAccountSubscriberInfo osAccountSubscriberInfo;
+        osAccountSubscriberInfo.SetOsAccountSubscribeType(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVATING);
+        osAccountSubscriberInfo.SetName("ResschdeAccountActivatingSubscriber");
+        accountObserver_ = std::make_shared<AccountObserver>(osAccountSubscriberInfo);
+    }
+    if (!accountObserver_) {
+        RESSCHED_LOGE("account observer make failed");
+    }
+    ErrCode errCode = AccountSA::OsAccountManager::SubscribeOsAccount(accountObserver_);
+    if (errCode == ERR_OK) {
+        RESSCHED_LOGI("account observer register success");
+    } else {
+        RESSCHED_LOGW("account observer register failed");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a account observer failed!");
+    }
+}
+
+void ObserverManager::DisableAccountObserver()
+{
+    RESSCHED_LOGI("Disable account observer");
+    if (!accountObserver_) {
+        RESSCHED_LOGI("ObserverManager has benn disable acount observer");
+        return;
+    }
+    accountObserver_ = nullptr;
+}
 
 extern "C" void ObserverManagerInit()
 {

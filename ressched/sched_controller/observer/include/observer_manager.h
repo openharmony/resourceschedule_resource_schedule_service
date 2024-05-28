@@ -17,6 +17,7 @@
 #define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_OBSERVER_MANAGER_H
 
 #include <memory>
+#include "account_observer.h"
 #include "if_system_ability_manager.h"
 #include "system_ability_status_change_stub.h"
 #include "singleton.h"
@@ -80,6 +81,8 @@ public:
     void GetReportFunc();
     void InitDataShareObserver();
     void DisableDataShareObserver();
+    void InitAccountObserver();
+    void DisableAccountObserver();
 #ifndef RESOURCE_REQUEST_REQUEST
     void InitDownloadUploadObserver();
     void DisableDownloadUploadObserver();
@@ -112,6 +115,7 @@ public:
 #ifndef RESOURCE_REQUEST_REQUEST
     std::shared_ptr<DownLoadUploadObserver> downLoadUploadObserver_ = nullptr;
 #endif
+    std::shared_ptr<AccountObserver> accountObserver_ = nullptr;
     bool isNeedReport_ = true;
 };
 } // namespace ResourceSchedule

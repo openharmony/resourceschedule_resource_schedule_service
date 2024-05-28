@@ -50,6 +50,7 @@
         "movement",
         "napi",
         "input",
+        "os_account",
         "request",
         "samgr",
         "safwk",

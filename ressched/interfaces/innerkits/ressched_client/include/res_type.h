@@ -222,6 +222,8 @@ enum : uint32_t {
     RES_TYPE_BOOT_COMPLETED = 94,
     // report continuous application startup
     RES_TYPE_CONTINUOUS_STARTUP = 95,
+    //report account activating
+    RES_TYPE_ACCOUNT_ACTIVATING = 96,
     //last resType
     RES_TYPE_LAST,
 };

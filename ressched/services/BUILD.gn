@@ -55,6 +55,7 @@ ohos_shared_library("resschedsvc") {
 
   sources = [
     "../sched_controller/common_event/src/event_controller.cpp",
+    "../sched_controller/observer/src/account_observer.cpp",
     "../sched_controller/observer/src/audio_observer.cpp",
     "../sched_controller/observer/src/connection_subscriber.cpp",
     "../sched_controller/observer/src/download_upload_observer.cpp",
@@ -103,6 +104,7 @@ ohos_shared_library("resschedsvc") {
     "input:libmmi-client",
     "ipc:ipc_single",
     "libxml2:libxml2",
+    "os_account:os_account_innerkits",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libdm",
@@ -181,6 +183,7 @@ ohos_static_library("resschedsvc_static") {
 
   sources = [
     "../sched_controller/common_event/src/event_controller.cpp",
+    "../sched_controller/observer/src/account_observer.cpp",
     "../sched_controller/observer/src/audio_observer.cpp",
     "../sched_controller/observer/src/connection_subscriber.cpp",
     "../sched_controller/observer/src/download_upload_observer.cpp",
@@ -229,6 +232,7 @@ ohos_static_library("resschedsvc_static") {
     "input:libmmi-client",
     "ipc:ipc_single",
     "libxml2:libxml2",
+    "os_account:os_account_innerkits",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libdm",
