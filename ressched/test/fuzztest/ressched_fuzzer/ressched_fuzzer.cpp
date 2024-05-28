@@ -252,6 +252,7 @@ namespace {
         NotifierMgr::GetInstance().OnApplicationStateChange(state, level);
         NotifierMgr::GetInstance().GetSystemloadLevel();
         NotifierMgr::GetInstance().DumpRegisterInfo();
+        NotifierMgr::GetInstance().Deinit();
         return true;
     }
 } // namespace ResourceSchedule

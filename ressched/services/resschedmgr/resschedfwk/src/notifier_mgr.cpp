@@ -82,6 +82,11 @@ void NotifierMgr::Init()
     initialized_ = true;
 }
 
+void NotifierMgr::Deinit()
+{
+    notifierHandler_.reset();
+}
+
 void NotifierMgr::RegisterNotifier(int32_t pid, const sptr<IRemoteObject>& notifier)
 {
     RESSCHED_LOGD("RegisterNotifier called, pid = %{public}d.", pid);
