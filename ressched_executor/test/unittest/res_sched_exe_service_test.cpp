@@ -114,7 +114,7 @@ HWTEST_F(ResSchedExeServiceTest, ServiceDump001, Function | MediumTest | Level0)
     int32_t wrongFd = -1;
     std::vector<std::u16string> argsNull;
     int res = resSchedExeService_->Dump(wrongFd, argsNull);
-    EXPECT_TRUE(!res);
+    EXPECT_NE(res, ResErrCode::RSSEXE_NO_ERR);
 
     int32_t correctFd = 0;
     res = resSchedExeService_->Dump(correctFd, argsNull);
