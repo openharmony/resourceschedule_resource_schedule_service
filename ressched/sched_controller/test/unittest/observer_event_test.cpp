@@ -634,15 +634,15 @@ HWTEST_F(ObserverEventTest, downLoadUploadObserver_001, testing::ext::TestSize.L
  */
 HWTEST_F(ObserverEventTest, accountObserver_001, testing::ext::TestSize.Level1)
 {
-    AccountSA::OsAccountSubscriberInfo osAccountSubscriberInfo;
-    osAccountSubscriberInfo.SetOsAccountSubscribeType(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVATING);
-    osAccountSubscriberInfo.SetName("ResschdeAccountActivatingSubscriberTest");
-    auto accountObserver = std::make_shared<AccountObserver>(osAccountSubscriberInfo);
-    accountObserver->OnAccountChanged(200);
+    AccountSA::OsAccountSubscribeInfo osAccountSubscribeInfo;
+    osAccountSubscribeInfo.SetOsAccountSubscribeType(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVATING);
+    osAccountSubscribeInfo.SetName("ResschdeAccountActivatingSubscriberTest");
+    auto accountObserver = std::make_shared<AccountObserver>(osAccountSubscribeInfo);
+    accountObserver->OnAccountsChanged(200);
     SUCCEED();
-    accountObserver->OnAccountChanged(201);
+    accountObserver->OnAccountsChanged(201);
     SUCCEED();
-    accountObserver->OnAccountChanged(-1);
+    accountObserver->OnAccountsChanged(-1);
     SUCCEED();
     accountObserver = nullptr;
 }

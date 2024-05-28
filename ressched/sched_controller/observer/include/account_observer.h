@@ -17,13 +17,13 @@
 #define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_SCHED_ACCOUNT_OBSERVER_H
 
 #include "os_account_subscriber.h"
-#include "os_account_subscriber_info.h"
+#include "os_account_subscribe_info.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 class AccountObserver : public AccountSA::OsAccountSubscriber {
 public:
-    AccountObserver(const AccountSA::OsAccountSubscriberInfo &subscriberInfo);
+    AccountObserver(const AccountSA::OsAccountSubscribeInfo &subscriberInfo);
     ~AccountObserver();
     virtual void OnAccountsChanged(const int &id) override;
 };

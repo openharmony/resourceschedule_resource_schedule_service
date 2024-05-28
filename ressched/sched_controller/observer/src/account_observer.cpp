@@ -21,7 +21,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-AccountObserver::AccountObserver(const AccountSA::OsAccountSubscriberInfo &subscriberInfo)
+AccountObserver::AccountObserver(const AccountSA::OsAccountSubscribeInfo &subscriberInfo)
     : AccountSA::OsAccountSubscriber(subscriberInfo)
 {}
 

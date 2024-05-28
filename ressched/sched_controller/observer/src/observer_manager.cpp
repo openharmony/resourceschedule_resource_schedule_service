@@ -113,7 +113,6 @@ void ObserverManager::InitObserverCbMap()
 #endif
         { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN,
             std::bind(&ObserverManager::DisableAccountObserver, std::placeholders::_1) },
-        }
     };
 }
 
@@ -652,10 +651,10 @@ void ObserverManager::InitAccountObserver()
 {
     RESSCHED_LOGI("InitAccountObserver");
     if (!accountObserver_) {
-        AccountSA::OsAccountSubscriberInfo osAccountSubscriberInfo;
-        osAccountSubscriberInfo.SetOsAccountSubscribeType(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVATING);
-        osAccountSubscriberInfo.SetName("ResschdeAccountActivatingSubscriber");
-        accountObserver_ = std::make_shared<AccountObserver>(osAccountSubscriberInfo);
+        AccountSA::OsAccountSubscribeInfo osAccountSubscribeInfo;
+        osAccountSubscribeInfo.SetOsAccountSubscribeType(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVATING);
+        osAccountSubscribeInfo.SetName("ResschdeAccountActivatingSubscriber");
+        accountObserver_ = std::make_shared<AccountObserver>(osAccountSubscribeInfo);
     }
     if (!accountObserver_) {
         RESSCHED_LOGE("account observer make failed");
