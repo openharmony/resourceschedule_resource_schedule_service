@@ -39,6 +39,7 @@ public:
     };
     using NotifierMap = std::map<int32_t, NotifierInfo>;
     void Init();
+    void Deinit();
     void RegisterNotifier(int32_t pid, const sptr<IRemoteObject>& notifier);
     void UnRegisterNotifier(int32_t pid);
     void OnRemoteNotifierDied(const sptr<IRemoteObject>& notifier);
