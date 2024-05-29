@@ -102,7 +102,7 @@ void ResSchedExeServiceTest::TearDown()
  */
 HWTEST_F(ResSchedExeServiceTest, ServiceDump001, Function | MediumTest | Level0)
 {
-    PluginMgr::GetInstance().Init(false);
+    PluginMgr::GetInstance().Init(true);
     std::string result;
     resSchedExeService_->DumpAllInfo(result);
     EXPECT_TRUE(!result.empty());
@@ -114,7 +114,7 @@ HWTEST_F(ResSchedExeServiceTest, ServiceDump001, Function | MediumTest | Level0)
     int32_t wrongFd = -1;
     std::vector<std::u16string> argsNull;
     int res = resSchedExeService_->Dump(wrongFd, argsNull);
-    EXPECT_TRUE(!res);
+    EXPECT_NE(res, ResErrCode::RSSEXE_NO_ERR);
 
     int32_t correctFd = 0;
     res = resSchedExeService_->Dump(correctFd, argsNull);
@@ -423,7 +423,6 @@ HWTEST_F(ResSchedExeServiceTest, ParseParcel001, Function | MediumTest | Level0)
     EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
 
     MessageParcel reportData;
-    reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
@@ -442,7 +441,6 @@ static void ParseParcelTask()
         EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
 
         MessageParcel reportData;
-        reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
         reportData.WriteUint32(1);
         reportData.WriteInt64(1);
         reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
