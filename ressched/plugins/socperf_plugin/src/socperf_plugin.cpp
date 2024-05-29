@@ -58,9 +58,9 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_WEB_SLIDE_NORMAL      = 10025;
     const int32_t PERF_REQUEST_CMD_ID_REMOTE_ANIMATION      = 10030;
     const int32_t PERF_REQUEST_CMD_ID_DRAG_STATUS_BAR       = 10034;
-    const int32_t PERF_REQUEST_CMD_ID_GAME_START            = 10035;
-    const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH_UP        = 10036;
-    const int32_t PERF_REQUEST_CMD_ID_REMOTE_UNLOCK         = 10037;
+    const int32_t PERF_REQUEST_CMD_ID_GAME_START            = 10038;
+    const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH_UP        = 10040;
+    const int32_t PERF_REQUEST_CMD_ID_REMOTE_UNLOCK         = 10041;
     const int32_t PERF_REQUEST_CMD_ID_LOAD_URL              = 10070;
     const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
     const int32_t PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE       = 10073;
@@ -294,7 +294,7 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
     if (data->value == ClickEventType::TOUCH_EVENT_DOWN) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
     } else if (data->value == ClickEventType::TOUCH_EVENT_UP) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_UP, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
     } else if (data->value == ClickEventType::CLICK_EVENT) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
     }
