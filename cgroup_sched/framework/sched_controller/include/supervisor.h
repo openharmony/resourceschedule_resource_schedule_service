@@ -149,7 +149,8 @@ public:
     std::shared_ptr<ProcessRecord> FindProcessRecordByToken(uintptr_t token);
     std::shared_ptr<ProcessRecord> FindProcessRecordByWindowId(uint32_t windowId);
     void SetName(const std::string& name);
-    void SetMainProcess(std::shared_ptr<ProcessRecord> pr);
+    void AddHostProcess(int32_t hostPid);
+    bool IsHostProcess(int32_t hostPid) const;
 
     inline uid_t GetUid() const
     {
@@ -159,11 +160,6 @@ public:
     inline std::map<pid_t, std::shared_ptr<ProcessRecord>> GetPidsMap() const
     {
         return pidsMap_;
-    }
-
-    std::shared_ptr<ProcessRecord> GetMainProcessRecord() const
-    {
-        return mainProcess_;
     }
 
     const std::string& GetName() const
@@ -182,6 +178,7 @@ private:
     std::string name_;
     std::shared_ptr<ProcessRecord> mainProcess_ = nullptr;
     std::map<pid_t, std::shared_ptr<ProcessRecord>> pidsMap_;
+    std::set<int32_t> hostPidsSet_;
 };
 
 class Supervisor {
