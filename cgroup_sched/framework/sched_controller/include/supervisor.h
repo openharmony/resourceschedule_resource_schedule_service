@@ -177,7 +177,6 @@ public:
 private:
     uid_t uid_;
     std::string name_;
-    std::shared_ptr<ProcessRecord> mainProcess_ = nullptr;
     std::map<pid_t, std::shared_ptr<ProcessRecord>> pidsMap_;
     std::set<int32_t> hostPidsSet_;
 };
