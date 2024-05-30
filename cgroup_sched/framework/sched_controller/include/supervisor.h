@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <unordered_set>
 
 #include "sched_policy.h"
 
@@ -177,7 +178,7 @@ private:
     uid_t uid_;
     std::string name_;
     std::map<pid_t, std::shared_ptr<ProcessRecord>> pidsMap_;
-    std::set<int32_t> hostPidsSet_;
+    std::unordered_set<int32_t> hostPidsSet_;
 };
 
 class Supervisor {
