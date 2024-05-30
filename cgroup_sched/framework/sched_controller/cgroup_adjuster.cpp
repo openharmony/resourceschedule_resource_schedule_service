@@ -61,23 +61,21 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
     ResSchedUtils::GetInstance().ReportArbitrationResult(app, pr, source);
     ApplyProcessGroup(app, pr);
 
-    auto mainProcRecord = app.GetMainProcessRecord();
-    if (!mainProcRecord) {
-        CGS_LOGI("%{public}s mainProcRecord is null %{public}s %{public}d", __func__,
-            app.GetName().c_str(), app.GetUid());
-        return;
-    }
-    if (mainProcRecord->GetPid() != pr.GetPid()) {
+    if (!app.IsHostProcess(pr.GetPid())) {
         return;
     }
 
-    /* Let the sched group of render process follow the sched group of main process */
+    /* Let the sched group of render process follow the sched group of host process */
     for (const auto &iter : app.GetPidsMap()) {
         const auto &procRecord = iter.second;
         if (procRecord && (procRecord->isRenderProcess_ || procRecord->isGPUProcess_)) {
+            auto hostProcRecord = app.GetProcessRecord(procRecord->hostPid_);
+            if (!hostProcRecord || (procRecord->hostPid_ != pr.GetPid())) {
+                continue;
+            }
             CGS_LOGI("%{public}s for %{public}d, source : %{public}d for render process",
                 __func__, procRecord->GetPid(), source);
-            procRecord->setSchedGroup_ = mainProcRecord->curSchedGroup_;
+            procRecord->setSchedGroup_ = hostProcRecord->curSchedGroup_;
             ResSchedUtils::GetInstance().ReportArbitrationResult(app, *(procRecord.get()),
                 AdjustSource::ADJS_SELF_RENDER_THREAD);
             ApplyProcessGroup(app, *procRecord);
@@ -112,8 +110,8 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
     {
         ChronoScope cs("ComputeProcessGroup");
         if (pr.isRenderProcess_) {
-            auto mainProcRecord = app.GetMainProcessRecord();
-            group = mainProcRecord ? mainProcRecord->curSchedGroup_ : SP_DEFAULT;
+            auto hostProcRecord = app.GetProcessRecord(pr.hostPid_);
+            group = hostProcRecord ? hostProcRecord->curSchedGroup_ : SP_DEFAULT;
         } else if (source == AdjustSource::ADJS_PROCESS_CREATE) {
             group = SP_DEFAULT;
         } else if (app.focusedProcess_) {

@@ -171,7 +171,6 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
     app->SetName(bundleName);
     app->state_ = state;
-    app->SetMainProcess(procRecord);
 }
 
 void CgroupEventHandler::HandleProcessStateChanged(uid_t uid, pid_t pid,
@@ -257,27 +256,30 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, const
         AdjustSource::ADJS_EXTENSION_STATE);
 }
 
-void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t processType,
+void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t hostPid, int32_t processType,
     const std::string& bundleName, int32_t extensionType)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, bundleName.c_str());
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}s", __func__, uid, pid, hostPid,
+        bundleName.c_str());
     ChronoScope cs("HandleProcessCreated");
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
     app->SetName(bundleName);
-    if (processType == static_cast<int32_t>(ProcessType::NORMAL)) {
-        app->SetMainProcess(procRecord);
-    } else if (processType == static_cast<int32_t>(ProcessType::RENDER)) {
+    if (processType == static_cast<int32_t>(ProcessType::RENDER)) {
         procRecord->isRenderProcess_ = true;
+        procRecord->hostPid_ = hostPid;
+        app->AddHostProcess(hostPid);
     } else if (processType == static_cast<int32_t>(ProcessType::EXTENSION)) {
         procRecord->isExtensionProcess_ = true;
         procRecord->extensionType_ = extensionType;
     } else if (processType == static_cast<int32_t>(ProcessType::GPU)) {
         procRecord->isGPUProcess_ = true;
+        procRecord->hostPid_ = hostPid;
+        app->AddHostProcess(hostPid);
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_CREATE);
@@ -618,11 +620,11 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
     }
 
     // if role of thread is important display, adjust it
-    auto mainProcRecord = app->GetMainProcessRecord();
-    if (!mainProcRecord) {
+    auto hostProcRecord = app->GetProcessRecord(procRecord->hostPid_);
+    if (!hostProcRecord) {
         return;
     }
-    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(hostProcRecord.get()),
         AdjustSource::ADJS_REPORT_IMPORTANT_DISPLAY_THREAD);
 }
 
@@ -660,16 +662,16 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
         procRecord->linkedWindowId_ = -1;
         procRecord->isActive_ = false;
     }
-    auto mainProcRecord = app->GetMainProcessRecord();
-    if (!mainProcRecord) {
+    auto hostProcRecord = app->GetProcessRecord(procRecord->hostPid_);
+    if (!hostProcRecord) {
         return;
     }
-    UpdateActivepWebRenderInfo(uid, pid, windowId, state, mainProcRecord);
-    if (CheckVisibilityForRenderProcess(*(procRecord.get()), *mainProcRecord)) {
+    UpdateActivepWebRenderInfo(uid, pid, windowId, state, hostProcRecord);
+    if (CheckVisibilityForRenderProcess(*(procRecord.get()), *hostProcRecord)) {
         CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d is not visible but active",
             __func__, app->GetName().c_str(), uid, pid);
     }
-    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(mainProcRecord.get()),
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(hostProcRecord.get()),
         AdjustSource::ADJS_REPORT_WINDOW_STATE_CHANGED);
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
         ResType::RES_TYPE_REPORT_WINDOW_STATE, state);

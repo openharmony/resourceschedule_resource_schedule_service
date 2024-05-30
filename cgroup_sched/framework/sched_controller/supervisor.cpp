@@ -118,8 +118,8 @@ void Application::RemoveProcessRecord(pid_t pid)
         if (focusedProcess_ == iter->second) {
             focusedProcess_ = nullptr;
         }
-        if (mainProcess_ == iter->second) {
-            mainProcess_ = nullptr;
+        if (IsHostProcess(pid)) {
+            hostPidsSet_.erase(pid);
         }
         pidsMap_.erase(iter);
     }
@@ -163,13 +163,6 @@ void Application::SetName(const std::string& name)
     }
 }
 
-void Application::SetMainProcess(std::shared_ptr<ProcessRecord> pr)
-{
-    if (!mainProcess_) {
-        mainProcess_ = pr;
-    }
-}
-
 std::shared_ptr<ProcessRecord> Application::FindProcessRecordByWindowId(uint32_t windowId)
 {
     for (auto iter = pidsMap_.begin(); iter != pidsMap_.end(); iter++) {
@@ -182,6 +175,20 @@ std::shared_ptr<ProcessRecord> Application::FindProcessRecordByWindowId(uint32_t
         }
     }
     return nullptr;
+}
+
+void Application::AddHostProcess(int32_t hostPid)
+{
+    hostPidsSet_.insert(hostPid);
+}
+
+bool Application::IsHostProcess(int32_t hostPid) const
+{
+    if (hostPidsSet_.find(hostPid) != hostPidsSet_.end()) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 std::shared_ptr<Application> Supervisor::GetAppRecord(int32_t uid)

@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 #include <set>
-#include <map>
+#include <unordered_set>
 
 #include "sched_policy.h"
 
@@ -122,6 +122,7 @@ public:
     int32_t bluetoothState_ = -1;
     int32_t wifiState_ = -1;
     int32_t mmiStatus_ {-1};
+    int32_t hostPid_ = -1;
 
     std::map<uint32_t, bool> runningLockState_;
     std::map<int32_t, bool> avCodecState_;
@@ -149,7 +150,8 @@ public:
     std::shared_ptr<ProcessRecord> FindProcessRecordByToken(uintptr_t token);
     std::shared_ptr<ProcessRecord> FindProcessRecordByWindowId(uint32_t windowId);
     void SetName(const std::string& name);
-    void SetMainProcess(std::shared_ptr<ProcessRecord> pr);
+    void AddHostProcess(int32_t hostPid);
+    bool IsHostProcess(int32_t hostPid) const;
 
     inline uid_t GetUid() const
     {
@@ -159,11 +161,6 @@ public:
     inline std::map<pid_t, std::shared_ptr<ProcessRecord>> GetPidsMap() const
     {
         return pidsMap_;
-    }
-
-    std::shared_ptr<ProcessRecord> GetMainProcessRecord() const
-    {
-        return mainProcess_;
     }
 
     const std::string& GetName() const
@@ -180,8 +177,8 @@ public:
 private:
     uid_t uid_;
     std::string name_;
-    std::shared_ptr<ProcessRecord> mainProcess_ = nullptr;
     std::map<pid_t, std::shared_ptr<ProcessRecord>> pidsMap_;
+    std::unordered_set<int32_t> hostPidsSet_;
 };
 
 class Supervisor {
