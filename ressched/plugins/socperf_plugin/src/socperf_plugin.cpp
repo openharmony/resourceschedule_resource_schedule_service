@@ -508,7 +508,7 @@ bool SocPerfPlugin::HandleSocperfAccountActivating(const std::shared_ptr<ResData
         return false;
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->AccountActivating: %{public}lld", (long long)data->value);
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_ACCOUNT_ACTIVATING, true, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_ACCOUNT_ACTIVATING, true, "");
     return true;
 }
 
@@ -518,7 +518,7 @@ bool SocPerfPlugin::HandleCustEvent(const std::shared_ptr<ResData> &data)
         return false;
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->Anco: %{public}lld", (long long)data->value);
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(data->value, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(data->value, "");
     return true;
 }
 
