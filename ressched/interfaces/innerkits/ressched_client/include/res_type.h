@@ -224,6 +224,8 @@ enum : uint32_t {
     RES_TYPE_CONTINUOUS_STARTUP = 95,
     // report account activating
     RES_TYPE_ACCOUNT_ACTIVATING = 96,
+    // report silent playback in renderer
+    RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK = 97,
     // last resType
     RES_TYPE_LAST,
 };
