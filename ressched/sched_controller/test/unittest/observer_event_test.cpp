@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 
 #define private public
+#include "account_observer.h"
 #include "hisysevent_observer.h"
 #include "mmi_observer.h"
 #include "fold_display_mode_observer.h"
@@ -624,24 +625,26 @@ HWTEST_F(ObserverEventTest, downLoadUploadObserver_001, testing::ext::TestSize.L
     SUCCEED();
     downLoadUploadObserver_ = nullptr;
 }
-
-/**
- * @tc.name: observerManager_001
- * @tc.desc: test observer Manager
- * @tc.type: FUNC
- * @tc.require: issuesI9BU37
- */
-HWTEST_F(ObserverEventTest, observerManager_001, testing::ext::TestSize.Level1)
-{
-    auto instance = ObserverManager::GetInstance();
-    if (instance) {
-        auto downLoadUploadObserver_ = std::make_shared<DownLoadUploadObserver>();
-        instance->downLoadUploadObserver_ = downLoadUploadObserver_;
-        instance->InitDownloadUploadObserver();
-        instance->DisableDownloadUploadObserver();
-    }
-    SUCCEED();
-}
 #endif
+/**
+ * @tc.name: accountObserver_001
+ * @tc.desc: test account observer
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, accountObserver_001, testing::ext::TestSize.Level1)
+{
+    AccountSA::OsAccountSubscribeInfo osAccountSubscribeInfo;
+    osAccountSubscribeInfo.SetOsAccountSubscribeType(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVATING);
+    osAccountSubscribeInfo.SetName("ResschdeAccountActivatingSubscriberTest");
+    auto accountObserver = std::make_shared<AccountObserver>(osAccountSubscribeInfo);
+    accountObserver->OnAccountsChanged(200);
+    SUCCEED();
+    accountObserver->OnAccountsChanged(201);
+    SUCCEED();
+    accountObserver->OnAccountsChanged(-1);
+    SUCCEED();
+    accountObserver = nullptr;
+}
 }
 }
