@@ -19,6 +19,7 @@
 #include <cstdint>
 #include <dlfcn.h>
 #include <iostream>
+#include <sched.h>
 #include <string>
 #include "config_policy_utils.h"
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
@@ -39,6 +40,7 @@ using namespace AppExecFwk;
 using namespace HiviewDFX;
 
 namespace {
+    const int32_t PLUGIN_MGR_PRIO = 1;
     const int32_t DISPATCH_WARNING_TIME = 10; // ms
     const std::string RUNNER_NAME = "rssDispatcher";
     const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
@@ -54,6 +56,7 @@ PluginMgr::~PluginMgr()
 
 void PluginMgr::Init()
 {
+    SetPriority();
     if (pluginSwitch_) {
         RESSCHED_LOGW("%{public}s, PluginMgr has Initialized!", __func__);
         return;
@@ -103,6 +106,17 @@ void PluginMgr::Init()
     }
     LoadPlugin();
     RESSCHED_LOGI("PluginMgr::Init success!");
+}
+
+void PluginMgr::SetPriority()
+{
+    struct sched_param param = {0};
+    param.sched_priority = PLUGIN_MGR_PRIO;
+    if (sched_setscheduler(0, SCHED_FIFO, &param) != 0) {
+        RESSCHED_LOGE("PluginMgr set SCHED_FIFO failed, errno=%{public}d %{public}s", errno, strerror(errno));
+    } else {
+        RESSCHED_LOGI("PluginMgr set SCHED_FIFO success");
+    }
 }
 
 void PluginMgr::LoadPlugin()
