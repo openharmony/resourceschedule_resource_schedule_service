@@ -69,12 +69,12 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
     for (const auto &iter : app.GetPidsMap()) {
         const auto &procRecord = iter.second;
         if (procRecord && (procRecord->isRenderProcess_ || procRecord->isGPUProcess_)) {
-            CGS_LOGI("%{public}s for %{public}d, source : %{public}d for render process",
-                __func__, procRecord->GetPid(), source);
             auto hostProcRecord = app.GetProcessRecord(procRecord->hostPid_);
             if (!hostProcRecord || (procRecord->hostPid_ != pr.GetPid())) {
                 continue;
             }
+            CGS_LOGI("%{public}s for %{public}d, source : %{public}d for render process",
+                __func__, procRecord->GetPid(), source);
             procRecord->setSchedGroup_ = hostProcRecord->curSchedGroup_;
             ResSchedUtils::GetInstance().ReportArbitrationResult(app, *(procRecord.get()),
                 AdjustSource::ADJS_SELF_RENDER_THREAD);
