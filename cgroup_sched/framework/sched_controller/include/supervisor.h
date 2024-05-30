@@ -22,7 +22,6 @@
 #include <string>
 #include <vector>
 #include <set>
-#include <map>
 
 #include "sched_policy.h"
 
