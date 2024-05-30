@@ -61,6 +61,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_GAME_START            = 10038;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH_UP        = 10040;
     const int32_t PERF_REQUEST_CMD_ID_REMOTE_UNLOCK         = 10041;
+    const int32_t PERF_REQUEST_CMD_ID_ACCOUNT_ACTIVATING    = 10043;
     const int32_t PERF_REQUEST_CMD_ID_LOAD_URL              = 10070;
     const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
     const int32_t PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE       = 10073;
@@ -170,6 +171,8 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleWebDragResize(data); } },
         { RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); } },
+        { RES_TYPE_ACCOUNT_ACTIVATING,
+            [this](const std::shared_ptr<ResData>& data) { HandleSocperfAccountActivating(data); } },
         { RES_TYPE_ANCO_CUST,
             [this](const std::shared_ptr<ResData>& data) { HandleCustEvent(data); } },
         { RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
@@ -201,6 +204,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_DEVICE_MODE_STATUS,
         RES_TYPE_WEB_DRAG_RESIZE,
         RES_TYPE_SCENE_BOARD_ID,
+        RES_TYPE_ACCOUNT_ACTIVATING,
         RES_TYPE_ANCO_CUST,
         RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
         RES_TYPE_SOCPERF_CUST_EVENT_END,
@@ -498,13 +502,23 @@ bool SocPerfPlugin::HandleSocperfSceneBoard(const std::shared_ptr<ResData> &data
     return true;
 }
 
+bool SocPerfPlugin::HandleSocperfAccountActivating(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->AccountActivating: %{public}lld", (long long)data->value);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_ACCOUNT_ACTIVATING, true, "");
+    return true;
+}
+
 bool SocPerfPlugin::HandleCustEvent(const std::shared_ptr<ResData> &data)
 {
     if (data == nullptr || data->value <= 0) {
         return false;
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->Anco: %{public}lld", (long long)data->value);
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(data->value, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(data->value, "");
     return true;
 }
 
