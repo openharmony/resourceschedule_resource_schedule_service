@@ -74,11 +74,32 @@ void FrameAwarePlugin::Init()
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
     RME::FrameMsgIntf::GetInstance().Init();
+    if (!GetThreadQueue()) {
+        return;
+    }
     RME_LOGI("FrameAwarePlugin::Init ueaServer success");
+}
+
+bool FrameAwarePlugin::GetThreadQueue()
+{
+    if (taskQueue_ == nullptr) {
+        taskQueue_ = new(ffrt::queue)("frame_aware_plugin_queue",
+            ffrt::queue_attr().qos(ffrt::qos_user_interactive));
+        if (taskQueue_  == nullptr) {
+            RME_LOGE("FrameAwarePlugin::GetThreadQueue failed.");
+            return false;
+        }
+    }
+    RME_LOGI("FrameAwarePlugin::GetThreadQueue success.");
+    return true;
 }
 
 void FrameAwarePlugin::Disable()
 {
+    if (taskQueue_ != nullptr) {
+        delete taskQueue_;
+        taskQueue_ = nullptr;
+    }
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
@@ -90,118 +111,130 @@ void FrameAwarePlugin::Disable()
 
 void FrameAwarePlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
 {
-    if (!data->payload.is_object()) {
-        return;
-    }
+    taskQueue_->submit([data] {
+        if (!data->payload.is_object()) {
+            return;
+        }
 
-    if (!data->payload.contains("pid") || !data->payload.contains("uid") || !data->payload.contains("bundleName") ||
-        !data->payload["pid"].is_string() || !data->payload["uid"].is_string() ||
-        !data->payload["bundleName"].is_string()) {
-        RME_LOGI("FrameAwarePlugin::HandleAppStateChange payload is not contains pid or uid or bundleName");
-        return;
-    }
+        if (!data->payload.contains("pid") || !data->payload.contains("uid") || !data->payload.contains("bundleName") ||
+            !data->payload["pid"].is_string() || !data->payload["uid"].is_string() ||
+            !data->payload["bundleName"].is_string()) {
+            RME_LOGI("FrameAwarePlugin::HandleAppStateChange payload is not contains pid or uid or bundleName");
+            return;
+        }
 
-    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
-    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
-    std::string bundleName = data->payload["bundleName"].get<std::string>().c_str();
-    RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
-    RME::FrameMsgIntf::GetInstance().ReportAppInfo(pid, uid, bundleName, state);
+        int uid = atoi(data->payload["uid"].get<std::string>().c_str());
+        int pid = atoi(data->payload["pid"].get<std::string>().c_str());
+        std::string bundleName = data->payload["bundleName"].get<std::string>().c_str();
+        RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
+        RME::FrameMsgIntf::GetInstance().ReportAppInfo(pid, uid, bundleName, state);
+    });
 }
 
 void FrameAwarePlugin::HandleProcessStateChange(const std::shared_ptr<ResData>& data)
 {
-    if (!data->payload.is_object()) {
-        return;
-    }
+    taskQueue_->submit([data] {
+        if (!data->payload.is_object()) {
+            return;
+        }
 
-    if (!data->payload.contains("pid") || !data->payload.contains("uid") || !data->payload.contains("bundleName") ||
-        !data->payload["pid"].is_string() || !data->payload["uid"].is_string() ||
-        !data->payload["bundleName"].is_string()) {
-        RME_LOGI("FrameAwarePlugin::HandleProcessStateChange payload is not contains pid or uid or bundleName");
-        return;
-    }
+        if (!data->payload.contains("pid") || !data->payload.contains("uid") || !data->payload.contains("bundleName") ||
+            !data->payload["pid"].is_string() || !data->payload["uid"].is_string() ||
+            !data->payload["bundleName"].is_string()) {
+            RME_LOGI("FrameAwarePlugin::HandleProcessStateChange payload is not contains pid or uid or bundleName");
+            return;
+        }
 
-    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
-    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
-    std::string bundleName = data->payload["bundleName"].get<std::string>().c_str();
-    RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
-    RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, uid, bundleName, state);
+        int pid = atoi(data->payload["pid"].get<std::string>().c_str());
+        int uid = atoi(data->payload["uid"].get<std::string>().c_str());
+        std::string bundleName = data->payload["bundleName"].get<std::string>().c_str();
+        RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
+        RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, uid, bundleName, state);
+    });
 }
 
 void FrameAwarePlugin::HandleContinuousTask(const std::shared_ptr<ResData>& data)
 {
-    if (!data->payload.is_object()) {
-        return;
-    }
-    if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
-        !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
-        RME_LOGI("FrameAwarePlugin::HandleContinuousTask payload is not contains pid or uid");
-        return;
-    }
+    taskQueue_->submit([data] {
+        if (!data->payload.is_object()) {
+            return;
+        }
+        if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
+            !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
+            RME_LOGI("FrameAwarePlugin::HandleContinuousTask payload is not contains pid or uid");
+            return;
+        }
 
-    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
-    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
-    RME::FrameMsgIntf::GetInstance().ReportContinuousTask(pid, uid, data->value);
+        int pid = atoi(data->payload["pid"].get<std::string>().c_str());
+        int uid = atoi(data->payload["uid"].get<std::string>().c_str());
+        RME::FrameMsgIntf::GetInstance().ReportContinuousTask(pid, uid, data->value);
+    });
 }
 
 void FrameAwarePlugin::HandleCgroupAdjuster(const std::shared_ptr<ResData>& data)
 {
-    if (!data->payload.is_object()) {
-        return;
-    }
+    taskQueue_->submit([data] {
+        if (!data->payload.is_object()) {
+            return;
+        }
 
-    if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
-        !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
-        RME_LOGI("FrameAwarePlugin::HandleCgroupAdjuster payload is not contains pid or uid");
-        return;
-    }
+        if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
+            !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
+            RME_LOGI("FrameAwarePlugin::HandleCgroupAdjuster payload is not contains pid or uid");
+            return;
+        }
 
-    if (!data->payload.contains("oldGroup") || !data->payload.contains("newGroup") ||
-        !data->payload["oldGroup"].is_string() || !data->payload["newGroup"].is_string()) {
-        RME_LOGI("FrameAwarePlugin::HandleCgroupAdjuster payload is not contains oldGroup or newGroup");
-        return;
-    }
-    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
-    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
-    int oldGroup = atoi(data->payload["oldGroup"].get<std::string>().c_str());
-    int newGroup = atoi(data->payload["newGroup"].get<std::string>().c_str());
-    if (!data->value) {
-        RME::FrameMsgIntf::GetInstance().ReportCgroupChange(pid, uid, oldGroup, newGroup);
-    }
+        if (!data->payload.contains("oldGroup") || !data->payload.contains("newGroup") ||
+            !data->payload["oldGroup"].is_string() || !data->payload["newGroup"].is_string()) {
+            RME_LOGI("FrameAwarePlugin::HandleCgroupAdjuster payload is not contains oldGroup or newGroup");
+            return;
+        }
+        int pid = atoi(data->payload["pid"].get<std::string>().c_str());
+        int uid = atoi(data->payload["uid"].get<std::string>().c_str());
+        int oldGroup = atoi(data->payload["oldGroup"].get<std::string>().c_str());
+        int newGroup = atoi(data->payload["newGroup"].get<std::string>().c_str());
+        if (!data->value) {
+            RME::FrameMsgIntf::GetInstance().ReportCgroupChange(pid, uid, oldGroup, newGroup);
+        }
+    });
 }
 
 void FrameAwarePlugin::HandleWindowsFocus(const std::shared_ptr<ResData>& data)
 {
-    if (!data->payload.is_object()) {
-        return;
-    }
+    taskQueue_->submit([data] {
+        if (!data->payload.is_object()) {
+            return;
+        }
 
-    if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
-        !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
-        RME_LOGI("FrameAwarePlugin::HandleWindowsFocus payload is not contains pid or uid");
-        return;
-    }
+        if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
+            !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
+            RME_LOGI("FrameAwarePlugin::HandleWindowsFocus payload is not contains pid or uid");
+            return;
+        }
 
-    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
-    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
-    RME::FrameMsgIntf::GetInstance().ReportWindowFocus(pid, uid, data->value);
+        int pid = atoi(data->payload["pid"].get<std::string>().c_str());
+        int uid = atoi(data->payload["uid"].get<std::string>().c_str());
+        RME::FrameMsgIntf::GetInstance().ReportWindowFocus(pid, uid, data->value);
+    });
 }
 
 void FrameAwarePlugin::HandleReportRender(const std::shared_ptr<ResData>& data)
 {
-    if (!data->payload.is_object()) {
-        return;
-    }
+    taskQueue_->submit([data] {
+        if (!data->payload.is_object()) {
+            return;
+        }
 
-    if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
-        !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
-        RME_LOGI("FrameAwarePlugin::HandleReportRender payload is not contains pid or uid");
-        return;
-    }
+        if (!data->payload.contains("pid") || !data->payload.contains("uid") ||
+            !data->payload["pid"].is_string() || !data->payload["uid"].is_string()) {
+            RME_LOGI("FrameAwarePlugin::HandleReportRender payload is not contains pid or uid");
+            return;
+        }
 
-    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
-    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
-    RME::FrameMsgIntf::GetInstance().ReportRenderThread(pid, uid, data->value);
+        int pid = atoi(data->payload["pid"].get<std::string>().c_str());
+        int uid = atoi(data->payload["uid"].get<std::string>().c_str());
+        RME::FrameMsgIntf::GetInstance().ReportRenderThread(pid, uid, data->value);
+    });
 }
 
 void FrameAwarePlugin::HandleNetworkLatencyRequest(const std::shared_ptr<ResData>& data)
@@ -231,39 +264,45 @@ void FrameAwarePlugin::HandleNetworkLatencyRequest(const std::shared_ptr<ResData
 
 void FrameAwarePlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
-    if (!data->payload.is_object()) {
-        return;
-    }
+    taskQueue_->submit([data] {
+        if (!data->payload.is_object()) {
+            return;
+        }
 
-    if (!data->payload.contains("clientPid") || !data->payload.contains("callingUid") ||
-        !data->payload["clientPid"].is_string() || !data->payload["callingUid"].is_string()) {
-        RME_LOGI("FrameAwarePlugin::HandleEventSlide payload is not contains pid or uid");
-        return;
-    }
+        if (!data->payload.contains("clientPid") || !data->payload.contains("callingUid") ||
+            !data->payload["clientPid"].is_string() || !data->payload["callingUid"].is_string()) {
+            RME_LOGI("FrameAwarePlugin::HandleEventSlide payload is not contains pid or uid");
+            return;
+        }
 
-    int pid = atoi(data->payload["clientPid"].get<std::string>().c_str());
-    int uid = atoi(data->payload["callingUid"].get<std::string>().c_str());
-    RME::FrameMsgIntf::GetInstance().ReportSlideEvent(pid, uid, data->value);
+        int pid = atoi(data->payload["clientPid"].get<std::string>().c_str());
+        int uid = atoi(data->payload["callingUid"].get<std::string>().c_str());
+        RME::FrameMsgIntf::GetInstance().ReportSlideEvent(pid, uid, data->value);
+    });
 }
 
 void FrameAwarePlugin::HandleScreenLock(const std::shared_ptr<ResData>& data)
 {
-    if (!data->payload.is_object()) {
-        return;
-    }
-    if (!data->value) {
-        RME_LOGI("Screen Lock Report");
-    }
+    taskQueue_->submit([data] {
+        if (!data->payload.is_object()) {
+            return;
+        }
+        if (!data->value) {
+            RME_LOGI("Screen Lock Report");
+        }
+    });
 }
 
 void FrameAwarePlugin::HandleScreenStatus(const std::shared_ptr<ResData>& data)
 {
-    if (!data->payload.is_object()) {
-        return;
-    }
-    if (data->value) {
-        RME_LOGI("Screen Bright Report");
-    }
+    taskQueue_->submit([data] {
+        if (!data->payload.is_object()) {
+            return;
+        }
+        if (data->value) {
+            RME_LOGI("Screen Bright Report");
+        }
+    });
 }
 
 void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
