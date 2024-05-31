@@ -59,7 +59,7 @@ void CgroupAdjuster::InitAdjuster()
 
 void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
 {
-    std:string filePath = ResSchedUtils::GetInstance().GetProcessFilePath(app.GetUid(), app.GetName(), pr.GetPid());
+    std::string filePath = ResSchedUtils::GetInstance().GetProcessFilePath(app.GetUid(), app.GetName(), pr.GetPid());
     int fd = open(filePath.c_str(), O_RDONLY);
     if (fd < 0) {
         return;
@@ -76,7 +76,7 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
             forkProcRecord->setSchedGroup_ = pr.curSchedGroup_;
             pid_t pid = forkProcRecord->GetPid();
             int ret = CgroupSetting::SetThreadGroupSchedPolicy(forkPid, (int)forkProcRecord->setSchedGroup_);
-            int (ret != 0) {
+            if (ret != 0) {
                 CGS_LOGE("%{public}s set %{public}d, to group %{public}d failed, ret = %{public}d!",
                     __func__, forkPid, forkProcRecord->setSchedGroup_, ret);
                 return;
