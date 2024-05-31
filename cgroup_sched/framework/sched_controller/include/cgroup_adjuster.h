@@ -57,6 +57,7 @@ public:
     static CgroupAdjuster& GetInstance();
 
     void InitAdjuster();
+    void AdjustForkProcessGroup(Application &app, ProcessRecord &pr);
     void AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source);
     void AdjustAllProcessGroup(Application &app, AdjustSource source);
     void ApplyProcessGroup(Application &app, ProcessRecord &pr);

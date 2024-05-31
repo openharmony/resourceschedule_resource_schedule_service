@@ -16,6 +16,9 @@
 #include "cgroup_adjuster.h"
 
 #include <unistd.h>
+#include <fcntl.h>
+#include <cerrno>
+#include <string>
 #include "app_mgr_constants.h"
 #include "cgroup_event_handler.h"
 #include "cgroup_sched_common.h"
@@ -52,6 +55,56 @@ void CgroupAdjuster::InitAdjuster()
             this->AdjustSelfProcessGroup();
         });
     }
+}
+
+void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
+{
+    std:string filePath = ResSchedUtils::GetInstance().GetProcessFilePath(app.GetUid(), app.GetName(), pr.GetPid());
+    int fd = open(filePath.c_str(), O_RDONLY);
+    if (fd < 0) {
+        return;
+    }
+    char fileContent[1024] = {0};
+    std::string line;
+    int rd = read(fd, fileContent, sizeof(fileContent));
+    const char *flag = "\n";
+    line = strtok(fileContent, flag);
+    while (line != "") {
+        int32_t forkPid = std::stoi(line);
+        if (forkPid != pr.GetPid()) {
+            const auto &forkProcRecord = app.GetProcessRecordNonNull(forkPid);
+            forkProcRecord->setSchedGroup_ = pr.curSchedGroup_;
+            pid_t pid = forkProcRecord->GetPid();
+            int ret = CgroupSetting::SetThreadGroupSchedPolicy(forkPid, (int)forkProcRecord->setSchedGroup_);
+            int (ret != 0) {
+                CGS_LOGE("%{public}s set %{public}d, to group %{public}d failed, ret = %{public}d!",
+                    __func__, forkPid, forkProcRecord->setSchedGroup_, ret);
+                return;
+            }
+            forkProcRecord->lastSchedGroup_ = forkProcRecord->curSchedGroup_;
+            forkProcRecord->curSchedGroup_ = forkProcRecord->setSchedGroup_;
+            CGS_LOGI("%{public}s set %{public}d's cgroup from %{public}d to %{public}d.",
+                __func__, forkPid, forkProcRecord->lastSchedGroup_, forkProcRecord->curSchedGroup_);
+            std::string traceStr(__func__);
+            traceStr.append(" for ").append(std::to_string(forkPid)).append(", group change from")
+                .append(std::to_string((int32_t)(forkProcRecord->lastSchedGroup_))).append(" to ")
+                .append(std::to_string((int32_t)(forkProcRecord->curSchedGroup_)));
+            StartTrace(HITRACE_TAG_OHOS, traceStr);
+            nlohmann::json payload;
+            payload["pid"] = std::to_string(forkPid);
+            payload["uid"] = std::to_string(forkProcRecord->GetUid());
+            payload["name"] = app.GetName();
+            payload["oldGroup"] = std::to_string((int32_t)(forkProcRecord->lastSchedGroup_));
+            payload["newGroup"] = std::to_string((int32_t)(forkProcRecord->curSchedGroup_));
+            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CGROUP_ADJUSTER, 0, payload);
+            FinishTrace(HITRACE_TAG_OHOS);
+        } else {
+            break;
+        }
+        line = strtok(NULL, flag);
+    }
+    close(fd);
+    return;
 }
 
 void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
@@ -173,7 +226,7 @@ void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
         payload["oldGroup"] = std::to_string((int32_t)(pr.lastSchedGroup_));
         payload["newGroup"] = std::to_string((int32_t)(pr.curSchedGroup_));
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CGROUP_ADJUSTER, 0, payload);
-
+        AdjustForkProcessGroup(app, pr);
         FinishTrace(HITRACE_TAG_OHOS);
     }
 }
