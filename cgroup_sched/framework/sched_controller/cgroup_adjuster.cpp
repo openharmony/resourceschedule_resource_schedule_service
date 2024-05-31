@@ -62,6 +62,8 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
     std::string filePath = ResSchedUtils::GetInstance().GetProcessFilePath(app.GetUid(), app.GetName(), pr.GetPid());
     int fd = open(filePath.c_str(), O_RDONLY);
     if (fd < 0) {
+        CGS_LOGE("%{public}s File is not opened: %{public}s, error is %{public}s.",
+            __func__, filePath.c_str(), strerror(errno));
         return;
     }
     char fileContent[1024] = {0};
@@ -74,7 +76,6 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
         if (forkPid != pr.GetPid()) {
             const auto &forkProcRecord = app.GetProcessRecordNonNull(forkPid);
             forkProcRecord->setSchedGroup_ = pr.curSchedGroup_;
-            pid_t pid = forkProcRecord->GetPid();
             int ret = CgroupSetting::SetThreadGroupSchedPolicy(forkPid, (int)forkProcRecord->setSchedGroup_);
             if (ret != 0) {
                 CGS_LOGE("%{public}s set %{public}d, to group %{public}d failed, ret = %{public}d!",
@@ -83,10 +84,8 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
             }
             forkProcRecord->lastSchedGroup_ = forkProcRecord->curSchedGroup_;
             forkProcRecord->curSchedGroup_ = forkProcRecord->setSchedGroup_;
-            CGS_LOGI("%{public}s set %{public}d's cgroup from %{public}d to %{public}d.",
-                __func__, forkPid, forkProcRecord->lastSchedGroup_, forkProcRecord->curSchedGroup_);
             std::string traceStr(__func__);
-            traceStr.append(" for ").append(std::to_string(forkPid)).append(", group change from")
+            traceStr.append(" for ").append(std::to_string(forkPid)).append(", group change from ")
                 .append(std::to_string((int32_t)(forkProcRecord->lastSchedGroup_))).append(" to ")
                 .append(std::to_string((int32_t)(forkProcRecord->curSchedGroup_)));
             StartTrace(HITRACE_TAG_OHOS, traceStr);
