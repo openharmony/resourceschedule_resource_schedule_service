@@ -23,7 +23,7 @@ class ResSchedUtils {
 public:
     ResSchedUtils() = default;
     ~ResSchedUtils() = default;
-    static int64_t GetNowTime();
+    static int64_t GetNowMillTime();
 
 };
 } // namespace ResourceSchedule

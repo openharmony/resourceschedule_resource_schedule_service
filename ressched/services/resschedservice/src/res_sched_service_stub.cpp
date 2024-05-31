@@ -33,8 +33,9 @@ namespace {
     constexpr int32_t MEMMGR_UID = 1111;
     constexpr int32_t SAMGR_UID = 5555;
     constexpr int32_t FOUNDATION_UID = 5523;
-    constexpr int32_t LIMIT_REQUEST_COUNT = 100;
-    constexpr int32_t LIMIT_REQUEST_TIME = 100;
+    constexpr int32_t SINGLE_UID_REQUEST_LIMIT_COUNT = 100;
+    constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 500;
+    constexpr int32_t LIMIT_REQUEST_TIME = 1000;
     static const std::unordered_set<uint32_t> scbRes = {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
@@ -318,23 +319,37 @@ bool ResSchedServiceStub::IsAllowedAppPreloadInner(MessageParcel& data, MessageP
 }
 
 int64_t ResSchedServiceStub::IsLimitRequest(int32_t uid) {
-    auto iter = requestLimitMap_.find(uid);
-    int64_t nowTime = ResSchedUtils::GetNowTime();
-    if (iter == requestLimitMap_.end()) {
-        std::deque<int64_t> timeDeque;
-        timeDeque.push_back(nowTime);
-        requestLimitMap_[uid] = timeDeque;
-        return false;
-    }
-    std::deque<int64_t> timeDeque = requestLimitMap_[uid];
-    while (!timeDeque.empty() && nowTime - timeDeque.front() -> LIMIT_TIME) {
-        timeDeque.pop_back();
-    }
-    if (timeDeque.size() >= LIMIT_REQUEST_COUNT) {
+    
+
+    int64_t nowTime = ResSchedUtils::GetNowMillTime();
+    CheckAndUpdateLimitData(nowTime);
+    if (allRequestCount_.load() >= ALL_UID_REQUEST_LIMIT_COUNT) {
+        RESSCHED_LOGD("all uid request is limit, %{public}d request fail", uid);
         return true;
     }
-    timeDeque.push_back(nowTime);
+    auto iter = requestLimitMap_.find(uid);
+    if (iter == requestLimitMap_.end()) {
+        std::atomic<int32_t> requestCount(1);
+        requestLimitMap_[uid] = requestCount;
+        allRequestCount_++;
+        return false;
+    }
+    auto requestCount = requestLimitMap_[uid];
+    if (requestCount.load() >= SINGLE_UID_REQUEST_LIMIT_COUNT) {
+        RESSCHED_LOGD("uid:%{public}d request is limit, request fail", uid);
+        return true;
+    }
+    requestLimitMap_[uid] = ++requestCount;
+    allRequestCount_++;
     return false;
+}
+
+void ResSchedServiceStub::CheckAndUpdateLimitData(int64_t nowTime) {
+    if (nowTime - nextCheckTime_ > LIMIT_REQUEST_TIME) {
+        nextCheckTime_ = nowTime + LIMIT_REQUEST_TIME;
+        requestLimitMap_.clear();
+        allRequestCount_.store(0);
+    }
 }
 
 int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,

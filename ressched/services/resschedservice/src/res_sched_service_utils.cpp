@@ -18,7 +18,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 
-int64_t ResSchedUtils::GetNowTime()
+int64_t ResSchedUtils::GetNowMillTime()
 {
     time_t now;
     (void)time(&now);
@@ -27,7 +27,7 @@ int64_t ResSchedUtils::GetNowTime()
         return 0;
     }
     auto tarEndTimePoint = std::chrono::system_clock::from_time_t(now);
-    auto tarDuration = std::chrono::duration_cast<std::chrono:microseconds>(tarEndTimePoint.time_since_epoch());
+    auto tarDuration = std::chrono::duration_cast<std::chrono:milliseconds>(tarEndTimePoint.time_since_epoch());
     int64_t tarDate = tarDuration.count();
     if (tarDate < 0) {
         RESSCHED_LOGD("tarDuration is less than 0");

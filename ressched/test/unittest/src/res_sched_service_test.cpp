@@ -751,5 +751,25 @@ HWTEST_F(ResSchedServiceTest, IsAllowedAppPreloadInner001, Function | MediumTest
     reportData.WriteInt32(1);
     EXPECT_TRUE(resSchedServiceStub_->IsAllowedAppPreloadInner(reportData, reply));
 }
+
+/**
+ * @tc.name: ResSchedServicesStub IsLimitRequest 001
+ * @tc.desc: IsLimitRequestTest
+ * @tc.type: FUNC
+ * @tc.require: issueI9U0YF
+ * @tc.author:fengyang
+ */
+HWTEST_F(ResSchedServiceTest, IsLimitRequest001, Function | MediumTest | Level0)
+{
+    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
+    resSchedServiceStub_->Init();
+    int32_t uid = 0;
+    EXPECT_EQ(resSchedServiceStub_->IsLimitRequest(uid), false);
+    resSchedServiceStub_->requestLimitMap_[uid].store(100);
+    EXPECT_EQ(resSchedServiceStub_->IsLimitRequest(uid), true);
+    resSchedServiceStub_->allRequestCount_.store(500);
+    EXPECT_EQ(resSchedServiceStub_->IsLimitRequest(uid), true);
+}
+
 } // namespace ResourceSchedule
 } // namespace OHOS
