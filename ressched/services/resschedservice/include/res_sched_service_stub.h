@@ -23,6 +23,7 @@
 #include "iremote_stub.h"
 #include "ires_sched_service.h"
 #include "res_type.h"
+#include <deque>
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -42,11 +43,13 @@ private:
     int32_t GetSystemloadLevelInner(MessageParcel& data, MessageParcel& reply);
     bool IsAllowedAppPreloadInner(MessageParcel& data, MessageParcel& reply);
     nlohmann::json StringToJsonObj(const std::string& str);
+    bool IsLimitRequest(int32_t uid);
 
     void Init();
 
     using RequestFuncType = std::function<int32_t (MessageParcel& data, MessageParcel& reply)>;
     std::map<uint32_t, RequestFuncType> funcMap_;
+    std::map<int32_t, std::deque<int64_t>> requestLimitMap_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -23,6 +23,7 @@
 #include "ipc_skeleton.h"
 #include "ipc_util.h"
 #include "accesstoken_kit.h"
+#include "res_sched_service_utils.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -32,6 +33,8 @@ namespace {
     constexpr int32_t MEMMGR_UID = 1111;
     constexpr int32_t SAMGR_UID = 5555;
     constexpr int32_t FOUNDATION_UID = 5523;
+    constexpr int32_t LIMIT_REQUEST_COUNT = 100;
+    constexpr int32_t LIMIT_REQUEST_TIME = 100;
     static const std::unordered_set<uint32_t> scbRes = {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
@@ -314,13 +317,36 @@ bool ResSchedServiceStub::IsAllowedAppPreloadInner(MessageParcel& data, MessageP
     return true;
 }
 
+int64_t ResSchedServiceStub::IsLimitRequest(int32_t uid) {
+    auto iter = requestLimitMap_.find(uid);
+    int64_t nowTime = ResSchedUtils::GetNowTime();
+    if (iter == requestLimitMap_.end()) {
+        std::deque<int64_t> timeDeque;
+        timeDeque.push_back(nowTime);
+        requestLimitMap_[uid] = timeDeque;
+        return false;
+    }
+    std::deque<int64_t> timeDeque = requestLimitMap_[uid];
+    while (!timeDeque.empty() && nowTime - timeDeque.front() -> LIMIT_TIME) {
+        timeDeque.pop_back();
+    }
+    if (timeDeque.size() >= LIMIT_REQUEST_COUNT) {
+        return true;
+    }
+    timeDeque.push_back(nowTime);
+    return false;
+}
+
 int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
     auto uid = IPCSkeleton::GetCallingUid();
     RESSCHED_LOGD("ResSchedServiceStub::OnRemoteRequest, code = %{public}u, flags = %{public}d,"
         " uid = %{public}d.", code, option.GetFlags(), uid);
-
+    if (IsLimitRequest(uid)) {
+        RESSCHED_LOGD("%{public}d is limit request, cur request fail", uid);
+        return RES_SCHED_REQUEST_FAIL;
+    }
     switch (code) {
         case static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA):
             return ReportDataInner(data, reply);
