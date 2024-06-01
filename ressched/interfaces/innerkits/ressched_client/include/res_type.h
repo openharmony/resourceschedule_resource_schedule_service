@@ -723,6 +723,13 @@ enum ContinuousStartupStatus : int64_t {
     STOP_CONTINUOUS_STARTUP = 1,
 };
 
+/**
+ * @brief account activating status
+ */
+enum AccountActivatingStatus : int64_t {
+    ACCOUNT_ACTIVATING_START = 0,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
