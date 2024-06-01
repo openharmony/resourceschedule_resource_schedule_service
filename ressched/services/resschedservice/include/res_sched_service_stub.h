@@ -53,7 +53,6 @@ private:
 
     using RequestFuncType = std::function<int32_t (MessageParcel& data, MessageParcel& reply)>;
     std::map<uint32_t, RequestFuncType> funcMap_;
-    appRequestCountMap
     std::map<int32_t, int32_t> appRequestCountMap_;
     std::atomic<int32_t> allRequestCount_ {0};
     std::atomic<int32_t> bigDataReportCount_ {0};
