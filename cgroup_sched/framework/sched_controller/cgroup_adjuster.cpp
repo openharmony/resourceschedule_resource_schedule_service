@@ -16,6 +16,9 @@
 #include "cgroup_adjuster.h"
 
 #include <unistd.h>
+#include <fcntl.h>
+#include <cerrno>
+#include <string>
 #include "app_mgr_constants.h"
 #include "cgroup_event_handler.h"
 #include "cgroup_sched_common.h"
@@ -52,6 +55,36 @@ void CgroupAdjuster::InitAdjuster()
             this->AdjustSelfProcessGroup();
         });
     }
+}
+
+void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
+{
+    std::string filePath = ResSchedUtils::GetInstance().GetProcessFilePath(app.GetUid(), app.GetName(), pr.GetPid());
+    int fd = open(filePath.c_str(), O_RDONLY);
+    if (fd < 0) {
+        CGS_LOGE("%{public}s File is not opened: %{public}s, error is %{public}s.",
+            __func__, filePath.c_str(), strerror(errno));
+        return;
+    }
+    char fileContent[1024] = {0};
+    int rd = read(fd, fileContent, sizeof(fileContent));
+    const char *flag = "\n";
+    char *line = strtok(fileContent, flag);
+    while (line != NULL) {
+        int32_t forkPid = std::stoi(line);
+        line = strtok(NULL, flag);
+        if (forkPid != pr.GetPid()) {
+            int ret = CgroupSetting::SetThreadGroupSchedPolicy(forkPid, pr.curSchedGroup_);
+            if (ret != 0) {
+                CGS_LOGE("%{public}s set %{public}d, to group %{public}d failed, ret = %{public}d!",
+                    __func__, forkPid, (int)pr.curSchedGroup_, ret);
+            }
+        } else {
+            continue;
+        }
+    }
+    close(fd);
+    return;
 }
 
 void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
@@ -173,7 +206,7 @@ void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
         payload["oldGroup"] = std::to_string((int32_t)(pr.lastSchedGroup_));
         payload["newGroup"] = std::to_string((int32_t)(pr.curSchedGroup_));
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CGROUP_ADJUSTER, 0, payload);
-
+        AdjustForkProcessGroup(app, pr);
         FinishTrace(HITRACE_TAG_OHOS);
     }
 }

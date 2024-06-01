@@ -28,6 +28,7 @@ namespace ResourceSchedule {
 namespace {
     const std::string RES_SCHED_SERVICE_SO = "libresschedsvc.z.so";
     const std::string RES_SCHED_CG_EXT_SO = "libcgroup_sched_ext.z.so";
+    const int32_t UID_TRANSFORM_DIVISOR = 200000;
 }
 
 ResSchedUtils& ResSchedUtils::GetInstance()
@@ -143,6 +144,20 @@ void ResSchedUtils::ReportSysEvent(Application &app, ProcessRecord &pr, uint32_t
         return;
     }
     reportSysEventFunc_(app, pr, resType, state);
+}
+
+std::string ResSchedUtils::GetProcessFilePath(int32_t uid, std::string bundleName, int32_t pid)
+{
+    int32_t userId = uid / UID_TRANSFORM_DIVISOR;
+    std::string path;
+    path.append("/dev/pids")
+        .append(std::to_string(userId))
+        .append("/")
+        .append(bundleName)
+        .append("/app_")
+        .append(std::to_string(pid))
+        .append("/cgroup.procs");
+    return path;
 }
 
 void ResSchedUtils::DispatchResourceExt(uint32_t resType, int64_t value, const nlohmann::json& payload)
