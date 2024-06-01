@@ -28,6 +28,7 @@ public:
     static constexpr char MEMORY_DETERIORATION[] = "Kill Reason:App Memory Deterioration";
     static constexpr char MEMORY_PRESSURE[] = "Kill Reason:Memory Pressure";
     static constexpr char TEMPERATURE_CONTROL[] = "Kill Reason:Temperature Control";
+    static constexpr char RESOURCE_OVERLIMIT[] = "Kill Reason:Resource Overlimit";
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
