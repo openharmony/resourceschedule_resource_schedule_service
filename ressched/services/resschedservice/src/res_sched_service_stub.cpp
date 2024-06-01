@@ -343,7 +343,8 @@ bool ResSchedServiceStub::IsLimitRequest(int32_t uid) {
     return false;
 }
 
-void ResSchedServiceStub::CheckAndUpdateLimitData(int64_t nowTime) {
+void ResSchedServiceStub::CheckAndUpdateLimitData(int64_t nowTime)
+{
     if (nowTime - nextCheckTime_.load() > LIMIT_REQUEST_TIME) {
         nextCheckTime_.store(nowTime + LIMIT_REQUEST_TIME);
         requestLimitMap_.clear();
@@ -352,7 +353,8 @@ void ResSchedServiceStub::CheckAndUpdateLimitData(int64_t nowTime) {
     }
 }
 
-void ResSchedServiceStub::PrintLimitLog(int32_t uid) {
+void ResSchedServiceStub::PrintLimitLog(int32_t uid)
+{
     if (isPrintLimitLog_.load()) {
         isPrintLimitLog_.store(false);
         RESSCHED_LOGD("request limit, allRequestCount_:%{public}d, cur report uid:%{public}d",
@@ -360,7 +362,8 @@ void ResSchedServiceStub::PrintLimitLog(int32_t uid) {
     }
 }
 
-void ResSchedServiceStub::ReportBigData() {
+void ResSchedServiceStub::ReportBigData()
+{
     if (!isReportBigData_.load()) {
         return;
     }
@@ -373,7 +376,8 @@ void ResSchedServiceStub::ReportBigData() {
     bigDataReportCount_.store(0);
 }
 
-void ResSchedServiceStub::InreaseBigDataCount() {
+void ResSchedServiceStub::InreaseBigDataCount()
+{
     if (!isReportBigData_.load()) {
         isReportBigData_.store(true);
         nextReportBigDataTime_ = ResSchedUtils::GetNowMillTime() + FOUR_HOUR_TIME;

@@ -49,8 +49,6 @@ private:
     void PrintLimitLog(int32_t uid);
     void ReportBigData();
     void InreaseBigDataCount();
-    
-
     void Init();
 
     using RequestFuncType = std::function<int32_t (MessageParcel& data, MessageParcel& reply)>;

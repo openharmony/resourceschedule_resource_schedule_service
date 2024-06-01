@@ -128,7 +128,7 @@ static void RequestTest(int32_t argc, char *argv[])
         count++;
         OHOS::ResourceSchedule::ResSchedClient::GetInstance().ReportData(DEFAULT_TYPE, DEFAULT_VALUE, mapPayload);
     }
-    std::cout << "success RequestTest " << pid << std::endl;
+    std::cout << "success RequestTest " << uid << std::endl;
 }
 
 int32_t main(int32_t argc, char *argv[])
