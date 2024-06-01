@@ -67,12 +67,12 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
         return;
     }
     char fileContent[1024] = {0};
-    std::string line;
     int rd = read(fd, fileContent, sizeof(fileContent));
     const char *flag = "\n";
-    line = strtok(fileContent, flag);
-    while (line != "") {
+    char *line = strtok(fileContent, flag);
+    while (line != NULL) {
         int32_t forkPid = std::stoi(line);
+        line = strtok(NULL, flag);
         if (forkPid != pr.GetPid()) {
             const auto &forkProcRecord = app.GetProcessRecordNonNull(forkPid);
             forkProcRecord->setSchedGroup_ = pr.curSchedGroup_;
@@ -98,9 +98,8 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
             ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CGROUP_ADJUSTER, 0, payload);
             FinishTrace(HITRACE_TAG_OHOS);
         } else {
-            break;
+            continue;
         }
-        line = strtok(NULL, flag);
     }
     close(fd);
     return;
