@@ -64,7 +64,6 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
     if (fd < 0) {
         CGS_LOGE("%{public}s File is not opened: %{public}s, error is %{public}s.",
             __func__, filePath.c_str(), strerror(errno));
-        close(fd);
         return;
     }
     char fileContent[1024] = {0};
