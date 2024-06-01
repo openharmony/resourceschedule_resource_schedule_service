@@ -320,7 +320,8 @@ bool ResSchedServiceStub::IsAllowedAppPreloadInner(MessageParcel& data, MessageP
     return true;
 }
 
-bool ResSchedServiceStub::IsLimitRequest(int32_t uid) {
+bool ResSchedServiceStub::IsLimitRequest(int32_t uid)
+{
     int64_t nowTime = ResSchedUtils::GetNowMillTime();
     CheckAndUpdateLimitData(nowTime);
     if (allRequestCount_.load() >= ALL_UID_REQUEST_LIMIT_COUNT) {

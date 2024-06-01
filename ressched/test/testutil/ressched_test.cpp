@@ -119,7 +119,7 @@ static void RequestTest(int32_t argc, char *argv[])
     }
     int32_t requestCount = atoi(argv[REQUEST_COUNT_INDEX]);
     int32_t requestTime = atoi(argv[REQUEST_TIME_INDEX]);
-    int32_t uid = atoi(argv[UID_INDEX]);
+    int32_t uid = atoi(argv[REQUEST_UID_INDEX]);
     MockProcess(uid);
     std::unordered_map<std::string, std::string> mapPayload;
     int64_t startTime = GetNowTime();
