@@ -79,7 +79,6 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
             if (ret != 0) {
                 CGS_LOGE("%{public}s set %{public}d, to group %{public}d failed, ret = %{public}d!",
                     __func__, forkPid, (int)pr.curSchedGroup_, ret);
-                break;
             }
         } else {
             continue;
