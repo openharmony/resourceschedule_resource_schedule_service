@@ -114,7 +114,7 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
             group = hostProcRecord ? hostProcRecord->curSchedGroup_ : SP_DEFAULT;
         } else if (source == AdjustSource::ADJS_PROCESS_CREATE) {
             group = SP_DEFAULT;
-        } else if (app.focusedProcess_) {
+        } else if (app.focusedProcess_ && (app.focusedProcess_->GetPid() == pr.GetPid())) {
             group = SP_TOP_APP;
         } else {
             if (pr.abilities_.size() == 0) {
