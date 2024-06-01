@@ -339,7 +339,7 @@ bool ResSchedServiceStub::IsLimitRequest(int32_t uid)
         RESSCHED_LOGD("uid:%{public}d request is limit, request fail", uid);
         return true;
     }
-    appRequestCountMap_[uid] = appRequestCountMap_[uid] + 1;
+    appRequestCountMap_[uid] ++;
     allRequestCount_ ++;
     return false;
 }
