@@ -53,7 +53,8 @@ private:
 
     using RequestFuncType = std::function<int32_t (MessageParcel& data, MessageParcel& reply)>;
     std::map<uint32_t, RequestFuncType> funcMap_;
-    std::map<int32_t, int32_t> requestLimitMap_;
+    appRequestCountMap
+    std::map<int32_t, int32_t> appRequestCountMap_;
     std::atomic<int32_t> allRequestCount_ {0};
     std::atomic<int32_t> bigDataReportCount_ {0};
     std::atomic<int64_t> nextCheckTime_ = {0};

@@ -329,17 +329,17 @@ bool ResSchedServiceStub::IsLimitRequest(int32_t uid)
         return true;
     }
     std::lock_guard<std::mutex> lock(mutex_);
-    auto iter = requestLimitMap_.find(uid);
-    if (iter == requestLimitMap_.end()) {
-        requestLimitMap_[uid] = 1;
+    auto iter = appRequestCountMap_.find(uid);
+    if (iter == appRequestCountMap_.end()) {
+        appRequestCountMap_[uid] = 1;
         allRequestCount_++;
         return false;
     }
-    if (requestLimitMap_[uid] >= SINGLE_UID_REQUEST_LIMIT_COUNT) {
+    if (appRequestCountMap_[uid] >= SINGLE_UID_REQUEST_LIMIT_COUNT) {
         RESSCHED_LOGD("uid:%{public}d request is limit, request fail", uid);
         return true;
     }
-    requestLimitMap_[uid] = requestLimitMap_[uid] + 1;
+    appRequestCountMap_[uid] = appRequestCountMap_[uid] + 1;
     allRequestCount_++;
     return false;
 }
@@ -348,7 +348,7 @@ void ResSchedServiceStub::CheckAndUpdateLimitData(int64_t nowTime)
 {
     if (nowTime - nextCheckTime_.load() > LIMIT_REQUEST_TIME) {
         nextCheckTime_.store(nowTime + LIMIT_REQUEST_TIME);
-        requestLimitMap_.clear();
+        appRequestCountMap_.clear();
         allRequestCount_.store(0);
         isPrintLimitLog_.store(true);
     }
