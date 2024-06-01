@@ -332,7 +332,7 @@ bool ResSchedServiceStub::IsLimitRequest(int32_t uid)
     auto iter = appRequestCountMap_.find(uid);
     if (iter == appRequestCountMap_.end()) {
         appRequestCountMap_[uid] = 1;
-        allRequestCount_++;
+        allRequestCount_ ++;
         return false;
     }
     if (appRequestCountMap_[uid] >= SINGLE_UID_REQUEST_LIMIT_COUNT) {
@@ -340,7 +340,7 @@ bool ResSchedServiceStub::IsLimitRequest(int32_t uid)
         return true;
     }
     appRequestCountMap_[uid] = appRequestCountMap_[uid] + 1;
-    allRequestCount_++;
+    allRequestCount_ ++;
     return false;
 }
 
@@ -358,7 +358,7 @@ void ResSchedServiceStub::PrintLimitLog(int32_t uid)
 {
     if (isPrintLimitLog_.load()) {
         isPrintLimitLog_.store(false);
-        RESSCHED_LOGD("request limit, allRequestCount_:%{public}d, cur report uid:%{public}d",
+        RESSCHED_LOGI("request limit, allRequestCount_:%{public}d, cur report uid:%{public}d",
             allRequestCount_.load(), uid);
     }
 }
@@ -383,7 +383,7 @@ void ResSchedServiceStub::InreaseBigDataCount()
         isReportBigData_.store(true);
         nextReportBigDataTime_ = ResSchedUtils::GetNowMillTime() + FOUR_HOUR_TIME;
     }
-    bigDataReportCount_++;
+    bigDataReportCount_ ++;
 }
 
 int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
