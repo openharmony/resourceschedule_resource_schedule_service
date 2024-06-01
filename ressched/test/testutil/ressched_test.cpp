@@ -27,16 +27,16 @@ const static int32_t PARAMETERS_NUM_MIN                      = 2;
 const static int32_t PARAMETERS_NUM_MIN_KILL_PROCESS         = 4;
 const static int32_t PARAMETERS_NUM_KILL_PROCESS_PROCESSNAME = 5;
 const static int32_t PARAMETERS_NUM_REPORT_DATA = 6;
-const static int32_t PARAMETERS_NUM_REQUEST_TEST = 3;
+const static int32_t PARAMETERS_NUM_REQUEST_TEST = 5;
 const static int32_t PID_INDEX = 3;
 const static int32_t RES_TYPE_INDEX = 4;
 const static int32_t UID_INDEX = 2;
 const static int32_t VALUE_INDEX = 5;
 const static int32_t REQUEST_COUNT_INDEX = 2;
 const static int32_t REQUEST_TIME_INDEX = 3;
+const static int32_t REQUEST_UID_INDEX = 4;
 const static int32_t DEFAULT_TYPE = 1;
 const static int32_t DEFAULT_VALUE = 1;
-const static int32_t DEFAULT_UID = 100;
 
 static void MockProcess(int32_t uid)
 {
@@ -70,7 +70,7 @@ static int64_t GetNowTime()
         return 0;
     }
     auto tarEndTimePoint = std::chrono::system_clock::from_time_t(now);
-    auto tarDuration = std::chrono::duration_cast<std::chrono:microseconds>(tarEndTimePoint.time_since_epoch());
+    auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
     int64_t tarDate = tarDuration.count();
     if (tarDate < 0) {
         std::cout << "tarDuration is less than 0 " << std::endl;
@@ -119,13 +119,14 @@ static void RequestTest(int32_t argc, char *argv[])
     }
     int32_t requestCount = atoi(argv[REQUEST_COUNT_INDEX]);
     int32_t requestTime = atoi(argv[REQUEST_TIME_INDEX]);
-    MockProcess(DEFAULT_UID);
+    int32_t uid = atoi(argv[UID_INDEX]);
+    MockProcess(uid);
     std::unordered_map<std::string, std::string> mapPayload;
     int64_t startTime = GetNowTime();
     int32_t count = 0;
     while (count < requestCount && GetNowTime() -startTime < requestTime) {
         count++;
-        OHOS::ResourceSchedule::ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
+        OHOS::ResourceSchedule::ResSchedClient::GetInstance().ReportData(DEFAULT_TYPE, DEFAULT_VALUE, mapPayload);
     }
     std::cout << "success RequestTest " << pid << std::endl;
 }
@@ -141,6 +142,8 @@ int32_t main(int32_t argc, char *argv[])
         KillProcess(argc, argv);
     } else if (strcmp(function, "ReportData") == 0) {
         ReportData(argc, argv);
+    } else if (strcmp(function, "RequestTest") == 0) {
+        RequestTest(argc, argv);
     } else {
         std::cout << "error parameters";
     }

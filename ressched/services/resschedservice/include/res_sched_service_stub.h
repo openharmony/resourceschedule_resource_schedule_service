@@ -24,6 +24,7 @@
 #include "ires_sched_service.h"
 #include "res_type.h"
 #include <atomic>
+#include <mutex>
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -45,14 +46,23 @@ private:
     nlohmann::json StringToJsonObj(const std::string& str);
     bool IsLimitRequest(int32_t uid);
     void CheckAndUpdateLimitData(int64_t nowTime);
+    void PrintLimitLog(int32_t uid);
+    void ReportBigData();
+    void InreaseBigDataCount();
+    
 
     void Init();
 
     using RequestFuncType = std::function<int32_t (MessageParcel& data, MessageParcel& reply)>;
     std::map<uint32_t, RequestFuncType> funcMap_;
-    std::map<int32_t, std::atomic<int32_t>> requestLimitMap_;
-    std::atomic<int32_t> allRequestCount_ = 0;
-    std::atomic<int64_t> nextCheckTime_ = 0;
+    std::map<int32_t, int32_t> requestLimitMap_;
+    std::atomic<int32_t> allRequestCount_ {0};
+    std::atomic<int32_t> bigDataReportCount_ {0};
+    std::atomic<int64_t> nextCheckTime_ = {0};
+    std::atomic<int64_t> nextReportBigDataTime_ = {0};
+    std::atomic<bool> isReportBigData_ = {false};
+    std::atomic<bool> isPrintLimitLog_ = {true};
+    std::mutex mutex_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

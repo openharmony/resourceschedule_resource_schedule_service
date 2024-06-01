@@ -24,6 +24,7 @@
 #include "ipc_util.h"
 #include "accesstoken_kit.h"
 #include "res_sched_service_utils.h"
+#include "hisysevent.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -33,9 +34,10 @@ namespace {
     constexpr int32_t MEMMGR_UID = 1111;
     constexpr int32_t SAMGR_UID = 5555;
     constexpr int32_t FOUNDATION_UID = 5523;
-    constexpr int32_t SINGLE_UID_REQUEST_LIMIT_COUNT = 100;
-    constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 500;
+    constexpr int32_t SINGLE_UID_REQUEST_LIMIT_COUNT = 250;
+    constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 650;
     constexpr int32_t LIMIT_REQUEST_TIME = 1000;
+    constexpr int64_t FOUR_HOUR_TIME = 4 * 60 * 60 * 1000;
     static const std::unordered_set<uint32_t> scbRes = {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
@@ -318,48 +320,78 @@ bool ResSchedServiceStub::IsAllowedAppPreloadInner(MessageParcel& data, MessageP
     return true;
 }
 
-int64_t ResSchedServiceStub::IsLimitRequest(int32_t uid) {
-    
-
+bool ResSchedServiceStub::IsLimitRequest(int32_t uid) {
     int64_t nowTime = ResSchedUtils::GetNowMillTime();
     CheckAndUpdateLimitData(nowTime);
     if (allRequestCount_.load() >= ALL_UID_REQUEST_LIMIT_COUNT) {
         RESSCHED_LOGD("all uid request is limit, %{public}d request fail", uid);
         return true;
     }
+    std::lock_guard<std::mutex> lock(mutex_);
     auto iter = requestLimitMap_.find(uid);
     if (iter == requestLimitMap_.end()) {
-        std::atomic<int32_t> requestCount(1);
-        requestLimitMap_[uid] = requestCount;
+        requestLimitMap_[uid] = 1;
         allRequestCount_++;
         return false;
     }
-    auto requestCount = requestLimitMap_[uid];
-    if (requestCount.load() >= SINGLE_UID_REQUEST_LIMIT_COUNT) {
+    if (requestLimitMap_[uid] >= SINGLE_UID_REQUEST_LIMIT_COUNT) {
         RESSCHED_LOGD("uid:%{public}d request is limit, request fail", uid);
         return true;
     }
-    requestLimitMap_[uid] = ++requestCount;
+    requestLimitMap_[uid] = requestLimitMap_[uid] + 1;
     allRequestCount_++;
     return false;
 }
 
 void ResSchedServiceStub::CheckAndUpdateLimitData(int64_t nowTime) {
-    if (nowTime - nextCheckTime_ > LIMIT_REQUEST_TIME) {
-        nextCheckTime_ = nowTime + LIMIT_REQUEST_TIME;
+    if (nowTime - nextCheckTime_.load() > LIMIT_REQUEST_TIME) {
+        nextCheckTime_.store(nowTime + LIMIT_REQUEST_TIME);
         requestLimitMap_.clear();
         allRequestCount_.store(0);
+        isPrintLimitLog_.store(true);
     }
+}
+
+void ResSchedServiceStub::PrintLimitLog(int32_t uid) {
+    if (isPrintLimitLog_.load()) {
+        isPrintLimitLog_.store(false);
+        RESSCHED_LOGD("request limit, allRequestCount_:%{public}d, cur report uid:%{public}d",
+            allRequestCount_.load(), uid);
+    }
+}
+
+void ResSchedServiceStub::ReportBigData() {
+    if (!isReportBigData_.load()) {
+        return;
+    }
+    if (ResSchedUtils::GetNowMillTime() < nextReportBigDataTime_) {
+        return;
+    }
+    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "SERVICE_REQUEST_LIMIT",
+                    HiviewDFX::HiSysEvent::EventType::FAULT, "REQUEST_LIMIT_COUNT", bigDataReportCount_.load());
+    isReportBigData_.store(false);
+    bigDataReportCount_.store(0);
+}
+
+void ResSchedServiceStub::InreaseBigDataCount() {
+    if (!isReportBigData_.load()) {
+        isReportBigData_.store(true);
+        nextReportBigDataTime_ = ResSchedUtils::GetNowMillTime() + FOUR_HOUR_TIME;
+    }
+    bigDataReportCount_++;
 }
 
 int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     MessageParcel &reply, MessageOption &option)
 {
+    ReportBigData();
     auto uid = IPCSkeleton::GetCallingUid();
     RESSCHED_LOGD("ResSchedServiceStub::OnRemoteRequest, code = %{public}u, flags = %{public}d,"
         " uid = %{public}d.", code, option.GetFlags(), uid);
     if (IsLimitRequest(uid)) {
         RESSCHED_LOGD("%{public}d is limit request, cur request fail", uid);
+        InreaseBigDataCount();
+        PrintLimitLog(uid);
         return RES_SCHED_REQUEST_FAIL;
     }
     switch (code) {
