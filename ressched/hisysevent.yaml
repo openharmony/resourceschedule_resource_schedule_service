@@ -33,3 +33,7 @@ LIMIT_REQUEST:
   CLIENT_ID: {type: INT32, desc: 1 means power 2 means thermal}
   RES_ID: {type: INT32, desc: number of node path config in socperf_resource_config}
   CONFIG: {type: INT64, desc: limit max to xx}
+
+SERVICE_REQUEST_LIMIT:
+  __BASE: {type: BEHAVIOR, level: MINOR, desc: RSS_SERVICE_REQUEST_LIMIT, preserve: true}
+  REQUEST_LIMIT_COUNT: {type: INT32, desc: SERVICE_REQUEST_LIMIT_COUNT}
