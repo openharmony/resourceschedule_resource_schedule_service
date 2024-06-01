@@ -64,6 +64,7 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
     if (fd < 0) {
         CGS_LOGE("%{public}s File is not opened: %{public}s, error is %{public}s.",
             __func__, filePath.c_str(), strerror(errno));
+        close(fd);
         return;
     }
     char fileContent[1024] = {0};
@@ -74,29 +75,12 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
         int32_t forkPid = std::stoi(line);
         line = strtok(NULL, flag);
         if (forkPid != pr.GetPid()) {
-            const auto &forkProcRecord = app.GetProcessRecordNonNull(forkPid);
-            forkProcRecord->setSchedGroup_ = pr.curSchedGroup_;
-            int ret = CgroupSetting::SetThreadGroupSchedPolicy(forkPid, (int)forkProcRecord->setSchedGroup_);
+            int ret = CgroupSetting::SetThreadGroupSchedPolicy(forkPid, pr.curSchedGroup_);
             if (ret != 0) {
                 CGS_LOGE("%{public}s set %{public}d, to group %{public}d failed, ret = %{public}d!",
-                    __func__, forkPid, forkProcRecord->setSchedGroup_, ret);
-                return;
+                    __func__, forkPid, (int)pr.curSchedGroup_, ret);
+                break;
             }
-            forkProcRecord->lastSchedGroup_ = forkProcRecord->curSchedGroup_;
-            forkProcRecord->curSchedGroup_ = forkProcRecord->setSchedGroup_;
-            std::string traceStr(__func__);
-            traceStr.append(" for ").append(std::to_string(forkPid)).append(", group change from ")
-                .append(std::to_string((int32_t)(forkProcRecord->lastSchedGroup_))).append(" to ")
-                .append(std::to_string((int32_t)(forkProcRecord->curSchedGroup_)));
-            StartTrace(HITRACE_TAG_OHOS, traceStr);
-            nlohmann::json payload;
-            payload["pid"] = std::to_string(forkPid);
-            payload["uid"] = std::to_string(forkProcRecord->GetUid());
-            payload["name"] = app.GetName();
-            payload["oldGroup"] = std::to_string((int32_t)(forkProcRecord->lastSchedGroup_));
-            payload["newGroup"] = std::to_string((int32_t)(forkProcRecord->curSchedGroup_));
-            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CGROUP_ADJUSTER, 0, payload);
-            FinishTrace(HITRACE_TAG_OHOS);
         } else {
             continue;
         }
