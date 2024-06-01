@@ -387,7 +387,8 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
     {
         std::string libName = "";
         std::list<std::string> pluginList = { pluginLib };
-        HitraceScoped hitrace(HITRACE_TAG_OHOS, BuildDispatchTrace(resData, libName, __func__, pluginList));
+        std::string traceStr = BuildDispatchTrace(resData, libName, __func__, pluginList);
+        HitraceScoped hitrace(HITRACE_TAG_OHOS, traceStr);
         InnerTimeUtil timeUtil(__func__, pluginLib);
         ret = pluginDeliverFunc(resData);
     }
