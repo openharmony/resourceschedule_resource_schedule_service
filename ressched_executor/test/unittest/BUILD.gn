@@ -33,6 +33,7 @@ ohos_unittest("resschedexefwk_test") {
 
   sources = [
     "res_sched_exe_client_test.cpp",
+    "res_sched_exe_mgr_test.cpp",
     "res_sched_exe_service_test.cpp",
   ]
 
@@ -52,6 +53,11 @@ ohos_unittest("resschedexefwk_test") {
   ]
 
   public_external_deps = [ "json:nlohmann_json_static" ]
+
+  cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
 
   sanitize = {
     cfi = true

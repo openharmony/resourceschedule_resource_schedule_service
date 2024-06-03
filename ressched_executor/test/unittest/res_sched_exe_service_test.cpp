@@ -16,8 +16,6 @@
 #include "gtest/gtest.h"
 #include "gtest/hwext/gtest-multithread.h"
 
-#define private public
-#define protected public
 #include <vector>
 
 #include "accesstoken_kit.h"
@@ -104,7 +102,7 @@ void ResSchedExeServiceTest::TearDown()
  */
 HWTEST_F(ResSchedExeServiceTest, ServiceDump001, Function | MediumTest | Level0)
 {
-    PluginMgr::GetInstance().Init(false);
+    PluginMgr::GetInstance().Init(true);
     std::string result;
     resSchedExeService_->DumpAllInfo(result);
     EXPECT_TRUE(!result.empty());
@@ -116,7 +114,7 @@ HWTEST_F(ResSchedExeServiceTest, ServiceDump001, Function | MediumTest | Level0)
     int32_t wrongFd = -1;
     std::vector<std::u16string> argsNull;
     int res = resSchedExeService_->Dump(wrongFd, argsNull);
-    EXPECT_TRUE(!res);
+    EXPECT_NE(res, ResErrCode::RSSEXE_NO_ERR);
 
     int32_t correctFd = 0;
     res = resSchedExeService_->Dump(correctFd, argsNull);
@@ -284,7 +282,6 @@ HWTEST_F(ResSchedExeServiceTest, ReportRequestInner001, Function | MediumTest | 
     EXPECT_TRUE(resSchedExeServiceStub_->ReportRequestInner(emptyData, reply));
 
     MessageParcel reportData;
-    reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
@@ -301,7 +298,6 @@ static void ReportRequestInnerTask()
         EXPECT_TRUE(resSchedExeServiceStub_->ReportRequestInner(emptyData, reply));
 
         MessageParcel reportData;
-        reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
         reportData.WriteUint32(1);
         reportData.WriteInt64(1);
         reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
@@ -334,7 +330,6 @@ HWTEST_F(ResSchedExeServiceTest, ReportDebugInner001, Function | MediumTest | Le
     EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(emptyData));
 
     MessageParcel reportData;
-    reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
     reportData.WriteUint32(ResExeType::RES_TYPE_DEBUG);
     reportData.WriteUint64(ResSchedExeCommonUtils::GetCurrentTimestampUs());
     EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData));
@@ -349,7 +344,6 @@ static void ReportDebugInnerTask()
         EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(emptyData));
 
         MessageParcel reportData;
-        reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
         reportData.WriteUint32(ResExeType::RES_TYPE_DEBUG);
         reportData.WriteUint64(ResSchedExeCommonUtils::GetCurrentTimestampUs());
         EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData));
@@ -378,11 +372,11 @@ HWTEST_F(ResSchedExeServiceTest, RemoteRequest001, Function | MediumTest | Level
     auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
     MessageOption option;
     MessageParcel reply;
-    int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SYNC, reply, reply, option);
+    int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SEND_SYNC, reply, reply, option);
     EXPECT_TRUE(res);
-    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_ASYNC, reply, reply, option);
+    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SEND_ASYNC, reply, reply, option);
     EXPECT_TRUE(res);
-    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_DEBUG, reply, reply, option);
+    res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SEND_DEBUG, reply, reply, option);
     EXPECT_TRUE(res);
 }
 
@@ -392,11 +386,11 @@ static void RemoteRequestTask()
     MessageOption option;
     MessageParcel reply;
     for (int i = 0; i < SYNC_THREAD_NUM; i++) {
-        int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SYNC, reply, reply, option);
+        int32_t res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SEND_SYNC, reply, reply, option);
         EXPECT_TRUE(res);
-        res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_ASYNC, reply, reply, option);
+        res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SEND_ASYNC, reply, reply, option);
         EXPECT_TRUE(res);
-        res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_DEBUG, reply, reply, option);
+        res = resSchedExeServiceStub_->OnRemoteRequest(ResIpcType::REQUEST_SEND_DEBUG, reply, reply, option);
         EXPECT_TRUE(res);
         usleep(SYNC_INTERNAL_TIME);
     }
@@ -429,7 +423,6 @@ HWTEST_F(ResSchedExeServiceTest, ParseParcel001, Function | MediumTest | Level0)
     EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
 
     MessageParcel reportData;
-    reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
@@ -448,7 +441,6 @@ static void ParseParcelTask()
         EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
 
         MessageParcel reportData;
-        reportData.WriteInterfaceToken(ResSchedExeServiceStub::GetDescriptor());
         reportData.WriteUint32(1);
         reportData.WriteInt64(1);
         reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
@@ -467,7 +459,5 @@ HWTEST_F(ResSchedExeServiceTest, ParseParcel002, Function | MediumTest | Level0)
     SET_THREAD_NUM(10);
     GTEST_RUN_TASK(ParseParcelTask);
 }
-#undef private
-#undef protected
 } // namespace ResourceSchedule
 } // namespace OHOS
