@@ -574,6 +574,31 @@ namespace ResourceSchedule {
         return true;
     }
 
+    bool AdjustForkProcessGroupFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uid_t uid = GetData<uid_t>();
+        pid_t pid = GetData<pid_t>();
+        ProcessRecord pr(uid, pid);
+        pr.isRenderProcess_ = true;
+        pr.isActive_ = true;
+        Application app(uid);
+        auto cgroupAdjuster =
+            std::make_shared<CgroupAdjuster>(OHOS::AppExecFwk::EventRunner::Create("CgroupAdjuster_fuzz"));
+        cgroupAdjuster->AdjustForkProcessGroup(app, pr);
+
+        return true;
+    }
+
     bool ParsePayloadFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
