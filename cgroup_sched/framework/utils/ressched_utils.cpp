@@ -150,7 +150,7 @@ std::string ResSchedUtils::GetProcessFilePath(int32_t uid, std::string bundleNam
 {
     int32_t userId = uid / UID_TRANSFORM_DIVISOR;
     std::string path;
-    path.append("/dev/pids")
+    path.append("/dev/pids/")
         .append(std::to_string(userId))
         .append("/")
         .append(bundleName)
