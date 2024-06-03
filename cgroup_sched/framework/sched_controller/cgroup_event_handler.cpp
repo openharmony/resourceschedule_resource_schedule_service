@@ -668,8 +668,8 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     }
     UpdateActivepWebRenderInfo(uid, pid, windowId, state, hostProcRecord);
     if (CheckVisibilityForRenderProcess(*(procRecord.get()), *hostProcRecord)) {
-        CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d is not visible but active",
-            __func__, app->GetName().c_str(), uid, pid);
+        CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d, winId: %{public}d" \
+            "is not visible but active", __func__, app->GetName().c_str(), uid, pid, procRecord->linkedWindowId_);
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(hostProcRecord.get()),
         AdjustSource::ADJS_REPORT_WINDOW_STATE_CHANGED);
