@@ -513,11 +513,14 @@ void ObserverManager::InitDisplayModeObserver()
         return;
     }
 
-    foldDisplayModeObserver_ = new (std::nothrow)FoldDisplayModeObserver();
-    if (foldDisplayModeObserver_ == nullptr) {
-        RESSCHED_LOGE("Failed to create fold ChangeListener due to no memory");
-        return;
+    if (!foldDisplayModeObserver_) {
+        foldDisplayModeObserver_ = new (std::nothrow)FoldDisplayModeObserver();
+        if (foldDisplayModeObserver_ == nullptr) {
+            RESSCHED_LOGE("Failed to create fold ChangeListener due to no memory");
+            return;
+        }
     }
+
     auto ret = OHOS::Rosen::DisplayManager::GetInstance().RegisterDisplayModeListener(foldDisplayModeObserver_);
     if (ret == OHOS::Rosen::DMError::DM_OK) {
         RESSCHED_LOGI("ObserverManager init displayModeObserver successfully");
