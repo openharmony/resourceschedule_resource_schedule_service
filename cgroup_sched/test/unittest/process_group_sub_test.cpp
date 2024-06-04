@@ -19,7 +19,8 @@
 #define private public
 #define protected public
 #include "sched_policy.h"
-#include "supervisior.h"
+#include "supervisor.h"
+#include "cgroup_adjuster.h"
 #undef private
 #undef protected
 
@@ -192,7 +193,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_AdjustProcess_001, Function | 
 {
     auto application = new Application(20150011);
     auto pr = new ProcessRecord(20150011, 9050);
-    CgroupAdjuster::GetInstance().AdjustForkProcessGroup(application, pr);
+    CgroupAdjuster::GetInstance().AdjustForkProcessGroup(*application, *pr);
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule

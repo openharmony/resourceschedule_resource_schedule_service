@@ -148,6 +148,10 @@ void ResSchedUtils::ReportSysEvent(Application &app, ProcessRecord &pr, uint32_t
 
 std::string ResSchedUtils::GetProcessFilePath(int32_t uid, std::string bundleName, int32_t pid)
 {
+    if (uid < 0 || pid < 0) {
+        CGS_LOGE("%{public}s Parameter Error: UID: %{public}d, PID: %{public}d", __func__, uid, pid);
+        return "";
+    }
     int32_t userId = uid / UID_TRANSFORM_DIVISOR;
     std::string path;
     path.append("/dev/pids/")
@@ -157,7 +161,12 @@ std::string ResSchedUtils::GetProcessFilePath(int32_t uid, std::string bundleNam
         .append("/app_")
         .append(std::to_string(pid))
         .append("/cgroup.procs");
-    return path;
+    char absolutePath[PATH_MAX] = {0};
+    if (!realpath(path.c_str(), absolutePath)) {
+        CGS_LOGE("%{public}s Path Error: Path: %{public}s.", __func__, path.c_str());
+        return "";
+    }
+    return std::string(absolutePath);
 }
 
 void ResSchedUtils::DispatchResourceExt(uint32_t resType, int64_t value, const nlohmann::json& payload)
