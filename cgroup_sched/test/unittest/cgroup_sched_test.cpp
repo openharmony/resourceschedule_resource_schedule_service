@@ -136,7 +136,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_WindowStateObserver_002, Function | Me
     nowWindowMode = windowModeObserver_->MarshallingWindowModeType(Rosen::WindowModeType::WINDOW_MODE_FLOATING);
     EXPECT_EQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_FLOATING);
 
-    nowWindowMode = windowModeObserver_->MarshallingWindowModeType(Rosen::WindowModeType::WINDOW_MODE_FULLSCREEN_FLOATING);
+    nowWindowMode = windowModeObserver_->MarshallingWindowModeType(
+        Rosen::WindowModeType::WINDOW_MODE_FULLSCREEN_FLOATING);
     EXPECT_EQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_FLOATING);
 
     nowWindowMode = windowModeObserver_->MarshallingWindowModeType(Rosen::WindowModeType::WINDOW_MODE_OTHER);
