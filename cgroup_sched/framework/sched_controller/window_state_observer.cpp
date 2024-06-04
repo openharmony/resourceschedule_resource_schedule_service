@@ -88,10 +88,12 @@ void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeIn
 void WindowVisibilityObserver::MarshallingWindowVisibilityInfo(const sptr<WindowVisibilityInfo>& info,
     nlohmann::json& payload)
 {
+    bool isVisible = info->visibilityState_ < Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
     payload["pid"] = std::to_string(info->pid_);
     payload["uid"] = std::to_string(info->uid_);
     payload["windowId"] = std::to_string(info->windowId_);
     payload["windowType"] = std::to_string((int32_t)info->windowType_);
+    payload["isVisible"] = isVisible;
     payload["visibilityState"] = std::to_string(info->visibilityState_);
 }
 
@@ -195,6 +197,7 @@ uint8_t WindowModeObserver::MarshallingWindowModeType(const WindowModeType mode)
             nowWindowMode = RSSWindowMode::WINDOW_MODE_SPLIT;
             break;
         case Rosen::WindowModeType::WINDOW_MODE_FLOATING:
+        case Rosen::WindowModeType::WINDOW_MODE_FULLSCREEN_FLOATING:
             nowWindowMode = RSSWindowMode::WINDOW_MODE_FLOATING;
             break;
         case Rosen::WindowModeType::WINDOW_MODE_SPLIT_FLOATING:
