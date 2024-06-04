@@ -59,7 +59,8 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     const nlohmann::json& payload, nlohmann::json& reply)
 {
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
-    HitraceScoped hitrace(HITRACE_TAG_OHOS, BuildTraceStr(__func__, resType, value));
+    std::string traceStr = BuildTraceStr(__func__, resType, value);
+    HitraceScoped hitrace(HITRACE_TAG_OHOS, traceStr);
     auto resData = std::make_shared<ResData>(resType, value, payload, reply);
     int32_t ret = PluginMgr::GetInstance().DeliverResource(resData);
     if (ret != ResIpcErrCode::RSSEXE_PLUGIN_ERROR) {
@@ -77,7 +78,8 @@ int32_t ResSchedExeMgr::KillProcess(pid_t pid)
 void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
-    HitraceScoped hitrace(HITRACE_TAG_OHOS, BuildTraceStr(__func__, resType, value));
+    std::string traceStr = BuildTraceStr(__func__, resType, value);
+    HitraceScoped hitrace(HITRACE_TAG_OHOS, traceStr);
     PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
 }
 
