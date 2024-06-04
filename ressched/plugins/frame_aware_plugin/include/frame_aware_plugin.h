@@ -22,6 +22,7 @@
 
 #include "nlohmann/json.hpp"
 
+#include "ffrt_inner.h"
 #include "plugin.h"
 #include "single_instance.h"
 
@@ -41,7 +42,9 @@ private:
     std::set<uint32_t> resTypes;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData> data)>> functionMap;
     std::set<std::string> unsupportApp = {};
+    ffrt::queue* taskQueue_ = nullptr;
     NetworkLatencyController netLatCtrl;
+    bool GetThreadQueue();
     void HandleAppStateChange(const std::shared_ptr<ResData>& data);
     void HandleProcessStateChange(const std::shared_ptr<ResData>& data);
     void HandleContinuousTask(const std::shared_ptr<ResData>& data);
