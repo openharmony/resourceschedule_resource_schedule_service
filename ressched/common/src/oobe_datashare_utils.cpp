@@ -74,7 +74,6 @@ ErrCode DataShareUtils::GetStringValue(const std::string& key, std::string& valu
         RESSCHED_LOGW("resultSet->GetString return not ok, ret=%{public}d", ret);
         return ERR_INVALID_VALUE;
     }
-    resultSet->Close();
     return ERR_OK;
 }
 
