@@ -88,7 +88,8 @@ void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeIn
 void WindowVisibilityObserver::MarshallingWindowVisibilityInfo(const sptr<WindowVisibilityInfo>& info,
     nlohmann::json& payload)
 {
-    bool isVisible = info->visibilityState_ < Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
+    bool isVisible = info->visibilityState_ <
+        Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
     payload["pid"] = std::to_string(info->pid_);
     payload["uid"] = std::to_string(info->uid_);
     payload["windowId"] = std::to_string(info->windowId_);
