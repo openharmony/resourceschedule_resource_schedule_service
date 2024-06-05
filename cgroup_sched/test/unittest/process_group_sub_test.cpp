@@ -194,6 +194,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_AdjustProcess_001, Function | 
     auto application = new Application(20150011);
     auto pr = new ProcessRecord(20150011, 9050);
     CgroupAdjuster::GetInstance().AdjustForkProcessGroup(*application, *pr);
+    SUCCEED();
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
