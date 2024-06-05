@@ -19,6 +19,8 @@
 #define private public
 #define protected public
 #include "sched_policy.h"
+#include "supervisor.h"
+#include "cgroup_adjuster.h"
 #undef private
 #undef protected
 
@@ -178,6 +180,21 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_010, Function 
 {
     const char* policyName = GetSchedPolicyShortenedName(SP_BACKGROUND);
     EXPECT_TRUE(!strcmp(policyName, "bg"));
+}
+
+/*
+ * @tc.number: ProcessGroupSubTest_AdjustProcess_001
+ * @tc.name: Adjust Fork Process Schedule
+ * @tc.type: FUNC
+ * @tc.require: issueI9TPCH
+ * @tc.desc:
+ */
+HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_AdjustProcess_001, Function | MediumTest | Level1)
+{
+    auto application = new Application(20150011);
+    auto pr = new ProcessRecord(20150011, 9050);
+    CgroupAdjuster::GetInstance().AdjustForkProcessGroup(*application, *pr);
+    SUCCEED();
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule

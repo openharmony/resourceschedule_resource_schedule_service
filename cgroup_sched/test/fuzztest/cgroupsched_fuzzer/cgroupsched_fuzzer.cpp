@@ -262,14 +262,12 @@ namespace ResourceSchedule {
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
 
-        auto event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_APP_STATE_OBSERVER, typeId);
-        cgroupEventHandler->ProcessEvent(event);
-
-        event = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_BGTASK_OBSERVER, typeId);
-        cgroupEventHandler->ProcessEvent(event);
-
-        event = AppExecFwk::InnerEvent::Get(EVENT_ID_DEFAULT, typeId);
-        cgroupEventHandler->ProcessEvent(event);
+        auto event1 = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_APP_STATE_OBSERVER, typeId);
+        auto event2 = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_BGTASK_OBSERVER, typeId);
+        auto event3 = AppExecFwk::InnerEvent::Get(EVENT_ID_DEFAULT, typeId);
+        cgroupEventHandler->ProcessEvent(event1);
+        cgroupEventHandler->ProcessEvent(event2);
+        cgroupEventHandler->ProcessEvent(event3);
 
         return true;
     }

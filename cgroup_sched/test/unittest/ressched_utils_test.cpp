@@ -66,5 +66,18 @@ HWTEST_F(ResschedUtilsTest, ProcessGroupSubTest_SchedPolicyType_002, Function | 
 {
     EXPECT_EQ(ResSchedUtils::GetInstance().CheckTidIsInPid(1, 1), true);
 }
+
+/**
+ * @tc.name: ResschedUtilsTest_UtilTest_001
+ * @tc.desc: Get Fork Process File Path
+ * @tc.type: FUNC
+ * @tc.require: issueI9TPCH
+ * @tc.desc:
+ */
+HWTEST_F(ResschedUtilsTest, ResschedUtilsTest_UtilTest_001, Function | MediumTest | Level1)
+{
+    std::string path = ResSchedUtils::GetInstance().GetProcessFilePath(20150111, "com.example.myapplication", 5973);
+    EXPECT_STREQ(path.c_str(), "/dev/pids/100/com.example.myapplication/app_5973/cgroup.procs");
+}
 }
 }

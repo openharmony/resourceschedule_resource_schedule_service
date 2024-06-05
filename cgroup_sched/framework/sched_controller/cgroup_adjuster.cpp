@@ -38,6 +38,7 @@ using OHOS::AppExecFwk::ApplicationState;
 using OHOS::AppExecFwk::AbilityState;
 using OHOS::AppExecFwk::ExtensionState;
 using OHOS::Rosen::WindowType;
+constexpr uint32_t MAX_SIZE = 32768;
 
 CgroupAdjuster& CgroupAdjuster::GetInstance()
 {
@@ -66,8 +67,12 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
             __func__, filePath.c_str(), strerror(errno));
         return;
     }
-    char fileContent[1024] = {0};
+    char fileContent[MAX_SIZE] = {0};
     int rd = read(fd, fileContent, sizeof(fileContent));
+    if (rd < 0) {
+        CGS_LOGE("%{public}s Read File %{public}s Error, error is %{public}s.",
+            __func__, filePath.c_str(), strerror(errno));
+    }
     const char *flag = "\n";
     char *line = strtok(fileContent, flag);
     while (line != NULL) {
