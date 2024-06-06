@@ -38,7 +38,7 @@ using OHOS::AppExecFwk::ApplicationState;
 using OHOS::AppExecFwk::AbilityState;
 using OHOS::AppExecFwk::ExtensionState;
 using OHOS::Rosen::WindowType;
-constexpr uint32_t MAX_SIZE = 32768;
+constexpr uint32_t MAX_SIZE = 4096;
 
 CgroupAdjuster& CgroupAdjuster::GetInstance()
 {
