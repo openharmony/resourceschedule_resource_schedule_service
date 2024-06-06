@@ -63,6 +63,7 @@ void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
         volumeEvent.volumeType, volumeEvent.volume);
     nlohmann::json payload;
     payload["volumeType"] = std::to_string(volumeEvent.volumeType);
+    payload["volumeLevel"] = std::to_string(volumeEvent.volume);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
         volumeEvent.volume, payload);
 }
