@@ -36,6 +36,7 @@ private:
     void HandleTaskUpdate(pid_t pid, const std::vector<uint32_t> &typeIds);
     void HandleTaskStop(pid_t pid);
     void HandleForeground(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    bool checkEnterScene();
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -85,10 +85,11 @@ HWTEST_F(SceneRecognizeTest, BgtaskTest001, Function | MediumTest | Level0)
     bgtaskRecognizer->OnDispatchResource(ResType::RES_TYPE_APP_STATE_CHANGE,
         ResType::ProcessStatus::PROCESS_FOREGROUND, payload);
     EXPECT_EQ(bgtaskRecognizer->isInBackgroundPerceivableScene_, false);
-    payload["pid"] = "4000";
+    payload["pid"] = "3000";
     bgtaskRecognizer->OnDispatchResource(ResType::RES_TYPE_APP_STATE_CHANGE,
         ResType::ProcessStatus::PROCESS_FOREGROUND, payload);
     EXPECT_EQ(bgtaskRecognizer->isInBackgroundPerceivableScene_, true);
+    payload["pid"] = "4000";
     payload["typeIds"] = { 1 };
     bgtaskRecognizer->OnDispatchResource(ResType::RES_TYPE_CONTINUOUS_TASK,
         ResType::ContinuousTaskStatus::CONTINUOUS_TASK_UPDATE, payload);
