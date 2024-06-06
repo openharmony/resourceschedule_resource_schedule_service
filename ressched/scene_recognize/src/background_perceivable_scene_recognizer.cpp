@@ -124,7 +124,7 @@ void BackgroundPerceivableSceneRecoginzer::HandleTaskUpdate(pid_t pid, const std
         if (!isInBackgroundPerceivableScene_) {
             nlohmann::json payload;
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE,
-            ResType::BackgroundPerceivableStatus::PERCEIVABLE_START, payload);
+                ResType::BackgroundPerceivableStatus::PERCEIVABLE_START, payload);
             isInBackgroundPerceivableScene_ = true;
         }
     }
