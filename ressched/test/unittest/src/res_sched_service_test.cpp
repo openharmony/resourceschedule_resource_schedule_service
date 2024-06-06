@@ -28,6 +28,7 @@
 #include "res_sched_service_ability.h"
 #include "res_sched_systemload_notifier_proxy.h"
 #include "res_sched_systemload_notifier_stub.h"
+#include "res_type.h"
 #include "token_setproc.h"
 
 namespace OHOS {
@@ -172,6 +173,22 @@ HWTEST_F(ResSchedServiceTest, Report001, Function | MediumTest | Level0)
     nlohmann::json payload;
     EXPECT_TRUE(resSchedService_ != nullptr);
     resSchedService_->ReportData(0, 0, payload);
+}
+
+/**
+ * @tc.name: ReportSyncEvent
+ * @tc.desc: test func ReportSyncEvent.
+ * @tc.type: FUNC
+ * @tc.require: I9QN9E
+ */
+HWTEST_F(ResSchedServiceTest, ReportSyncEvent, Function | MediumTest | Level0)
+{
+    EXPECT_NE(resSchedService_, nullptr);
+    nlohmann::json payload({{"pid", 100}});
+    nlohmann::json reply;
+    int32_t ret = resSchedService_->ReportSyncEvent(ResType::SYNC_RES_TYPE_THAW_ONE_APP, 0, payload, reply);
+    // 事件分发失败，返回err
+    EXPECT_NE(ret, 0);
 }
 
 static void ReportTask()
@@ -503,6 +520,12 @@ public:
     {
     }
 
+    int32_t ReportSyncEvent(const uint32_t resType, const int64_t value, const nlohmann::json& payload,
+        nlohmann::json& reply) override
+    {
+        return 0;
+    }
+
     int32_t KillProcess(const nlohmann::json& payload) override
     {
         return 0;
@@ -548,6 +571,26 @@ HWTEST_F(ResSchedServiceTest, ReportDataInner001, Function | MediumTest | Level0
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
     SUCCEED();
+}
+
+/**
+ * @tc.name: ReportSyncEventInner
+ * @tc.desc: test func ReportSyncEventInner.
+ * @tc.type: FUNC
+ * @tc.require: I9QN9E
+ */
+HWTEST_F(ResSchedServiceTest, ReportSyncEventInner, Function | MediumTest | Level0)
+{
+    auto serviceStub = make_shared<TestResSchedServiceStub>();
+    EXPECT_NE(serviceStub, nullptr);
+    serviceStub->Init();
+    MessageParcel data;
+    data.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
+    data.WriteUint32(ResType::SYNC_RES_TYPE_THAW_ONE_APP);
+    data.WriteInt64(0);
+    data.WriteString(R"({"pid": 100})");
+    MessageParcel reply;
+    EXPECT_NE(serviceStub->ReportSyncEventInner(data, reply), 0);
 }
 
 static void ReportDataInnerTask()
@@ -627,6 +670,9 @@ HWTEST_F(ResSchedServiceTest, RemoteRequest001, Function | MediumTest | Level0)
     MessageParcel reply;
     int32_t res = resSchedServiceStub_->OnRemoteRequest(
         static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA), reply, reply, option);
+    EXPECT_TRUE(res);
+    res = resSchedServiceStub_->OnRemoteRequest(
+        static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_SYNC_EVENT), reply, reply, option);
     EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(
         static_cast<uint32_t>(ResourceScheduleInterfaceCode::KILL_PROCESS), reply, reply, option);

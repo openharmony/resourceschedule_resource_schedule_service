@@ -38,6 +38,17 @@ public:
     void ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload) override;
 
     /**
+     * @brief Report the synchronization event to the resource schedule service.
+     *
+     * @param resType Indicates the resource type, all of the type have listed in res_type.h.
+     * @param value Indicates the value of the resource type, defined by the developers.
+     * @param payload Indicates the context info of the resource type event.
+     * @param reply Indicates the return value of service processing.
+     */
+    int32_t ReportSyncEvent(const uint32_t resType, const int64_t value, const nlohmann::json& payload,
+        nlohmann::json& reply) override;
+
+    /**
      * @brief Kill process with pid.
      *
      * @param payload Indicates the context info of the kill message.
@@ -79,6 +90,11 @@ public:
      * @brief Destroy the ResSchedServiceProxy object
      */
     virtual ~ResSchedServiceProxy() {}
+
+private:
+    int32_t WriteParcelForReportData(const uint32_t resType, const int64_t value, const nlohmann::json& payload,
+        MessageParcel& data);
+    bool StringToJson(const std::string& str, nlohmann::json& jsonObj);
 
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedServiceProxy);

@@ -55,6 +55,12 @@ void ResSchedService::ReportData(uint32_t resType, int64_t value, const nlohmann
     ResSchedMgr::GetInstance().ReportData(resType, value, *payloadM);
 }
 
+int32_t ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t value, const nlohmann::json& payload,
+    nlohmann::json& reply)
+{
+    return PluginMgr::GetInstance().DeliverResource(std::make_shared<ResData>(resType, value, payload, reply));
+}
+
 int32_t ResSchedService::KillProcess(const nlohmann::json& payload)
 {
     return ResSchedMgr::GetInstance().KillProcessByClient(payload);

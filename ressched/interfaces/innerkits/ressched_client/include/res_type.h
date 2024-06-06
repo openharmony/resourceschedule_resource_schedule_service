@@ -226,8 +226,16 @@ enum : uint32_t {
     RES_TYPE_ACCOUNT_ACTIVATING = 96,
     // report silent playback in renderer
     RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK = 97,
+    // last async resType
+    ASYNC_RES_TYPE_LAST,
+    // first sync resType
+    SYNC_RES_TYPE_FIRST = ASYNC_RES_TYPE_LAST,
+    // thaw one application
+    SYNC_RES_TYPE_THAW_ONE_APP,
+    // last sync resType
+    SYNC_RES_TYPE_LAST,
     // last resType
-    RES_TYPE_LAST,
+    RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
 };
 
 /**
