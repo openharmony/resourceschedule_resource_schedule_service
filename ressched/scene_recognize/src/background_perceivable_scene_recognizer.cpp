@@ -96,10 +96,24 @@ void BackgroundPerceivableSceneRecoginzer::HandleContinuousTask(uint32_t resType
     }
 }
 
+bool BackgroundPerceivableSceneRecoginzer::checkEnterScene()
+{
+    if (isInBackgroundPerceivableScene_ || foregroundPid_ == sceneboardPid_) {
+        return false;
+    }
+    if (perceivableTasks_.size() > 1) {
+        return true;
+    }
+    if (perceivableTasks_.size() > 0 && perceivableTasks_.find(foregroundPid_) == perceivableTasks_.end()) {
+        return true;
+    }
+    return false;
+}
+
 void BackgroundPerceivableSceneRecoginzer::HandleTaskStart(pid_t pid, const std::vector<uint32_t> &typeIds)
 {
     perceivableTasks_[pid] = typeIds;
-    if (!isInBackgroundPerceivableScene_ && foregroundPid_ != sceneboardPid_) {
+    if (checkEnterScene()) {
         RESSCHED_LOGI("perceivable task start enter scene");
         nlohmann::json payload;
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE,
@@ -121,7 +135,7 @@ void BackgroundPerceivableSceneRecoginzer::HandleTaskUpdate(pid_t pid, const std
         }
     } else {
         perceivableTasks_[pid] = typeIds;
-        if (!isInBackgroundPerceivableScene_) {
+        if (checkEnterScene()) {
             nlohmann::json payload;
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE,
                 ResType::BackgroundPerceivableStatus::PERCEIVABLE_START, payload);
@@ -157,7 +171,7 @@ void BackgroundPerceivableSceneRecoginzer::HandleForeground(uint32_t resType, in
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE,
             ResType::BackgroundPerceivableStatus::PERCEIVABLE_STOP, curPayload);
         isInBackgroundPerceivableScene_ = false;
-    } else if (foregroundPid_ != sceneboardPid_ && !isInBackgroundPerceivableScene_ && !perceivableTasks_.empty()) {
+    } else if (checkEnterScene()) {
         RESSCHED_LOGI("sceneboard background and has perceivable task enter scene");
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE,
             ResType::BackgroundPerceivableStatus::PERCEIVABLE_START, curPayload);
