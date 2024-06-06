@@ -91,6 +91,7 @@ void UpdatingSceneRecognizer::OnDispatchResource(uint32_t resType, int64_t value
         return;
     }
     if (isDeviceUpdating_) {
+        RESSCHED_LOGI("enter updating scene");
         nlohmann::json payload;
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SYSTEM_UPDATED, 0, payload);
     }
