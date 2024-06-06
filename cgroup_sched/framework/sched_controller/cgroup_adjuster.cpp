@@ -63,15 +63,15 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
     std::string filePath = ResSchedUtils::GetInstance().GetProcessFilePath(app.GetUid(), app.GetName(), pr.GetPid());
     int fd = open(filePath.c_str(), O_RDONLY);
     if (fd < 0) {
-        CGS_LOGE("%{public}s File is not opened: %{public}s, error is %{public}s.",
-            __func__, filePath.c_str(), strerror(errno));
+        CGS_LOGD("%{public}s File is not opened, error is %{public}s.",
+            __func__, strerror(errno));
         return;
     }
     char fileContent[MAX_SIZE] = {0};
     int rd = read(fd, fileContent, sizeof(fileContent));
     if (rd < 0) {
-        CGS_LOGE("%{public}s Read File %{public}s Error, error is %{public}s.",
-            __func__, filePath.c_str(), strerror(errno));
+        CGS_LOGE("%{public}s Read File Error, error is %{public}s.",
+            __func__, strerror(errno));
     }
     const char *flag = "\n";
     char *line = strtok(fileContent, flag);
