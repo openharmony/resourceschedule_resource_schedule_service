@@ -38,6 +38,8 @@ public:
 
 private:
     int32_t ReportDataInner(MessageParcel& data, MessageParcel& reply);
+    int32_t ReportSyncEventInner(MessageParcel& data, MessageParcel& reply);
+    int32_t ParseAndCheckReportDataParcel(MessageParcel& data, uint32_t& type, int64_t& value, std::string& payload);
     int32_t KillProcessInner(MessageParcel& data, MessageParcel& reply);
     void RegisterSystemloadNotifierInner(MessageParcel& data, MessageParcel& reply);
     void UnRegisterSystemloadNotifierInner(MessageParcel& data, MessageParcel& reply);

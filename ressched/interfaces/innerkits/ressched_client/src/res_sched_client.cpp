@@ -57,6 +57,22 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
     rss_->ReportData(resType, value, payload);
 }
 
+int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t value, const nlohmann::json& payload,
+    nlohmann::json& reply)
+{
+    if (TryConnect() != ERR_OK) {
+        return RES_SCHED_CONNECT_FAIL;
+    }
+    RESSCHED_LOGD("%{public}s: resType=%{public}u, value=%{public}lld.", __func__, resType, value);
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (rss_ == nullptr) {
+        RESSCHED_LOGD("%{public}s: fail to get rss.", __func__);
+        return RES_SCHED_CONNECT_FAIL;
+    }
+    return rss_->ReportSyncEvent(resType, value, payload, reply);
+}
+
 int32_t ResSchedClient::KillProcess(const std::unordered_map<std::string, std::string>& mapPayload)
 {
     if (TryConnect() != ERR_OK) {

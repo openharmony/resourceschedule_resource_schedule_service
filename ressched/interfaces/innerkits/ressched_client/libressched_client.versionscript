@@ -16,6 +16,7 @@
     *IResSchedService*;
     *ResSchedClient*GetInstance*;
     *ResSchedClient*ReportData*;
+    *ResSchedClient*ReportSyncEvent*;
     *ResSchedClient*KillProcess*;
     *ResSchedClient*StopRemoteObject*;
     *ResSchedClient*RegisterSystemloadNotifier*;

@@ -35,6 +35,17 @@ public:
     virtual void ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload) = 0;
 
     /**
+     * @brief Report the synchronization event to the resource schedule service.
+     *
+     * @param resType Indicates the resource type, all of the type have listed in res_type.h.
+     * @param value Indicates the value of the resource type, defined by the developers.
+     * @param payload Indicates the context info of the resource type event.
+     * @param reply Indicates the return value of service processing.
+     */
+    virtual int32_t ReportSyncEvent(const uint32_t resType, const int64_t value, const nlohmann::json& payload,
+        nlohmann::json& reply) = 0;
+
+    /**
      * @brief Kill process with pid.
      *
      * @param payload Indicates the context info of the kill message.

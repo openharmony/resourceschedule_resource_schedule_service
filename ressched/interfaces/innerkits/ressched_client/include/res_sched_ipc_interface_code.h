@@ -28,6 +28,7 @@ namespace ResourceSchedule {
         UNREGISTER_SYSTEMLOAD_NOTIFIER = 4,
         GET_SYSTEMLOAD_LEVEL = 5,
         TOUCH_DOWN_APP_PRELOAD = 6,
+        REPORT_SYNC_EVENT = 7,
     };
 
     enum class ResourceSceduleSystemloadNotifierCode {

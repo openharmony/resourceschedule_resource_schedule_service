@@ -28,6 +28,9 @@ public:
 
     void ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload) override;
 
+    int32_t ReportSyncEvent(const uint32_t resType, const int64_t value, const nlohmann::json& payload,
+        nlohmann::json& reply) override;
+
     int32_t KillProcess(const nlohmann::json& payload) override;
 
     void RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier) override;
