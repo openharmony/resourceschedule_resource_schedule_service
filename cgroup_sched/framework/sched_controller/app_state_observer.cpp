@@ -118,6 +118,7 @@ void RmsApplicationStateObserver::MarshallingProcessData(const ProcessData &proc
     payload["extensionType"] = std::to_string(static_cast<uint32_t>(processData.extensionType));
     payload["isTestMode"] = std::to_string(processData.isTestMode);
     payload["processName"] = processData.processName;
+    payload["hostPid"] = std::to_string(processData.hostPid);
 }
 
 void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processData)
