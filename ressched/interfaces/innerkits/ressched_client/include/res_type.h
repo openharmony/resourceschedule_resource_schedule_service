@@ -232,6 +232,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_FIRST = ASYNC_RES_TYPE_LAST,
     // thaw one application
     SYNC_RES_TYPE_THAW_ONE_APP,
+    // get all suspend state
+    SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
