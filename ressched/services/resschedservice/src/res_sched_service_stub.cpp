@@ -239,7 +239,7 @@ int32_t ResSchedServiceStub::ParseAndCheckReportDataParcel(MessageParcel& data, 
     READ_PARCEL(data, Int64, value, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
     READ_PARCEL(data, String, payload, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
     if (payload.size() > PAYLOAD_MAX_SIZE) {
-        RESSCHED_LOGE("too long payload.size:%{public}u", payload.size());
+        RESSCHED_LOGE("too long payload.size:%{public}u", (uint32_t)payload.size());
         return ERR_RES_SCHED_PARCEL_ERROR;
     }
     return ERR_OK;
@@ -264,7 +264,7 @@ int32_t ResSchedServiceStub::ReportSyncEventInner(MessageParcel& input, MessageP
     nlohmann::json reply;
     ret = ReportSyncEvent(type, value, payload, reply);
     RESSCHED_LOGD("%{public}s: clientPid=%{public}d, callingUid=%{public}d, type=%{public}u, value=%{public}lld, "
-                  "ret=%{public}d", __func__, clientPid, callingUid, type, value, ret);
+                  "ret=%{public}d", __func__, clientPid, callingUid, type, (long long)value, ret);
     WRITE_PARCEL(output, Int32, ret, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
     WRITE_PARCEL(output, String, reply.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace),
         ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
