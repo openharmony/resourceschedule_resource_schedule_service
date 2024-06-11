@@ -132,7 +132,8 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleTaskStart(pid_t pi
     }
 }
 
-void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleTaskUpdate(pid_t pid, const std::vector<uint32_t> &filteredTypeIds)
+void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleTaskUpdate(pid_t pid,
+    const std::vector<uint32_t> &filteredTypeIds)
 {
     if (filteredTypeIds.empty()) {
         if (perceivableTasks_.find(pid) != perceivableTasks_.end()) {
