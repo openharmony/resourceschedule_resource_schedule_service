@@ -39,6 +39,7 @@ namespace {
     constexpr int32_t LIMIT_REQUEST_TIME = 1000;
     constexpr int64_t FOUR_HOUR_TIME = 4 * 60 * 60 * 1000;
     static const std::unordered_set<uint32_t> scbRes = {
+        ResType::SYNC_RES_TYPE_THAW_ONE_APP,
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
         ResType::RES_TYPE_KEY_PERF_SCENE,
@@ -67,6 +68,8 @@ namespace {
         ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
     };
     static const std::unordered_set<uint32_t> saRes_ = {
+        ResType::SYNC_RES_TYPE_THAW_ONE_APP,
+        ResType::SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
         ResType::RES_TYPE_SCREEN_STATUS,
         ResType::RES_TYPE_APP_STATE_CHANGE,
         ResType::RES_TYPE_ABILITY_STATE_CHANGE,
@@ -134,7 +137,7 @@ namespace {
         return descriptor == remoteDescriptor;
     }
 
-    bool IsHasPermission(uint32_t type, std::unordered_set<uint32_t> saRes)
+    bool IsHasPermission(const uint32_t type, const std::unordered_set<uint32_t>& saRes)
     {
         if (saRes.find(type) == saRes.end()) {
             RESSCHED_LOGE("resType:%{public}d not sa report", type);
@@ -154,12 +157,12 @@ namespace {
         return true;
     }
 
-    bool IsTypeVaild(uint32_t type)
+    bool IsTypeVaild(const uint32_t type)
     {
         return type >= ResType::RES_TYPE_FIRST && type < ResType::RES_TYPE_LAST;
     }
 
-    bool IsThirdPartType(uint32_t type, std::unordered_set<uint32_t> thirdPartRes)
+    bool IsThirdPartType(const uint32_t type, const std::unordered_set<uint32_t>& thirdPartRes)
     {
         if (thirdPartRes.find(type) == thirdPartRes.end()) {
             RESSCHED_LOGD("resType:%{public}d not hap app report", type);
@@ -202,30 +205,69 @@ ResSchedServiceStub::~ResSchedServiceStub()
 
 int32_t ResSchedServiceStub::ReportDataInner(MessageParcel& data, [[maybe_unused]] MessageParcel& reply)
 {
+    uint32_t type = 0;
+    int64_t value = 0;
+    std::string payload;
+    int32_t ret = ParseAndCheckReportDataParcel(data, type, value, payload);
+    if (ret != ERR_OK) {
+        RESSCHED_LOGE("%{public}s: parse fail=%{public}d type=%{public}u", __func__, ret, type);
+        return ret;
+    }
+
+    ReportData(type, value, StringToJsonObj(payload));
+    return ERR_OK;
+}
+
+int32_t ResSchedServiceStub::ParseAndCheckReportDataParcel(MessageParcel& data, uint32_t& type, int64_t& value,
+    std::string& payload)
+{
     if (!IsValidToken(data)) {
         return ERR_RES_SCHED_PARCEL_ERROR;
     }
-    uint32_t type = 0;
+
     READ_PARCEL(data, Uint32, type, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
     if (!IsTypeVaild(type)) {
-        RESSCHED_LOGE("type:%{public}d is invalid", type);
+        RESSCHED_LOGE("type:%{public}u is invalid", type);
         return ERR_RES_SCHED_PARCEL_ERROR;
     }
     if (!IsSBDResType(type) && !IsThirdPartType(type, thirdPartRes_) && !IsHasPermission(type, saRes_)) {
+        RESSCHED_LOGE("type:%{public}u, no permission", type);
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
-    int64_t value = 0;
+
     READ_PARCEL(data, Int64, value, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
-
-    std::string payload;
     READ_PARCEL(data, String, payload, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
-
-    if (payload.size() <= PAYLOAD_MAX_SIZE) {
-        ReportData(type, value, StringToJsonObj(payload));
-    } else {
-        RESSCHED_LOGE("The payload is too long. DoS.");
+    if (payload.size() > PAYLOAD_MAX_SIZE) {
+        RESSCHED_LOGE("too long payload.size:%{public}u", payload.size());
+        return ERR_RES_SCHED_PARCEL_ERROR;
     }
     return ERR_OK;
+}
+
+int32_t ResSchedServiceStub::ReportSyncEventInner(MessageParcel& input, MessageParcel& output)
+{
+    uint32_t type = 0;
+    int64_t value = 0;
+    std::string payloadStr;
+    int32_t ret = ParseAndCheckReportDataParcel(input, type, value, payloadStr);
+    if (ret != ERR_OK) {
+        RESSCHED_LOGE("%{public}s: parse fail=%{public}d type=%{public}u", __func__, ret, type);
+        return ret;
+    }
+
+    nlohmann::json payload = StringToJsonObj(payloadStr);
+    int32_t clientPid = IPCSkeleton::GetCallingPid();
+    int32_t callingUid = IPCSkeleton::GetCallingUid();
+    payload["clientPid"] = std::to_string(clientPid);
+    payload["callingUid"] = std::to_string(callingUid);
+    nlohmann::json reply;
+    ret = ReportSyncEvent(type, value, payload, reply);
+    RESSCHED_LOGD("%{public}s: clientPid=%{public}d, callingUid=%{public}d, type=%{public}u, value=%{public}lld, "
+                  "ret=%{public}d", __func__, clientPid, callingUid, type, value, ret);
+    WRITE_PARCEL(output, Int32, ret, ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
+    WRITE_PARCEL(output, String, reply.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace),
+        ERR_RES_SCHED_PARCEL_ERROR, ResSchedServiceStub);
+    return ret;
 }
 
 int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel& reply)
@@ -403,6 +445,8 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
     switch (code) {
         case static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA):
             return ReportDataInner(data, reply);
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_SYNC_EVENT):
+            return ReportSyncEventInner(data, reply);
         case static_cast<uint32_t>(ResourceScheduleInterfaceCode::KILL_PROCESS):
             return KillProcessInner(data, reply);
         case static_cast<uint32_t>(ResourceScheduleInterfaceCode::REGISTER_SYSTEMLOAD_NOTIFIER):

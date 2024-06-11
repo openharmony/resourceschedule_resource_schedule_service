@@ -19,6 +19,7 @@
 #include <vector>
 #include "nativetoken_kit.h"
 #include "res_sched_client.h"
+#include "res_type.h"
 #include "res_sched_systemload_notifier_client.h"
 #include "token_setproc.h"
 
@@ -128,6 +129,24 @@ HWTEST_F(ResSchedClientTest, KillProcess002, Function | MediumTest | Level0)
     MockProcess(uid);
     ResSchedClient::GetInstance().KillProcess(mapPayload);
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
+}
+
+/**
+ * @tc.name: ReportSyncEvent
+ * @tc.desc: test func ReportSyncEvent
+ * @tc.type: FUNC
+ * @tc.require: I9QN9E
+ */
+HWTEST_F(ResSchedClientTest, ReportSyncEvent, Function | MediumTest | Level0)
+{
+    uint32_t resType = ResType::SYNC_RES_TYPE_THAW_ONE_APP;
+    nlohmann::json payload;
+    payload.emplace("pid", 1);
+    payload.emplace("reason", "test_reason");
+    nlohmann::json reply;
+    int32_t ret = ResSchedClient::GetInstance().ReportSyncEvent(resType, 0, payload, reply);
+    // 权限校验失败，返回err
+    EXPECT_NE(ret, 0);
 }
 
 /**

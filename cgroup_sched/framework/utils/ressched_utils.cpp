@@ -163,7 +163,7 @@ std::string ResSchedUtils::GetProcessFilePath(int32_t uid, std::string bundleNam
         .append("/cgroup.procs");
     char absolutePath[PATH_MAX] = {0};
     if (!realpath(path.c_str(), absolutePath)) {
-        CGS_LOGE("%{public}s Path Error: Path: %{public}s.", __func__, path.c_str());
+        CGS_LOGD("%{public}s Get Proc File Path Error.", __func__);
         return "";
     }
     return std::string(absolutePath);

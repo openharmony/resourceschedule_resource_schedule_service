@@ -229,11 +229,21 @@ enum : uint32_t {
     // report continuous application install
     RES_TYPE_CONTINUOUS_INSTALL = 98,
     // report system updated
-    RES_TYPE_SYSTEM_UPDATED = 99,
+    RES_TYPE_FIRST_BOOT_AFTER_SYSTEM_UPGRADE = 99,
     // report background perceivable scene
     RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE = 100,
+    // last async resType
+    ASYNC_RES_TYPE_LAST,
+    // first sync resType
+    SYNC_RES_TYPE_FIRST = ASYNC_RES_TYPE_LAST,
+    // thaw one application
+    SYNC_RES_TYPE_THAW_ONE_APP,
+    // get all suspend state
+    SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
+    // last sync resType
+    SYNC_RES_TYPE_LAST,
     // last resType
-    RES_TYPE_LAST,
+    RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
 };
 
 /**

@@ -31,11 +31,7 @@ void ResSchedServiceProxy::ReportData(uint32_t resType, int64_t value, const nlo
     MessageParcel data;
     MessageParcel reply;
     MessageOption option = { MessageOption::TF_ASYNC };
-    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), void(), ResSchedServiceProxy);
-    WRITE_PARCEL(data, Uint32, resType, void(), ResSchedServiceProxy);
-    WRITE_PARCEL(data, Int64, value, void(), ResSchedServiceProxy);
-    WRITE_PARCEL(data, String, payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace), void(),
-        ResSchedServiceProxy);
+    WriteParcelForReportData(resType, value, payload, data);
     error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA),
         data, reply, option);
     if (error != NO_ERROR) {
@@ -43,6 +39,58 @@ void ResSchedServiceProxy::ReportData(uint32_t resType, int64_t value, const nlo
         return;
     }
     RESSCHED_LOGD("%{public}s, success.", __func__);
+}
+
+int32_t ResSchedServiceProxy::ReportSyncEvent(const uint32_t resType, const int64_t value,
+    const nlohmann::json& payload, nlohmann::json& reply)
+{
+    MessageParcel data;
+    WriteParcelForReportData(resType, value, payload, data);
+    MessageParcel response;
+    MessageOption option = { MessageOption::TF_SYNC };
+    int32_t ret = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_SYNC_EVENT),
+        data, response, option);
+    if (ret != NO_ERROR) {
+        RESSCHED_LOGE("%{public}s: SendRequest fail=%{public}d.", __func__, ret);
+        return RES_SCHED_REQUEST_FAIL;
+    }
+
+    ret = response.ReadInt32();
+    if (ret == NO_ERROR && !StringToJson(response.ReadString(), reply)) {
+        RESSCHED_LOGE("%{public}s: parse reply fail.", __func__);
+        ret = RES_SCHED_DATA_ERROR;
+    }
+    RESSCHED_LOGD("%{public}s: ret=%{public}d.", __func__, ret);
+    return ret;
+}
+
+int32_t ResSchedServiceProxy::WriteParcelForReportData(const uint32_t resType, const int64_t value,
+    const nlohmann::json& payload, MessageParcel& data)
+{
+    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), RES_SCHED_DATA_ERROR,
+        ResSchedServiceProxy);
+    WRITE_PARCEL(data, Uint32, resType, RES_SCHED_DATA_ERROR, ResSchedServiceProxy);
+    WRITE_PARCEL(data, Int64, value, RES_SCHED_DATA_ERROR, ResSchedServiceProxy);
+    WRITE_PARCEL(data, String, payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace),
+        RES_SCHED_DATA_ERROR, ResSchedServiceProxy);
+    return NO_ERROR;
+}
+
+bool ResSchedServiceProxy::StringToJson(const std::string& str, nlohmann::json& jsonObj)
+{
+    if (str.empty()) {
+        return true;
+    }
+    jsonObj = nlohmann::json::parse(str, nullptr, false);
+    if (jsonObj.is_discarded()) {
+        RESSCHED_LOGE("%{public}s: parse fail, str=%{public}s.", __func__, str.c_str());
+        return false;
+    }
+    if (!jsonObj.is_object()) {
+        RESSCHED_LOGE("%{public}s: str=%{public}s is not jsonObj.", __func__, str.c_str());
+        return false;
+    }
+    return true;
 }
 
 int32_t ResSchedServiceProxy::KillProcess(const nlohmann::json& payload)
