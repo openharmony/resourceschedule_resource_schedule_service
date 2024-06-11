@@ -77,6 +77,9 @@ HWTEST_F(ResschedUtilsTest, ProcessGroupSubTest_SchedPolicyType_002, Function | 
 HWTEST_F(ResschedUtilsTest, ResschedUtilsTest_UtilTest_001, Function | MediumTest | Level1)
 {
     std::string path = ResSchedUtils::GetInstance().GetProcessFilePath(20150111, "com.example.myapplication", 5973);
+    if (!realpath(path.c_str(), absolutePath)) {
+        EXPECT_STREQ(path.c_str(), "");
+    }
     EXPECT_STREQ(path.c_str(), "/dev/pids/100/com.example.myapplication/app_5973/cgroup.procs");
 }
 }
