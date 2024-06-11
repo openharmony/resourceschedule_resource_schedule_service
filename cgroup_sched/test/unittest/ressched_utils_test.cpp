@@ -80,8 +80,10 @@ HWTEST_F(ResschedUtilsTest, ResschedUtilsTest_UtilTest_001, Function | MediumTes
     char absolutePath[PATH_MAX] = {0};
     if (!realpath(path.c_str(), absolutePath)) {
         EXPECT_STREQ(path.c_str(), "");
+    } else {
+        EXPECT_STREQ(std::string(absolutePath).c_str(),
+            "/dev/pids/100/com.example.myapplication/app_5973/cgroup.procs");
     }
-    EXPECT_STREQ(std::string(absolutePath).c_str(), "/dev/pids/100/com.example.myapplication/app_5973/cgroup.procs");
 }
 }
 }
