@@ -20,11 +20,11 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-class BackgroundPerceivableSceneRecoginzer : public SceneRecognizerBase {
+class BackgroundSensitiveTaskOverlappingSceneRecognizer : public SceneRecognizerBase {
 public:
-    BackgroundPerceivableSceneRecoginzer();
-    ~BackgroundPerceivableSceneRecoginzer();
-    void OnDispatchResource(uint32_t, int64_t value, const nlohmann::json& payload) override;
+    BackgroundSensitiveTaskOverlappingSceneRecognizer();
+    ~BackgroundSensitiveTaskOverlappingSceneRecognizer();
+    void OnDispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload) override;
 private:
     pid_t foregroundPid_ = -1;
     pid_t sceneboardPid_ = -1;
@@ -36,7 +36,7 @@ private:
     void HandleTaskUpdate(pid_t pid, const std::vector<uint32_t> &typeIds);
     void HandleTaskStop(pid_t pid);
     void HandleForeground(uint32_t resType, int64_t value, const nlohmann::json& payload);
-    bool checkEnterScene();
+    bool CheckEnterScene();
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

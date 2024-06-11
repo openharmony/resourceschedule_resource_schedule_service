@@ -20,16 +20,15 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-class UpdatingSceneRecognizer : public SceneRecognizerBase {
+class SystemUpgradeSceneRecognizer : public SceneRecognizerBase {
 public:
-    ~UpdatingSceneRecognizer();
-    UpdatingSceneRecognizer();
+    ~SystemUpgradeSceneRecognizer();
+    SystemUpgradeSceneRecognizer();
     void OnDispatchResource(uint32_t, int64_t value, const nlohmann::json& payload) override;
 private:
-    bool isDeviceUpdating_;
+    bool isSystemUpgraded_;
 
     void Init();
-    std::string GetOldSystemFingerprint();
     std::string GetCurSystemFingerprint();
 };
 } // namespace ResourceSchedule

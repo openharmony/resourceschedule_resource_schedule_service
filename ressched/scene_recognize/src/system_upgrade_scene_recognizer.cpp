@@ -15,7 +15,7 @@
 
 #include <file_ex.h>
 
-#include "updating_scene_recognizer.h"
+#include "system_upgrade_scene_recognizer.h"
 #include "ffrt_inner.h"
 #include "parameters.h"
 #include "plugin_mgr.h"
@@ -28,7 +28,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     static const std::string OLD_SYSTEM_FINGERPRINT_PATH = "/data/service/el1/public/ressched/device_version";
-    static const std::string SEPARATOR = "/";
+    static const std::string SEPARATOR = "|";
     const std::vector<std::string> FINGERPRINTS = {
         "const.product.software.version",
         "const.product.build.type",
@@ -40,40 +40,32 @@ namespace {
     };
 }
 
-UpdatingSceneRecognizer::~UpdatingSceneRecognizer()
+SystemUpgradeSceneRecognizer::~SystemUpgradeSceneRecognizer()
 {
     RESSCHED_LOGI("~UpdatingSceneRecognizer");
 }
 
-UpdatingSceneRecognizer::UpdatingSceneRecognizer()
+SystemUpgradeSceneRecognizer::SystemUpgradeSceneRecognizer()
 {
     Init();
 }
 
-void UpdatingSceneRecognizer::Init()
+void SystemUpgradeSceneRecognizer::Init()
 {
     std::string oldSystemFingerprint;
     OHOS::LoadStringFromFile(OLD_SYSTEM_FINGERPRINT_PATH, oldSystemFingerprint);
     std::string curSystemFingerprint = GetCurSystemFingerprint();
-    isDeviceUpdating_ = oldSystemFingerprint.empty() || (oldSystemFingerprint != curSystemFingerprint);
-    if (isDeviceUpdating_) {
+    isSystemUpgraded_ = oldSystemFingerprint.empty() || (oldSystemFingerprint != curSystemFingerprint);
+    if (isSystemUpgraded_) {
         OHOS::SaveStringToFile(OLD_SYSTEM_FINGERPRINT_PATH, curSystemFingerprint, true);
     }
 }
 
-std::string UpdatingSceneRecognizer::GetOldSystemFingerprint()
-{
-    std::string content;
-    PluginMgr::GetInstance().GetConfigContent(-1, OLD_SYSTEM_FINGERPRINT_PATH, content);
-    return content;
-}
-
-std::string UpdatingSceneRecognizer::GetCurSystemFingerprint()
+std::string SystemUpgradeSceneRecognizer::GetCurSystemFingerprint()
 {
     std::string curSystemFingerprint;
     for (const auto &item : FINGERPRINTS) {
-        std::string itemFingerprintDef;
-        std::string itemFingerprint = OHOS::system::GetParameter(item, itemFingerprintDef);
+        std::string itemFingerprint = OHOS::system::GetParameter(item, "");
         if (itemFingerprint.empty()) {
             continue;
         }
@@ -85,15 +77,15 @@ std::string UpdatingSceneRecognizer::GetCurSystemFingerprint()
     return curSystemFingerprint;
 }
  
-void UpdatingSceneRecognizer::OnDispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload)
+void SystemUpgradeSceneRecognizer::OnDispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (resType != ResType::RES_TYPE_BOOT_COMPLETED) {
         return;
     }
-    if (isDeviceUpdating_) {
+    if (isSystemUpgraded_) {
         RESSCHED_LOGI("enter updating scene");
         nlohmann::json payload;
-        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SYSTEM_UPDATED, 0, payload);
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_FIRST_BOOT_AFTER_SYSTEM_UPGRADE, 0, payload);
     }
 }
 } // namespace ResourceSchedule
