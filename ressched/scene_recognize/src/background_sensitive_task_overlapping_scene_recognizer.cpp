@@ -15,6 +15,7 @@
 
 #include <file_ex.h>
 #include <set>
+#include <sstream>
 
 #include "background_sensitive_task_overlapping_scene_recognizer.h"
 #include "background_mode.h"
@@ -78,13 +79,20 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleContinuousTask(uin
     if (payload.contains(TYPE_IDS_KEY) && payload[TYPE_IDS_KEY].is_array()) {
         typeIds = payload[TYPE_IDS_KEY].get<std::vector<uint32_t>>();
     }
+    std::stringstream typeIdsStr;
     for (auto it = typeIds.begin(); it != typeIds.end();) {
+        if (!typeIdsStr.str().empty()) {
+            typeIdsStr << ", ";    
+        }
+        typeIdsStr << *it;
         if (PERCEIVABLE_MODES.find(*it) == PERCEIVABLE_MODES.end()) {
             it = typeIds.erase(it);
         } else {
             it ++;
         }
     }
+    RESSCHED_LOGI("%{public}s, resType:%{public}d, value:%{public}ld, typeIds:{%{public}s}",
+        __func__, resType, value, typeIdsStr);
     if (value == ResType::ContinuousTaskStatus::CONTINUOUS_TASK_START && !typeIds.empty()) {
         HandleTaskStart(pid, typeIds);
     } else if (value == ResType::ContinuousTaskStatus::CONTINUOUS_TASK_UPDATE) {
@@ -107,7 +115,7 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleContinuousTask(uin
 bool BackgroundSensitiveTaskOverlappingSceneRecognizer::CheckEnterScene()
 {
     if (isInBackgroundPerceivableScene_ || foregroundPid_ == sceneboardPid_) {
-        RESSCHED_LOGI("not int background sensitive scene or foreground is sceneboard");
+        RESSCHED_LOGD("already in background sensitive scene or foreground is sceneboard");
         return false;
     }
     if (perceivableTasks_.size() > 1) {
@@ -119,16 +127,29 @@ bool BackgroundSensitiveTaskOverlappingSceneRecognizer::CheckEnterScene()
     return false;
 }
 
+void BackgroundSensitiveTaskOverlappingSceneRecognizer::EnterScene()
+{
+    nlohmann::json payload;
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE,
+        ResType::BackgroundPerceivableStatus::PERCEIVABLE_START, payload);
+    isInBackgroundPerceivableScene_ = true;
+}
+
+void BackgroundSensitiveTaskOverlappingSceneRecognizer::ExitScene()
+{
+    nlohmann::json payload;
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE,
+        ResType::BackgroundPerceivableStatus::PERCEIVABLE_STOP, payload);
+    isInBackgroundPerceivableScene_ = false;
+}
+
 void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleTaskStart(pid_t pid,
     const std::vector<uint32_t> &filteredTypeIds)
 {
     perceivableTasks_[pid] = filteredTypeIds;
     if (CheckEnterScene()) {
         RESSCHED_LOGI("perceivable task start enter scene");
-        nlohmann::json payload;
-        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE,
-            ResType::BackgroundPerceivableStatus::PERCEIVABLE_START, payload);
-        isInBackgroundPerceivableScene_ = true;
+        EnterScene();
     }
 }
 
@@ -141,18 +162,14 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleTaskUpdate(pid_t p
         }
         if (perceivableTasks_.empty() && isInBackgroundPerceivableScene_) {
             RESSCHED_LOGI("after task update all perceivable task stop exit scene");
-            nlohmann::json payload;
-            ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE,
-                ResType::BackgroundPerceivableStatus::PERCEIVABLE_STOP, payload);
-            isInBackgroundPerceivableScene_ = false;
+            ExitScene();
         }
     } else {
         perceivableTasks_[pid] = filteredTypeIds;
         if (CheckEnterScene()) {
             nlohmann::json payload;
-            ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE,
-                ResType::BackgroundPerceivableStatus::PERCEIVABLE_START, payload);
-            isInBackgroundPerceivableScene_ = true;
+            RESSCHED_LOGI("after task update perceivable task update enter scene");
+            EnterScene();
         }
     }
 }
@@ -163,10 +180,7 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleTaskStop(pid_t pid
         perceivableTasks_.erase(pid);
         if (perceivableTasks_.empty() && isInBackgroundPerceivableScene_) {
             RESSCHED_LOGI("after task stop all perceivable task stop exit scene");
-            nlohmann::json payload;
-            ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE,
-                ResType::BackgroundPerceivableStatus::PERCEIVABLE_STOP, payload);
-            isInBackgroundPerceivableScene_ = false;
+            ExitScene();
         }
     }
 }
@@ -178,17 +192,12 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleForeground(uint32_
         return;
     }
     StrToInt(payload[PID_KEY].get<std::string>(), foregroundPid_);
-    nlohmann::json curPayload;
     if (foregroundPid_ == sceneboardPid_ && isInBackgroundPerceivableScene_) {
         RESSCHED_LOGI("sceneboard foreground exit scene");
-        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE,
-            ResType::BackgroundPerceivableStatus::PERCEIVABLE_STOP, curPayload);
-        isInBackgroundPerceivableScene_ = false;
+        ExitScene();
     } else if (CheckEnterScene()) {
         RESSCHED_LOGI("sceneboard background and has perceivable task enter scene");
-        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE,
-            ResType::BackgroundPerceivableStatus::PERCEIVABLE_START, curPayload);
-        isInBackgroundPerceivableScene_ = true;
+        EnterScene();
     }
 }
 } // namespace ResourceSchedule
