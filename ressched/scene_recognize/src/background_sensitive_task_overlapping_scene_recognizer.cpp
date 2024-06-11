@@ -27,6 +27,8 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     static const int32_t INVALID_VALUE = -1;
+    static const std::string PID_KEY = "pid";
+    static const std::string TYPE_IDS_KEY = "typeIds";
     static const std::set<uint32_t> PERCEIVABLE_MODES = {
         BackgroundTaskMgr::BackgroundMode::Type::LOCATION,
         BackgroundTaskMgr::BackgroundMode::Type::VOIP,
@@ -48,7 +50,7 @@ BackgroundSensitiveTaskOverlappingSceneRecognizer::BackgroundSensitiveTaskOverla
 void BackgroundSensitiveTaskOverlappingSceneRecognizer::OnDispatchResource(uint32_t resType, int64_t value,
     const nlohmann::json& payload)
 {
-    if (!payload.contains("pid") || !payload["pid"].is_string()) {
+    if (!payload.contains(PID_KEY) || !payload[PID_KEY].is_string()) {
         return;
     }
     int32_t invalidValue = INVALID_VALUE;
@@ -60,10 +62,10 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::OnDispatchResource(uint3
             HandleContinuousTask(resType, value, payload);
             break;
         case ResType::RES_TYPE_REPORT_SCENE_BOARD:
-            StrToInt(payload["pid"].get<std::string>(), sceneboardPid_);
+            StrToInt(payload[PID_KEY].get<std::string>(), sceneboardPid_);
             break;
         default:
-            return;
+            break;
     }
 }
 
@@ -71,10 +73,10 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleContinuousTask(uin
     const nlohmann::json& payload)
 {
     pid_t pid = -1;
-    StrToInt(payload["pid"].get<std::string>(), pid);
+    StrToInt(payload[PID_KEY].get<std::string>(), pid);
     std::vector<uint32_t> typeIds;
-    if (payload.contains("typeIds") && payload["typeIds"].is_array()) {
-        typeIds = payload["typeIds"].get<std::vector<uint32_t>>();
+    if (payload.contains(TYPE_IDS_KEY) && payload[TYPE_IDS_KEY].is_array()) {
+        typeIds = payload[TYPE_IDS_KEY].get<std::vector<uint32_t>>();
     }
     for (auto it = typeIds.begin(); it != typeIds.end();) {
         if (PERCEIVABLE_MODES.find(*it) == PERCEIVABLE_MODES.end()) {
@@ -90,7 +92,7 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleContinuousTask(uin
     } else if (value == ResType::ContinuousTaskStatus::CONTINUOUS_TASK_END) {
         HandleTaskStop(pid);
     } else {
-        RESSCHED_LOGW("unknow ContinuousTaskStatus value");
+        RESSCHED_LOGW("%{public}s, unknow ContinuousTaskStatus value", __func__);
     }
 }
 
@@ -174,7 +176,7 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleForeground(uint32_
     if (value != ResType::ProcessStatus::PROCESS_FOREGROUND) {
         return;
     }
-    StrToInt(payload["pid"].get<std::string>(), foregroundPid_);
+    StrToInt(payload[PID_KEY].get<std::string>(), foregroundPid_);
     nlohmann::json curPayload;
     if (foregroundPid_ == sceneboardPid_ && isInBackgroundPerceivableScene_) {
         RESSCHED_LOGI("sceneboard foreground exit scene");
