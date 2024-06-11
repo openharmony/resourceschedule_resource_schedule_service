@@ -118,6 +118,8 @@ bool BackgroundSensitiveTaskOverlappingSceneRecognizer::CheckEnterScene()
         RESSCHED_LOGD("already in background sensitive scene or foreground is sceneboard");
         return false;
     }
+
+    // more than one app has benn applied for sensitive task, there must be a task in background
     if (perceivableTasks_.size() > 1) {
         return true;
     }
