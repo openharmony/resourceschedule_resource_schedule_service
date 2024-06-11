@@ -91,8 +91,8 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleContinuousTask(uin
             it ++;
         }
     }
-    RESSCHED_LOGI("%{public}s, resType:%{public}d, value:%{public}ld, typeIds:{%{public}s}",
-        __func__, resType, value, typeIdsStr.str().c_str());
+    RESSCHED_LOGI("%{public}s, resType:%{public}d, value:%{public}lld, typeIds:{%{public}s}",
+        __func__, resType, (long long)value, typeIdsStr.str().c_str());
     if (value == ResType::ContinuousTaskStatus::CONTINUOUS_TASK_START && !typeIds.empty()) {
         HandleTaskStart(pid, typeIds);
     } else if (value == ResType::ContinuousTaskStatus::CONTINUOUS_TASK_UPDATE) {
