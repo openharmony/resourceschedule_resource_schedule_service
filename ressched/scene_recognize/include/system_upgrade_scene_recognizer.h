@@ -26,7 +26,7 @@ public:
     SystemUpgradeSceneRecognizer();
     void OnDispatchResource(uint32_t, int64_t value, const nlohmann::json& payload) override;
 private:
-    bool isSystemUpgraded_;
+    bool isSystemUpgraded_; // first boot completed after system upgrade
 
     void Init();
     std::string GetCurSystemFingerprint();
