@@ -55,10 +55,10 @@ ohos_shared_library("resschedsvc") {
   ]
 
   sources = [
-    "../scene_recognize/src/background_perceivable_scene_recognizer.cpp",
+    "../scene_recognize/src/background_sensitive_task_overlapping_scene_recognizer.cpp",
     "../scene_recognize/src/continuous_app_install_recognizer.cpp",
     "../scene_recognize/src/scene_recognizer_mgr.cpp",
-    "../scene_recognize/src/updating_scene_recognizer.cpp",
+    "../scene_recognize/src/system_upgrade_scene_recognizer.cpp",
     "../sched_controller/common_event/src/event_controller.cpp",
     "../sched_controller/observer/src/account_observer.cpp",
     "../sched_controller/observer/src/audio_observer.cpp",
@@ -189,10 +189,10 @@ ohos_static_library("resschedsvc_static") {
   ]
 
   sources = [
-    "../scene_recognize/src/background_perceivable_scene_recognizer.cpp",
+    "../scene_recognize/src/background_sensitive_task_overlapping_scene_recognizer.cpp",
     "../scene_recognize/src/continuous_app_install_recognizer.cpp",
     "../scene_recognize/src/scene_recognizer_mgr.cpp",
-    "../scene_recognize/src/updating_scene_recognizer.cpp",
+    "../scene_recognize/src/system_upgrade_scene_recognizer.cpp",
     "../sched_controller/common_event/src/event_controller.cpp",
     "../sched_controller/observer/src/account_observer.cpp",
     "../sched_controller/observer/src/audio_observer.cpp",
