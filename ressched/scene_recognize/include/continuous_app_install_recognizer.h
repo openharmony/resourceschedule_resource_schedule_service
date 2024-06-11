@@ -28,8 +28,8 @@ public:
     ~ContinuousAppInstallRecognizer();
     void OnDispatchResource(uint32_t, int64_t value, const nlohmann::json& payload) override;
 private:
-    ffrt::task_handle exitAppInstall = nullptr;
-    std::atomic<bool> isInContinuousInstall = {false};
+    ffrt::task_handle exitAppInstall_ = nullptr;
+    std::atomic<bool> isInContinuousInstall_ = {false};
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

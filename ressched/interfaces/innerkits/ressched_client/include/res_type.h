@@ -259,7 +259,7 @@ enum ScreenStatus : int64_t {
  */
 enum AppInstallStatus : int64_t {
     APP_UNINSTALL = 0,
-    APP_INSTALL = 1,
+    APP_INSTALL_END = 1,
     APP_CHANGED = 2,
     APP_REPLACED = 3,
     APP_FULLY_REMOVED = 4,

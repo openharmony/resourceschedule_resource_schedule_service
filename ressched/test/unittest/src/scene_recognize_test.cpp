@@ -49,10 +49,10 @@ HWTEST_F(SceneRecognizeTest, AppInstallTest001, Function | MediumTest | Level0)
     SceneRecognizerMgr::GetInstance().DispatchResource(-1, -1, payload);
     SUCCEED();
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
-        ResType::AppInstallStatus::APP_INSTALL, payload);
+        ResType::AppInstallStatus::APP_INSTALL_END, payload);
     SUCCEED();
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
-        ResType::AppInstallStatus::APP_INSTALL_START, payload);
+        ResType::AppInstallStatus::APP_INSTALL_END, payload);
 }
 
 /**

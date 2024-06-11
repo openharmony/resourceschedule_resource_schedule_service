@@ -294,7 +294,7 @@ bool EventController::HandlePkgCommonEvent(const std::string &action, Want &want
     }
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_ADDED) {
         HandlePkgAddRemove(want, payload);
-        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_INSTALL, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_INSTALL_END, payload);
         return true;
     }
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_CHANGED) {

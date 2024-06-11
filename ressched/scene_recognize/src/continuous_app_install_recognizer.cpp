@@ -36,24 +36,24 @@ void ContinuousAppInstallRecognizer::OnDispatchResource(uint32_t resType, int64_
         return;
     }
     if (value == ResType::AppInstallStatus::APP_INSTALL_START) {
-        if (exitAppInstall) {
-            ffrt::skip(exitAppInstall);
+        if (exitAppInstall_) {
+            ffrt::skip(exitAppInstall_);
         }
-        if (!isInContinuousInstall.load()) {
+        if (!isInContinuousInstall_.load()) {
             nlohmann::json payload;
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_CONTINUOUS_INSTALL,
                 ResType::ContinuousInstallStatus::START_CONTINUOUS_INSTALL, payload);
-            isInContinuousInstall.store(true);
+            isInContinuousInstall_.store(true);
         }
-    } else if (value == ResType::AppInstallStatus::APP_INSTALL) {
-        if (exitAppInstall) {
-            ffrt::skip(exitAppInstall);
+    } else if (value == ResType::AppInstallStatus::APP_INSTALL_END) {
+        if (exitAppInstall_) {
+            ffrt::skip(exitAppInstall_);
         }
         exitAppInstall = ffrt::submit_h([recognizer = shared_from_this()]() {
             nlohmann::json payload;
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_CONTINUOUS_INSTALL,
                 ResType::ContinuousInstallStatus::STOP_CONTINUOUS_INSTALL, payload);
-            recognizer->isInContinuousInstall.store(false);
+            recognizer->isInContinuousInstall_.store(false);
         }, {}, {}, ffrt::task_attr().delay(EXIT_INSTALL_DELAY_TIME));
     }
 }
