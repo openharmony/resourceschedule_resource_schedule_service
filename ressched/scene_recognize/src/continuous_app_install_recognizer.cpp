@@ -49,7 +49,7 @@ void ContinuousAppInstallRecognizer::OnDispatchResource(uint32_t resType, int64_
         if (exitAppInstall_) {
             ffrt::skip(exitAppInstall_);
         }
-        exitAppInstall = ffrt::submit_h([recognizer = shared_from_this()]() {
+        exitAppInstall_ = ffrt::submit_h([recognizer = shared_from_this()]() {
             nlohmann::json payload;
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_CONTINUOUS_INSTALL,
                 ResType::ContinuousInstallStatus::STOP_CONTINUOUS_INSTALL, payload);
