@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-#include "background_perceivable_scene_recognizer.h"
+#include "background_sensitive_task_overlapping_scene_recognizer.h"
 #include "continuous_app_install_recognizer.h"
 #include "res_sched_log.h"
 #include "scene_recognizer_mgr.h"
-#include "updating_scene_recognizer.h"
+#include "system_upgrade_scene_recognizer.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -27,8 +27,8 @@ SceneRecognizerMgr::SceneRecognizerMgr()
 {
     sceneRecognizers_ = {
         std::make_shared<ContinuousAppInstallRecognizer>(),
-        std::make_shared<UpdatingSceneRecognizer>(),
-        std::make_shared<BackgroundPerceivableSceneRecoginzer>(),
+        std::make_shared<SystemUpgradeSceneRecognizer>(),
+        std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>(),
         };
     ffrtQueue_ = std::make_shared<ffrt::queue>("scene_recognizers_queue",
         ffrt::queue_attr().qos(ffrt::qos_user_interactive));

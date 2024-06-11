@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "background_perceivable_scene_recognizer.h"
+#include "background_sensitive_task_overlapping_scene_recognizer.h"
 #include "gtest/gtest.h"
 #include "res_type.h"
 #include "scene_recognize_test.h"
@@ -64,7 +64,7 @@ HWTEST_F(SceneRecognizeTest, AppInstallTest001, Function | MediumTest | Level0)
  */
 HWTEST_F(SceneRecognizeTest, BgtaskTest001, Function | MediumTest | Level0)
 {
-    auto bgtaskRecognizer = std::make_shared<BackgroundPerceivableSceneRecoginzer>();
+    auto bgtaskRecognizer = std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>();
     nlohmann::json payload;
     payload["pid"] = "2000";
     bgtaskRecognizer->OnDispatchResource(ResType::RES_TYPE_REPORT_SCENE_BOARD,

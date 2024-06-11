@@ -22,8 +22,6 @@
 #include "res_sched_mgr.h"
 #include "res_type.h"
 #include "string_ex.h"
-#include "updating_scene_recognizer.h"
-
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -37,12 +35,12 @@ namespace {
     };
 }
 
-BackgroundSensitiveTaskOverlappingSceneRecognizer::~BackgroundPerceivableSceneRecoginzer()
+BackgroundSensitiveTaskOverlappingSceneRecognizer::~BackgroundSensitiveTaskOverlappingSceneRecognizer()
 {
     RESSCHED_LOGI("~BackgroundPerceivableSceneRecoginzer");
 }
 
-BackgroundSensitiveTaskOverlappingSceneRecognizer::BackgroundPerceivableSceneRecoginzer()
+BackgroundSensitiveTaskOverlappingSceneRecognizer::BackgroundSensitiveTaskOverlappingSceneRecognizer()
 {
     perceivableTasks_ = {};
 }
