@@ -82,7 +82,7 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleContinuousTask(uin
     std::stringstream typeIdsStr;
     for (auto it = typeIds.begin(); it != typeIds.end();) {
         if (!typeIdsStr.str().empty()) {
-            typeIdsStr << ", ";    
+            typeIdsStr << ", ";
         }
         typeIdsStr << *it;
         if (PERCEIVABLE_MODES.find(*it) == PERCEIVABLE_MODES.end()) {
