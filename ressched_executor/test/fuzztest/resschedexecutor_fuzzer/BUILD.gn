@@ -38,7 +38,7 @@ ohos_fuzztest("ResSchedExecutorFuzzTest") {
   sources = [ "resschedexecutor_fuzzer.cpp" ]
 
   deps = [
-    "${ressched_services}:resschedexesvc_static",
+    "${resschedexe_services}:resschedexesvc_static",
     "//third_party/json:nlohmann_json_static",
   ]
 
