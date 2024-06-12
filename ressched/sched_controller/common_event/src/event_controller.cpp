@@ -24,6 +24,8 @@
 #include "if_system_ability_manager.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
+#include "oobe_datashare_utils.h"
+#include "oobe_manager.h"
 #include "system_ability_definition.h"
 
 #include "res_sched_log.h"
@@ -131,6 +133,12 @@ void EventController::Stop()
     sysAbilityListener_->Stop();
 }
 
+void EventController::DataShareIsReady()
+{
+    ResourceSchedule::DataShareUtils::GetInstance().isDataShareReady_ = true;
+    ResourceSchedule::OOBEManager::GetInstance().DataShareReady();
+}
+
 void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
@@ -161,6 +169,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent("common.event.UNLOCK_SCREEN");
     matchingSkills.AddEvent("common.event.LOCK_SCREEN");
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
+    matchingSkills.AddEvent("usual.event.DATA_SHARE_READY");
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
     if (CommonEventManager::SubscribeCommonEvent(subscriber_)) {
@@ -216,11 +225,15 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         return;
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_CALL_STATE_CHANGED) {
-        int32_t state = want.GetIntParam("state", -1);
-        payload["state"] = state;
+        payload["state"] = want.GetIntParam("state", -1);
         ReportDataInProcess(ResType::RES_TYPE_CALL_STATE_CHANGED, static_cast<int64_t>(data.GetCode()), payload);
         return;
     }
+    if (action == "usual.event.DATA_SHARE_READY") {
+        DataShareIsReady();
+        return;
+    }
+    
     handleEvent(data.GetCode(), action, payload);
 }
 

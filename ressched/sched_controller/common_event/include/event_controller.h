@@ -53,6 +53,7 @@ private:
     std::shared_ptr<EventController> subscriber_ = nullptr;
 };
 
+    void DataShareIsReady();
     void HandleConnectivityChange(const EventFwk::Want &want, const int32_t &code, nlohmann::json &payload);
     void HandlePkgAddRemove(const EventFwk::Want &want, nlohmann::json &payload) const;
     int32_t GetUid(const int32_t &userId, const std::string &bundleName) const;

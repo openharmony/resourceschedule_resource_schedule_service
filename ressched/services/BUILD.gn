@@ -156,6 +156,7 @@ ohos_shared_library("resschedsvc") {
     defines += [ "RESOURCE_REQUEST_REQUEST" ]
     external_deps += [ "request:request_native" ]
   }
+  external_deps += [ "data_share:datashare_consumer" ]
 
   version_script = "libresschedsvc.versionscript"
   shlib_type = "sa"
@@ -287,6 +288,7 @@ ohos_static_library("resschedsvc_static") {
     defines += [ "RESOURCE_REQUEST_REQUEST" ]
     external_deps += [ "request:request_native" ]
   }
+  external_deps += [ "data_share:datashare_consumer" ]
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

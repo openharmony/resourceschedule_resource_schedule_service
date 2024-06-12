@@ -34,6 +34,7 @@ public:
     Uri AssembleUri(const std::string& key);
     bool ReleaseDataShareHelper(std::shared_ptr<DataShare::DataShareHelper>& helper);
     std::shared_ptr<DataShare::DataShareHelper> CreateDataShareHelper();
+    bool isDataShareReady_ = false;
 
 private:
     DataShareUtils ();
