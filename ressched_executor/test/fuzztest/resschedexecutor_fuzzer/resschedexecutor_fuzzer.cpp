@@ -14,7 +14,7 @@
  */
 
 #include "resschedexecutor_fuzzer.h"
-#include "res_sched_exe_common_untils.h"
+#include "res_sched_exe_common_utils.h"
 
 #include <cstddef>
 #include <cstdint>
