@@ -133,6 +133,12 @@ void EventController::Stop()
     sysAbilityListener_->Stop();
 }
 
+void EventController::DataShareIsReady()
+{
+    ResourceSchedule::DataShareUtils::GetInstance().isDataShareReady_ = true;
+    ResourceSchedule::OOBEManager::GetInstance().DataShareReady();
+}
+
 void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
@@ -224,8 +230,7 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         return;
     }
     if (action == "usual.event.DATA_SHARE_READY") {
-        ResourceSchedule::DataShareUtils::GetInstance().isDataShareReady_ = true;
-        ResourceSchedule::OOBEManager::GetInstance().DataShareReady();
+        DataShareIsReady();
         return;
     }
     
