@@ -1,4 +1,4 @@
-# Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+# Copyright (c) 2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -14,28 +14,40 @@
 #####################hydra-fuzz###################
 import("//build/config/features.gni")
 import("//build/test.gni")
-import("../../../ressched.gni")
+import("//build/ohos.gni")
+import("../../../../ressched/ressched.gni")
+import("../../../ressched_executor.gni")
 module_output_path = "resource_schedule_service/resource_schedule_service"
 
 ##############################fuzztest##########################################
-ohos_fuzztest("LoadFromConfigFileFuzzTest") {
+ohos_fuzztest("ResSchedExecutorFuzzTest") {
   module_out_path = module_output_path
-  fuzz_config_file = "${ressched_test}/fuzztest/loadfromconfigfile_fuzzer"
+  fuzz_config_file = "${resource_schedule_service_path}/ressched_executor/test/fuzztest/resschedexecutor_fuzzer"
 
-  include_dirs = []
+  include_dirs = [
+    "${ressched_common}/include",
+  ]
+
   cflags = [
     "-g",
     "-O0",
     "-Wno-unused-variable",
     "-fno-omit-frame-pointer",
   ]
-  sources = [ "loadfromconfigfile_fuzzer.cpp" ]
 
-  deps = [ "${ressched_services}:resschedsvc_static" ]
+  sources = [ "resschedexecutor_fuzzer.cpp" ]
+
+  deps = [
+    "${ressched_services}:resschedexesvc_static",
+    "//third_party/json:nlohmann_json_static",
+  ]
 
   external_deps = [
+    "access_token:libaccesstoken_sdk",
+    "access_token:libnativetoken",
+    "access_token:libtoken_setproc",
     "c_utils:utils",
-    "eventhandler:libeventhandler",
+    "ffrt:libffrt",
     "hilog:libhilog",
     "ipc:ipc_single",
   ]
@@ -47,7 +59,7 @@ group("fuzztest") {
   deps = []
   deps += [
     # deps file
-    ":LoadFromConfigFileFuzzTest",
+    ":ResSchedExecutorFuzzTest",
   ]
 }
 ###############################################################################
