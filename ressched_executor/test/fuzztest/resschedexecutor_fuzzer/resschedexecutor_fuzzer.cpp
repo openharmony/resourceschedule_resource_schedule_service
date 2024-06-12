@@ -91,7 +91,7 @@ namespace ResourceSchedule {
         g_data = data;
         g_size = size;
         g_pos = 0;
-        if (static_cast<int>(size) < 0){
+        if (static_cast<int>(size) < 0) {
             return false;
         }
         // getdata
@@ -114,7 +114,7 @@ namespace ResourceSchedule {
         g_data = data;
         g_size = size;
         g_pos = 0;
-        if (static_cast<int>(size) < 0){
+        if (static_cast<int>(size) < 0) {
             return false;
         }
         // getdata
