@@ -22,7 +22,7 @@ module_output_path = "resource_schedule_service/resource_schedule_service"
 ##############################fuzztest##########################################
 ohos_fuzztest("ResSchedExecutorFuzzTest") {
   module_out_path = module_output_path
-  fuzz_config_file = "${resource_schedule_service_path}/ressched_executor/test/fuzztest/resschedexecutor_fuzzer"
+  fuzz_config_file = "${resourcescheduleservice_path}/ressched_executor/test/fuzztest/resschedexecutor_fuzzer"
 
   include_dirs = [
     "${ressched_common}/include",
