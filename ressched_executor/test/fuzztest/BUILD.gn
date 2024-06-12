@@ -13,7 +13,5 @@
 
 group("fuzztest") {
   testonly = true
-  deps = [
-    "resschedexecutor_fuzzer:fuzztest"
-  ]
+  deps = [ "resschedexecutor_fuzzer:fuzztest" ]
 }
