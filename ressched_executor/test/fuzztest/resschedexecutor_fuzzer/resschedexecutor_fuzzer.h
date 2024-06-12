@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,9 +13,16 @@
  * limitations under the License.
  */
 
-#ifndef TEST_FUZZTEST_LOADFROMCONFIGFILE_FUZZER_H
-#define TEST_FUZZTEST_LOADFROMCONFIGFILE_FUZZER_H
+#ifndef RESSCHEDEXECUTOR_FUZZER_H
+#define RESSCHEDEXECUTOR_FUZZER_H
 
-#define FUZZ_PROJECT_NAME "loadfromconfigfile_fuzzer"
+#include <cstdint>
+#include <unistd.h>
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
+#include <fcntl.h>
+
+#define FUZZ_PROJECT_NAME "resschedexecutor_fuzzer"
 
 #endif
