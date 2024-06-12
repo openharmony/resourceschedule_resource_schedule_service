@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,39 +13,118 @@
  * limitations under the License.
  */
 
-#include "loadfromconfigfile_fuzzer.h"
+#include "resschedexecutor_fuzzer.h"
+#include "res_sched_exe_common_untils.h"
 
-#include "plugin_switch.h"
-#include "plugin_mgr.h"
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <securec.h>
+#include <string>
+#include <vector>
+#include <memory>
+
+#define private public
+#define protected public
+
+#ifndef errno_t
+typedef int errno_t;
+#endif
+
+#ifndef EOK
+#define EOK 0
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {
-    const std::string fuzzedFile = "mySwitchFuzzed.xml";
-    const int32_t FILE_RETURN_SUCCESS = 1;
+    const uint8_t* g_data = nullptr;
+    constexpr errno_t NO_ERROR = 0;
+    size_t g_size = 0;
+    size_t g_pos;
 
-    bool DoSomethingInterestingWithMyAPI(const uint8_t* data, size_t size)
+    /**
+     * describe: get data from outside untrusted data(g_data) which size is according to sizeof(T)
+     * tips: only support basic type
+     */
+    template<class T>
+    T GetData()
     {
-        // generate fuzzed xml
-        FILE *pFile = fopen(fuzzedFile.c_str(), "wb");
-        if (!pFile) {
+        T object {};
+        size_t objectSize = sizeof(object);
+        if (g_data == nullptr || objectSize > g_size - g_pos) {
+            return object;
+        }
+        errno_t ret = memcpy_s(&object, objectSize, g_data + g_pos, objectSize);
+        if (ret != NO_ERROR) {
+            return {};
+        }
+        g_pos += objectSize;
+        return object;
+    }
+
+    std::string GetStringFromData(int strlen)
+    {
+        if (strlen <= 0) {
+            return "";
+        }
+        char cstr[strlen];
+        cstr[strlen - 1] = '\0';
+        for (int i = 0; i < strlen - 1; i++) {
+            char tmp = GetData<char>();
+            if (tmp == '\0') {
+                tmp = '1';
+            }
+            cstr[i] = tmp;
+        }
+        std::string str(cstr);
+        return str;
+    }
+
+    bool CheckPermissionFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
             return false;
         }
 
-        int32_t retCode = fwrite(reinterpret_cast<const void*>(data), size, 1, pFile); // 1 means count=1
-        if (retCode < FILE_RETURN_SUCCESS) {
-            (void)fclose(pFile);
-            pFile = nullptr;
+        if (size <= sizeof(int32_t)) {
             return false;
         }
 
-        (void)fclose(pFile);
-        pFile = nullptr;
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+        if(static_cast<int>(size) < 0){
+            return false;
+        }
+        // getdata
+        std::string permission = GetStringFromData(static_cast<int>(size));
+        ResSchedExeCommonUtils::CheckPermission(permission);
+        return true;
+    }
 
-        std::shared_ptr<PluginSwitch> pluginSwitch = std::make_shared<PluginSwitch>();
-        std::string content;
-        PluginMgr::GetInstance().GetConfigContent(-1, fuzzedFile, content);
-        bool ret = pluginSwitch->LoadFromConfigContent(content);
-        return ret;
+    bool StringToJsonFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= sizeof(int32_t)) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+        if(static_cast<int>(size) < 0){
+            return false;
+        }
+        // getdata
+        std::string str = GetStringFromData(static_cast<int>(size));
+        nlohmann::json payload;
+        ResSchedExeCommonUtils::StringToJson(str, payload);
+        return true;
     }
 } // namespace ResourceSchedule
 } // namespace OHOS
@@ -54,6 +133,7 @@ namespace ResourceSchedule {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     /* Run your code on data */
-    OHOS::ResourceSchedule::DoSomethingInterestingWithMyAPI(data, size);
+    OHOS::ResourceSchedule::CheckPermissionFuzzTest(data, size);
+    OHOS::ResourceSchedule::StringToJsonFuzzTest(data, size);
     return 0;
 }
