@@ -83,7 +83,6 @@ HWTEST_F(ResschedUtilsTest, ResschedUtilsTest_UtilTest_001, Function | MediumTes
     }
     std::string path = ResSchedUtils::GetInstance().GetProcessFilePath(20150111, "com.example.myapplication", 5973);
     EXPECT_TRUE(path == targetPath);
-    }
 }
 }
 }
