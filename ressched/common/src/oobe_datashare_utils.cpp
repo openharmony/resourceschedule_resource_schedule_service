@@ -28,8 +28,11 @@ namespace ResourceSchedule {
 sptr<IRemoteObject> DataShareUtils::remoteObj_;
 std::mutex DataShareUtils::mutex_;
 namespace {
+constexpr const int32_t E_OK = 0; 
+constexpr const int32_t E_DATA_SHARE_NOT_READY = 1055; 
 const std::string SETTING_COLUMN_KEYWORD = "KEYWORD";
 const std::string SETTING_COLUMN_VALUE = "VALUE";
+constexpr const char *SETTINGS_DATA_EXT_URI = "datashare:///com.ohos.settingsdata.DataAbility";
 const std::string SETTING_URI_PROXY = "datashare:///com.ohos.settingsdata/entry/settingsdata/SETTINGSDATA?Proxy=true";
 } // namespace
 
@@ -83,13 +86,21 @@ std::shared_ptr<DataShare::DataShareHelper> DataShareUtils::CreateDataShareHelpe
         RESSCHED_LOGE("Get remoteObj return nullptr!");
         return nullptr;
     }
-    auto helper = DataShare::DataShareHelper::Creator(remoteObj_, SETTING_URI_PROXY);
-    if (helper == nullptr) {
-        RESSCHED_LOGW("helper is nullptr, uri=%{public}s, remoteObj_=%{public}p", SETTING_URI_PROXY.c_str(),
-            remoteObj_.GetRefPtr());
+    std::pair<int, std::shared_ptr<DataShare::DataShareHelper>> ret =
+        DataShare::DataShareHelper::Create(remoteObj_, SETTING_URI_PROXY, SETTINGS_DATA_EXT_URI);
+    if (ret.first == E_OK) {
+        RESSCHED_LOGI("create data_share helper success!");
+        auto helper = ret.second;
+        isDataShareReady_ = true;
+        return helper;
+    } else if (ret.first == E_DATA_SHARE_NOT_READY) {
+        RESSCHED_LOGE("create data_share helper faild!");
+        isDataShareReady_ = false;
         return nullptr;
     }
-    return helper;
+    RESSCHED_LOGE("data_share unknown!");
+    isDataShareReady_ = false;
+    return nullptr;
 }
 
 bool DataShareUtils::ReleaseDataShareHelper(std::shared_ptr<DataShare::DataShareHelper>& helper)

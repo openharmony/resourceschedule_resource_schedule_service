@@ -16,6 +16,7 @@
 #include "oobe_datashare_utils.h"
 #include "res_sched_log.h"
 #include "oobe_manager.h"
+#include <functional>
 #include <vector>
 #include "ipc_skeleton.h"
 
@@ -23,6 +24,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 std::mutex OOBEManager::mutex_;
 std::vector<std::shared_ptr<IOOBETask>> OOBEManager::oobeTasks_;
+std::vector<std::function<void()>> OOBEManager::dataShareFunctions_;
 sptr<OOBEManager::ResDataAbilityObserver> OOBEManager::observer_ = nullptr;
 namespace {
 const std::string KEYWORD = "basic_statement_agreed";
@@ -52,6 +54,15 @@ bool OOBEManager::GetOOBValue()
 
 ErrCode OOBEManager::RegisterObserver(const std::string& key, ResDataAbilityObserver::UpdateFunc& func)
 {
+    if (!DataShareUtils::GetInstance().isDataShareReady_) {
+        RESSCHED_LOGE("RegisterObserver: dataShare is not ready!");
+        std::function dataShareFunction = [&]() {
+            RegisterObserver(key, func);
+        };
+        dataShareFunctions_.push_back(dataShareFunction);
+        return ERR_NO_INIT;
+    }
+    
     std::lock_guard<std::mutex> lock(mutex_);
     std::string callingIdentity = IPCSkeleton::ResetCallingIdentity();
     auto uri = DataShareUtils::GetInstance().AssembleUri(key);
@@ -151,6 +162,13 @@ void OOBEManager::StartListen()
         }
     };
     RegisterObserver(KEYWORD, updateFunc);
+}
+
+void OOBEManager::DataShareReady()
+{
+    for (auto function : dataShareFunctions_) {
+        function();
+    }
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
