@@ -28,8 +28,8 @@ namespace ResourceSchedule {
 sptr<IRemoteObject> DataShareUtils::remoteObj_;
 std::mutex DataShareUtils::mutex_;
 namespace {
-constexpr const int32_t E_OK = 0; 
-constexpr const int32_t E_DATA_SHARE_NOT_READY = 1055; 
+constexpr const int32_t E_OK = 0;
+constexpr const int32_t E_DATA_SHARE_NOT_READY = 1055;
 const std::string SETTING_COLUMN_KEYWORD = "KEYWORD";
 const std::string SETTING_COLUMN_VALUE = "VALUE";
 constexpr const char *SETTINGS_DATA_EXT_URI = "datashare:///com.ohos.settingsdata.DataAbility";
