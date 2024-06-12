@@ -136,6 +136,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
 {
     MatchingSkills matchingSkills;
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_CONNECTIVITY_CHANGE);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_PACKAGE_INSTALLATION_STARTED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_PACKAGE_ADDED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_PACKAGE_CHANGED);
@@ -285,9 +286,16 @@ bool EventController::HandlePkgCommonEvent(const std::string &action, Want &want
         ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_UNINSTALL, payload);
         return true;
     }
+    if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_INSTALLATION_STARTED) {
+        HandlePkgAddRemove(want, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+            ResType::AppInstallStatus::APP_INSTALL_START, payload);
+        return true;
+    }
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_ADDED) {
         HandlePkgAddRemove(want, payload);
-        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_INSTALL, payload);
+        ReportDataInProcess(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+            ResType::AppInstallStatus::APP_INSTALL_END, payload);
         return true;
     }
     if (action == CommonEventSupport::COMMON_EVENT_PACKAGE_CHANGED) {

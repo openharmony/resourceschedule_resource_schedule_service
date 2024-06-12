@@ -43,6 +43,7 @@ ohos_unittest("resschedservice_test") {
     "src/oobe_mgr_test.cpp",
     "src/res_sched_client_test.cpp",
     "src/res_sched_service_test.cpp",
+    "src/scene_recognize_test.cpp",
   ]
 
   deps = [

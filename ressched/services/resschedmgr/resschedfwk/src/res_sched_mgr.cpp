@@ -24,6 +24,7 @@
 #include "res_type.h"
 #include "plugin_mgr.h"
 #include "hitrace_meter.h"
+#include "scene_recognizer_mgr.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -152,6 +153,7 @@ void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::js
 {
     ReportDataInner(resType, value, payload);
     DispatchResourceInner(resType, value, payload);
+    SceneRecognizerMgr::GetInstance().DispatchResource(resType, value, payload);
 }
 
 void ResSchedMgr::ReportDataInner(uint32_t resType, int64_t value, const nlohmann::json& payload)

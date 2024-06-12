@@ -226,6 +226,12 @@ enum : uint32_t {
     RES_TYPE_ACCOUNT_ACTIVATING = 96,
     // report silent playback in renderer
     RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK = 97,
+    // report continuous application install
+    RES_TYPE_CONTINUOUS_INSTALL = 98,
+    // report system updated
+    RES_TYPE_FIRST_BOOT_AFTER_SYSTEM_UPGRADE = 99,
+    // report background perceivable scene
+    RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE = 100,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -253,11 +259,12 @@ enum ScreenStatus : int64_t {
  */
 enum AppInstallStatus : int64_t {
     APP_UNINSTALL = 0,
-    APP_INSTALL = 1,
+    APP_INSTALL_END = 1,
     APP_CHANGED = 2,
     APP_REPLACED = 3,
     APP_FULLY_REMOVED = 4,
-    BUNDLE_REMOVED = 5
+    BUNDLE_REMOVED = 5,
+    APP_INSTALL_START = 6
 };
 
 /**
@@ -740,6 +747,18 @@ enum AccountActivatingStatus : int64_t {
     ACCOUNT_ACTIVATING_START = 0,
 };
 
+/**
+ * @brief continuous install status
+ */
+enum ContinuousInstallStatus : int64_t {
+    START_CONTINUOUS_INSTALL = 0,
+    STOP_CONTINUOUS_INSTALL = 1,
+};
+
+enum BackgroundPerceivableStatus : int64_t {
+    PERCEIVABLE_START = 0,
+    PERCEIVABLE_STOP = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
