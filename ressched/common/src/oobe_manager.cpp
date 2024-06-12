@@ -54,6 +54,7 @@ bool OOBEManager::GetOOBValue()
 
 ErrCode OOBEManager::RegisterObserver(const std::string& key, ResDataAbilityObserver::UpdateFunc& func)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     if (!DataShareUtils::GetInstance().isDataShareReady_) {
         RESSCHED_LOGE("RegisterObserver: dataShare is not ready!");
         std::function dataShareFunction = [&]() {
@@ -63,7 +64,6 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, ResDataAbilityObse
         return ERR_NO_INIT;
     }
     
-    std::lock_guard<std::mutex> lock(mutex_);
     std::string callingIdentity = IPCSkeleton::ResetCallingIdentity();
     auto uri = DataShareUtils::GetInstance().AssembleUri(key);
     auto helper = DataShareUtils::GetInstance().CreateDataShareHelper();
