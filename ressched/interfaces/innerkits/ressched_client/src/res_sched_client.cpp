@@ -63,7 +63,7 @@ int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t va
     if (TryConnect() != ERR_OK) {
         return RES_SCHED_CONNECT_FAIL;
     }
-    RESSCHED_LOGD("%{public}s: resType=%{public}u, value=%{public}lld.", __func__, resType, value);
+    RESSCHED_LOGD("%{public}s: resType=%{public}u, value=%{public}lld.", __func__, resType, (long long)value);
 
     std::lock_guard<std::mutex> lock(mutex_);
     if (rss_ == nullptr) {
