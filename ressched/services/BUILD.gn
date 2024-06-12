@@ -277,6 +277,7 @@ ohos_static_library("resschedsvc_static") {
     defines += [ "RESOURCE_REQUEST_REQUEST" ]
     external_deps += [ "request:request_native" ]
   }
+  external_deps += [ "data_share:datashare_consumer" ]
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
