@@ -24,9 +24,6 @@
 #include <vector>
 #include <memory>
 
-#define private public
-#define protected public
-
 #ifndef errno_t
 typedef int errno_t;
 #endif
@@ -94,7 +91,7 @@ namespace ResourceSchedule {
         g_data = data;
         g_size = size;
         g_pos = 0;
-        if(static_cast<int>(size) < 0){
+        if (static_cast<int>(size) < 0){
             return false;
         }
         // getdata
@@ -117,7 +114,7 @@ namespace ResourceSchedule {
         g_data = data;
         g_size = size;
         g_pos = 0;
-        if(static_cast<int>(size) < 0){
+        if (static_cast<int>(size) < 0){
             return false;
         }
         // getdata
