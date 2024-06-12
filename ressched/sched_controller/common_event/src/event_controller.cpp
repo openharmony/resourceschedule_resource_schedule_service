@@ -224,8 +224,7 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         return;
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_CALL_STATE_CHANGED) {
-        int32_t state = want.GetIntParam("state", -1);
-        payload["state"] = state;
+        payload["state"] = want.GetIntParam("state", -1);
         ReportDataInProcess(ResType::RES_TYPE_CALL_STATE_CHANGED, static_cast<int64_t>(data.GetCode()), payload);
         return;
     }
