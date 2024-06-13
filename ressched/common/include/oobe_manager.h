@@ -33,7 +33,7 @@ public:
     void StartListen();
     ErrCode UnregisterObserver();
     bool GetOOBValue();
-    void DataShareReady();
+    void OnReceiveDataShareReadyCallBack();
 
 private:
     class ResDataAbilityObserver : public AAFwk::DataAbilityObserverStub {
@@ -43,7 +43,7 @@ private:
         void OnChange() override;
 
         using UpdateFunc = std::function<void()>;
-        void SetUpdateFunc(UpdateFunc& func);
+        void SetUpdateFunc(const UpdateFunc& func);
     private:
         UpdateFunc update_ = nullptr;
     };
@@ -56,7 +56,7 @@ private:
     OOBEManager();
     ~OOBEManager();
     void Initialize();
-    ErrCode RegisterObserver(const std::string& key, ResDataAbilityObserver::UpdateFunc& func);
+    ErrCode RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func);
 };
 } // ResourceSchedule
 } // OHOS

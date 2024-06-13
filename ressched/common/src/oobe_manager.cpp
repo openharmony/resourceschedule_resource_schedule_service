@@ -52,12 +52,12 @@ bool OOBEManager::GetOOBValue()
     return g_oobeValue;
 }
 
-ErrCode OOBEManager::RegisterObserver(const std::string& key, ResDataAbilityObserver::UpdateFunc& func)
+ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
 {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (!DataShareUtils::GetInstance().isDataShareReady_) {
+    if (!DataShareUtils::GetInstance().GetDataShareReadyFlag()) {
         RESSCHED_LOGE("RegisterObserver: dataShare is not ready!");
-        std::function dataShareFunction = [&]() {
+        std::function dataShareFunction = [key, func, this]() {
             RegisterObserver(key, func);
         };
         dataShareFunctions_.push_back(dataShareFunction);
@@ -114,7 +114,7 @@ void OOBEManager::ResDataAbilityObserver::OnChange()
     }
 }
 
-void OOBEManager::ResDataAbilityObserver::SetUpdateFunc(UpdateFunc& func)
+void OOBEManager::ResDataAbilityObserver::SetUpdateFunc(const UpdateFunc& func)
 {
     update_ = func;
 }
@@ -164,11 +164,12 @@ void OOBEManager::StartListen()
     RegisterObserver(KEYWORD, updateFunc);
 }
 
-void OOBEManager::DataShareReady()
+void OOBEManager::OnReceiveDataShareReadyCallBack()
 {
     for (auto function : dataShareFunctions_) {
         function();
     }
+    dataShareFunctions_.clear();
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
