@@ -62,7 +62,16 @@ void SocPerfExecutorWirteNode::WriteNodeThreadWraps(std::vector<int32_t>& resIdV
 {
     int32_t len = (int32_t)resIdVec.size();
     for (int32_t i = 0; i < len; i++) {
-        UpdateCurrentValue(resIdVec[i], valueVec[i]);
+        UpdateResIdCurrentValue(resIdVec[i], valueVec[i]);
+    }
+}
+
+void SocPerfExecutorWirteNode::UpdateResIdCurrentValue(int32_t resId, int64_t currValue)
+{
+    if (currValue == NODE_DEFAULT_VALUE) {
+        UpdateCurrentValue(resId, socPerfConfig_.resourceNodeInfo_[resId]->def);
+    } else {
+        UpdateCurrentValue(resId, currValue);
     }
 }
 
