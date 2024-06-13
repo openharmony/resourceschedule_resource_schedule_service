@@ -231,7 +231,7 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         ReportDataInProcess(ResType::RES_TYPE_CALL_STATE_CHANGED, static_cast<int64_t>(data.GetCode()), payload);
         return;
     }
-    if (DATA_SHARE_READY) {
+    if (action == DATA_SHARE_READY) {
         DataShareIsReady();
         return;
     }
