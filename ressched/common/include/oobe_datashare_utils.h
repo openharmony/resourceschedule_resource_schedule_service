@@ -44,7 +44,7 @@ private:
     static std::mutex mutex_;
     ErrCode GetStringValue(const std::string& key, std::string& value);
     void InitSystemAbilityManager();
-    std::atomic<bool> isDataShareReady_ = false;
+    std::atomic<bool> isDataShareReady_ { false };
 };
 
 template <typename T>
