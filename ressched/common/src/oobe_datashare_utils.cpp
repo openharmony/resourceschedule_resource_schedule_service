@@ -136,5 +136,15 @@ Uri DataShareUtils::AssembleUri(const std::string& key)
     Uri uri(SETTING_URI_PROXY + "&key=" + key);
     return uri;
 }
+
+bool DataShareUtils::GetDataShareReadyFlag()
+{
+    return isDataShareReady_;
+}
+
+bool DataShareUtils::SetDataShareReadyFlag(bool readyFlag)
+{
+    isDataShareReady_ = readyFlag;
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

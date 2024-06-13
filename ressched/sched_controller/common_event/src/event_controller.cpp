@@ -37,6 +37,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 IMPLEMENT_SINGLE_INSTANCE(EventController);
 
+const std::string DATA_SHARE_READY = "usual.event.DATA_SHARE_READY";
 void EventController::Init()
 {
     if (sysAbilityListener_ != nullptr) {
@@ -135,8 +136,9 @@ void EventController::Stop()
 
 void EventController::DataShareIsReady()
 {
-    ResourceSchedule::DataShareUtils::GetInstance().isDataShareReady_ = true;
-    ResourceSchedule::OOBEManager::GetInstance().DataShareReady();
+    RESSCHED_LOGD("Data_share is ready! Call back to create data_share helper");
+    ResourceSchedule::DataShareUtils::GetInstance().SetDataShareReadyFlag(true);
+    ResourceSchedule::OOBEManager::GetInstance().OnReceiveDataShareReadyCallBack();
 }
 
 void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
@@ -169,7 +171,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent("common.event.UNLOCK_SCREEN");
     matchingSkills.AddEvent("common.event.LOCK_SCREEN");
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
-    matchingSkills.AddEvent("usual.event.DATA_SHARE_READY");
+    matchingSkills.AddEvent(DATA_SHARE_READY);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
     if (CommonEventManager::SubscribeCommonEvent(subscriber_)) {
@@ -229,7 +231,7 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         ReportDataInProcess(ResType::RES_TYPE_CALL_STATE_CHANGED, static_cast<int64_t>(data.GetCode()), payload);
         return;
     }
-    if (action == "usual.event.DATA_SHARE_READY") {
+    if (DATA_SHARE_READY) {
         DataShareIsReady();
         return;
     }
