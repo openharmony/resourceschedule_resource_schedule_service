@@ -142,7 +142,7 @@ bool DataShareUtils::GetDataShareReadyFlag()
     return isDataShareReady_;
 }
 
-bool DataShareUtils::SetDataShareReadyFlag(bool readyFlag)
+void DataShareUtils::SetDataShareReadyFlag(bool readyFlag)
 {
     isDataShareReady_ = readyFlag;
 }
