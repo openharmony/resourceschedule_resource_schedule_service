@@ -178,6 +178,9 @@ bool TestAppStateChange(const uint8_t *data, size_t size)
 
 bool TestUseBySo(const uint8_t *data, size_t size)
 {
+    if (data == nullptr || size < sizeof(int64_t) + sizeof(int64_t)) {
+        return false;
+    }
     auto handle = dlopen(SOCPERF_PLUBIN_LIB_NAME.c_str(), RTLD_NOW);
     OnPluginInitFunc onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(handle, "OnPluginInit"));
     onPluginInitFunc(SOCPERF_PLUBIN_LIB_NAME);
