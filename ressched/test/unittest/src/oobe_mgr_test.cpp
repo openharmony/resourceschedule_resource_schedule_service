@@ -177,8 +177,8 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_007, Function | MediumTest | Level0)
 HWTEST_F(OOBEMgrTest, TestOOBEManager_008, Function | MediumTest | Level0)
 {
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
-    oobeMgr.dataShareFunctions_.insert([oobeMgr]() {
-        oobeMgr.GetOOBValue();
+    oobeMgr.dataShareFunctions_.emplace_back([]() {
+        SUCCEED();
     });
     SUCCEED();
 }
