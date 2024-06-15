@@ -218,9 +218,9 @@ HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_010, Function | MediumTest |
  * @tc.desc: test the interface SetDataShareReadyFlag of dataShareUtils
  * @tc.type: FUNC
  * @tc.require: issueIA5MRN
- * @tc.author:zhumingjie
+ * @tc.author:fengyang
  */
-HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_010, Function | MediumTest | Level0)
+HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_011, Function | MediumTest | Level0)
 {
     DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
     dataShareUtils.SetDataShareReadyFlag(true);
