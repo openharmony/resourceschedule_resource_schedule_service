@@ -166,6 +166,23 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_007, Function | MediumTest | Level0)
     bool flag = oobeMgr.GetOOBValue();
     SUCCEED();
 }
+
+/**
+ * @tc.name: oobe manager TestOOBEManager_008
+ * @tc.desc: test the callBack of OOBEManager
+ * @tc.type: FUNC
+ * @tc.require: issueIA5MRN
+ * @tc.author:fengyang
+ */
+HWTEST_F(OOBEMgrTest, TestOOBEManager_008, Function | MediumTest | Level0)
+{
+    OOBEManager& oobeMgr = OOBEManager::GetInstance();
+    oobeMgr.dataShareFunctions_.insert([oobeMgr]() {
+        oobeMgr.GetOOBValue();
+    });
+    SUCCEED();
+}
+
 #undef private
 #undef protected
 } // namespace ResourceSchedule
