@@ -226,7 +226,5 @@ HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_011, Function | MediumTest |
     dataShareUtils.SetDataShareReadyFlag(true);
     EXPECT_EQ(dataShareUtils.GetDataShareReadyFlag(), true);
 }
-#undef private
-#undef protected
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -182,8 +182,5 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_008, Function | MediumTest | Level0)
     });
     SUCCEED();
 }
-
-#undef private
-#undef protected
 } // namespace ResourceSchedule
 } // namespace OHOS
