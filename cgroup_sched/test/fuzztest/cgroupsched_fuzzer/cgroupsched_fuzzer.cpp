@@ -18,6 +18,7 @@
 #include "cgroup_event_handler.h"
 #include "cgroup_sched.h"
 #include "cgroup_adjuster.h"
+#include "wm_common.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -596,7 +597,7 @@ namespace ResourceSchedule {
         return true;
     }
 
-     bool HandleReportAvCodecEventFuzzTest(const uint8_t* data, size_t size)
+    bool HandleReportAvCodecEventFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
             return false;
@@ -618,6 +619,55 @@ namespace ResourceSchedule {
         return true;
     }
 
+    bool HandleWindowVisibilityChangedFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        int32_t uid = GetData<int32_t>();
+        int32_t pid = GetData<int32_t>();
+        uint32_t windowId = GetData<int32_t>();
+        uint32_t visibilityState = GetData<uint32_t>();
+        auto cgroupEventHandler =
+            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+
+        cgroupEventHandler->HandleWindowVisibilityChanged(
+            windowId, visibilityState, WindowType::APP_WINDOW_BASE, pid, uid);
+
+        return true;
+    }
+
+    bool HandleDrawingContentChangeWindowFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        int32_t uid = GetData<int32_t>();
+        int32_t pid = GetData<int32_t>();
+        uint32_t windowId = GetData<int32_t>();
+        auto cgroupEventHandler =
+            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+
+        cgroupEventHandler->HandleDrawingContentChangeWindow(windowId, WindowType::APP_WINDOW_BASE, false, pid, uid);
+        cgroupEventHandler->HandleDrawingContentChangeWindow(windowId, WindowType::APP_WINDOW_BASE, true, pid, uid);
+
+        return true;
+    }
+
     bool AdjustForkProcessGroupFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -634,9 +684,8 @@ namespace ResourceSchedule {
         pid_t pid = GetData<pid_t>();
         ProcessRecord pr(uid, pid);
         Application app(uid);
-        auto cgroupAdjuster =
-            std::make_shared<CgroupAdjuster>(OHOS::AppExecFwk::EventRunner::Create("CgroupAdjuster_fuzz"));
-        cgroupAdjuster->AdjustForkProcessGroup(app, pr);
+
+        CgroupAdjuster::GetInstance().AdjustForkProcessGroup(app, pr);
 
         return true;
     }
@@ -657,9 +706,46 @@ namespace ResourceSchedule {
         pid_t pid = GetData<pid_t>();
         ProcessRecord pr(uid, pid);
         Application app(uid);
-        auto cgroupAdjuster =
-            std::make_shared<CgroupAdjuster>(OHOS::AppExecFwk::EventRunner::Create("CgroupAdjuster_fuzz"));
-        cgroupAdjuster->AdjustProcessGroup(app, pr, AdjustSource::ADJS_FG_APP_CHANGE);
+
+        CgroupAdjuster::GetInstance().AdjustProcessGroup(app, pr, AdjustSource::ADJS_FG_APP_CHANGE);
+
+        return true;
+    }
+
+    bool AdjustAllProcessGroupFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        Application app(uid);
+
+        CgroupAdjuster::GetInstance().AdjustAllProcessGroup(app, AdjustSource::ADJS_FG_APP_CHANGE);
+
+        return true;
+    }
+
+
+    bool AdjustSelfProcessGroupFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+
+        CgroupAdjuster::GetInstance().AdjustSelfProcessGroup();
 
         return true;
     }
@@ -680,9 +766,8 @@ namespace ResourceSchedule {
         pid_t pid = GetData<pid_t>();
         ProcessRecord pr(uid, pid);
         Application app(uid);
-        auto cgroupAdjuster =
-            std::make_shared<CgroupAdjuster>(OHOS::AppExecFwk::EventRunner::Create("CgroupAdjuster_fuzz"));
-        cgroupAdjuster->ComputeProcessGroup(app, pr, AdjustSource::ADJS_FG_APP_CHANGE);
+
+        CgroupAdjuster::GetInstance().ComputeProcessGroup(app, pr, AdjustSource::ADJS_FG_APP_CHANGE);
 
         return true;
     }
@@ -703,9 +788,8 @@ namespace ResourceSchedule {
         pid_t pid = GetData<pid_t>();
         ProcessRecord pr(uid, pid);
         Application app(uid);
-        auto cgroupAdjuster =
-            std::make_shared<CgroupAdjuster>(OHOS::AppExecFwk::EventRunner::Create("CgroupAdjuster_fuzz"));
-        cgroupAdjuster->ApplyProcessGroup(app, pr);
+
+        CgroupAdjuster::GetInstance().ApplyProcessGroup(app, pr);
 
         return true;
     }
@@ -742,11 +826,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::CheckVisibilityForRenderProcessFuzzTest(data, size);
     OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleWindowVisibilityChangedFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleDrawingContentChangeWindowFuzzTest(data, size);
     // cgroup_event_handler.cpp end
 
     // cgroup_adjuster.cpp
     OHOS::ResourceSchedule::AdjustForkProcessGroupFuzzTest(data, size);
     OHOS::ResourceSchedule::AdjustProcessGroupFuzzTest(data, size);
+    OHOS::ResourceSchedule::AdjustAllProcessGroupFuzzTest(data, size);
+    OHOS::ResourceSchedule::AdjustSelfProcessGroupFuzzTest(data, size);
     OHOS::ResourceSchedule::ComputeProcessGroupFuzzTest(data, size);
     OHOS::ResourceSchedule::ApplyProcessGroupFuzzTest(data, size);
     // cgroup_adjuster.cpp end
