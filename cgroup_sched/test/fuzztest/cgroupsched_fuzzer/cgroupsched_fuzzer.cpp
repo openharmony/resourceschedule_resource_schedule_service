@@ -1128,7 +1128,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::HandleExtensionStateChangedFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleReportAudioStateFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleProcessCreatedFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleReportAudioStateFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleWebviewScreenCaptureFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleReportWebviewVideoStateFuzzTest(data, size);
     // cgroup_event_handler.cpp end
