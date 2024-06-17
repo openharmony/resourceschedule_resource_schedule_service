@@ -323,7 +323,7 @@ namespace ResourceSchedule {
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
         cgroupEventHandler->SetSupervisor(supervisor);
-        
+
         cgroupEventHandler->HandleTransientTaskStart(uid, pid, packageName);
 
         return true;
@@ -887,7 +887,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleWindowVisibilityChangedFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleDrawingContentChangeWindowFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleUnfocusedWindowFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleFocusedWindowFuzzTest(data, size);
     // cgroup_event_handler.cpp end
 
     // cgroup_adjuster.cpp
