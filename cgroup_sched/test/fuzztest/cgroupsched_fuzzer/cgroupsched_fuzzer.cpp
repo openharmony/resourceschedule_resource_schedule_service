@@ -596,6 +596,28 @@ namespace ResourceSchedule {
         return true;
     }
 
+     bool HandleReportAvCodecEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
+        nlohmann::json payload;
+        auto cgroupEventHandler =
+            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->HandleReportAvCodecEvent(resType, value, payload);
+
+        return true;
+    }
+
     bool AdjustForkProcessGroupFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -719,14 +741,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::HandleReportHisysEventFuzzTest(data, size);
     OHOS::ResourceSchedule::CheckVisibilityForRenderProcessFuzzTest(data, size);
     OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);
     // cgroup_event_handler.cpp end
 
-    //cgroup_adjuster.cpp
+    // cgroup_adjuster.cpp
     OHOS::ResourceSchedule::AdjustForkProcessGroupFuzzTest(data, size);
     OHOS::ResourceSchedule::AdjustProcessGroupFuzzTest(data, size);
     OHOS::ResourceSchedule::ComputeProcessGroupFuzzTest(data, size);
     OHOS::ResourceSchedule::ApplyProcessGroupFuzzTest(data, size);
-    //cgroup_adjuster.cpp end
+    // cgroup_adjuster.cpp end
 
     return 0;
 }
