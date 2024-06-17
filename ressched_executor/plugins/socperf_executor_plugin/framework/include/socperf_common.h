@@ -36,6 +36,7 @@ const int32_t RES_ID_NUMS_PER_TYPE_EXT            = 10000;
 const int32_t WRITE_NODE                          = 0;
 const int32_t REPORT_TO_PERFSO                    = 1;
 const int32_t MAX_FREQUE_NODE                     = 1;
+const int32_t NODE_DEFAULT_VALUE                  = -1;
 
 class ResourceNode {
 public:
