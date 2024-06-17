@@ -708,6 +708,7 @@ namespace ResourceSchedule {
         // getdata
         int32_t uid = GetData<int32_t>();
         int32_t pid = GetData<int32_t>();
+        uintptr_t token = GetData<uintptr_t>();
         uint32_t windowId = GetData<int32_t>();
         uint64_t displayId = GetData<uint64_t>();
         auto cgroupEventHandler =
@@ -715,7 +716,7 @@ namespace ResourceSchedule {
         cgroupEventHandler->SetSupervisor(supervisor);
 
         cgroupEventHandler->HandleUnfocusedWindow(
-            windowId, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
+            windowId, token, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
 
         return true;
     }
@@ -734,6 +735,7 @@ namespace ResourceSchedule {
         // getdata
         int32_t uid = GetData<int32_t>();
         int32_t pid = GetData<int32_t>();
+        uintptr_t token = GetData<uintptr_t>();
         uint32_t windowId = GetData<int32_t>();
         uint64_t displayId = GetData<uint64_t>();
         auto cgroupEventHandler =
@@ -741,7 +743,7 @@ namespace ResourceSchedule {
         cgroupEventHandler->SetSupervisor(supervisor);
 
         cgroupEventHandler->HandleFocusedWindow(
-            windowId, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
+            windowId, token, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
 
         return true;
     }
@@ -802,8 +804,8 @@ namespace ResourceSchedule {
         g_pos = 0;
 
         // getdata
-        Application app(uid);
         uid_t uid = GetData<uid_t>();
+        Application app(uid);
 
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(app, AdjustSource::ADJS_FG_APP_CHANGE);
 
