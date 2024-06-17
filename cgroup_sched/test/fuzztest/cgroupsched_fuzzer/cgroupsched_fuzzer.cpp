@@ -48,6 +48,7 @@ namespace ResourceSchedule {
     const uint8_t* G_DATA = nullptr;
     size_t g_size = 0;
     size_t g_pos;
+    std::shared_ptr<Supervisor> supervisor = std::make_shared<Supervisor>();
 
 /*
 * describe: get data from outside untrusted data(G_DATA) which size is according to sizeof(T)
@@ -321,6 +322,8 @@ namespace ResourceSchedule {
         std::string packageName(std::to_string(*data));
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
+        
         cgroupEventHandler->HandleTransientTaskStart(uid, pid, packageName);
 
         return true;
@@ -343,6 +346,8 @@ namespace ResourceSchedule {
         std::string packageName(std::to_string(*data));
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
+
         cgroupEventHandler->HandleTransientTaskEnd(uid, pid, packageName);
 
         return true;
@@ -366,6 +371,8 @@ namespace ResourceSchedule {
         int32_t abilityId = GetData<int32_t>();
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
+
         cgroupEventHandler->HandleContinuousTaskUpdate(uid, pid, {typeIds}, abilityId);
 
         return true;
@@ -389,6 +396,8 @@ namespace ResourceSchedule {
         int32_t abilityId = GetData<int32_t>();
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
+
         cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, typeId, abilityId);
 
         return true;
@@ -411,6 +420,8 @@ namespace ResourceSchedule {
         nlohmann::json payload;
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
+
         cgroupEventHandler->HandleReportMMIProcess(resType, value, payload);
 
         return true;
@@ -433,6 +444,8 @@ namespace ResourceSchedule {
         nlohmann::json payload;
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
+
         cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
 
         return true;
@@ -455,6 +468,8 @@ namespace ResourceSchedule {
         nlohmann::json payload;
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
+
         cgroupEventHandler->HandleReportKeyThread(resType, value, payload);
 
         return true;
@@ -477,6 +492,8 @@ namespace ResourceSchedule {
         nlohmann::json payload;
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
+
         cgroupEventHandler->HandleReportWindowState(resType, value, payload);
 
         return true;
@@ -499,6 +516,8 @@ namespace ResourceSchedule {
         nlohmann::json payload;
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
+
         cgroupEventHandler->HandleReportWebviewAudioState(resType, value, payload);
 
         return true;
@@ -521,6 +540,8 @@ namespace ResourceSchedule {
         nlohmann::json payload;
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
+
         cgroupEventHandler->HandleReportRunningLockEvent(resType, value, payload);
 
         return true;
@@ -543,6 +564,7 @@ namespace ResourceSchedule {
         nlohmann::json payload;
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
         cgroupEventHandler->HandleReportHisysEvent(resType, value, payload);
 
         return true;
@@ -568,6 +590,8 @@ namespace ResourceSchedule {
         ProcessRecord mainProc(uid, pid);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
+
         cgroupEventHandler->CheckVisibilityForRenderProcess(pr, mainProc);
 
         return true;
@@ -637,6 +661,7 @@ namespace ResourceSchedule {
         uint32_t visibilityState = GetData<uint32_t>();
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
 
         cgroupEventHandler->HandleWindowVisibilityChanged(
             windowId, visibilityState, WindowType::APP_WINDOW_BASE, pid, uid);
@@ -661,9 +686,62 @@ namespace ResourceSchedule {
         uint32_t windowId = GetData<int32_t>();
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
 
         cgroupEventHandler->HandleDrawingContentChangeWindow(windowId, WindowType::APP_WINDOW_BASE, false, pid, uid);
         cgroupEventHandler->HandleDrawingContentChangeWindow(windowId, WindowType::APP_WINDOW_BASE, true, pid, uid);
+
+        return true;
+    }
+
+    bool HandleUnfocusedWindowFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        int32_t uid = GetData<int32_t>();
+        int32_t pid = GetData<int32_t>();
+        uint32_t windowId = GetData<int32_t>();
+        uint64_t displayId = GetData<uint64_t>();
+        auto cgroupEventHandler =
+            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
+
+        cgroupEventHandler->HandleUnfocusedWindow(
+            windowId, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
+
+        return true;
+    }
+
+    bool HandleFocusedWindowFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        int32_t uid = GetData<int32_t>();
+        int32_t pid = GetData<int32_t>();
+        uint32_t windowId = GetData<int32_t>();
+        uint64_t displayId = GetData<uint64_t>();
+        auto cgroupEventHandler =
+            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+        cgroupEventHandler->SetSupervisor(supervisor);
+
+        cgroupEventHandler->HandleFocusedWindow(
+            windowId, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
 
         return true;
     }
@@ -725,27 +803,9 @@ namespace ResourceSchedule {
 
         // getdata
         Application app(uid);
+        uid_t uid = GetData<uid_t>();
 
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(app, AdjustSource::ADJS_FG_APP_CHANGE);
-
-        return true;
-    }
-
-
-    bool AdjustSelfProcessGroupFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-        g_pos = 0;
-
-        // getdata
-
-        CgroupAdjuster::GetInstance().AdjustSelfProcessGroup();
 
         return true;
     }
@@ -834,7 +894,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::AdjustForkProcessGroupFuzzTest(data, size);
     OHOS::ResourceSchedule::AdjustProcessGroupFuzzTest(data, size);
     OHOS::ResourceSchedule::AdjustAllProcessGroupFuzzTest(data, size);
-    OHOS::ResourceSchedule::AdjustSelfProcessGroupFuzzTest(data, size);
     OHOS::ResourceSchedule::ComputeProcessGroupFuzzTest(data, size);
     OHOS::ResourceSchedule::ApplyProcessGroupFuzzTest(data, size);
     // cgroup_adjuster.cpp end
