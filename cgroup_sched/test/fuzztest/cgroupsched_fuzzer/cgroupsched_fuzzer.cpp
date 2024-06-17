@@ -274,6 +274,37 @@ namespace ResourceSchedule {
         return true;
     }
 
+    bool HandleAbilityAddedFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        std::string deviceId(std::to_string(*data));
+        auto cgroupEventHandler =
+            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+
+        int32_t saId = APP_MGR_SERVICE_ID;
+        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
+
+        saId = WINDOW_MANAGER_SERVICE_ID;
+        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
+
+        saId = APP_MGR_SERVICE_ID;
+        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
+
+        saId = DEFAULT;
+        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
+
+        return true;
+    }
+
     bool HandleAbilityRemovedFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -304,6 +335,32 @@ namespace ResourceSchedule {
 
         return true;
     }
+
+    bool HandleProcessDiedFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uid_t uid = GetData<uid_t>();
+        pid_t pid = GetData<pid_t>();
+        std::string packageName(std::to_string(*data));
+        auto cgroupEventHandler =
+            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+
+        cgroupEventHandler->HandleProcessDied(uid, pid, packageName);
+        cgroupEventHandler->SetSupervisor(supervisor);
+        cgroupEventHandler->HandleProcessDied(uid, pid, packageName);
+
+        return true;
+    }
+
 
     bool HandleTransientTaskStartFuzzTest(const uint8_t* data, size_t size)
     {
@@ -471,7 +528,11 @@ namespace ResourceSchedule {
         // getdata
         uint32_t resType = GetData<uint32_t>();
         int64_t value = GetData<int64_t>();
+        int32_t keyTid = GetData<int32_t>();
+        int32_t role = GetData<int32_t>();
         nlohmann::json payload;
+        payload["keyTid"] = std::to_string(keyTid);
+        payload["role"] = std::to_string(role);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
 
@@ -496,7 +557,13 @@ namespace ResourceSchedule {
         // getdata
         uint32_t resType = GetData<uint32_t>();
         int64_t value = GetData<int64_t>();
+        int32_t windowId = GetData<int32_t>();
+        int32_t state = GetData<int32_t>();
+        int32_t nowSerialNum = GetData<int32_t>();
         nlohmann::json payload;
+        payload["windowId"] = std::to_string(windowId);
+        payload["state"] = std::to_string(state);
+        payload["nowSerialNum"] = std::to_string(nowSerialNum);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
 
@@ -569,9 +636,13 @@ namespace ResourceSchedule {
         g_pos = 0;
 
         // getdata
+        uid_t uid = GetData<uid_t>();
+        pid_t pid = GetData<pid_t>();
         uint32_t resType = GetData<uint32_t>();
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
+        payload["uid"] = std::to_string(uid);
+        payload["pid"] = std::to_string(pid);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
 
@@ -646,12 +717,45 @@ namespace ResourceSchedule {
         g_pos = 0;
 
         // getdata
+        int32_t uid = GetData<int32_t>();
+        int32_t pid = GetData<int32_t>();
+        int32_t instanceId = GetData<int32_t>();
         uint32_t resType = GetData<uint32_t>();
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
+        payload["uid"] = std::to_string(uid);
+        payload["pid"] = std::to_string(pid);
+        payload["instanceId"] = std::to_string(instanceId);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
         cgroupEventHandler->HandleReportAvCodecEvent(resType, value, payload);
+
+        return true;
+    }
+
+    bool HandleSceneBoardStateFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        int32_t pid = GetData<int32_t>();
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
+        nlohmann::json payload;
+        payload["pid"] = std::to_string(pid);
+        auto cgroupEventHandler =
+            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+
+        cgroupEventHandler->HandleSceneBoardState(resType, value, payload);
+        cgroupEventHandler->SetSupervisor(supervisor);
+        cgroupEventHandler->HandleSceneBoardState(resType, value, payload);
 
         return true;
     }
@@ -1104,7 +1208,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 
     // cgroup_event_handler.cpp
     OHOS::ResourceSchedule::ProcessEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleAbilityAddedFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleAbilityRemovedFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleProcessDiedFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleTransientTaskStartFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleTransientTaskEndFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleContinuousTaskUpdateFuzzTest(data, size);
@@ -1119,7 +1225,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::CheckVisibilityForRenderProcessFuzzTest(data, size);
     OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleWindowVisibilityChangedFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleSceneBoardStateFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleWindowVisibilityChangedFuzzTest(data, size); 
+    OHOS::ResourceSchedule::HandleDrawingContentChangeWindowFuzzTest(data, size); 
     OHOS::ResourceSchedule::HandleUnfocusedWindowFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleFocusedWindowFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleApplicationStateChangedFuzzTest(data, size);
