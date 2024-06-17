@@ -563,7 +563,7 @@ namespace ResourceSchedule {
         nlohmann::json payload;
         payload["windowId"] = std::to_string(windowId);
         payload["state"] = std::to_string(state);
-        payload["nowSerialNum"] = std::to_string(nowSerialNum);
+        payload["serialNum"] = std::to_string(nowSerialNum);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
 
