@@ -595,6 +595,98 @@ namespace ResourceSchedule {
 
         return true;
     }
+
+    bool AdjustForkProcessGroupFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uid_t uid = GetData<uid_t>();
+        pid_t pid = GetData<pid_t>();
+        ProcessRecord pr(uid, pid);
+        Application app(uid);
+        auto cgroupAdjuster =
+            std::make_shared<CgroupAdjuster>(OHOS::AppExecFwk::EventRunner::Create("CgroupAdjuster_fuzz"));
+        cgroupAdjuster->AdjustForkProcessGroup(app, pr);
+
+        return true;
+    }
+
+    bool AdjustProcessGroupFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uid_t uid = GetData<uid_t>();
+        pid_t pid = GetData<pid_t>();
+        ProcessRecord pr(uid, pid);
+        Application app(uid);
+        auto cgroupAdjuster =
+            std::make_shared<CgroupAdjuster>(OHOS::AppExecFwk::EventRunner::Create("CgroupAdjuster_fuzz"));
+        cgroupAdjuster->AdjustProcessGroup(app, pr, AdjustSource::ADJS_FG_APP_CHANGE);
+
+        return true;
+    }
+
+    bool ComputeProcessGroupFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uid_t uid = GetData<uid_t>();
+        pid_t pid = GetData<pid_t>();
+        ProcessRecord pr(uid, pid);
+        Application app(uid);
+        auto cgroupAdjuster =
+            std::make_shared<CgroupAdjuster>(OHOS::AppExecFwk::EventRunner::Create("CgroupAdjuster_fuzz"));
+        cgroupAdjuster->ComputeProcessGroup(app, pr, AdjustSource::ADJS_FG_APP_CHANGE);
+
+        return true;
+    }
+
+    bool ApplyProcessGroupFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uid_t uid = GetData<uid_t>();
+        pid_t pid = GetData<pid_t>();
+        ProcessRecord pr(uid, pid);
+        Application app(uid);
+        auto cgroupAdjuster =
+            std::make_shared<CgroupAdjuster>(OHOS::AppExecFwk::EventRunner::Create("CgroupAdjuster_fuzz"));
+        cgroupAdjuster->ApplyProcessGroup(app, pr);
+
+        return true;
+    }
 } // namespace ResourceSchedule
 } // namespace OHOS
 
@@ -628,6 +720,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::CheckVisibilityForRenderProcessFuzzTest(data, size);
     OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
     // cgroup_event_handler.cpp end
+
+    //cgroup_adjuster.cpp
+    OHOS::ResourceSchedule::AdjustForkProcessGroupFuzzTest(data, size);
+    OHOS::ResourceSchedule::AdjustProcessGroupFuzzTest(data, size);
+    OHOS::ResourceSchedule::ComputeProcessGroupFuzzTest(data, size);
+    OHOS::ResourceSchedule::ApplyProcessGroupFuzzTest(data, size);
+    //cgroup_adjuster.cpp end
 
     return 0;
 }
