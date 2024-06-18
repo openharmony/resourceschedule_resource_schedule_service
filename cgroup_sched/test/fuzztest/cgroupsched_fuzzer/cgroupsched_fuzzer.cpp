@@ -20,6 +20,7 @@
 #include "cgroup_adjuster.h"
 #include "wm_common.h"
 #include "app_state_observer.h"
+#include "app_startup_scene_rec.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -1245,7 +1246,7 @@ namespace ResourceSchedule {
         int32_t uid = GetData<int32_t>();
         int32_t pid = GetData<int32_t>();
         std::string bundleName(std::to_string(*data));
-        RmsApplicationStateObserver appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
+        RmsApplicationStateObserver *appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
         AppStateData appStateData = new AppStateData();
         appStateData.uid = uid;
         appStateData.pid = pid;
@@ -1271,7 +1272,7 @@ namespace ResourceSchedule {
         int32_t uid = GetData<int32_t>();
         int32_t pid = GetData<int32_t>();
         std::string bundleName(std::to_string(*data));
-        RmsApplicationStateObserver appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
+        RmsApplicationStateObserver *appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
         ProcessData processData = new ProcessData();
         processData.uid = uid;
         processData.pid = pid;
@@ -1298,7 +1299,7 @@ namespace ResourceSchedule {
         int32_t pid = GetData<int32_t>();
         int32_t state = GetData<int32_t>();
         std::string bundleName(std::to_string(*data));
-        RmsApplicationStateObserver appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
+        RmsApplicationStateObserver *appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
         AppStateData appStateData = new AppStateData();
         appStateData.uid = uid;
         appStateData.pid = pid;
@@ -1326,7 +1327,7 @@ namespace ResourceSchedule {
         int32_t pid = GetData<int32_t>();
         int32_t state = GetData<int32_t>();
         std::string bundleName(std::to_string(*data));
-        RmsApplicationStateObserver appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
+        RmsApplicationStateObserver *appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
         AppStateData appStateData = new AppStateData();
         appStateData.uid = uid;
         appStateData.pid = pid;
@@ -1354,7 +1355,7 @@ namespace ResourceSchedule {
         int32_t pid = GetData<int32_t>();
         int32_t state = GetData<int32_t>();
         std::string bundleName(std::to_string(*data));
-        RmsApplicationStateObserver appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
+        RmsApplicationStateObserver *appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
         AppStateData appStateData = new AppStateData();
         appStateData.uid = uid;
         appStateData.pid = pid;
