@@ -19,6 +19,7 @@
 #include "cgroup_sched.h"
 #include "cgroup_adjuster.h"
 #include "wm_common.h"
+#include "app_state_observer.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -161,7 +162,7 @@ namespace ResourceSchedule {
         g_pos = 0;
 
         // getdata
-        int32_t typeId = GetData<int32_t>();
+        int32_t typeId = 1;
         int32_t creatorUid = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
         std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
@@ -189,7 +190,7 @@ namespace ResourceSchedule {
         g_pos = 0;
 
         // getdata
-        int32_t typeId = GetData<int32_t>();
+        int32_t typeId = 1;
         int32_t creatorUid = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
         std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
@@ -217,7 +218,7 @@ namespace ResourceSchedule {
         g_pos = 0;
 
         // getdata
-        int32_t typeId = GetData<int32_t>();
+        int32_t typeId = 1;
         int32_t creatorUid = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
         std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
@@ -536,7 +537,7 @@ namespace ResourceSchedule {
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
 
-        cgroupEventHandler->HandleReportKeyThread(resType, value, payload);    
+        cgroupEventHandler->HandleReportKeyThread(resType, value, payload);
         cgroupEventHandler->SetSupervisor(supervisor);
         cgroupEventHandler->HandleReportKeyThread(resType, value, payload);
 
@@ -646,7 +647,7 @@ namespace ResourceSchedule {
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
 
-        cgroupEventHandler->HandleReportHisysEvent(resType, value, payload);   
+        cgroupEventHandler->HandleReportHisysEvent(resType, value, payload);
         cgroupEventHandler->SetSupervisor(supervisor);
         cgroupEventHandler->HandleReportHisysEvent(resType, value, payload);
 
@@ -1190,6 +1191,181 @@ namespace ResourceSchedule {
 
         return true;
     }
+
+    bool RecordIsContinuousStartupFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uid_t uid = GetData<uid_t>();
+        std::string bundleName(std::to_string(*data));
+
+        AppStartupSceneRec::GetInstance().HandleProcessCreated(0, uid, bundleName);
+
+        return true;
+    }
+
+    bool CleanRecordSceneDataFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+
+        AppStartupSceneRec::GetInstance().CleanRecordSceneData();
+
+        return true;
+    }
+
+    bool UpdateAppStartupNumFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        int32_t uid = GetData<int32_t>();
+        int32_t pid = GetData<int32_t>();
+        std::string bundleName(std::to_string(*data));
+        RmsApplicationStateObserver appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
+        AppStateData appStateData = new AppStateData();
+        appStateData.uid = uid;
+        appStateData.pid = pid;
+        appStateData.bundleName = bundleName;
+
+        appStateObserver.OnForegroundApplicationChanged(appStateData);
+
+        return true;
+    }
+
+    bool OnProcessDiedFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        int32_t uid = GetData<int32_t>();
+        int32_t pid = GetData<int32_t>();
+        std::string bundleName(std::to_string(*data));
+        RmsApplicationStateObserver appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
+        ProcessData processData = new ProcessData();
+        processData.uid = uid;
+        processData.pid = pid;
+        processData.bundleName = bundleName;
+
+        appStateObserver.OnProcessDied(processData);
+
+        return true;
+    }
+
+    bool OnApplicationStateChangedFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        int32_t uid = GetData<int32_t>();
+        int32_t pid = GetData<int32_t>();
+        int32_t state = GetData<int32_t>();
+        std::string bundleName(std::to_string(*data));
+        RmsApplicationStateObserver appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
+        AppStateData appStateData = new AppStateData();
+        appStateData.uid = uid;
+        appStateData.pid = pid;
+        appStateData.state = state;
+        appStateData.bundleName = bundleName;
+
+        appStateObserver.OnApplicationStateChanged(appStateData);
+
+        return true;
+    }
+
+    bool OnAppStateChangedFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        int32_t uid = GetData<int32_t>();
+        int32_t pid = GetData<int32_t>();
+        int32_t state = GetData<int32_t>();
+        std::string bundleName(std::to_string(*data));
+        RmsApplicationStateObserver appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
+        AppStateData appStateData = new AppStateData();
+        appStateData.uid = uid;
+        appStateData.pid = pid;
+        appStateData.state = state;
+        appStateData.bundleName = bundleName;
+
+        appStateObserver.OnAppStateChanged(appStateData);
+
+        return true;
+    }
+
+    bool OnAppCacheStateChangedFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        int32_t uid = GetData<int32_t>();
+        int32_t pid = GetData<int32_t>();
+        int32_t state = GetData<int32_t>();
+        std::string bundleName(std::to_string(*data));
+        RmsApplicationStateObserver appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
+        AppStateData appStateData = new AppStateData();
+        appStateData.uid = uid;
+        appStateData.pid = pid;
+        appStateData.state = state;
+        appStateData.bundleName = bundleName;
+
+        appStateObserver.OnAppCacheStateChanged(appStateData);
+
+        return true;
+    }
+
 } // namespace ResourceSchedule
 } // namespace OHOS
 
@@ -1226,8 +1402,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleSceneBoardStateFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleWindowVisibilityChangedFuzzTest(data, size); 
-    OHOS::ResourceSchedule::HandleDrawingContentChangeWindowFuzzTest(data, size); 
+    OHOS::ResourceSchedule::HandleWindowVisibilityChangedFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleDrawingContentChangeWindowFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleUnfocusedWindowFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleFocusedWindowFuzzTest(data, size);
     OHOS::ResourceSchedule::HandleApplicationStateChangedFuzzTest(data, size);
@@ -1247,6 +1423,21 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::ComputeProcessGroupFuzzTest(data, size);
     OHOS::ResourceSchedule::ApplyProcessGroupFuzzTest(data, size);
     // cgroup_adjuster.cpp end
+
+    // app_startup_scene_rec.cpp
+    OHOS::ResourceSchedule::RecordIsContinuousStartupFuzzTest(data, size);
+    OHOS::ResourceSchedule::CleanRecordSceneDataFuzzTest(data, size);
+    // app_startup_scene_rec.cpp end
+
+    // app_state_observer.cpp
+    OHOS::ResourceSchedule::UpdateAppStartupNumFuzzTest(data, size);
+    OHOS::ResourceSchedule::OnProcessDiedFuzzTest(data, size);
+    OHOS::ResourceSchedule::OnApplicationStateChangedFuzzTest(data, size);
+    OHOS::ResourceSchedule::OnAppStateChangedFuzzTest(data, size);
+    OHOS::ResourceSchedule::OnAppCacheStateChangedFuzzTest(data, size);
+    // app_state_observer.cpp end
+
+
 
     return 0;
 }
