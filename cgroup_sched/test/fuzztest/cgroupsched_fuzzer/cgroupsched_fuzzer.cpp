@@ -20,7 +20,6 @@
 #include "cgroup_adjuster.h"
 #include "wm_common.h"
 #include "app_state_observer.h"
-#include "app_startup_scene_rec.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -1193,44 +1192,6 @@ namespace ResourceSchedule {
         return true;
     }
 
-    bool RecordIsContinuousStartupFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-        g_pos = 0;
-
-        // getdata
-        uid_t uid = GetData<uid_t>();
-        std::string bundleName(std::to_string(*data));
-
-        AppStartupSceneRec::GetInstance().HandleProcessCreated(0, uid, bundleName);
-
-        return true;
-    }
-
-    bool CleanRecordSceneDataFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-        g_pos = 0;
-
-        // getdata
-
-        AppStartupSceneRec::GetInstance().CleanRecordSceneData();
-
-        return true;
-    }
-
     bool UpdateAppStartupNumFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -1247,12 +1208,12 @@ namespace ResourceSchedule {
         int32_t pid = GetData<int32_t>();
         std::string bundleName(std::to_string(*data));
         RmsApplicationStateObserver *appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
-        AppStateData appStateData = new AppStateData();
+        AppStateData appStateData;
         appStateData.uid = uid;
         appStateData.pid = pid;
         appStateData.bundleName = bundleName;
 
-        appStateObserver.OnForegroundApplicationChanged(appStateData);
+        appStateObserver->OnForegroundApplicationChanged(appStateData);
 
         return true;
     }
@@ -1273,12 +1234,12 @@ namespace ResourceSchedule {
         int32_t pid = GetData<int32_t>();
         std::string bundleName(std::to_string(*data));
         RmsApplicationStateObserver *appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
-        ProcessData processData = new ProcessData();
+        ProcessData processData;
         processData.uid = uid;
         processData.pid = pid;
         processData.bundleName = bundleName;
 
-        appStateObserver.OnProcessDied(processData);
+        appStateObserver->OnProcessDied(processData);
 
         return true;
     }
@@ -1300,13 +1261,13 @@ namespace ResourceSchedule {
         int32_t state = GetData<int32_t>();
         std::string bundleName(std::to_string(*data));
         RmsApplicationStateObserver *appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
-        AppStateData appStateData = new AppStateData();
+        AppStateData appStateData;
         appStateData.uid = uid;
         appStateData.pid = pid;
         appStateData.state = state;
         appStateData.bundleName = bundleName;
 
-        appStateObserver.OnApplicationStateChanged(appStateData);
+        appStateObserver->OnApplicationStateChanged(appStateData);
 
         return true;
     }
@@ -1328,13 +1289,13 @@ namespace ResourceSchedule {
         int32_t state = GetData<int32_t>();
         std::string bundleName(std::to_string(*data));
         RmsApplicationStateObserver *appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
-        AppStateData appStateData = new AppStateData();
+        AppStateData appStateData;
         appStateData.uid = uid;
         appStateData.pid = pid;
         appStateData.state = state;
         appStateData.bundleName = bundleName;
 
-        appStateObserver.OnAppStateChanged(appStateData);
+        appStateObserver->OnAppStateChanged(appStateData);
 
         return true;
     }
@@ -1356,13 +1317,13 @@ namespace ResourceSchedule {
         int32_t state = GetData<int32_t>();
         std::string bundleName(std::to_string(*data));
         RmsApplicationStateObserver *appStateObserver = new (std::nothrow)RmsApplicationStateObserver();
-        AppStateData appStateData = new AppStateData();
+        AppStateData appStateData;
         appStateData.uid = uid;
         appStateData.pid = pid;
         appStateData.state = state;
         appStateData.bundleName = bundleName;
 
-        appStateObserver.OnAppCacheStateChanged(appStateData);
+        appStateObserver->OnAppCacheStateChanged(appStateData);
 
         return true;
     }
@@ -1424,11 +1385,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::ComputeProcessGroupFuzzTest(data, size);
     OHOS::ResourceSchedule::ApplyProcessGroupFuzzTest(data, size);
     // cgroup_adjuster.cpp end
-
-    // app_startup_scene_rec.cpp
-    OHOS::ResourceSchedule::RecordIsContinuousStartupFuzzTest(data, size);
-    OHOS::ResourceSchedule::CleanRecordSceneDataFuzzTest(data, size);
-    // app_startup_scene_rec.cpp end
 
     // app_state_observer.cpp
     OHOS::ResourceSchedule::UpdateAppStartupNumFuzzTest(data, size);
