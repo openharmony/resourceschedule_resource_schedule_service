@@ -273,13 +273,13 @@ HWTEST_F(FrameAwarePluginTest, HandleEventSlideTest, TestSize.Level1)
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain pid
     data->payload.clear();
     data->value = 0;
-    data->payload["pid"] = true;
+    data->payload["clientPid"] = true;
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain uid
-    data->payload["uid"] = true;
+    data->payload["callingUid"] = true;
     FrameAwarePlugin::GetInstance().DispatchResource(data); // pid is not string
-    data->payload["pid"] = "12345";
+    data->payload["clientPid"] = "12345";
     FrameAwarePlugin::GetInstance().DispatchResource(data); // uid is not string
-    data->payload["uid"] = "12345";
+    data->payload["callingUid"] = "12345";
     FrameAwarePlugin::GetInstance().DispatchResource(data); // all right
     ffrt::wait();
 }
