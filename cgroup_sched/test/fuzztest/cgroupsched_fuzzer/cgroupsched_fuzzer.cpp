@@ -1394,7 +1394,5 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::OnAppCacheStateChangedFuzzTest(data, size);
     // app_state_observer.cpp end
 
-
-
     return 0;
 }
