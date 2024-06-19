@@ -232,6 +232,8 @@ enum : uint32_t {
     RES_TYPE_FIRST_BOOT_AFTER_SYSTEM_UPGRADE = 99,
     // report background perceivable scene
     RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE = 100,
+    // report send frame event
+    RES_TYPE_SEND_FRAME_EVENT = 101,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -245,6 +247,19 @@ enum : uint32_t {
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
 };
+
+enum EventType : uint32_t {
+    EVENT_START = 0,
+    EVENT_DRAW_FRAME_REPORT,
+    EVENT_END,
+}
+
+enum EventValue : uint32_t {
+    EVENT_VALUE_START = 0,
+    EVENT_VALUE_DRAW_FRAME_REPORT_START,
+    EVENT_VALUE_DRAW_FRAME_REPORT_STOP,
+    EVENT_END,
+}
 
 /**
  * @brief Screen status

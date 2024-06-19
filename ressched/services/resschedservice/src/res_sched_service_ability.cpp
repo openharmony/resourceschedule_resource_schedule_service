@@ -43,6 +43,7 @@ void ResSchedServiceAbility::OnStart()
 {
     ResSchedMgr::GetInstance().Init();
     NotifierMgr::GetInstance().Init();
+    EventListenerMgr::GetInstance().Init();
     if (!service_) {
         service_ = new (std::nothrow) ResSchedService();
     }

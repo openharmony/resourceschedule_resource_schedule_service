@@ -13,18 +13,20 @@
  * limitations under the License.
  */
 
-#include "res_sched_notifier_death_recipient.h"
+#ifndef RESSCHED_SCENE_RECOGNIZE_LIST_FLING_RECOGNIZER_H
+#define RESSCHED_SCENE_RECOGNIZE_LIST_FLING_RECOGNIZER_H
 
-#include "res_sched_log.h"
+#include "scene_recognizer_base.h"
+#include "ffrt.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-void ResSchedCommonDeathRecipient::OnRemoteDied(const wptr<IRemoteObject>& remote)
-{
-    RESSCHED_LOGD("called");
-    if (deathRecipientCb_ != nullptr) {
-        deathRecipientCb_(remote.promote());
-    }
-}
+class ListFlingRecognizer : public SceneRecognizerBase {
+public:
+    ListFlingRecognizer() = default;
+    ~ListFlingRecognizer();
+    void OnDispatchResource(uint32_t, int64_t value, const nlohmann::json& payload) override;
+};
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif // RESSCHED_SCENE_RECOGNIZE_CONTINUOUS_APP_INSTALL_RECOGNIZER_H

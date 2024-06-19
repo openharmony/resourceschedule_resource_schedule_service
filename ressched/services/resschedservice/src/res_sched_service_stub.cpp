@@ -364,6 +364,36 @@ bool ResSchedServiceStub::IsAllowedAppPreloadInner(MessageParcel& data, MessageP
     return true;
 }
 
+void ResSchedServiceStub::RegisterEventListenerInner(MessageParcel& data,
+    [[maybe_unused]] MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        RESSCHED_LOGE("%{public}s:Register invalid token.", __func__);
+        return;
+    }
+    sptr<IRemoteObject> listener = nullptr;
+    uint32_t eventType = -1;
+    READ_PARCEL(data, RemoteObject, listener, void(), ResSchedServiceStub);
+    READ_PARCEL(data, Uint32, eventType, void(), ResSchedServiceStub);
+    if (listener == nullptr || eventType == -1) {
+        RESSCHED_LOGE("%{public}s:parse parcel failed.", __func__);
+        return;
+    }
+    RegisterSystemloadNotifier(listener, eventType);
+}
+
+void ResSchedServiceStub::UnRegisterEventListenerInner(MessageParcel& data,
+    [[maybe_unused]] MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        RESSCHED_LOGE("UnRegister invalid token.");
+        return;
+    }
+    uint32_t eventType = -1;
+    READ_PARCEL(data, Uint32, eventType, void(), ResSchedServiceStub);
+    UnRegisterEventListener(eventType);
+}
+
 bool ResSchedServiceStub::IsLimitRequest(int32_t uid)
 {
     int64_t nowTime = ResSchedUtils::GetNowMillTime();
@@ -460,6 +490,10 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
             return GetSystemloadLevelInner(data, reply);
         case static_cast<uint32_t>(ResourceScheduleInterfaceCode::TOUCH_DOWN_APP_PRELOAD):
             return IsAllowedAppPreloadInner(data, reply);
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::REGISTER_EVENT_LISTENER):
+            return RegisterEventListenerInner(data, reply);
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::UNREGISTER_EVENT_LISTENER):
+            return UnRegisterEventListenerInner(data, reply);
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }

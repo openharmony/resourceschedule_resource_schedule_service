@@ -120,7 +120,9 @@ private:
     void AddResSaListenerLocked();
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId);
     int32_t InitSystemloadListenersLocked();
+    int32_t InitInnerEventListenerLocked();
     void UnRegisterSystemloadListenersLocked();
+    void UnRegisterEventLstenerLocked();
     class SystemloadLevelListener : public ResSchedSystemloadNotifierStub {
     public:
         SystemloadLevelListener() = default;
@@ -132,6 +134,19 @@ private:
     private:
         std::mutex listMutex_;
         std::list<sptr<ResSchedSystemloadNotifierClient>> systemloadLevelCbs_;
+    };
+    class InnerEventListener : public ResSchedEventListenerStub {
+    public:
+        InnerEventListener() = default;
+        virtual ~InnerEventListener();
+        void RegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType);
+        void UnRegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType);
+        void OnReceiveEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json& extInfo) override;
+        bool IsInnerEventMapEmpty(uint32_t eventType);
+        std::vector<uint32_t> GetRegisteredTypes();
+    private:
+        std::mutex eventMutex_;
+        std::unordered_map<uint32_t, vector<sptr<ResSchedEventListener>>> eventListeners_;
     };
     class ResSchedDeathRecipient : public IRemoteObject::DeathRecipient {
     public:
@@ -150,8 +165,10 @@ private:
     sptr<IRemoteObject> remoteObject_;
     sptr<IResSchedService> rss_;
     sptr<SystemloadLevelListener> systemloadLevelListener_;
+    sprt<InnerEventListener> innerEventListener_;
     sptr<ResSchedSvcStatusChange> resSchedSvcStatusListener_;
     bool systemloadCbRegistered_ = false;
+    std::unordered_set<uint32_t> registeredInnerEvents;
     DISALLOW_COPY_AND_MOVE(ResSchedClient);
 };
 } // namespace ResourceSchedule

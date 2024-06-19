@@ -13,18 +13,23 @@
  * limitations under the License.
  */
 
-#include "res_sched_notifier_death_recipient.h"
+#ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_EVENT_LISTENER_H
+#define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_EVENT_LISTENER_H
 
-#include "res_sched_log.h"
+#include <cstdint>
+#include <string>
+
+#include "refbase.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-void ResSchedCommonDeathRecipient::OnRemoteDied(const wptr<IRemoteObject>& remote)
-{
-    RESSCHED_LOGD("called");
-    if (deathRecipientCb_ != nullptr) {
-        deathRecipientCb_(remote.promote());
-    }
-}
+class ResSchedEventListener : public virtual RefBase {
+public:
+    ResSchedEventListener() = default;
+    virtual ~ResSchedEventListener() = default;
+    virtual void OnReceiveEvent(uint32_t eventType, uint32_t eventValue,
+        std::unordered_map<std::string, std::string> extInfo) = 0;
+};
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif // RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_EVENT_LISTENER_H

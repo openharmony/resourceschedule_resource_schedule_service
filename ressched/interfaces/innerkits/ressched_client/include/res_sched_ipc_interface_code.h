@@ -29,10 +29,16 @@ namespace ResourceSchedule {
         GET_SYSTEMLOAD_LEVEL = 5,
         TOUCH_DOWN_APP_PRELOAD = 6,
         REPORT_SYNC_EVENT = 7,
+        REGISTER_EVENT_LISTENER = 8,
+        UNREGISTER_EVENT_LISTENER = 9,
     };
 
     enum class ResourceSceduleSystemloadNotifierCode {
         SYSTEMLOAD_LEVEL = 1,
+    };
+
+    enum class ResourceScedulEventListenerCode {
+        RECEIVE_EVENT = 1,
     };
 } // namespace ResourceSchedule
 } // namespace OHOS

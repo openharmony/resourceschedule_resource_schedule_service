@@ -67,7 +67,7 @@ void NotifierMgr::Init()
         return;
     }
     notifierDeathRecipient_ = sptr<IRemoteObject::DeathRecipient>(
-        new (std::nothrow) ResSchedNotifierDeathRecipient(
+        new (std::nothrow) ResSchedCommonDeathRecipient(
         std::bind(&NotifierMgr::OnRemoteNotifierDied, this, std::placeholders::_1)));
     notifierHandler_ = std::make_shared<ffrt::queue>("DeviceNotifyQueue");
     std::string systemloadParamDef;
