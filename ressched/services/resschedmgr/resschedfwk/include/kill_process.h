@@ -16,7 +16,6 @@
 #define RESSCHED_SERVICES_RESSCHEDMGR_RESSCHEDFWK_INCLUDE_KILL_PROCESS_H
 
 #include <string>
-#include <vector>
 #include "nlohmann/json.hpp"
 
 namespace OHOS {
@@ -24,10 +23,6 @@ namespace ResourceSchedule {
 class KillProcess {
 public:
     int32_t KillProcessByPidWithClient(const nlohmann::json& payload);
-private:
-    time_t GetProcessStartTime(int pid);
-    std::vector<std::string> GetStatInfo(const std::string &path);
-    std::string ReadFileByChar(const std::string &path);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
