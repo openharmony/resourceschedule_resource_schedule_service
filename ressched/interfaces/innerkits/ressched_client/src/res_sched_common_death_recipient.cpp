@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "res_sched_notifier_death_recipient.h"
+#include "res_sched_common_death_recipient.h"
 
 #include "res_sched_log.h"
 

@@ -26,7 +26,10 @@ public:
     ListFlingRecognizer() = default;
     ~ListFlingRecognizer();
     void OnDispatchResource(uint32_t, int64_t value, const nlohmann::json& payload) override;
+private:
+    ffrt::task_handle listFlingEndTask_ = nullptr;
+    ffrt::task_handle listFlingTimeOutTask_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // RESSCHED_SCENE_RECOGNIZE_CONTINUOUS_APP_INSTALL_RECOGNIZER_H
+#endif // RESSCHED_SCENE_RECOGNIZE_LIST_FLING_RECOGNIZER_H
