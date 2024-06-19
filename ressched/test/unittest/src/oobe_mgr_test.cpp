@@ -180,7 +180,8 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_008, Function | MediumTest | Level0)
     oobeMgr.dataShareFunctions_.emplace_back([]() {
         SUCCEED();
     });
-    SUCCEED();
+    oobeMgr.OnReceiveDataShareReadyCallBack();
+    EXPECT_EQ(0, oobeMgr.dataShareFunctions_.size());
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
