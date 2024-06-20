@@ -13,17 +13,15 @@
  * limitations under the License.
  */
 
-#include "notifier_mgr.h"
-
-#include <vector>
+#include "event_listener_mgr.h"
 
 #include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
 #include "app_mgr_constants.h"
 #include "parameters.h"
 #include "res_sched_log.h"
-#include "res_sched_notifier_death_recipient.h"
-#include "res_sched_systemload_notifier_proxy.h"
+#include "res_sched_common_death_recipient.h"
+#include "res_sched_event_listener_proxy.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -66,26 +64,24 @@ void EventListenerMgr::RegisterEventListener(int32_t callingPid, const sptr<IRem
     }
     std::lock_guard<std::mutex> autoLock(mutex_);
     auto iter = eventListenerMap_.find(eventType);
-    std::vector<EventListenerInfo> listenerList;
+    std::map<pid_t, EventListenerInfo> listenerList;
     if (iter == eventListenerMap_.end()) {
         listenerList = {};
         iter->second = listenerList;
     } else {
         listenerList = iter->second;
     }
-    for (auto item : listenerList) {
-        if (item.pid == (pid_t)callingPid || item.listener = listener) {
-            RESSCHED_LOGE("%{public}s:pid %{public}d has benn registered eventType %{public}d",
-                __func__, callingPid, eventType);
-            return;
-        }
+    if (listenerList.find((pid_t)callingPid) != listenerList.end()) {
+        RESSCHED_LOGE("%{public}s:pid %{public}d has benn registered eventType %{public}d",
+            __func__, callingPid, eventType);
+        return;
     }
     EventListenerInfo info;
     info.listener = listener;
     info.pid = (pid_t)callingPid;
-    listenerList.emplace_back(info);
+    listenerList[info.pid] = info;
     listener->AddDeathRecipient(eventListenerDeathRecipient_);
-    RESSCHED_LOGI("%{public}s:pid = %{public}d register eventType %{public}d succeed.", __func__, callingPid. eventType);
+    RESSCHED_LOGI("%{public}s:pid = %{public}d register eventType %{public}d succeed.", __func__, callingPid, eventType);
 }
 
 void EventListenerMgr::UnRegisterEventListener(int32_t callingPid, uint32_t eventType)
@@ -93,18 +89,16 @@ void EventListenerMgr::UnRegisterEventListener(int32_t callingPid, uint32_t even
     RESSCHED_LOGD("%{public}s: called", __func__);
     std::lock_guard<std::mutex> autoLock(mutex_);
     auto iter = eventListenerMap_.find(eventType);
-    if (iter != notifierMap_.end()) {
-        for (auto listenerInfo : iter->second) {
-            if (listenerInfo->pid == (pid_t)callingPid) {
-                listenerInfo->listener->RemoveDeathRecipient(notifierDeathRecipient_);
-                iter->second.erase(listenerInfo);
-                if (iter->second.empty()) {
-                    eventListenerMap_.erase(eventType);
-                }
-                RESSCHED_LOGI("%{public}s: pid:%{public}d unregister eventType %{public}d succeed",
-                   __func__, callingPid, eventType);
-                return;
+    if (iter != eventListenerMap_.end()) {
+        auto listenerItem = iter->second.find(callingPid);
+        if (listenerItem != iter->second.end()) {
+            listenerItem->second.listener->RemoveDeathRecipient(eventListenerDeathRecipient_);
+            iter->second.erase(callingPid);
+            if (iter->second.empty()) {
+                eventListenerMap_.erase(eventType);
             }
+            RESSCHED_LOGI("%{public}s: pid:%{public}d unregister eventType %{public}d succeed",
+                   __func__, callingPid, eventType);
         }
     }
 }
@@ -116,7 +110,7 @@ void EventListenerMgr::OnRemoteListenerDied(const sptr<IRemoteObject>& listener)
         RESSCHED_LOGW("remote listener null");
         return;
     }
-    RemoveNotifierLock(notifier);
+    RemoveListenerLock(listener);
 }
 
 void EventListenerMgr::SendEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo)
@@ -144,18 +138,18 @@ void EventListenerMgr::RemoveListenerLock(const sptr<IRemoteObject>& listener)
     RESSCHED_LOGD("%{public}s:called", __func__);
     std::lock_guard<std::mutex> autoLock(mutex_);
     for (auto& listeners : eventListenerMap_) {
-        for (auto& listenerInfo : listeners->second) {
-            if (listenerInfo->listener != listener) {
+        for (auto& listenerInfoItem : listeners.second) {
+            if (listenerInfoItem.second.listener != listener) {
                 continue;
             }
-            listenerInfo->listener->RemoveDeathRecipient(eventListenerDeathRecipient_);
-            listeners->second.erase(listenerInfo);
+            listenerInfoItem.second.listener->RemoveDeathRecipient(eventListenerDeathRecipient_);
+            listeners.second.erase(listenerInfoItem.first);
             break;
         }
     }
 }
 
-void EventListenerMgr::SendEventLock(uint32_t eventType, uint32_t eventValue, nlohmann::json extInfo)
+void EventListenerMgr::SendEventLock(uint32_t eventType, uint32_t eventValue, const nlohmann::json& extInfo)
 {
     std::vector<sptr<IRemoteObject>> listenerArray;
     {
@@ -165,27 +159,27 @@ void EventListenerMgr::SendEventLock(uint32_t eventType, uint32_t eventValue, nl
             RESSCHED_LOGD("eventType:%{public}d no listener.", eventType);
             return;
         }
-        for (auto& listener : listeners->second) {
-            listenerArray.push_back(listener->listener);
+        for (auto& listenerItem : listeners->second) {
+            listenerArray.push_back(listenerItem.second.listener);
         }
     }
     HandleSendEvent(listenerArray, eventType, eventValue, extInfo);
 }
 
-std::unordered_map<int32_t, std::vector<int32_t>> EventListenerMgr::DumpRegisterInfo()
+std::unordered_map<int32_t, std::vector<pid_t>> EventListenerMgr::DumpRegisterInfo()
 {
     std::unordered_map<int32_t, std::vector<pid_t>> ret;
     {
         std::lock_guard<std::mutex> autoLock(mutex_);
         for (auto& listenerItem : eventListenerMap_) {
-            ret[listenerItem->first] = {};
-            for (auto listener : listenerItem->second) {
-                ret[listenerItem->first].emplace_back(listener->pid);
+            ret[listenerItem.first] = {};
+            for (auto listener : listenerItem.second) {
+                ret[listenerItem.first].emplace_back(listener.second.pid);
             }
         }
     }
     return ret;
-}
+}uou336
 
 void EventListenerMgr::HandleSendEvent(std::vector<sptr<IRemoteObject>>& listenerVec, 
     uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo)
@@ -199,7 +193,7 @@ void EventListenerMgr::HandleSendEvent(std::vector<sptr<IRemoteObject>>& listene
             proxy->OnReceiveEvent(eventType, eventValue, extInfo);
         }
     };
-    notifierHandler_->submit(func);
+    eventSenderQueue_->submit(func);
 }
 } // ResourceSchedule
 } // OHOS

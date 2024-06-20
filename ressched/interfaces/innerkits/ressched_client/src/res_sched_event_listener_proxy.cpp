@@ -48,7 +48,7 @@ void ResSchedEventListenerProxy::OnReceiveEvent(uint32_t eventType, uint32_t eve
 }
 
 int32_t ResSchedEventListenerProxy::WriteParcelForReceiveEvent(const uint32_t eventType,
-    const int64_t eventValue, const nlohmann::json& extInfo, MessageParcel& data)
+    const uint32_t eventValue, const nlohmann::json& extInfo, MessageParcel& data)
 {
     WRITE_PARCEL(data, InterfaceToken, ResSchedEventListenerProxy::GetDescriptor(), RES_SCHED_DATA_ERROR,
         ResSchedEventListenerProxy);

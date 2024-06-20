@@ -27,6 +27,8 @@ public:
     ~ListFlingRecognizer();
     void OnDispatchResource(uint32_t, int64_t value, const nlohmann::json& payload) override;
 private:
+    void HandleSlideEvent(int64_t value, const nlohmann::json& payload);
+    void HandleSendFrameEvent(const nlohmann::json& payload);
     ffrt::task_handle listFlingEndTask_ = nullptr;
     ffrt::task_handle listFlingTimeOutTask_ = nullptr;
 };

@@ -69,19 +69,19 @@ int32_t ResSchedEventListenerStub::OnReceiveEventInner(MessageParcel& data, Mess
     std::string extInfo;
     int32_t ret = ParseAndCheckEventParcel(data, eventType, eventValue, extInfo);
     if (ret != ERR_OK) {
-        RESSCHED_LOGE("%{public}s: parse fail=%{public}d type=%{public}u", __func__, ret, type);
+        RESSCHED_LOGE("%{public}s: parse fail=%{public}d", __func__, ret);
         return ret;
     }
-    OnReceiveEvent(eventType, eventValue, StringToStringJsonObj(payload));
+    OnReceiveEvent(eventType, eventValue, StringToStringJsonObj(extInfo));
     return ERR_OK;
 }
 
 int32_t ResSchedEventListenerStub::ParseAndCheckEventParcel(MessageParcel& data, uint32_t& eventType,
-    int64_t& eventValue,std::string& extInfo)
+    uint32_t& eventValue, std::string& extInfo)
 {
-    std::u16string descriptor = IResSchedSystemloadNotifier::GetDescriptor();
+    std::u16string descriptor = IResSchedEventListeneI::GetDescriptor();
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
-    if (descriptor != remoteDescriptor) {}
+    if (descriptor != remoteDescriptor) {
         return ERR_RES_SCHED_PARCEL_ERROR;
     }
     READ_PARCEL(data, Uint32, eventType, ERR_RES_SCHED_PARCEL_ERROR, ResSchedEventListenerStub);
@@ -89,9 +89,5 @@ int32_t ResSchedEventListenerStub::ParseAndCheckEventParcel(MessageParcel& data,
     READ_PARCEL(data, String, extInfo, ERR_RES_SCHED_PARCEL_ERROR, ResSchedEventListenerStub);
     return ERR_OK;
 }
-
-
-
-
 } // namespace ResourceSchedule
 } // namespace OHOS

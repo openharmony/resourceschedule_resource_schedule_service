@@ -22,7 +22,7 @@
 #include "app_mgr_constants.h"
 #include "parameters.h"
 #include "res_sched_log.h"
-#include "res_sched_notifier_death_recipient.h"
+#include "res_sched_common_death_recipient.h"
 #include "res_sched_systemload_notifier_proxy.h"
 
 namespace OHOS {

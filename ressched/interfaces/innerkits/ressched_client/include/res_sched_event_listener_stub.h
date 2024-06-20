@@ -32,8 +32,10 @@ public:
         MessageParcel& reply, MessageOption& option) override;
 
 private:
-    DISALLOW_COPY_AND_MOVE(ResSchedSystemloadNotifierStub);
+    DISALLOW_COPY_AND_MOVE(ResSchedEventListenerStub);
     int32_t OnReceiveEventInner(MessageParcel& data, MessageParcel& reply);
+    int32_t ParseAndCheckEventParcel(MessageParcel& data, uint32_t& eventType,
+        uint32_t& eventValue, std::string& extInfo);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

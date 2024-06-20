@@ -33,6 +33,8 @@ public:
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedSystemloadNotifierProxy);
     static inline BrokerDelegator<ResSchedSystemloadNotifierProxy> delegator_;
+    int32_t WriteParcelForReceiveEvent(const uint32_t eventType, const uint32_t eventValue,
+        const nlohmann::json& extInfo, MessageParcel& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

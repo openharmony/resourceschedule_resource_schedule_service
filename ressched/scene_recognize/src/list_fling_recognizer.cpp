@@ -44,7 +44,7 @@ namespace {
             ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP,extInfo);
         isInListFlingMode = false;
         listFlingMutex.unlock();
-    }
+    };
 }
 
 ListFlingRecognizer::~ListFlingRecognizer()
@@ -59,17 +59,17 @@ void ListFlingRecognizer::OnDispatchResource(uint32_t resType, int64_t value, co
             HandleSlideEvent(value, payload);
             break;
         case ResType::RES_TYPE_SEND_FRAME_EVENT:
-            HandleSendFrameEvent(value, payload);
+            HandleSendFrameEvent(payload);
             break;
         default:
             break;
     }
 }
 
-void ListFlingRecognizer::HandleSlideEvent(int64_t value, const nlohmann::json& payload) 
+void ListFlingRecognizer::HandleSlideEvent(int64_t value, const nlohmann::json& payload)
 {
     if (value == ResType::SlideEventStatus::SLIDE_NORMAL_BEGIN) {
-        if (isInListFlingMode = false) {
+        if (!isInListFlingMode) {
             return;
         }
         if(listFlingEndTask_) {
@@ -82,8 +82,9 @@ void ListFlingRecognizer::HandleSlideEvent(int64_t value, const nlohmann::json& 
     }
     if (value == ResType::SlideEventStatus::SLIDE_NORMAL_END) {
         listFlingMutex.lock();
+        nlohmann::json extInfo;
         EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
-            ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START,extInfo);
+            ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
             ResType::SlideEventStatus::SLIDE_EVENT_ON, payload);
         isInListFlingMode = true;
@@ -100,7 +101,7 @@ void ListFlingRecognizer::HandleSlideEvent(int64_t value, const nlohmann::json& 
     }
 }
 
-void ListFlingRecognizer::HandleSendFrameEvent() 
+void ListFlingRecognizer::HandleSendFrameEvent(const nlohmann::json& payload) 
 {
     if (listFlingEndTask_) {
         ffrt::skip(listFlingEndTask_);

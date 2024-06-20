@@ -23,6 +23,7 @@
 #include "res_sched_mgr.h"
 #include "res_sched_service.h"
 #include "event_controller_intf.h"
+#include "event_listener_mgr.h"
 #include "system_ability_definition.h"
 #include "cgroup_sched.h"
 

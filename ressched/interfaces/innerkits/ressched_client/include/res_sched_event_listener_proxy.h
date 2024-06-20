@@ -33,7 +33,7 @@ public:
 private:
     int32_t WriteParcelForReceiveEvent(const uint32_t eventType, const uint32_t eventValue, const nlohmann::json& extInfo,
         MessageParcel& data);
-    DISALLOW_COPY_AND_MOVE(ResSchedSystemloadNotifierProxy);
+    DISALLOW_COPY_AND_MOVE(ResSchedEventListenerProxy);
     static inline BrokerDelegator<ResSchedEventListenerProxy> delegator_;
 };
 } // namespace ResourceSchedule

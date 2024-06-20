@@ -252,14 +252,14 @@ enum EventType : uint32_t {
     EVENT_START = 0,
     EVENT_DRAW_FRAME_REPORT,
     EVENT_END,
-}
+};
 
 enum EventValue : uint32_t {
     EVENT_VALUE_START = 0,
     EVENT_VALUE_DRAW_FRAME_REPORT_START,
     EVENT_VALUE_DRAW_FRAME_REPORT_STOP,
-    EVENT_END,
-}
+    EVENT_VALUE_END,
+};
 
 /**
  * @brief Screen status

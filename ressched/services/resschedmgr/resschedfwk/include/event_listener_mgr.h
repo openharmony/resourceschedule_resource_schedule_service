@@ -19,37 +19,41 @@
 #include <map>
 #include <mutex>
 #include <string>
+#include <list>
+#include <vector>
 
 #include "ffrt.h"
 #include "iremote_object.h"
 #include "refbase.h"
 #include "res_type.h"
+#include "nlohmann/json.hpp"
 #include "single_instance.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 class EventListenerMgr {
-    DECLARE_SINGLE_INSTANCE_BASE(NotifierMgr);
+    DECLARE_SINGLE_INSTANCE_BASE(EventListenerMgr);
 public:
     struct EventListenerInfo {
         sptr<IRemoteObject> listener = nullptr;
         pid_t pid;
     };
-    using EventListenerMap = std::map<uint32_t, std::vector<EventListenerInfo>>;
+    using EventListenerMap = std::map<uint32_t, std::map<pid_t, EventListenerInfo>>;
     void Init();
     void Deinit();
     void RegisterEventListener(int32_t callingPid, const sptr<IRemoteObject>& listener, uint32_t eventType);
     void UnRegisterEventListener(int32_t callingPid, uint32_t eventType);
     void OnRemoteNotifierDied(const sptr<IRemoteObject>& notifier);
     void SendEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo);
-    std::vector<std::pair<int32_t, bool>> DumpRegisterInfo();
+    std::unordered_map<int32_t, std::vector<pid_t>> DumpRegisterInfo();
 private:
     EventListenerMgr() = default;
     ~EventListenerMgr();
     void RemoveListenerLock(const sptr<IRemoteObject>& listener);
     void SendEventLock(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo);
     void HandleSendEvent(std::vector<sptr<IRemoteObject>>& listenerVec, 
-        uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo)
+        uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo);
+    void OnRemoteListenerDied(const sptr<IRemoteObject>& listener);
 
     bool initialized_ = false;
     std::mutex mutex_;

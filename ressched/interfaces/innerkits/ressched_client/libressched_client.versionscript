@@ -27,6 +27,8 @@
     *ResSchedSystemloadNotifierProxy*;
     *ResSchedSystemloadNotifierStub*;
     *ResSchedCommonDeathRecipient*;
+    *ResSchedEventListenerStub*;
+    *ResSchedEventListenerProxy*;
     ReportData;
     KillProcess;
   local:

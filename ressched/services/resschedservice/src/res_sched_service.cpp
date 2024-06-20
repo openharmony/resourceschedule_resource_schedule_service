@@ -77,9 +77,9 @@ void ResSchedService::UnRegisterSystemloadNotifier()
     NotifierMgr::GetInstance().UnRegisterNotifier(IPCSkeleton::GetCallingPid());
 }
 
-void ResSchedService::RegisterEventListener(const sptr<IRemoteObject>& notifier, uint32_t eventType)
+void ResSchedService::RegisterEventListener(const sptr<IRemoteObject>& eventListener, uint32_t eventType)
 {
-    EventListenerMgr::GetInstance().RegisterEventListener(IPCSkeleton::GetCallingPid(), notifier, eventType);
+    EventListenerMgr::GetInstance().RegisterEventListener(IPCSkeleton::GetCallingPid(), eventListener, eventType);
 }
 
 void ResSchedService::UnRegisterEventListener(uint32_t eventType)
