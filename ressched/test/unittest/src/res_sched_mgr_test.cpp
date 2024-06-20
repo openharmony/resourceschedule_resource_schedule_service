@@ -104,6 +104,7 @@ HWTEST_F(ResSchedMgrTest, KillProcess001, TestSize.Level1)
     nlohmann::json payload;
     ResSchedMgr::GetInstance().KillProcessByClient(payload);
     payload["pid"] = 1234567;
+    payload["killReason"] = "0";
     ResSchedMgr::GetInstance().KillProcessByClient(payload);
     payload["pid"] = "0";
     ResSchedMgr::GetInstance().KillProcessByClient(payload);

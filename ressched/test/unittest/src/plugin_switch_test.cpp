@@ -104,5 +104,18 @@ HWTEST_F(PluginSwitchTest, LoadConfig004, TestSize.Level1)
     bool ret = pluginSwitch_->LoadFromConfigContent(content);
     EXPECT_TRUE(!ret);
 }
+
+/**
+ * @tc.name: Init plugin Switch IsInvalidNode001
+ * @tc.desc: IsInvalidNode
+ * @tc.type: FUNC
+ * @tc.require: issueI798UT
+ * @tc.author:luolu
+ */
+HWTEST_F(PluginSwitchTest, IsInvalidNode001, TestSize.Level1)
+{
+    xmlNode currNode;
+    pluginSwitch_->IsInvalidNode(currNode);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
