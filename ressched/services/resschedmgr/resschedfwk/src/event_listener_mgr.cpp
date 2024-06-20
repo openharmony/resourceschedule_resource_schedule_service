@@ -179,7 +179,7 @@ std::unordered_map<int32_t, std::vector<pid_t>> EventListenerMgr::DumpRegisterIn
         }
     }
     return ret;
-}uou336
+}
 
 void EventListenerMgr::HandleSendEvent(std::vector<sptr<IRemoteObject>>& listenerVec, 
     uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo)
