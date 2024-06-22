@@ -32,6 +32,7 @@ public:
     static SocPerfConfig& GetInstance();
 
 public:
+    std::mutex resourceNodeMutex_;
     std::unordered_map<int32_t, std::shared_ptr<ResourceNode>> resourceNodeInfo_;
 
 private:
