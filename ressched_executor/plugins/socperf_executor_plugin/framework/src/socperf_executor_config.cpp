@@ -27,7 +27,6 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     std::unordered_map<std::string, int32_t> g_resStrToIdInfo;
-    void* g_handle;
     const std::string SPLIT_OR = "|";
     const std::string SPLIT_EQUAL = "=";
     const std::string SPLIT_SPACE = " ";
@@ -41,13 +40,7 @@ SocPerfConfig& SocPerfConfig::GetInstance()
 
 SocPerfConfig::SocPerfConfig() {}
 
-SocPerfConfig::~SocPerfConfig()
-{
-    if (g_handle != nullptr) {
-        dlclose(g_handle);
-        g_handle = nullptr;
-    }
-}
+SocPerfConfig::~SocPerfConfig() {}
 
 bool SocPerfConfig::Init()
 {

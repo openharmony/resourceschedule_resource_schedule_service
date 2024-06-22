@@ -28,15 +28,15 @@ namespace OHOS {
 namespace ResourceSchedule {
 
 const std::string SOCPERF_RESOURCE_CONFIG_XML = "etc/soc_perf/socperf_resource_config.xml";
-const int32_t INVALID_VALUE                       = INT_MIN;
-const int32_t MIN_RESOURCE_ID                     = 1000;
-const int32_t MAX_RESOURCE_ID                     = 5999;
-const int32_t RES_ID_NUMS_PER_TYPE                = 1000;
-const int32_t RES_ID_NUMS_PER_TYPE_EXT            = 10000;
-const int32_t WRITE_NODE                          = 0;
-const int32_t REPORT_TO_PERFSO                    = 1;
-const int32_t MAX_FREQUE_NODE                     = 1;
-const int32_t NODE_DEFAULT_VALUE                  = -1;
+const int32_t INVALID_VALUE                   = INT_MIN;
+const int32_t MIN_RESOURCE_ID                 = 1000;
+const int32_t MAX_RESOURCE_ID                 = 5999;
+const int32_t RES_ID_NUMS_PER_TYPE            = 1000;
+const int32_t RES_ID_NUMS_PER_TYPE_EXT        = 10000;
+const int32_t WRITE_NODE                      = 0;
+const int32_t REPORT_TO_PERFSO                = 1;
+const int32_t MAX_FREQUE_NODE                 = 1;
+const int32_t NODE_DEFAULT_VALUE              = -1;
 
 class ResourceNode {
 public:
@@ -70,7 +70,6 @@ public:
     void PrintString()
     {
         SOC_PERF_LOGD("resNode-> id: [%{public}d], name: [%{public}s]", id, name.c_str());
-        SOC_PERF_LOGD("          path: [%{public}s]", path.c_str());
         SOC_PERF_LOGD("          def: [%{public}lld], mode: [%{public}d], pair: [%{public}d]",
             (long long)def, isMaxValue, pair);
         std::string str;
@@ -129,32 +128,6 @@ public:
         }
     }
 };
-
-static inline int64_t Max(int64_t num1, int64_t num2)
-{
-    if (num1 >= num2) {
-        return num1;
-    }
-    return num2;
-}
-
-static inline int64_t Max(int64_t num1, int64_t num2, int64_t num3)
-{
-    return Max(Max(num1, num2), num3);
-}
-
-static inline int64_t Min(int64_t num1, int64_t num2)
-{
-    if (num1 <= num2) {
-        return num1;
-    }
-    return num2;
-}
-
-static inline int64_t Min(int64_t num1, int64_t num2, int64_t num3)
-{
-    return Min(Min(num1, num2), num3);
-}
 
 static inline bool IsNumber(const std::string& str)
 {
