@@ -26,9 +26,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    std::unordered_map<std::string, int32_t> g_resStrToIdInfo;
     const std::string SPLIT_OR = "|";
-    const std::string SPLIT_EQUAL = "=";
     const std::string SPLIT_SPACE = " ";
 }
 
@@ -222,8 +220,9 @@ bool SocPerfConfig::LoadFreqResourceContent(int32_t persistMode, xmlNode* greatG
     }
     xmlFree(node);
 
-    g_resStrToIdInfo.insert(std::pair<std::string, int32_t>(resNode->name, resNode->id));
+    std::unique_lock<std::mutex> lockResourceNode(resourceNodeMutex_);
     resourceNodeInfo_.insert(std::pair<int32_t, std::shared_ptr<ResNode>>(resNode->id, resNode));
+    lockResourceNode.unlock();
     return true;
 }
 
@@ -249,8 +248,11 @@ bool SocPerfConfig::LoadGovResource(xmlNode* child, const std::string& configFil
             name, persistMode ? atoi(persistMode) : 0);
         xmlFree(id);
         xmlFree(name);
-        g_resStrToIdInfo.insert(std::pair<std::string, int32_t>(govResNode->name, govResNode->id));
+        
+        std::unique_lock<std::mutex> lockResourceNode(resourceNodeMutex_);
         resourceNodeInfo_.insert(std::pair<int32_t, std::shared_ptr<GovResNode>>(govResNode->id, govResNode));
+        lockResourceNode.unlock();
+
         if (!TraversalGovResource(persistMode ? atoi(persistMode) : 0, greatGrandson, configFile, govResNode)) {
             xmlFree(persistMode);
             return false;
@@ -446,7 +448,9 @@ bool SocPerfConfig::LoadGovResourceAvailable(std::shared_ptr<GovResNode> govResN
         SOC_PERF_LOGE("Invalid governor resource node matches paths");
         return false;
     }
+    std::unique_lock<std::mutex> levelMutex(govResNode->levelToStrMutex_);
     govResNode->levelToStr.insert(std::pair<int32_t, std::vector<std::string>>(atoll(level), result));
+    levelMutex.unlock();
     return true;
 }
 
