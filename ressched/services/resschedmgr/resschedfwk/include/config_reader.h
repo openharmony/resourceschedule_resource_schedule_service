@@ -32,7 +32,7 @@ public:
      * @param configFile The xml filepath.
      * @return Returns true if parse successfully.
      */
-    bool LoadFromCustConfigContent(const std::string& content);
+    bool LoadFromConfigContent(const std::string& content);
 
     /**
      * Xml parse successfully, the config object has resolved.
@@ -49,6 +49,8 @@ private:
     void ParseSubItem(const xmlNode& currNode, Item& item);
     void ParseItem(const xmlNode& parentNode, PluginConfig& pluginConfig);
     void ParseConfig(const xmlNode& parentNode, PluginConfigMap& pluginConfigMap);
+    void MergeConfigList(std::map<std::string, PluginConfigMap>& pluginConfigs);
+    void MergePluginConfigMap(PluginConfigMap& curPluginConfigMap, const PluginConfigMap& nextPluginConfigMap);
     bool ParsePluginConfig(const xmlNode& currNode, std::map<std::string, PluginConfigMap>& pluginConfigs);
 
     std::mutex configMutex_;

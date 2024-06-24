@@ -81,7 +81,6 @@ bool PluginSwitch::LoadFromConfigContent(const string& content, bool isRssExe)
         return false;
     }
 
-    std::list<PluginInfo> pluginInfoList;
     xmlNodePtr currNodePtr = rootNodePtr->xmlChildrenNode;
     for (; currNodePtr; currNodePtr = currNodePtr->next) {
         if (IsInvalidNode(*currNodePtr)) {
@@ -99,16 +98,19 @@ bool PluginSwitch::LoadFromConfigContent(const string& content, bool isRssExe)
             RESSCHED_LOGW("%{public}s, fill in pluginInfo error!", __func__);
             continue;
         }
-        pluginInfoList.emplace_back(info);
+        pluginSwitchMap_[info.libPath] = info;
     }
     xmlFreeDoc(xmlDocPtr);
-    pluginInfoList_ = std::move(pluginInfoList);
     return true;
 }
 
 std::list<PluginInfo> PluginSwitch::GetPluginSwitch()
 {
-    return pluginInfoList_;
+    std::list<PluginInfo> pluginInfoList;
+    for (auto iter: pluginSwitchMap_) {
+        pluginInfoList.emplace_back(iter.second);
+    }
+    return pluginInfoList;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

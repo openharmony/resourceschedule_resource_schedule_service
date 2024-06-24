@@ -127,7 +127,7 @@ bool ConfigReader::ParsePluginConfig(const xmlNode& currNode, map<string, Plugin
     return true;
 }
 
-bool ConfigReader::LoadFromCustConfigContent(const string& content)
+bool ConfigReader::LoadFromConfigContent(const string& content)
 {
     // skip the empty string, else you will get empty node
     xmlDocPtr xmlDocPtr = xmlReadMemory(content.c_str(), content.length(), nullptr, nullptr,
@@ -161,8 +161,28 @@ bool ConfigReader::LoadFromCustConfigContent(const string& content)
     }
     xmlFreeDoc(xmlDocPtr);
     lock_guard<mutex> autoLock(configMutex_);
-    allPluginConfigs_ = std::move(allPluginConfigs);
+    MergeConfigList(allPluginConfigs);
+    std::move(allPluginConfigs);
     return true;
+}
+
+PluginConfig ConfigReader::MergeConfigList(td::map<std::string, PluginConfigMap>& pluginConfigs)
+{
+    for (auto iter : pluginConfigs) {
+        if (allPluginConfigs_.find(iter.first) == allPluginConfigs_.end()) {
+            allPluginConfigs_[iter.first] = iter.second;
+            continue;
+        }
+        MergePluginConfigMap(allPluginConfigs_[iter.first], iter.second);
+    }
+}
+
+PluginConfig ConfigReader::MergePluginConfigMap(PluginConfigMap& curPluginConfigMap,
+    const PluginConfigMap& nextPluginConfigMap)
+{
+    for (auto iter : nextPluginConfigMap) {
+        curPluginConfigMap[iter.first] = iter.second;
+    }
 }
 
 PluginConfig ConfigReader::GetConfig(const std::string& pluginName, const std::string& configName)

@@ -70,19 +70,7 @@ void PluginMgr::Init(bool isRssExe)
         return;
     }
     LoadGetExtConfigFunc();
-    std::string content;
-    if (!pluginSwitch_) {
-        pluginSwitch_ = make_unique<PluginSwitch>();
-        std::string realPath = GetRealConfigPath(PLUGIN_SWITCH_FILE_NAME);
-        GetConfigContent(PLUGIN_SWITCH_FILE_IDX, realPath, content);
-        if (realPath.empty() || !pluginSwitch_->LoadFromConfigContent(content, isRssExe)) {
-            RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
-            HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
-                "ERR_MSG", "PluginMgr load switch config file failed!");
-        }
-    }
-
+    loadConfig(isRssExe);
     if (!configReader_) {
         configReader_ = make_unique<ConfigReader>();
         std::string realPath = GetRealConfigPath(CONFIG_FILE_NAME);
@@ -123,33 +111,101 @@ void PluginMgr::LoadGetExtConfigFunc()
         RESSCHED_LOGE("not find lib,errno: %{public}d", errno);
         return;
     }
-    getExtConfigFunc_ = reinterpret_cast<GetExtConfigFunc>(dlsym(handle, "GetExtConfig"));
-    if (!getExtConfigFunc_) {
+    getExtMultiConfigFunc_ = reinterpret_cast<GetExtMultiConfigFunc>(dlsym(handle, "GetExtMultiConfig"));
+    if (!getExtMultiConfigFunc_) {
         RESSCHED_LOGE("dlsym getExtConfig func failed!");
         dlclose(handle);
     }
 }
 
-void PluginMgr::GetConfigContent(int32_t configIdx, const std::string& realPath, std::string& content)
+void PluginMgr::GetConfigContent(int32_t configIdx, const std::string& configPath, std::vector<std::string>& contents)
 {
-    if (configIdx != -1 && getExtConfigFunc_) {
-        getExtConfigFunc_(configIdx, content);
+    if (configIdx != -1 && getExtMultiConfigFunc_) {
+        getExtMultiConfigFunc_(configIdx, contents);
+        return;
+    }
+    auto configFilePaths = GetAllRealConfigPath(configPath);
+    if (!configFilePaths || configFilePaths.size() == 0) {
         return;
     }
     std::ifstream ifs;
-    ifs.open(realPath, std::ios::in | std::ios::binary);
-    ifs.seekg(0, std::ios::end);
-    int32_t len = ifs.tellg();
-    if (len > MAX_FILE_LENGTH) {
-        RESSCHED_LOGE("file is too large");
+    for (auto configFilePath : configFilePaths) {
+        if (configFilePath.empty()) {
+            continue;
+        }
+        ifs.open(realPath, std::ios::in | std::ios::binary);
+        ifs.seekg(0, std::ios::end);
+        int32_t len = ifs.tellg();
+        if (len > MAX_FILE_LENGTH) {
+            RESSCHED_LOGE("file is too large");
+            ifs.close();
+            continue;
+        }
+        ifs.seekg(0, std::ios::beg);
+        std::stringstream contentData;
+        contentData << ifs.rdbuf();
+        contents.emplace_back(contentData.str());
         ifs.close();
-        return;
     }
-    ifs.seekg(0, std::ios::beg);
-    std::stringstream contentData;
-    contentData << ifs.rdbuf();
-    content = contentData.str();
-    ifs.close();
+}
+
+std::vector<std::string> PluginMgr::GetAllRealConfigPath(const std::string& configName) {
+    std::vector<std::string> configFilePaths;
+    auto cfgDirList = GetCfgDirList();
+    if (cfgDirList == nullptr) {
+        return configFilePaths;
+    }
+    std::string baseRealPath;
+    for (const auto& cfgDir : cfgDirList->paths) {
+        if (cfgDir == nullptr) {
+            continue;
+        }
+        if (!CheckRealPath(std::string(cfgDir) + "/" + fileString, baseRealPath)) {
+            continue;
+        }
+        configFilePaths.emplace_back(baseRealPath);
+    }
+    FreeCfgDirList(cfgDirList);
+    return configFilePaths;
+}
+
+bool PluginMgr::CheckRealPath(const std::string& partialPath, std::string fullPath) {
+    char tmpPath[PATH_MAX] = {0};
+    if (partialPath.size() > PATH_MAX || !realpath(partialPath.c_str(), tmpPath)) {
+        return false;
+    }
+    fullPath = tmpPath;
+    return true;
+}
+
+void PluginMgr::loadConfig(bool isRssExe) {
+    std::vector<std::string> contents;
+    if (!pluginSwitch_) {
+        pluginSwitch_ = make_unique<PluginSwitch>();
+        GetConfigContent(PLUGIN_SWITCH_FILE_IDX, PLUGIN_SWITCH_FILE_NAME, contents);
+        for (const auto& content : contents) {
+            if (content.empty() || !pluginSwitch_->LoadFromConfigContent(content, isRssExe)) {
+                RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
+                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
+                    "ERR_MSG", "PluginMgr load switch config file failed!");
+            }
+        }
+
+    }
+    contents.clear();
+    if (!configReader_) {
+        configReader_ = make_unique<ConfigReader>();
+        GetConfigContent(CONFIG_FILE_IDX, CONFIG_FILE_NAME, contents);
+        for (const auto& content : contents) {
+            if (content.empty() || !configReader_->LoadFromConfigContent(content)) {
+                RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
+                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
+                    "ERR_MSG", "PluginMgr load parameter config file failed!");
+            }
+        }
+    }
 }
 
 void PluginMgr::LoadPlugin()

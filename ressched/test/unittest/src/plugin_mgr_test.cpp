@@ -94,6 +94,8 @@ HWTEST_F(PluginMgrTest, Stop001, TestSize.Level1)
     EXPECT_TRUE(pluginMgr_->configReader_ == nullptr);
 }
 
+
+
 /**
  * @tc.name: Plugin mgr test GetConfig 001
  * @tc.desc: Verify if can get config with wrong env.
@@ -107,14 +109,51 @@ HWTEST_F(PluginMgrTest, GetConfig001, TestSize.Level1)
     EXPECT_TRUE(config.itemList.empty());
 }
 
+std::string PluginMgrTest::GetSubItemValue(std::string PluginName, std::string configName)
+{
+    std::string subItemValue;
+    PluginConfig config = pluginMgr_->GetConfig(PluginName, configName);
+    if (config.itemList.size() <= 0) {
+        return "";
+    }
+    for (auto item : config.itemList) {
+        for (auto subItem : item.subItemList) {
+            if (subItem.name == "tag") {
+                subItemValue = subItem.value;
+            }
+        }
+    }
+    return subItemValue;
+}
+
 /**
  * @tc.name: Plugin mgr test GetConfig 002
+ * @tc.desc: Verify if can get config with wrong env.
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
+ */
+HWTEST_F(PluginMgrTest, GetConfig002, TestSize.Level1)
+{
+    std::string subItemValue = GetSubItemValue("demo2", sample);
+    bool ret = !subItemValue.empty() && subItemValue == "test_sys_prod";
+    EXPECT_TRUE(ret);
+    subItemValue = GetSubItemValue("demo3", sample);
+    ret = !subItemValue.empty() && subItemValue == "test_sys_prod";
+    EXPECT_TRUE(ret);
+    subItemValue = GetSubItemValue("demo4", sample);
+    ret = !subItemValue.empty() && subItemValue == "test_system";
+    EXPECT_TRUE(ret);
+}
+
+/**
+ * @tc.name: Plugin mgr test GetConfig 003
  * @tc.desc: Verify if can get config with wrong env.
  * @tc.type: FUNC
  * @tc.require: issueI8VZVN
  * @tc.author:z30053169
  */
-HWTEST_F(PluginMgrTest, GetConfig002, TestSize.Level1)
+HWTEST_F(PluginMgrTest, GetConfig003, TestSize.Level1)
 {
     PluginMgr::GetInstance().configReader_ = nullptr;
     PluginConfig config = pluginMgr_->GetConfig("", "");
@@ -581,5 +620,33 @@ HWTEST_F(PluginMgrTest, GetPluginLib002, TestSize.Level0)
     std::shared_ptr<PluginLib> libInfoPtr = pluginMgr_->GetPluginLib("libapp_preload_plugin.z.so");
     SUCCEED();
 }
+
+/**
+ * @tc.name: Plugin mgr test GetPluginSwitch 001
+ * @tc.desc: Verify if can get pluginlib
+ * @tc.type: FUNC
+ * @tc.require: issueI9C9JN
+ * @tc.author:xiaoshun
+ */
+HWTEST_F(PluginMgrTest, GetPluginSwitch001, TestSize.Level0)
+{
+    auto pluginInfoList = PluginMgr::GetInstance().pluginSwitch_->GetPluginSwitch();
+    bool result;
+    for (auto pluginInfo : pluginInfoList) {
+        switch (pluginInfo.libPath) {
+            case "libapp_preload_plugin.z.so":
+                EXPECT_TRUE(pluginInfo.switchOn);
+            case "libapp_preload_plugin2.z.so":
+                EXPECT_TRUE(!pluginInfo.switchOn);
+            case "libapp_preload_plugin3.z.so":
+                EXPECT_TRUE(!pluginInfo.switchOn);
+            case "libapp_preload_plugin4.z.so":
+                EXPECT_TRUE(!pluginInfo.switchOn);
+        }
+    }
+    SUCCEED();
+}
+
+
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -48,7 +48,7 @@ using OnDeliverResourceFunc = int32_t (*)(const std::shared_ptr<ResData>&);
 using OnDumpFunc = void (*)(const std::vector<std::string>&, std::string&);
 using OnPluginDisableFunc = void (*)();
 using OnIsAllowedAppPreloadFunc = bool (*)(const std::string&, int32_t preloadMode);
-using GetExtConfigFunc = int32_t (*)(int32_t, std::string&);
+using GetExtMultiConfigFunc = int32_t (*)(int32_t, std::vector<std::string>&);
 
 constexpr int32_t DISPATCH_TIME_OUT = 50; // ms
 constexpr int32_t DISPATCH_TIME_OUT_US = DISPATCH_TIME_OUT * 1000; // us
@@ -172,7 +172,7 @@ public:
 
     std::shared_ptr<PluginLib> GetPluginLib(const std::string& libPath);
 
-    void GetConfigContent(int32_t configIdx, const std::string& realPath, std::string& content);
+    void GetConfigContent(int32_t configIdx, const std::string& configPath, std::vector<std::string>& contents);
 
 private:
     PluginMgr() = default;
@@ -182,6 +182,7 @@ private:
     std::shared_ptr<PluginLib> LoadOnePlugin(const PluginInfo& info);
     void UnLoadPlugin();
     void ClearResource();
+    void loadConfig(const bool isRssExe);
     void DispatchResourceToPluginSync(const std::list<std::string>& pluginList,
         const std::shared_ptr<ResData>& resData);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
@@ -192,6 +193,8 @@ private:
     void RemoveDisablePluginHandler();
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);
     bool GetPluginListByResType(uint32_t resType, std::list<std::string>& pluginList);
+    bool CheckRealPath(const std::string& partialPath, std::string& fullPath);
+    std::vector<std::string> GetAllRealConfigPath(const char* configName);
     std::string BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,
         const std::string& funcName, std::list<std::string>& pluginList);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
@@ -200,7 +203,7 @@ private:
     std::list<std::string> SortPluginList(const std::list<std::string>& pluginList);
     std::string GetStrFromResTypeStrMap(uint32_t resType);
 
-    std::string GetRealConfigPath(const char* configName);
+    std::string GetRealConfigPath(const std::string& configName);
 
     class InnerTimeUtil {
     public:
@@ -241,7 +244,7 @@ private:
 #endif
 
     std::map<std::string, PluginStat> pluginStat_;
-    GetExtConfigFunc getExtConfigFunc_ = nullptr;
+    GetExtMultiConfigFunc getExtMultiConfigFunc_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

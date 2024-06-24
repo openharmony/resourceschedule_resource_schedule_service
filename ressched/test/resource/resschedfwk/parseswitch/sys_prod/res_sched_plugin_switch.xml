@@ -15,4 +15,6 @@
  -->
 <pluginlist>
     <plugin libpath="libunittest_plugin.z.so" switch="1" />
+    <plugin libpath="libunittest2_plugin.z.so" switch="0" />
+    <plugin libpath="libunittest4_plugin.z.so" switch="0" />
 </pluginlist>

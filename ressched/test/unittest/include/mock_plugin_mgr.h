@@ -53,24 +53,32 @@ public:
 
         if (!pluginSwitch_) {
             pluginSwitch_ = std::make_unique<PluginSwitch>();
-            std::string content;
-            GetConfigContent(-1, TEST_PREFIX_RES_SWITCH_PATH, content);
-            bool loadRet = pluginSwitch_->LoadFromConfigContent(content);
+            std::vector<std::string> contents;
+            GetConfigContent(-1, TEST_PREFIX_RES_SWITCH_PATH, contents);
+            bool loadRet = false;
+            for (auto content : contents) {
+                if (pluginSwitch_->LoadFromConfigContent(content)) {
+                    loadRet = true;
+                }
+            }
             if (!loadRet) {
                 initStatus = LOAD_CONFIG_FAIL;
+                return;
             }
         }
 
         if (!configReader_) {
             configReader_ = std::make_unique<ConfigReader>();
-            std::string content;
-            PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_RES_PATH, content);
-            bool loadRet = configReader_->LoadFromCustConfigContent(content);
+            std::vector<std::string> contents;
+            PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_RES_PATH, contents);
+            if (configReader_->LoadFromConfigContent(content)) {
+                loadRet = true;
+            }
             if (!loadRet) {
                 initStatus = LOAD_CUST_CONFIG_FAIL;
+                return;
             }
         }
-
         initStatus = INIT_SUCCESS;
     }
 };
