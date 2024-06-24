@@ -651,34 +651,6 @@ HWTEST_F(PluginMgrTest, GetPluginLib002, TestSize.Level0)
     SUCCEED();
 }
 
-<<<<<<< Updated upstream
-/**
- * @tc.name: Plugin mgr test GetPluginSwitch 001
- * @tc.desc: Verify if can get pluginSwitch
- * @tc.type: FUNC
- * @tc.require: issuesIA7P80
- * @tc.author:xiaoshun
- */
-HWTEST_F(PluginMgrTest, GetPluginSwitch001, TestSize.Level0)
-{
-    auto pluginInfoList = PluginMgr::GetInstance().pluginSwitch_->GetPluginSwitch();
-    bool result;
-    for (auto pluginInfo : pluginInfoList) {
-        switch (pluginInfo.libPath) {
-            case "libapp_preload_plugin.z.so":
-                EXPECT_TRUE(pluginInfo.switchOn);
-            case "libapp_preload_plugin2.z.so":
-                EXPECT_TRUE(!pluginInfo.switchOn);
-            case "libapp_preload_plugin3.z.so":
-                EXPECT_TRUE(!pluginInfo.switchOn);
-            case "libapp_preload_plugin4.z.so":
-                EXPECT_TRUE(!pluginInfo.switchOn);
-        }
-    }
-    SUCCEED();
-}
-
-
  * @tc.name: Plugin mgr test InnerTimeUtil 001
  * @tc.desc: InnerTimeUtil
  * @tc.type: FUNC
@@ -716,7 +688,5 @@ HWTEST_F(PluginMgrTest, SubscribeSyncResource002, TestSize.Level0)
     PluginMgr::GetInstance().SubscribeSyncResource(pluginLib, resType);
     PluginMgr::GetInstance().UnSubscribeSyncResource(pluginLib, resType);
 }
-=======
->>>>>>> Stashed changes
 } // namespace ResourceSchedule
 } // namespace OHOS
