@@ -202,9 +202,6 @@ private:
 #endif
     std::list<std::string> SortPluginList(const std::list<std::string>& pluginList);
     std::string GetStrFromResTypeStrMap(uint32_t resType);
-
-    std::string GetRealConfigPath(const std::string& configName);
-
     class InnerTimeUtil {
     public:
         InnerTimeUtil(const std::string& func, const std::string& plugin);

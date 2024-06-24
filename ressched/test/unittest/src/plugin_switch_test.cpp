@@ -70,7 +70,7 @@ HWTEST_F(PluginSwitchTest, LoadConfig001, TestSize.Level1)
  * @tc.author:xukuan
  */
 HWTEST_F(PluginSwitchTest, LoadConfig002, TestSize.Level1)
-{   
+{
     pluginSwitch_ = make_unique<PluginSwitch>();
     std::vector<std::string> contents;
     PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_SWITCH_PATH + "not_exist_plugin.xml", contents);

@@ -71,17 +71,6 @@ void PluginMgr::Init(bool isRssExe)
     }
     LoadGetExtConfigFunc();
     loadConfig(isRssExe);
-    if (!configReader_) {
-        configReader_ = make_unique<ConfigReader>();
-        std::string realPath = GetRealConfigPath(CONFIG_FILE_NAME);
-        GetConfigContent(CONFIG_FILE_IDX, realPath, content);
-        if (realPath.empty() || !configReader_->LoadFromCustConfigContent(content)) {
-            RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
-            HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
-                "ERR_MSG", "PluginMgr load parameter config file failed!");
-        }
-    }
     LoadPlugin();
     {
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
@@ -133,7 +122,7 @@ void PluginMgr::GetConfigContent(int32_t configIdx, const std::string& configPat
         if (configFilePath.empty()) {
             continue;
         }
-        ifs.open(configFilePat, std::ios::in | std::ios::binary);
+        ifs.open(configFilePath, std::ios::in | std::ios::binary);
         ifs.seekg(0, std::ios::end);
         int32_t len = ifs.tellg();
         if (len > MAX_FILE_LENGTH) {
@@ -585,19 +574,6 @@ void PluginMgr::DumpPluginInfoAppend(std::string &result, PluginInfo info)
     } else {
         result.append(" | disabled\n");
     }
-}
-
-std::string PluginMgr::GetRealConfigPath(const char* configName)
-{
-    char buf[PATH_MAX + 1];
-    char* configFilePath = GetOneCfgFile(configName, buf, PATH_MAX + 1);
-    char tmpPath[PATH_MAX + 1] = {0};
-    if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
-        !realpath(configFilePath, tmpPath)) {
-        RESSCHED_LOGE("%{public}s load config file wrong !", __func__);
-        return "";
-    }
-    return std::string(tmpPath);
 }
 
 void PluginMgr::ClearResource()

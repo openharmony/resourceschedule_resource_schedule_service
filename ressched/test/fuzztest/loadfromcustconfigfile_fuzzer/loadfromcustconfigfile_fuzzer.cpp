@@ -46,7 +46,7 @@ namespace ResourceSchedule {
         PluginMgr::GetInstance().GetConfigContent(-1, fuzzedFile, contents);
         bool ret = false;
         for (auto content : contents) {
-            if(pluginSwitch->LoadFromConfigContent(content)) {
+            if (pluginSwitch->LoadFromConfigContent(content)) {
                 ret = true;
             }
         }
