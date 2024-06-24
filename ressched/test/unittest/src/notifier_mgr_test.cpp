@@ -210,6 +210,36 @@ HWTEST_F(NotifierMgrTest, RegisterNotifier002, Function | MediumTest | Level0)
 }
 
 /**
+ * @tc.name: notifier manager RegisterNotifier 003
+ * @tc.desc: test the interface RegisterNotifier
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:luolu
+ */
+HWTEST_F(NotifierMgrTest, RegisterNotifier003, Function | MediumTest | Level0)
+{
+    sptr<IRemoteObject> notifier;
+    auto callingPid = IPCSkeleton::GetCallingPid();
+    NotifierMgr::GetInstance().RegisterNotifier(callingPid, notifier);
+}
+
+/**
+ * @tc.name: notifier manager RegisterNotifier 004
+ * @tc.desc: test the interface RegisterNotifier
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:luolu
+ */
+HWTEST_F(NotifierMgrTest, RegisterNotifier004, Function | MediumTest | Level0)
+{
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestNotifierSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    auto callingPid = IPCSkeleton::GetCallingPid();
+    NotifierMgr::GetInstance().notifierDeathRecipient_ = nullptr;
+    NotifierMgr::GetInstance().RegisterNotifier(callingPid, notifier);
+}
+
+/**
  * @tc.name: notifier manager UnRegisterNotifier 001
  * @tc.desc: test the interface UnRegisterNotifier
  * @tc.type: FUNC
@@ -302,6 +332,71 @@ HWTEST_F(NotifierMgrTest, Dump002, Function | MediumTest | Level0)
     NotifierMgr::GetInstance().UnRegisterNotifier(IPCSkeleton::GetCallingPid());
     res = NotifierMgr::GetInstance().DumpRegisterInfo();
     EXPECT_TRUE(res.size() == 0);
+}
+
+/**
+ * @tc.name: notifier manager deinit 001
+ * @tc.desc: test the interface Deinit
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:luolu
+ */
+HWTEST_F(NotifierMgrTest, Deinit001, Function | MediumTest | Level0)
+{
+    NotifierMgr::GetInstance().Init();
+    NotifierMgr::GetInstance().Deinit();
+}
+
+/**
+ * @tc.name: notifier manager OnRemoteNotifierDied 001
+ * @tc.desc: test the interface OnRemoteNotifierDied
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:luolu
+ */
+HWTEST_F(NotifierMgrTest, OnRemoteNotifierDied001, Function | MediumTest | Level0)
+{
+    sptr<IRemoteObject> notifier;
+    NotifierMgr::GetInstance().OnRemoteNotifierDied(notifier);
+}
+
+/**
+ * @tc.name: notifier manager OnRemoteNotifierDied 002
+ * @tc.desc: test the interface OnRemoteNotifierDied
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:luolu
+ */
+HWTEST_F(NotifierMgrTest, OnRemoteNotifierDied002, Function | MediumTest | Level0)
+{
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestNotifierSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().OnRemoteNotifierDied(notifier);
+}
+
+/**
+ * @tc.name: notifier manager OnDeviceLevelChanged 001
+ * @tc.desc: test the interface OnDeviceLevelChanged
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:luolu
+ */
+HWTEST_F(NotifierMgrTest, OnDeviceLevelChanged001, Function | MediumTest | Level0)
+{
+    sptr<IRemoteObject> notifier = nullptr;
+    NotifierMgr::GetInstance().OnDeviceLevelChanged(0, 2);
+}
+
+/**
+ * @tc.name: notifier manager OnApplicationStateChange 001
+ * @tc.desc: test the interface OnApplicationStateChange
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:luolu
+ */
+HWTEST_F(NotifierMgrTest, OnApplicationStateChange001, Function | MediumTest | Level0)
+{
+    NotifierMgr::GetInstance().OnApplicationStateChange(2, IPCSkeleton::GetCallingPid());
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
