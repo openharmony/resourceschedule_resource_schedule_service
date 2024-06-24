@@ -71,11 +71,14 @@ public:
             configReader_ = std::make_unique<ConfigReader>();
             std::vector<std::string> contents;
             PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_RES_PATH, contents);
-            if (configReader_->LoadFromConfigContent(content)) {
-                loadRet = true;
+            bool loadRet = false;
+            for (auto content : contents) {
+                if (configReader_->LoadFromConfigContent(content)) {
+                    loadRet = true;
+                }
             }
             if (!loadRet) {
-                initStatus = LOAD_CUST_CONFIG_FAIL;
+                initStatus = LOAD_CONFIG_FAIL;
                 return;
             }
         }
