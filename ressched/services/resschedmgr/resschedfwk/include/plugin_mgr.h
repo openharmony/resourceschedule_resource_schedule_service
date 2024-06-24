@@ -194,7 +194,7 @@ private:
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);
     bool GetPluginListByResType(uint32_t resType, std::list<std::string>& pluginList);
     bool CheckRealPath(const std::string& partialPath, std::string& fullPath);
-    std::vector<std::string> GetAllRealConfigPath(const char* configName);
+    std::vector<std::string> GetAllRealConfigPath(const std::string& configName);
     std::string BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,
         const std::string& funcName, std::list<std::string>& pluginList);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE

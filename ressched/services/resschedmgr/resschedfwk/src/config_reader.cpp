@@ -166,7 +166,7 @@ bool ConfigReader::LoadFromConfigContent(const string& content)
     return true;
 }
 
-PluginConfig ConfigReader::MergeConfigList(td::map<std::string, PluginConfigMap>& pluginConfigs)
+void ConfigReader::MergeConfigList(std::map<std::string, PluginConfigMap>& pluginConfigs)
 {
     for (auto iter : pluginConfigs) {
         if (allPluginConfigs_.find(iter.first) == allPluginConfigs_.end()) {
@@ -177,7 +177,7 @@ PluginConfig ConfigReader::MergeConfigList(td::map<std::string, PluginConfigMap>
     }
 }
 
-PluginConfig ConfigReader::MergePluginConfigMap(PluginConfigMap& curPluginConfigMap,
+void ConfigReader::MergePluginConfigMap(PluginConfigMap& curPluginConfigMap,
     const PluginConfigMap& nextPluginConfigMap)
 {
     for (auto iter : nextPluginConfigMap) {

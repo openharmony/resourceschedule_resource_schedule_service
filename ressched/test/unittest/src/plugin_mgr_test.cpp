@@ -94,8 +94,6 @@ HWTEST_F(PluginMgrTest, Stop001, TestSize.Level1)
     EXPECT_TRUE(pluginMgr_->configReader_ == nullptr);
 }
 
-
-
 /**
  * @tc.name: Plugin mgr test GetConfig 001
  * @tc.desc: Verify if can get config with wrong env.
@@ -130,7 +128,7 @@ std::string PluginMgrTest::GetSubItemValue(std::string PluginName, std::string c
  * @tc.name: Plugin mgr test GetConfig 002
  * @tc.desc: Verify if can get config with wrong env.
  * @tc.type: FUNC
- * @tc.require: issueI5WWV3
+ * @tc.require: issuesIA7P80
  * @tc.author:lice
  */
 HWTEST_F(PluginMgrTest, GetConfig002, TestSize.Level1)
@@ -623,9 +621,9 @@ HWTEST_F(PluginMgrTest, GetPluginLib002, TestSize.Level0)
 
 /**
  * @tc.name: Plugin mgr test GetPluginSwitch 001
- * @tc.desc: Verify if can get pluginlib
+ * @tc.desc: Verify if can get pluginSwitch
  * @tc.type: FUNC
- * @tc.require: issueI9C9JN
+ * @tc.require: issuesIA7P80
  * @tc.author:xiaoshun
  */
 HWTEST_F(PluginMgrTest, GetPluginSwitch001, TestSize.Level0)

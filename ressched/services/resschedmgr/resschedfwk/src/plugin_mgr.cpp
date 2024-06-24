@@ -125,7 +125,7 @@ void PluginMgr::GetConfigContent(int32_t configIdx, const std::string& configPat
         return;
     }
     auto configFilePaths = GetAllRealConfigPath(configPath);
-    if (!configFilePaths || configFilePaths.size() == 0) {
+    if (configFilePaths.size() <= 0) {
         return;
     }
     std::ifstream ifs;
@@ -133,7 +133,7 @@ void PluginMgr::GetConfigContent(int32_t configIdx, const std::string& configPat
         if (configFilePath.empty()) {
             continue;
         }
-        ifs.open(realPath, std::ios::in | std::ios::binary);
+        ifs.open(configFilePat, std::ios::in | std::ios::binary);
         ifs.seekg(0, std::ios::end);
         int32_t len = ifs.tellg();
         if (len > MAX_FILE_LENGTH) {
@@ -149,7 +149,8 @@ void PluginMgr::GetConfigContent(int32_t configIdx, const std::string& configPat
     }
 }
 
-std::vector<std::string> PluginMgr::GetAllRealConfigPath(const std::string& configName) {
+std::vector<std::string> PluginMgr::GetAllRealConfigPath(const std::string& configName)
+{
     std::vector<std::string> configFilePaths;
     auto cfgDirList = GetCfgDirList();
     if (cfgDirList == nullptr) {
@@ -160,7 +161,7 @@ std::vector<std::string> PluginMgr::GetAllRealConfigPath(const std::string& conf
         if (cfgDir == nullptr) {
             continue;
         }
-        if (!CheckRealPath(std::string(cfgDir) + "/" + fileString, baseRealPath)) {
+        if (!CheckRealPath(std::string(cfgDir) + "/" + configName, baseRealPath)) {
             continue;
         }
         configFilePaths.emplace_back(baseRealPath);
@@ -169,7 +170,8 @@ std::vector<std::string> PluginMgr::GetAllRealConfigPath(const std::string& conf
     return configFilePaths;
 }
 
-bool PluginMgr::CheckRealPath(const std::string& partialPath, std::string fullPath) {
+bool PluginMgr::CheckRealPath(const std::string& partialPath, std::string& fullPath)
+{
     char tmpPath[PATH_MAX] = {0};
     if (partialPath.size() > PATH_MAX || !realpath(partialPath.c_str(), tmpPath)) {
         return false;
@@ -178,7 +180,8 @@ bool PluginMgr::CheckRealPath(const std::string& partialPath, std::string fullPa
     return true;
 }
 
-void PluginMgr::loadConfig(bool isRssExe) {
+void PluginMgr::loadConfig(bool isRssExe)
+{
     std::vector<std::string> contents;
     if (!pluginSwitch_) {
         pluginSwitch_ = make_unique<PluginSwitch>();
@@ -186,13 +189,14 @@ void PluginMgr::loadConfig(bool isRssExe) {
         for (const auto& content : contents) {
             if (content.empty() || !pluginSwitch_->LoadFromConfigContent(content, isRssExe)) {
                 RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
-                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                    HiviewDFX::HiSysEvent::EventType::FAULT,
                     "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
                     "ERR_MSG", "PluginMgr load switch config file failed!");
             }
         }
-
     }
+
     contents.clear();
     if (!configReader_) {
         configReader_ = make_unique<ConfigReader>();
@@ -200,7 +204,8 @@ void PluginMgr::loadConfig(bool isRssExe) {
         for (const auto& content : contents) {
             if (content.empty() || !configReader_->LoadFromConfigContent(content)) {
                 RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
-                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                    HiviewDFX::HiSysEvent::EventType::FAULT,
                     "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
                     "ERR_MSG", "PluginMgr load parameter config file failed!");
             }
