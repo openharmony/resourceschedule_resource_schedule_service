@@ -169,6 +169,10 @@ HWTEST_F(PluginMgrTest, UnSubscribeResource003, TestSize.Level1)
 HWTEST_F(PluginMgrTest, DispatchResource001, TestSize.Level1)
 {
     pluginMgr_->Init();
+    if (pluginMgr_->dispatcher_ == nullptr) {
+        pluginMgr_->dispatcher_ = std::make_shared<AppExecFwk::EventHandler>(
+            AppExecFwk::EventRunner::Create("rssDispatcher"));
+    }
     nlohmann::json payload;
     auto data = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
         ResType::AppStartType::APP_COLD_START, payload);
@@ -186,6 +190,10 @@ HWTEST_F(PluginMgrTest, DispatchResource001, TestSize.Level1)
  */
 HWTEST_F(PluginMgrTest, DispatchResource002, TestSize.Level1)
 {
+    if (PluginMgr::GetInstance().dispatcher_ == nullptr) {
+        PluginMgr::GetInstance().dispatcher_ = std::make_shared<AppExecFwk::EventHandler>(
+            AppExecFwk::EventRunner::Create("rssDispatcher"));
+    }
     nlohmann::json payload;
     auto data = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
         ResType::AppStartType::APP_COLD_START, payload);
@@ -580,6 +588,45 @@ HWTEST_F(PluginMgrTest, GetPluginLib002, TestSize.Level0)
 {
     std::shared_ptr<PluginLib> libInfoPtr = pluginMgr_->GetPluginLib("libapp_preload_plugin.z.so");
     SUCCEED();
+}
+
+/**
+ * @tc.name: Plugin mgr test InnerTimeUtil 001
+ * @tc.desc: InnerTimeUtil
+ * @tc.type: FUNC
+ * @tc.require: issueI9C9JN
+ * @tc.author:luolu
+ */
+HWTEST_F(PluginMgrTest, InnerTimeUtil001, TestSize.Level0)
+{
+    PluginMgr::InnerTimeUtil innerTimeUtil("test1", "test2");
+}
+
+/**
+ * @tc.name: Plugin mgr test LoadPlugin 001
+ * @tc.desc: LoadPlugin
+ * @tc.type: FUNC
+ * @tc.require: issueI9C9JN
+ * @tc.author:luolu
+ */
+HWTEST_F(PluginMgrTest, LoadPlugin001, TestSize.Level0)
+{
+    PluginMgr::GetInstance().LoadPlugin();
+}
+
+/**
+ * @tc.name: Plugin mgr test SubscribeSyncResource 002
+ * @tc.desc: SubscribeSyncResource
+ * @tc.type: FUNC
+ * @tc.require: issueI9C9JN
+ * @tc.author:luolu
+ */
+HWTEST_F(PluginMgrTest, SubscribeSyncResource002, TestSize.Level0)
+{
+    std::string pluginLib;
+    uint32_t resType = 0;
+    PluginMgr::GetInstance().SubscribeSyncResource(pluginLib, resType);
+    PluginMgr::GetInstance().UnSubscribeSyncResource(pluginLib, resType);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
