@@ -30,6 +30,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     constexpr int32_t SIGNAL_KILL = 9;
+    const int32_t MAX_CONFIG_SIZE = 1024 * 1024;
     const std::string STR_CONFIG_READER = "config";
     const std::string STR_PLUGIN_SWITCH = "switch";
 
@@ -89,10 +90,19 @@ void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlo
 
 void ResSchedExeMgr::InitPluginMgr(const nlohmann::json& payload)
 {
+    if (!payload.contains(STR_CONFIG_READER) || !payload[STR_CONFIG_READER].is_string()
+        || !payload.contains(STR_PLUGIN_SWITCH) || !payload[STR_PLUGIN_SWITCH].is_string()) {
+        RSSEXE_LOGE("recieve config string error");
+        return;
+    }
     std::string configStr = payload[STR_CONFIG_READER];
-    PluginMgr::GetInstance().AnalyseConfigReader(configStr);
     std::string switchStr = payload[STR_PLUGIN_SWITCH];
-    PluginMgr::GetInstance().AnalysePluginSwitch(switchStr, true);
+    if (configStr.size() > MAX_CONFIG_SIZE || switchStr.size() > MAX_CONFIG_SIZE) {
+        RSSEXE_LOGE("recieve config string too large");
+        return;
+    }
+    PluginMgr::GetInstance().ParseConfigReader(configStr);
+    PluginMgr::GetInstance().ParsePluginSwitch(switchStr, true);
 }
 
 std::string ResSchedExeMgr::BuildTraceStr(const std::string& func, uint32_t resType, int64_t value)

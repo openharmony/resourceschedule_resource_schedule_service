@@ -652,26 +652,26 @@ HWTEST_F(PluginMgrTest, GetPluginSwitchStr001, TestSize.Level0)
 }
 
 /**
- * @tc.name: Plugin mgr test AnalyseConfigReader 001
- * @tc.desc: Verify if can Analyse ConfigReader.
+ * @tc.name: Plugin mgr test ParseConfigReader 001
+ * @tc.desc: Verify if can Parse ConfigReader.
  * @tc.type: FUNC
  */
-HWTEST_F(PluginMgrTest, AnalyseConfigReader001, TestSize.Level0)
+HWTEST_F(PluginMgrTest, ParseConfigReader001, TestSize.Level0)
 {
     std::string configStr = pluginMgr_->GetConfigReaderStr();
-    pluginMgr_->AnalyseConfigReader(configStr);
+    pluginMgr_->ParseConfigReader(configStr);
     SUCCEED();
 }
 
 /**
- * @tc.name: Plugin mgr test AnalysePluginSwitch 001
- * @tc.desc: Verify if can Analyse PluginSwitch.
+ * @tc.name: Plugin mgr test ParsePluginSwitch 001
+ * @tc.desc: Verify if can Parse PluginSwitch.
  * @tc.type: FUNC
  */
-HWTEST_F(PluginMgrTest, AnalysePluginSwitchr001, TestSize.Level0)
+HWTEST_F(PluginMgrTest, ParsePluginSwitchr001, TestSize.Level0)
 {
     std::string switchStr = pluginMgr_->GetPluginSwitchStr();
-    pluginMgr_->AnalysePluginSwitch(switchStr);
+    pluginMgr_->ParsePluginSwitch(switchStr);
     SUCCEED();
 }
 } // namespace ResourceSchedule

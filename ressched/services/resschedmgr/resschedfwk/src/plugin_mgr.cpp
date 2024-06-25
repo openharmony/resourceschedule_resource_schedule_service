@@ -81,10 +81,10 @@ void PluginMgr::Init(bool isRssExe)
         LoadGetExtConfigFunc();
 
         std::string configStr = GetConfigReaderStr();
-        AnalyseConfigReader(configStr);
+        ParseConfigReader(configStr);
 
         std::string switchStr = GetPluginSwitchStr();
-        AnalysePluginSwitch(switchStr);
+        ParsePluginSwitch(switchStr);
     }
     RESSCHED_LOGI("PluginMgr::Init success!");
 }
@@ -109,7 +109,7 @@ std::string PluginMgr::GetPluginSwitchStr()
     return switchStr;
 }
 
-void PluginMgr::AnalyseConfigReader(const std::string& configStr)
+void PluginMgr::ParseConfigReader(const std::string& configStr)
 {
     if (configStr.empty() || !configReader_->LoadFromCustConfigContent(configStr)) {
         RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
@@ -119,7 +119,7 @@ void PluginMgr::AnalyseConfigReader(const std::string& configStr)
     }
 }
 
-void PluginMgr::AnalysePluginSwitch(const std::string& switchStr, bool isRssExe)
+void PluginMgr::ParsePluginSwitch(const std::string& switchStr, bool isRssExe)
 {
     if (switchStr.empty() || !pluginSwitch_->LoadFromConfigContent(switchStr, isRssExe)) {
         RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);

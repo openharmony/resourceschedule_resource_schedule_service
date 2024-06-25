@@ -189,19 +189,19 @@ public:
     std::string GetPluginSwitchStr();
 
     /**
-     * Analyse config reader xml file.
+     * Parse config reader xml file.
      *
      * @param configStr The string of config reader xml file.
      */
-    void AnalyseConfigReader(const std::string& configStr);
+    void ParseConfigReader(const std::string& configStr);
 
     /**
-     * Analyse plugin switch xml file.
+     * Parse plugin switch xml file.
      *
      * @param switchStr The string of plugin switch xml file.
      * @param isRssExe is calling service resource_schedule_executor.
      */
-    void AnalysePluginSwitch(const std::string& switchStr, bool isRssExe = false);
+    void ParsePluginSwitch(const std::string& switchStr, bool isRssExe = false);
 
 private:
     PluginMgr() = default;
