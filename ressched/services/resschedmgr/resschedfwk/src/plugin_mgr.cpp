@@ -177,11 +177,11 @@ void PluginMgr::LoadPluginSwitchConfig(bool isRssExe)
         pluginSwitch_ = make_unique<PluginSwitch>();
         GetConfigContent(PLUGIN_SWITCH_FILE_IDX, PLUGIN_SWITCH_FILE_NAME, contents);
         RESSCHED_LOGI("plugin switch content size %{public}d", static_cast<int32_t>(contents.size()));
-        for (int i = 0; i < contents.size(); i++) {
-            if (contents[i].empty()) {
+        for (auto content : contents) {
+            if (content.empty()) {
                 continue;
             }
-            if (!pluginSwitch_->LoadFromConfigContent(contents[i], isRssExe)) {
+            if (!pluginSwitch_->LoadFromConfigContent(content, isRssExe)) {
                 RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                     HiviewDFX::HiSysEvent::EventType::FAULT,
@@ -199,11 +199,11 @@ void PluginMgr::loadPluginConfig()
         configReader_ = make_unique<ConfigReader>();
         GetConfigContent(CONFIG_FILE_IDX, CONFIG_FILE_NAME, contents);
         RESSCHED_LOGI("plugin info content size %{public}d", static_cast<int32_t>(contents.size()));
-        for (int i = 0; i < contents.size(); i++) {
-            if (contents[i].empty()) {
+        for (auto content : contents) {
+            if (content.empty()) {
                 continue;
             }
-            if (!configReader_->LoadFromConfigContent(contents[i])) {
+            if (!configReader_->LoadFromConfigContent(content)) {
                 RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                     HiviewDFX::HiSysEvent::EventType::FAULT,
@@ -530,9 +530,9 @@ void PluginMgr::DumpAllPluginConfig(std::string &result)
     std::list<PluginInfo> pluginInfoList = pluginSwitch_->GetPluginSwitch();
     result.append("================Resource Schedule Plugin Switch================\n");
     for (const auto& info : pluginInfoList) {
-        result.append(info.libPath).append(" ").append(info.switchOn).append("\n");
+        result.append(info.libPath).append(" ").append(std::to_string(info.switchOn)).append("\n");
     }
-    configReader_->Dump(std::string &result);
+    configReader_->Dump(result);
 }
 
 void PluginMgr::DumpOnePlugin(std::string &result, std::string pluginName, std::vector<std::string>& args)
