@@ -651,6 +651,7 @@ HWTEST_F(PluginMgrTest, GetPluginLib002, TestSize.Level0)
     SUCCEED();
 }
 
+/**
  * @tc.name: Plugin mgr test InnerTimeUtil 001
  * @tc.desc: InnerTimeUtil
  * @tc.type: FUNC
