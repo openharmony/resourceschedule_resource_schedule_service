@@ -182,7 +182,7 @@ void ResSchedMgr::InitExecutorPlugin()
     nlohmann::json payload;
     payload["config"] = PluginMgr::GetInstance().GetConfigReaderStr();
     payload["switch"] = PluginMgr::GetInstance().GetPluginSwitchStr();
-    ResschedExeClient::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT, 0, payload);
+    ResSchedExeClient::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT, 0, payload);
 }
 
 void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload)
