@@ -91,27 +91,27 @@ void PluginMgr::Init(bool isRssExe)
 
 std::string GetConfigReaderStr()
 {
-    std::string config;
+    std::string configStr;
     std::string realPath = GetRealConfigPath(CONFIG_FILE_NAME);
     if (!realPath.empty()) {
-        GetConfigContent(CONFIG_FILE_IDX, realPath, config);
+        GetConfigContent(CONFIG_FILE_IDX, realPath, configStr);
     }
-    return config;
+    return configStr;
 }
 
 std::string GetPluginSwitchStr()
 {
-    std::string plugin;
+    std::string switchStr;
     std::string realPath = GetRealConfigPath(PLUGIN_SWITCH_FILE_NAME);
     if (!realPath.empty()) {
-        GetConfigContent(PLUGIN_SWITCH_FILE_IDX, realPath, plugin);
+        GetConfigContent(PLUGIN_SWITCH_FILE_IDX, realPath, switchStr);
     }
-    return plugin;
+    return switchStr;
 }
 
-void AnalyseConfigReader(const std::string& config)
+void AnalyseConfigReader(const std::string& configStr)
 {
-    if (config.empty() || !configReader_->LoadFromCustConfigContent(config)) {
+    if (configStr.empty() || !configReader_->LoadFromCustConfigContent(configStr)) {
         RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
             "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
@@ -119,9 +119,9 @@ void AnalyseConfigReader(const std::string& config)
     }
 }
 
-void AnalysePluginSwitch(const std::string& pluginSwitch, bool isRssExe)
+void AnalysePluginSwitch(const std::string& switchStr, bool isRssExe)
 {
-    if (pluginSwitch.empty() || !pluginSwitch_->LoadFromConfigContent(pluginSwitch, isRssExe)) {
+    if (switchStr.empty() || !pluginSwitch_->LoadFromConfigContent(switchStr, isRssExe)) {
         RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
             "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
