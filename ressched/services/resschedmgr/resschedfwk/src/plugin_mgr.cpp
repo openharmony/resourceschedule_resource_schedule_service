@@ -119,9 +119,9 @@ void AnalyseConfigReader(const std::string& config)
     }
 }
 
-void AnalysePluginSwitch(const std::string& switch, bool isRssExe)
+void AnalysePluginSwitch(const std::string& pluginSwitch, bool isRssExe)
 {
-    if (switch.empty() || !pluginSwitch_->LoadFromConfigContent(switch, isRssExe)) {
+    if (pluginSwitch.empty() || !pluginSwitch_->LoadFromConfigContent(pluginSwitch, isRssExe)) {
         RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
             "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",

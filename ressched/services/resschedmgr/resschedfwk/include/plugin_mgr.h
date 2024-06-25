@@ -198,10 +198,10 @@ public:
     /**
      * Analyse plugin switch xml file.
      *
-     * @param switch The string of plugin switch xml file.
+     * @param pluginSwitch The string of plugin switch xml file.
      * @param isRssExe is calling service resource_schedule_executor.
      */
-    void AnalysePluginSwitch(const std::string& switch, bool isRssExe = false);
+    void AnalysePluginSwitch(const std::string& pluginSwitch, bool isRssExe = false);
 
 private:
     PluginMgr() = default;
