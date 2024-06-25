@@ -168,6 +168,8 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
             DumpSystemLoadInfo(result);
         } else if (argsInStr[DUMP_OPTION] == "sendDebugToExecutor") {
             DumpExecutorDebugCommand(argsInStr, result);
+        } else if (argsInStr[DUMP_OPTION] == "PluginConfig") {
+            DumpAllPluginConfig(result);
         } else {
             result.append("Error params.");
         }
@@ -343,6 +345,12 @@ void ResSchedService::DumpExecutorDebugCommand(const std::vector<std::string>& a
         ResSchedExeClient::GetInstance().SendDebugCommand(isSync);
         usleep(internal);
     }
+}
+
+void ResSchedService::DumpAllPluginConfig(std::string &result)
+{
+    result.append("================Resource Schedule Plugin Config================\n");
+    PluginMgr::GetInstance().DumpAllPluginConfig(result);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

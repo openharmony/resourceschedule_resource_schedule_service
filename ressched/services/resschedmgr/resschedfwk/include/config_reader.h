@@ -43,6 +43,10 @@ public:
      */
     PluginConfig GetConfig(const std::string& pluginName, const std::string& configName);
 
+    void Dump(std::string &result);
+
+    void DumpItem(const Item& item, std::string &result);
+
 private:
     static bool IsInvalidNode(const xmlNode& currNode);
     void ParseProperties(const xmlNode& currNode, std::map<std::string, std::string>& properties);

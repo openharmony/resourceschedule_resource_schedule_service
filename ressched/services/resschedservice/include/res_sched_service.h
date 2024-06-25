@@ -55,6 +55,8 @@ public:
 
     void DumpSystemLoadInfo(std::string &result);
 
+    void DumpAllPluginConfig(std::string &result);
+
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedService);
 

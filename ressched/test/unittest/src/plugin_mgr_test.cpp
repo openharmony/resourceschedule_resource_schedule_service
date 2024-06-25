@@ -356,6 +356,9 @@ HWTEST_F(PluginMgrTest, Dump001, TestSize.Level1)
     args.emplace_back("-h");
     pluginMgr_->DumpOnePlugin(res, LIB_NAME, args);
     EXPECT_TRUE(!res.empty());
+    res = "";
+    pluginMgr_->DumpAllPluginConfig(res);
+    EXPECT_TRUE(!res.empty());
 }
 
 /**

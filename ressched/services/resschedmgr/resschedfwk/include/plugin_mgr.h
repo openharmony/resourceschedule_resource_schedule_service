@@ -160,6 +160,8 @@ public:
 
     void DumpAllPlugin(std::string &result);
 
+    void DumpAllPluginConfig(std::string &result);
+
     void DumpOnePlugin(std::string &result, std::string pluginName, std::vector<std::string>& args);
 
     std::string DumpInfoFromPlugin(std::string& result, std::string libPath, std::vector<std::string>& args);

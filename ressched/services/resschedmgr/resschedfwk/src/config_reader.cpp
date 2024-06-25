@@ -202,5 +202,37 @@ PluginConfig ConfigReader::GetConfig(const std::string& pluginName, const std::s
     }
     return configMap[configName];
 }
+
+PluginConfig ConfigReader::Dump(std::string &result)
+{
+    result.append("================Resource Schedule Plugin Config ================\n");
+    for (auto pluginIter : allPluginConfigs_) {
+        result.append("pluginName:").append(pluginIter.first).append(" \n");
+        auto pluginConfigMap = pluginIter.second;
+        for (auto pluginConfigMapIter : pluginConfigMap) {
+            result.append("configName:").append(pluginConfigMapIter.first).append(" \n");
+            auto pluginConfig = pluginConfigMapIter.second;
+            for (auto item : pluginConfig.itemList) {
+                DumpItem(item, result);
+            }
+        }
+    }
+}
+
+PluginConfig ConfigReader::DumpItem(const Item& item, std::string &result)
+{
+    result.append("Item : ");
+    for (auto itemProPerty : item.itemProperties) {
+        result.append(itemProPerty.first).append(" = ").append(itemProPerty.second).append(" ");
+    }
+    result.append(" \n");
+    for (auto subItem : item.subItemList) {
+        result.append("subItemName : ").append(subItem.name).append(" ");
+        for (auto subItemProPerty : subItem.properties) {
+            result.append(subItemProPerty.first).append(" = ").append(subItemProPerty.second).append(" ");
+        }
+        result.append(" value :").append(subItem.value).append(" \n");
+    }
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
