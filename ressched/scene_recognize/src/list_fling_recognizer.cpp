@@ -75,6 +75,9 @@ void ListFlingRecognizer::HandleSlideEvent(int64_t value, const nlohmann::json& 
         if(listFlingEndTask_) {
             ffrt::skip(listFlingEndTask_);
         }
+        if (listFlingTimeOutTask_) {
+            ffrt::skip(listFlingTimeOutTask_);
+        }
         listFlingEndTask_ = nullptr;
         listFlingTimeOutTask_ = nullptr;
         reportListFlingLockedEnd(payload);
@@ -89,6 +92,9 @@ void ListFlingRecognizer::HandleSlideEvent(int64_t value, const nlohmann::json& 
             ResType::SlideEventStatus::SLIDE_EVENT_ON, payload);
         isInListFlingMode = true;
         listFlingMutex.unlock();
+        if (listFlingEndTask_) {
+            ffrt::skip(listFlingEndTask_);
+        }
         listFlingEndTask_ = ffrt::submit_h([payload]() {
             reportListFlingLockedEnd(payload);
             }, {}, {}, ffrt::task_attr().delay(LIST_FLINT_END_TIME));

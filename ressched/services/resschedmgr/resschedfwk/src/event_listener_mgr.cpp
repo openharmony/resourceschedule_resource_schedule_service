@@ -64,14 +64,7 @@ void EventListenerMgr::RegisterEventListener(int32_t callingPid, const sptr<IRem
     }
     std::lock_guard<std::mutex> autoLock(mutex_);
     auto iter = eventListenerMap_.find(eventType);
-    std::map<pid_t, EventListenerInfo> listenerList;
-    if (iter == eventListenerMap_.end()) {
-        listenerList = {};
-        iter->second = listenerList;
-    } else {
-        listenerList = iter->second;
-    }
-    if (listenerList.find((pid_t)callingPid) != listenerList.end()) {
+    if (iter != eventListenerMap_.end() && iter->second.find((pid_t)callingPid) != iter->second.end()) {
         RESSCHED_LOGE("%{public}s:pid %{public}d has benn registered eventType %{public}d",
             __func__, callingPid, eventType);
         return;
@@ -79,7 +72,7 @@ void EventListenerMgr::RegisterEventListener(int32_t callingPid, const sptr<IRem
     EventListenerInfo info;
     info.listener = listener;
     info.pid = (pid_t)callingPid;
-    listenerList[info.pid] = info;
+    eventListenerMap_[eventType][info.pid] = info;
     listener->AddDeathRecipient(eventListenerDeathRecipient_);
     RESSCHED_LOGI("%{public}s:pid = %{public}d register eventType %{public}d succeed.", __func__, callingPid, eventType);
 }
