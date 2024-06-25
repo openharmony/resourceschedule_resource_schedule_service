@@ -79,6 +79,12 @@ void ResSchedServiceAbility::OnStart()
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of background task manager service failed.");
     }
+    if (!AddSystemAbilityListener(RES_SCHED_EXE_ABILITY_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of background task manager service failed.");
+    }
     if (!AddSystemAbilityListener(POWER_MANAGER_SERVICE_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
@@ -106,6 +112,9 @@ void ResSchedServiceAbility::OnStop()
 
 void ResSchedServiceAbility::OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
 {
+    if (systemAbilityId == RES_SCHED_EXE_ABILITY_ID) {
+        ResSchedMgr::GetInstance().InitExecutorPlugin();
+    }
     ReportAbilityStatus(systemAbilityId, deviceId, 1);
 }
 

@@ -628,5 +628,51 @@ HWTEST_F(PluginMgrTest, SubscribeSyncResource002, TestSize.Level0)
     PluginMgr::GetInstance().SubscribeSyncResource(pluginLib, resType);
     PluginMgr::GetInstance().UnSubscribeSyncResource(pluginLib, resType);
 }
+
+/**
+ * @tc.name: Plugin mgr test GetConfigReaderStr 001
+ * @tc.desc: Verify if can get ConfigReaderStr.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, GetConfigReaderStr001, TestSize.Level0)
+{
+    std::string configStr = pluginMgr_->GetConfigReaderStr();
+    EXPECT_TRUE(!configStr.empty());
+}
+
+/**
+ * @tc.name: Plugin mgr test GetPluginSwitchStr 001
+ * @tc.desc: Verify if can get PluginSwitchStr.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, GetPluginSwitchStr001, TestSize.Level0)
+{
+    std::string switchStr = pluginMgr_->GetPluginSwitchStr();
+    EXPECT_TRUE(!switchStr.empty());
+}
+
+/**
+ * @tc.name: Plugin mgr test AnalyseConfigReader 001
+ * @tc.desc: Verify if can Analyse ConfigReader.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, AnalyseConfigReader001, TestSize.Level0)
+{
+    std::string configStr = pluginMgr_->GetConfigReaderStr();
+    pluginMgr_->AnalyseConfigReader(configStr);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: Plugin mgr test AnalysePluginSwitch 001
+ * @tc.desc: Verify if can Analyse PluginSwitch.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, AnalysePluginSwitchr001, TestSize.Level0)
+{
+    std::string switchStr = pluginMgr_->GetPluginSwitchStr();
+    pluginMgr_->AnalysePluginSwitch(switchStr);
+    SUCCEED();
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

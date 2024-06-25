@@ -29,6 +29,10 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
+    constexpr int32_t SIGNAL_KILL = 9;
+    const std::string STR_CONFIG_READER = "config";
+    const std::string STR_PLUGIN_SWITCH = "switch";
+
     const std::map<uint32_t, std::string> resTypeToStr = {
         { ResExeType::RES_TYPE_COMMON_SYNC, "RES_TYPE_COMMON_SYNC" },
         { ResExeType::RES_TYPE_COMMON_ASYNC, "RES_TYPE_COMMON_ASYNC" },
@@ -36,10 +40,6 @@ namespace {
         { ResExeType::RES_TYPE_THERMAL_AWARE_ASYNC_EVENT, "THERMAL_AWARE_ASYNC_EVENT" },
         { ResExeType::RES_TYPE_DEBUG, "DEBUG_COMMAND" },
     };
-}
-
-namespace {
-    constexpr int32_t SIGNAL_KILL = 9;
 }
 
 IMPLEMENT_SINGLE_INSTANCE(ResSchedExeMgr);
@@ -78,9 +78,21 @@ int32_t ResSchedExeMgr::KillProcess(pid_t pid)
 void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
+    if (resType == ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT) {
+        InitPluginMgr(payload);
+        return;
+    }
     std::string traceStr = BuildTraceStr(__func__, resType, value);
     HitraceScoped hitrace(HITRACE_TAG_OHOS, traceStr);
     PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
+}
+
+void ResSchedExeMgr::InitPluginMgr(const nlohmann::json& payload)
+{
+    std::string configStr = payload[STR_CONFIG_READER];
+    PluginMgr::GetInstance().AnalyseConfigReader(configStr);
+    std::string switchStr = payload[STR_PLUGIN_SWITCH];
+    PluginMgr::GetInstance().AnalysePluginSwitch(switchStr, true);
 }
 
 std::string ResSchedExeMgr::BuildTraceStr(const std::string& func, uint32_t resType, int64_t value)

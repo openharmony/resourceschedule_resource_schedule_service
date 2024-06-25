@@ -41,6 +41,8 @@ enum : uint32_t {
     RES_TYPE_THERMAL_AWARE_ASYNC_EVENT,
     // socperf wirte node async
     EWS_TYPE_SOCPERF_EXECUTOR_ASYNC_EVENT,
+    // init executor plugin manager
+    RES_TYPE_EXECUTOR_PLUGIN_INIT,
     // last resType, please add resType before
     RES_TYPE_LAST = 1000,
     // resType for debug ipc

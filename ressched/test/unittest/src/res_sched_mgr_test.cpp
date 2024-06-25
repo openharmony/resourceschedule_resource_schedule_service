@@ -157,5 +157,16 @@ HWTEST_F(ResSchedMgrTest, 003, TestSize.Level1)
 
     ResSchedMgr::GetInstance().DispatchResourceInner(ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, 0, payload);
 }
+
+/**
+ * @tc.name: Init Executor plugin mgr 001
+ * @tc.desc: Verify if InitExecutorPlugin is success
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedMgrTest, InitExecutorPlugin001, TestSize.Level1)
+{
+    ResSchedMgr::GetInstance().InitExecutorPlugin();
+    SUCCEED();
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
