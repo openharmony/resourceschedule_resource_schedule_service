@@ -162,7 +162,6 @@ bool ConfigReader::LoadFromConfigContent(const string& content)
     xmlFreeDoc(xmlDocPtr);
     lock_guard<mutex> autoLock(configMutex_);
     MergeConfigList(allPluginConfigs);
-    std::move(allPluginConfigs);
     return true;
 }
 
