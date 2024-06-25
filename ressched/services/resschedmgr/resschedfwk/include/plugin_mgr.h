@@ -184,7 +184,8 @@ private:
     std::shared_ptr<PluginLib> LoadOnePlugin(const PluginInfo& info);
     void UnLoadPlugin();
     void ClearResource();
-    void loadConfig(const bool isRssExe);
+    void LoadPluginSwitchConfig(const bool isRssExe);
+    void loadPluginConfig();
     void DispatchResourceToPluginSync(const std::list<std::string>& pluginList,
         const std::shared_ptr<ResData>& resData);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE

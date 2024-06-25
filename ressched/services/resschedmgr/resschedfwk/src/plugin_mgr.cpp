@@ -70,7 +70,8 @@ void PluginMgr::Init(bool isRssExe)
         return;
     }
     LoadGetExtConfigFunc();
-    loadConfig(isRssExe);
+    LoadPluginSwitchConfig(isRssExe);
+    loadPluginConfig();
     LoadPlugin();
     {
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
@@ -169,7 +170,7 @@ bool PluginMgr::CheckRealPath(const std::string& partialPath, std::string& fullP
     return true;
 }
 
-void PluginMgr::loadPluginSwitchConfig(bool isRssExe)
+void PluginMgr::LoadPluginSwitchConfig(bool isRssExe)
 {
     std::vector<std::string> contents;
     if (!pluginSwitch_) {
@@ -181,8 +182,7 @@ void PluginMgr::loadPluginSwitchConfig(bool isRssExe)
                 continue;
             }
             if (!pluginSwitch_->LoadFromConfigContent(contents[i], isRssExe)) {
-                RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed,
-                    Index is %{public}d", __func__, i);
+                RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                     HiviewDFX::HiSysEvent::EventType::FAULT,
                     "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
@@ -204,7 +204,7 @@ void PluginMgr::loadPluginConfig()
                 continue;
             }
             if (!configReader_->LoadFromConfigContent(contents[i])) {
-                RESSCHED_LOGW("%{public}s, PluginMgr load config file failed, Index is %{public}d", __func__, i);
+                RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                     HiviewDFX::HiSysEvent::EventType::FAULT,
                     "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
