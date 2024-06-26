@@ -176,6 +176,35 @@ public:
 
     void GetConfigContent(int32_t configIdx, const std::string& configPath, std::vector<std::string>& contents);
 
+    /**
+     * Get config reader xml file.
+     *
+     * @return config reader xml file string.
+     */
+    std::string GetConfigReaderStr();
+
+    /**
+     * Get plugin switch xml file.
+     *
+     * @return plugin switch xml file string.
+     */
+    std::string GetPluginSwitchStr();
+
+    /**
+     * Parse config reader xml file.
+     *
+     * @param configStr The string of config reader xml file.
+     */
+    void ParseConfigReader(const std::string& configStr);
+
+    /**
+     * Parse plugin switch xml file.
+     *
+     * @param switchStr The string of plugin switch xml file.
+     * @param isRssExe is calling service resource_schedule_executor.
+     */
+    void ParsePluginSwitch(const std::string& switchStr, bool isRssExe = false);
+
 private:
     PluginMgr() = default;
     void OnDestroy();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -72,6 +72,64 @@ void PluginMgr::Init(bool isRssExe)
     LoadGetExtConfigFunc();
     LoadPluginSwitchConfig(isRssExe);
     loadPluginConfig();
+
+    if (!pluginSwitch_) {
+        pluginSwitch_ = make_unique<PluginSwitch>();
+    }
+    if (!configReader_) {
+        configReader_ = make_unique<ConfigReader>();
+    }
+
+    if (!isRssExe) {
+        LoadGetExtConfigFunc();
+
+        std::string configStr = GetConfigReaderStr();
+        ParseConfigReader(configStr);
+
+        std::string switchStr = GetPluginSwitchStr();
+        ParsePluginSwitch(switchStr);
+    }
+    RESSCHED_LOGI("PluginMgr::Init success!");
+}
+
+std::string PluginMgr::GetConfigReaderStr()
+{
+    std::string configStr;
+    std::string realPath = GetRealConfigPath(CONFIG_FILE_NAME);
+    if (!realPath.empty()) {
+        GetConfigContent(CONFIG_FILE_IDX, realPath, configStr);
+    }
+    return configStr;
+}
+
+std::string PluginMgr::GetPluginSwitchStr()
+{
+    std::string switchStr;
+    std::string realPath = GetRealConfigPath(PLUGIN_SWITCH_FILE_NAME);
+    if (!realPath.empty()) {
+        GetConfigContent(PLUGIN_SWITCH_FILE_IDX, realPath, switchStr);
+    }
+    return switchStr;
+}
+
+void PluginMgr::ParseConfigReader(const std::string& configStr)
+{
+    if (configStr.empty() || !configReader_->LoadFromCustConfigContent(configStr)) {
+        RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+            "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
+            "ERR_MSG", "PluginMgr load parameter config file failed!");
+    }
+}
+
+void PluginMgr::ParsePluginSwitch(const std::string& switchStr, bool isRssExe)
+{
+    if (switchStr.empty() || !pluginSwitch_->LoadFromConfigContent(switchStr, isRssExe)) {
+        RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+            "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
+            "ERR_MSG", "PluginMgr load switch config file failed!");
+    }
     LoadPlugin();
     {
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
@@ -91,7 +149,6 @@ void PluginMgr::Init(bool isRssExe)
         }
 #endif
     }
-    RESSCHED_LOGI("PluginMgr::Init success!");
 }
 
 void PluginMgr::LoadGetExtConfigFunc()
@@ -224,6 +281,9 @@ void PluginMgr::LoadPlugin()
     std::list<PluginInfo> pluginInfoList = pluginSwitch_->GetPluginSwitch();
     for (const auto& info : pluginInfoList) {
         if (!info.switchOn) {
+            continue;
+        }
+        if (pluginLibMap_.find(info.libPath) != pluginLibMap_.end()) {
             continue;
         }
         shared_ptr<PluginLib> libInfoPtr = LoadOnePlugin(info);

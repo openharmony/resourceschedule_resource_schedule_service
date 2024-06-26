@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,7 +50,12 @@ bool PluginSwitch::FillinPluginInfo(const xmlNode* currNode, PluginInfo& info, b
         RESSCHED_LOGW("%{public}s, libPath null!", __func__);
         return false;
     }
-    info.libPath = reinterpret_cast<const char*>(attrValue);
+    std::string libPath = reinterpret_cast<const char*>(attrValue);
+    if (libPath.empty()) {
+        RESSCHED_LOGW("%{public}s, libPath empty!", __func__);
+        return false;
+    }
+    info.libPath = libPath;
     xmlFree(attrValue);
 
     attrValue = xmlGetProp(currNode, reinterpret_cast<const xmlChar*>(XML_ATTR_SWITCH));
