@@ -70,8 +70,6 @@ void PluginMgr::Init(bool isRssExe)
         return;
     }
     LoadGetExtConfigFunc();
-    LoadPluginSwitchConfig(isRssExe);
-    loadPluginConfig();
 
     if (!pluginSwitch_) {
         pluginSwitch_ = make_unique<PluginSwitch>();
@@ -83,52 +81,60 @@ void PluginMgr::Init(bool isRssExe)
     if (!isRssExe) {
         LoadGetExtConfigFunc();
 
-        std::string configStr = GetConfigReaderStr();
-        ParseConfigReader(configStr);
+        std::vector<std::string> configStrs = GetConfigReaderStr();
+        ParseConfigReader(configStrs);
 
-        std::string switchStr = GetPluginSwitchStr();
-        ParsePluginSwitch(switchStr);
+        std::vector<std::string> switchStrs = GetPluginSwitchStr();
+        ParsePluginSwitch(switchStrs);
     }
     RESSCHED_LOGI("PluginMgr::Init success!");
 }
 
-std::string PluginMgr::GetConfigReaderStr()
+std::vector<std::string> PluginMgr::GetConfigReaderStr()
 {
-    std::string configStr;
-    std::string realPath = GetRealConfigPath(CONFIG_FILE_NAME);
-    if (!realPath.empty()) {
-        GetConfigContent(CONFIG_FILE_IDX, realPath, configStr);
-    }
-    return configStr;
+    std::vector<std::string> configStrs;
+    GetConfigContent(CONFIG_FILE_IDX, CONFIG_FILE_NAME, configStrs);
+    return configStrs;
 }
 
-std::string PluginMgr::GetPluginSwitchStr()
+std::vector<std::string> PluginMgr::GetPluginSwitchStr()
 {
-    std::string switchStr;
-    std::string realPath = GetRealConfigPath(PLUGIN_SWITCH_FILE_NAME);
-    if (!realPath.empty()) {
-        GetConfigContent(PLUGIN_SWITCH_FILE_IDX, realPath, switchStr);
-    }
-    return switchStr;
+    std::vector<std::string> switchStrs;
+    GetConfigContent(PLUGIN_SWITCH_FILE_IDX, PLUGIN_SWITCH_FILE_NAME, switchStrs);
+    return switchStrs;
 }
 
-void PluginMgr::ParseConfigReader(const std::string& configStr)
+void PluginMgr::ParseConfigReader(const std::vector<std::string>& configStrs)
 {
-    if (configStr.empty() || !configReader_->LoadFromCustConfigContent(configStr)) {
-        RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
-        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-            "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
-            "ERR_MSG", "PluginMgr load parameter config file failed!");
+    RESSCHED_LOGI("plugin configStrs size %{public}d", static_cast<int32_t>(configStrs.size()));
+    for (auto configStr : configStrs) {
+        if (configStr.empty()) {
+            continue;
+        }
+        if (!configReader_->LoadFromConfigContent(configStr)) {
+            RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
+            HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                HiviewDFX::HiSysEvent::EventType::FAULT,
+                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
+                "ERR_MSG", "PluginMgr load parameter config file failed");
+        }
     }
 }
 
-void PluginMgr::ParsePluginSwitch(const std::string& switchStr, bool isRssExe)
+void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bool isRssExe)
 {
-    if (switchStr.empty() || !pluginSwitch_->LoadFromConfigContent(switchStr, isRssExe)) {
-        RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
-        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-            "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
-            "ERR_MSG", "PluginMgr load switch config file failed!");
+    RESSCHED_LOGI("plugin switchStrs size %{public}d", static_cast<int32_t>(switchStrs.size()));
+    for (auto switchStr : switchStrs) {
+        if (switchStr.empty()) {
+            continue;
+        }
+        if (!pluginSwitch_->LoadFromConfigContent(switchStr, isRssExe)) {
+            RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
+            HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                HiviewDFX::HiSysEvent::EventType::FAULT,
+                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
+                "ERR_MSG", "PluginMgr load switch config file failed!");
+        }
     }
     LoadPlugin();
     {
@@ -225,50 +231,6 @@ bool PluginMgr::CheckRealPath(const std::string& partialPath, std::string& fullP
     }
     fullPath = tmpPath;
     return true;
-}
-
-void PluginMgr::LoadPluginSwitchConfig(bool isRssExe)
-{
-    std::vector<std::string> contents;
-    if (!pluginSwitch_) {
-        pluginSwitch_ = make_unique<PluginSwitch>();
-        GetConfigContent(PLUGIN_SWITCH_FILE_IDX, PLUGIN_SWITCH_FILE_NAME, contents);
-        RESSCHED_LOGI("plugin switch content size %{public}d", static_cast<int32_t>(contents.size()));
-        for (auto content : contents) {
-            if (content.empty()) {
-                continue;
-            }
-            if (!pluginSwitch_->LoadFromConfigContent(content, isRssExe)) {
-                RESSCHED_LOGW("%{public}s, PluginMgr load switch config file failed!", __func__);
-                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
-                    HiviewDFX::HiSysEvent::EventType::FAULT,
-                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
-                    "ERR_MSG", "PluginMgr load switch config file failed!");
-            }
-        }
-    }
-}
-
-void PluginMgr::loadPluginConfig()
-{
-    std::vector<std::string> contents;
-    if (!configReader_) {
-        configReader_ = make_unique<ConfigReader>();
-        GetConfigContent(CONFIG_FILE_IDX, CONFIG_FILE_NAME, contents);
-        RESSCHED_LOGI("plugin info content size %{public}d", static_cast<int32_t>(contents.size()));
-        for (auto content : contents) {
-            if (content.empty()) {
-                continue;
-            }
-            if (!configReader_->LoadFromConfigContent(content)) {
-                RESSCHED_LOGW("%{public}s, PluginMgr load config file failed!", __func__);
-                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
-                    HiviewDFX::HiSysEvent::EventType::FAULT,
-                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
-                    "ERR_MSG", "PluginMgr load parameter config file failed");
-            }
-        }
-    }
 }
 
 void PluginMgr::LoadPlugin()
