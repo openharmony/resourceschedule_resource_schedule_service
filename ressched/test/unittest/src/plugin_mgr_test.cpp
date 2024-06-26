@@ -700,7 +700,7 @@ HWTEST_F(PluginMgrTest, SubscribeSyncResource002, TestSize.Level0)
  */
 HWTEST_F(PluginMgrTest, GetConfigReaderStr001, TestSize.Level0)
 {
-    std::string configStr = pluginMgr_->GetConfigReaderStr();
+    auto configStr = pluginMgr_->GetConfigReaderStr();
     EXPECT_TRUE(!configStr.empty());
 }
 
@@ -711,7 +711,7 @@ HWTEST_F(PluginMgrTest, GetConfigReaderStr001, TestSize.Level0)
  */
 HWTEST_F(PluginMgrTest, GetPluginSwitchStr001, TestSize.Level0)
 {
-    std::string switchStr = pluginMgr_->GetPluginSwitchStr();
+    auto switchStr = pluginMgr_->GetPluginSwitchStr();
     EXPECT_TRUE(!switchStr.empty());
 }
 
