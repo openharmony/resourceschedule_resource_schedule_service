@@ -181,21 +181,21 @@ public:
      *
      * @return config reader xml file string.
      */
-    std::string GetConfigReaderStr();
+    std::vector<std::string> GetConfigReaderStr();
 
     /**
      * Get plugin switch xml file.
      *
      * @return plugin switch xml file string.
      */
-    std::string GetPluginSwitchStr();
+    std::vector<std::string> GetPluginSwitchStr();
 
     /**
      * Parse config reader xml file.
      *
      * @param configStr The string of config reader xml file.
      */
-    void ParseConfigReader(const std::string& configStr);
+    void ParseConfigReader(const std::vector<std::string>& configStrs);
 
     /**
      * Parse plugin switch xml file.
@@ -203,7 +203,7 @@ public:
      * @param switchStr The string of plugin switch xml file.
      * @param isRssExe is calling service resource_schedule_executor.
      */
-    void ParsePluginSwitch(const std::string& switchStr, bool isRssExe = false);
+    void ParsePluginSwitch(const std::vector<std::string>& switchStrs, bool isRssExe = false);
 
 private:
     PluginMgr() = default;
