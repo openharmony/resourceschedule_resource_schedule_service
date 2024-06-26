@@ -203,7 +203,7 @@ PluginConfig ConfigReader::GetConfig(const std::string& pluginName, const std::s
     return configMap[configName];
 }
 
-PluginConfig ConfigReader::Dump(std::string &result)
+void ConfigReader::Dump(std::string &result)
 {
     result.append("================Resource Schedule Plugin Config ================\n");
     for (auto pluginIter : allPluginConfigs_) {
@@ -219,7 +219,7 @@ PluginConfig ConfigReader::Dump(std::string &result)
     }
 }
 
-PluginConfig ConfigReader::DumpItem(const Item& item, std::string &result)
+void ConfigReader::DumpItem(const Item& item, std::string &result)
 {
     result.append("Item : ");
     for (auto itemProPerty : item.itemProperties) {
