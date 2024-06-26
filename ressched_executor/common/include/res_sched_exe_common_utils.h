@@ -44,21 +44,6 @@ public:
     static uint64_t GetCurrentTimestampUs();
 
     /**
-     * @brief check device is eng mode
-     *
-     * @return device is eng mode or not
-     */
-    static bool IsDebugMode();
-
-    /**
-     * @brief check process has permission
-     *
-     * @param permission permission name to check
-     * @return process has permission or not
-     */
-    static bool CheckPermission(const std::string& permission);
-
-    /**
      * @brief convert string to json
      *
      * @param str message string

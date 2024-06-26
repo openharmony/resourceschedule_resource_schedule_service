@@ -628,5 +628,51 @@ HWTEST_F(PluginMgrTest, SubscribeSyncResource002, TestSize.Level0)
     PluginMgr::GetInstance().SubscribeSyncResource(pluginLib, resType);
     PluginMgr::GetInstance().UnSubscribeSyncResource(pluginLib, resType);
 }
+
+/**
+ * @tc.name: Plugin mgr test GetConfigReaderStr 001
+ * @tc.desc: Verify if can get ConfigReaderStr.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, GetConfigReaderStr001, TestSize.Level0)
+{
+    std::string configStr = pluginMgr_->GetConfigReaderStr();
+    EXPECT_TRUE(!configStr.empty());
+}
+
+/**
+ * @tc.name: Plugin mgr test GetPluginSwitchStr 001
+ * @tc.desc: Verify if can get PluginSwitchStr.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, GetPluginSwitchStr001, TestSize.Level0)
+{
+    std::string switchStr = pluginMgr_->GetPluginSwitchStr();
+    EXPECT_TRUE(!switchStr.empty());
+}
+
+/**
+ * @tc.name: Plugin mgr test ParseConfigReader 001
+ * @tc.desc: Verify if can Parse ConfigReader.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, ParseConfigReader001, TestSize.Level0)
+{
+    std::string configStr = pluginMgr_->GetConfigReaderStr();
+    pluginMgr_->ParseConfigReader(configStr);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: Plugin mgr test ParsePluginSwitch 001
+ * @tc.desc: Verify if can Parse PluginSwitch.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, ParsePluginSwitchr001, TestSize.Level0)
+{
+    std::string switchStr = pluginMgr_->GetPluginSwitchStr();
+    pluginMgr_->ParsePluginSwitch(switchStr);
+    SUCCEED();
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

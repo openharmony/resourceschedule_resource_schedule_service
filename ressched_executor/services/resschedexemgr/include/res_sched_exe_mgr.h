@@ -67,6 +67,7 @@ public:
      */
     int32_t KillProcess(pid_t pid);
 private:
+    void InitPluginMgr(const nlohmann::json& payload);
     std::string BuildTraceStr(const std::string& func, uint32_t resType, int64_t value);
 };
 } // namespace ResourceSchedule

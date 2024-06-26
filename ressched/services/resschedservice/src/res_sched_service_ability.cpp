@@ -61,30 +61,7 @@ void ResSchedServiceAbility::OnStart()
                         "ERR_MSG", "Register ResSchedService failed.");
     }
     CgroupSchedInit();
-    if (!AddSystemAbilityListener(APP_MGR_SERVICE_ID)) {
-        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of app manager service failed.");
-    }
-    if (!AddSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID)) {
-        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of window manager service failed.");
-    }
-    if (!AddSystemAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID)) {
-        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of background task manager service failed.");
-    }
-    if (!AddSystemAbilityListener(POWER_MANAGER_SERVICE_ID)) {
-        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of power manager service failed.");
-    }
+    SystemAbilityListenerInit();
     EventControllerInit();
     ObserverManagerInit();
     ReclaimProcessMemory();
@@ -106,6 +83,9 @@ void ResSchedServiceAbility::OnStop()
 
 void ResSchedServiceAbility::OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
 {
+    if (systemAbilityId == RES_SCHED_EXE_ABILITY_ID) {
+        ResSchedMgr::GetInstance().InitExecutorPlugin();
+    }
     ReportAbilityStatus(systemAbilityId, deviceId, 1);
 }
 
@@ -129,6 +109,40 @@ void ResSchedServiceAbility::ReclaimProcessMemory()
     ffrt::task_attr taskattr;
     taskattr.delay(delayTime);
     ffrt::submit([]() {ResCommonUtil::WriteFileReclaim(getpid());}, {}, {}, {taskattr});
+}
+
+void ResSchedServiceAbility::SystemAbilityListenerInit()
+{
+    if (!AddSystemAbilityListener(APP_MGR_SERVICE_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of app manager service failed.");
+    }
+    if (!AddSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of window manager service failed.");
+    }
+    if (!AddSystemAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of background task manager service failed.");
+    }
+    if (!AddSystemAbilityListener(RES_SCHED_EXE_ABILITY_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of background task manager service failed.");
+    }
+    if (!AddSystemAbilityListener(POWER_MANAGER_SERVICE_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of power manager service failed.");
+    }
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
