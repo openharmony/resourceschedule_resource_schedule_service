@@ -27,7 +27,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     static constexpr int64_t LIST_FLINT_TIME_OUT_TIME = 3 * 1000 * 1000;
-    static constexpr int64_t LIST_FLINT_END_TIME = 100 * 1000;
+    static constexpr int64_t LIST_FLINT_END_TIME = 300 * 1000;
     static bool isInListFlingMode = false;
     static int64_t lastTouchUpTime = 0;
     static ffrt::mutex listFlingMutex;

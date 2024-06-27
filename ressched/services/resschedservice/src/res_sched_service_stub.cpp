@@ -127,6 +127,7 @@ namespace {
         ResType::RES_TYPE_CONTINUOUS_STARTUP,
         ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
         ResType::RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK,
+        ResType::RES_TYPE_SEND_FRAME_EVENT,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
