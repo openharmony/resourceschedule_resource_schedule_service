@@ -20,7 +20,7 @@
             <option name="push" value="parseconfig/invalid_format.xml -> /sys_prod/data/test/resource/resschedfwk/parseconfig" src="res"/>
             <option name="push" value="parseconfig/not_exist_plugin.xml -> /sys_prod/data/test/resource/resschedfwk/parseconfig" src="res"/>
             <option name="push" value="parseconfig/plugin_tag_wrong.xml -> /sys_prod/data/test/resource/resschedfwk/parseconfig" src="res"/>
-            <option name="push" value="parseconfig/res_sched_config.xml -> /sys_prod/data/test/resource/resschedfwk/parseconfig" src="res"/>
+            <option name="push" value="parseconfig/sys_prod/res_sched_config.xml -> /sys_prod/data/test/resource/resschedfwk/parseconfig" src="res"/>
             <option name="push" value="parseconfig/res_sched_config_comments.xml -> /sys_prod/data/test/resource/resschedfwk/parseconfig" src="res"/>
             <option name="push" value="parseconfig/root_element_wrong.xml -> /sys_prod/data/test/resource/resschedfwk/parseconfig" src="res"/>
             <option name="push" value="parseswitch/invalid_format.xml -> /sys_prod/data/test/resource/resschedfwk/parseswitch" src="res"/>
@@ -29,7 +29,7 @@
             <option name="push" value="parseconfig/invalid_format.xml -> /system/data/test/resource/resschedfwk/parseconfig" src="res"/>
             <option name="push" value="parseconfig/not_exist_plugin.xml -> /system/data/test/resource/resschedfwk/parseconfig" src="res"/>
             <option name="push" value="parseconfig/plugin_tag_wrong.xml -> /system/data/test/resource/resschedfwk/parseconfig" src="res"/>
-            <option name="push" value="parseconfig/res_sched_config.xml -> /system/data/test/resource/resschedfwk/parseconfig" src="res"/>
+            <option name="push" value="parseconfig/system/res_sched_config.xml -> /system/data/test/resource/resschedfwk/parseconfig" src="res"/>
             <option name="push" value="parseconfig/res_sched_config_comments.xml -> /system/data/test/resource/resschedfwk/parseconfig" src="res"/>
             <option name="push" value="parseconfig/root_element_wrong.xml -> /system/data/test/resource/resschedfwk/parseconfig" src="res"/>
             <option name="push" value="parseswitch/invalid_format.xml -> /system/data/test/resource/resschedfwk/parseswitch" src="res"/>

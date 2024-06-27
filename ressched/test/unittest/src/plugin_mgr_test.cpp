@@ -722,6 +722,7 @@ HWTEST_F(PluginMgrTest, GetPluginSwitchStr001, TestSize.Level0)
  */
 HWTEST_F(PluginMgrTest, ParseConfigReader001, TestSize.Level0)
 {
+    pluginMgr_->Init();
     auto configStrs = pluginMgr_->GetConfigReaderStr();
     pluginMgr_->ParseConfigReader(configStrs);
     SUCCEED();
@@ -734,6 +735,7 @@ HWTEST_F(PluginMgrTest, ParseConfigReader001, TestSize.Level0)
  */
 HWTEST_F(PluginMgrTest, ParsePluginSwitchr001, TestSize.Level0)
 {
+    pluginMgr_->Init();
     auto switchStrs = pluginMgr_->GetPluginSwitchStr();
     pluginMgr_->ParsePluginSwitch(switchStrs);
     SUCCEED();
