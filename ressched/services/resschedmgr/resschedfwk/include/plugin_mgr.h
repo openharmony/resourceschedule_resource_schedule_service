@@ -48,7 +48,7 @@ using OnDeliverResourceFunc = int32_t (*)(const std::shared_ptr<ResData>&);
 using OnDumpFunc = void (*)(const std::vector<std::string>&, std::string&);
 using OnPluginDisableFunc = void (*)();
 using OnIsAllowedAppPreloadFunc = bool (*)(const std::string&, int32_t preloadMode);
-using GetExtConfigFunc = int32_t (*)(int32_t, std::string&);
+using GetExtMultiConfigFunc = int32_t (*)(int32_t, std::vector<std::string>&);
 
 constexpr int32_t DISPATCH_TIME_OUT = 50; // ms
 constexpr int32_t DISPATCH_TIME_OUT_US = DISPATCH_TIME_OUT * 1000; // us
@@ -160,6 +160,8 @@ public:
 
     void DumpAllPlugin(std::string &result);
 
+    void DumpAllPluginConfig(std::string &result);
+
     void DumpOnePlugin(std::string &result, std::string pluginName, std::vector<std::string>& args);
 
     std::string DumpInfoFromPlugin(std::string& result, std::string libPath, std::vector<std::string>& args);
@@ -172,28 +174,28 @@ public:
 
     std::shared_ptr<PluginLib> GetPluginLib(const std::string& libPath);
 
-    void GetConfigContent(int32_t configIdx, const std::string& realPath, std::string& content);
+    void GetConfigContent(int32_t configIdx, const std::string& configPath, std::vector<std::string>& contents);
 
     /**
      * Get config reader xml file.
      *
      * @return config reader xml file string.
      */
-    std::string GetConfigReaderStr();
+    std::vector<std::string> GetConfigReaderStr();
 
     /**
      * Get plugin switch xml file.
      *
      * @return plugin switch xml file string.
      */
-    std::string GetPluginSwitchStr();
+    std::vector<std::string> GetPluginSwitchStr();
 
     /**
      * Parse config reader xml file.
      *
      * @param configStr The string of config reader xml file.
      */
-    void ParseConfigReader(const std::string& configStr);
+    void ParseConfigReader(const std::vector<std::string>& configStrs);
 
     /**
      * Parse plugin switch xml file.
@@ -201,7 +203,7 @@ public:
      * @param switchStr The string of plugin switch xml file.
      * @param isRssExe is calling service resource_schedule_executor.
      */
-    void ParsePluginSwitch(const std::string& switchStr, bool isRssExe = false);
+    void ParsePluginSwitch(const std::vector<std::string>& switchStrs, bool isRssExe = false);
 
 private:
     PluginMgr() = default;
@@ -221,6 +223,8 @@ private:
     void RemoveDisablePluginHandler();
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);
     bool GetPluginListByResType(uint32_t resType, std::list<std::string>& pluginList);
+    bool CheckRealPath(const std::string& partialPath, std::string& fullPath);
+    std::vector<std::string> GetAllRealConfigPath(const std::string& configName);
     std::string BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,
         const std::string& funcName, std::list<std::string>& pluginList);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
@@ -228,9 +232,6 @@ private:
 #endif
     std::list<std::string> SortPluginList(const std::list<std::string>& pluginList);
     std::string GetStrFromResTypeStrMap(uint32_t resType);
-
-    std::string GetRealConfigPath(const char* configName);
-
     class InnerTimeUtil {
     public:
         InnerTimeUtil(const std::string& func, const std::string& plugin);
@@ -270,7 +271,7 @@ private:
 #endif
 
     std::map<std::string, PluginStat> pluginStat_;
-    GetExtConfigFunc getExtConfigFunc_ = nullptr;
+    GetExtMultiConfigFunc getExtMultiConfigFunc_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

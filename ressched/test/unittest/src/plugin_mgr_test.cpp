@@ -51,6 +51,23 @@ void PluginMgrTest::TearDown()
     pluginMgr_ = nullptr;
 }
 
+std::string PluginMgrTest::GetSubItemValue(std::string PluginName, std::string configName)
+{
+    std::string subItemValue;
+    PluginConfig config = pluginMgr_->GetConfig(PluginName, configName);
+    if (config.itemList.size() <= 0) {
+        return "";
+    }
+    for (auto item : config.itemList) {
+        for (auto subItem : item.subItemList) {
+            if (subItem.name == "tag") {
+                subItemValue = subItem.value;
+            }
+        }
+    }
+    return subItemValue;
+}
+
 /**
  * @tc.name: Plugin mgr test Init 001
  * @tc.desc: Verify if can init success.
@@ -77,6 +94,29 @@ HWTEST_F(PluginMgrTest, Init002, TestSize.Level1)
     PluginMgr::GetInstance().pluginSwitch_ = nullptr;
     pluginMgr_->Init();
     SUCCEED();
+}
+
+/**
+ * @tc.name: Plugin mgr test GetPluginSwitch 001
+ * @tc.desc: Verify if can get pluginSwitch
+ * @tc.type: FUNC
+ * @tc.require: issuesIA7P80
+ * @tc.author:xiaoshun
+ */
+HWTEST_F(PluginMgrTest, GetPluginSwitch001, TestSize.Level0)
+{
+    pluginMgr_->Init();
+    auto pluginInfoList = pluginMgr_->pluginSwitch_->GetPluginSwitch();
+    bool result;
+    for (auto pluginInfo : pluginInfoList) {
+        if (pluginInfo.libPath == "libapp_preload_plugin.z.so") {
+            EXPECT_TRUE(pluginInfo.switchOn);
+        } else if (pluginInfo.libPath == "libapp_preload_plugin2.z.so" ||
+            pluginInfo.libPath == "libapp_preload_plugin3.z.so" ||
+            pluginInfo.libPath == "libapp_preload_plugin4.z.so") {
+            EXPECT_TRUE(!pluginInfo.switchOn);
+        }
+    }
 }
 
 /**
@@ -111,10 +151,31 @@ HWTEST_F(PluginMgrTest, GetConfig001, TestSize.Level1)
  * @tc.name: Plugin mgr test GetConfig 002
  * @tc.desc: Verify if can get config with wrong env.
  * @tc.type: FUNC
+ * @tc.require: issuesIA7P80
+ * @tc.author:lice
+ */
+HWTEST_F(PluginMgrTest, GetConfig002, TestSize.Level1)
+{
+    pluginMgr_->Init();
+    std::string subItemValue = GetSubItemValue("demo2", "sample");
+    bool ret = !subItemValue.empty() && subItemValue == "test_sys_prod";
+    EXPECT_TRUE(ret);
+    subItemValue = GetSubItemValue("demo3", "sample");
+    ret = !subItemValue.empty() && subItemValue == "test_sys_prod";
+    EXPECT_TRUE(ret);
+    subItemValue = GetSubItemValue("demo4", "sample");
+    ret = !subItemValue.empty() && subItemValue == "test_system";
+    EXPECT_TRUE(ret);
+}
+
+/**
+ * @tc.name: Plugin mgr test GetConfig 003
+ * @tc.desc: Verify if can get config with wrong env.
+ * @tc.type: FUNC
  * @tc.require: issueI8VZVN
  * @tc.author:z30053169
  */
-HWTEST_F(PluginMgrTest, GetConfig002, TestSize.Level1)
+HWTEST_F(PluginMgrTest, GetConfig003, TestSize.Level1)
 {
     PluginMgr::GetInstance().configReader_ = nullptr;
     PluginConfig config = pluginMgr_->GetConfig("", "");
@@ -294,6 +355,9 @@ HWTEST_F(PluginMgrTest, Dump001, TestSize.Level1)
 
     args.emplace_back("-h");
     pluginMgr_->DumpOnePlugin(res, LIB_NAME, args);
+    EXPECT_TRUE(!res.empty());
+    res = "";
+    pluginMgr_->DumpAllPluginConfig(res);
     EXPECT_TRUE(!res.empty());
 }
 
@@ -636,7 +700,7 @@ HWTEST_F(PluginMgrTest, SubscribeSyncResource002, TestSize.Level0)
  */
 HWTEST_F(PluginMgrTest, GetConfigReaderStr001, TestSize.Level0)
 {
-    std::string configStr = pluginMgr_->GetConfigReaderStr();
+    auto configStr = pluginMgr_->GetConfigReaderStr();
     EXPECT_TRUE(!configStr.empty());
 }
 
@@ -647,7 +711,7 @@ HWTEST_F(PluginMgrTest, GetConfigReaderStr001, TestSize.Level0)
  */
 HWTEST_F(PluginMgrTest, GetPluginSwitchStr001, TestSize.Level0)
 {
-    std::string switchStr = pluginMgr_->GetPluginSwitchStr();
+    auto switchStr = pluginMgr_->GetPluginSwitchStr();
     EXPECT_TRUE(!switchStr.empty());
 }
 
@@ -658,8 +722,9 @@ HWTEST_F(PluginMgrTest, GetPluginSwitchStr001, TestSize.Level0)
  */
 HWTEST_F(PluginMgrTest, ParseConfigReader001, TestSize.Level0)
 {
-    std::string configStr = pluginMgr_->GetConfigReaderStr();
-    pluginMgr_->ParseConfigReader(configStr);
+    pluginMgr_->Init();
+    auto configStrs = pluginMgr_->GetConfigReaderStr();
+    pluginMgr_->ParseConfigReader(configStrs);
     SUCCEED();
 }
 
@@ -670,8 +735,9 @@ HWTEST_F(PluginMgrTest, ParseConfigReader001, TestSize.Level0)
  */
 HWTEST_F(PluginMgrTest, ParsePluginSwitchr001, TestSize.Level0)
 {
-    std::string switchStr = pluginMgr_->GetPluginSwitchStr();
-    pluginMgr_->ParsePluginSwitch(switchStr);
+    pluginMgr_->Init();
+    auto switchStrs = pluginMgr_->GetPluginSwitchStr();
+    pluginMgr_->ParsePluginSwitch(switchStrs);
     SUCCEED();
 }
 } // namespace ResourceSchedule

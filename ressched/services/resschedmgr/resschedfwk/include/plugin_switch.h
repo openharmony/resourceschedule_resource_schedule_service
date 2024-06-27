@@ -55,7 +55,7 @@ private:
 
     using PluginInfoMap = std::map<std::string, std::string>;
 
-    std::list<PluginInfo> pluginInfoList_;
+    std::map<std::string, PluginInfo> pluginSwitchMap_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

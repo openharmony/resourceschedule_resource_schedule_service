@@ -42,9 +42,14 @@ namespace ResourceSchedule {
         pFile = nullptr;
 
         std::shared_ptr<PluginSwitch> pluginSwitch = std::make_shared<PluginSwitch>();
-        std::string content;
-        PluginMgr::GetInstance().GetConfigContent(-1, fuzzedFile, content);
-        bool ret = pluginSwitch->LoadFromConfigContent(content);
+        std::vector<std::string> contents;
+        PluginMgr::GetInstance().GetConfigContent(-1, fuzzedFile, contents);
+        bool ret = false;
+        for (auto content : contents) {
+            if (pluginSwitch->LoadFromConfigContent(content)) {
+                ret = true;
+            }
+        }
         return ret;
     }
 } // namespace ResourceSchedule

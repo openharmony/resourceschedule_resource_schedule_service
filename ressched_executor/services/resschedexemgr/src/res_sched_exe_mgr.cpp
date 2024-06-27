@@ -90,19 +90,29 @@ void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlo
 
 void ResSchedExeMgr::InitPluginMgr(const nlohmann::json& payload)
 {
-    if (!payload.contains(STR_CONFIG_READER) || !payload[STR_CONFIG_READER].is_string()
-        || !payload.contains(STR_PLUGIN_SWITCH) || !payload[STR_PLUGIN_SWITCH].is_string()) {
+    if (!payload.contains(STR_CONFIG_READER) || !payload[STR_CONFIG_READER].is_array()
+        || !payload.contains(STR_PLUGIN_SWITCH) || !payload[STR_PLUGIN_SWITCH].is_array()) {
         RSSEXE_LOGE("recieve config string error");
         return;
     }
-    std::string configStr = payload[STR_CONFIG_READER];
-    std::string switchStr = payload[STR_PLUGIN_SWITCH];
-    if (configStr.size() > MAX_CONFIG_SIZE || switchStr.size() > MAX_CONFIG_SIZE) {
-        RSSEXE_LOGE("recieve config string too large");
-        return;
+
+    std::vector<std::string> configStrs = payload[STR_CONFIG_READER].get<std::vector<std::string>>();
+    std::vector<std::string> switchStrs = payload[STR_PLUGIN_SWITCH].get<std::vector<std::string>>();
+    for (auto configStr : configStrs) {
+        if (configStr.size() > MAX_CONFIG_SIZE) {
+            RSSEXE_LOGE("recieve config string too large");
+            return;
+        }
     }
-    PluginMgr::GetInstance().ParseConfigReader(configStr);
-    PluginMgr::GetInstance().ParsePluginSwitch(switchStr, true);
+    PluginMgr::GetInstance().ParseConfigReader(configStrs);
+
+    for (auto switchStr : switchStrs) {
+        if (switchStr.size() > MAX_CONFIG_SIZE) {
+            RSSEXE_LOGE("recieve switch config string too large");
+            return;
+        }
+    }
+    PluginMgr::GetInstance().ParsePluginSwitch(switchStrs, true);
 }
 
 std::string ResSchedExeMgr::BuildTraceStr(const std::string& func, uint32_t resType, int64_t value)
