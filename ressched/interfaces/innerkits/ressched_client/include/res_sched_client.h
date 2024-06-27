@@ -109,7 +109,7 @@ public:
      * @param eventListener event listener object.
      * @param eventType event type.
      */
-    void RegisterEventListener(const sptr<ResSchedEvenetListener>& eventListener, uint32 eventType);
+    void RegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType);
 
     /**
      * @brief UnRegister event listener.
@@ -117,7 +117,7 @@ public:
      * @param eventListener event listener object.
      * @param eventType event type
      */
-    void UnRegisterEventListener(const sptr<ResSchedEvenetListener>& eventListener, uint32 eventType);
+    void UnRegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType);
 
     /**
      * @brief client get systemload level.

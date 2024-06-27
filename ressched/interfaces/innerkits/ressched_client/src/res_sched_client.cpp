@@ -397,7 +397,6 @@ void ResSchedClient::InnerEventListener::RegisterEventListener(const sptr<ResSch
     if (eventListener != nullptr) {
         auto item = eventListeners_.find(eventType);
         if (item == eventListeners_.end()) {
-            listenerList = {};
             eventListeners_[eventType].emplace_back(eventListener);
         } else {
             for (auto& iter : item->second) {

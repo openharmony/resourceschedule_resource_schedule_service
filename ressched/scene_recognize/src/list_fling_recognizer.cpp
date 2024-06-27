@@ -86,6 +86,7 @@ void ListFlingRecognizer::HandleSlideEvent(int64_t value, const nlohmann::json& 
     if (value == ResType::SlideEventStatus::SLIDE_NORMAL_END) {
         listFlingMutex.lock();
         if (isInListFlingMode) {
+            listFlingMutex.unlock();
             return;
         }
         nlohmann::json extInfo;

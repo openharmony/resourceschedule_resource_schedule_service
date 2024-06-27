@@ -79,7 +79,7 @@ int32_t ResSchedEventListenerStub::OnReceiveEventInner(MessageParcel& data, Mess
 int32_t ResSchedEventListenerStub::ParseAndCheckEventParcel(MessageParcel& data, uint32_t& eventType,
     uint32_t& eventValue, std::string& extInfo)
 {
-    std::u16string descriptor = IResSchedEventListeneI::GetDescriptor();
+    std::u16string descriptor = IResSchedEventListener::GetDescriptor();
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
     if (descriptor != remoteDescriptor) {
         return ERR_RES_SCHED_PARCEL_ERROR;
