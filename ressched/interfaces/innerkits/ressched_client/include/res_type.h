@@ -234,6 +234,8 @@ enum : uint32_t {
     RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE = 100,
     // user interaction scene
     RES_TYPE_USER_INTERACTION_SCENE = 101,
+    // report game sched, value 0 start, value 1 stop
+    RES_TYPE_REPORT_GAME_SCHED = 102,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -766,6 +768,14 @@ enum BackgroundPerceivableStatus : int64_t {
 enum UserInteractionScene : int64_t {
     ENTER_USER_INTERACTION_SCENE = 0,
     EXIT_USER_INTERACTION_SCENE = 1,
+};
+
+/**
+ * @brief game sched status
+ */
+enum GameSchedStatus : int64_t {
+    GAME_SCHED_START = 0,
+    GAME_SCHED_STOP = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
