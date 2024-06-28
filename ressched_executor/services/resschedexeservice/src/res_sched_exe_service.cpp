@@ -19,6 +19,9 @@
 #include <parameters.h>
 #include <string_ex.h>
 
+#include "accesstoken_kit.h"
+#include "ipc_skeleton.h"
+
 #include "plugin_mgr.h"
 #include "res_sched_exe_common_utils.h"
 #include "res_sched_exe_constants.h"
@@ -30,6 +33,7 @@ namespace ResourceSchedule {
 namespace {
     constexpr int32_t DUMP_OPTION = 0;
     constexpr int32_t DUMP_PARAM_INDEX = 1;
+    const int32_t ENG_MODE = OHOS::system::GetIntParameter("const.debuggable", 0);
     const std::string DUMP_PERMISSION = "ohos.permission.DUMP";
 }
 
@@ -51,11 +55,13 @@ int32_t ResSchedExeService::KillProcess(pid_t pid)
 
 bool ResSchedExeService::AllowDump()
 {
-    if (!ResSchedExeCommonUtils::IsDebugMode()) {
+    if (ENG_MODE == 0) {
         RSSEXE_LOGE("Not eng mode");
         return false;
     }
-    if (!ResSchedExeCommonUtils::CheckPermission(DUMP_PERMISSION)) {
+    Security::AccessToken::AccessTokenID tokenId = IPCSkeleton::GetCallingTokenID();
+    int32_t ret = Security::AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, DUMP_PERMISSION);
+    if (ret != Security::AccessToken::PermissionState::PERMISSION_GRANTED) {
         RSSEXE_LOGE("CheckPermission failed");
         return false;
     }

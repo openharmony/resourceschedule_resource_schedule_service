@@ -53,9 +53,12 @@ void PluginSwitchTest::TearDown()
 HWTEST_F(PluginSwitchTest, LoadConfig001, TestSize.Level1)
 {
     pluginSwitch_ = make_unique<PluginSwitch>();
-    std::string content;
-    PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_SWITCH_PATH + "fileNotExist", content);
-    bool ret = pluginSwitch_->LoadFromConfigContent(content);
+    std::vector<std::string> contents;
+    PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_SWITCH_PATH + "fileNotExist", contents);
+    bool ret = false;
+    for (auto content : contents) {
+        ret = pluginSwitch_->LoadFromConfigContent(content);
+    }
     EXPECT_TRUE(!ret);
 }
 
@@ -69,9 +72,12 @@ HWTEST_F(PluginSwitchTest, LoadConfig001, TestSize.Level1)
 HWTEST_F(PluginSwitchTest, LoadConfig002, TestSize.Level1)
 {
     pluginSwitch_ = make_unique<PluginSwitch>();
-    std::string content;
-    PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_SWITCH_PATH + "not_exist_plugin.xml", content);
-    bool ret = pluginSwitch_->LoadFromConfigContent(content);
+    std::vector<std::string> contents;
+    PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_SWITCH_PATH + "not_exist_plugin.xml", contents);
+    bool ret = false;
+    for (auto content : contents) {
+        ret = pluginSwitch_->LoadFromConfigContent(content);
+    }
     EXPECT_TRUE(!ret);
 }
 
@@ -84,9 +90,12 @@ HWTEST_F(PluginSwitchTest, LoadConfig002, TestSize.Level1)
  */
 HWTEST_F(PluginSwitchTest, LoadConfig003, TestSize.Level1)
 {
-    std::string content;
-    PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_SWITCH_PATH + "invalid_format.xml", content);
-    bool ret = pluginSwitch_->LoadFromConfigContent(content);
+    std::vector<std::string> contents;
+    PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_SWITCH_PATH + "invalid_format.xml", contents);
+    bool ret = false;
+    for (auto content : contents) {
+        ret = pluginSwitch_->LoadFromConfigContent(content);
+    }
     EXPECT_TRUE(!ret);
 }
 
@@ -99,10 +108,26 @@ HWTEST_F(PluginSwitchTest, LoadConfig003, TestSize.Level1)
  */
 HWTEST_F(PluginSwitchTest, LoadConfig004, TestSize.Level1)
 {
-    std::string content;
-    PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_SWITCH_PATH + "root_element_wrong.xml", content);
-    bool ret = pluginSwitch_->LoadFromConfigContent(content);
+    std::vector<std::string> contents;
+    PluginMgr::GetInstance().GetConfigContent(-1, TEST_PREFIX_SWITCH_PATH + "root_element_wrong.xml", contents);
+    bool ret = false;
+    for (auto content : contents) {
+        ret = pluginSwitch_->LoadFromConfigContent(content);
+    }
     EXPECT_TRUE(!ret);
+}
+
+/**
+ * @tc.name: Init plugin Switch IsInvalidNode001
+ * @tc.desc: IsInvalidNode
+ * @tc.type: FUNC
+ * @tc.require: issueI798UT
+ * @tc.author:luolu
+ */
+HWTEST_F(PluginSwitchTest, IsInvalidNode001, TestSize.Level1)
+{
+    xmlNode currNode;
+    pluginSwitch_->IsInvalidNode(currNode);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

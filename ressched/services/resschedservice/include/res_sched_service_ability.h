@@ -42,6 +42,8 @@ private:
 
     void ReclaimProcessMemory();
 
+    void SystemAbilityListenerInit();
+
     sptr<ResSchedService> service_;
 
     DISALLOW_COPY_AND_MOVE(ResSchedServiceAbility);

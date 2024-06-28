@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,6 +63,11 @@ public:
      * @param payload process message
      */
     int32_t KillProcessByClient(const nlohmann::json& payload = nullptr);
+
+    /**
+     * Init resource_schedule_executor plugin manager.
+     */
+    void InitExecutorPlugin();
 private:
     void DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload);
     std::shared_ptr<KillProcess> killProcess_ = nullptr;

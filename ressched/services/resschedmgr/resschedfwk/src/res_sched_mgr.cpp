@@ -20,6 +20,8 @@
 
 #include "cgroup_sched.h"
 #include "notifier_mgr.h"
+#include "res_exe_type.h"
+#include "res_sched_exe_client.h"
 #include "res_sched_log.h"
 #include "res_type.h"
 #include "plugin_mgr.h"
@@ -143,6 +145,8 @@ void ResSchedMgr::Init()
     if (!killProcess_) {
         killProcess_ = std::make_shared<KillProcess>();
     }
+
+    InitExecutorPlugin();
 }
 
 void ResSchedMgr::Stop()
@@ -172,6 +176,14 @@ void ResSchedMgr::ReportDataInner(uint32_t resType, int64_t value, const nlohman
 int32_t ResSchedMgr::KillProcessByClient(const nlohmann::json& payload)
 {
     return killProcess_->KillProcessByPidWithClient(payload);
+}
+
+void ResSchedMgr::InitExecutorPlugin()
+{
+    nlohmann::json payload;
+    payload["config"] = PluginMgr::GetInstance().GetConfigReaderStr();
+    payload["switch"] = PluginMgr::GetInstance().GetPluginSwitchStr();
+    ResSchedExeClient::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT, 0, payload);
 }
 
 void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload)

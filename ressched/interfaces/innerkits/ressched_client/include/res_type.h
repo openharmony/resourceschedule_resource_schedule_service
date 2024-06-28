@@ -232,8 +232,10 @@ enum : uint32_t {
     RES_TYPE_FIRST_BOOT_AFTER_SYSTEM_UPGRADE = 99,
     // report background perceivable scene
     RES_TYPE_BACKGROUND_PERCEIVABLE_SCENE = 100,
+    // user interaction scene
+    RES_TYPE_USER_INTERACTION_SCENE = 101,
     // report game sched, value 0 start, value 1 stop
-    RES_TYPE_REPORT_GAME_SCHED = 101,
+    RES_TYPE_REPORT_GAME_SCHED = 102,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -761,6 +763,11 @@ enum ContinuousInstallStatus : int64_t {
 enum BackgroundPerceivableStatus : int64_t {
     PERCEIVABLE_START = 0,
     PERCEIVABLE_STOP = 1,
+};
+
+enum UserInteractionScene : int64_t {
+    ENTER_USER_INTERACTION_SCENE = 0,
+    EXIT_USER_INTERACTION_SCENE = 1,
 };
 
 /**

@@ -118,6 +118,20 @@ HWTEST_F(ResSchedExeMgrTest, KillProcess001, Function | MediumTest | Level0)
 }
 
 /**
+ * @tc.name: InitPluginMgr001
+ * @tc.desc: Verify if InitExecutorPlugin is success
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeMgrTest, InitPluginMgr001, TestSize.Level1)
+{
+    nlohmann::json context;
+    context["config"] = "test_config";
+    context["switch"] = "test_switch";
+    ResSchedExeMgr::GetInstance().InitPluginMgr(context);
+    SUCCEED();
+}
+
+/**
  * @tc.name: BuildTraceStr001
  * @tc.desc: BuildTraceStr test
  * @tc.type: FUNC
