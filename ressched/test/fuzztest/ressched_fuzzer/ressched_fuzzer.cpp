@@ -24,6 +24,9 @@
 #include "iremote_stub.h"
 #include "ires_sched_service.h"
 #include "iservice_registry.h"
+#include "oobe_datashare_utils.h"
+#include "oobe_manager.h"
+#include "ioobe_task.h"
 #include "plugin_mgr.h"
 #include "res_sched_service.h"
 #include "singleton.h"
@@ -50,6 +53,13 @@ namespace ResourceSchedule {
 namespace {
     static const int32_t TWO_PARAMETERS = 2;
 }
+
+class OOBETaskImpl : public IOOBETask {
+public:
+    OOBETaskImpl() {}
+    void ExcutingTask() override {}
+};
+
     constexpr int32_t MAX_CODE = 5;
     constexpr int32_t MIN_LEN = 4;
     std::mutex mutexLock;
@@ -255,6 +265,55 @@ namespace {
         NotifierMgr::GetInstance().Deinit();
         return true;
     }
+
+    bool OOBEManagerFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        std::string key = GetStringFromData(int(size));
+        OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
+        std::shared_ptr<IOOBETask> oobeTask = std::make_shared<OOBETaskImpl>();
+        if (!DoInit()) {
+            return false;
+        }
+
+        OOBEManager::GetInstance().GetOOBValue();
+        OOBEManager::GetInstance().RegisterObserver(key, updateFunc);
+        OOBEManager::GetInstance().UnregisterObserver();
+        sptr<OOBEManager::ResDataAbilityObserver> oobeObserver = new OOBEManager::ResDataAbilityObserver();
+        oobeObserver->OnChange();
+        oobeObserver->SetUpdateFunc(updateFunc);
+        OOBEManager::GetInstance().Initialize();
+        OOBEManager::GetInstance().SubmitTask(oobeTask);
+        OOBEManager::GetInstance().StartListen();
+        OOBEManager::GetInstance().OnReceiveDataShareReadyCallBack();
+        return true;
+    }
+
+    bool OOBEDatashareUtilsFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        std::string key = GetStringFromData(int(size));
+        std::string value = GetStringFromData(int(size));
+        if (!DoInit()) {
+            return false;
+        }
+
+        DataShareUtils::GetInstance().GetValue(key, value);
+        DataShareUtils::GetInstance().GetStringValue(key, value);
+        std::shared_ptr<DataShare::DataShareHelper> helper = dataShareUtils.CreateDataShareHelper();
+        DataShareUtils::GetInstance().ReleaseDataShareHelper(helper);
+        DataShareUtils::GetInstance().InitSystemAbilityManager();
+        DataShareUtils::GetInstance().AssembleUri(key);
+        DataShareUtils::GetInstance().GetDataShareReadyFlag();
+        DataShareUtils::GetInstance().SetDataShareReadyFlag(true);
+        return true;
+    }
 } // namespace ResourceSchedule
 } // namespace OHOS
 
@@ -267,5 +326,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::ResSchedClientFuzzTest(data, size);
     OHOS::ResourceSchedule::OnSystemloadLevelFuzzTest(data, size);
     OHOS::ResourceSchedule::NotifierMgrFuzzTest(data, size);
+    OHOS::ResourceSchedule::OOBEManagerFuzzTest(data, size);
+    OHOS::ResourceSchedule::OOBEDatashareUtilsFuzzTest(data, size);
     return 0;
 }
