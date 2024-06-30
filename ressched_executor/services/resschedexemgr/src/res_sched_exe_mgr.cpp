@@ -21,7 +21,6 @@
 #include <map>
 #include <sstream>
 
-
 #include "hitrace_meter.h"
 
 #include "plugin_mgr.h"
