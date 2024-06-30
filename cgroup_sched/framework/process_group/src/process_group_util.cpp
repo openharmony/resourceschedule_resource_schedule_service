@@ -24,6 +24,8 @@
 #include "nlohmann/json.hpp"
 #include "securec.h"
 #include "process_group_log.h"
+#include "res_exe_type.h"
+#include "res_sched_exe_client.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -97,6 +99,19 @@ bool ReadFileToString(const std::string& filePath, std::string& content)
     return readStatus;
 }
 
+bool ReadFileToStringForVFSFromExecutor(int tid, std::string& content)
+{
+    nlohmann::json payload;
+    payload["pid"] = tid;
+    nlohmann::json reply;
+    ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(ResExeType::RES_TYPE_CGROUP_SYNC_EVENT, 0, payload, reply);
+    std::string resStr{"res"};
+    if (!reply.contains(resStr) || !reply[resStr].is_string()) {
+        return false;
+    }
+    content = reply[resStr].get<std::string>();
+    return true;
+}
 
 bool ReadFileToStringForVFS(const std::string& filePath, std::string& content)
 {
