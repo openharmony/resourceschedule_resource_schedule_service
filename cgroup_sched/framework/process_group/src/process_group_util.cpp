@@ -104,7 +104,8 @@ bool ReadFileToStringForVFSFromExecutor(int tid, std::string& content)
     nlohmann::json payload;
     payload["pid"] = tid;
     nlohmann::json reply;
-    ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(ResExeType::RES_TYPE_CGROUP_SYNC_EVENT, 0, payload, reply);
+    ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(
+        ResExeType::RES_TYPE_CGROUP_SYNC_EVENT, 0, payload, reply);
     std::string resStr{"res"};
     if (!reply.contains(resStr) || !reply[resStr].is_string()) {
         return false;
