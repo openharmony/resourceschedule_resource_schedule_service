@@ -105,8 +105,9 @@ std::vector<std::string> PluginMgr::GetPluginSwitchStr()
 
 void PluginMgr::ParseConfigReader(const std::vector<std::string>& configStrs)
 {
-    RESSCHED_LOGI("plugin configStrs size %{public}d", static_cast<int32_t>(configStrs.size()));
-    for (int index = 0; index < configStrs.size(); index++) {
+    int32_t configStrsSize = static_cast<int32_t>(configStrs.size());
+    RESSCHED_LOGI("plugin configStrs size %{public}d", configStrsSize));
+    for (int index = 0; index < configStrsSize; index++) {
         if (configStrs[index].empty()) {
             continue;
         }
@@ -123,12 +124,13 @@ void PluginMgr::ParseConfigReader(const std::vector<std::string>& configStrs)
 
 void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bool isRssExe)
 {
-    RESSCHED_LOGI("plugin switchStrs size %{public}d", static_cast<int32_t>(switchStrs.size()));
-    for (int index = 0; index < switchStrs.size(); index++) {
-        if (switchStrs[i].empty()) {
+    int32_t switchStrsSize = static_cast<int32_t>(switchStrs.size());
+    RESSCHED_LOGI("plugin switchStrs size %{public}d", switchStrsSize));
+    for (int32_t index = 0; index < switchStrsSize; index++) {
+        if (switchStrs[index].empty()) {
             continue;
         }
-        if (!pluginSwitch_->LoadFromConfigContent(switchStrs[i], isRssExe)) {
+        if (!pluginSwitch_->LoadFromConfigContent(switchStrs[index], isRssExe)) {
             RESSCHED_LOGW("%{public}s, PluginMgr load switch config file index:%{public}d failed!", __func__, index);
             HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                 HiviewDFX::HiSysEvent::EventType::FAULT,
