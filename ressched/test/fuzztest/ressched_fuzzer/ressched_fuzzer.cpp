@@ -306,7 +306,7 @@ public:
 
         DataShareUtils::GetInstance().GetValue(key, value);
         DataShareUtils::GetInstance().GetStringValue(key, value);
-        std::shared_ptr<DataShare::DataShareHelper> helper = dataShareUtils.CreateDataShareHelper();
+        std::shared_ptr<DataShare::DataShareHelper> helper = DataShareUtils::GetInstance().CreateDataShareHelper();
         DataShareUtils::GetInstance().ReleaseDataShareHelper(helper);
         DataShareUtils::GetInstance().InitSystemAbilityManager();
         DataShareUtils::GetInstance().AssembleUri(key);
