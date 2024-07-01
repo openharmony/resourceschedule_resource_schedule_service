@@ -117,6 +117,7 @@ void PluginMgr::ParseConfigReader(const std::vector<std::string>& configStrs)
                 HiviewDFX::HiSysEvent::EventType::FAULT,
                 "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
                 "ERR_MSG", "PluginMgr load parameter config file failed");
+            continue;
         }
         RESSCHED_LOGI("PluginMgr load config file index:%{public}d success!", index);
     }
@@ -136,6 +137,7 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
                 HiviewDFX::HiSysEvent::EventType::FAULT,
                 "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
                 "ERR_MSG", "PluginMgr load switch config file failed!");
+            continue;
         }
         RESSCHED_LOGI("PluginMgr load switch config file index:%{public}d success!", index);
     }
