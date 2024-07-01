@@ -351,6 +351,7 @@ enum WindowVisibilityStatus : int64_t {
 enum SlideEventStatus : int64_t {
     SLIDE_EVENT_OFF = 0,
     SLIDE_EVENT_ON = 1,
+    SLIDE_EVENT_DETECTING = 2,
     SLIDE_NORMAL_BEGIN = 3,
     SLIDE_NORMAL_END = 4,
 };
@@ -364,6 +365,7 @@ enum ClickEventType : int64_t {
     TOUCH_EVENT_DOWN = 1,
     CLICK_EVENT = 2,
     TOUCH_EVENT_UP = 3,
+    TOUCH_EVENT_PULL_UP = 4,
 };
 
 /**

@@ -13,25 +13,37 @@
  * limitations under the License.
  */
 
-#ifndef RESSCHED_SCENE_RECOGNIZE_LIST_FLING_RECOGNIZER_H
-#define RESSCHED_SCENE_RECOGNIZE_LIST_FLING_RECOGNIZER_H
+#ifndef RESSCHED_SCENE_RECOGNIZE_SLIDE_RECOGNIZER_H
+#define RESSCHED_SCENE_RECOGNIZE_SLIDE_RECOGNIZER_H
 
 #include "scene_recognizer_base.h"
 #include "ffrt.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-class ListFlingRecognizer : public SceneRecognizerBase {
+namespace SlideRecognizeStat {
+enum : uint32_t {
+    IDLE,
+    SLIDE_NORMAL_DETECTING,
+    SLIDE_NORMAL,
+    LIST_FLING,
+}
+}
+class SlideRecognizer : public SceneRecognizerBase {
 public:
-    ListFlingRecognizer() = default;
-    ~ListFlingRecognizer();
+    SlideRecognizer() = default;
+    ~SlideRecognizer();
     void OnDispatchResource(uint32_t, int64_t value, const nlohmann::json& payload) override;
 private:
     void HandleSlideEvent(int64_t value, const nlohmann::json& payload);
-    void HandleSendFrameEvent(const nlohmann::json& payload);
+    void HandleSendFrameEvent(const nlohmann::json& payload);3
+    void HandleClickEvent(int64_t value, const nlohmann::json& payload);
+    void HandleSlideDetecting(const nlohmann::json& payload);
     ffrt::task_handle listFlingEndTask_ = nullptr;
     ffrt::task_handle listFlingTimeOutTask_ = nullptr;
+    int64_t slideDetectingTime_ = -1;
+    uint32_t state_ = SlideRecognizeStat::IDLE;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // RESSCHED_SCENE_RECOGNIZE_LIST_FLING_RECOGNIZER_H
+#endif // RESSCHED_SCENE_RECOGNIZE_SLIDE_RECOGNIZER_H

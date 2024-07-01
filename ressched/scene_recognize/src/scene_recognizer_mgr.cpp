@@ -15,7 +15,7 @@
 
 #include "background_sensitive_task_overlapping_scene_recognizer.h"
 #include "continuous_app_install_recognizer.h"
-#include "list_fling_recognizer.h"
+#include "slide_recognizer.h"
 #include "res_sched_log.h"
 #include "scene_recognizer_mgr.h"
 #include "system_upgrade_scene_recognizer.h"
@@ -30,7 +30,7 @@ SceneRecognizerMgr::SceneRecognizerMgr()
         std::make_shared<ContinuousAppInstallRecognizer>(),
         std::make_shared<SystemUpgradeSceneRecognizer>(),
         std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>(),
-        std::make_shared<ListFlingRecognizer>(),
+        std::make_shared<SlideRecognizer>(),
         };
     ffrtQueue_ = std::make_shared<ffrt::queue>("scene_recognizers_queue",
         ffrt::queue_attr().qos(ffrt::qos_user_interactive));
