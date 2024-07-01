@@ -33,6 +33,9 @@ ressched_interfaces =
 ressched_services =
     "${resourceschedule_path}/resource_schedule_service/ressched/services"
 
+ressched_services_executor =
+    "${resourceschedule_path}/resource_schedule_service/ressched_executor"
+
 declare_args() {
   cgroup_ressched_power_manager_enable = true
   has_bg_task_mgr = false
