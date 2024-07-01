@@ -77,29 +77,6 @@ namespace ResourceSchedule {
         return str;
     }
 
-    bool CheckPermissionFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        if (size <= sizeof(int32_t)) {
-            return false;
-        }
-
-        // initialize
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
-        if (static_cast<int>(size) < 0) {
-            return false;
-        }
-        // getdata
-        std::string permission = GetStringFromData(static_cast<int>(size));
-        ResSchedExeCommonUtils::CheckPermission(permission);
-        return true;
-    }
-
     bool StringToJsonFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -130,7 +107,6 @@ namespace ResourceSchedule {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     /* Run your code on data */
-    OHOS::ResourceSchedule::CheckPermissionFuzzTest(data, size);
     OHOS::ResourceSchedule::StringToJsonFuzzTest(data, size);
     return 0;
 }

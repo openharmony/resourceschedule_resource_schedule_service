@@ -62,6 +62,10 @@ ohos_unittest("event_controller_test") {
     defines += [ "RESOURCE_REQUEST_REQUEST" ]
     external_deps += [ "request:request_native" ]
   }
+  if (device_movement_perception_enable) {
+    defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
+    external_deps += [ "movement:movement_client" ]
+  }
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

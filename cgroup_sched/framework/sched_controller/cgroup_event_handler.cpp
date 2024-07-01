@@ -168,7 +168,6 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
         return;
     }
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
-    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
     app->SetName(bundleName);
     app->state_ = state;
 }

@@ -59,11 +59,14 @@ public:
 
     void DumpSystemLoadInfo(std::string &result);
 
+    void DumpAllPluginConfig(std::string &result);
+
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedService);
 
     void DumpAllInfo(std::string &result);
     void DumpUsage(std::string &result);
+    void DumpExt(const std::vector<std::string>& argsInStr, std::string &result);
     void DumpExecutorDebugCommand(const std::vector<std::string>& args, std::string& result);
     bool AllowDump();
 

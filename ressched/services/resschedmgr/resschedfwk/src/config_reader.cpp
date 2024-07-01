@@ -127,7 +127,7 @@ bool ConfigReader::ParsePluginConfig(const xmlNode& currNode, map<string, Plugin
     return true;
 }
 
-bool ConfigReader::LoadFromCustConfigContent(const string& content)
+bool ConfigReader::LoadFromConfigContent(const string& content)
 {
     // skip the empty string, else you will get empty node
     xmlDocPtr xmlDocPtr = xmlReadMemory(content.c_str(), content.length(), nullptr, nullptr,
@@ -161,8 +161,27 @@ bool ConfigReader::LoadFromCustConfigContent(const string& content)
     }
     xmlFreeDoc(xmlDocPtr);
     lock_guard<mutex> autoLock(configMutex_);
-    allPluginConfigs_ = std::move(allPluginConfigs);
+    MergeConfigList(allPluginConfigs);
     return true;
+}
+
+void ConfigReader::MergeConfigList(std::map<std::string, PluginConfigMap>& pluginConfigs)
+{
+    for (auto iter : pluginConfigs) {
+        if (allPluginConfigs_.find(iter.first) == allPluginConfigs_.end()) {
+            allPluginConfigs_[iter.first] = iter.second;
+            continue;
+        }
+        MergePluginConfigMap(allPluginConfigs_[iter.first], iter.second);
+    }
+}
+
+void ConfigReader::MergePluginConfigMap(PluginConfigMap& curPluginConfigMap,
+    const PluginConfigMap& nextPluginConfigMap)
+{
+    for (auto iter : nextPluginConfigMap) {
+        curPluginConfigMap[iter.first] = iter.second;
+    }
 }
 
 PluginConfig ConfigReader::GetConfig(const std::string& pluginName, const std::string& configName)
@@ -182,6 +201,38 @@ PluginConfig ConfigReader::GetConfig(const std::string& pluginName, const std::s
         return config;
     }
     return configMap[configName];
+}
+
+void ConfigReader::Dump(std::string &result)
+{
+    result.append("================Resource Schedule Plugin Config ================\n");
+    for (auto pluginIter : allPluginConfigs_) {
+        result.append("pluginName:").append(pluginIter.first).append(" \n");
+        auto pluginConfigMap = pluginIter.second;
+        for (auto pluginConfigMapIter : pluginConfigMap) {
+            result.append("configName:").append(pluginConfigMapIter.first).append(" \n");
+            auto pluginConfig = pluginConfigMapIter.second;
+            for (auto item : pluginConfig.itemList) {
+                DumpItem(item, result);
+            }
+        }
+    }
+}
+
+void ConfigReader::DumpItem(const Item& item, std::string &result)
+{
+    result.append("Item : ");
+    for (auto itemProPerty : item.itemProperties) {
+        result.append(itemProPerty.first).append(" = ").append(itemProPerty.second).append(" ");
+    }
+    result.append(" \n");
+    for (auto subItem : item.subItemList) {
+        result.append("subItemName : ").append(subItem.name).append(" ");
+        for (auto subItemProPerty : subItem.properties) {
+            result.append(subItemProPerty.first).append(" = ").append(subItemProPerty.second).append(" ");
+        }
+        result.append(" value :").append(subItem.value).append(" \n");
+    }
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

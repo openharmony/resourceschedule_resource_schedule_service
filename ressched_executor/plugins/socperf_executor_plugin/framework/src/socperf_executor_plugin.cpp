@@ -104,8 +104,8 @@ void SocPerfExecutorPlugin::SocPerfWirteNode(const std::shared_ptr<ResData>& dat
         SOC_PERF_LOGE("SocPerfWirteNode bad data");
         return;
     }
-    std::vector<int32_t> resIdVec = data->payload[QOSID_STRING];
-    std::vector<int64_t> valueVec = data->payload[VALUE_STRING];
+    const std::vector<int32_t> resIdVec = data->payload[QOSID_STRING];
+    const std::vector<int64_t> valueVec = data->payload[VALUE_STRING];
     if (resIdVec.size() != valueVec.size()) {
         SOC_PERF_LOGE("SocPerfWirteNode bad data size");
         return;

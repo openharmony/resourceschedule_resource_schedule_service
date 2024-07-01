@@ -30,6 +30,7 @@ public:
     void SetUp();
     void TearDown();
 protected:
+    std::string GetSubItemValue(std::string PluginName, std::string configName);
     std::shared_ptr<MockPluginMgr> pluginMgr_ = nullptr;
 };
 } // namespace ResourceSchedule

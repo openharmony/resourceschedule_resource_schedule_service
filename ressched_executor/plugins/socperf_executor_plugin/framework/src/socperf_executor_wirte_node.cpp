@@ -58,11 +58,21 @@ void SocPerfExecutorWirteNode::InitResourceNodeInfo(std::shared_ptr<ResourceNode
     }
 }
 
-void SocPerfExecutorWirteNode::WriteNodeThreadWraps(std::vector<int32_t>& resIdVec, std::vector<int64_t>& valueVec)
+void SocPerfExecutorWirteNode::WriteNodeThreadWraps(const std::vector<int32_t>& resIdVec,
+    const std::vector<int64_t>& valueVec)
 {
     int32_t len = (int32_t)resIdVec.size();
     for (int32_t i = 0; i < len; i++) {
-        UpdateCurrentValue(resIdVec[i], valueVec[i]);
+        UpdateResIdCurrentValue(resIdVec[i], valueVec[i]);
+    }
+}
+
+void SocPerfExecutorWirteNode::UpdateResIdCurrentValue(int32_t resId, int64_t currValue)
+{
+    if (currValue == NODE_DEFAULT_VALUE) {
+        UpdateCurrentValue(resId, socPerfConfig_.resourceNodeInfo_[resId]->def);
+    } else {
+        UpdateCurrentValue(resId, currValue);
     }
 }
 
@@ -103,10 +113,12 @@ int32_t SocPerfExecutorWirteNode::GetFdForFilePath(const std::string& filePath)
     }
     char path[PATH_MAX + 1] = {0};
     if (filePath.size() == 0 || filePath.size() > PATH_MAX || !realpath(filePath.c_str(), path)) {
+        SOC_PERF_LOGE("GetFdForFilePath filePath failed %{public}s", filePath.c_str());
         return -1;
     }
     int32_t fd = open(path, O_RDWR | O_CLOEXEC);
     if (fd < 0) {
+        SOC_PERF_LOGE("GetFdForFilePath fd failed %{public}s %{public}d", filePath.c_str(), fd);
         return fd;
     }
     fdInfo_.insert(std::pair<std::string, int32_t>(filePath, fd));
