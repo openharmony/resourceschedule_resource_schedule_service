@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,7 +50,12 @@ bool PluginSwitch::FillinPluginInfo(const xmlNode* currNode, PluginInfo& info, b
         RESSCHED_LOGW("%{public}s, libPath null!", __func__);
         return false;
     }
-    info.libPath = reinterpret_cast<const char*>(attrValue);
+    std::string libPath = reinterpret_cast<const char*>(attrValue);
+    if (libPath.empty()) {
+        RESSCHED_LOGW("%{public}s, libPath empty!", __func__);
+        return false;
+    }
+    info.libPath = libPath;
     xmlFree(attrValue);
 
     attrValue = xmlGetProp(currNode, reinterpret_cast<const xmlChar*>(XML_ATTR_SWITCH));
@@ -81,7 +86,6 @@ bool PluginSwitch::LoadFromConfigContent(const string& content, bool isRssExe)
         return false;
     }
 
-    std::list<PluginInfo> pluginInfoList;
     xmlNodePtr currNodePtr = rootNodePtr->xmlChildrenNode;
     for (; currNodePtr; currNodePtr = currNodePtr->next) {
         if (IsInvalidNode(*currNodePtr)) {
@@ -99,16 +103,19 @@ bool PluginSwitch::LoadFromConfigContent(const string& content, bool isRssExe)
             RESSCHED_LOGW("%{public}s, fill in pluginInfo error!", __func__);
             continue;
         }
-        pluginInfoList.emplace_back(info);
+        pluginSwitchMap_[info.libPath] = info;
     }
     xmlFreeDoc(xmlDocPtr);
-    pluginInfoList_ = std::move(pluginInfoList);
     return true;
 }
 
 std::list<PluginInfo> PluginSwitch::GetPluginSwitch()
 {
-    return pluginInfoList_;
+    std::list<PluginInfo> pluginInfoList;
+    for (auto iter: pluginSwitchMap_) {
+        pluginInfoList.emplace_back(iter.second);
+    }
+    return pluginInfoList;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -163,25 +163,7 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
         DumpUsage(result);
     } else if (argsInStr.size() == DUMP_OPTION + 1) {
         // hidumper -s said '-h' or hidumper -s said '-a'
-        if (argsInStr[DUMP_OPTION] == "-h") {
-            DumpUsage(result);
-        } else if (argsInStr[DUMP_OPTION] == "-a") {
-            DumpAllInfo(result);
-        } else if (argsInStr[DUMP_OPTION] == "-p") {
-            PluginMgr::GetInstance().DumpAllPlugin(result);
-        } else if (argsInStr[DUMP_OPTION] == "getRunningLockInfo") {
-            DumpProcessRunningLock(result);
-        } else if (argsInStr[DUMP_OPTION] == "getProcessEventInfo") {
-            DumpProcessEventState(result);
-        } else if (argsInStr[DUMP_OPTION] == "getProcessWindowInfo") {
-            DumpProcessWindowInfo(result);
-        } else if (argsInStr[DUMP_OPTION] == "getSystemloadInfo") {
-            DumpSystemLoadInfo(result);
-        } else if (argsInStr[DUMP_OPTION] == "sendDebugToExecutor") {
-            DumpExecutorDebugCommand(argsInStr, result);
-        } else {
-            result.append("Error params.");
-        }
+        DumpExt(argsInStr, result);
     } else if (argsInStr.size() >= DUMP_PARAM_INDEX + 1) {
         if (argsInStr[DUMP_OPTION] == "-p") {
             std::vector<std::string> argsInStrToPlugin;
@@ -196,6 +178,32 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
         RESSCHED_LOGE("%{public}s save to fd failed.", __func__);
     }
     return ERR_OK;
+}
+
+
+void ResSchedService::DumpExt(const std::vector<std::string>& argsInStr, std::string &result)
+{
+    if (argsInStr[DUMP_OPTION] == "-h") {
+        DumpUsage(result);
+    } else if (argsInStr[DUMP_OPTION] == "-a") {
+        DumpAllInfo(result);
+    } else if (argsInStr[DUMP_OPTION] == "-p") {
+        PluginMgr::GetInstance().DumpAllPlugin(result);
+    } else if (argsInStr[DUMP_OPTION] == "getRunningLockInfo") {
+        DumpProcessRunningLock(result);
+    } else if (argsInStr[DUMP_OPTION] == "getProcessEventInfo") {
+        DumpProcessEventState(result);
+    } else if (argsInStr[DUMP_OPTION] == "getProcessWindowInfo") {
+        DumpProcessWindowInfo(result);
+    } else if (argsInStr[DUMP_OPTION] == "getSystemloadInfo") {
+        DumpSystemLoadInfo(result);
+    } else if (argsInStr[DUMP_OPTION] == "sendDebugToExecutor") {
+        DumpExecutorDebugCommand(argsInStr, result);
+    } else if (argsInStr[DUMP_OPTION] == "PluginConfig") {
+        DumpAllPluginConfig(result);
+    } else {
+        result.append("Error params.");
+    }
 }
 
 void ResSchedService::DumpProcessRunningLock(std::string &result)
@@ -354,6 +362,12 @@ void ResSchedService::DumpExecutorDebugCommand(const std::vector<std::string>& a
         ResSchedExeClient::GetInstance().SendDebugCommand(isSync);
         usleep(internal);
     }
+}
+
+void ResSchedService::DumpAllPluginConfig(std::string &result)
+{
+    result.append("================Resource Schedule Plugin Config================\n");
+    PluginMgr::GetInstance().DumpAllPluginConfig(result);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -104,6 +104,7 @@ HWTEST_F(ResSchedMgrTest, KillProcess001, TestSize.Level1)
     nlohmann::json payload;
     ResSchedMgr::GetInstance().KillProcessByClient(payload);
     payload["pid"] = 1234567;
+    payload["killReason"] = "0";
     ResSchedMgr::GetInstance().KillProcessByClient(payload);
     payload["pid"] = "0";
     ResSchedMgr::GetInstance().KillProcessByClient(payload);
@@ -155,6 +156,17 @@ HWTEST_F(ResSchedMgrTest, 003, TestSize.Level1)
     EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
 
     ResSchedMgr::GetInstance().DispatchResourceInner(ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, 0, payload);
+}
+
+/**
+ * @tc.name: Init Executor plugin mgr 001
+ * @tc.desc: Verify if InitExecutorPlugin is success
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedMgrTest, InitExecutorPlugin001, TestSize.Level1)
+{
+    ResSchedMgr::GetInstance().InitExecutorPlugin();
+    SUCCEED();
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

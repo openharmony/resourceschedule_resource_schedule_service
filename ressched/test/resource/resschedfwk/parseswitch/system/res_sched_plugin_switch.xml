@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  -->
-<ressched>
-    <plugin name="demo">
-        <config name="sample">
-            <item key="value">
-                <tag>value1</tag>
-                <my>me</my>
-            </item>
-        </config>
-    </plugin>
-</ressched>
+<pluginlist>
+    <plugin libpath="libunittest_plugin.z.so" switch="1" />
+    <plugin libpath="libunittest2_plugin.z.so" switch="1" />
+    <plugin libpath="libunittest3_plugin.z.so" switch="0" />
+</pluginlist>

@@ -33,12 +33,13 @@ class SocPerfExecutorWirteNode {
 public:
     static SocPerfExecutorWirteNode& GetInstance();
     void InitThreadWraps();
-    void WriteNodeThreadWraps(std::vector<int32_t>& resIdVec, std::vector<int64_t>& valueVec);
+    void WriteNodeThreadWraps(const std::vector<int32_t>& resIdVec, const std::vector<int64_t>& valueVec);
 private:
     SocPerfConfig &socPerfConfig_ = SocPerfConfig::GetInstance();
     std::unordered_map<std::string, int32_t> fdInfo_;
 private:
     void InitResourceNodeInfo(std::shared_ptr<ResourceNode> resourceNode);
+    void UpdateResIdCurrentValue(int32_t resId, int64_t currValue);
     void UpdateCurrentValue(int32_t resId, int64_t currValue);
     void WriteNode(int32_t resId, const std::string& filePath, const std::string& value);
     int32_t GetFdForFilePath(const std::string& filePath);

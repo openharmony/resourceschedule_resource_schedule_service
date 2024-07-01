@@ -17,12 +17,6 @@
 
 #include <chrono>
 
-#include <parameters.h>
-
-#include "accesstoken_kit.h"
-#include "ipc_skeleton.h"
-#include "tokenid_kit.h"
-
 #include "res_sched_exe_log.h"
 
 namespace OHOS {
@@ -41,23 +35,6 @@ uint64_t ResSchedExeCommonUtils::GetCurrentTimestampUs()
         std::chrono::system_clock::now().time_since_epoch()
     );
     return static_cast<uint64_t>(ms.count());
-}
-
-bool ResSchedExeCommonUtils::IsDebugMode()
-{
-    return OHOS::system::GetIntParameter("const.debuggable", 0) != 0;
-}
-
-bool ResSchedExeCommonUtils::CheckPermission(const std::string& permission)
-{
-    Security::AccessToken::AccessTokenID tokenId = IPCSkeleton::GetCallingTokenID();
-    auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
-    if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
-        RSSEXE_LOGE("not native sa");
-        return false;
-    }
-    int32_t ret = Security::AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, permission);
-    return ret == Security::AccessToken::PermissionState::PERMISSION_GRANTED;
 }
 
 void ResSchedExeCommonUtils::StringToJson(const std::string& str, nlohmann::json& payload)
