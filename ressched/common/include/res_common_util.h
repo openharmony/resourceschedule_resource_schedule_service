@@ -19,6 +19,7 @@
 #include <string>
 #include <unistd.h>
 #include <fcntl.h>
+#include <limits>
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -57,6 +58,19 @@ public:
         }
         write(fd, contentStr.c_str(), contentStr.length());
         close(fd);
+    }
+
+    static bool StrToFloat(const std::string& value, float& result)
+    {
+        char* pEnd = nullptr;
+        erron = 0;
+        float res = std::strtof(value.c_str(), &pEnd);
+        if (errno == ERANGE || pEnd == value.c_str() || *pEnd != '\0' ||
+            (res < std::numeric_limits<float>::min()) || 
+            res > std::numeric_limits<float>::max()) {
+            return false;
+        }
+        result = res;
     }
 };
 } // namespace ResourceSchedule

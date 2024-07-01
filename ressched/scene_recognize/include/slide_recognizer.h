@@ -27,7 +27,7 @@ enum : uint32_t {
     SLIDE_NORMAL_DETECTING,
     SLIDE_NORMAL,
     LIST_FLING,
-}
+};
 }
 class SlideRecognizer : public SceneRecognizerBase {
 public:
@@ -36,7 +36,7 @@ public:
     void OnDispatchResource(uint32_t, int64_t value, const nlohmann::json& payload) override;
 private:
     void HandleSlideEvent(int64_t value, const nlohmann::json& payload);
-    void HandleSendFrameEvent(const nlohmann::json& payload);3
+    void HandleSendFrameEvent(const nlohmann::json& payload);
     void HandleClickEvent(int64_t value, const nlohmann::json& payload);
     void HandleSlideDetecting(const nlohmann::json& payload);
     ffrt::task_handle listFlingEndTask_ = nullptr;
