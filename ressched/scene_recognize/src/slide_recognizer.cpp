@@ -12,15 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- #include <atomic>
+#include <mutex>
 
 #include "slide_recognizer.h"
 #include "ffrt_inner.h"
 #include "plugin_mgr.h"
 #include "res_sched_log.h"
-#include "res_sched_mgr.h"
+#include "res_sched_mgr.h"   
 #include "res_type.h"
-#include "res_common_utils.h"
+#include "res_common_util.h".
 #include "event_listener_mgr.h"
 #include "res_sched_service_utils.h"
 
@@ -31,24 +31,21 @@ namespace {
     static constexpr int64_t LIST_FLINT_TIME_OUT_TIME = 3 * 1000 * 1000;
     static constexpr int64_t LIST_FLINT_END_TIME = 300 * 1000;
     static constexpr float LIST_FLING_SPEED_LIMIT = 10.0;
-    static constexpr int64_t SLIDE_NORMAL_DETECTING_TIME = 15;
+    static constexpr int64_t SLIDE_NORMAL_DETECTING_TIME = 5;
     static const std::string UP_SPEED_KEY = "up_speed";
-    static bool isInListFlingMode = false;
-    static int64_t lastTouchUpTime = 0;
-    static ffrt::mutex listFlingMutex;
+    static uint32_t g_slideState = SlideEventStatus::IDLE;
+    static ffrt::recursive_mutex stateMutex;
     static auto reportListFlingLockedEnd = [](const nlohmann::json payload){
-        listFlingMutex.lock();
-        if (!isInListFlingMode) {
-            listFlingMutex.unlock();
-            return;
+        std::lock_guard<ffrt:recursive_mutex> lock(stateMutex);
+        if (g_slideState != SlideRecognizeStat::LIST_FLING) {
+            return; 
         }
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
             ResType::SlideEventStatus::SLIDE_EVENT_OFF, payload);
         nlohmann::json extInfo;
         EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
             ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP,extInfo);
-        isInListFlingMode = false;
-        listFlingMutex.unlock();
+        g_slideState = SlideRecognizeStat::IDLE;
     };
 }
 
@@ -87,8 +84,8 @@ void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
-    slideDetectingTime_ = ResSchedUtils::GetNowMillTime();
-    if (state_ == SlideRecognizeStat::LIST_FLING) {
+    slideDetectingTime_ = ResCommonUtil::GetNowMillTime();
+    if (g_slideState == SlideRecognizeStat::LIST_FLING) {
         if(listFlingEndTask_) {
         ffrt::skip(listFlingEndTask_);
         }
@@ -99,23 +96,19 @@ void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
         listFlingTimeOutTask_ = nullptr;
         reportListFlingLockedEnd(payload);
     }
-    state_ = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
+    g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
 }
 
 void SlideRecognizer::HandleListFlingStart(const nlohmann::json& payload)
 {
-    listFlingMutex.lock();
-    if (isInListFlingMode) {
-        listFlingMutex.unlock();
+    std::lock_guard<ffrt:recursive_mutex> lock(stateMutex);
+    if (g_slideState == SlideRecognizeStat::LIST_FLING) {
         return;
     }
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
-    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
-        ResType::SlideEventStatus::SLIDE_EVENT_ON, payload);
-    isInListFlingMode = true;
-    listFlingMutex.unlock();
+    g_slideState = SlideRecognizeStat::LIST_FLING;
     if (listFlingEndTask_) {
         ffrt::skip(listFlingEndTask_);
     }
@@ -132,17 +125,20 @@ void SlideRecognizer::HandleListFlingStart(const nlohmann::json& payload)
 
 void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload) 
 {
-    if (state_ == SlideRecognizeStat::SLIDE_NORMAL_DETECTING) {
-        int64_t nowTime = ResSchedUtils::GetNowMillTime();
+    std::lock_guard<ffrt:recursive_mutex> lock(stateMutex);
+    if (g_slideState == SlideRecognizeStat::SLIDE_NORMAL_DETECTING) {
+        int64_t nowTime = ResCommonUtil::GetNowMillTime();
         if (nowTime - slideDetectingTime_ < SLIDE_NORMAL_DETECTING_TIME) {
-            nlohmann::json extInfo;
-            EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
-                ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP, extInfo);
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
                 ResType::SlideEventStatus::SLIDE_NORMAL_BEGIN, payload);
-            state_ = SlideRecognizeStat::SLIDE_NORMAL;
+            g_slideState = SlideRecognizeStat::SLIDE_NORMAL;
+        } else {
+            g_slideState = SlideRecognizeStat::IDLE;
         }
-    } else if (state_ == SlideRecognizeStat::LIST_FLING) {
+        nlohmann::json extInfo;
+        EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+            ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP, extInfo);
+    } else if (g_slideState == SlideRecognizeStat::LIST_FLING) {
         if (listFlingEndTask_) {
             ffrt::skip(listFlingEndTask_);
         }
@@ -150,12 +146,14 @@ void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload)
             reportListFlingLockedEnd(payload);
             }, {}, {}, ffrt::task_attr().delay(LIST_FLINT_END_TIME));
     }
+
 }
 
 void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payload)
 {
+    std::lock_guard<ffrt:recursive_mutex> lock(stateMutex);
     //not in slide stat
-    if (state_ != SlideRecognizeStat::SLIDE_NORMAL) {
+    if (g_slideState != SlideRecognizeStat::SLIDE_NORMAL) {
         return;
     }
     // receive up event, silde normal end
@@ -175,7 +173,7 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
                 ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
                 ResType::SlideEventStatus::SLIDE_EVENT_ON, payload);
-            state_ = SlideRecognizeStat::LIST_FLING;
+            g_slideState = SlideRecognizeStat::LIST_FLING;
         }
     }
 }

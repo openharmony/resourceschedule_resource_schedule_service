@@ -39,6 +39,7 @@ private:
     void HandleSendFrameEvent(const nlohmann::json& payload);
     void HandleClickEvent(int64_t value, const nlohmann::json& payload);
     void HandleSlideDetecting(const nlohmann::json& payload);
+    void HandleListFlingStart(const nlohmann::json& payload);
     ffrt::task_handle listFlingEndTask_ = nullptr;
     ffrt::task_handle listFlingTimeOutTask_ = nullptr;
     int64_t slideDetectingTime_ = -1;

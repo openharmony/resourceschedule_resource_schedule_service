@@ -25,6 +25,7 @@
 #include "accesstoken_kit.h"
 #include "res_sched_service_utils.h"
 #include "hisysevent.h"
+#include "res_common_util.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -401,7 +402,7 @@ void ResSchedServiceStub::UnRegisterEventListenerInner(MessageParcel& data,
 
 bool ResSchedServiceStub::IsLimitRequest(int32_t uid)
 {
-    int64_t nowTime = ResSchedUtils::GetNowMillTime();
+    int64_t nowTime = ResCommonUtil::GetNowMillTime();
     CheckAndUpdateLimitData(nowTime);
     if (allRequestCount_.load() >= ALL_UID_REQUEST_LIMIT_COUNT) {
         RESSCHED_LOGD("all uid request is limit, %{public}d request fail", uid);
@@ -447,7 +448,7 @@ void ResSchedServiceStub::ReportBigData()
     if (!isReportBigData_.load()) {
         return;
     }
-    if (ResSchedUtils::GetNowMillTime() < nextReportBigDataTime_) {
+    if (ResCommonUtil::GetNowMillTime() < nextReportBigDataTime_) {
         return;
     }
     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "SERVICE_REQUEST_LIMIT",
@@ -460,7 +461,7 @@ void ResSchedServiceStub::InreaseBigDataCount()
 {
     if (!isReportBigData_.load()) {
         isReportBigData_.store(true);
-        nextReportBigDataTime_ = ResSchedUtils::GetNowMillTime() + FOUR_HOUR_TIME;
+        nextReportBigDataTime_ = ResCommonUtil::GetNowMillTime() + FOUR_HOUR_TIME;
     }
     bigDataReportCount_ ++;
 }

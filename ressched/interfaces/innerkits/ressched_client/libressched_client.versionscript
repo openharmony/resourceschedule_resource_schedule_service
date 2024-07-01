@@ -21,6 +21,8 @@
     *ResSchedClient*StopRemoteObject*;
     *ResSchedClient*RegisterSystemloadNotifier*;
     *ResSchedClient*UnRegisterSystemloadNotifier*;
+    *ResSchedClient*RegisterEventListener*;
+    *ResSchedClient*UnRegisterEventListener*;
     *ResSchedClient*GetSystemloadLevel*;
     *ResSchedClient*IsAllowedAppPreload*;
     *ResSchedServiceProxy*;
