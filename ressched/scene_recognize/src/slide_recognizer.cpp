@@ -30,7 +30,7 @@ namespace {
     static constexpr int64_t LIST_FLINT_TIME_OUT_TIME = 3 * 1000 * 1000;
     static constexpr int64_t LIST_FLINT_END_TIME = 300 * 1000;
     static constexpr float LIST_FLING_SPEED_LIMIT = 10.0;
-    static constexpr int64_t SLIDE_NORMAL_DETECTING_TIME = 50;
+    static constexpr int64_t SLIDE_NORMAL_DETECTING_TIME = 150;
     static const std::string UP_SPEED_KEY = "up_speed";
     static uint32_t g_slideState = SlideRecognizeStat::IDLE;
     static ffrt::recursive_mutex stateMutex;
@@ -80,10 +80,6 @@ void SlideRecognizer::HandleSlideEvent(int64_t value, const nlohmann::json& payl
 
 void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
 {
-    nlohmann::json extInfo;
-    EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
-        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
-    slideDetectingTime_ = ResCommonUtil::GetNowMillTime();
     if (g_slideState == SlideRecognizeStat::LIST_FLING) {
         if (listFlingEndTask_) {
         ffrt::skip(listFlingEndTask_);
@@ -95,6 +91,10 @@ void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
         listFlingTimeOutTask_ = nullptr;
         reportListFlingLockedEnd(payload);
     }
+    nlohmann::json extInfo;
+    EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
+    slideDetectingTime_ = ResCommonUtil::GetNowMillTime();
     g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
 }
 
