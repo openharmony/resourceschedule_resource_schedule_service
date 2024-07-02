@@ -21,6 +21,7 @@
 #include "res_sched_client.h"
 #include "res_type.h"
 #include "res_sched_systemload_notifier_client.h"
+#include "res_sched_event_listener.h"
 #include "token_setproc.h"
 
 namespace OHOS {
@@ -80,6 +81,24 @@ public:
 };
 
 int32_t ResSchedSystemloadNotifierClientMock::levels = 0;
+
+class ResSchedEventListenerMock : public ResSchedEventListener {
+public:
+    ResSchedEventListenerMock() = default;
+    ~ResSchedEventListenerMock() = default;
+    void OnReceiveEvent(uint32_t eventType, uint32_t eventValue,
+        std::unordered_map<std::string, std::string> extInfo) override
+    {
+        
+        type = eventType;
+        value = eventValue;
+    }
+    static int32_t type;
+    static int32_t value;
+};
+
+int32_t ResSchedEventListenerMock::type = 0;
+int32_t ResSchedEventListenerMock::value = 0;
 
 /**
  * @tc.name: KillProcess001
@@ -198,6 +217,56 @@ HWTEST_F(ResSchedClientTest, UnRegisterSystemloadNotifier001, Function | MediumT
     ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(notifier);
     ResSchedClient::GetInstance().systemloadLevelListener_->OnSystemloadLevel(2);
     EXPECT_TRUE(ResSchedSystemloadNotifierClientMock::levels == 0);
+}
+
+/**
+ * @tc.name: RegisterEventListener001
+ * @tc.desc: Register event listener
+ * @tc.type: FUNC
+ * @tc.require: issueIA9UZ9
+ * @tc.author: baiheng
+ */
+HWTEST_F(ResSchedClientTest, RegisterEventListener001, Function | MediumTest | Level0)
+{
+    sptr<ResSchedEventListener> eventListener =
+        new (std::nothrow) ResSchedEventListenerMock;
+    EXPECT_TRUE(eventListener != nullptr);
+    ResSchedClient::GetInstance().RegisterEventListener(eventListener,
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    ResSchedClient::GetInstance().RegisterEventListener(eventListener,
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    nlohmann::json extInfo;
+    ResSchedClient::GetInstance().innerEventListener_->OnReceiveEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
+    EXPECT_TRUE(ResSchedEventListenerMock::type == ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    EXPECT_TRUE(ResSchedEventListenerMock::value == ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START);
+    ResSchedEventListenerMock::type = 0;
+    ResSchedEventListenerMock::value = 0;
+    ResSchedClient::GetInstance().UnRegisterEventListener(eventListener,
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: UnRegisterEventListener001
+ * @tc.desc: UnRegister event listener
+ * @tc.type: FUNC
+ * @tc.require: issueIA9UZ9
+ * @tc.author: baiheng
+ */
+HWTEST_F(ResSchedClientTest, UnRegisterEventListener001, Function | MediumTest | Level0)
+{
+    sptr<ResSchedEventListener> eventListener =
+        new (std::nothrow) ResSchedEventListenerMock;
+    EXPECT_TRUE(eventListener != nullptr);
+    ResSchedClient::GetInstance().RegisterEventListener(eventListener,
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    ResSchedClient::GetInstance().UnRegisterEventListener(eventListener,
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    ResSchedClient::GetInstance().innerEventListener_->OnReceiveEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
+    EXPECT_TRUE(ResSchedEventListenerMock::type == 0);
+    EXPECT_TRUE(ResSchedEventListenerMock::value == 0);
 }
 
 /**
