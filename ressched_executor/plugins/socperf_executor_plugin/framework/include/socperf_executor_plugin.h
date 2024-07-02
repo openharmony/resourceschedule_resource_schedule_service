@@ -32,7 +32,7 @@ public:
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
 private:
     void HandleSocperfWirteNode(const std::shared_ptr<ResData> &data);
-    void SocPerfInitNode(const std::shared_ptr<ResData> &data);
+    void SocPerfInitNode();
     void SocPerfWirteNode(const std::shared_ptr<ResData> &data);
 private:
     std::set<uint32_t> resType_;
