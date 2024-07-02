@@ -394,19 +394,21 @@ void ResSchedClient::InnerEventListener::RegisterEventListener(const sptr<ResSch
     uint32_t eventType)
 {
     std::lock_guard<std::mutex> lock(eventMutex_);
-    if (eventListener != nullptr) {
-        auto item = eventListeners_.find(eventType);
-        if (item == eventListeners_.end()) {
-            eventListeners_[eventType].emplace_back(eventListener);
-        } else {
-            for (auto& iter : item->second) {
-                if (iter == eventListener) {
-                    RESSCHED_LOGE("ResSchedClient register an exist eventListener object.");
-                    return;
-                }
+    if (eventListener == nullptr) {
+        RESSCHED_LOGE("ResSchedClient register an null eventListener object.");
+        return;
+    }
+    auto item = eventListeners_.find(eventType);
+    if (item == eventListeners_.end()) {
+        eventListeners_[eventType].emplace_back(eventListener);
+    } else {
+        for (auto& iter : item->second) {
+            if (iter == eventListener) {
+                RESSCHED_LOGE("ResSchedClient register an exist eventListener object.");
+                return;
             }
-            eventListeners_[eventType].emplace_back(eventListener);
         }
+        eventListeners_[eventType].emplace_back(eventListener);
     }
     RESSCHED_LOGD("Client has registered %{public}d eventListener with type:%{public}d.",
         static_cast<int32_t>(eventListeners_[eventType].size()), eventType);
@@ -445,7 +447,7 @@ void ResSchedClient::InnerEventListener::OnReceiveEvent(uint32_t eventType, uint
         if (item != eventListeners_.end()) {
             for (auto& iter : item->second) {
                 listenerList.push_back(iter);
-            }    
+            }
         }
     }
     // copy notifiers from systemloadLevelCbs_ to revent dead lock

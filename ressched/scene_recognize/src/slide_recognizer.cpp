@@ -12,18 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "slide_recognizer.h"
+
 #include <mutex>
 
-#include "slide_recognizer.h"
+#include "event_listener_mgr.h"
 #include "ffrt_inner.h"
 #include "plugin_mgr.h"
+#include "res_common_util.h"
 #include "res_sched_log.h"
-#include "res_sched_mgr.h"   
-#include "res_type.h"
-#include "res_common_util.h".
-#include "event_listener_mgr.h"
+#include "res_sched_mgr.h"
 #include "res_sched_service_utils.h"
-
+#include "res_type.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -35,16 +35,16 @@ namespace {
     static const std::string UP_SPEED_KEY = "up_speed";
     static uint32_t g_slideState = SlideEventStatus::IDLE;
     static ffrt::recursive_mutex stateMutex;
-    static auto reportListFlingLockedEnd = [](const nlohmann::json payload){
+    static auto reportListFlingLockedEnd = [](const nlohmann::json payload) {
         std::lock_guard<ffrt:recursive_mutex> lock(stateMutex);
         if (g_slideState != SlideRecognizeStat::LIST_FLING) {
-            return; 
+            return;
         }
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
             ResType::SlideEventStatus::SLIDE_EVENT_OFF, payload);
         nlohmann::json extInfo;
         EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
-            ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP,extInfo);
+            ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP, extInfo);
         g_slideState = SlideRecognizeStat::IDLE;
     };
 }
@@ -86,7 +86,7 @@ void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
     slideDetectingTime_ = ResCommonUtil::GetNowMillTime();
     if (g_slideState == SlideRecognizeStat::LIST_FLING) {
-        if(listFlingEndTask_) {
+        if (listFlingEndTask_) {
         ffrt::skip(listFlingEndTask_);
         }
         if (listFlingTimeOutTask_) {
@@ -123,7 +123,7 @@ void SlideRecognizer::HandleListFlingStart(const nlohmann::json& payload)
         }, {}, {}, ffrt::task_attr().delay(LIST_FLINT_TIME_OUT_TIME));
 }
 
-void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload) 
+void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload)
 {
     std::lock_guard<ffrt:recursive_mutex> lock(stateMutex);
     if (g_slideState == SlideRecognizeStat::SLIDE_NORMAL_DETECTING) {
@@ -146,7 +146,6 @@ void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload)
             reportListFlingLockedEnd(payload);
             }, {}, {}, ffrt::task_attr().delay(LIST_FLINT_END_TIME));
     }
-
 }
 
 void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payload)
@@ -162,12 +161,11 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
             ResType::SlideEventStatus::SLIDE_NORMAL_END, payload);
         float upSpeed = 0.0;
-        if (!payload.contains(UP_SPEED_KEY) || !payload[UP_SPEED_KEY].is_string()){
+        if (!payload.contains(UP_SPEED_KEY) || !payload[UP_SPEED_KEY].is_string()) {
             return;
         }
         // if up speed large than LIST_FLING_SPEED_LIMIT,start recognize list fling.
-        if(ResCommonUtil::StrToFloat(payload[UP_SPEED_KEY], upSpeed) && upSpeed > LIST_FLING_SPEED_LIMIT)
-        {
+        if(ResCommonUtil::StrToFloat(payload[UP_SPEED_KEY], upSpeed) && upSpeed > LIST_FLING_SPEED_LIMIT) {
             nlohmann::json extInfo;
             EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
                 ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);

@@ -40,7 +40,8 @@ namespace {
             return ret;
         }
         if (!jsonTmp.is_object()) {
-            RESSCHED_LOGD("%{public}s extInfo converted result is not a jsonObj: %{public}s.", __func__, extInfo.c_str());
+            RESSCHED_LOGD("%{public}s extInfo converted result is not a jsonObj: %{public}s.",
+                __func__, extInfo.c_str());
             return ret;
         }
         return jsonTmp;
@@ -48,7 +49,7 @@ namespace {
 }
 
 int32_t ResSchedEventListenerStub::OnRemoteRequest(uint32_t code, MessageParcel& data,
-                                                        MessageParcel& reply, MessageOption& option)
+    MessageParcel& reply, MessageOption& option)
 {
     RESSCHED_LOGI("event listener ipc code = %{public}u", code);
     switch (code) {

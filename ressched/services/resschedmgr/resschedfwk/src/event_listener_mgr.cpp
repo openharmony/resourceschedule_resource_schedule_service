@@ -51,7 +51,8 @@ void EventListenerMgr::Deinit()
     eventSenderQueue_.reset();
 }
 
-void EventListenerMgr::RegisterEventListener(int32_t callingPid, const sptr<IRemoteObject>& listener, uint32_t eventType)
+void EventListenerMgr::RegisterEventListener(int32_t callingPid,
+    const sptr<IRemoteObject>& listener, uint32_t eventType)
 {
     RESSCHED_LOGD("%{public}s:called, pid = %{public}d.", __func__, callingPid);
     if (listener == nullptr) {
@@ -74,7 +75,8 @@ void EventListenerMgr::RegisterEventListener(int32_t callingPid, const sptr<IRem
     info.pid = (pid_t)callingPid;
     eventListenerMap_[eventType][info.pid] = info;
     listener->AddDeathRecipient(eventListenerDeathRecipient_);
-    RESSCHED_LOGI("%{public}s:pid = %{public}d register eventType %{public}d succeed.", __func__, callingPid, eventType);
+    RESSCHED_LOGI("%{public}s:pid = %{public}d register eventType %{public}d succeed.",
+        __func__, callingPid, eventType);
 }
 
 void EventListenerMgr::UnRegisterEventListener(int32_t callingPid, uint32_t eventType)
@@ -91,7 +93,7 @@ void EventListenerMgr::UnRegisterEventListener(int32_t callingPid, uint32_t even
                 eventListenerMap_.erase(eventType);
             }
             RESSCHED_LOGI("%{public}s: pid:%{public}d unregister eventType %{public}d succeed",
-                   __func__, callingPid, eventType);
+                __func__, callingPid, eventType);
         }
     }
 }
@@ -174,7 +176,7 @@ std::unordered_map<int32_t, std::vector<pid_t>> EventListenerMgr::DumpRegisterIn
     return ret;
 }
 
-void EventListenerMgr::HandleSendEvent(std::vector<sptr<IRemoteObject>>& listenerVec, 
+void EventListenerMgr::HandleSendEvent(std::vector<sptr<IRemoteObject>>& listenerVec,
     uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo)
 {
     auto func = [listenerVec, eventType, eventValue, extInfo] () {

@@ -23,7 +23,7 @@
 #include "ipc_skeleton.h"
 #include "ipc_util.h"
 #include "accesstoken_kit.h"
-#include "res_sched_service_utils.h"
+#include "res_common_util.h"
 #include "hisysevent.h"
 #include "res_common_util.h"
 

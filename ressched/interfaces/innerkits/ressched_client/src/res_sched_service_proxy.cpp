@@ -130,7 +130,7 @@ void ResSchedServiceProxy::RegisterSystemloadNotifier(const sptr<IRemoteObject>&
     RESSCHED_LOGD("%{public}s, success.", __func__);
 }
 
-void ResSchedServiceProxy::RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType) 
+void ResSchedServiceProxy::RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType)
 {
     int32_t error;
     MessageParcel data;
@@ -148,7 +148,7 @@ void ResSchedServiceProxy::RegisterEventListener(const sptr<IRemoteObject>& list
     RESSCHED_LOGD("%{public}s, success.", __func__);
 }
 
-void ResSchedServiceProxy::UnRegisterEventListener(uint32_t eventType) 
+void ResSchedServiceProxy::UnRegisterEventListener(uint32_t eventType)
 {
     int32_t error;
     MessageParcel data;

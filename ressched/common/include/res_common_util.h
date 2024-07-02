@@ -66,12 +66,19 @@ public:
         errno = 0;
         float res = std::strtof(value.c_str(), &pEnd);
         if (errno == ERANGE || pEnd == value.c_str() || *pEnd != '\0' ||
-            (res < std::numeric_limits<float>::min()) || 
+            (res < std::numeric_limits<float>::min()) ||
             res > std::numeric_limits<float>::max()) {
             return false;
         }
         result = res;
         return true;
+    }
+
+    static int64_t GetNowMillTime()
+    {
+        auto now = std::chrono::system_clock::now();
+        auto millSecs = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
+        return millSecs.count();
     }
 };
 } // namespace ResourceSchedule

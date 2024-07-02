@@ -19,7 +19,7 @@
 #include <cstdint>                                  // for int64_t, uint32_t
 #include <unordered_map>                            // for unordered_map
 #include <unordered_set>                              // for unordered_set
-#include <mutex>                                    // for mutex 
+#include <mutex>                                    // for mutex
 #include <iosfwd>                                   // for string
 #include <list>                                     // for list
 #include "errors.h"                                 // for ErrCode

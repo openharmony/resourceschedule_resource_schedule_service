@@ -51,7 +51,7 @@ private:
     ~EventListenerMgr();
     void RemoveListenerLock(const sptr<IRemoteObject>& listener);
     void SendEventLock(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo);
-    void HandleSendEvent(std::vector<sptr<IRemoteObject>>& listenerVec, 
+    void HandleSendEvent(std::vector<sptr<IRemoteObject>>& listenerVec,
         uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo);
     void OnRemoteListenerDied(const sptr<IRemoteObject>& listener);
 
