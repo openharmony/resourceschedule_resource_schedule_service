@@ -22,7 +22,6 @@
 #include "res_common_util.h"
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
-#include "res_sched_service_utils.h"
 #include "res_type.h"
 
 namespace OHOS {
