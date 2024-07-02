@@ -35,14 +35,15 @@ public:
 
     void OnReceiveEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json& extInfo)
     {
-        eventType_ = level;
+        eventType_ = eventType;
         eventValue_ = eventValue;
     }
 
     static uint32_t eventType_;
     static uint32_t eventValue_;
 };
-
+uint32_t TestEventListener::eventType_ = 0;
+uint32_t TestEventListener::eventValue_ = 0;
 void EventListenerMgrTest::SetUpTestCase()
 {
     EventListenerMgr::GetInstance().Init();
@@ -54,7 +55,8 @@ void EventListenerMgrTest::SetUp() {}
 
 void EventListenerMgrTest::TearDown()
 {
-    EventListenerMgr::GetInstance().UnRegisterEventListener(IPCSkeleton::GetCallingPid());
+    EventListenerMgr::GetInstance().UnRegisterEventListener(IPCSkeleton::GetCallingPid()
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     TestEventListener::eventType_ = 0;
     TestEventListener::eventValue_ = 0;
 }
@@ -79,7 +81,7 @@ HWTEST_F(EventListenerMgrTest, TestEventListener001, Function | MediumTest | Lev
     EXPECT_TRUE(TestEventListener::eventType_ ==
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     EXPECT_TRUE(TestEventListener::eventValue_ ==
-        ResType::EventType::EVENT_VALUE_DRAW_FRAME_REPORT_START);
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START);
 }
 
 /**
@@ -93,6 +95,7 @@ HWTEST_F(EventListenerMgrTest, TestEventListener002, Function | MediumTest | Lev
 {
     sptr<IRemoteObject> eventListener = new (std::nothrow) TestEventListener();
     EXPECT_TRUE(eventListener != nullptr);
+    nlohmann::json extInfo;
     EventListenerMgr::GetInstance().RegisterEventListener(IPCSkeleton::GetCallingPid(), eventListener,
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
@@ -101,7 +104,7 @@ HWTEST_F(EventListenerMgrTest, TestEventListener002, Function | MediumTest | Lev
     EXPECT_TRUE(TestEventListener::eventType_ ==
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     EXPECT_TRUE(TestEventListener::eventValue_ ==
-        ResType::EventType::EVENT_VALUE_DRAW_FRAME_REPORT_STOP);
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP);
 }
 
 /**
@@ -122,7 +125,8 @@ HWTEST_F(EventListenerMgrTest, RegisterEventListener001, Function | MediumTest |
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     EventListenerMgr::GetInstance().RegisterEventListener(callingPid, eventListener1,
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
-    auto realEventListener = EventListenerMgr::GetInstance().eventListenerMap_[callingPid].listener;
+    auto realEventListener = EventListenerMgr::GetInstance().
+        eventListenerMap_[ResType::EventType::EVENT_DRAW_FRAME_REPORT][callingPid].listener;
     EXPECT_TRUE(eventListener.GetRefPtr() == realEventListener.GetRefPtr());
 }
 
@@ -240,9 +244,10 @@ HWTEST_F(EventListenerMgrTest, Dump002, Function | MediumTest | Level0)
 {
     sptr<IRemoteObject> eventListener = new (std::nothrow) TestEventListener();
     EXPECT_TRUE(eventListener != nullptr);
+    EventListenerMgr::GetInstance().initialized_ = false;
     EventListenerMgr::GetInstance().Init();
-    EventListenerMgr::GetInstance().RegisterEventListener(callingPid, eventListener,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    EventListenerMgr::GetInstance().RegisterEventListener(IPCSkeleton::GetCallingPid(),
+        eventListener, ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     auto res = EventListenerMgr::GetInstance().DumpRegisterInfo();
     EXPECT_TRUE(res.size() == 1);
     EventListenerMgr::GetInstance().UnRegisterEventListener(IPCSkeleton::GetCallingPid(),
@@ -303,6 +308,7 @@ HWTEST_F(EventListenerMgrTest, OnRemoteeventListenerDied002, Function | MediumTe
 HWTEST_F(EventListenerMgrTest, SendEvent001, Function | MediumTest | Level0)
 {
     sptr<IRemoteObject> eventListener = nullptr;
+    nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP, extInfo);
     SUCCEED();

@@ -32,10 +32,10 @@ namespace {
     static constexpr float LIST_FLING_SPEED_LIMIT = 10.0;
     static constexpr int64_t SLIDE_NORMAL_DETECTING_TIME = 5;
     static const std::string UP_SPEED_KEY = "up_speed";
-    static uint32_t g_slideState = SlideEventStatus::IDLE;
+    static uint32_t g_slideState = SlideRecognizeStat::IDLE;
     static ffrt::recursive_mutex stateMutex;
     static auto reportListFlingLockedEnd = [](const nlohmann::json payload) {
-        std::lock_guard<ffrt:recursive_mutex> lock(stateMutex);
+        std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
         if (g_slideState != SlideRecognizeStat::LIST_FLING) {
             return;
         }
@@ -100,7 +100,7 @@ void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
 
 void SlideRecognizer::HandleListFlingStart(const nlohmann::json& payload)
 {
-    std::lock_guard<ffrt:recursive_mutex> lock(stateMutex);
+    std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
     if (g_slideState == SlideRecognizeStat::LIST_FLING) {
         return;
     }
@@ -124,7 +124,7 @@ void SlideRecognizer::HandleListFlingStart(const nlohmann::json& payload)
 
 void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload)
 {
-    std::lock_guard<ffrt:recursive_mutex> lock(stateMutex);
+    std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
     if (g_slideState == SlideRecognizeStat::SLIDE_NORMAL_DETECTING) {
         int64_t nowTime = ResCommonUtil::GetNowMillTime();
         if (nowTime - slideDetectingTime_ < SLIDE_NORMAL_DETECTING_TIME) {
@@ -149,7 +149,7 @@ void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload)
 
 void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payload)
 {
-    std::lock_guard<ffrt:recursive_mutex> lock(stateMutex);
+    std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
     //not in slide stat
     if (g_slideState != SlideRecognizeStat::SLIDE_NORMAL) {
         return;

@@ -539,6 +539,14 @@ public:
     {
     }
 
+    void RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType) override
+    {
+    }
+
+    void UnRegisterEventListener(uint32_t eventType) override
+    {
+    }   
+
     int32_t GetSystemloadLevel() override
     {
         return 0;

@@ -263,6 +263,7 @@ HWTEST_F(ResSchedClientTest, UnRegisterEventListener001, Function | MediumTest |
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     ResSchedClient::GetInstance().UnRegisterEventListener(eventListener,
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    nlohmann::json extInfo;
     ResSchedClient::GetInstance().innerEventListener_->OnReceiveEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
     EXPECT_TRUE(ResSchedEventListenerMock::type == 0);

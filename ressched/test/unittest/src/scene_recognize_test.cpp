@@ -110,11 +110,11 @@ HWTEST_F(SceneRecognizeTest, BgtaskTest001, Function | MediumTest | Level0)
  * @tc.require: issueIA9UZ9
  * @tc.author:baiheng
  */
-HWTEST_F(SceneRecognizeTest, AppInstallTest001, Function | MediumTest | Level0)
+HWTEST_F(SceneRecognizeTest, SlideTest001, Function | MediumTest | Level0)
 {
     nlohmann::json payload;
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_SLIDE_RECOGNIZE,
-        ResType::SlideEventStatus::SLIDE_NORMAL_DETECTING, payload);
+        ResType::SlideEventStatus::SLIDE_EVENT_DETECTING, payload);
     SUCCEED();
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_SEND_FRAME_EVENT, 0, payload);
     SUCCEED();
