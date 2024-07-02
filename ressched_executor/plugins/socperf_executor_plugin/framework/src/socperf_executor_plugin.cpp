@@ -46,6 +46,7 @@ void SocPerfExecutorPlugin::Init()
     for (auto resType : resType_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
+    SocPerfInitNode();
     SOC_PERF_LOGI("Init success");
 }
 
@@ -76,9 +77,6 @@ void SocPerfExecutorPlugin::HandleSocperfWirteNode(const std::shared_ptr<ResData
         return;
     }
     switch (data->value) {
-        case SOCPERF_EVENT_INIT_NODE:
-            SocPerfInitNode(data);
-            break;
         case SOCPERF_EVENT_WIRTE_NODE:
             SocPerfWirteNode(data);
             break;
@@ -88,11 +86,8 @@ void SocPerfExecutorPlugin::HandleSocperfWirteNode(const std::shared_ptr<ResData
     return;
 }
 
-void SocPerfExecutorPlugin::SocPerfInitNode(const std::shared_ptr<ResData>& data)
+void SocPerfExecutorPlugin::SocPerfInitNode()
 {
-    if (data == nullptr || data->value <= 0) {
-        return;
-    }
     SocPerfExecutorWirteNode::GetInstance().InitThreadWraps();
     SOC_PERF_LOGI("SocPerfInitNode OK");
 }
