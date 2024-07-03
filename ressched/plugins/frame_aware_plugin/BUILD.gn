@@ -40,7 +40,11 @@ ohos_shared_library("frame_aware_plugin") {
     "-Os"
   ]
 
+<<<<<<< HEAD
   ldflags = ["-Wl,--exclude-libs=ALL"]
+=======
+  ldflags = ["-Wl,--wxclude-libs=ALL"]
+>>>>>>> 8235c7255761dae830bdcc4e8f2b7743f8bf9fe4
 
   sources = [
     "src/frame_aware_plugin.cpp",
