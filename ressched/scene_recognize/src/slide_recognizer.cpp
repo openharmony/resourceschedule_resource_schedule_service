@@ -34,7 +34,7 @@ namespace {
     static const std::string UP_SPEED_KEY = "up_speed";
     static uint32_t g_slideState = SlideRecognizeStat::IDLE;
     static ffrt::recursive_mutex stateMutex;
-    static auto reportListFlingLockedEnd = [](const nlohmann::json payload) {
+    static auto g_reportListFlingLockedEnd = [](const nlohmann::json payload) {
         std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
         if (g_slideState != SlideRecognizeStat::LIST_FLING) {
             return;
@@ -89,7 +89,7 @@ void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
         }
         listFlingEndTask_ = nullptr;
         listFlingTimeOutTask_ = nullptr;
-        reportListFlingLockedEnd(payload);
+        g_reportListFlingLockedEnd(payload);
     }
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
@@ -112,13 +112,13 @@ void SlideRecognizer::HandleListFlingStart(const nlohmann::json& payload)
         ffrt::skip(listFlingEndTask_);
     }
     listFlingEndTask_ = ffrt::submit_h([payload]() {
-        reportListFlingLockedEnd(payload);
+        g_reportListFlingLockedEnd(payload);
         }, {}, {}, ffrt::task_attr().delay(LIST_FLINT_END_TIME));
     if (listFlingTimeOutTask_) {
         ffrt::skip(listFlingTimeOutTask_);
     }
     listFlingTimeOutTask_ = ffrt::submit_h([payload]() {
-        reportListFlingLockedEnd(payload);
+        g_reportListFlingLockedEnd(payload);
         }, {}, {}, ffrt::task_attr().delay(LIST_FLINT_TIME_OUT_TIME));
 }
 
@@ -142,7 +142,7 @@ void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload)
             ffrt::skip(listFlingEndTask_);
         }
         listFlingEndTask_ = ffrt::submit_h([payload]() {
-            reportListFlingLockedEnd(payload);
+            g_reportListFlingLockedEnd(payload);
             }, {}, {}, ffrt::task_attr().delay(LIST_FLINT_END_TIME));
     }
 }

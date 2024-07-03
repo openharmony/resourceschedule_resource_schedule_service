@@ -545,7 +545,7 @@ public:
 
     void UnRegisterEventListener(uint32_t eventType) override
     {
-    }   
+    }
 
     int32_t GetSystemloadLevel() override
     {
