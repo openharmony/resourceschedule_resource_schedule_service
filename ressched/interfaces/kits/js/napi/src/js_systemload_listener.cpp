@@ -24,7 +24,7 @@ struct CallBackContext {
     std::shared_ptr<NativeReference> callbackRef = nullptr;
     OnSystemloadLevelCb onSystemloadLevelCb = nullptr;
     int32_t level = 0;
-}
+};
 
 SystemloadListener::SystemloadListener(napi_env env, napi_value callbackObj, OnSystemloadLevelCb callback)
     : napiEnv_(env), systemloadLevelCb_(callback)
@@ -44,8 +44,7 @@ SystemloadListener::SystemloadListener(napi_env env, napi_value callbackObj, OnS
 void SystemloadListener::ThreadSafeCallBack(napi_env ThreadSafeEnv, napi_value js_cb, void* context, void* data)
 {
     RESSCHED_LOGI("SystemloadListener ThreadSafeCallBack start");
-    CallBackContext* callBackContext = reinterpret_cast<CallBackContext>(data);
-    callBackContext->env;
+    CallBackContext* callBackContext = reinterpret_cast<CallBackContext*>(data);
     callBackContext->onSystemloadLevelCb(callBackContext->env,
         callBackContext->callbackRef->GetNapiValue(), callBackContext->level);
     delete callBackContext;
