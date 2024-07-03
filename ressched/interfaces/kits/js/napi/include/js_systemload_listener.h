@@ -33,9 +33,11 @@ public:
     virtual ~SystemloadListener() = default;
     void OnSystemloadLevel(int32_t level) override;
 private:
+    static void ThreadSafeCallBack(napi_env env, napi_value js_cb, void *context, void *data);
+    napi_threadsafe_function threadSafeFunction_ = nullptr;
     napi_env napiEnv_ = nullptr;
     OnSystemloadLevelCb systemloadLevelCb_ = nullptr;
-    std::unique_ptr<NativeReference> callbackRef_ = nullptr;
+    std::shared_ptr<NativeReference> callbackRef_ = nullptr;
 };
 } // ResourceSchedule
 } // OHOS
