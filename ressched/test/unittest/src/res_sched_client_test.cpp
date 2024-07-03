@@ -89,7 +89,6 @@ public:
     void OnReceiveEvent(uint32_t eventType, uint32_t eventValue,
         std::unordered_map<std::string, std::string> extInfo) override
     {
-        
         type = eventType;
         value = eventValue;
     }

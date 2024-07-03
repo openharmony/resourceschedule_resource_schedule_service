@@ -164,7 +164,7 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
             return;
         }
         // if up speed large than LIST_FLING_SPEED_LIMIT,start recognize list fling.
-        if(ResCommonUtil::StrToFloat(payload[UP_SPEED_KEY], upSpeed) && upSpeed > LIST_FLING_SPEED_LIMIT) {
+        if (ResCommonUtil::StrToFloat(payload[UP_SPEED_KEY], upSpeed) && upSpeed > LIST_FLING_SPEED_LIMIT) {
             nlohmann::json extInfo;
             EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
                 ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
