@@ -44,6 +44,7 @@ typedef int errno_t;
 #define WINDOW_MANAGER_SERVICE_ID       4606
 #define DEFAULT                         1904
 #define TASK_KEEPING                    9
+#define DATA_TRANSFER                   1
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -198,7 +199,7 @@ namespace ResourceSchedule {
         g_pos = 0;
 
         // getdata
-        int32_t typeId = 1;
+        int32_t typeId = DATA_TRANSFER;
         int32_t creatorUid = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
         std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
@@ -230,7 +231,7 @@ namespace ResourceSchedule {
         g_pos = 0;
 
         // getdata
-        int32_t typeId = 1;
+        int32_t typeId = DATA_TRANSFER;
         int32_t creatorUid = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
         std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
@@ -262,7 +263,7 @@ namespace ResourceSchedule {
         g_pos = 0;
 
         // getdata
-        int32_t typeId = 1;
+        int32_t typeId = DATA_TRANSFER;
         int32_t creatorUid = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
         std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
