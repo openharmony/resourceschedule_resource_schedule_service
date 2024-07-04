@@ -170,7 +170,6 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
                 ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
                 ResType::SlideEventStatus::SLIDE_EVENT_ON, payload);
-            g_slideState = SlideRecognizeStat::LIST_FLING;
         }
     }
 }
