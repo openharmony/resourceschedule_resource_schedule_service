@@ -92,7 +92,7 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbili
 void OOBEManager::ReRegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
 {
     int resultValue = 0;
-    auto dataShareUtils = ResourceSchedule::DataShareUtils::GetInstance().GetValue(key, resultValue);
+    ResourceSchedule::DataShareUtils::GetInstance().GetValue(key, resultValue);
     if (resultValue != 0) {
         func();
         return;
@@ -133,7 +133,7 @@ void OOBEManager::ResDataAbilityObserver::SetUpdateFunc(const UpdateFunc& func)
 void OOBEManager::Initialize()
 {
     int resultValue = 0;
-    auto dataShareUtils = ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
+    ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
     if (resultValue != 0) {
         g_oobeValue = true;
     }
@@ -157,11 +157,11 @@ bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
 void OOBEManager::StartListen()
 {
     int resultValue = 0;
-    auto dataShareUtils = ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
+    ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
     if (resultValue != 0) {
         std::lock_guard<std::mutex> lock(mutex_);
         g_oobeValue = true;
-         for (auto task : oobeTasks_) {
+        for (auto task : oobeTasks_) {
             task->ExcutingTask();
         }
         return;
