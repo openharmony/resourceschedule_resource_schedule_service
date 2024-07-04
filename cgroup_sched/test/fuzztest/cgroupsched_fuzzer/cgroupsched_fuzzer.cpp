@@ -210,7 +210,7 @@ namespace ResourceSchedule {
         continuousTaskCallbackInfo =
             std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         backgroundTaskObserver->OnContinuousTaskStart(continuousTaskCallbackInfo);
-        
+
         return true;
     }
 
@@ -1386,6 +1386,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     // background_task_observer.cpp
     OHOS::ResourceSchedule::TransientTaskStartFuzzTest(data, size);
     OHOS::ResourceSchedule::TransientTaskEndFuzzTest(data, size);
+    OHOS::ResourceSchedule::MarshallingContinuousTaskCallbackInfoFuzzTest(data, size);
     OHOS::ResourceSchedule::ContinuousTaskStartFuzzTest(data, size);
     OHOS::ResourceSchedule::ContinuousTaskStopFuzzTest(data, size);
     OHOS::ResourceSchedule::ContinuousTaskUpdateFuzzTest(data, size);
