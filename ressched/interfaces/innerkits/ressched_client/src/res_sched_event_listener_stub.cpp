@@ -51,7 +51,7 @@ namespace {
 int32_t ResSchedEventListenerStub::OnRemoteRequest(uint32_t code, MessageParcel& data,
     MessageParcel& reply, MessageOption& option)
 {
-    RESSCHED_LOGI("event listener ipc code = %{public}u", code);
+    RESSCHED_LOGD("event listener ipc code = %{public}u", code);
     switch (code) {
         case static_cast<uint32_t>(ResourceScedulEventListenerCode::RECEIVE_EVENT): {
             return OnReceiveEventInner(data, reply);
