@@ -43,6 +43,7 @@ typedef int errno_t;
 #define APP_MGR_SERVICE_ID              501
 #define WINDOW_MANAGER_SERVICE_ID       4606
 #define DEFAULT                         1904
+#define TASK_KEEPING                    9
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -146,6 +147,41 @@ namespace ResourceSchedule {
         return true;
     }
 
+    bool MarshallingContinuousTaskCallbackInfoFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= sizeof(int32_t) + sizeof(int32_t)) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uint32_t typeId = GetData<int32_t>();
+        std::vector<uint32_t> typeIds;
+        typeIds.push_back(typeId);
+        int32_t creatorUid = GetData<int32_t>();
+        int32_t abilityId = GetData<int32_t>();
+        pid_t creatorPid = GetData<pid_t>();
+        std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
+        bool isBatchApi = GetData<bool>();
+        bool isFromWebview = GetData<bool>();
+        nlohmann::json payload;
+        auto continuousTaskCallbackInfo =
+            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName,
+            isFromWebview, isBatchApi, typeIds, abilityId);
+        auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
+        backgroundTaskObserver->MarshallingContinuousTaskCallbackInfo(continuousTaskCallbackInfo, payload);
+
+        return true;
+    }
+
     bool ContinuousTaskStartFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -170,7 +206,11 @@ namespace ResourceSchedule {
             std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
         backgroundTaskObserver->OnContinuousTaskStart(continuousTaskCallbackInfo);
-
+        typeId = TASK_KEEPING;
+        continuousTaskCallbackInfo =
+            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
+        backgroundTaskObserver->OnContinuousTaskStart(continuousTaskCallbackInfo);
+        
         return true;
     }
 
@@ -197,6 +237,10 @@ namespace ResourceSchedule {
         auto continuousTaskCallbackInfo =
             std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
+        backgroundTaskObserver->OnContinuousTaskStop(continuousTaskCallbackInfo);
+        typeId = TASK_KEEPING;
+        continuousTaskCallbackInfo =
+            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         backgroundTaskObserver->OnContinuousTaskStop(continuousTaskCallbackInfo);
 
         return true;
@@ -225,6 +269,10 @@ namespace ResourceSchedule {
         auto continuousTaskCallbackInfo =
             std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
+        backgroundTaskObserver->OnContinuousTaskUpdate(continuousTaskCallbackInfo);
+        typeId = TASK_KEEPING;
+        continuousTaskCallbackInfo =
+            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         backgroundTaskObserver->OnContinuousTaskUpdate(continuousTaskCallbackInfo);
 
         return true;
