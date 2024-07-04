@@ -37,10 +37,10 @@ ohos_shared_library("frame_aware_plugin") {
     "-fno-unwind-tables",
     "-fno-asynchronous-unwind-tables",
     "-g0",
-    "-Os"
+    "-Os",
   ]
 
-  ldflags = ["-Wl,--exclude-libs=ALL"]
+  ldflags = [ "-Wl,--exclude-libs=ALL" ]
   sources = [
     "src/frame_aware_plugin.cpp",
     "src/network_latency_controller.cpp",
