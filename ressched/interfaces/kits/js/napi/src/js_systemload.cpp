@@ -131,7 +131,7 @@ napi_value Systemload::RegisterSystemloadCallback(napi_env env, napi_callback_in
             return CreateJsUndefined(env);
         }
     }
-    auto systemloadLevelCb = [](napi_env env, napi_value callbackObj, int32_t level){
+    auto systemloadLevelCb = [](napi_env env, napi_value callbackObj, int32_t level) {
         Systemload::GetInstance().OnSystemloadLevel(env, callbackObj, level);
     };
     sptr<SystemloadListener> systemloadListener =

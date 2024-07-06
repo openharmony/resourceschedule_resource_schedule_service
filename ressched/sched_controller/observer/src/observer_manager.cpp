@@ -73,7 +73,7 @@ void ObserverManager::InitObserverCbMap()
     handleObserverMap_ = {
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->InitHiSysEventObserver(); }},
-        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,[](std::shared_ptr<ObserverManager> mgr) {
+        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->InitTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitAudioObserver(); }},
         { MSDP_MOVEMENT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitDeviceMovementObserver(); }},
@@ -88,28 +88,31 @@ void ObserverManager::InitObserverCbMap()
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
         { AVSESSION_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitAVSessionStateChangeListener(); }},
 #endif
-        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN,[](std::shared_ptr<ObserverManager> mgr) { mgr->InitAccountObserver(); }},
+        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, [](std::shared_ptr<ObserverManager> mgr) {
+            mgr->InitAccountObserver(); }},
     };
 
     removeObserverMap_ = {
-        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {mgr->DisableHiSysEventObserver(); }},
+        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
+            mgr->DisableHiSysEventObserver(); }},
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,[](std::shared_ptr<ObserverManager> mgr) {
             mgr->DisableTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableAudioObserver(); }},
-        { MSDP_MOVEMENT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableDeviceMovementObserver(); }},
+        { MSDP_MOVEMENT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) {
+            mgr->DisableDeviceMovementObserver(); }},
         { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableMMiEventObserver(); }},
         { DISPLAY_MANAGER_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableDisplayModeObserver(); }},
         { ABILITY_MGR_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableConnectionSubscriber(); }},
-        { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID,[](std::shared_ptr<ObserverManager> mgr) {
+        { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->DisableDataShareObserver(); }},
 #ifndef RESOURCE_REQUEST_REQUEST
         { DOWNLOAD_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableDownloadUploadObserver(); }},
 #endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
-        { AVSESSION_SERVICE_ID,[](std::shared_ptr<ObserverManager> mgr) {
+        { AVSESSION_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->DisableAVSessionStateChangeListener(); }},
 #endif
-        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN,[](std::shared_ptr<ObserverManager> mgr) {
+        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->DisableAccountObserver(); }},
     };
 }
