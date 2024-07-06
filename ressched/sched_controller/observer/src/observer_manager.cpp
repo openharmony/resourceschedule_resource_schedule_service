@@ -71,48 +71,41 @@ void ObserverManager::Disable()
 void ObserverManager::InitObserverCbMap()
 {
     handleObserverMap_ = {
-        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::InitHiSysEventObserver,
-            std::placeholders::_1) },
-        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
-            std::bind(&ObserverManager::InitTelephonyObserver, std::placeholders::_1) },
-        { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::InitAudioObserver, std::placeholders::_1) },
-        { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::InitDeviceMovementObserver, std::placeholders::_1) },
-        { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::InitMMiEventObserver, std::placeholders::_1) },
-        { DISPLAY_MANAGER_SERVICE_ID, std::bind(&ObserverManager::InitDisplayModeObserver, std::placeholders::_1) },
-        { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::InitConnectionSubscriber, std::placeholders::_1) },
-        { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID,
-            std::bind(&ObserverManager::InitDataShareObserver, std::placeholders::_1) },
+        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](){ ObserverManager::GetInstance().InitHiSysEventObserver(); }},
+        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,[](){ ObserverManager::GetInstance().InitTelephonyObserver(); }},
+        { AUDIO_POLICY_SERVICE_ID, [](){ ObserverManager::GetInstance().InitAudioObserver(); }},
+        { MSDP_MOVEMENT_SERVICE_ID, [](){ ObserverManager::GetInstance().InitDeviceMovementObserver(); }},
+        { MULTIMODAL_INPUT_SERVICE_ID, [](){ ObserverManager::GetInstance().InitMMiEventObserver(); }},
+        { DISPLAY_MANAGER_SERVICE_ID, [](){ ObserverManager::GetInstance().InitDisplayModeObserver(); }},
+        { ABILITY_MGR_SERVICE_ID, [](){ ObserverManager::GetInstance().InitConnectionSubscriber(); }},
+        { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID,[](){ ObserverManager::GetInstance().InitDataShareObserver(); }},
 #ifndef RESOURCE_REQUEST_REQUEST
-        { DOWNLOAD_SERVICE_ID, std::bind(&ObserverManager::InitDownloadUploadObserver, std::placeholders::_1) },
+        { DOWNLOAD_SERVICE_ID, [](){ ObserverManager::GetInstance().InitDownloadUploadObserver(); }},
 #endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
-        { AVSESSION_SERVICE_ID, std::bind(&ObserverManager::InitAVSessionStateChangeListener, std::placeholders::_1) },
+        { AVSESSION_SERVICE_ID, [](){ ObserverManager::GetInstance().InitAVSessionStateChangeListener(); }},
 #endif
-        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN,
-            std::bind(&ObserverManager::InitAccountObserver, std::placeholders::_1) },
+        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN,[](){ ObserverManager::GetInstance().InitAccountObserver(); }},
     };
 
     removeObserverMap_ = {
-        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, std::bind(&ObserverManager::DisableHiSysEventObserver,
-            std::placeholders::_1) },
-        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,
-            std::bind(&ObserverManager::DisableTelephonyObserver, std::placeholders::_1) },
-        { AUDIO_POLICY_SERVICE_ID, std::bind(&ObserverManager::DisableAudioObserver, std::placeholders::_1) },
-        { MSDP_MOVEMENT_SERVICE_ID, std::bind(&ObserverManager::DisableDeviceMovementObserver, std::placeholders::_1) },
-        { MULTIMODAL_INPUT_SERVICE_ID, std::bind(&ObserverManager::DisableMMiEventObserver, std::placeholders::_1) },
-        { DISPLAY_MANAGER_SERVICE_ID, std::bind(&ObserverManager::DisableDisplayModeObserver, std::placeholders::_1) },
-        { ABILITY_MGR_SERVICE_ID, std::bind(&ObserverManager::DisableConnectionSubscriber, std::placeholders::_1) },
-        { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID,
-            std::bind(&ObserverManager::DisableDataShareObserver, std::placeholders::_1) },
+        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](){
+            ObserverManager::GetInstance().DisableHiSysEventObserver();
+        }},
+        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID,[](){ ObserverManager::GetInstance().DisableTelephonyObserver(); }},
+        { AUDIO_POLICY_SERVICE_ID, [](){ ObserverManager::GetInstance().DisableAudioObserver(); }},
+        { MSDP_MOVEMENT_SERVICE_ID, [](){ ObserverManager::GetInstance().DisableDeviceMovementObserver(); }},
+        { MULTIMODAL_INPUT_SERVICE_ID, [](){ ObserverManager::GetInstance().DisableMMiEventObserver(); }},
+        { DISPLAY_MANAGER_SERVICE_ID, [](){ ObserverManager::GetInstance().DisableDisplayModeObserver(); }},
+        { ABILITY_MGR_SERVICE_ID, [](){ ObserverManager::GetInstance().DisableConnectionSubscriber(); }},
+        { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID,[](){ ObserverManager::GetInstance().DisableDataShareObserver(); }},
 #ifndef RESOURCE_REQUEST_REQUEST
-        { DOWNLOAD_SERVICE_ID, std::bind(&ObserverManager::DisableDownloadUploadObserver, std::placeholders::_1) },
+        { DOWNLOAD_SERVICE_ID, [](){ ObserverManager::GetInstance().DisableDownloadUploadObserver(); }},
 #endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
-        { AVSESSION_SERVICE_ID,
-          std::bind(&ObserverManager::DisableAVSessionStateChangeListener, std::placeholders::_1) },
+        { AVSESSION_SERVICE_ID,[](){ ObserverManager::GetInstance().DisableAVSessionStateChangeListener(); }},
 #endif
-        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN,
-            std::bind(&ObserverManager::DisableAccountObserver, std::placeholders::_1) },
+        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN,[](){ ObserverManager::GetInstance().DisableAccountObserver(); }},
     };
 }
 

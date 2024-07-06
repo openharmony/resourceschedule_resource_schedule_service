@@ -131,8 +131,9 @@ napi_value Systemload::RegisterSystemloadCallback(napi_env env, napi_callback_in
             return CreateJsUndefined(env);
         }
     }
-    auto systemloadLevelCb = std::bind(
-        &Systemload::OnSystemloadLevel, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+    auto systemloadLevelCb = [](napi_env env, napi_value callbackObj, int32_t level){
+        Systemload::GetInstance().OnSystemloadLevel(env, callbackObj, level);
+    };
     sptr<SystemloadListener> systemloadListener =
         new (std::nothrow) SystemloadListener(env, jsCallback, systemloadLevelCb);
     if (systemloadListener == nullptr) {
