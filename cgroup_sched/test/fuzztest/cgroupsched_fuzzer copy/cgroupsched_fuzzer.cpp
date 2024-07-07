@@ -1377,70 +1377,6 @@ namespace ResourceSchedule {
         return true;
     }
 
-    void BackgroundTaskObserverFuzzExecute(const uint8_t* data, size_t size)
-    {
-        OHOS::ResourceSchedule::TransientTaskStartFuzzTest(data, size);
-        OHOS::ResourceSchedule::TransientTaskEndFuzzTest(data, size);
-        OHOS::ResourceSchedule::MarshallingContinuousTaskCallbackInfoFuzzTest(data, size);
-        OHOS::ResourceSchedule::ContinuousTaskStartFuzzTest(data, size);
-        OHOS::ResourceSchedule::ContinuousTaskStopFuzzTest(data, size);
-        OHOS::ResourceSchedule::ContinuousTaskUpdateFuzzTest(data, size);
-        OHOS::ResourceSchedule::RemoteDiedFuzzTest(data, size);
-    }
-
-    void CgroupEventHandlerFuzzExecute(const uint8_t* data, size_t size)
-    {
-        OHOS::ResourceSchedule::ProcessEventFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleAbilityAddedFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleAbilityRemovedFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleProcessDiedFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleTransientTaskStartFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleTransientTaskEndFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleContinuousTaskUpdateFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleContinuousTaskCancelFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleReportMMIProcessFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleReportRenderThreadFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleReportKeyThreadFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleReportWindowStateFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleReportWebviewAudioStateFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleReportRunningLockEventFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleReportHisysEventFuzzTest(data, size);
-        OHOS::ResourceSchedule::CheckVisibilityForRenderProcessFuzzTest(data, size);
-        OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleSceneBoardStateFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleWindowVisibilityChangedFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleDrawingContentChangeWindowFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleUnfocusedWindowFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleFocusedWindowFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleApplicationStateChangedFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleProcessStateChangedFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleAbilityStateChangedFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleExtensionStateChangedFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleReportAudioStateFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleProcessCreatedFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleWebviewScreenCaptureFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleReportWebviewVideoStateFuzzTest(data, size);
-    }
-
-    void CgroupAdjusterFuzzExecute(const uint8_t* data, size_t size)
-    {
-        OHOS::ResourceSchedule::AdjustForkProcessGroupFuzzTest(data, size);
-        OHOS::ResourceSchedule::AdjustProcessGroupFuzzTest(data, size);
-        OHOS::ResourceSchedule::AdjustAllProcessGroupFuzzTest(data, size);
-        OHOS::ResourceSchedule::ComputeProcessGroupFuzzTest(data, size);
-        OHOS::ResourceSchedule::ApplyProcessGroupFuzzTest(data, size);
-    }
-
-    void AppStateObserverFuzzExecute(const uint8_t* data, size_t size)
-    {
-        OHOS::ResourceSchedule::UpdateAppStartupNumFuzzTest(data, size);
-        OHOS::ResourceSchedule::OnProcessDiedFuzzTest(data, size);
-        OHOS::ResourceSchedule::OnApplicationStateChangedFuzzTest(data, size);
-        OHOS::ResourceSchedule::OnAppStateChangedFuzzTest(data, size);
-        OHOS::ResourceSchedule::OnAppCacheStateChangedFuzzTest(data, size);
-    }
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 
@@ -1449,19 +1385,63 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     /* Run your code on data */
     // background_task_observer.cpp
-    OHOS::ResourceSchedule::BackgroundTaskObserverFuzzExecute(data, size);
+    OHOS::ResourceSchedule::TransientTaskStartFuzzTest(data, size);
+    OHOS::ResourceSchedule::TransientTaskEndFuzzTest(data, size);
+    OHOS::ResourceSchedule::MarshallingContinuousTaskCallbackInfoFuzzTest(data, size);
+    OHOS::ResourceSchedule::ContinuousTaskStartFuzzTest(data, size);
+    OHOS::ResourceSchedule::ContinuousTaskStopFuzzTest(data, size);
+    OHOS::ResourceSchedule::ContinuousTaskUpdateFuzzTest(data, size);
+    OHOS::ResourceSchedule::RemoteDiedFuzzTest(data, size);
     // background_task_observer.cpp end
 
     // cgroup_event_handler.cpp
-    OHOS::ResourceSchedule::CgroupEventHandlerFuzzExecute(data, size);
+    OHOS::ResourceSchedule::ProcessEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleAbilityAddedFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleAbilityRemovedFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleProcessDiedFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleTransientTaskStartFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleTransientTaskEndFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleContinuousTaskUpdateFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleContinuousTaskCancelFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleReportMMIProcessFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleReportRenderThreadFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleReportKeyThreadFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleReportWindowStateFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleReportWebviewAudioStateFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleReportRunningLockEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleReportHisysEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::CheckVisibilityForRenderProcessFuzzTest(data, size);
+    OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleSceneBoardStateFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleWindowVisibilityChangedFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleDrawingContentChangeWindowFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleUnfocusedWindowFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleFocusedWindowFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleApplicationStateChangedFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleProcessStateChangedFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleAbilityStateChangedFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleExtensionStateChangedFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleReportAudioStateFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleProcessCreatedFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleWebviewScreenCaptureFuzzTest(data, size);
+    OHOS::ResourceSchedule::HandleReportWebviewVideoStateFuzzTest(data, size);
     // cgroup_event_handler.cpp end
 
     // cgroup_adjuster.cpp
-    OHOS::ResourceSchedule::CgroupAdjusterFuzzExecute(data, size);
+    OHOS::ResourceSchedule::AdjustForkProcessGroupFuzzTest(data, size);
+    OHOS::ResourceSchedule::AdjustProcessGroupFuzzTest(data, size);
+    OHOS::ResourceSchedule::AdjustAllProcessGroupFuzzTest(data, size);
+    OHOS::ResourceSchedule::ComputeProcessGroupFuzzTest(data, size);
+    OHOS::ResourceSchedule::ApplyProcessGroupFuzzTest(data, size);
     // cgroup_adjuster.cpp end
 
     // app_state_observer.cpp
-    OHOS::ResourceSchedule::AppStateObserverFuzzExecute(data, size);
+    OHOS::ResourceSchedule::UpdateAppStartupNumFuzzTest(data, size);
+    OHOS::ResourceSchedule::OnProcessDiedFuzzTest(data, size);
+    OHOS::ResourceSchedule::OnApplicationStateChangedFuzzTest(data, size);
+    OHOS::ResourceSchedule::OnAppStateChangedFuzzTest(data, size);
+    OHOS::ResourceSchedule::OnAppCacheStateChangedFuzzTest(data, size);
     // app_state_observer.cpp end
 
     return 0;
