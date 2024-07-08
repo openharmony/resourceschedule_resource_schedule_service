@@ -325,6 +325,7 @@ HWTEST_F(NotifierMgrTest, Dump002, Function | MediumTest | Level0)
 {
     sptr<IRemoteObject> notifier = new (std::nothrow) TestNotifierSystemloadListener();
     EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().initialized_ = false;
     NotifierMgr::GetInstance().Init();
     NotifierMgr::GetInstance().RegisterNotifier(IPCSkeleton::GetCallingPid(), notifier);
     auto res = NotifierMgr::GetInstance().DumpRegisterInfo();
