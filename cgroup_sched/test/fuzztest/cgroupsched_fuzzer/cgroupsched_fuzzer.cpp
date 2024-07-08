@@ -52,6 +52,7 @@ namespace ResourceSchedule {
     size_t g_size = 0;
     size_t g_pos;
     std::shared_ptr<Supervisor> g_supervisor = std::make_shared<Supervisor>();
+    const size_t STR_LEN = 10;
 
 /*
 * describe: get data from outside untrusted data(G_DATA) which size is according to sizeof(T)
@@ -100,10 +101,6 @@ namespace ResourceSchedule {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(int32_t)) {
-            return false;
-        }
-
         // initialize
         G_DATA = data;
         g_size = size;
@@ -112,7 +109,7 @@ namespace ResourceSchedule {
         // getdata
         int32_t uid = GetData<int32_t>();
         int32_t pid = GetData<int32_t>();
-        std::string packageName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t));
+        std::string packageName = GetStringFromData(STR_LEN);
         auto transientTaskAppInfo =
             std::make_shared<TransientTaskAppInfo>(packageName, uid, pid);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
@@ -127,10 +124,6 @@ namespace ResourceSchedule {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(int32_t)) {
-            return false;
-        }
-
         // initialize
         G_DATA = data;
         g_size = size;
@@ -139,7 +132,7 @@ namespace ResourceSchedule {
         // getdata
         int32_t uid = GetData<int32_t>();
         int32_t pid = GetData<int32_t>();
-        std::string packageName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t));
+        std::string packageName = GetStringFromData(STR_LEN);
         auto transientTaskAppInfo =
         std::make_shared<TransientTaskAppInfo>(packageName, uid, pid);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
@@ -151,10 +144,6 @@ namespace ResourceSchedule {
     bool MarshallingContinuousTaskCallbackInfoFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
-            return false;
-        }
-
-        if (size <= sizeof(int32_t) + sizeof(int32_t)) {
             return false;
         }
 
@@ -170,7 +159,7 @@ namespace ResourceSchedule {
         int32_t creatorUid = GetData<int32_t>();
         int32_t abilityId = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
-        std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
+        std::string abilityName = GetStringFromData(STR_LEN);
         bool isBatchApi = GetData<bool>();
         bool isFromWebview = GetData<bool>();
         nlohmann::json payload;
@@ -189,10 +178,6 @@ namespace ResourceSchedule {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(int32_t) + sizeof(pid_t)) {
-            return false;
-        }
-
         // initialize
         G_DATA = data;
         g_size = size;
@@ -202,7 +187,7 @@ namespace ResourceSchedule {
         int32_t typeId = DATA_TRANSFER;
         int32_t creatorUid = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
-        std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
+        std::string abilityName = GetStringFromData(STR_LEN);
         auto continuousTaskCallbackInfo =
             std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
@@ -221,10 +206,6 @@ namespace ResourceSchedule {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(int32_t) + sizeof(pid_t)) {
-            return false;
-        }
-
         // initialize
         G_DATA = data;
         g_size = size;
@@ -234,7 +215,7 @@ namespace ResourceSchedule {
         int32_t typeId = DATA_TRANSFER;
         int32_t creatorUid = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
-        std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
+        std::string abilityName = GetStringFromData(STR_LEN);
         auto continuousTaskCallbackInfo =
             std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
@@ -253,10 +234,6 @@ namespace ResourceSchedule {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(int32_t) + sizeof(pid_t)) {
-            return false;
-        }
-
         // initialize
         G_DATA = data;
         g_size = size;
@@ -266,7 +243,7 @@ namespace ResourceSchedule {
         int32_t typeId = DATA_TRANSFER;
         int32_t creatorUid = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
-        std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
+        std::string abilityName = GetStringFromData(STR_LEN);
         auto continuousTaskCallbackInfo =
             std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
