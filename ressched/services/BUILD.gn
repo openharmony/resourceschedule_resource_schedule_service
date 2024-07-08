@@ -117,6 +117,8 @@ ohos_shared_library("resschedsvc") {
     "window_manager:libdm",
   ]
 
+  public_external_deps = [ "json:nlohmann_json_static" ]
+
   if (device_movement_perception_enable) {
     defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
     external_deps += [ "movement:movement_client" ]
