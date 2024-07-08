@@ -44,7 +44,7 @@ private:
     bool CheckJsonValue(const nlohmann::json& value, std::initializer_list<std::string> params);
 
     std::map<std::string,
-        std::function<void(HiSysEventObserver *, const nlohmann::json&, const std::string&)>> handleObserverMap_;
+        std::function<void(const nlohmann::json&, const std::string&)>> handleObserverMap_;
 };
 
 /**

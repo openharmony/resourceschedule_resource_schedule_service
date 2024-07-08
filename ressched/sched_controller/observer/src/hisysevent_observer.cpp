@@ -43,24 +43,33 @@ namespace {
 HiSysEventObserver::HiSysEventObserver() : HiviewDFX::HiSysEventListener()
 {
     handleObserverMap_ = {
-        {"RUNNINGLOCK", std::bind(&HiSysEventObserver::ProcessRunningLockEvent,
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)},
-        {"STREAM_CHANGE", std::bind(&HiSysEventObserver::ProcessAudioEvent,
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)},
-        {"CAMERA_CONNECT", std::bind(&HiSysEventObserver::ProcessCameraEvent,
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)},
-        {"CAMERA_DISCONNECT", std::bind(&HiSysEventObserver::ProcessCameraEvent,
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)},
-        {"BR_SWITCH_STATE", std::bind(&HiSysEventObserver::ProcessBluetoothEvent,
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)},
-        {"BLE_SWITCH_STATE", std::bind(&HiSysEventObserver::ProcessBluetoothEvent,
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)},
-        {"WIFI_CONNECTION", std::bind(&HiSysEventObserver::ProcessWifiEvent,
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)},
-        {"WIFI_SCAN", std::bind(&HiSysEventObserver::ProcessWifiEvent,
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)},
-        {"PLAYER_STATE", std::bind(&HiSysEventObserver::ProcessScreenCaptureEvent,
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)},
+        {"RUNNINGLOCK", [this](const nlohmann::json& root, const std::string& eventName) {
+            this->ProcessRunningLockEvent(root, eventName);
+        }},
+        {"STREAM_CHANGE", [this](const nlohmann::json& root, const std::string& eventName) {
+            this->ProcessAudioEvent(root, eventName);
+        }},
+        {"CAMERA_CONNECT", [this](const nlohmann::json& root, const std::string& eventName) {
+            this->ProcessCameraEvent(root, eventName);
+        }},
+        {"CAMERA_DISCONNECT", [this](const nlohmann::json& root, const std::string& eventName) {
+            this->ProcessCameraEvent(root, eventName);
+        }},
+        {"BR_SWITCH_STATE", [this](const nlohmann::json& root, const std::string& eventName) {
+            this->ProcessBluetoothEvent(root, eventName);
+        }},
+        {"BLE_SWITCH_STATE", [this](const nlohmann::json& root, const std::string& eventName) {
+            this->ProcessBluetoothEvent(root, eventName);
+        }},
+        {"WIFI_CONNECTION", [this](const nlohmann::json& root, const std::string& eventName) {
+            this->ProcessWifiEvent(root, eventName);
+        }},
+        {"WIFI_SCAN", [this](const nlohmann::json& root, const std::string& eventName) {
+            this->ProcessWifiEvent(root, eventName);
+        }},
+        {"PLAYER_STATE", [this](const nlohmann::json& root, const std::string& eventName) {
+            this->ProcessScreenCaptureEvent(root, eventName);
+        }},
     };
 }
 
@@ -118,7 +127,7 @@ void HiSysEventObserver::ProcessHiSysEvent(const std::string& eventName, const n
     if (funcIter != handleObserverMap_.end()) {
         auto function = funcIter->second;
         if (function) {
-            function(this, root, eventName);
+            function(root, eventName);
         }
     }
 }
