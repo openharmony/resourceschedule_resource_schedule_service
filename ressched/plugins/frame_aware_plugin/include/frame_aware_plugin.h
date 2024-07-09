@@ -52,6 +52,7 @@ private:
     void HandleEventSlide(const std::shared_ptr<ResData>& data);
     void HandleScreenLock(const std::shared_ptr<ResData>& data);
     void HandleScreenStatus(const std::shared_ptr<ResData>& data);
+    void HandleInteractionScene(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

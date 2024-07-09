@@ -58,7 +58,7 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbili
     if (!DataShareUtils::GetInstance().GetDataShareReadyFlag()) {
         RESSCHED_LOGE("RegisterObserver: dataShare is not ready!");
         std::function dataShareFunction = [key, func, this]() {
-            RegisterObserver(key, func);
+            ReRegisterObserver(key, func);
         };
         dataShareFunctions_.push_back(dataShareFunction);
         return ERR_NO_INIT;
@@ -87,6 +87,17 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbili
     IPCSkeleton::SetCallingIdentity(callingIdentity);
     RESSCHED_LOGI("succeed to register observer of uri=%{public}s", uri.ToString().c_str());
     return ERR_OK;
+}
+
+void OOBEManager::ReRegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
+{
+    int resultValue = 0;
+    ResourceSchedule::DataShareUtils::GetInstance().GetValue(key, resultValue);
+    if (resultValue != 0) {
+        func();
+        return;
+    }
+    RegisterObserver(key, func);
 }
     
 ErrCode OOBEManager::UnregisterObserver()
@@ -122,8 +133,7 @@ void OOBEManager::ResDataAbilityObserver::SetUpdateFunc(const UpdateFunc& func)
 void OOBEManager::Initialize()
 {
     int resultValue = 0;
-    auto dataShareUtils = ResourceSchedule::DataShareUtils::GetInstance();
-    dataShareUtils.GetValue(KEYWORD, resultValue);
+    ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
     if (resultValue != 0) {
         g_oobeValue = true;
     }
@@ -146,6 +156,16 @@ bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
 
 void OOBEManager::StartListen()
 {
+    int resultValue = 0;
+    ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
+    if (resultValue != 0) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        g_oobeValue = true;
+        for (auto task : oobeTasks_) {
+            task->ExcutingTask();
+        }
+        return;
+    }
     OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {
         int result = 0;
         ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);

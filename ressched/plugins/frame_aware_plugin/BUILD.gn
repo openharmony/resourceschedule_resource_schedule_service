@@ -26,14 +26,21 @@ config("frame_aware_plugin_config") {
 ohos_shared_library("frame_aware_plugin") {
   branch_protector_ret = "pac_ret"
 
-  sanitize = {
-    cfi = true
-    cfi_cross_dso = true
-    debug = false
-  }
-
   configs = [ ":frame_aware_plugin_config" ]
 
+  cflags_cc = [
+    "-fomit-frame-pointer",
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-fno-unroll-loops",
+    "-fno-exceptions",
+    "-fno-unwind-tables",
+    "-fno-asynchronous-unwind-tables",
+    "-g0",
+    "-Os",
+  ]
+
+  ldflags = [ "-Wl,--exclude-libs=ALL" ]
   sources = [
     "src/frame_aware_plugin.cpp",
     "src/network_latency_controller.cpp",

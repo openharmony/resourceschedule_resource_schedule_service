@@ -12,6 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
+import("../../cgroup_sched.gni")
 
 config("libprocess_group_config") {
   include_dirs = [ "./include" ]
@@ -29,10 +30,13 @@ ohos_shared_library("libprocess_group") {
     "./src/sched_policy.cpp",
   ]
 
+  deps = [ "${ressched_services_executor}/interfaces/innerkits/ressched_executor_client:resschedexe_client" ]
+
   external_deps = [
     "c_utils:utils",
     "config_policy:configpolicy_util",
     "hilog:libhilog",
+    "ipc:ipc_single",
   ]
 
   public_external_deps = [ "json:nlohmann_json_static" ]

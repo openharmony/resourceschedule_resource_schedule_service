@@ -57,6 +57,7 @@ private:
     ~OOBEManager();
     void Initialize();
     ErrCode RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func);
+    void ReRegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func);
 };
 } // ResourceSchedule
 } // OHOS

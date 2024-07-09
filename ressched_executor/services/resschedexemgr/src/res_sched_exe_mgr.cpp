@@ -17,7 +17,9 @@
 
 #include <cinttypes>
 #include <csignal>
+#include <fstream>
 #include <map>
+#include <sstream>
 
 #include "hitrace_meter.h"
 
@@ -62,6 +64,7 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
     std::string traceStr = BuildTraceStr(__func__, resType, value);
     HitraceScoped hitrace(HITRACE_TAG_OHOS, traceStr);
+    HandleRequestForCgroup(resType, payload, reply);
     auto resData = std::make_shared<ResData>(resType, value, payload, reply);
     int32_t ret = PluginMgr::GetInstance().DeliverResource(resData);
     if (ret != ResIpcErrCode::RSSEXE_PLUGIN_ERROR) {
@@ -121,6 +124,32 @@ std::string ResSchedExeMgr::BuildTraceStr(const std::string& func, uint32_t resT
     trace_str.append(",resType[").append(std::to_string(resType)).append("]");
     trace_str.append(",value[").append(std::to_string(value)).append("]");
     return trace_str;
+}
+
+void ResSchedExeMgr::HandleRequestForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply)
+{
+    if (resType != ResExeType::RES_TYPE_CGROUP_SYNC_EVENT) {
+        return;
+    }
+    if (!payload.contains("pid") || !payload["pid"].is_number_integer()) {
+        return;
+    }
+    int pid = payload["pid"];
+    std::string path = "/proc/" + std::to_string(pid) + "/cgroup";
+    char resolvedPath[PATH_MAX] = { 0 };
+    if (path.size() > PATH_MAX || !realpath(path.c_str(), resolvedPath)) {
+        RSSEXE_LOGE("%{public}s realpath failed", __func__);
+        return;
+    }
+    auto realPath = std::string(resolvedPath);
+    std::ifstream fin(realPath.c_str(), std::ios::in);
+    if (!fin) {
+        return;
+    }
+    std::stringstream ss;
+    ss << fin.rdbuf();
+    reply["res"] = ss.str();
+    return;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

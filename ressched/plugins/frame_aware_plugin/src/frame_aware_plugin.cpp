@@ -57,6 +57,8 @@ void FrameAwarePlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleScreenLock(data); } },
         { RES_TYPE_SCREEN_STATUS,
             [this](const std::shared_ptr<ResData>& data) { HandleScreenStatus(data); } },
+        { RES_TYPE_USER_INTERACTION_SCENE,
+            [this](const std::shared_ptr<ResData>& data) { HandleInteractionScene(data); } },
     };
     resTypes = {
         RES_TYPE_APP_STATE_CHANGE,
@@ -69,6 +71,7 @@ void FrameAwarePlugin::Init()
         RES_TYPE_SLIDE_RECOGNIZE,
         RES_TYPE_SCREEN_LOCK,
         RES_TYPE_SCREEN_STATUS,
+        RES_TYPE_USER_INTERACTION_SCENE,
     };
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
@@ -264,6 +267,11 @@ void FrameAwarePlugin::HandleScreenStatus(const std::shared_ptr<ResData>& data)
     if (data->value) {
         RME_LOGI("Screen Bright Report");
     }
+}
+
+void FrameAwarePlugin::HandleInteractionScene(const std::shared_ptr<ResData>& data)
+{
+    RME::FrameMsgIntf::GetInstance().ReportInteractionScene(data->value);
 }
 
 void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)

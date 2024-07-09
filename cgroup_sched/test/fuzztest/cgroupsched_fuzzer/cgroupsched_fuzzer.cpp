@@ -43,6 +43,8 @@ typedef int errno_t;
 #define APP_MGR_SERVICE_ID              501
 #define WINDOW_MANAGER_SERVICE_ID       4606
 #define DEFAULT                         1904
+#define TASK_KEEPING                    9
+#define DATA_TRANSFER                   1
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -50,6 +52,7 @@ namespace ResourceSchedule {
     size_t g_size = 0;
     size_t g_pos;
     std::shared_ptr<Supervisor> g_supervisor = std::make_shared<Supervisor>();
+    const size_t STR_LEN = 10;
 
 /*
 * describe: get data from outside untrusted data(G_DATA) which size is according to sizeof(T)
@@ -98,10 +101,6 @@ namespace ResourceSchedule {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(int32_t)) {
-            return false;
-        }
-
         // initialize
         G_DATA = data;
         g_size = size;
@@ -110,7 +109,7 @@ namespace ResourceSchedule {
         // getdata
         int32_t uid = GetData<int32_t>();
         int32_t pid = GetData<int32_t>();
-        std::string packageName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t));
+        std::string packageName = GetStringFromData(STR_LEN);
         auto transientTaskAppInfo =
             std::make_shared<TransientTaskAppInfo>(packageName, uid, pid);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
@@ -125,7 +124,26 @@ namespace ResourceSchedule {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(int32_t)) {
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        int32_t uid = GetData<int32_t>();
+        int32_t pid = GetData<int32_t>();
+        std::string packageName = GetStringFromData(STR_LEN);
+        auto transientTaskAppInfo =
+        std::make_shared<TransientTaskAppInfo>(packageName, uid, pid);
+        auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
+        backgroundTaskObserver->OnTransientTaskEnd(transientTaskAppInfo);
+
+        return true;
+    }
+
+    bool MarshallingContinuousTaskCallbackInfoFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
             return false;
         }
 
@@ -135,13 +153,21 @@ namespace ResourceSchedule {
         g_pos = 0;
 
         // getdata
-        int32_t uid = GetData<int32_t>();
-        int32_t pid = GetData<int32_t>();
-        std::string packageName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t));
-        auto transientTaskAppInfo =
-        std::make_shared<TransientTaskAppInfo>(packageName, uid, pid);
+        uint32_t typeId = GetData<int32_t>();
+        std::vector<uint32_t> typeIds;
+        typeIds.push_back(typeId);
+        int32_t creatorUid = GetData<int32_t>();
+        int32_t abilityId = GetData<int32_t>();
+        pid_t creatorPid = GetData<pid_t>();
+        std::string abilityName = GetStringFromData(STR_LEN);
+        bool isBatchApi = GetData<bool>();
+        bool isFromWebview = GetData<bool>();
+        nlohmann::json payload;
+        auto continuousTaskCallbackInfo =
+            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName,
+            isFromWebview, isBatchApi, typeIds, abilityId);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
-        backgroundTaskObserver->OnTransientTaskEnd(transientTaskAppInfo);
+        backgroundTaskObserver->MarshallingContinuousTaskCallbackInfo(continuousTaskCallbackInfo, payload);
 
         return true;
     }
@@ -152,23 +178,23 @@ namespace ResourceSchedule {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(int32_t) + sizeof(pid_t)) {
-            return false;
-        }
-
         // initialize
         G_DATA = data;
         g_size = size;
         g_pos = 0;
 
         // getdata
-        int32_t typeId = 1;
+        int32_t typeId = DATA_TRANSFER;
         int32_t creatorUid = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
-        std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
+        std::string abilityName = GetStringFromData(STR_LEN);
         auto continuousTaskCallbackInfo =
             std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
+        backgroundTaskObserver->OnContinuousTaskStart(continuousTaskCallbackInfo);
+        typeId = TASK_KEEPING;
+        continuousTaskCallbackInfo =
+            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         backgroundTaskObserver->OnContinuousTaskStart(continuousTaskCallbackInfo);
 
         return true;
@@ -180,23 +206,23 @@ namespace ResourceSchedule {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(int32_t) + sizeof(pid_t)) {
-            return false;
-        }
-
         // initialize
         G_DATA = data;
         g_size = size;
         g_pos = 0;
 
         // getdata
-        int32_t typeId = 1;
+        int32_t typeId = DATA_TRANSFER;
         int32_t creatorUid = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
-        std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
+        std::string abilityName = GetStringFromData(STR_LEN);
         auto continuousTaskCallbackInfo =
             std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
+        backgroundTaskObserver->OnContinuousTaskStop(continuousTaskCallbackInfo);
+        typeId = TASK_KEEPING;
+        continuousTaskCallbackInfo =
+            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         backgroundTaskObserver->OnContinuousTaskStop(continuousTaskCallbackInfo);
 
         return true;
@@ -208,23 +234,23 @@ namespace ResourceSchedule {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(int32_t) + sizeof(pid_t)) {
-            return false;
-        }
-
         // initialize
         G_DATA = data;
         g_size = size;
         g_pos = 0;
 
         // getdata
-        int32_t typeId = 1;
+        int32_t typeId = DATA_TRANSFER;
         int32_t creatorUid = GetData<int32_t>();
         pid_t creatorPid = GetData<pid_t>();
-        std::string abilityName = GetStringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t) - sizeof(pid_t));
+        std::string abilityName = GetStringFromData(STR_LEN);
         auto continuousTaskCallbackInfo =
             std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
+        backgroundTaskObserver->OnContinuousTaskUpdate(continuousTaskCallbackInfo);
+        typeId = TASK_KEEPING;
+        continuousTaskCallbackInfo =
+            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
         backgroundTaskObserver->OnContinuousTaskUpdate(continuousTaskCallbackInfo);
 
         return true;
@@ -1328,6 +1354,70 @@ namespace ResourceSchedule {
         return true;
     }
 
+    void BackgroundTaskObserverFuzzExecute(const uint8_t* data, size_t size)
+    {
+        OHOS::ResourceSchedule::TransientTaskStartFuzzTest(data, size);
+        OHOS::ResourceSchedule::TransientTaskEndFuzzTest(data, size);
+        OHOS::ResourceSchedule::MarshallingContinuousTaskCallbackInfoFuzzTest(data, size);
+        OHOS::ResourceSchedule::ContinuousTaskStartFuzzTest(data, size);
+        OHOS::ResourceSchedule::ContinuousTaskStopFuzzTest(data, size);
+        OHOS::ResourceSchedule::ContinuousTaskUpdateFuzzTest(data, size);
+        OHOS::ResourceSchedule::RemoteDiedFuzzTest(data, size);
+    }
+
+    void CgroupEventHandlerFuzzExecute(const uint8_t* data, size_t size)
+    {
+        OHOS::ResourceSchedule::ProcessEventFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleAbilityAddedFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleAbilityRemovedFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleProcessDiedFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleTransientTaskStartFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleTransientTaskEndFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleContinuousTaskUpdateFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleContinuousTaskCancelFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportMMIProcessFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportRenderThreadFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportKeyThreadFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportWindowStateFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportWebviewAudioStateFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportRunningLockEventFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportHisysEventFuzzTest(data, size);
+        OHOS::ResourceSchedule::CheckVisibilityForRenderProcessFuzzTest(data, size);
+        OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleSceneBoardStateFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleWindowVisibilityChangedFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleDrawingContentChangeWindowFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleUnfocusedWindowFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleFocusedWindowFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleApplicationStateChangedFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleProcessStateChangedFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleAbilityStateChangedFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleExtensionStateChangedFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportAudioStateFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleProcessCreatedFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleWebviewScreenCaptureFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportWebviewVideoStateFuzzTest(data, size);
+    }
+
+    void CgroupAdjusterFuzzExecute(const uint8_t* data, size_t size)
+    {
+        OHOS::ResourceSchedule::AdjustForkProcessGroupFuzzTest(data, size);
+        OHOS::ResourceSchedule::AdjustProcessGroupFuzzTest(data, size);
+        OHOS::ResourceSchedule::AdjustAllProcessGroupFuzzTest(data, size);
+        OHOS::ResourceSchedule::ComputeProcessGroupFuzzTest(data, size);
+        OHOS::ResourceSchedule::ApplyProcessGroupFuzzTest(data, size);
+    }
+
+    void AppStateObserverFuzzExecute(const uint8_t* data, size_t size)
+    {
+        OHOS::ResourceSchedule::UpdateAppStartupNumFuzzTest(data, size);
+        OHOS::ResourceSchedule::OnProcessDiedFuzzTest(data, size);
+        OHOS::ResourceSchedule::OnApplicationStateChangedFuzzTest(data, size);
+        OHOS::ResourceSchedule::OnAppStateChangedFuzzTest(data, size);
+        OHOS::ResourceSchedule::OnAppCacheStateChangedFuzzTest(data, size);
+    }
+
 } // namespace ResourceSchedule
 } // namespace OHOS
 
@@ -1336,62 +1426,19 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     /* Run your code on data */
     // background_task_observer.cpp
-    OHOS::ResourceSchedule::TransientTaskStartFuzzTest(data, size);
-    OHOS::ResourceSchedule::TransientTaskEndFuzzTest(data, size);
-    OHOS::ResourceSchedule::ContinuousTaskStartFuzzTest(data, size);
-    OHOS::ResourceSchedule::ContinuousTaskStopFuzzTest(data, size);
-    OHOS::ResourceSchedule::ContinuousTaskUpdateFuzzTest(data, size);
-    OHOS::ResourceSchedule::RemoteDiedFuzzTest(data, size);
+    OHOS::ResourceSchedule::BackgroundTaskObserverFuzzExecute(data, size);
     // background_task_observer.cpp end
 
     // cgroup_event_handler.cpp
-    OHOS::ResourceSchedule::ProcessEventFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleAbilityAddedFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleAbilityRemovedFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleProcessDiedFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleTransientTaskStartFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleTransientTaskEndFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleContinuousTaskUpdateFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleContinuousTaskCancelFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleReportMMIProcessFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleReportRenderThreadFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleReportKeyThreadFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleReportWindowStateFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleReportWebviewAudioStateFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleReportRunningLockEventFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleReportHisysEventFuzzTest(data, size);
-    OHOS::ResourceSchedule::CheckVisibilityForRenderProcessFuzzTest(data, size);
-    OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleSceneBoardStateFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleWindowVisibilityChangedFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleDrawingContentChangeWindowFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleUnfocusedWindowFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleFocusedWindowFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleApplicationStateChangedFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleProcessStateChangedFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleAbilityStateChangedFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleExtensionStateChangedFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleReportAudioStateFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleProcessCreatedFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleWebviewScreenCaptureFuzzTest(data, size);
-    OHOS::ResourceSchedule::HandleReportWebviewVideoStateFuzzTest(data, size);
+    OHOS::ResourceSchedule::CgroupEventHandlerFuzzExecute(data, size);
     // cgroup_event_handler.cpp end
 
     // cgroup_adjuster.cpp
-    OHOS::ResourceSchedule::AdjustForkProcessGroupFuzzTest(data, size);
-    OHOS::ResourceSchedule::AdjustProcessGroupFuzzTest(data, size);
-    OHOS::ResourceSchedule::AdjustAllProcessGroupFuzzTest(data, size);
-    OHOS::ResourceSchedule::ComputeProcessGroupFuzzTest(data, size);
-    OHOS::ResourceSchedule::ApplyProcessGroupFuzzTest(data, size);
+    OHOS::ResourceSchedule::CgroupAdjusterFuzzExecute(data, size);
     // cgroup_adjuster.cpp end
 
     // app_state_observer.cpp
-    OHOS::ResourceSchedule::UpdateAppStartupNumFuzzTest(data, size);
-    OHOS::ResourceSchedule::OnProcessDiedFuzzTest(data, size);
-    OHOS::ResourceSchedule::OnApplicationStateChangedFuzzTest(data, size);
-    OHOS::ResourceSchedule::OnAppStateChangedFuzzTest(data, size);
-    OHOS::ResourceSchedule::OnAppCacheStateChangedFuzzTest(data, size);
+    OHOS::ResourceSchedule::AppStateObserverFuzzExecute(data, size);
     // app_state_observer.cpp end
 
     return 0;

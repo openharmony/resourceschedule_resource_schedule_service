@@ -116,8 +116,7 @@ bool CgroupController::AddSchedPolicy(SchedPolicy policy, const std::string& sub
 bool CgroupController::GetTaskGroup(int tid, std::string& subgroup)
 {
     std::string content;
-    std::string filePath = StringPrintf("/proc/%d/cgroup", tid);
-    if (!ReadFileToStringForVFS(filePath, content)) {
+    if (!ReadFileToStringForVFSFromExecutor(tid, content)) {
         PGCGS_LOGE("%{public}s: fail to read pid %{public}d cgroup proc", __func__, tid);
         return false;
     }

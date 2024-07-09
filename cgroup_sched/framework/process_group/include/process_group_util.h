@@ -35,6 +35,8 @@ bool WriteStringToFile(int fd, const std::string& content);
 bool WriteStringToFile(const std::string& content, const std::string& filePath);
 
 bool ReadFileToStringForVFS(const std::string& filePath, std::string& content);
+
+bool ReadFileToStringForVFSFromExecutor(int tid, std::string& content);
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
