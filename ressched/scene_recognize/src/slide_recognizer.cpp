@@ -27,10 +27,6 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    static constexpr int64_t LIST_FLINT_TIME_OUT_TIME = 3 * 1000 * 1000;
-    static constexpr int64_t LIST_FLINT_END_TIME = 300 * 1000;
-    static constexpr float LIST_FLING_SPEED_LIMIT = 500.0;
-    static constexpr int64_t SLIDE_NORMAL_DETECTING_TIME = 50;
     static const std::string UP_SPEED_KEY = "up_speed";
     static uint32_t g_slideState = SlideRecognizeStat::IDLE;
     static ffrt::recursive_mutex stateMutex;
@@ -172,6 +168,26 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
                 ResType::SlideEventStatus::SLIDE_EVENT_ON, payload);
         }
     }
+}
+
+void SlideRecognizer::SetListFlingTimeoutTime(int64_t value)
+{
+    listFlingTimeOutTime_ = value;
+}
+
+void SlideRecognizer::SetListFlingEndTime(int64_t value)
+{
+    listFlingEndTime_ = value;
+}
+
+void SlideRecognizer::SetListFlingSpeedLimit(float value)
+{
+    listFlingSpeedLimit_ = value;
+}
+
+void SlideRecognizer::SetSlideNormalDetectingTime(int64_t value)
+{
+    slideNormalDecectingTime_ = value;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

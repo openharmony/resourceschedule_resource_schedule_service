@@ -27,10 +27,11 @@ IMPLEMENT_SINGLE_INSTANCE(SceneRecognizerMgr);
 SceneRecognizerMgr::SceneRecognizerMgr()
 {
     sceneRecognizers_ = {
-        std::make_shared<ContinuousAppInstallRecognizer>(),
-        std::make_shared<SystemUpgradeSceneRecognizer>(),
-        std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>(),
-        std::make_shared<SlideRecognizer>(),
+        { RecognizeType::CONTINUOUS_APP_INSTALL_RECOGNIZER, std::make_shared<ContinuousAppInstallRecognizer>() },
+        { RecognizeType::SYSTEM_UPGRADE_SCENE_RECOGNIZER , std::make_shared<SystemUpgradeSceneRecognizer>() },
+        { RecognizeType::BACKGROUND_SENSITIVE_TASK_OVERLAPPING_SCENE_RECOGNIZER,
+            std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>() },
+        { RecognizeType::SLIDE_RECOGNIZER, std::make_shared<SlideRecognizer>()},
         };
     ffrtQueue_ = std::make_shared<ffrt::queue>("scene_recognizers_queue",
         ffrt::queue_attr().qos(ffrt::qos_user_interactive));
@@ -46,9 +47,46 @@ SceneRecognizerMgr::~SceneRecognizerMgr()
 void SceneRecognizerMgr::DispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     for (auto recognizer : sceneRecognizers_) {
-        ffrtQueue_->submit([resType, value, payload, recognizer]() {
+        ffrtQueue_->submit([resType, value, payload, recognizer.second]() {
             recognizer->OnDispatchResource(resType, value, payload);
         });
+    }
+}
+
+void SceneRecognizerMgr::SetListFlingTimeoutTime(int64_t value)
+{
+    sceneRecognizers[RecognizeType::SLIDE_RECOGNIZER]->SetListFlingTimeoutTime(value);
+}
+
+void SceneRecognizerMgr::SetListFlingEndTime(int64_t value)
+{
+    sceneRecognizers[RecognizeType::SLIDE_RECOGNIZER]->SetListFlingEndTime(value);
+}
+void SceneRecognizerMgr::SetListFlingSpeedLimit(float value)
+{
+    sceneRecognizers[RecognizeType::SLIDE_RECOGNIZER]->SetListFlingSpeedLimit(value);
+}
+void SceneRecognizerMgr::SetSlideNormalDetectingTime(int64_t value)
+{
+    sceneRecognizers[RecognizeType::SLIDE_RECOGNIZER]->SetSlideNormalDetectingTime(value);
+}
+
+extern "C" {
+    void SetListFlingTimeoutTime(int64_t value)
+    {
+        SceneRecognizerMgr::GetInstance().SetListFlingTimeoutTime(value);
+    }
+    void SetListFlingEndTime(int64_t value)
+    {
+        SceneRecognizerMgr::GetInstance().SetListFlingEndTime(value);
+    }
+    void SetListFlingSpeedLimit(float value)
+    {
+        SceneRecognizerMgr::GetInstance().SetListFlingSpeedLimit(value);
+    }
+    void SetSlideNormalDetectingTime(int64_t value)
+    {
+        SceneRecognizerMgr::GetInstance().SetSlideNormalDetectingTime(value);
     }
 }
 } // namespace ResourceSchedule
