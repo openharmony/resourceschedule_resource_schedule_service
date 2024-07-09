@@ -21,6 +21,7 @@ config("cgroup_sched_public_config") {
     "./utils/include",
     "process_group/include",
     "sched_controller/include",
+    "../../ressched_executor/common/include",
   ]
 }
 
@@ -41,6 +42,7 @@ ohos_shared_library("cgroup_sched") {
   deps = [
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
     "./process_group:libprocess_group",
+    "${ressched_services_executor}/interfaces/innerkits/ressched_executor_client:resschedexe_client",
   ]
 
   external_deps = [

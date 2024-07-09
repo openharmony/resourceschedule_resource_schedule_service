@@ -27,6 +27,7 @@
 #include "res_exe_type.h"
 #include "res_sched_exe_constants.h"
 #include "res_sched_exe_log.h"
+#include "directory_ex.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -65,6 +66,7 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     std::string traceStr = BuildTraceStr(__func__, resType, value);
     HitraceScoped hitrace(HITRACE_TAG_OHOS, traceStr);
     HandleRequestForCgroup(resType, payload, reply);
+    HandleProcTaskForCgroup(resType, payload, reply);
     auto resData = std::make_shared<ResData>(resType, value, payload, reply);
     int32_t ret = PluginMgr::GetInstance().DeliverResource(resData);
     if (ret != ResIpcErrCode::RSSEXE_PLUGIN_ERROR) {
@@ -149,6 +151,26 @@ void ResSchedExeMgr::HandleRequestForCgroup(uint32_t resType, const nlohmann::js
     std::stringstream ss;
     ss << fin.rdbuf();
     reply["res"] = ss.str();
+    return;
+}
+
+void ResSchedExeMgr::HandleProcTaskForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply)
+{
+    if (resType != ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT) {
+        return;
+    }
+    if (!payload.contains("pid") || !payload["pid"].is_number_integer()) {
+        return;
+    }
+    if (!payload.contains("tid") || !payload["tid"].is_number_integer()) {
+        return;
+    }
+    int pid = payload["pid"];
+    int tid = payload["tid"];
+    std::string pathName = std::string("/proc/").append(std::to_string(pid))
+        .append("/task/").append(std::to_string(tid)).append("/comm");
+    std::string realPath;
+    reply["res"] = PathToRealPath(pathName, realPath);
     return;
 }
 } // namespace ResourceSchedule

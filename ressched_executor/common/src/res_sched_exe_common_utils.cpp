@@ -59,5 +59,12 @@ void ResSchedExeCommonUtils::StringToJson(const std::string& str, nlohmann::json
         payload[key] = value;
     }
 }
+bool ResSchedExeCommonUtils::CheckTidIsInPid(int32_t pid, int32_t tid)
+{
+    std::string pathName = std::string("/proc/").append(std::to_string(pid))
+        .append("/task/").append(std::to_string(tid)).append("/comm");
+    std::string realPath;
+    return PathToRealPath(pathName, realPath);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

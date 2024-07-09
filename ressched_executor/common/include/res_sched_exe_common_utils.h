@@ -50,6 +50,7 @@ public:
      * @param payload message will be convert to json
      */
     static void StringToJson(const std::string& str, nlohmann::json& payload);
+    static bool ResSchedExeCommonUtils::CheckTidIsInPid(int32_t pid, int32_t tid);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
