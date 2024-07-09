@@ -21,7 +21,6 @@ config("cgroup_sched_public_config") {
     "./utils/include",
     "process_group/include",
     "sched_controller/include",
-    "../../ressched_executor/common/include",
   ]
 }
 

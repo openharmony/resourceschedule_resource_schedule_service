@@ -16,7 +16,6 @@
 
 #include <dlfcn.h>
 #include "cgroup_sched_log.h"
-#include "directory_ex.h"
 #include "hisysevent.h"
 #include "res_exe_type.h"
 #include "res_sched_exe_client.h"
