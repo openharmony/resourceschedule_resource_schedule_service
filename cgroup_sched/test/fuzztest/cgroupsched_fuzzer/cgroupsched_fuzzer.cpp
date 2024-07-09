@@ -349,15 +349,19 @@ namespace ResourceSchedule {
             std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
 
         int32_t saId = APP_MGR_SERVICE_ID;
+        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
         cgroupEventHandler->HandleAbilityRemoved(saId, deviceId);
 
         saId = WINDOW_MANAGER_SERVICE_ID;
+        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
         cgroupEventHandler->HandleAbilityRemoved(saId, deviceId);
 
         saId = APP_MGR_SERVICE_ID;
+        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
         cgroupEventHandler->HandleAbilityRemoved(saId, deviceId);
 
         saId = DEFAULT;
+        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
         cgroupEventHandler->HandleAbilityRemoved(saId, deviceId);
 
         return true;
