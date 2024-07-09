@@ -134,7 +134,7 @@ void ResSchedExeMgr::HandleRequestForCgroup(uint32_t resType, const nlohmann::js
         return;
     }
     switch (resType) {
-        case ResExeType::RES_TYPE_CGROUP_SYNC_EVENT: 
+        case ResExeType::RES_TYPE_CGROUP_SYNC_EVENT:
             GetCgroupFileContent(resType, payload, reply);
             break;
         case ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT:
