@@ -70,6 +70,7 @@ private:
     void InitPluginMgr(const nlohmann::json& payload);
     std::string BuildTraceStr(const std::string& func, uint32_t resType, int64_t value);
     void HandleRequestForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply);
+    void GetCgroupFileContent(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply);
     void HandleProcTaskForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply);
 };
 } // namespace ResourceSchedule

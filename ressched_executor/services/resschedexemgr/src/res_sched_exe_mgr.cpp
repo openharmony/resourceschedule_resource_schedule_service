@@ -66,7 +66,6 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     std::string traceStr = BuildTraceStr(__func__, resType, value);
     HitraceScoped hitrace(HITRACE_TAG_OHOS, traceStr);
     HandleRequestForCgroup(resType, payload, reply);
-    HandleProcTaskForCgroup(resType, payload, reply);
     auto resData = std::make_shared<ResData>(resType, value, payload, reply);
     int32_t ret = PluginMgr::GetInstance().DeliverResource(resData);
     if (ret != ResIpcErrCode::RSSEXE_PLUGIN_ERROR) {
@@ -130,14 +129,30 @@ std::string ResSchedExeMgr::BuildTraceStr(const std::string& func, uint32_t resT
 
 void ResSchedExeMgr::HandleRequestForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply)
 {
-    if (resType != ResExeType::RES_TYPE_CGROUP_SYNC_EVENT) {
+    if (resType != ResExeType::RES_TYPE_CGROUP_SYNC_EVENT &&
+        resType != ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT) {
         return;
     }
+    switch (resType) {
+        case ResExeType::RES_TYPE_CGROUP_SYNC_EVENT: 
+            GetCgroupFileContent(resType, payload, reply);
+            break;
+        case ResExeType::RES_TYPE_CGROUP_SYNC_EVENT:
+            CheckProcTaskForCgroup(resType, payload, reply);
+            break;
+        default:
+            break;
+    }
+    return;
+}
+
+void ResSchedExeMgr::GetCgroupFileContent(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply)
+{
     if (!payload.contains("pid") || !payload["pid"].is_number_integer()) {
         return;
     }
     int pid = payload["pid"];
-    std::string path = "/proc/" + std::to_string(pid) + "/cgroup";
+    std::string path = std::string("/proc/").append(std::to_string(pid)).append("/cgroup");
     char resolvedPath[PATH_MAX] = { 0 };
     if (path.size() > PATH_MAX || !realpath(path.c_str(), resolvedPath)) {
         RSSEXE_LOGE("%{public}s realpath failed", __func__);
@@ -154,11 +169,8 @@ void ResSchedExeMgr::HandleRequestForCgroup(uint32_t resType, const nlohmann::js
     return;
 }
 
-void ResSchedExeMgr::HandleProcTaskForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply)
+void ResSchedExeMgr::CheckProcTaskForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply)
 {
-    if (resType != ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT) {
-        return;
-    }
     if (!payload.contains("pid") || !payload["pid"].is_number_integer()) {
         return;
     }
