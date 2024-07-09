@@ -27,6 +27,7 @@
 #include "res_exe_type.h"
 #include "res_sched_exe_constants.h"
 #include "res_sched_exe_log.h"
+#include "directory_ex.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -128,14 +129,30 @@ std::string ResSchedExeMgr::BuildTraceStr(const std::string& func, uint32_t resT
 
 void ResSchedExeMgr::HandleRequestForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply)
 {
-    if (resType != ResExeType::RES_TYPE_CGROUP_SYNC_EVENT) {
+    if (resType != ResExeType::RES_TYPE_CGROUP_SYNC_EVENT &&
+        resType != ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT) {
         return;
     }
+    switch (resType) {
+        case ResExeType::RES_TYPE_CGROUP_SYNC_EVENT:
+            GetCgroupFileContent(resType, payload, reply);
+            break;
+        case ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT:
+            CheckProcTaskForCgroup(resType, payload, reply);
+            break;
+        default:
+            break;
+    }
+    return;
+}
+
+void ResSchedExeMgr::GetCgroupFileContent(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply)
+{
     if (!payload.contains("pid") || !payload["pid"].is_number_integer()) {
         return;
     }
     int pid = payload["pid"];
-    std::string path = "/proc/" + std::to_string(pid) + "/cgroup";
+    std::string path = std::string("/proc/").append(std::to_string(pid)).append("/cgroup");
     char resolvedPath[PATH_MAX] = { 0 };
     if (path.size() > PATH_MAX || !realpath(path.c_str(), resolvedPath)) {
         RSSEXE_LOGE("%{public}s realpath failed", __func__);
@@ -149,6 +166,23 @@ void ResSchedExeMgr::HandleRequestForCgroup(uint32_t resType, const nlohmann::js
     std::stringstream ss;
     ss << fin.rdbuf();
     reply["res"] = ss.str();
+    return;
+}
+
+void ResSchedExeMgr::CheckProcTaskForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply)
+{
+    if (!payload.contains("pid") || !payload["pid"].is_number_integer()) {
+        return;
+    }
+    if (!payload.contains("tid") || !payload["tid"].is_number_integer()) {
+        return;
+    }
+    int pid = payload["pid"];
+    int tid = payload["tid"];
+    std::string pathName = std::string("/proc/").append(std::to_string(pid))
+        .append("/task/").append(std::to_string(tid)).append("/comm");
+    std::string realPath;
+    reply["res"] = PathToRealPath(pathName, realPath);
     return;
 }
 } // namespace ResourceSchedule

@@ -32,6 +32,8 @@ enum : uint32_t {
     EWS_TYPE_SOCPERF_EXECUTOR_SYNC_EVENT,
     // cgroup read node sync
     RES_TYPE_CGROUP_SYNC_EVENT,
+    // cgroup read proc task sync
+    RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT,
     // last sync resType, please add sync resType before
     RES_TYPE_SYNC_END,
 

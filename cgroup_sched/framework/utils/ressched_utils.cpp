@@ -16,8 +16,9 @@
 
 #include <dlfcn.h>
 #include "cgroup_sched_log.h"
-#include "directory_ex.h"
 #include "hisysevent.h"
+#include "res_exe_type.h"
+#include "res_sched_exe_client.h"
 #include "nlohmann/json.hpp"
 
 #undef LOG_TAG
@@ -180,10 +181,17 @@ void ResSchedUtils::DispatchResourceExt(uint32_t resType, int64_t value, const n
 
 bool ResSchedUtils::CheckTidIsInPid(int32_t pid, int32_t tid)
 {
-    std::string pathName = std::string("/proc/").append(std::to_string(pid))
-        .append("/task/").append(std::to_string(tid)).append("/comm");
-    std::string realPath;
-    return PathToRealPath(pathName, realPath);
+    nlohmann::json payload;
+    payload["pid"] = pid;
+    payload["tid"] = tid;
+    nlohmann::json reply;
+    ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(
+        ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT, 0, payload, reply);
+    std::string resStr{"res"};
+    if (!reply.contains(resStr) || !reply[resStr].is_boolean()) {
+        return false;
+    }
+    return reply[resStr];
 }
 
 void ResSchedUtils::ReportAppStateInProcess(int32_t state, int32_t pid)
