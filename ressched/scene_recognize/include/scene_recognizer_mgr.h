@@ -34,6 +34,7 @@ enum : uint32_t {
     BACKGROUND_SENSITIVE_TASK_OVERLAPPING_SCENE_RECOGNIZER,
     SLIDE_RECOGNIZER,
 };
+}
 class SceneRecognizerMgr {
     DECLARE_SINGLE_INSTANCE_BASE(SceneRecognizerMgr);
 public:

@@ -46,8 +46,9 @@ SceneRecognizerMgr::~SceneRecognizerMgr()
 
 void SceneRecognizerMgr::DispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    for (auto recognizer : sceneRecognizers_) {
-        ffrtQueue_->submit([resType, value, payload, recognizer.second]() {
+    for (auto recognizerItem : sceneRecognizers_) {
+        auto recognizer = recognizerItem.second;
+        ffrtQueue_->submit([resType, value, payload, recognizer]() {
             recognizer->OnDispatchResource(resType, value, payload);
         });
     }
@@ -55,20 +56,24 @@ void SceneRecognizerMgr::DispatchResource(uint32_t resType, int64_t value, const
 
 void SceneRecognizerMgr::SetListFlingTimeoutTime(int64_t value)
 {
-    sceneRecognizers[RecognizeType::SLIDE_RECOGNIZER]->SetListFlingTimeoutTime(value);
+    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
+        SetListFlingTimeoutTime(value);
 }
 
 void SceneRecognizerMgr::SetListFlingEndTime(int64_t value)
 {
-    sceneRecognizers[RecognizeType::SLIDE_RECOGNIZER]->SetListFlingEndTime(value);
+    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
+        SetListFlingEndTime(value);
 }
 void SceneRecognizerMgr::SetListFlingSpeedLimit(float value)
 {
-    sceneRecognizers[RecognizeType::SLIDE_RECOGNIZER]->SetListFlingSpeedLimit(value);
+    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
+        SetListFlingSpeedLimit(value);
 }
 void SceneRecognizerMgr::SetSlideNormalDetectingTime(int64_t value)
 {
-    sceneRecognizers[RecognizeType::SLIDE_RECOGNIZER]->SetSlideNormalDetectingTime(value);
+    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])-> 
+        SetSlideNormalDetectingTime(value);
 }
 
 extern "C" {

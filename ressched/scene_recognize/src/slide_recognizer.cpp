@@ -109,13 +109,13 @@ void SlideRecognizer::HandleListFlingStart(const nlohmann::json& payload)
     }
     listFlingEndTask_ = ffrt::submit_h([payload]() {
         g_reportListFlingLockedEnd(payload);
-        }, {}, {}, ffrt::task_attr().delay(LIST_FLINT_END_TIME));
+        }, {}, {}, ffrt::task_attr().delay(listFlingEndTime_));
     if (listFlingTimeOutTask_) {
         ffrt::skip(listFlingTimeOutTask_);
     }
     listFlingTimeOutTask_ = ffrt::submit_h([payload]() {
         g_reportListFlingLockedEnd(payload);
-        }, {}, {}, ffrt::task_attr().delay(LIST_FLINT_TIME_OUT_TIME));
+        }, {}, {}, ffrt::task_attr().delay(listFlingTimeOutTime_));
 }
 
 void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload)
@@ -123,7 +123,7 @@ void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload)
     std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
     if (g_slideState == SlideRecognizeStat::SLIDE_NORMAL_DETECTING) {
         int64_t nowTime = ResCommonUtil::GetNowMillTime();
-        if (nowTime - slideDetectingTime_ < SLIDE_NORMAL_DETECTING_TIME) {
+        if (nowTime - slideDetectingTime_ < slideNormalDecectingTime_) {
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
                 ResType::SlideEventStatus::SLIDE_NORMAL_BEGIN, payload);
             g_slideState = SlideRecognizeStat::SLIDE_NORMAL;
@@ -139,7 +139,7 @@ void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload)
         }
         listFlingEndTask_ = ffrt::submit_h([payload]() {
             g_reportListFlingLockedEnd(payload);
-            }, {}, {}, ffrt::task_attr().delay(LIST_FLINT_END_TIME));
+            }, {}, {}, ffrt::task_attr().delay(listFlingEndTime_));
     }
 }
 
@@ -160,7 +160,7 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
             return;
         }
         // if up speed large than LIST_FLING_SPEED_LIMIT,start recognize list fling.
-        if (ResCommonUtil::StrToFloat(payload[UP_SPEED_KEY], upSpeed) && upSpeed > LIST_FLING_SPEED_LIMIT) {
+        if (ResCommonUtil::StrToFloat(payload[UP_SPEED_KEY], upSpeed) && upSpeed > listFlingSpeedLimit_) {
             nlohmann::json extInfo;
             EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
                 ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
