@@ -28,7 +28,7 @@ SceneRecognizerMgr::SceneRecognizerMgr()
 {
     sceneRecognizers_ = {
         { RecognizeType::CONTINUOUS_APP_INSTALL_RECOGNIZER, std::make_shared<ContinuousAppInstallRecognizer>() },
-        { RecognizeType::SYSTEM_UPGRADE_SCENE_RECOGNIZER , std::make_shared<SystemUpgradeSceneRecognizer>() },
+        { RecognizeType::SYSTEM_UPGRADE_SCENE_RECOGNIZER, std::make_shared<SystemUpgradeSceneRecognizer>() },
         { RecognizeType::BACKGROUND_SENSITIVE_TASK_OVERLAPPING_SCENE_RECOGNIZER,
             std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>() },
         { RecognizeType::SLIDE_RECOGNIZER, std::make_shared<SlideRecognizer>()},
