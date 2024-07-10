@@ -72,7 +72,7 @@ void SceneRecognizerMgr::SetListFlingSpeedLimit(float value)
 }
 void SceneRecognizerMgr::SetSlideNormalDetectingTime(int64_t value)
 {
-    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])-> 
+    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
         SetSlideNormalDetectingTime(value);
 }
 
