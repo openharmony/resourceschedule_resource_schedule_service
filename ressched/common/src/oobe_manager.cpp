@@ -186,8 +186,13 @@ void OOBEManager::StartListen()
 
 void OOBEManager::OnReceiveDataShareReadyCallBack()
 {
+    if (dataShareFunctions_.size() == 0) {
+        return;
+    }
     for (auto function : dataShareFunctions_) {
-        function();
+        if (function) {
+            function();
+        }
     }
     dataShareFunctions_.clear();
 }
