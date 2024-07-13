@@ -144,6 +144,7 @@ private:
     private:
         ResSchedClient &resSchedClient_;
     };
+    sptr<IResSchedService> GetProxy();
     ErrCode TryConnect();
     std::mutex mutex_;
     sptr<ResSchedDeathRecipient> recipient_;
