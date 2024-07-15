@@ -60,35 +60,29 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
 int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t value, const nlohmann::json& payload,
     nlohmann::json& reply)
 {
-    if (TryConnect() != ERR_OK) {
-        return RES_SCHED_CONNECT_FAIL;
-    }
     RESSCHED_LOGD("%{public}s: resType=%{public}u, value=%{public}lld.", __func__, resType, (long long)value);
 
-    std::lock_guard<std::mutex> lock(mutex_);
-    if (rss_ == nullptr) {
+    sptr<IResSchedService> proxy = GetProxy();
+    if (proxy == nullptr) {
         RESSCHED_LOGD("%{public}s: fail to get rss.", __func__);
         return RES_SCHED_CONNECT_FAIL;
     }
-    return rss_->ReportSyncEvent(resType, value, payload, reply);
+    return proxy->ReportSyncEvent(resType, value, payload, reply);
 }
 
 int32_t ResSchedClient::KillProcess(const std::unordered_map<std::string, std::string>& mapPayload)
 {
-    if (TryConnect() != ERR_OK) {
-        return RES_SCHED_CONNECT_FAIL;
-    }
     RESSCHED_LOGD("ResSchedClient::KillProcess receive mission.");
     nlohmann::json payload;
     for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
         payload[it->first] = it->second;
     }
-    std::lock_guard<std::mutex> lock(mutex_);
-    if (rss_ == nullptr) {
+    sptr<IResSchedService> proxy = GetProxy();
+    if (proxy == nullptr) {
         RESSCHED_LOGD("ResSchedClient::KillProcess fail to get resource schedule service.");
         return RES_SCHED_KILL_PROCESS_FAIL;
     }
-    return rss_->KillProcess(payload);
+    return proxy->KillProcess(payload);
 }
 
 void ResSchedClient::RegisterSystemloadNotifier(const sptr<ResSchedSystemloadNotifierClient>& callbackObj)
@@ -148,6 +142,15 @@ bool ResSchedClient::IsAllowedAppPreload(const std::string& bundleName, int32_t 
 
     RESSCHED_LOGD("App preload bundleName %{public}s, preloadMode %{public}d", bundleName.c_str(), preloadMode);
     return rss_->IsAllowedAppPreload(bundleName, preloadMode);
+}
+
+sptr<IResSchedService> ResSchedClient::GetProxy()
+{
+    if (TryConnect() == ERR_OK) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return rss_;
+    }
+    return nullptr;
 }
 
 ErrCode ResSchedClient::TryConnect()

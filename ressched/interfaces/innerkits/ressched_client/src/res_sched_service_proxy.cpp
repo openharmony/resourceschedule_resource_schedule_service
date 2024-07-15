@@ -25,6 +25,19 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+
+int32_t ResSchedServiceProxy::SendRequestToRemote(const uint32_t code, MessageParcel &data, MessageParcel &reply,
+    MessageOption &option)
+{
+    sptr<IRemoteObject> remote = Remote();
+    if (remote != nullptr) {
+        return remote->SendRequest(code, data, reply, option);
+    }
+
+    RESSCHED_LOGE("remote is null, code=%{public}u.", code);
+    return RES_SCHED_CONNECT_FAIL;
+}
+
 void ResSchedServiceProxy::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     int32_t error;
@@ -32,7 +45,7 @@ void ResSchedServiceProxy::ReportData(uint32_t resType, int64_t value, const nlo
     MessageParcel reply;
     MessageOption option = { MessageOption::TF_ASYNC };
     WriteParcelForReportData(resType, value, payload, data);
-    error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA),
+    error = SendRequestToRemote(static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA),
         data, reply, option);
     if (error != NO_ERROR) {
         RESSCHED_LOGE("Send request error: %{public}d.", error);
@@ -48,7 +61,7 @@ int32_t ResSchedServiceProxy::ReportSyncEvent(const uint32_t resType, const int6
     WriteParcelForReportData(resType, value, payload, data);
     MessageParcel response;
     MessageOption option = { MessageOption::TF_SYNC };
-    int32_t ret = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_SYNC_EVENT),
+    int32_t ret = SendRequestToRemote(static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_SYNC_EVENT),
         data, response, option);
     if (ret != NO_ERROR) {
         RESSCHED_LOGE("%{public}s: SendRequest fail=%{public}d.", __func__, ret);
@@ -103,7 +116,7 @@ int32_t ResSchedServiceProxy::KillProcess(const nlohmann::json& payload)
         ResSchedServiceProxy);
     WRITE_PARCEL(data, String, payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace),
         RES_SCHED_DATA_ERROR, ResSchedServiceProxy);
-    error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::KILL_PROCESS),
+    error = SendRequestToRemote(static_cast<uint32_t>(ResourceScheduleInterfaceCode::KILL_PROCESS),
         data, reply, option);
     if (error != NO_ERROR) {
         RESSCHED_LOGE("Send request error: %{public}d.", error);
@@ -121,7 +134,7 @@ void ResSchedServiceProxy::RegisterSystemloadNotifier(const sptr<IRemoteObject>&
     MessageOption option = { MessageOption::TF_SYNC };
     WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), void(), ResSchedServiceProxy);
     WRITE_PARCEL(data, RemoteObject, notifier, void(), ResSchedServiceProxy);
-    error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::REGISTER_SYSTEMLOAD_NOTIFIER),
+    error = SendRequestToRemote(static_cast<uint32_t>(ResourceScheduleInterfaceCode::REGISTER_SYSTEMLOAD_NOTIFIER),
         data, reply, option);
     if (error != NO_ERROR) {
         RESSCHED_LOGE("Send request error: %{public}d.", error);
@@ -137,7 +150,7 @@ void ResSchedServiceProxy::UnRegisterSystemloadNotifier()
     MessageParcel reply;
     MessageOption option = { MessageOption::TF_SYNC };
     WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), void(), ResSchedServiceProxy);
-    error = Remote()->SendRequest(
+    error = SendRequestToRemote(
         static_cast<uint32_t>(ResourceScheduleInterfaceCode::UNREGISTER_SYSTEMLOAD_NOTIFIER), data, reply, option);
     if (error != NO_ERROR) {
         RESSCHED_LOGE("Send request error: %{public}d.", error);
@@ -154,7 +167,7 @@ int32_t ResSchedServiceProxy::GetSystemloadLevel()
     MessageOption option = { MessageOption::TF_SYNC };
     WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), RES_SCHED_DATA_ERROR,
         ResSchedServiceProxy);
-    error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::GET_SYSTEMLOAD_LEVEL),
+    error = SendRequestToRemote(static_cast<uint32_t>(ResourceScheduleInterfaceCode::GET_SYSTEMLOAD_LEVEL),
         data, reply, option);
     if (error != NO_ERROR) {
         RESSCHED_LOGE("Send request error: %{public}d.", error);

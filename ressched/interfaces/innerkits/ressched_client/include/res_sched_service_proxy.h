@@ -95,6 +95,7 @@ private:
     int32_t WriteParcelForReportData(const uint32_t resType, const int64_t value, const nlohmann::json& payload,
         MessageParcel& data);
     bool StringToJson(const std::string& str, nlohmann::json& jsonObj);
+    int32_t SendRequestToRemote(const uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option);
 
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedServiceProxy);

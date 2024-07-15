@@ -14,6 +14,7 @@
  */
 
 #include "gtest/gtest.h"
+#include "gtest/hwext/gtest-multithread.h"
 
 #include <unordered_map>
 #include <vector>
@@ -27,6 +28,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace std;
 using namespace testing::ext;
+using namespace testing::mt;
 static constexpr int32_t RSS_SA_ID = 1901;
 static constexpr int32_t OTHER_SA_ID = 1900;
 class ResSchedClientTest : public testing::Test {
@@ -129,6 +131,52 @@ HWTEST_F(ResSchedClientTest, KillProcess002, Function | MediumTest | Level0)
     MockProcess(uid);
     ResSchedClient::GetInstance().KillProcess(mapPayload);
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
+}
+
+static void StartKillProcess()
+{
+    std::unordered_map<std::string, std::string> payload;
+    payload["pid"] = "65535";
+    payload["processName"] = "test_process";
+    ResSchedClient::GetInstance().KillProcess(payload);
+    EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
+}
+
+/**
+ * @tc.name: MultiThreadKillProcess
+ * @tc.desc: multi-thread invoking test
+ * @tc.type: FUNC
+ * @tc.require: IACR9M
+ */
+HWTEST_F(ResSchedClientTest, MultiThreadKillProcess, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(StartKillProcess);
+}
+
+static void StartReportSyncEvent()
+{
+    uint32_t resType = ResType::SYNC_RES_TYPE_THAW_ONE_APP;
+    nlohmann::json payload;
+    payload.emplace("pid", 1);
+    payload.emplace("reason", "test_reason");
+    nlohmann::json reply;
+    int32_t ret = ResSchedClient::GetInstance().ReportSyncEvent(resType, 0, payload, reply);
+    // 权限校验失败，返回err
+    EXPECT_NE(ret, 0);
+    EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
+}
+
+/**
+ * @tc.name: MultiThreadReportSyncEvent
+ * @tc.desc: multi-thread invoking test
+ * @tc.type: FUNC
+ * @tc.require: IACR9M
+ */
+HWTEST_F(ResSchedClientTest, MultiThreadReportSyncEvent, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(StartReportSyncEvent);
 }
 
 /**
