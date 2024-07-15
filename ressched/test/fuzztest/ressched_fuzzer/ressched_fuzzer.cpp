@@ -54,11 +54,6 @@ namespace {
     static const int32_t TWO_PARAMETERS = 2;
 }
 
-class OOBETaskImpl : public IOOBETask {
-public:
-    OOBETaskImpl() {}
-    void ExcutingTask() override {}
-};
 
     constexpr int32_t MAX_CODE = 5;
     constexpr int32_t MIN_LEN = 4;
@@ -278,7 +273,6 @@ public:
 
         std::string key = GetStringFromData(int(size));
         OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
-        std::shared_ptr<IOOBETask> oobeTask = std::make_shared<OOBETaskImpl>();
         if (!DoInit()) {
             return false;
         }
@@ -290,7 +284,6 @@ public:
         oobeObserver->OnChange();
         oobeObserver->SetUpdateFunc(updateFunc);
         OOBEManager::GetInstance().Initialize();
-        OOBEManager::GetInstance().SubmitTask(oobeTask);
         OOBEManager::GetInstance().StartListen();
         OOBEManager::GetInstance().OnReceiveDataShareReadyCallBack();
         return true;
