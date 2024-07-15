@@ -279,6 +279,7 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t host
         procRecord->isGPUProcess_ = true;
         procRecord->hostPid_ = hostPid;
         app->AddHostProcess(hostPid);
+        app->pidofGPUProcess_ = pid;
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_CREATE);

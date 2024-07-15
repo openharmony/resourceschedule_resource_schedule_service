@@ -173,6 +173,7 @@ public:
     SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
+    pid_t pidofGPUProcess_ = -1;
 
 private:
     uid_t uid_;

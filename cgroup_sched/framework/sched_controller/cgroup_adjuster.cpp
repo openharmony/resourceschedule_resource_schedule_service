@@ -114,8 +114,11 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
             CGS_LOGI("%{public}s for %{public}d, source : %{public}d for render process",
                 __func__, procRecord->GetPid(), source);
             procRecord->setSchedGroup_ = hostProcRecord->curSchedGroup_;
-            ResSchedUtils::GetInstance().ReportArbitrationResult(app, *(procRecord.get()),
-                AdjustSource::ADJS_SELF_RENDER_THREAD);
+            if (procRecord->isRenderProcess_ ||
+                (procRecord->isGPUProcess_ && hostProcRecord->curSchedGroup_ == SP_TOP_APP)) {
+                ResSchedUtils::GetInstance().ReportArbitrationResult(app, *(procRecord.get()),
+                    AdjustSource::ADJS_SELF_RENDER_THREAD);
+            }
             ApplyProcessGroup(app, *procRecord);
         }
     }
