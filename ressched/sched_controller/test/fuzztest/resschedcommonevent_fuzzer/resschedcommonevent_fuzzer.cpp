@@ -25,6 +25,7 @@
 #include <securec.h>
 #include <string>
 #include <vector>
+#include <thread>
 
 #ifndef errno_t
 typedef int errno_t;
@@ -38,7 +39,8 @@ namespace OHOS {
 namespace ResourceSchedule {
 
 namespace {
-    static const int32_t THREE_PARAMETERS = 3;
+    static const int32_t TWO_PARAMETERS = 2;
+    static const int64_t FFRT_DELAY_EXIT_TIME = 300;
 }
     const uint8_t* DATA = nullptr;
     size_t g_size = 0;
@@ -101,7 +103,7 @@ namespace {
         g_pos = 0;
 
         int32_t systemAbilityId = GetData<int32_t>();
-        std::string deviceId = GetStringFromData(int(size));
+        std::string deviceId = GetStringFromData(int(size) - sizeof(int32_t));
 
         std::shared_ptr<EventController> eventController = std::make_shared<EventController>();
         eventController->Init();
@@ -129,7 +131,7 @@ namespace {
         g_pos = 0;
 
         int32_t userId = GetData<int32_t>();
-        std::string bundleName = GetStringFromData(int(size));
+        std::string bundleName = GetStringFromData(int(size) - sizeof(int32_t));
         std::shared_ptr<EventController> eventController = std::make_shared<EventController>();
         eventController->GetUid(userId, bundleName);
         return true;
@@ -166,6 +168,11 @@ namespace {
         if (data == nullptr) {
             return false;
         }
+
+        if (size <=  TWO_PARAMETERS * sizeof(int32_t) + TWO_PARAMETERS * sizeof(std::string)) {
+            return false;
+        }
+
         // initialize
         DATA = data;
         g_size = size;
@@ -173,10 +180,8 @@ namespace {
 
         int32_t code = GetData<int32_t>();
         int32_t value = GetData<int32_t>();
-        std::string eventData = GetStringFromData(int(size) -
-        THREE_PARAMETERS * sizeof(int32_t));
-        std::string action = GetStringFromData(int(size) -
-        THREE_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
+        std::string eventData = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t));
+        std::string action = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
 
         nlohmann::json payload;
         AAFwk::Want want;
@@ -200,6 +205,11 @@ namespace {
         if (data == nullptr) {
             return false;
         }
+
+        if (size <=  TWO_PARAMETERS * sizeof(int32_t) + TWO_PARAMETERS * sizeof(std::string)) {
+            return false;
+        }
+        
         // initialize
         DATA = data;
         g_size = size;
@@ -207,10 +217,8 @@ namespace {
 
         int32_t code = GetData<int32_t>();
         int32_t value = GetData<int32_t>();
-        std::string eventData = GetStringFromData(int(size) -
-        THREE_PARAMETERS * sizeof(int32_t));
-        std::string action = GetStringFromData(int(size) -
-        THREE_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
+        std::string eventData = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t));
+        std::string action = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
 
         nlohmann::json payload;
         AAFwk::Want want;
@@ -231,6 +239,11 @@ namespace {
         if (data == nullptr) {
             return false;
         }
+
+        if (size <=  TWO_PARAMETERS * sizeof(int32_t) + TWO_PARAMETERS * sizeof(std::string)) {
+            return false;
+        }
+        
         // initialize
         DATA = data;
         g_size = size;
@@ -238,10 +251,8 @@ namespace {
 
         int32_t code = GetData<int32_t>();
         int32_t value = GetData<int32_t>();
-        std::string eventData = GetStringFromData(int(size) -
-        THREE_PARAMETERS * sizeof(int32_t));
-        std::string action = GetStringFromData(int(size) -
-        THREE_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
+        std::string eventData = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t));
+        std::string action = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
 
         nlohmann::json payload;
         AAFwk::Want want;
@@ -277,5 +288,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::ResSchedPkgCommonEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ResSchedCommonEventSwitchFuzzTest(data, size);
     OHOS::ResourceSchedule::ResSchedPkgOtherCommonEventFuzzTest(data, size);
+    std::this_thread::sleep_for(std::chrono::milliseconds(FFRT_DELAY_EXIT_TIME));
     return 0;
 }
