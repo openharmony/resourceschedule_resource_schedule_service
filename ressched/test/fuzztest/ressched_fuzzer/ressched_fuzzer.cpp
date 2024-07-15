@@ -272,6 +272,10 @@ public:
             return false;
         }
 
+        if (size <= sizeof(std::string)) {
+            return false;
+        }
+
         std::string key = GetStringFromData(int(size));
         OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
         std::shared_ptr<IOOBETask> oobeTask = std::make_shared<OOBETaskImpl>();
@@ -295,6 +299,10 @@ public:
     bool OOBEDatashareUtilsFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= TWO_PARAMETERS * sizeof(std::string)) {
             return false;
         }
 
