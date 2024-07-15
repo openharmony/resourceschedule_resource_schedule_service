@@ -186,6 +186,10 @@ namespace {
             return false;
         }
         AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
+        auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
+        if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_HAP) {
+            return false;
+        }
         AccessToken::HapTokenInfo callingTokenInfo;
         AccessToken::AccessTokenKit::GetHapTokenInfo(tokenId, callingTokenInfo);
         if (callingTokenInfo.bundleName == SCENEBOARD_BUNDLE_NAME) {
