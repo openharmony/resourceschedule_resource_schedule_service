@@ -697,6 +697,7 @@ HWTEST_F(ObserverEventTest, DisableDataShareObserver_001, testing::ext::TestSize
     if (instance) {
         instance->DisableDataShareObserver();
     }
+    SUCCEED();
 }
 
 /**
@@ -713,6 +714,7 @@ HWTEST_F(ObserverEventTest, DisableAudioObserver_001, testing::ext::TestSize.Lev
         instance->InitAudioObserver();
         instance->DisableAudioObserver();
     }
+    SUCCEED();
 }
 
 /**
@@ -729,6 +731,7 @@ HWTEST_F(ObserverEventTest, DisableDeviceMovementObserver_001, testing::ext::Tes
         instance->InitDeviceMovementObserver();
         instance->DisableDeviceMovementObserver();
     }
+    SUCCEED();
 }
 
 /**
@@ -743,6 +746,7 @@ HWTEST_F(ObserverEventTest, DisableMMiEventObserver_001, testing::ext::TestSize.
     if (instance) {
         instance->DisableMMiEventObserver();
     }
+    SUCCEED();
 }
 
 /**
@@ -759,6 +763,7 @@ HWTEST_F(ObserverEventTest, DisableMMiEventObserver_002, testing::ext::TestSize.
         instance->InitMMiEventObserver();
         instance->DisableMMiEventObserver();
     }
+    SUCCEED();
 }
 
 /**
@@ -775,6 +780,7 @@ HWTEST_F(ObserverEventTest, DisableConnectionSubscriber_001, testing::ext::TestS
         instance->InitConnectionSubscriber();
         instance->DisableConnectionSubscriber();
     }
+    SUCCEED();
 }
 
 /**
@@ -790,6 +796,7 @@ HWTEST_F(ObserverEventTest, DisableAccountObserver_001, testing::ext::TestSize.L
         instance->accountObserver_ = nullptr;
         instance->DisableAccountObserver();
     }
+    SUCCEED();
 }
 
 /**
@@ -805,6 +812,7 @@ HWTEST_F(ObserverEventTest, DisableAVSessionStateChangeListener_001, testing::ex
     if (instance) {
         instance->DisableAVSessionStateChangeListener();
     }
+    SUCCEED();
 }
 #endif
 
@@ -821,6 +829,7 @@ HWTEST_F(ObserverEventTest, DisableDownloadUploadObserver_001, testing::ext::Tes
     if (instance) {
         instance->DisableDownloadUploadObserver();
     }
+    SUCCEED();
 }
 
 /**
@@ -835,6 +844,7 @@ HWTEST_F(ObserverEventTest, InitDownloadUploadObserver_001, testing::ext::TestSi
     if (instance) {
         instance->InitDownloadUploadObserver();
     }
+    SUCCEED();
 }
 #endif
 
@@ -850,6 +860,7 @@ HWTEST_F(ObserverEventTest, DisableTelephonyObserver_001, testing::ext::TestSize
     if (instance) {
         instance->DisableTelephonyObserver();
     }
+    SUCCEED();
 }
 
 /**
@@ -864,6 +875,7 @@ HWTEST_F(ObserverEventTest, DisableHiSysEventObserver_001, testing::ext::TestSiz
     if (instance) {
         instance->DisableHiSysEventObserver();
     }
+    SUCCEED();
 }
 
 /**
@@ -879,6 +891,7 @@ HWTEST_F(ObserverEventTest, DisableDisplayModeObserver_001, testing::ext::TestSi
         instance->foldDisplayModeObserver_ = nullptr;
         instance->DisableDisplayModeObserver();
     }
+    SUCCEED();
 }
 
 /**
@@ -894,6 +907,7 @@ HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.
         instance->foldDisplayModeObserver_ = nullptr;
         instance->InitDisplayModeObserver();
     }
+    SUCCEED();
 }
 
 /**
@@ -908,6 +922,7 @@ HWTEST_F(ObserverEventTest, GetAllMmiStatusData_001, testing::ext::TestSize.Leve
     if (instance) {
         instance->GetAllMmiStatusData();
     }
+    SUCCEED();
 }
 }
 }
