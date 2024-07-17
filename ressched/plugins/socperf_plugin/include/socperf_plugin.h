@@ -42,8 +42,8 @@ private:
     std::string perfReqAppTypeSoFunc_;
     void* handle_ = nullptr;
     ReqAppTypeFunc reqAppTypeFunc_ = nullptr;
-    int32_t RES_TYPE_SCENE_BOARD_ID;
-    int32_t RES_TYPE_RGM_BOOTING_STATUS;
+    int32_t RES_TYPE_SCENE_BOARD_ID = 0;
+    int32_t RES_TYPE_RGM_BOOTING_STATUS = 0;
     void InitEventId();
     void InitFunctionMap();
     void AddEventToFunctionMap();

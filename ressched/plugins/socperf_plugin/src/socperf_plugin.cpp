@@ -156,7 +156,7 @@ void SocPerfPlugin::InitFunctionMap()
         { RES_TYPE_MOVE_WINDOW,
             [this](const std::shared_ptr<ResData>& data) { HandleMoveWindow(data); } },
         { RES_TYPE_SHOW_REMOTE_ANIMATION,
-                [this](const std::shared_ptr<ResData>& data) { HandleRemoteAnimation(data); } },
+            [this](const std::shared_ptr<ResData>& data) { HandleRemoteAnimation(data); } },
         { RES_TYPE_DRAG_STATUS_BAR,
             [this](const std::shared_ptr<ResData>& data) { HandleDragStatusBar(data); } },
         { RES_TYPE_WEB_GESTURE_MOVE,
@@ -221,7 +221,6 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_ANCO_CUST,
         RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
         RES_TYPE_SOCPERF_CUST_EVENT_END,
-        RES_TYPE_RGM_BOOTING_STATUS,
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
