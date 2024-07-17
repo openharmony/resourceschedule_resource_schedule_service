@@ -37,10 +37,12 @@ namespace {
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_FUNC = "socperf_req_apptype_func";
     const std::string BUNDLE_NAME = "bundleName";
     const std::string SOCPERF_TYPE_ID = "socperf_type_id";
+    const std::string SOCPERF_TYPE_RGM = "socperf_type_rgm";
     const std::string EXTENSION_TYPE_KEY = "extensionType";
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
+    const int32_t PERF_REQUEST_CMD_ID_RGM_BOOTING_START     = 1000;
     const int32_t PERF_REQUEST_CMD_ID_APP_START             = 10000;
     const int32_t PERF_REQUEST_CMD_ID_WARM_START            = 10001;
     const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH         = 10002;
@@ -125,6 +127,8 @@ void SocPerfPlugin::InitEventId()
         for (SubItem sub : item.subItemList) {
             if (sub.name == SOCPERF_TYPE_ID) {
                 RES_TYPE_SCENE_BOARD_ID = atoi(sub.value.c_str());
+            } else if (sub.name == SOCPERF_TYPE_RGM) {
+                RES_TYPE_RGM_BOOTING_STATUS = atoi(sub.value.c_str());
             }
         }
     }
@@ -179,6 +183,8 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleCustEventBegin(data); } },
         { RES_TYPE_SOCPERF_CUST_EVENT_END,
             [this](const std::shared_ptr<ResData>& data) { HandleCustEventEnd(data); } },
+        { RES_TYPE_RGM_BOOTING_STATUS,
+            [this](const std::shared_ptr<ResData>& data) { HandleRgmBootingStatus(data); } },
     };
 }
 
@@ -208,6 +214,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_ANCO_CUST,
         RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
         RES_TYPE_SOCPERF_CUST_EVENT_END,
+        RES_TYPE_RGM_BOOTING_STATUS,
     };
 }
 
@@ -325,12 +332,17 @@ void SocPerfPlugin::HandlePopPage(const std::shared_ptr<ResData>& data)
 void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
     SOC_PERF_LOGD("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
+    status int counter = 0;
     if (data->value == SlideEventStatus::SLIDE_EVENT_ON) {
+        counter++;
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, true, "");
     } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, false, "");
+        counter--;
+        if (counter == 0) {
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, false, "");
+        }
     } else if (data->value == SlideEventStatus::SLIDE_NORMAL_BEGIN) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER, true, "");
     } else if (data->value == SlideEventStatus::SLIDE_NORMAL_END) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER, false, "");
     }
@@ -541,6 +553,18 @@ bool SocPerfPlugin::HandleCustEventEnd(const std::shared_ptr<ResData> &data)
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->SOCPERF_CUST_EVENT_END: %{public}lld", (long long)data->value);
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(data->value, false, "");
+    return true;
+}
+
+bool SocPerfPlugin::HandleRgmBootingStatus(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->RGM_BOOTING_STATUS: %{public}lld", (long long)data->value);
+    if (data->value == 0) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_RGM_BOOTING_START, true, "");
+    }
     return true;
 }
 

@@ -43,6 +43,7 @@ private:
     void* handle_ = nullptr;
     ReqAppTypeFunc reqAppTypeFunc_ = nullptr;
     int32_t RES_TYPE_SCENE_BOARD_ID;
+    int32_t RES_TYPE_RGM_BOOTING_STATUS;
     void InitEventId();
     void InitFunctionMap();
     void InitResTypes();
@@ -72,6 +73,7 @@ private:
     bool HandleCustEvent(const std::shared_ptr<ResData>& data);
     bool HandleCustEventBegin(const std::shared_ptr<ResData>& data);
     bool HandleCustEventEnd(const std::shared_ptr<ResData>& data);
+    bool HandleRgmBootingStatus(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
