@@ -325,12 +325,25 @@ void SocPerfPlugin::HandlePopPage(const std::shared_ptr<ResData>& data)
 void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
     SOC_PERF_LOGD("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
+    static int counter = 0;
+    static uint64_t lastTime = 0;
     if (data->value == SlideEventStatus::SLIDE_EVENT_ON) {
+        auto now = std::chrono::system_clock::now();
+        uint64_t curMs = static_cast<uint64_t>(
+            std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
+        if (curMs - lastTime > TIME_INTERVAL) {
+            lastTime = curMs;
+            counter = 0;
+        }
+        counter++;
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, true, "");
     } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, false, "");
+        counter--;
+        if (counter == 0) {
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, false, "");
+        }
     } else if (data->value == SlideEventStatus::SLIDE_NORMAL_BEGIN) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER, true, "");
     } else if (data->value == SlideEventStatus::SLIDE_NORMAL_END) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER, false, "");
     }
