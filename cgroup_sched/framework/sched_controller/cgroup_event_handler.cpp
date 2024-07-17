@@ -262,8 +262,8 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t host
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}s", __func__, uid, pid, hostPid,
-        bundleName.c_str());
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d",
+        __func__, uid, pid, hostPid, processType, bundleName.c_str(), extensionType);
     ChronoScope cs("HandleProcessCreated");
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
