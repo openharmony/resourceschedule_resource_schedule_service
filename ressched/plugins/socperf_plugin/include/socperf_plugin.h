@@ -46,6 +46,7 @@ private:
     int32_t RES_TYPE_RGM_BOOTING_STATUS;
     void InitEventId();
     void InitFunctionMap();
+    void AddEventToFunctionMap();
     void InitResTypes();
     void InitPerfCrucialSo();
     void InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc);

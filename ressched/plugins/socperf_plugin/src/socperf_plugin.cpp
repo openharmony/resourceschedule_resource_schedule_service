@@ -73,8 +73,8 @@ IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 void SocPerfPlugin::Init()
 {
     InitEventId();
-    InitFunctionMap();
     InitResTypes();
+    InitFunctionMap();
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
@@ -173,8 +173,6 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleDeviceModeStatusChange(data); } },
         { RES_TYPE_WEB_DRAG_RESIZE,
             [this](const std::shared_ptr<ResData>& data) { HandleWebDragResize(data); } },
-        { RES_TYPE_SCENE_BOARD_ID,
-            [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); } },
         { RES_TYPE_ACCOUNT_ACTIVATING,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfAccountActivating(data); } },
         { RES_TYPE_ANCO_CUST,
@@ -183,9 +181,19 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleCustEventBegin(data); } },
         { RES_TYPE_SOCPERF_CUST_EVENT_END,
             [this](const std::shared_ptr<ResData>& data) { HandleCustEventEnd(data); } },
-        { RES_TYPE_RGM_BOOTING_STATUS,
-            [this](const std::shared_ptr<ResData>& data) { HandleRgmBootingStatus(data); } },
     };
+    AddEventToFunctionMap();
+}
+
+void SocPerfPlugin::AddEventToFunctionMap() {
+    if (RES_TYPE_SCENE_BOARD_ID != 0) {
+        functionMap.insert(RES_TYPE_SCENE_BOARD_ID,
+            [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); });
+    }
+    if (RES_TYPE_RGM_BOOTING_STATUS != 0) {
+        functionMap.insert(RES_TYPE_RGM_BOOTING_STATUS,
+            [this](const std::shared_ptr<ResData>& data) { HandleRgmBootingStatus(data); });
+    }
 }
 
 void SocPerfPlugin::InitResTypes()
@@ -209,13 +217,18 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_APP_STATE_CHANGE,
         RES_TYPE_DEVICE_MODE_STATUS,
         RES_TYPE_WEB_DRAG_RESIZE,
-        RES_TYPE_SCENE_BOARD_ID,
         RES_TYPE_ACCOUNT_ACTIVATING,
         RES_TYPE_ANCO_CUST,
         RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
         RES_TYPE_SOCPERF_CUST_EVENT_END,
         RES_TYPE_RGM_BOOTING_STATUS,
     };
+    if (RES_TYPE_SCENE_BOARD_ID != 0) {
+        resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
+    }
+    if (RES_TYPE_RGM_BOOTING_STATUS != 0) {
+        resTypes.insert(RES_TYPE_RGM_BOOTING_STATUS);
+    }
 }
 
 void SocPerfPlugin::Disable()
