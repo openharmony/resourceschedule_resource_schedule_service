@@ -187,12 +187,12 @@ void SocPerfPlugin::InitFunctionMap()
 
 void SocPerfPlugin::AddEventToFunctionMap() {
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
-        functionMap.insert(RES_TYPE_SCENE_BOARD_ID,
-            [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); });
+        functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
+            [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
     }
     if (RES_TYPE_RGM_BOOTING_STATUS != 0) {
-        functionMap.insert(RES_TYPE_RGM_BOOTING_STATUS,
-            [this](const std::shared_ptr<ResData>& data) { HandleRgmBootingStatus(data); });
+        functionMap.insert(std::make_pair(RES_TYPE_RGM_BOOTING_STATUS,
+            [this](const std::shared_ptr<ResData>& data) { HandleRgmBootingStatus(data); }));
     }
 }
 
