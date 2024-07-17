@@ -333,9 +333,9 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
         uint64_t curMs = static_cast<uint64_t>(
             std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
         if (curMs - lastTime > TIME_INTERVAL) {
-            lastTime = curMs;
             counter = 0;
         }
+        lastTime = curMs;
         counter++;
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, true, "");
     } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
