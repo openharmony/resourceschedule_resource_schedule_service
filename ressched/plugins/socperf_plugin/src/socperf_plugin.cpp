@@ -41,6 +41,7 @@ namespace {
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
+    const int64_t TIME_INTERVAL                             = 5000;
     const int32_t PERF_REQUEST_CMD_ID_APP_START             = 10000;
     const int32_t PERF_REQUEST_CMD_ID_WARM_START            = 10001;
     const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH         = 10002;
