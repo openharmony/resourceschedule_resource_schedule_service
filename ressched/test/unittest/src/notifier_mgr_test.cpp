@@ -399,5 +399,19 @@ HWTEST_F(NotifierMgrTest, OnApplicationStateChange001, Function | MediumTest | L
 {
     NotifierMgr::GetInstance().OnApplicationStateChange(2, IPCSkeleton::GetCallingPid());
 }
+
+/**
+ * @tc.name: notifier manager RemoveNotifierLock 001
+ * @tc.desc: test the interface RemoveNotifierLock
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:luolu
+ */
+HWTEST_F(NotifierMgrTest, RemoveNotifierLock001, Function | MediumTest | Level0)
+{
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestNotifierSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().RemoveNotifierLock(notifier);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

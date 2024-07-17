@@ -684,5 +684,245 @@ HWTEST_F(ObserverEventTest, OnEvent_001, testing::ext::TestSize.Level1)
         sysEvent.dump(JSON_FORMAT)));
     EXPECT_NE(hisysEventObserver_, nullptr);
 }
+
+/**
+ * @tc.name: DisableDataShareObserver_001
+ * @tc.desc: test account observer DisableDataShareObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, DisableDataShareObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->DisableDataShareObserver();
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: DisableAudioObserver_001
+ * @tc.desc: test account observer DisableAudioObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, DisableAudioObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->DisableAudioObserver();
+        instance->InitAudioObserver();
+        instance->DisableAudioObserver();
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: DisableDeviceMovementObserver_001
+ * @tc.desc: test account observer DisableDeviceMovementObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, DisableDeviceMovementObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->DisableDeviceMovementObserver();
+        instance->InitDeviceMovementObserver();
+        instance->DisableDeviceMovementObserver();
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: DisableMMiEventObserver_001
+ * @tc.desc: test account observer DisableMMiEventObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, DisableMMiEventObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->DisableMMiEventObserver();
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: DisableMMiEventObserver_002
+ * @tc.desc: test account observer DisableMMiEventObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, DisableMMiEventObserver_002, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->isNeedReport_ = true;
+        instance->InitMMiEventObserver();
+        instance->DisableMMiEventObserver();
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: DisableConnectionSubscriber_001
+ * @tc.desc: test account observer DisableConnectionSubscriber
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, DisableConnectionSubscriber_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->DisableConnectionSubscriber();
+        instance->InitConnectionSubscriber();
+        instance->DisableConnectionSubscriber();
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: DisableAccountObserver_001
+ * @tc.desc: test account observer DisableAccountObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, DisableAccountObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->accountObserver_ = nullptr;
+        instance->DisableAccountObserver();
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: DisableAVSessionStateChangeListener_001
+ * @tc.desc: test account observer DisableAVSessionStateChangeListener
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
+HWTEST_F(ObserverEventTest, DisableAVSessionStateChangeListener_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->DisableAVSessionStateChangeListener();
+    }
+    SUCCEED();
+}
+#endif
+
+#ifndef RESOURCE_REQUEST_REQUEST
+/**
+ * @tc.name: DisableDownloadUploadObserver_001
+ * @tc.desc: test account observer DisableDownloadUploadObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, DisableDownloadUploadObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->DisableDownloadUploadObserver();
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: InitDownloadUploadObserver_001
+ * @tc.desc: test account observer InitDownloadUploadObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, InitDownloadUploadObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->InitDownloadUploadObserver();
+    }
+    SUCCEED();
+}
+#endif
+
+/**
+ * @tc.name: DisableTelephonyObserver_001
+ * @tc.desc: test account observer DisableTelephonyObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, DisableTelephonyObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->DisableTelephonyObserver();
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: DisableHiSysEventObserver_001
+ * @tc.desc: test account observer DisableHiSysEventObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, DisableHiSysEventObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->DisableHiSysEventObserver();
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: DisableDisplayModeObserver_001
+ * @tc.desc: test account observer DisableDisplayModeObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, DisableDisplayModeObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->foldDisplayModeObserver_ = nullptr;
+        instance->DisableDisplayModeObserver();
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: InitDisplayModeObserver_001
+ * @tc.desc: test account observer InitDisplayModeObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->foldDisplayModeObserver_ = nullptr;
+        instance->InitDisplayModeObserver();
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: GetAllMmiStatusData_001
+ * @tc.desc: test account observer GetAllMmiStatusData
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, GetAllMmiStatusData_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->GetAllMmiStatusData();
+    }
+    SUCCEED();
+}
 }
 }
