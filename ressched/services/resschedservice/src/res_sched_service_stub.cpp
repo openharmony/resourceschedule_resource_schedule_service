@@ -23,8 +23,9 @@
 #include "ipc_skeleton.h"
 #include "ipc_util.h"
 #include "accesstoken_kit.h"
-#include "res_sched_service_utils.h"
+#include "res_common_util.h"
 #include "hisysevent.h"
+#include "res_common_util.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -128,6 +129,7 @@ namespace {
         ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
         ResType::RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK,
         ResType::RES_TYPE_REPORT_GAME_SCHED,
+        ResType::RES_TYPE_SEND_FRAME_EVENT,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
@@ -369,9 +371,42 @@ bool ResSchedServiceStub::IsAllowedAppPreloadInner(MessageParcel& data, MessageP
     return true;
 }
 
+void ResSchedServiceStub::RegisterEventListenerInner(MessageParcel& data,
+    [[maybe_unused]] MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        RESSCHED_LOGE("%{public}s:Register invalid token.", __func__);
+        return;
+    }
+    uint32_t eventType = -1;
+    sptr<IRemoteObject> listener =data.ReadRemoteObject();
+    if (listener == nullptr) {
+        RESSCHED_LOGE("%{public}s:read listener is null.", __func__);
+        return;
+    }
+    READ_PARCEL(data, Uint32, eventType, void(), ResSchedServiceStub);
+    if (listener == nullptr || eventType == -1) {
+        RESSCHED_LOGE("%{public}s:parse parcel failed.", __func__);
+        return;
+    }
+    RegisterEventListener(listener, eventType);
+}
+
+void ResSchedServiceStub::UnRegisterEventListenerInner(MessageParcel& data,
+    [[maybe_unused]] MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        RESSCHED_LOGE("UnRegister invalid token.");
+        return;
+    }
+    uint32_t eventType = -1;
+    READ_PARCEL(data, Uint32, eventType, void(), ResSchedServiceStub);
+    UnRegisterEventListener(eventType);
+}
+
 bool ResSchedServiceStub::IsLimitRequest(int32_t uid)
 {
-    int64_t nowTime = ResSchedUtils::GetNowMillTime();
+    int64_t nowTime = ResCommonUtil::GetNowMillTime();
     CheckAndUpdateLimitData(nowTime);
     if (allRequestCount_.load() >= ALL_UID_REQUEST_LIMIT_COUNT) {
         RESSCHED_LOGD("all uid request is limit, %{public}d request fail", uid);
@@ -417,7 +452,7 @@ void ResSchedServiceStub::ReportBigData()
     if (!isReportBigData_.load()) {
         return;
     }
-    if (ResSchedUtils::GetNowMillTime() < nextReportBigDataTime_) {
+    if (ResCommonUtil::GetNowMillTime() < nextReportBigDataTime_) {
         return;
     }
     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "SERVICE_REQUEST_LIMIT",
@@ -430,7 +465,7 @@ void ResSchedServiceStub::InreaseBigDataCount()
 {
     if (!isReportBigData_.load()) {
         isReportBigData_.store(true);
-        nextReportBigDataTime_ = ResSchedUtils::GetNowMillTime() + FOUR_HOUR_TIME;
+        nextReportBigDataTime_ = ResCommonUtil::GetNowMillTime() + FOUR_HOUR_TIME;
     }
     bigDataReportCount_ ++;
 }
@@ -465,6 +500,12 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
             return GetSystemloadLevelInner(data, reply);
         case static_cast<uint32_t>(ResourceScheduleInterfaceCode::TOUCH_DOWN_APP_PRELOAD):
             return IsAllowedAppPreloadInner(data, reply);
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::REGISTER_EVENT_LISTENER):
+            RegisterEventListenerInner(data, reply);
+            return ERR_OK;
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::UNREGISTER_EVENT_LISTENER):
+            UnRegisterEventListenerInner(data, reply);
+            return ERR_OK;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
