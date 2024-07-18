@@ -186,7 +186,7 @@ void SocPerfPlugin::InitFunctionMap()
     AddEventToFunctionMap();
 }
 
-void SocPerfPlugin::AddEventToFunctionMap() 
+void SocPerfPlugin::AddEventToFunctionMap()
 {
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
