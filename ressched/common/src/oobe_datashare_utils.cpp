@@ -110,7 +110,7 @@ bool DataShareUtils::ReleaseDataShareHelper(std::shared_ptr<DataShare::DataShare
         return false;
     }
     if (!helper->Release()) {
-        RESSCHED_LOGW("release helper fail, remoteObj_%{public}p", remoteObj_.GetRefPtr());
+        RESSCHED_LOGW("release helper fail.");
         return false;
     }
     return true;
