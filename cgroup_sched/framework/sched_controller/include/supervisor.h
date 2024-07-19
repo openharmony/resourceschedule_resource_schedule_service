@@ -196,6 +196,8 @@ public:
     int32_t GetSystemLoadLevel();
 
     int32_t sceneBoardPid_ = -1;
+    int32_t installsPid_ = -1;
+    int32_t installsUid_ = -1;
     std::shared_ptr<Application> focusedApp_ = nullptr;
 
     inline std::map<int32_t, std::shared_ptr<Application>> GetUidsMap() const
