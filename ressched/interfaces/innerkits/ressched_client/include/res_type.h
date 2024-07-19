@@ -236,6 +236,8 @@ enum : uint32_t {
     RES_TYPE_USER_INTERACTION_SCENE = 101,
     // report game sched, value 0 start, value 1 stop
     RES_TYPE_REPORT_GAME_SCHED = 102,
+    // report event vsync tid, value tid, payload pid, tid, uid.
+    RES_TYPE_REPORT_VSYNC_TID = 103,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
