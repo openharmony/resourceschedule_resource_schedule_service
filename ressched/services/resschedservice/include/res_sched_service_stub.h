@@ -30,7 +30,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 class ResSchedServiceStub : public IRemoteStub<IResSchedService> {
 public:
-    ResSchedServiceStub(bool serialInvokeFlag = true);
+    ResSchedServiceStub();
     ~ResSchedServiceStub();
     DISALLOW_COPY_AND_MOVE(ResSchedServiceStub);
     int32_t OnRemoteRequest(
