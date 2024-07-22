@@ -238,6 +238,10 @@ enum : uint32_t {
     RES_TYPE_REPORT_GAME_SCHED = 102,
     // report send frame event
     RES_TYPE_SEND_FRAME_EVENT = 103,
+    // report app cold start only perf, value 0 start, value 1 stop
+    RES_TYPE_ONLY_PERF_APP_COLD_START = 104,
+    // report scene rotation, value 0 start, value 1 stop
+    RES_TYPE_SCENE_ROTATION = 105,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

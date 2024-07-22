@@ -75,6 +75,8 @@ private:
     bool HandleCustEventBegin(const std::shared_ptr<ResData>& data);
     bool HandleCustEventEnd(const std::shared_ptr<ResData>& data);
     bool HandleRgmBootingStatus(const std::shared_ptr<ResData>& data);
+    bool HandleAppColdStartEx(const std::shared_ptr<ResData>& data);
+    bool HandleSceneRotation(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

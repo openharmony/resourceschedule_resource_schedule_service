@@ -45,6 +45,10 @@ namespace {
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
         ResType::RES_TYPE_KEY_PERF_SCENE,
+        ResType::RES_TYPE_MOVE_WINDOW,
+        ResType::RES_TYPE_RESIZE_WINDOW,
+        ResType::RES_TYPE_ONLY_PERF_APP_COLD_START,
+        ResType::RES_TYPE_SCENE_ROTATION,
     };
     static const std::unordered_set<uint32_t> thirdPartRes_ = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
