@@ -59,6 +59,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_MOVE_WINDOW           = 10019;
     const int32_t PERF_REQUEST_CMD_ID_WEB_GESTURE_MOVE      = 10020;
     const int32_t PERF_REQUEST_CMD_ID_WEB_SLIDE_NORMAL      = 10025;
+    const int32_t PERF_REQUEST_CMD_ID_ROTATION              = 10027;
     const int32_t PERF_REQUEST_CMD_ID_REMOTE_ANIMATION      = 10030;
     const int32_t PERF_REQUEST_CMD_ID_DRAG_STATUS_BAR       = 10034;
     const int32_t PERF_REQUEST_CMD_ID_GAME_START            = 10038;
@@ -188,6 +189,10 @@ void SocPerfPlugin::InitFunctionMap()
 
 void SocPerfPlugin::AddEventToFunctionMap()
 {
+    functionMap.insert(std::make_pair(RES_TYPE_ONLY_PERF_APP_COLD_START,
+        [this](const std::shared_ptr<ResData>& data) { HandleAppColdStartEx(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_SCENE_ROTATION,
+        [this](const std::shared_ptr<ResData>& data) { HandleSceneRotation(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
@@ -223,6 +228,8 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_ANCO_CUST,
         RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
         RES_TYPE_SOCPERF_CUST_EVENT_END,
+        RES_TYPE_ONLY_PERF_APP_COLD_START,
+        RES_TYPE_SCENE_ROTATION,
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -586,6 +593,34 @@ bool SocPerfPlugin::HandleRgmBootingStatus(const std::shared_ptr<ResData> &data)
     SOC_PERF_LOGD("SocPerfPlugin: socperf->RGM_BOOTING_STATUS: %{public}lld", (long long)data->value);
     if (data->value == 0) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_RGM_BOOTING_START, true, "");
+    }
+    return true;
+}
+
+bool SocPerfPlugin::HandleAppColdStartEx(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->APP_START_ONLY_PERF: %{public}lld", (long long)data->value);
+    if (data->value == 0) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_APP_START, true, "");
+    } else if (data->value == 1) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_APP_START, false, "");
+    }
+    return true;
+}
+
+bool SocPerfPlugin::HandleSceneRotation(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->PERF_REQUEST_CMD_ID_ROTATION: %{public}lld", (long long)data->value);
+    if (data->value == 0) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_ROTATION, true, "");
+    } else if (data->value == 1) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_ROTATION, false, "");
     }
     return true;
 }
