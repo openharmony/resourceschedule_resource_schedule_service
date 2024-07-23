@@ -411,13 +411,13 @@ void ResSchedServiceStub::UnRegisterEventListenerInner(MessageParcel& data,
 
 bool ResSchedServiceStub::IsLimitRequest(int32_t uid)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     int64_t nowTime = ResCommonUtil::GetNowMillTime();
     CheckAndUpdateLimitData(nowTime);
     if (allRequestCount_.load() >= ALL_UID_REQUEST_LIMIT_COUNT) {
         RESSCHED_LOGD("all uid request is limit, %{public}d request fail", uid);
         return true;
     }
-    std::lock_guard<std::mutex> lock(mutex_);
     auto iter = appRequestCountMap_.find(uid);
     if (iter == appRequestCountMap_.end()) {
         appRequestCountMap_[uid] = 1;
