@@ -378,14 +378,14 @@ void ResSchedServiceStub::RegisterEventListenerInner(MessageParcel& data,
         RESSCHED_LOGE("%{public}s:Register invalid token.", __func__);
         return;
     }
-    uint32_t eventType = -1;
+    uint32_t eventType = ResType::EventType::EVENT_START;
     sptr<IRemoteObject> listener =data.ReadRemoteObject();
     if (listener == nullptr) {
         RESSCHED_LOGE("%{public}s:read listener is null.", __func__);
         return;
     }
     READ_PARCEL(data, Uint32, eventType, void(), ResSchedServiceStub);
-    if (listener == nullptr || eventType == -1) {
+    if (listener == nullptr || eventType == ResType::EventType::EVENT_START) {
         RESSCHED_LOGE("%{public}s:parse parcel failed.", __func__);
         return;
     }
@@ -399,7 +399,7 @@ void ResSchedServiceStub::UnRegisterEventListenerInner(MessageParcel& data,
         RESSCHED_LOGE("UnRegister invalid token.");
         return;
     }
-    uint32_t eventType = -1;
+    uint32_t eventType = ResType::EventType::EVENT_START;
     READ_PARCEL(data, Uint32, eventType, void(), ResSchedServiceStub);
     UnRegisterEventListener(eventType);
 }

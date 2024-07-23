@@ -61,6 +61,7 @@ void SlideRecognizer::OnDispatchResource(uint32_t resType, int64_t value, const 
         case ResType::RES_TYPE_CLICK_RECOGNIZE:
             HandleClickEvent(value, payload);
         default:
+            RESSCHED_LOGD("unkonw resType");
             break;
     }
 }
