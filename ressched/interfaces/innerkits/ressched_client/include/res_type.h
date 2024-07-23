@@ -242,6 +242,8 @@ enum : uint32_t {
     RES_TYPE_ONLY_PERF_APP_COLD_START = 104,
     // report scene rotation, value 0 start, value 1 stop
     RES_TYPE_SCENE_ROTATION = 105,
+    // report event vsync tid, value tid, payload pid, tid, uid.
+    RES_TYPE_REPORT_VSYNC_TID = 106,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
