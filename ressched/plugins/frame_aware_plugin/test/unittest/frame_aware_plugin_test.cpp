@@ -350,6 +350,7 @@ HWTEST_F(FrameAwarePluginTest, HandleNetworkLatencyRequestTest, TestSize.Level1)
     data->payload["identity"] = "12345";
     FrameAwarePlugin::GetInstance().DispatchResource(data); // all right
     ffrt::wait();
+    sleep(1);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
