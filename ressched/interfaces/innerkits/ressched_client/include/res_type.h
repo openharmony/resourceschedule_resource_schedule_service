@@ -244,6 +244,8 @@ enum : uint32_t {
     RES_TYPE_SCENE_ROTATION = 105,
     // report event vsync tid, value tid, payload pid, tid, uid.
     RES_TYPE_REPORT_VSYNC_TID = 106,
+    // report cloud config update
+    RES_TYPE_CLOUD_CONFIG_UPDATE = 107,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
