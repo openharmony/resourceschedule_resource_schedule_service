@@ -216,19 +216,6 @@ HWTEST_F(ResSchedClientTest, ReportSyncEvent, Function | MediumTest | Level0)
 }
 
 /**
- * @tc.name: StopRemoteObject
- * @tc.desc: Stop Remote Object
- * @tc.type: FUNC
- * @tc.require: I78O6Y
- * @tc.author: lujunchao
- */
-HWTEST_F(ResSchedClientTest, StopRemoteObject, Function | MediumTest | Level0)
-{
-    ResSchedClient::GetInstance().StopRemoteObject();
-    EXPECT_TRUE(nullptr == ResSchedClient::GetInstance().rss_);
-}
-
-/**
  * @tc.name: RegisterSystemloadNotifier001
  * @tc.desc: Register systemload notifier
  * @tc.type: FUNC
@@ -292,6 +279,29 @@ HWTEST_F(ResSchedClientTest, RegisterEventListener001, Function | MediumTest | L
     ResSchedClient::GetInstance().UnRegisterEventListener(eventListener,
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     SUCCEED();
+}
+
+/**
+ * @tc.name: UnRegisterEventListener001
+ * @tc.desc: UnRegister event listener
+ * @tc.type: FUNC
+ * @tc.require: issueIA9UZ9
+ * @tc.author: baiheng
+ */
+HWTEST_F(ResSchedClientTest, UnRegisterEventListener001, Function | MediumTest | Level0)
+{
+    sptr<ResSchedEventListener> eventListener =
+        new (std::nothrow) ResSchedEventListenerMock;
+    EXPECT_TRUE(eventListener != nullptr);
+    ResSchedClient::GetInstance().RegisterEventListener(eventListener,
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    ResSchedClient::GetInstance().UnRegisterEventListener(eventListener,
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    nlohmann::json extInfo;
+    ResSchedClient::GetInstance().innerEventListener_->OnReceiveEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
+    EXPECT_TRUE(ResSchedEventListenerMock::type == 0);
+    EXPECT_TRUE(ResSchedEventListenerMock::value == 0);
 }
 
 /**
@@ -368,29 +378,6 @@ HWTEST_F(ResSchedClientTest, OnRemoveSystemAbility001, Function | MediumTest | L
 }
 
 /**
- * @tc.name: UnRegisterEventListener001
- * @tc.desc: UnRegister event listener
- * @tc.type: FUNC
- * @tc.require: issueIA9UZ9
- * @tc.author: baiheng
- */
-HWTEST_F(ResSchedClientTest, UnRegisterEventListener001, Function | MediumTest | Level0)
-{
-    sptr<ResSchedEventListener> eventListener =
-        new (std::nothrow) ResSchedEventListenerMock;
-    EXPECT_TRUE(eventListener != nullptr);
-    ResSchedClient::GetInstance().RegisterEventListener(eventListener,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
-    ResSchedClient::GetInstance().UnRegisterEventListener(eventListener,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
-    nlohmann::json extInfo;
-    ResSchedClient::GetInstance().innerEventListener_->OnReceiveEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
-        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
-    EXPECT_TRUE(ResSchedEventListenerMock::type == 0);
-    EXPECT_TRUE(ResSchedEventListenerMock::value == 0);
-}
-
-/**
  * @tc.name: IsAllowedAppPreload
  * @tc.desc: Is allowed application preload
  * @tc.type: FUNC
@@ -402,6 +389,19 @@ HWTEST_F(ResSchedClientTest, IsAllowedAppPreload, Function | MediumTest | Level0
     std::string bundleName = "com.ohos.test";
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
     EXPECT_TRUE(!ResSchedClient::GetInstance().IsAllowedAppPreload(bundleName, 0));
+}
+
+/**
+ * @tc.name: StopRemoteObject
+ * @tc.desc: Stop Remote Object
+ * @tc.type: FUNC
+ * @tc.require: I78O6Y
+ * @tc.author: lujunchao
+ */
+HWTEST_F(ResSchedClientTest, StopRemoteObject, Function | MediumTest | Level0)
+{
+    ResSchedClient::GetInstance().StopRemoteObject();
+    EXPECT_TRUE(nullptr == ResSchedClient::GetInstance().rss_);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
