@@ -295,29 +295,6 @@ HWTEST_F(ResSchedClientTest, RegisterEventListener001, Function | MediumTest | L
 }
 
 /**
- * @tc.name: UnRegisterEventListener001
- * @tc.desc: UnRegister event listener
- * @tc.type: FUNC
- * @tc.require: issueIA9UZ9
- * @tc.author: baiheng
- */
-HWTEST_F(ResSchedClientTest, UnRegisterEventListener001, Function | MediumTest | Level0)
-{
-    sptr<ResSchedEventListener> eventListener =
-        new (std::nothrow) ResSchedEventListenerMock;
-    EXPECT_TRUE(eventListener != nullptr);
-    ResSchedClient::GetInstance().RegisterEventListener(eventListener,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
-    ResSchedClient::GetInstance().UnRegisterEventListener(eventListener,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
-    nlohmann::json extInfo;
-    ResSchedClient::GetInstance().innerEventListener_->OnReceiveEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
-        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
-    EXPECT_TRUE(ResSchedEventListenerMock::type == 0);
-    EXPECT_TRUE(ResSchedEventListenerMock::value == 0);
-}
-
-/**
  * @tc.name: GetSystemloadLevel001
  * @tc.desc: Get systemload level
  * @tc.type: FUNC
@@ -388,6 +365,29 @@ HWTEST_F(ResSchedClientTest, OnRemoveSystemAbility001, Function | MediumTest | L
     ResSchedClient::GetInstance().resSchedSvcStatusListener_->OnRemoveSystemAbility(OTHER_SA_ID, empty);
     ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(notifier);
     SUCCEED();
+}
+
+/**
+ * @tc.name: UnRegisterEventListener001
+ * @tc.desc: UnRegister event listener
+ * @tc.type: FUNC
+ * @tc.require: issueIA9UZ9
+ * @tc.author: baiheng
+ */
+HWTEST_F(ResSchedClientTest, UnRegisterEventListener001, Function | MediumTest | Level0)
+{
+    sptr<ResSchedEventListener> eventListener =
+        new (std::nothrow) ResSchedEventListenerMock;
+    EXPECT_TRUE(eventListener != nullptr);
+    ResSchedClient::GetInstance().RegisterEventListener(eventListener,
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    ResSchedClient::GetInstance().UnRegisterEventListener(eventListener,
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    nlohmann::json extInfo;
+    ResSchedClient::GetInstance().innerEventListener_->OnReceiveEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
+    EXPECT_TRUE(ResSchedEventListenerMock::type == 0);
+    EXPECT_TRUE(ResSchedEventListenerMock::value == 0);
 }
 
 /**
