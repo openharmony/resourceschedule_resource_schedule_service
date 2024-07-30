@@ -126,6 +126,7 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
     std::vector<std::u16string> argsNull;
     int res = resSchedService_->Dump(wrongFd, argsNull);
     EXPECT_NE(res, ERR_OK);
+
     int32_t correctFd = -1;
     res = resSchedService_->Dump(correctFd, argsNull);
 
@@ -158,35 +159,6 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
 
     std::vector<std::u16string> argsOnePlugin5 = {to_utf16("sendDebugToExecutor")};
     res = resSchedService_->Dump(correctFd, argsOnePlugin5);
-}
-
-/**
- * @tc.name: ressched service IsAllowedAppPreload 001
- * @tc.desc: test the interface service IsAllowedAppPreload
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author: fengyang
- */
-HWTEST_F(ResSchedServiceTest, IsAllowedAppPreload001, Function | MediumTest | Level0)
-{
-    std::shared_ptr<ResSchedService> resSchedService = make_shared<ResSchedService>();
-    EXPECT_TRUE(resSchedService != nullptr);
-    int32_t res = resSchedService->IsAllowedAppPreload("test", 0);
-    EXPECT_NE(res, ERR_OK);
-}
-
-/**
- * @tc.name: ressched service IsAllowedAppPreload 002
- * @tc.desc: test the interface service IsAllowedAppPreload
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author: fengyang
- */
-HWTEST_F(ResSchedServiceTest, IsAllowedAppPreload002, Function | MediumTest | Level0)
-{
-    std::shared_ptr<ResSchedService> resSchedService = make_shared<ResSchedService>();
-    EXPECT_TRUE(resSchedService != nullptr);
-    resSchedService->LoadAppPreloadPlugin();
 }
 
 /**
