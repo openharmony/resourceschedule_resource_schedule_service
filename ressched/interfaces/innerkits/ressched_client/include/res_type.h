@@ -706,6 +706,7 @@ enum DeviceStatus : int64_t {
     THERMAL = 2,
     MEMORY_LEVEL = 3,
     HIGH_LOAD = 4,
+    DEVICE_IDEL = 5,
 };
 
 /**
