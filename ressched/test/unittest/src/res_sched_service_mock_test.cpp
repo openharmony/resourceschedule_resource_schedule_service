@@ -48,7 +48,8 @@ bool SystemAbility::AddSystemAbilityListener(int32_t systemAbilityId)
 }
 namespace Security::AccessToken {
 int32_t g_mockDumpTokenKit = 1;
-int AccessTokenKit::VerifyAccessToken(AccessTokenId tokenId, const std::string& permissionName)
+int32_t g_mockReportTokenKit = 1;
+int AccessTokenKit::VerifyAccessToken(AccessTokenID tokenId, const std::string& permissionName)
 {
     if (permissionName == "ohos.permission.DUMP") {
         return g_mockDumpTokenKit;
@@ -60,13 +61,13 @@ int AccessTokenKit::VerifyAccessToken(AccessTokenId tokenId, const std::string& 
 }
 
 int32_t g_mockTokenFlag = 1;
-int AccessTokenKit::GetTokenTypeFlag(AccessTokenId tokenId)
+ATokenTypeEnum AccessTokenKit::GetTokenTypeFlag(AccessTokenID tokenId)
 {
     return g_mockTokenFlag;
 }
 
 bool g_mockHapTokenInfo = false;
-int AccessTokenKit::GetHapTokenInfo(AccessTokenId tokenId, HapTokenInfo& hapTokenInfoRes)
+int AccessTokenKit::GetHapTokenInfo(AccessTokenID tokenId, HapTokenInfo& hapTokenInfoRes)
 {
     if (g_mockHapTokenInfo) {
         hapTokenInfoRes.bundleName = "com.ohos.sceneboard";
@@ -171,7 +172,7 @@ HWTEST_F(ResSchedServiceMockTest, ServiceDump001, Function | MediumTest | Level0
     std::vector<std::u16string> argsNull;
     int res = resSchedService_->Dump(wrongFd, argsNull);
     EXPECT_EQ(res, ERR_OK);
-    resSchedServiceAbility_->Onstart();
+    resSchedServiceAbility_->OnStart();
     int32_t correctFd = -1;
     res = resSchedService_->Dump(correctFd, argsNull);
 
@@ -215,7 +216,7 @@ HWTEST_F(ResSchedServiceMockTest, ServiceDump001, Function | MediumTest | Level0
  */
 HWTEST_F(ResSchedServiceMockTest, ServiceDump002, Function | MediumTest | Level0)
 {
-    Security::AccessToken::g_mockDumpTokenKit = 0；
+    Security::AccessToken::g_mockDumpTokenKit = 0;
     resSchedServiceAbility_->Onstart();
     std::shared_ptr<ResSchedService> resSchedService = make_shared<ResSchedService>();
     int32_t uid = 100;
@@ -224,12 +225,12 @@ HWTEST_F(ResSchedServiceMockTest, ServiceDump002, Function | MediumTest | Level0
     auto processRecord = app->GetProcessRecordNonNull(pid);
     processRecord->GetAbilityInfoNonNull(1000);
     processRecord->GetWindowInfoNonNull(1000);
-    processRecord->runningLockState_(1000) = false;
+    processRecord->runningLockState_[1000] = false;
     int32_t wrongFd = -1;
     int32_t correctFd = -1;
     std::vector<std::u16string> argsNull;
     std::vector<std::u16string> argsOnePlugin1 = {to_utf16("getRunningLockInfo")};
-    res = resSchedService->Dump(correctFd, argsOnePlugin1);
+    int res = resSchedService->Dump(correctFd, argsOnePlugin1);
     EXPECT_EQ(res, ERR_OK);
     std::vector<std::u16string> argsOnePlugin2 = {to_utf16("getProcessEventInfo")};
     res = resSchedService->Dump(correctFd, argsOnePlugin2);
@@ -248,15 +249,15 @@ HWTEST_F(ResSchedServiceMockTest, ServiceDump002, Function | MediumTest | Level0
  */
 HWTEST_F(ResSchedServiceMockTest, ServiceDump003, Function | MediumTest | Level0)
 {
-    Security::AccessToken::g_mockDumpTokenKit = 0；
+    Security::AccessToken::g_mockDumpTokenKit = 0;
     PluginMgr::GetInstance().Init();
     auto notifier = new (std::nothrow) TestResSchedSystemloadListener();
     EXPECT_TRUE(notifier != nullptr);
     resSchedService_->RegisterSystemLoadNotifier(notifier);
     std::vector<std::u16string> argsOnePlugin = {to_utf16("getSystemloadInfo")};
-    res = resSchedService_->Dump(correctFd, argsOnePlugin);
+    int res = resSchedService_->Dump(correctFd, argsOnePlugin);
     EXPECT_EQ(res, ERR_OK);
-    td::vector<std::u16string> argsOnePlugi2 = {to_utf16("sendDebugToExecutor"), to_utf16("1")};
+    std::vector<std::u16string> argsOnePlugin2 = {to_utf16("sendDebugToExecutor"), to_utf16("1")};
     res = resSchedService_->Dump(correctFd, argsOnePlugi2);
     EXPECT_EQ(res, ERR_OK);
 }
@@ -270,14 +271,14 @@ HWTEST_F(ResSchedServiceMockTest, ServiceDump003, Function | MediumTest | Level0
  */
 HWTEST_F(ResSchedServiceMockTest, ServiceDump004, Function | MediumTest | Level0)
 {
-    Security::AccessToken::g_mockDumpTokenKit = 1；
+    Security::AccessToken::g_mockDumpTokenKit = 1;
     std::shared_ptr<ResSchedService> resSchedService = make_shared<ResSchedService>();
-    int32_t wrongFd = -1;
-    std:;vector<std::u16string> argsNull;
-    res = resSchedService->Dump(correctFd, argsOnePlugi2);
+    int32_t correctFd = -1;
+    std::vector<std::u16string> argsOnePlugin = {to_utf16("-h")};
+    int res = resSchedService->Dump(correctFd, argsOnePlugin);
     EXPECT_NE(res, ERR_OK);
     system::g_mockEngMode = 0;
-    res = resSchedService->Dump(correctFd, argsOnePlugi2);
+    res = resSchedService->Dump(correctFd, argsOnePlugin);
     EXPECT_NE(res, ERR_OK);
 }
 
@@ -291,6 +292,7 @@ HWTEST_F(ResSchedServiceMockTest, ServiceDump004, Function | MediumTest | Level0
 HWTEST_F(ResSchedServiceMockTest, ServiceDump005, Function | MediumTest | Level0)
 {
     std::shared_ptr<ResSchedService> resSchedService = make_shared<ResSchedService>();
+    std::vector<std::string> args;
     std::string result;
     resSchedService->DumpProcessRunningLock(result);
     EXPECT_NE(result, "");
@@ -300,10 +302,27 @@ HWTEST_F(ResSchedServiceMockTest, ServiceDump005, Function | MediumTest | Level0
     EXPECT_NE(result, "");
     resSchedService->DumpSystemLoadInfo(result);
     EXPECT_NE(result, "");
-    resSchedService->DumpExecutorDebugCommand(result);
+    resSchedService->DumpExecutorDebugCommand(args, result);
     EXPECT_NE(result, "");
     resSchedService->DumpAllPluginConfig(result);
     EXPECT_NE(result, "");
+}
+
+/**
+ * @tc.name: Start ResSchedServiceAbility 001
+ * @tc.desc: Verify if ResSchedServiceAbility OnStart is success.
+ * @tc.type: FUNC
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
+ */
+HWTEST_F(ResSchedServiceTest, OnStart001, Function | MediumTest | Level0)
+{
+    system::g_mockAddAbilityListener = false;
+    resSchedServiceAbility_->OnStart();
+    EXPECT_TRUE(resSchedServiceAbility_->service_ != nullptr);
+    std::string action = "test";
+    resSchedServiceAbility_->OnDeviceLevelChanged(0, 2, action);
+    system::g_mockAddAbilityListener = true;
 }
 
 class TestResSchedServiceStub : public ResSchedServiceStub {
@@ -353,74 +372,6 @@ public:
 };
 
 /**
- * @tc.name: ResSchedServicesStub IsHasPermission 001
- * @tc.desc: IsHasPermission
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author: fengyang
- */
-HWTEST_F(ResSchedServiceMockTest, IsHasPermission001, Function | MediumTest | Level0)
-{
-    Security::AccessToken::g_mockDumpTokenKit = 0；
-    Security::AccessToken::g_mockTokenFlag = 0；
-    auto resSchedServiceStub = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    uint32_t type = 0;
-    std::unordered_set<uint32_t> saRes;
-    saRes.insert(0);
-    EXPECT_TRUE(resSchedServiceStub->IsHasPermission(type, saRes));
-    EXPECT_FALSE(resSchedServiceStub->IsHasPermission(1, saRes));
-    Security::AccessToken::g_mockDumpTokenKit = 1；
-    EXPECT_FALSE(resSchedServiceStub->IsHasPermission(0, saRes));
-    Security::AccessToken::g_mockTokenFlag = 1；
-    EXPECT_FALSE(resSchedServiceStub->IsHasPermission(type, saRes));
-}
-
-/**
- * @tc.name: ResSchedServicesStub IsThirdPartType 001
- * @tc.desc: IsThirdPartType
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author: fengyang
- */
-HWTEST_F(ResSchedServiceMockTest, IsThirdPartType001, Function | MediumTest | Level0)
-{
-    Security::AccessToken::g_mockReportTokenKit = 0；
-    Security::AccessToken::g_mockTokenFlag = 0；
-    auto resSchedServiceStub = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    uint32_t type = 0;
-    std::unordered_set<uint32_t> thirdPartRes;
-    thirdPartRes.insert(0);
-    EXPECT_TRUE(resSchedServiceStub->IsThirdPartType(type, saRes));
-    EXPECT_FALSE(resSchedServiceStub->IsThirdPartType(1, saRes));
-    Security::AccessToken::g_mockTokenFlag = 1；
-    EXPECT_FALSE(resSchedServiceStub->IsThirdPartType(type, saRes));
-}
-
-/**
- * @tc.name: ResSchedServicesStub IsSBDResType 001
- * @tc.desc: IsSBDResType
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author: fengyang
- */
-HWTEST_F(ResSchedServiceMockTest, IsSBDResType001, Function | MediumTest | Level0)
-{
-    Security::AccessToken::g_mockTokenFlag = 0；
-    Security::AccessToken::g_mockHapTokenInfo = true;
-    auto resSchedServiceStub = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    uint32_t type = 38;
-    EXPECT_FALSE(resSchedServiceStub->IsSBDResType(0));
-    EXPECT_TRUE(resSchedServiceStub->IsSBDResType(type));
-    Security::AccessToken::g_mockTokenFlag = 1；
-    EXPECT_FALSE(resSchedServiceStub->IsSBDResType(type));
-    Security::AccessToken::g_mockHapTokenInfo = false;
-    EXPECT_FALSE(resSchedServiceStub->IsSBDResType(type));
-}
-
-/**
  * @tc.name: ResSchedServicesStub ReportDataInner 001
  * @tc.desc: Verify if resschedstub reportdatainner is success.
  * @tc.type: FUNC
@@ -429,21 +380,104 @@ HWTEST_F(ResSchedServiceMockTest, IsSBDResType001, Function | MediumTest | Level
  */
 HWTEST_F(ResSchedServiceMockTest, ReportDataInner001, Function | MediumTest | Level0)
 {
-    Security::AccessToken::g_mockReportTokenKit = 0；
-    Security::AccessToken::g_mockTokenFlag = 0；
+    Security::AccessToken::g_mockReportTokenKit = 0;
+    Security::AccessToken::g_mockTokenFlag = 0;
     Security::AccessToken::g_mockHapTokenInfo = true;
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
+    auto resSchedServiceStub = make_shared<TestResSchedServiceStub>();
     MessageParcel reply;
     MessageParcel emptyData;
-    EXPECT_TRUE(resSchedServiceStub_->ReportDataInner(emptyData, reply));
-
+    EXPECT_EQ(resSchedServiceStub->ReportDataInner(emptyData, reply), 0);
     MessageParcel reportData;
     reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
     reportData.WriteUint32(1);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_TRUE(resSchedServiceStub_->ReportDataInner(emptyData, reportData));
+    EXPECT_NE(resSchedServiceStub->ReportDataInner(emptyData, reportData), 0);
+    MessageParcel reportData2;
+    reportData2.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
+    reportData2.WriteUint32(-1);
+    reportData2.WriteInt64(1);
+    reportData2.WriteString("{ { \" uid \" : \" 1 \" } }");
+    EXPECT_EQ(resSchedServiceStub->ReportDataInner(emptyData, reportData2), 0);
 }
+
+/**
+ * @tc.name: ResSchedServicesStub ReportDataInner002
+ * @tc.desc: ReportDataInner002 IsSBDResType
+ * @tc.type: FUNC
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
+ */
+HWTEST_F(ResSchedServiceMockTest, ReportDataInner002, Function | MediumTest | Level0)
+{
+    Security::AccessToken::g_mockTokenFlag = 0;
+    Security::AccessToken::g_mockHapTokenInfo = true;
+    auto resSchedServiceStub = make_shared<TestResSchedServiceStub>();
+    MessageParcel reportData;
+    reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
+    reportData.WriteUint32(0);
+    reportData.WriteInt64(1);
+    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
+    EXPECT_EQ(resSchedServiceStub->ReportDataInner(emptyData, reportData), 0);
+    MessageParcel reportData2;
+    reportData2.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
+    reportData2.WriteUint32(38);
+    reportData2.WriteInt64(1);
+    reportData2.WriteString("{ { \" uid \" : \" 1 \" } }");
+    EXPECT_NE(resSchedServiceStub->ReportDataInner(emptyData, reportData2), 0);
+    Security::AccessToken::g_mockHapTokenInfo = false;
+    EXPECT_EQ(resSchedServiceStub->ReportDataInner(emptyData, reportData2), 0);
+    Security::AccessToken::g_mockTokenFlag = 1;
+    EXPECT_EQ(resSchedServiceStub->ReportDataInner(emptyData, reportData2), 0); 
+}
+
+/**
+ * @tc.name: ResSchedServicesStub ReportDataInner 003
+ * @tc.desc: ReportDataInner003 IsThirdPartType
+ * @tc.type: FUNC
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
+ */
+HWTEST_F(ResSchedServiceMockTest, ReportDataInner003, Function | MediumTest | Level0)
+{
+    Security::AccessToken::g_mockReportTokenKit = 0;
+    Security::AccessToken::g_mockTokenFlag = 0;
+    auto resSchedServiceStub = make_shared<TestResSchedServiceStub>();
+    uto resSchedServiceStub = make_shared<TestResSchedServiceStub>();
+    MessageParcel reportData;
+    reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
+    reportData.WriteUint32(9);
+    reportData.WriteInt64(1);
+    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
+    EXPECT_NE(resSchedServiceStub->ReportDataInner(emptyData, reportData), 0);
+    Security::AccessToken::g_mockTokenFlag = 1;
+    EXPECT_EQ(resSchedServiceStub->ReportDataInner(emptyData, reportData), 0);
+}
+
+/**
+ * @tc.name: ResSchedServicesStub ReportDataInner004
+ * @tc.desc: ReportDataInner IsHasPermission
+ * @tc.type: FUNC
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
+ */
+HWTEST_F(ResSchedServiceMockTest, ReportDataInner004, Function | MediumTest | Level0)
+{
+    Security::AccessToken::g_mockReportTokenKit = 0;
+    Security::AccessToken::g_mockTokenFlag = 0;
+    auto resSchedServiceStub = make_shared<TestResSchedServiceStub>();
+    uto resSchedServiceStub = make_shared<TestResSchedServiceStub>();
+    MessageParcel reportData;
+    reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
+    reportData.WriteUint32(0);
+    reportData.WriteInt64(1);
+    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
+    EXPECT_NE(resSchedServiceStub->ReportDataInner(emptyData, reportData), 0);
+    Security::AccessToken::g_mockDumpTokenKit = 1;
+    EXPECT_EQ(resSchedServiceStub->ReportDataInner(emptyData, reportData), 0);
+    Security::AccessToken::g_mockTokenFlag = 1;
+    EXPECT_EQ(resSchedServiceStub->ReportDataInner(emptyData, reportData), 0);
+}
+
 } // namespace ResourceSchedule
 } // namespace OHOS

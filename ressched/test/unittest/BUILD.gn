@@ -13,7 +13,7 @@
 
 import("//build/test.gni")
 import("../../ressched.gni")
-import("../../cgroup_sched/cgroup_sched.gni")
+import("../../../cgroup_sched/cgroup_sched.gni")
 
 group("unittest") {
   testonly = true
@@ -36,8 +36,6 @@ ohos_unittest("resschedservice_test") {
     "${cgroup_sched_framework}/sched_controller/include",
     "${cgroup_sched_framework}/process_group/include",
     "${cgroup_sched_framework}/utils/include",
-    "${ressched_common}/include",
-    "${ressched_common}/include",
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
   ]

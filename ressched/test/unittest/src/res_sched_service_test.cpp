@@ -170,7 +170,7 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
 HWTEST_F(ResSchedServiceTest, IsAllowedAppPreload001, Function | MediumTest | Level0)
 {
     std::shared_ptr<ResSchedService> resSchedService = make_shared<ResSchedService>();
-    EXPECT_NE(resSchedService != nullptr);
+    EXPECT_TRUE(resSchedService != nullptr);
     int32_t res = resSchedService->IsAllowedAppPreload("test", 0);
     EXPECT_NE(res, ERR_OK);
 }
@@ -185,7 +185,7 @@ HWTEST_F(ResSchedServiceTest, IsAllowedAppPreload001, Function | MediumTest | Le
 HWTEST_F(ResSchedServiceTest, IsAllowedAppPreload002, Function | MediumTest | Level0)
 {
     std::shared_ptr<ResSchedService> resSchedService = make_shared<ResSchedService>();
-    EXPECT_NE(resSchedService != nullptr);
+    EXPECT_TRUE(resSchedService != nullptr);
     resSchedService->LoadAppPreloadPlugin();
 }
 
@@ -472,23 +472,6 @@ HWTEST_F(ResSchedServiceTest, OnStart001, Function | MediumTest | Level0)
     EXPECT_TRUE(resSchedServiceAbility_->service_ != nullptr);
 }
 
-/**
- * @tc.name: Start ResSchedServiceAbility 002
- * @tc.desc: Verify if ResSchedServiceAbility OnStart is success.
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author: fengyang
- */
-HWTEST_F(ResSchedServiceTest, OnStart002, Function | MediumTest | Level0)
-{
-    system::g_mockAddAbilityListener = false;
-    resSchedServiceAbility_->OnStart();
-    EXPECT_TRUE(resSchedServiceAbility_->service_ != nullptr);
-    std::string action = "test";
-    resSchedServiceAbility_->OnDeviceLevelChanged(0, 2, action);
-    system::g_mockAddAbilityListener = true;
-}
-
 static void OnStartTask()
 {
     std::shared_ptr<ResSchedServiceAbility> resSchedServiceAbility_ = make_shared<ResSchedServiceAbility>();
@@ -497,13 +480,13 @@ static void OnStartTask()
 }
 
 /**
- * @tc.name: Start ResSchedServiceAbility 003
+ * @tc.name: Start ResSchedServiceAbility 002
  * @tc.desc: Test ResSchedServiceAbility OnStart in multithreading.
  * @tc.type: FUNC
  * @tc.require: issueI7G8VT
  * @tc.author: nizihao
  */
-HWTEST_F(ResSchedServiceTest, OnStart003, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceTest, OnStart002, Function | MediumTest | Level0)
 {
     SET_THREAD_NUM(10);
     GTEST_RUN_TASK(OnStartTask);
