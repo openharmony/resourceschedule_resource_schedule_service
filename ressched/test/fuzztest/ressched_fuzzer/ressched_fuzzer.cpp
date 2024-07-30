@@ -285,7 +285,6 @@ namespace {
         oobeObserver->SetUpdateFunc(updateFunc);
         OOBEManager::GetInstance().Initialize();
         OOBEManager::GetInstance().StartListen();
-        OOBEManager::GetInstance().OnReceiveDataShareReadyCallBack();
         return true;
     }
 
