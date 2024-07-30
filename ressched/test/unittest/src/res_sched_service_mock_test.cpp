@@ -87,7 +87,6 @@ using namespace std;
 using namespace testing::ext;
 using namespace testing::mt;
 using namespace Security::AccessToken;
-using namespace IPC_SINGLE;
 
 class TestMockResSchedServiceStub : public ResSchedServiceStub {
 public:
@@ -194,7 +193,6 @@ void ResSchedServiceMockTest::SetUp()
     /**
      * @tc.setup: initialize the member variable resSchedServiceAbility_
      */
-    TestMockResSchedServiceStub
     resSchedService_ = make_shared<ResSchedService>();
     resSchedServiceAbility_ = make_shared<ResSchedServiceAbility>();
     resSchedServiceStub_ = make_shared<TestMockResSchedServiceStub>();
@@ -429,20 +427,14 @@ HWTEST_F(ResSchedServiceMockTest, ReportDataInner002, Function | MediumTest | Le
     MessageParcel reportData;
     MessageParcel reply;
     reportData.WriteInterfaceToken(resSchedServiceStub_->GetDescriptor());
-    reportData.WriteUint32(0);
+    reportData.WriteUint32(38);
     reportData.WriteInt64(1);
     reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
     EXPECT_EQ(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
-    MessageParcel reportData2;
-    reportData2.WriteInterfaceToken(resSchedServiceStub_->GetDescriptor());
-    reportData2.WriteUint32(38);
-    reportData2.WriteInt64(1);
-    reportData2.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_EQ(resSchedServiceStub_->ReportDataInner(reportData2, reply), ERR_OK);
     Security::AccessToken::g_mockHapTokenInfo = false;
-    EXPECT_NE(resSchedServiceStub_->ReportDataInner(reportData2, reply), ERR_OK);
+    EXPECT_NE(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
     Security::AccessToken::g_mockTokenFlag = TypeATokenTypeEnum::TOKEN_INVALID;
-    EXPECT_NE(resSchedServiceStub_->ReportDataInner(reportData2, reply), ERR_OK); 
+    EXPECT_NE(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
 }
 
 /**
