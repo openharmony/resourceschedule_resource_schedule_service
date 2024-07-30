@@ -113,6 +113,7 @@ void ResSchedServiceTest::TearDown()
  */
 HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
 {
+    Security::AccessToken::g_mockDumpTokenKit = 0；
     PluginMgr::GetInstance().Init();
     std::string result;
     resSchedService_->DumpAllInfo(result);
@@ -125,8 +126,8 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
     int32_t wrongFd = -1;
     std::vector<std::u16string> argsNull;
     int res = resSchedService_->Dump(wrongFd, argsNull);
-    EXPECT_NE(res, ERR_OK);
-
+    EXPECT_EQ(res, ERR_OK);
+    resSchedServiceAbility_->Onstart();
     int32_t correctFd = -1;
     res = resSchedService_->Dump(correctFd, argsNull);
 
@@ -159,6 +160,35 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
 
     std::vector<std::u16string> argsOnePlugin5 = {to_utf16("sendDebugToExecutor")};
     res = resSchedService_->Dump(correctFd, argsOnePlugin5);
+}
+
+/**
+ * @tc.name: ressched service IsAllowedAppPreload 001
+ * @tc.desc: test the interface service IsAllowedAppPreload
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
+ */
+HWTEST_F(ResSchedServiceTest, IsAllowedAppPreload001, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService = make_shared<ResSchedService>();
+    EXPECT_NE(resSchedService != nullptr);
+    int32_t res = resSchedService->IsAllowedAppPreload("test", 0);
+    EXPECT_NE(res, ERR_OK);
+}
+
+/**
+ * @tc.name: ressched service IsAllowedAppPreload 002
+ * @tc.desc: test the interface service IsAllowedAppPreload
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
+ */
+HWTEST_F(ResSchedServiceTest, IsAllowedAppPreload002, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService = make_shared<ResSchedService>();
+    EXPECT_NE(resSchedService != nullptr);
+    resSchedService->LoadAppPreloadPlugin();
 }
 
 /**
@@ -444,6 +474,23 @@ HWTEST_F(ResSchedServiceTest, OnStart001, Function | MediumTest | Level0)
     EXPECT_TRUE(resSchedServiceAbility_->service_ != nullptr);
 }
 
+/**
+ * @tc.name: Start ResSchedServiceAbility 002
+ * @tc.desc: Verify if ResSchedServiceAbility OnStart is success.
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
+ */
+HWTEST_F(ResSchedServiceTest, OnStart002, Function | MediumTest | Level0)
+{
+    system::g_mockAddAbilityListener = false;
+    resSchedServiceAbility_->OnStart();
+    EXPECT_TRUE(resSchedServiceAbility_->service_ != nullptr);
+    std::string action = "test";
+    resSchedServiceAbility_->OnDeviceLevelChanged(0, 2, action);
+    system::g_mockAddAbilityListener = true;
+}
+
 static void OnStartTask()
 {
     std::shared_ptr<ResSchedServiceAbility> resSchedServiceAbility_ = make_shared<ResSchedServiceAbility>();
@@ -452,13 +499,13 @@ static void OnStartTask()
 }
 
 /**
- * @tc.name: Start ResSchedServiceAbility 002
+ * @tc.name: Start ResSchedServiceAbility 003
  * @tc.desc: Test ResSchedServiceAbility OnStart in multithreading.
  * @tc.type: FUNC
  * @tc.require: issueI7G8VT
  * @tc.author: nizihao
  */
-HWTEST_F(ResSchedServiceTest, OnStart002, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceTest, OnStart003, Function | MediumTest | Level0)
 {
     SET_THREAD_NUM(10);
     GTEST_RUN_TASK(OnStartTask);
