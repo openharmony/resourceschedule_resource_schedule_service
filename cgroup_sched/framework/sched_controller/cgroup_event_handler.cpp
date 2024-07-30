@@ -201,7 +201,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, const s
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d",
         __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), abilityState, abilityType);
     if (abilityType == (int32_t)abilityType::EXTENSION) {
-        CGS_LOGD("%{public}s : this type of ability is not dealt with here", __func__);
+        CGS_LOGD("%{public}s : this type of event is not dealt with here", __func__);
         return;
     }
     ChronoScope cs("HandleAbilityStateChanged");
