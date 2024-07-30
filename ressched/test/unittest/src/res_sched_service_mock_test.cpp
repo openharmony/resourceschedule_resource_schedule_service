@@ -81,7 +81,7 @@ using namespace std;
 using namespace testing::ext;
 using namespace testing::mt;
 using namespace Security::AccessToken;
-class ResSchedServiceTest : public testing::Test {
+class ResSchedServiceMockTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
     static void TearDownTestCase(void);
@@ -106,7 +106,7 @@ public:
 
 int32_t TestResSchedSystemloadListener::testSystemloadLevel = 0;
 
-void ResSchedServiceTest::SetUpTestCase(void)
+void ResSchedServiceMockTest::SetUpTestCase(void)
 {
     static const char *perms[] = {
         "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT",
@@ -120,7 +120,7 @@ void ResSchedServiceTest::SetUpTestCase(void)
         .dcaps = nullptr,
         .perms = perms,
         .acls = nullptr,
-        .processName = "ResSchedServiceTest",
+        .processName = "ResSchedServiceMockTest",
         .aplStr = "system_core",
     };
     tokenId = GetAccessTokenId(&infoInstance);
@@ -128,9 +128,9 @@ void ResSchedServiceTest::SetUpTestCase(void)
     AccessTokenKit::ReloadNativeTokenInfo();
 }
 
-void ResSchedServiceTest::TearDownTestCase() {}
+void ResSchedServiceMockTest::TearDownTestCase() {}
 
-void ResSchedServiceTest::SetUp()
+void ResSchedServiceMockTest::SetUp()
 {
     /**
      * @tc.setup: initialize the member variable resSchedServiceAbility_
@@ -139,7 +139,7 @@ void ResSchedServiceTest::SetUp()
     resSchedServiceAbility_ = make_shared<ResSchedServiceAbility>();
 }
 
-void ResSchedServiceTest::TearDown()
+void ResSchedServiceMockTest::TearDown()
 {
     /**
      * @tc.teardown: clear resSchedServiceAbility_
@@ -152,10 +152,10 @@ void ResSchedServiceTest::TearDown()
  * @tc.name: ressched service dump 001
  * @tc.desc: Verify if ressched service dump commonds is success.
  * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
  */
-HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceMockTest, ServiceDump001, Function | MediumTest | Level0)
 {
     Security::AccessToken::g_mockDumpTokenKit = 0;
     PluginMgr::GetInstance().Init();
@@ -210,10 +210,10 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
  * @tc.name: ressched service dump 002
  * @tc.desc: Verify if ressched service dump commonds is success.
  * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
  */
-HWTEST_F(ResSchedServiceTest, ServiceDump002, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceMockTest, ServiceDump002, Function | MediumTest | Level0)
 {
     Security::AccessToken::g_mockDumpTokenKit = 0；
     resSchedServiceAbility_->Onstart();
@@ -243,10 +243,10 @@ HWTEST_F(ResSchedServiceTest, ServiceDump002, Function | MediumTest | Level0)
  * @tc.name: ressched service dump 003
  * @tc.desc: Verify if ressched service dump commonds is success.
  * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
  */
-HWTEST_F(ResSchedServiceTest, ServiceDump003, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceMockTest, ServiceDump003, Function | MediumTest | Level0)
 {
     Security::AccessToken::g_mockDumpTokenKit = 0；
     PluginMgr::GetInstance().Init();
@@ -265,10 +265,10 @@ HWTEST_F(ResSchedServiceTest, ServiceDump003, Function | MediumTest | Level0)
  * @tc.name: ressched service dump 004
  * @tc.desc: Verify if ressched service dump commonds is success.
  * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
  */
-HWTEST_F(ResSchedServiceTest, ServiceDump004, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceMockTest, ServiceDump004, Function | MediumTest | Level0)
 {
     Security::AccessToken::g_mockDumpTokenKit = 1；
     std::shared_ptr<ResSchedService> resSchedService = make_shared<ResSchedService>();
@@ -285,10 +285,10 @@ HWTEST_F(ResSchedServiceTest, ServiceDump004, Function | MediumTest | Level0)
  * @tc.name: ressched service dump 005
  * @tc.desc: Verify if ressched service dump commonds is success.
  * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
  */
-HWTEST_F(ResSchedServiceTest, ServiceDump005, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceMockTest, ServiceDump005, Function | MediumTest | Level0)
 {
     std::shared_ptr<ResSchedService> resSchedService = make_shared<ResSchedService>();
     std::string result;
@@ -356,10 +356,10 @@ public:
  * @tc.name: ResSchedServicesStub IsHasPermission 001
  * @tc.desc: IsHasPermission
  * @tc.type: FUNC
- * @tc.require: issueI9U0YF
- * @tc.author:fengyang
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
  */
-HWTEST_F(ResSchedServiceTest, IsHasPermission001, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceMockTest, IsHasPermission001, Function | MediumTest | Level0)
 {
     Security::AccessToken::g_mockDumpTokenKit = 0；
     Security::AccessToken::g_mockTokenFlag = 0；
@@ -380,10 +380,10 @@ HWTEST_F(ResSchedServiceTest, IsHasPermission001, Function | MediumTest | Level0
  * @tc.name: ResSchedServicesStub IsThirdPartType 001
  * @tc.desc: IsThirdPartType
  * @tc.type: FUNC
- * @tc.require: issueI9U0YF
- * @tc.author:fengyang
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
  */
-HWTEST_F(ResSchedServiceTest, IsThirdPartType001, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceMockTest, IsThirdPartType001, Function | MediumTest | Level0)
 {
     Security::AccessToken::g_mockReportTokenKit = 0；
     Security::AccessToken::g_mockTokenFlag = 0；
@@ -402,10 +402,10 @@ HWTEST_F(ResSchedServiceTest, IsThirdPartType001, Function | MediumTest | Level0
  * @tc.name: ResSchedServicesStub IsSBDResType 001
  * @tc.desc: IsSBDResType
  * @tc.type: FUNC
- * @tc.require: issueI9U0YF
- * @tc.author:fengyang
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
  */
-HWTEST_F(ResSchedServiceTest, IsSBDResType001, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceMockTest, IsSBDResType001, Function | MediumTest | Level0)
 {
     Security::AccessToken::g_mockTokenFlag = 0；
     Security::AccessToken::g_mockHapTokenInfo = true;
@@ -418,6 +418,32 @@ HWTEST_F(ResSchedServiceTest, IsSBDResType001, Function | MediumTest | Level0)
     EXPECT_FALSE(resSchedServiceStub->IsSBDResType(type));
     Security::AccessToken::g_mockHapTokenInfo = false;
     EXPECT_FALSE(resSchedServiceStub->IsSBDResType(type));
+}
+
+/**
+ * @tc.name: ResSchedServicesStub ReportDataInner 001
+ * @tc.desc: Verify if resschedstub reportdatainner is success.
+ * @tc.type: FUNC
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
+ */
+HWTEST_F(ResSchedServiceMockTest, ReportDataInner001, Function | MediumTest | Level0)
+{
+    Security::AccessToken::g_mockReportTokenKit = 0；
+    Security::AccessToken::g_mockTokenFlag = 0；
+    Security::AccessToken::g_mockHapTokenInfo = true;
+    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
+    resSchedServiceStub_->Init();
+    MessageParcel reply;
+    MessageParcel emptyData;
+    EXPECT_TRUE(resSchedServiceStub_->ReportDataInner(emptyData, reply));
+
+    MessageParcel reportData;
+    reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
+    reportData.WriteUint32(1);
+    reportData.WriteInt64(1);
+    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
+    EXPECT_TRUE(resSchedServiceStub_->ReportDataInner(emptyData, reportData));
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

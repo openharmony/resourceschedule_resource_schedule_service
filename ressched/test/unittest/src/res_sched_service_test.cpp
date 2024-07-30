@@ -113,7 +113,6 @@ void ResSchedServiceTest::TearDown()
  */
 HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
 {
-    Security::AccessToken::g_mockDumpTokenKit = 0；
     PluginMgr::GetInstance().Init();
     std::string result;
     resSchedService_->DumpAllInfo(result);
@@ -126,8 +125,7 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
     int32_t wrongFd = -1;
     std::vector<std::u16string> argsNull;
     int res = resSchedService_->Dump(wrongFd, argsNull);
-    EXPECT_EQ(res, ERR_OK);
-    resSchedServiceAbility_->Onstart();
+    EXPECT_NE(res, ERR_OK);
     int32_t correctFd = -1;
     res = resSchedService_->Dump(correctFd, argsNull);
 
@@ -166,8 +164,8 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
  * @tc.name: ressched service IsAllowedAppPreload 001
  * @tc.desc: test the interface service IsAllowedAppPreload
  * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
  */
 HWTEST_F(ResSchedServiceTest, IsAllowedAppPreload001, Function | MediumTest | Level0)
 {
@@ -181,8 +179,8 @@ HWTEST_F(ResSchedServiceTest, IsAllowedAppPreload001, Function | MediumTest | Le
  * @tc.name: ressched service IsAllowedAppPreload 002
  * @tc.desc: test the interface service IsAllowedAppPreload
  * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
  */
 HWTEST_F(ResSchedServiceTest, IsAllowedAppPreload002, Function | MediumTest | Level0)
 {
@@ -478,8 +476,8 @@ HWTEST_F(ResSchedServiceTest, OnStart001, Function | MediumTest | Level0)
  * @tc.name: Start ResSchedServiceAbility 002
  * @tc.desc: Verify if ResSchedServiceAbility OnStart is success.
  * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
+ * @tc.require: issuesIAGHOC
+ * @tc.author: fengyang
  */
 HWTEST_F(ResSchedServiceTest, OnStart002, Function | MediumTest | Level0)
 {
