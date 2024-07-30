@@ -15,6 +15,7 @@
 
 #include "cgroup_event_handler.h"
 #include <cinttypes>
+#include "ability_info.h"
 #include "app_mgr_constants.h"
 #include "cgroup_adjuster.h"
 #include "cgroup_sched_common.h"
@@ -47,6 +48,7 @@ namespace {
 
 using OHOS::AppExecFwk::ApplicationState;
 using OHOS::AppExecFwk::AbilityState;
+using OHOS::AppExecFwk::AbilityType;
 using OHOS::AppExecFwk::ExtensionState;
 using OHOS::AppExecFwk::ProcessType;
 
@@ -198,6 +200,10 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, const s
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d",
         __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), abilityState, abilityType);
+    if (abilityType == (int32_t)AbilityType::EXTENSION) {
+        CGS_LOGD("%{public}s : this type of event is not dealt with here", __func__);
+        return;
+    }
     ChronoScope cs("HandleAbilityStateChanged");
     if (abilityState == (int32_t)(AbilityState::ABILITY_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
