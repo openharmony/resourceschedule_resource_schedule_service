@@ -45,7 +45,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    const std::string CG_HANDLER_THREAD = "CgroupEventHandler";
+    const std::string CG_HANDLER_QUEUE = "CgroupEventHandlerQueue";
 }
 
 #ifdef CONFIG_BGTASK_MGR
@@ -83,7 +83,6 @@ void SchedController::Init()
 void SchedController::Deinit()
 {
     if (cgHandler_) {
-        cgHandler_->RemoveAllEvents();
         cgHandler_ = nullptr;
     }
     if (supervisor_) {
@@ -194,7 +193,7 @@ std::string SchedController::GetBundleNameByUid(const int32_t uid)
 
 inline void SchedController::InitCgroupHandler()
 {
-    cgHandler_ = std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create(CG_HANDLER_THREAD));
+    cgHandler_ = std::make_shared<CgroupEventHandler>(CG_HANDLER_QUEUE);
     cgHandler_->SetSupervisor(supervisor_);
 }
 

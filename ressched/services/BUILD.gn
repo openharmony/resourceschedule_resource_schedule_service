@@ -116,6 +116,7 @@ ohos_shared_library("resschedsvc") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libdm",
+    "window_manager:libwm_lite",
   ]
 
   public_external_deps = [ "json:nlohmann_json_static" ]
@@ -254,6 +255,7 @@ ohos_static_library("resschedsvc_static") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libdm",
+    "window_manager:libwm_lite",
   ]
 
   if (device_movement_perception_enable) {
