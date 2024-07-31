@@ -22,6 +22,7 @@
 #include "nativetoken_kit.h"
 #include "notifier_mgr.h"
 #include "plugin_mgr.h"
+#include "res_common_util.h"
 #include "res_sched_ipc_interface_code.h"
 #include "res_sched_common_death_recipient.h"
 #include "res_sched_service.h"
@@ -856,7 +857,7 @@ HWTEST_F(ResSchedServiceTest, ReportBigData001, Function | MediumTest | Level0)
     resSchedServiceStub_->ReportBigData();
     resSchedServiceStub_->isReportBigData_.store(true);
     resSchedServiceStub_->ReportBigData();
-    resSchedServiceStub_->nextReportBigDataTime_ = ResCommonUitl::GetNowMillTime();
+    resSchedServiceStub_->nextReportBigDataTime_ = ResCommonUtil::GetNowMillTime();
     resSchedServiceStub_->ReportBigData();
 }
 
