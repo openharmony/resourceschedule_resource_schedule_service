@@ -12,8 +12,8 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("../../ressched.gni")
 import("../../../cgroup_sched/cgroup_sched.gni")
+import("../../ressched.gni")
 
 group("unittest") {
   testonly = true
@@ -46,8 +46,8 @@ ohos_unittest("resschedservice_test") {
     "src/oobe_datashare_utils_test.cpp",
     "src/oobe_mgr_test.cpp",
     "src/res_sched_client_test.cpp",
-    "src/res_sched_service_test.cpp",
     "src/res_sched_service_mock_test.cpp",
+    "src/res_sched_service_test.cpp",
     "src/scene_recognize_test.cpp",
   ]
 
