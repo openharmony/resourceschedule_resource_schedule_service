@@ -447,7 +447,7 @@ void ObserverManager::InitMMiEventObserver()
     // Get all events registered in multimodal input.
     auto handler = SchedController::GetInstance().GetCgroupEventHandler();
     if (handler) {
-        handler->PostTask(task = [weak = weak_from_this()] {
+        handler->PostTask([weak = weak_from_this()] {
             auto self = weak.lock();
             if (self == nullptr) {
                 return;
