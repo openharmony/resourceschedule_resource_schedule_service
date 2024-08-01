@@ -79,7 +79,7 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
                 retry < MAX_RETRY_TIMES) {
                 eventId = EVENT_ID_REG_APP_STATE_OBSERVER;
                 eventParam = retry + 1;
-                PostTask(
+                this->PostTask(
                     [this, eventId, eventParam] {
                         this->ProcessEvent(eventId, eventParam);
                     },
@@ -99,7 +99,7 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
                 retry < MAX_RETRY_TIMES) {
                 eventId = EVENT_ID_REG_BGTASK_OBSERVER;
                 eventParam = retry + 1;
-                PostTask(
+                this->PostTask(
                     [this, eventId, eventParam] {
                         this->ProcessEvent(eventId, eventParam);
                     },
@@ -127,13 +127,13 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
 {
     switch (saId) {
         case APP_MGR_SERVICE_ID:
-            RemoveTask(std::to_string(EVENT_ID_REG_APP_STATE_OBSERVER));
+            this->RemoveTask(std::to_string(EVENT_ID_REG_APP_STATE_OBSERVER));
             if (!SchedController::GetInstance().SubscribeAppState()) {
                 uint32_t eventId = EVENT_ID_REG_APP_STATE_OBSERVER;
                 int64_t eventParam = 0;
-                PostTask(
+                this->PostTask(
                     [this, eventId, eventParam] {
-                        ProcessEvent(eventId, eventParam);
+                        this->ProcessEvent(eventId, eventParam);
                     },
                     std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
             }
@@ -142,13 +142,13 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
             SchedController::GetInstance().SubscribeWindowState();
             break;
         case BACKGROUND_TASK_MANAGER_SERVICE_ID:
-            RemoveTask(std::to_string(EVENT_ID_REG_BGTASK_OBSERVER));
+            this->RemoveTask(std::to_string(EVENT_ID_REG_BGTASK_OBSERVER));
             if (!SchedController::GetInstance().SubscribeBackgroundTask()) {
                 uint32_t eventId = EVENT_ID_REG_BGTASK_OBSERVER;
                 int64_t eventParam = 0;
-                PostTask(
+                this->PostTask(
                     [this, eventId, eventParam] {
-                        ProcessEvent(eventId, eventParam);
+                        this->ProcessEvent(eventId, eventParam);
                     },
                     std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
             }
@@ -167,14 +167,14 @@ void CgroupEventHandler::HandleAbilityRemoved(int32_t saId, const std::string& d
 {
     switch (saId) {
         case APP_MGR_SERVICE_ID:
-            RemoveTask(std::to_string(EVENT_ID_REG_APP_STATE_OBSERVER));
+            this->RemoveTask(std::to_string(EVENT_ID_REG_APP_STATE_OBSERVER));
             SchedController::GetInstance().UnsubscribeAppState();
             break;
         case WINDOW_MANAGER_SERVICE_ID:
             SchedController::GetInstance().UnsubscribeWindowState();
             break;
         case BACKGROUND_TASK_MANAGER_SERVICE_ID:
-            RemoveTask(std::to_string(EVENT_ID_REG_BGTASK_OBSERVER));
+            this->RemoveTask(std::to_string(EVENT_ID_REG_BGTASK_OBSERVER));
             SchedController::GetInstance().UnsubscribeBackgroundTask();
             break;
         default:
