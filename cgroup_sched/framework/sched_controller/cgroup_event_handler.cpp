@@ -82,7 +82,8 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
                 PostTask(
                     [this, eventId, eventParam] {
                         this->ProcessEvent(eventId, eventParam);
-                    }, std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
+                    },
+                    std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
                 if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                     "COMPONENT_NAME", "MAIN",
@@ -101,7 +102,8 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
                 PostTask(
                     [this, eventId, eventParam] {
                         this->ProcessEvent(eventId, eventParam);
-                    }, std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
+                    },
+                    std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
                 if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                     "COMPONENT_NAME", "MAIN",
@@ -132,7 +134,8 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
                 PostTask(
                     [this, eventId, eventParam] {
                         ProcessEvent(eventId, eventParam);
-                    }, std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
+                    },
+                    std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
             }
             break;
         case WINDOW_MANAGER_SERVICE_ID:
@@ -144,9 +147,10 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
                 uint32_t eventId = EVENT_ID_REG_BGTASK_OBSERVER;
                 int64_t eventParam = 0;
                 PostTask(
-                    task = [this, eventId, eventParam] {
+                    [this, eventId, eventParam] {
                         ProcessEvent(eventId, eventParam);
-                    }, std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
+                    },
+                    std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
             }
             break;
 #ifdef POWER_MANAGER_ENABLE
