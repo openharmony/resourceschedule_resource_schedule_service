@@ -71,8 +71,8 @@ public:
     void HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportWebviewVideoState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void PostTask(const std::function<void()> task);
-    void PostDelayTask(const std::string &taskName, const int32_t delayTime, const std::function<void()> task);
-    void CancelDelayTask(const std::string &taskName);
+    void PostTask(const std::function<void()> task, const std::string &taskName, const int32_t delayTime);
+    void RemoveTask(const std::string &taskName);
 
 private:
     bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);

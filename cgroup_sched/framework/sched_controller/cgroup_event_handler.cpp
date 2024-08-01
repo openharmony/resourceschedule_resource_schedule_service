@@ -79,10 +79,10 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
                 retry < MAX_RETRY_TIMES) {
                 eventId = EVENT_ID_REG_APP_STATE_OBSERVER;
                 eventParam = retry + 1;
-                auto task = [this, eventId, eventParam] {
-                    this->ProcessEvent(eventId, eventParam);
-                };
-                PostDelayTask(std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION, task);
+                PostTask(
+                    [this, eventId, eventParam] {
+                        this->ProcessEvent(eventId, eventParam);
+                    }, std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
                 if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                     "COMPONENT_NAME", "MAIN",
@@ -98,10 +98,11 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
                 retry < MAX_RETRY_TIMES) {
                 eventId = EVENT_ID_REG_BGTASK_OBSERVER;
                 eventParam = retry + 1;
-                auto task = [this, eventId, eventParam] {
-                    this->ProcessEvent(eventId, eventParam);
-                };
-                PostDelayTask(std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION, task);
+                PostTask(
+                    [this, eventId, eventParam] {
+                        this->ProcessEvent(eventId, eventParam);
+                    },
+                    std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
                 if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                     "COMPONENT_NAME", "MAIN",
@@ -125,28 +126,28 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
 {
     switch (saId) {
         case APP_MGR_SERVICE_ID:
-            CancelDelayTask(std::to_string(EVENT_ID_REG_APP_STATE_OBSERVER));
+            RemoveTask(std::to_string(EVENT_ID_REG_APP_STATE_OBSERVER));
             if (!SchedController::GetInstance().SubscribeAppState()) {
                 uint32_t eventId = EVENT_ID_REG_APP_STATE_OBSERVER;
                 int64_t eventParam = 0;
-                auto task = [this, eventId, eventParam] {
-                    ProcessEvent(eventId, eventParam);
-                };
-                PostDelayTask(std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION, task);
+                PostTask(
+                    [this, eventId, eventParam] {
+                        ProcessEvent(eventId, eventParam);
+                    }, std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
             }
             break;
         case WINDOW_MANAGER_SERVICE_ID:
             SchedController::GetInstance().SubscribeWindowState();
             break;
         case BACKGROUND_TASK_MANAGER_SERVICE_ID:
-            CancelDelayTask(std::to_string(EVENT_ID_REG_BGTASK_OBSERVER));
+            RemoveTask(std::to_string(EVENT_ID_REG_BGTASK_OBSERVER));
             if (!SchedController::GetInstance().SubscribeBackgroundTask()) {
                 uint32_t eventId = EVENT_ID_REG_BGTASK_OBSERVER;
                 int64_t eventParam = 0;
-                auto task = [this, eventId, eventParam] {
-                    ProcessEvent(eventId, eventParam);
-                };
-                PostDelayTask(std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION, task);
+                PostTask(
+                    task = [this, eventId, eventParam] {
+                        ProcessEvent(eventId, eventParam);
+                    }, std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
             }
             break;
 #ifdef POWER_MANAGER_ENABLE
@@ -163,14 +164,14 @@ void CgroupEventHandler::HandleAbilityRemoved(int32_t saId, const std::string& d
 {
     switch (saId) {
         case APP_MGR_SERVICE_ID:
-            CancelDelayTask(std::to_string(EVENT_ID_REG_APP_STATE_OBSERVER));
+            RemoveTask(std::to_string(EVENT_ID_REG_APP_STATE_OBSERVER));
             SchedController::GetInstance().UnsubscribeAppState();
             break;
         case WINDOW_MANAGER_SERVICE_ID:
             SchedController::GetInstance().UnsubscribeWindowState();
             break;
         case BACKGROUND_TASK_MANAGER_SERVICE_ID:
-            CancelDelayTask(std::to_string(EVENT_ID_REG_BGTASK_OBSERVER));
+            RemoveTask(std::to_string(EVENT_ID_REG_BGTASK_OBSERVER));
             SchedController::GetInstance().UnsubscribeBackgroundTask();
             break;
         default:
@@ -1056,8 +1057,8 @@ void CgroupEventHandler::PostTask(const std::function<void()> task)
     });
 }
 
-void CgroupEventHandler::PostDelayTask(const std::string &taskName, const int32_t delayTime,
-    const std::function<void()> task)
+void CgroupEventHandler::PostTask(const std::function<void()> task, const std::string &taskName,
+    const int32_t delayTime)
 {
     std::lock_guard<ffrt::mutex> autoLock(delayTaskMapMutex_);
     if (!cgroupEventQueue_) {
@@ -1069,7 +1070,7 @@ void CgroupEventHandler::PostDelayTask(const std::string &taskName, const int32_
     }, ffrt::task_attr().delay(delayTime * ffrtSwitch_));
 }
 
-void CgroupEventHandler::CancelDelayTask(const std::string &taskName)
+void CgroupEventHandler::RemoveTask(const std::string &taskName)
 {
     std::lock_guard<ffrt::mutex> autoLock(delayTaskMapMutex_);
     for (auto iter = delayTaskMap_.begin(); iter != delayTaskMap_.end(); iter++) {
