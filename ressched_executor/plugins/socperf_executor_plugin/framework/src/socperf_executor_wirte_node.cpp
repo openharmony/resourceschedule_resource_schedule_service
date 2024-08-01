@@ -40,6 +40,7 @@ SocPerfExecutorWirteNode::~SocPerfExecutorWirteNode()
             close(fd);
         }
     }
+    fdInfo_.clear();
 }
 
 void SocPerfExecutorWirteNode::InitThreadWraps()
