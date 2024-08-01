@@ -17,7 +17,6 @@
 #define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_CGROUP_EVENT_HANDLER_H_
 
 #include <sys/types.h>
-#include "event_handler.h"
 #include "ffrt.h"
 #include "ffrt_inner.h"
 #include "nlohmann/json.hpp"
