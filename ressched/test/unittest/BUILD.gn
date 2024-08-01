@@ -12,6 +12,7 @@
 # limitations under the License.
 
 import("//build/test.gni")
+import("../../../cgroup_sched/cgroup_sched.gni")
 import("../../ressched.gni")
 
 group("unittest") {
@@ -32,6 +33,9 @@ ohos_unittest("resschedservice_test") {
   ]
   include_dirs = [
     "./include",
+    "${cgroup_sched_framework}/sched_controller/include",
+    "${cgroup_sched_framework}/process_group/include",
+    "${cgroup_sched_framework}/utils/include",
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
   ]
@@ -42,11 +46,13 @@ ohos_unittest("resschedservice_test") {
     "src/oobe_datashare_utils_test.cpp",
     "src/oobe_mgr_test.cpp",
     "src/res_sched_client_test.cpp",
+    "src/res_sched_service_mock_test.cpp",
     "src/res_sched_service_test.cpp",
     "src/scene_recognize_test.cpp",
   ]
 
   deps = [
+    "${cgroup_sched_framework}:cgroup_sched",
     "${ressched_services}:resschedsvc_static",
     "//third_party/googletest:gtest_main",
   ]
@@ -62,6 +68,7 @@ ohos_unittest("resschedservice_test") {
     "ffrt:libffrt",
     "hilog:libhilog",
     "ipc:ipc_single",
+    "window_manager:libdm",
   ]
 
   sanitize = {
