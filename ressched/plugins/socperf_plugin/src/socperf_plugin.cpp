@@ -62,7 +62,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_ROTATION              = 10027;
     const int32_t PERF_REQUEST_CMD_ID_REMOTE_ANIMATION      = 10030;
     const int32_t PERF_REQUEST_CMD_ID_DRAG_STATUS_BAR       = 10034;
-    const int32_t PERF_REQUEST_CMD_ID_GAME_START            = 10038;
+    const int32_t PERF_REQUEST_CMD_ID_GAME_START            = 10036;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH_UP        = 10040;
     const int32_t PERF_REQUEST_CMD_ID_REMOTE_UNLOCK         = 10041;
     const int32_t PERF_REQUEST_CMD_ID_ACCOUNT_ACTIVATING    = 10043;
