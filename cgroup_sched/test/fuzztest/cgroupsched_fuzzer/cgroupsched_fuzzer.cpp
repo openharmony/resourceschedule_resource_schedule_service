@@ -289,14 +289,17 @@ namespace ResourceSchedule {
         // getdata
         int32_t typeId = GetData<int32_t>();
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
-        auto event1 = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_APP_STATE_OBSERVER, typeId);
-        auto event2 = AppExecFwk::InnerEvent::Get(EVENT_ID_REG_BGTASK_OBSERVER, typeId);
-        auto event3 = AppExecFwk::InnerEvent::Get(EVENT_ID_DEFAULT, typeId);
-        cgroupEventHandler->ProcessEvent(event1);
-        cgroupEventHandler->ProcessEvent(event2);
-        cgroupEventHandler->ProcessEvent(event3);
+        int32_t eventId1 = EVENT_ID_REG_APP_STATE_OBSERVER;
+        int64_t eventParam1 = typeId;
+        cgroupEventHandler->ProcessEvent(eventId1, eventParam1);
+        int32_t eventId2 = EVENT_ID_REG_BGTASK_OBSERVER;
+        int64_t eventParam2 = typeId;
+        cgroupEventHandler->ProcessEvent(eventId2, eventParam2);
+        int32_t eventId3 = EVENT_ID_DEFAULT;
+        int64_t eventParam3 = typeId;
+        cgroupEventHandler->ProcessEvent(eventId3, eventParam3);
 
         return true;
     }
@@ -315,7 +318,7 @@ namespace ResourceSchedule {
         // getdata
         std::string deviceId(std::to_string(*data));
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         int32_t saId = APP_MGR_SERVICE_ID;
         cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
@@ -346,7 +349,7 @@ namespace ResourceSchedule {
         // getdata
         std::string deviceId(std::to_string(*data));
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         int32_t saId = APP_MGR_SERVICE_ID;
         cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
@@ -383,7 +386,7 @@ namespace ResourceSchedule {
         pid_t pid = GetData<pid_t>();
         std::string packageName(std::to_string(*data));
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleProcessDied(uid, pid, packageName);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -409,7 +412,7 @@ namespace ResourceSchedule {
         pid_t pid = GetData<pid_t>();
         std::string packageName(std::to_string(*data));
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleTransientTaskStart(uid, pid, packageName);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -434,7 +437,7 @@ namespace ResourceSchedule {
         pid_t pid = GetData<pid_t>();
         std::string packageName(std::to_string(*data));
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleTransientTaskEnd(uid, pid, packageName);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -460,7 +463,7 @@ namespace ResourceSchedule {
         uint32_t typeIds = GetData<uint32_t>();
         int32_t abilityId = GetData<int32_t>();
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleContinuousTaskUpdate(uid, pid, {typeIds}, abilityId);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -486,7 +489,7 @@ namespace ResourceSchedule {
         uint32_t typeId = GetData<uint32_t>();
         int32_t abilityId = GetData<int32_t>();
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, typeId, abilityId);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -511,7 +514,7 @@ namespace ResourceSchedule {
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleReportMMIProcess(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -536,7 +539,7 @@ namespace ResourceSchedule {
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -565,7 +568,7 @@ namespace ResourceSchedule {
         payload["keyTid"] = std::to_string(keyTid);
         payload["role"] = std::to_string(role);
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleReportKeyThread(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -596,7 +599,7 @@ namespace ResourceSchedule {
         payload["state"] = std::to_string(state);
         payload["serialNum"] = std::to_string(nowSerialNum);
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleReportWindowState(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -621,7 +624,7 @@ namespace ResourceSchedule {
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleReportWebviewAudioState(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -646,7 +649,7 @@ namespace ResourceSchedule {
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleReportRunningLockEvent(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -675,7 +678,7 @@ namespace ResourceSchedule {
         payload["uid"] = std::to_string(uid);
         payload["pid"] = std::to_string(pid);
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleReportHisysEvent(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -703,7 +706,7 @@ namespace ResourceSchedule {
         pr.isActive_ = true;
         ProcessRecord mainProc(uid, pid);
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->CheckVisibilityForRenderProcess(pr, mainProc);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -730,7 +733,7 @@ namespace ResourceSchedule {
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
         cgroupEventHandler->ParsePayload(uid, pid, tid, value, payload);
 
         return true;
@@ -758,7 +761,7 @@ namespace ResourceSchedule {
         payload["pid"] = std::to_string(pid);
         payload["instanceId"] = std::to_string(instanceId);
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
         cgroupEventHandler->HandleReportAvCodecEvent(resType, value, payload);
 
         return true;
@@ -782,7 +785,7 @@ namespace ResourceSchedule {
         nlohmann::json payload;
         payload["pid"] = std::to_string(pid);
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleSceneBoardState(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -808,7 +811,7 @@ namespace ResourceSchedule {
         uint32_t windowId = GetData<int32_t>();
         uint32_t visibilityState = GetData<uint32_t>();
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleWindowVisibilityChanged(
             windowId, visibilityState, WindowType::APP_WINDOW_BASE, pid, uid);
@@ -835,7 +838,7 @@ namespace ResourceSchedule {
         int32_t pid = GetData<int32_t>();
         uint32_t windowId = GetData<int32_t>();
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleDrawingContentChangeWindow(windowId, WindowType::APP_WINDOW_BASE, false, pid, uid);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -862,7 +865,7 @@ namespace ResourceSchedule {
         uint32_t windowId = GetData<int32_t>();
         uint64_t displayId = GetData<uint64_t>();
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
         
         cgroupEventHandler->HandleUnfocusedWindow(
             windowId, token, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
@@ -891,7 +894,7 @@ namespace ResourceSchedule {
         uint32_t windowId = GetData<int32_t>();
         uint64_t displayId = GetData<uint64_t>();
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
         cgroupEventHandler->SetSupervisor(g_supervisor);
 
         cgroupEventHandler->HandleFocusedWindow(
@@ -917,7 +920,7 @@ namespace ResourceSchedule {
         std::string packageName(std::to_string(*data));
         int32_t state = GetData<int32_t>();
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleApplicationStateChanged(uid, pid, packageName, state);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -943,7 +946,7 @@ namespace ResourceSchedule {
         std::string packageName(std::to_string(*data));
         int32_t state = GetData<int32_t>();
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleProcessStateChanged(uid, pid, packageName, state);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -972,7 +975,7 @@ namespace ResourceSchedule {
         int32_t abilityState = GetData<int32_t>();
         int32_t abilityType = GetData<int32_t>();
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleAbilityStateChanged(
             uid, pid, bundleName, abilityName, token, abilityState, abilityType);
@@ -1003,7 +1006,7 @@ namespace ResourceSchedule {
         int32_t extensionState = GetData<int32_t>();
         int32_t abilityType = GetData<int32_t>();
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleExtensionStateChanged(
             uid, pid, bundleName, abilityName, token, extensionState, abilityType);
@@ -1034,7 +1037,7 @@ namespace ResourceSchedule {
         int32_t processType = GetData<int32_t>();
         int32_t extensionType = GetData<int32_t>();
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleProcessCreated(uid, pid, hostPid, processType, bundleName, extensionType);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -1059,7 +1062,7 @@ namespace ResourceSchedule {
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleReportAudioState(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
@@ -1084,7 +1087,7 @@ namespace ResourceSchedule {
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleWebviewScreenCapture(resType, value, payload);
 
@@ -1107,7 +1110,7 @@ namespace ResourceSchedule {
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
         auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create("CgroupEventHandler_fuzz"));
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleReportWebviewVideoState(resType, value, payload);
 
