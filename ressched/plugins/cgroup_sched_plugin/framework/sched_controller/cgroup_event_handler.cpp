@@ -979,9 +979,9 @@ void CgroupEventHandler::ReportAbilityStatus(uint32_t resType, int64_t value, co
     }
     std::string deviceId = "";
     if (payload.contains("deviceId") && payload.at("saId").is_string()) {
-        sadeviceIdId = payload["deviceId"].get<std::string>();
+        deviceId = payload["deviceId"].get<std::string>();
     }
-    CGS_LOGD("%{public}s saId: %{public}d, status: %{public}ld", __func__, saId, value);
+    CGS_LOGD("%{public}s saId: %{public}d, status: %{public}lld", __func__, saId, (long long)value);
     PostTask([saId, deviceId, value, this] {
         if (value > 0) {
             HandleAbilityAdded(saId, deviceId);

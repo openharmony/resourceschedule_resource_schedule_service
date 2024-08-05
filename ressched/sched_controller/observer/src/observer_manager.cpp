@@ -18,7 +18,6 @@
 #include <dlfcn.h>
 #include <string>
 
-#include "cgroup_event_handler.h"
 #include "display_manager.h"
 #include "dm_common.h"
 #include "hisysevent.h"
@@ -444,20 +443,7 @@ void ObserverManager::InitMMiEventObserver()
         return;
     }
     // Get all events registered in multimodal input.
-<<<<<<< HEAD
-    auto handler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (handler) {
-        handler->PostTask([weak = weak_from_this()] {
-            auto self = weak.lock();
-            if (self == nullptr) {
-                return;
-            }
-            self->GetAllMmiStatusData();
-        });
-    }
-=======
     GetAllMmiStatusData();
->>>>>>> pr_1083
 }
 
 void ObserverManager::DisableMMiEventObserver()
