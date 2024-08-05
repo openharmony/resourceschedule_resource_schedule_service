@@ -16,11 +16,14 @@
 #ifndef CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_SCHED_CONTROLLER_H_
 #define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_SCHED_CONTROLLER_H_
 
+#include <set>
 #include <sys/types.h>
 #include <string>
 #include "hilog/log.h"
 #include "nlohmann/json.hpp"
+#include "plugin.h"
 #include "refbase.h"
+#include "single_instance.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -37,12 +40,11 @@ class Supervisor;
 class CgroupAdjuster;
 class CgroupEventHandler;
 
-class SchedController {
+class SchedController : public Plugin {
 public:
-    static SchedController& GetInstance();
+    void Init() override;
+    void Disable() override;
 
-    void Init();
-    void Deinit();
     bool SubscribeAppState();
     void UnsubscribeAppState();
     bool SubscribeBackgroundTask();
@@ -53,10 +55,14 @@ public:
     void UnsubscribeWindowModeChange();
     void UnregisterStateObservers();
     int GetProcessGroup(pid_t pid);
-    void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status);
-    void DispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void DispatchResource(const std::shared_ptr<ResData>& resData) override;
     void DispatchOtherResource(uint32_t resType, int64_t value, const nlohmann::json& payload);
     std::string GetBundleNameByUid(const int32_t uid);
+    void Dump(const std::vector<std::string>& args, std::string& result);
+    void DumpHelp(std::string& result);
+    void DumpProcessRunningLock(std::string &result);
+    void DumpProcessEventState(std::string &result);
+    void DumpProcessWindowInfo(std::string &result);
 #ifdef POWER_MANAGER_ENABLE
     void GetRunningLockState();
 #endif
@@ -72,13 +78,7 @@ public:
     }
 
 private:
-    SchedController() = default;
-    ~SchedController() = default;
-
-    SchedController(const SchedController&) = delete;
-    SchedController& operator=(const SchedController &) = delete;
-    SchedController(SchedController&&) = delete;
-    SchedController& operator=(SchedController&&) = delete;
+    std::set<uint32_t> resTypes;
 
     std::shared_ptr<CgroupEventHandler> cgHandler_;
     std::shared_ptr<Supervisor> supervisor_;
@@ -94,6 +94,7 @@ private:
     std::unordered_map<uint32_t, std::function<void(std::shared_ptr<CgroupEventHandler>,
         uint32_t, int64_t, const nlohmann::json&)>> dispatchResFuncMap_;
 
+    void InitResTypes();
     inline void InitCgroupHandler();
     inline void InitCgroupAdjuster();
     inline void InitSupervisor();

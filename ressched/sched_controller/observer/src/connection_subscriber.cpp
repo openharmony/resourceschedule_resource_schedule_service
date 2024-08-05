@@ -16,7 +16,6 @@
 
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
-#include "ressched_utils.h"
 #include "res_type.h"
 
 namespace OHOS {
@@ -40,7 +39,7 @@ void ConnectionSubscriber::OnExtensionConnected(const AbilityRuntime::Connection
     RESSCHED_LOGD("Ressched ConnectionSubscriber OnExtensionConnected");
     nlohmann::json payload;
     MarshallingConnectionData(data, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_CONNECTION_OBSERVER, ResType::ConnectionObserverStatus::EXTENSION_CONNECTED, payload);
 }
 
@@ -49,7 +48,7 @@ void ConnectionSubscriber::OnExtensionDisconnected(const AbilityRuntime::Connect
     RESSCHED_LOGD("Ressched ConnectionSubscriber OnExtensionDisconnected");
     nlohmann::json payload;
     MarshallingConnectionData(data, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_CONNECTION_OBSERVER, ResType::ConnectionObserverStatus::EXTENSION_DISCONNECTED, payload);
 }
 
@@ -70,7 +69,7 @@ void ConnectionSubscriber::OnDlpAbilityOpened(const AbilityRuntime::DlpStateData
     RESSCHED_LOGD("Ressched ConnectionSubscriber OnDlpAbilityOpened");
     nlohmann::json payload;
     MarshallingDlpStateData(data, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_CONNECTION_OBSERVER, ResType::ConnectionObserverStatus::DLP_ABILITY_OPENED, payload);
 }
 
@@ -79,7 +78,7 @@ void ConnectionSubscriber::OnDlpAbilityClosed(const AbilityRuntime::DlpStateData
     RESSCHED_LOGD("Ressched ConnectionSubscriber OnDlpAbilityClosed");
     nlohmann::json payload;
     MarshallingDlpStateData(data, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_CONNECTION_OBSERVER, ResType::ConnectionObserverStatus::DLP_ABILITY_CLOSED, payload);
 }
 

@@ -16,6 +16,7 @@
 #ifndef RESSCHED_SERVICES_RESSCHEDMGR_RESSCHEDFWK_INCLUDE_PLUGIN_MGR_H
 #define RESSCHED_SERVICES_RESSCHEDMGR_RESSCHEDFWK_INCLUDE_PLUGIN_MGR_H
 
+#include <atomic>
 #include <functional>
 #include <list>
 #include <string>
@@ -269,6 +270,7 @@ private:
 #else
     std::shared_ptr<AppExecFwk::EventHandler> dispatcher_ = nullptr;
 #endif
+    std::atomic<bool> isInit = {false};
 
     std::map<std::string, PluginStat> pluginStat_;
     GetExtMultiConfigFunc getExtMultiConfigFunc_ = nullptr;

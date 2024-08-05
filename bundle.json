@@ -69,7 +69,7 @@
         "base_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_config",
           "//foundation/resourceschedule/resource_schedule_service/ressched/profile:ressched_plugin_switch",
-          "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/profiles:process_group_config"
+          "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin/profiles:process_group_config"
         ],
         "fwk_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
@@ -88,8 +88,8 @@
           "//foundation/resourceschedule/resource_schedule_service/ressched_executor/services:resschedexesvc",
           "//foundation/resourceschedule/resource_schedule_service/ressched_executor/sa_profile:resschedexe_sa_profile",
           "//foundation/resourceschedule/resource_schedule_service/ressched_executor/etc/init:resource_schedule_executor.cfg",
-          "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework:cgroup_sched",
-          "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group:libprocess_group"
+          "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin/framework:cgroup_sched",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin/framework/process_group:libprocess_group"
         ]
       },
       "inner_kits": [
@@ -147,7 +147,7 @@
         },
         {
           "header": {
-            "header_base": "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/sched_controller/include",
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin/framework/sched_controller/include",
             "header_files": [
               "cgroup_adjuster.h",
               "cgroup_event_handler.h",
@@ -155,16 +155,16 @@
               "supervisor.h"
             ]
           },
-          "name": "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework:cgroup_sched"
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin/framework:cgroup_sched"
         },
         {
           "header": {
-            "header_base": "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group/include",
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin/framework/process_group/include",
             "header_files": [
               "sched_policy.h"
             ]
           },
-          "name": "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group:libprocess_group"
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin/framework/process_group:libprocess_group"
         },
         {
           "header": {
@@ -182,7 +182,7 @@
         "//foundation/resourceschedule/resource_schedule_service/ressched/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched_executor/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched_executor/test/fuzztest:fuzztest",
-        "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/test/unittest:unittest",
+        "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/frame_aware_plugin/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/socperf_plugin/test/unittest:unittest",
@@ -192,7 +192,7 @@
         "//foundation/resourceschedule/resource_schedule_service/ressched/test/testutil:ressched_test",
         "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/test/fuzztest:fuzztest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/test/unittest/systemload_jsunittest:js_unittest",
-        "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/test/fuzztest:fuzztest"
+        "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin/test/fuzztest:fuzztest"
       ]
     },
     "hisysevent_config": [

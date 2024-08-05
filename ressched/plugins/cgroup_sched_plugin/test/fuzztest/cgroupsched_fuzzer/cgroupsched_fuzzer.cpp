@@ -16,7 +16,6 @@
 #include "cgroupsched_fuzzer.h"
 #include "background_task_observer.h"
 #include "cgroup_event_handler.h"
-#include "cgroup_sched.h"
 #include "cgroup_adjuster.h"
 #include "wm_common.h"
 #include "app_state_observer.h"
