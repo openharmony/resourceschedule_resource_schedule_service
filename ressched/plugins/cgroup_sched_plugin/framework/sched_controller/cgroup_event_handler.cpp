@@ -978,7 +978,7 @@ void CgroupEventHandler::ReportAbilityStatus(uint32_t resType, int64_t value, co
         saId = payload["saId"].get<int32_t>();
     }
     std::string deviceId = "";
-    if (payload.contains("deviceId") && payload.at("saId").is_string()) {
+    if (payload.contains("deviceId") && payload.at("deviceId").is_string()) {
         deviceId = payload["deviceId"].get<std::string>();
     }
     CGS_LOGD("%{public}s saId: %{public}d, status: %{public}lld", __func__, saId, (long long)value);

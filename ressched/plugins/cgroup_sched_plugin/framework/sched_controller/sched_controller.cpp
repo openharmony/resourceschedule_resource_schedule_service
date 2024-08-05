@@ -77,6 +77,7 @@ void SchedController::Init()
     // Init cgroup adjuster thread
     InitCgroupAdjuster();
     InitAppStartupSceneRec();
+    // Subscribe ResTypes
     InitResTypes();
     for (auto resType: resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
@@ -535,12 +536,12 @@ void SchedController::DumpProcessEventState(std::string& result)
                 .append(", napState: ").append(ToString(process->isNapState_))
                 .append(", processDrawingState: ").append(ToString(process->processDrawingState_))
                 .append(", mmiState: ").append(ToString(process->mmiStatus_))
-                .append(", cameraStatus: ").append(ToString(process->cameraState_))
-                .append(", bluetoothStatus: ").append(ToString(process->bluetoothState_))
-                .append(", wifiStatus: ").append(ToString(process->wifiState_))
-                .append(", screenCaptureStatus: ").append(ToString(process->screenCaptureState_))
-                .append(", videoStatus: ").append(ToString(process->videoState_))
-                .append(", audioPlayingStatus: ").append(ToString(process->audioPlayingState_))
+                .append(", cameraState: ").append(ToString(process->cameraState_))
+                .append(", bluetoothState: ").append(ToString(process->bluetoothState_))
+                .append(", wifiState: ").append(ToString(process->wifiState_))
+                .append(", screenCaptureState: ").append(ToString(process->screenCaptureState_))
+                .append(", videoState: ").append(ToString(process->videoState_))
+                .append(", audioPlayingState: ").append(ToString(process->audioPlayingState_))
                 .append(", isActive: ").append(ToString(process->isActive_))
                 .append(", linkedWindowId: ").append(ToString(process->linkedWindowId_))
                 .append("\n");
@@ -602,7 +603,7 @@ extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& resData)
 
 extern "C" int GetProcessGroup(const pid_t pid)
 {
-    SchedController::GetInstance().GetProcessGroup(pid);
+    return SchedController::GetInstance().GetProcessGroup(pid);
 }
 
 extern "C" void OnDump(const std::vector<std::string>& args, std::string& result)
