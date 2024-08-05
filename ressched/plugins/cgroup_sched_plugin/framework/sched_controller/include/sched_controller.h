@@ -41,6 +41,7 @@ class CgroupAdjuster;
 class CgroupEventHandler;
 
 class SchedController : public Plugin {
+DECLARE_SINGLE_INSTANCE(SchedController)
 public:
     void Init() override;
     void Disable() override;

@@ -63,7 +63,7 @@ OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
     return OHOS::iface_cast<OHOS::AppExecFwk::IAppMgr>(object);
 }
 
-IMPLEMENT_SINGLE_INSTANCE(SchedController);
+IMPLEMENT_SINGLE_INSTANCE(SchedController)
 
 void SchedController::Init()
 {
