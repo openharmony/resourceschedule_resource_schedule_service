@@ -174,7 +174,8 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
     }
 }
 
-nlohmann::json SlideRecognizer::FillRealPid(const nlohmann::json& payload) {
+nlohmann::json SlideRecognizer::FillRealPid(const nlohmann::json& payload)
+{
     if (slidePid_.empty()) {
         return payload;
     }
