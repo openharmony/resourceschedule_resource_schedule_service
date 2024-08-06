@@ -94,7 +94,7 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
 
 void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
 {
-    CGS_LOGD("%{public}s for %{public}d, source : %{public}d", __func__, pr.GetPid(), source);
+    CGS_LOGI("%{public}s for %{public}d, source : %{public}d", __func__, pr.GetPid(), source);
     ComputeProcessGroup(app, pr, source);
     ResSchedUtils::GetInstance().ReportArbitrationResult(app, pr, source);
     ApplyProcessGroup(app, pr);
@@ -111,11 +111,13 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
             if (!hostProcRecord || (procRecord->hostPid_ != pr.GetPid())) {
                 continue;
             }
-            CGS_LOGI("%{public}s for %{public}d, source : %{public}d for render process",
+            CGS_LOGD("%{public}s for %{public}d, source : %{public}d for render process",
                 __func__, procRecord->GetPid(), source);
             procRecord->setSchedGroup_ = hostProcRecord->curSchedGroup_;
             if (procRecord->isRenderProcess_ ||
                 (procRecord->isGPUProcess_ && hostProcRecord->curSchedGroup_ == SP_TOP_APP)) {
+                CGS_LOGI("%{public}s for %{public}d, source : %{public}d for render process",
+                    __func__, procRecord->GetPid(), AdjustSource::ADJS_SELF_RENDER_THREAD);  
                 ResSchedUtils::GetInstance().ReportArbitrationResult(app, *(procRecord.get()),
                     AdjustSource::ADJS_SELF_RENDER_THREAD);
             }
