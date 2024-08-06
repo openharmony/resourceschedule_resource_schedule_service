@@ -99,8 +99,7 @@ void NetworkLatencyController::HandleAddRequest(const std::string &identity)
         if (iter->first == identity) {
             ffrtQueue_->cancel(iter->second);
             taskHandlerMap_.erase(iter++);
-        }
-        else {
+        } else {
             iter++;
         }
     }
@@ -126,8 +125,7 @@ void NetworkLatencyController::HandleDelRequest(const std::string &identity)
         if (iter->first == identity) {
             ffrtQueue_->cancel(iter->second);
             taskHandlerMap_.erase(iter++);
-        }
-        else {
+        } else {
             iter++;
         }
     }
