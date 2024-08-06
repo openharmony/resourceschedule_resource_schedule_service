@@ -41,6 +41,7 @@ namespace ResourceSchedule {
 namespace {
     static const int32_t TWO_PARAMETERS = 2;
     static const int64_t FFRT_DELAY_EXIT_TIME = 300;
+    static const int32_t DATA_LENGTH = 10;
 }
     const uint8_t* DATA = nullptr;
     size_t g_size = 0;
@@ -93,7 +94,7 @@ namespace {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(std::string)) {
+        if (size <= sizeof(int32_t) + DATA_LENGTH) {
             return false;
         }
 
@@ -103,7 +104,7 @@ namespace {
         g_pos = 0;
 
         int32_t systemAbilityId = GetData<int32_t>();
-        std::string deviceId = GetStringFromData(int(size) - sizeof(int32_t));
+        std::string deviceId = GetStringFromData(DATA_LENGTH);
 
         std::shared_ptr<EventController> eventController = std::make_shared<EventController>();
         eventController->Init();
@@ -121,7 +122,7 @@ namespace {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(std::string)) {
+        if (size <= sizeof(int32_t) + DATA_LENGTH) {
             return false;
         }
 
@@ -131,7 +132,7 @@ namespace {
         g_pos = 0;
 
         int32_t userId = GetData<int32_t>();
-        std::string bundleName = GetStringFromData(int(size) - sizeof(int32_t));
+        std::string bundleName = GetStringFromData(DATA_LENGTH);
         std::shared_ptr<EventController> eventController = std::make_shared<EventController>();
         eventController->GetUid(userId, bundleName);
         return true;
@@ -169,7 +170,7 @@ namespace {
             return false;
         }
 
-        if (size <=  TWO_PARAMETERS * sizeof(int32_t) + TWO_PARAMETERS * sizeof(std::string)) {
+        if (size <=  TWO_PARAMETERS * (sizeof(int32_t) +  DATA_LENGTH)) {
             return false;
         }
 
@@ -180,8 +181,8 @@ namespace {
 
         int32_t code = GetData<int32_t>();
         int32_t value = GetData<int32_t>();
-        std::string eventData = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t));
-        std::string action = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
+        std::string eventData = GetStringFromData(DATA_LENGTH);
+        std::string action = GetStringFromData(DATA_LENGTH);
 
         nlohmann::json payload;
         AAFwk::Want want;
@@ -206,7 +207,7 @@ namespace {
             return false;
         }
 
-        if (size <=  TWO_PARAMETERS * sizeof(int32_t) + TWO_PARAMETERS * sizeof(std::string)) {
+        if (size <=  TWO_PARAMETERS * (sizeof(int32_t) + DATA_LENGTH)) {
             return false;
         }
         
@@ -217,8 +218,8 @@ namespace {
 
         int32_t code = GetData<int32_t>();
         int32_t value = GetData<int32_t>();
-        std::string eventData = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t));
-        std::string action = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
+        std::string eventData = GetStringFromData(DATA_LENGTH);
+        std::string action = GetStringFromData(DATA_LENGTH);
 
         nlohmann::json payload;
         AAFwk::Want want;
@@ -240,7 +241,7 @@ namespace {
             return false;
         }
 
-        if (size <=  TWO_PARAMETERS * sizeof(int32_t) + TWO_PARAMETERS * sizeof(std::string)) {
+        if (size <=  TWO_PARAMETERS * (sizeof(int32_t) + DATA_LENGTH)) {
             return false;
         }
         
@@ -251,8 +252,8 @@ namespace {
 
         int32_t code = GetData<int32_t>();
         int32_t value = GetData<int32_t>();
-        std::string eventData = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t));
-        std::string action = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
+        std::string eventData = GetStringFromData(DATA_LENGTH);
+        std::string action = GetStringFromData(DATA_LENGTH);
 
         nlohmann::json payload;
         AAFwk::Want want;
