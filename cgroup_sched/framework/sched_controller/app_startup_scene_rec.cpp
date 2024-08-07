@@ -71,7 +71,7 @@ void AppStartupSceneRec::RecordIsContinuousStartup(int32_t abilityState, std::st
         ffrtQueue_->cancel(exitContinuousStartupTask);
         exitContinuousStartupTask = nullptr;
     }
-    auto tarEndTimePoint = std::chrono::system_clock::now();
+    auto tarEndTimePoint = std::chrono::steady_clock::now();
     auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
     int64_t curTime = tarDuration.count();
     if (curTime - lastAppStartTime_ >= CONTINUOUS_START_TIME_OUT) {
