@@ -51,12 +51,6 @@ public:
 
     int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
 
-    void DumpProcessRunningLock(std::string& result);
-
-    void DumpProcessWindowInfo(std::string &result);
-
-    void DumpProcessEventState(std::string &result);
-
     void DumpSystemLoadInfo(std::string &result);
 
     void DumpAllPluginConfig(std::string &result);

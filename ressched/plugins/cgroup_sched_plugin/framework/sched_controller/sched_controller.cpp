@@ -31,6 +31,7 @@
 #include "cgroup_sched_common.h"
 #include "cgroup_sched_log.h"
 #include "hisysevent.h"
+#include "plugin_mgr.h"
 #include "ressched_utils.h"
 #include "res_type.h"
 #include "supervisor.h"
@@ -46,6 +47,8 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     const std::string CG_HANDLER_QUEUE = "CgroupEventHandlerQueue";
+    const std::string LIB_NAME = "libcgroup_sched.z.so";
+    constexpr int32_t DUMP_OPTION = 0;
 }
 
 #ifdef CONFIG_BGTASK_MGR
@@ -60,11 +63,7 @@ OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
     return OHOS::iface_cast<OHOS::AppExecFwk::IAppMgr>(object);
 }
 
-SchedController& SchedController::GetInstance()
-{
-    static SchedController instance;
-    return instance;
-}
+IMPLEMENT_SINGLE_INSTANCE(SchedController)
 
 void SchedController::Init()
 {
@@ -78,9 +77,15 @@ void SchedController::Init()
     // Init cgroup adjuster thread
     InitCgroupAdjuster();
     InitAppStartupSceneRec();
+    // Subscribe ResTypes
+    InitResTypes();
+    for (auto resType: resTypes) {
+        PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
+    }
+    ResSchedUtils::GetInstance().SubscribeResourceExt();
 }
 
-void SchedController::Deinit()
+void SchedController::Disable()
 {
     if (cgHandler_) {
         cgHandler_ = nullptr;
@@ -89,6 +94,7 @@ void SchedController::Deinit()
         supervisor_ = nullptr;
     }
     DeinitAppStartupSceneRec();
+    UnregisterStateObservers();
 }
 
 
@@ -109,38 +115,53 @@ int SchedController::GetProcessGroup(pid_t pid)
     return pr ? (int32_t)(pr->curSchedGroup_) : (int32_t)(SP_DEFAULT);
 }
 
-void SchedController::ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status)
+void SchedController::InitResTypes()
 {
-    CGS_LOGD("%{public}s sdId:%{public}d, status:%{public}d", __func__, saId, status);
-    auto handler = this->cgHandler_;
-    if (!handler) {
-        return;
-    }
-    handler->PostTask([handler, saId, deviceId, status] {
-        if (status > 0) {
-            handler->HandleAbilityAdded(saId, deviceId);
-        } else {
-            handler->HandleAbilityRemoved(saId, deviceId);
-        }
-    });
+    resTypes = {
+        ResType::RES_TYPE_REPORT_MMI_PROCESS,
+        ResType::RES_TYPE_REPORT_RENDER_THREAD,
+        ResType::RES_TYPE_REPORT_KEY_THREAD,
+        ResType::RES_TYPE_REPORT_WINDOW_STATE,
+        ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
+        ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
+        ResType::RES_TYPE_RUNNINGLOCK_STATE,
+        ResType::RES_TYPE_REPORT_SCENE_BOARD,
+        ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE,
+        ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
+        ResType::RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE,
+        ResType::RES_TYPE_MMI_STATUS_CHANGE,
+        ResType::RES_TYPE_REPORT_CAMERA_STATE,
+        ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE,
+        ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
+        ResType::RES_TYPE_MMI_INPUT_STATE,
+        ResType::RES_TYPE_REPORT_SCREEN_CAPTURE,
+        ResType::RES_TYPE_AV_CODEC_STATE,
+        ResType::RES_TYPE_SA_CONTROL_APP_EVENT,
+        ResType::RES_TYPE_FORM_STATE_CHANGE_EVENT,
+        ResType::RES_TYPE_CONTINUOUS_STARTUP,
+        ResType::RES_TYPE_SCREEN_LOCK,
+        ResType::RES_TYPE_BOOT_COMPLETED,
+        ResType::RES_TYPE_SYSTEM_CPU_LOAD,
+        ResType::RES_TYPE_THERMAL_STATE,
+    };
 }
 
-void SchedController::DispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload)
+void SchedController::DispatchResource(const std::shared_ptr<ResData>& resData)
 {
     auto handler = this->cgHandler_;
     if (!handler) {
         return;
     }
 
-    auto iter = dispatchResFuncMap_.find(resType);
+    auto iter = dispatchResFuncMap_.find(resData->resType);
     if (iter == dispatchResFuncMap_.end()) {
-        DispatchOtherResource(resType, value, payload);
+        DispatchOtherResource(resData->resType, resData->value, resData->payload);
         return;
     }
-    handler->PostTask([func = iter->second, handler, resType, value, payload] {
-        func(handler, resType, value, payload);
+    handler->PostTask([func = iter->second, handler, resData] {
+        func(handler, resData->resType, resData->value, resData->payload);
     });
-    DispatchOtherResource(resType, value, payload);
+    DispatchOtherResource(resData->resType, resData->value, resData->payload);
 }
 
 void SchedController::DispatchOtherResource(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -249,6 +270,12 @@ void SchedController::InitDispatchResFuncMap()
         { ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleReportWebviewVideoState(resType, value, payload); } },
+        { ResType::RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->ReportAbilityStatus(resType, value, payload); } },
+        { ResType::RES_TYPE_MMI_STATUS_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->UpdateMmiStatus(resType, value, payload); } },
     };
 }
 
@@ -338,7 +365,8 @@ void SchedController::SubscribeWindowState()
         if (windowStateObserver_) {
             if (OHOS::Rosen::WindowManagerLite::GetInstance().
             RegisterFocusChangedListener(windowStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
-                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                                HiviewDFX::HiSysEvent::EventType::FAULT,
                                 "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
                                 "ERR_MSG", "Register a listener of window focus change failed.");
             }
@@ -349,7 +377,8 @@ void SchedController::SubscribeWindowState()
         if (windowVisibilityObserver_) {
             if (OHOS::Rosen::WindowManagerLite::GetInstance().
             RegisterVisibilityChangedListener(windowVisibilityObserver_) != OHOS::Rosen::WMError::WM_OK) {
-                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                                HiviewDFX::HiSysEvent::EventType::FAULT,
                                 "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
                                 "ERR_MSG", "Register a listener of window visibility change failed.");
             }
@@ -443,30 +472,144 @@ void SchedController::GetRunningLockState()
 }
 #endif
 
-extern "C" void CgroupSchedInit()
+void SchedController::Dump(const std::vector<std::string>& args, std::string& result)
 {
+    if (args.size() == 0) {
+        return;
+    }
+    if (args.size() == DUMP_OPTION + 1 && args[DUMP_OPTION] == "-h") {
+        DumpHelp(result);
+    } else if (args.size() == DUMP_OPTION + 1 && args[DUMP_OPTION] == "-getRunningLockInfo") {
+        DumpProcessRunningLock(result);
+    } else if (args.size() == DUMP_OPTION + 1 && args[DUMP_OPTION] == "-getProcessEventInfo") {
+        DumpProcessEventState(result);
+    } else if (args.size() == DUMP_OPTION + 1 && args[DUMP_OPTION] == "-getProcessWindowInfo") {
+        DumpProcessWindowInfo(result);
+    }
+}
+
+void SchedController::DumpHelp(std::string& result)
+{
+    result.append("        plugin name : libcgroup_sched.z.so \n")
+        .append("                   -h: show the cgroup_sched_plugin help. \n")
+        .append("                   -getRunningLockInfo: get all runnable process lock info. \n")
+        .append("                   -getProcessEventInfo: get all runnable process event info. \n")
+        .append("                   -getProcessWindowInfo: get all runnable process window info. \n");
+}
+
+void SchedController::DumpProcessRunningLock(std::string& result)
+{
+    std::map<int32_t, std::shared_ptr<Application>> uidMap = supervisor_->GetUidsMap();
+    for (auto it = uidMap.begin(); it != uidMap.end(); it++) {
+        int32_t uid = it->first;
+        std::shared_ptr<Application> app = it->second;
+        std::map<pid_t, std::shared_ptr<ProcessRecord>> pidMap = app->GetPidsMap();
+        for (auto pidIt = pidMap.begin(); pidIt != pidMap.end(); pidIt++) {
+            int32_t pid = pidIt->first;
+            std::shared_ptr<ProcessRecord> process = pidIt->second;
+            for (auto lockIt = process->runningLockState_.begin();
+                lockIt != process->runningLockState_.end(); lockIt++) {
+                uint32_t lockType = lockIt->first;
+                bool lockState = lockIt->second;
+                result.append("uid: ").append(ToString(uid))
+                    .append(", pid: ").append(ToString(pid))
+                    .append(", lockType: ").append(ToString(lockType))
+                    .append(", lockState: ").append(ToString(lockState));
+            }
+        }
+    }
+}
+
+void SchedController::DumpProcessEventState(std::string& result)
+{
+    std::map<int32_t, std::shared_ptr<Application>> uidMap = supervisor_->GetUidsMap();
+    for (auto it = uidMap.begin(); it != uidMap.end(); it++) {
+        int32_t uid = it->first;
+        std::shared_ptr<Application> app = it->second;
+        std::map<pid_t, std::shared_ptr<ProcessRecord>> pidMap = app->GetPidsMap();
+        for (auto pidIt = pidMap.begin(); pidIt != pidMap.end(); pidIt++) {
+            int32_t pid = pidIt->first;
+            std::shared_ptr<ProcessRecord> process = pidIt->second;
+            result.append("uid: ").append(ToString(uid))
+                .append(", pid: ").append(ToString(pid))
+                .append(", processState: ").append(ToString(process->processState_))
+                .append(", napState: ").append(ToString(process->isNapState_))
+                .append(", processDrawingState: ").append(ToString(process->processDrawingState_))
+                .append(", mmiState: ").append(ToString(process->mmiStatus_))
+                .append(", cameraState: ").append(ToString(process->cameraState_))
+                .append(", bluetoothState: ").append(ToString(process->bluetoothState_))
+                .append(", wifiState: ").append(ToString(process->wifiState_))
+                .append(", screenCaptureState: ").append(ToString(process->screenCaptureState_))
+                .append(", videoState: ").append(ToString(process->videoState_))
+                .append(", audioPlayingState: ").append(ToString(process->audioPlayingState_))
+                .append(", isActive: ").append(ToString(process->isActive_))
+                .append(", linkedWindowId: ").append(ToString(process->linkedWindowId_))
+                .append("\n");
+        }
+    }
+}
+
+void SchedController::DumpProcessWindowInfo(std::string& result)
+{
+    std::map<int32_t, std::shared_ptr<Application>> uidMap = supervisor_->GetUidsMap();
+    for (auto it = uidMap.begin(); it != uidMap.end(); it++) {
+        int32_t uid = it->first;
+        std::shared_ptr<Application> app = it->second;
+        std::map<pid_t, std::shared_ptr<ProcessRecord>> pidMap = app->GetPidsMap();
+        std::string bundleName = app->GetName();
+        for (auto pidIt = pidMap.begin(); pidIt != pidMap.end(); pidIt++) {
+            int32_t pid = pidIt->first;
+            std::shared_ptr<ProcessRecord> process = pidIt->second;
+            if (process->windows_.size() == 0) {
+                continue;
+            }
+            result.append("uid: ").append(ToString(uid))
+                .append(", pid: ").append(ToString(pid))
+                .append(", bundleName: ").append(bundleName)
+                .append(", processDrawingState: ").append(ToString(process->processDrawingState_))
+                .append(", windowInfo: ")
+                .append("\n");
+            for (auto &windows : process->windows_) {
+                result.append("    windowId:").append(ToString(windows->windowId_))
+                    .append("    visibilityState:").append(ToString(windows->visibilityState_))
+                    .append("    isVisible:").append(ToString(windows->isVisible_))
+                    .append("    isFocus:").append(ToString(windows->isFocused_))
+                    .append("    topWebviewRenderUid:").append(ToString(windows->topWebviewRenderUid_))
+                    .append("\n");
+            }
+        }
+    }
+}
+
+extern "C" bool OnPluginInit(const std::string& libName)
+{
+    if (libName != LIB_NAME) {
+        CGS_LOGE("SchedController::OnPluginInit lib name is not match.");
+        return false;
+    }
     SchedController::GetInstance().Init();
+    return true;
 }
 
-extern "C" void CgroupSchedDeinit()
+extern "C" void OnPluginDisable()
 {
-    SchedController::GetInstance().Deinit();
-    SchedController::GetInstance().UnregisterStateObservers();
+    SchedController::GetInstance().Disable();
 }
 
-extern "C" int GetProcessGroup(pid_t pid)
+extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& resData)
+{
+    SchedController::GetInstance().DispatchResource(resData);
+}
+
+extern "C" int GetProcessGroup(const pid_t pid)
 {
     return SchedController::GetInstance().GetProcessGroup(pid);
 }
 
-extern "C" void ReportAbilityStatus(int32_t saId, const std::string& deviceId, uint32_t status)
+extern "C" void OnDump(const std::vector<std::string>& args, std::string& result)
 {
-    SchedController::GetInstance().ReportAbilityStatus(saId, deviceId, status);
+    SchedController::GetInstance().Dump(args, result);
 }
 
-extern "C" void CgroupSchedDispatch(uint32_t resType, int64_t value, const nlohmann::json& payload)
-{
-    SchedController::GetInstance().DispatchResource(resType, value, payload);
-}
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -12,7 +12,7 @@
 # limitations under the License.
 
 cgroup_sched_path =
-    "//foundation/resourceschedule/resource_schedule_service/cgroup_sched"
+    "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin"
 
 cgroup_sched_framework = "${cgroup_sched_path}/framework"
 

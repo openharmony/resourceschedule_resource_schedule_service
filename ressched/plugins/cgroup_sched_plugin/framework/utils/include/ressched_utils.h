@@ -29,6 +29,7 @@ using ReportArbitrationResultFunc = void (*)(Application &app, ProcessRecord &pr
 using ReportSysEventFunc = void (*)(Application &app, ProcessRecord &pr, uint32_t resType, int32_t state);
 using DispatchResourceExtFunc = void (*)(uint32_t resType, int64_t value, const nlohmann::json& payload);
 using ReportAppStateFunc = void (*)(int32_t state, int32_t pid);
+using SubscribeResourceExtFunc = void (*)();
 class ResSchedUtils {
 public:
     static ResSchedUtils& GetInstance();
@@ -39,6 +40,7 @@ public:
     void DispatchResourceExt(uint32_t resType, int64_t value, const nlohmann::json& payload);
     bool CheckTidIsInPid(int32_t pid, int32_t tid);
     void ReportAppStateInProcess(int32_t state, int32_t pid);
+    void SubscribeResourceExt();
 
 private:
     ResSchedUtils()
@@ -51,6 +53,7 @@ private:
         reportFunc_ = nullptr;
         reportArbitrationResultFunc_ = nullptr;
         reportSysEventFunc_ = nullptr;
+        subscribeResourceExtFunc_ = nullptr;
     }
     void LoadUtils();
     void LoadUtilsExtra();
@@ -65,6 +68,7 @@ private:
     ReportSysEventFunc reportSysEventFunc_ = nullptr;
     DispatchResourceExtFunc dispatchResourceExtFunc_ = nullptr;
     ReportAppStateFunc reportAppStateFunc_ = nullptr;
+    SubscribeResourceExtFunc subscribeResourceExtFunc_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

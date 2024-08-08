@@ -13,7 +13,6 @@
 
 import("//build/ohos.gni")
 import("//build/test.gni")
-import("../../cgroup_sched/cgroup_sched.gni")
 import("../ressched.gni")
 
 config("ressched_config") {
@@ -47,12 +46,7 @@ ohos_shared_library("resschedsvc") {
   public_configs = [ ":resschedsvc_public_config" ]
 
   defines = []
-  include_dirs = [
-    "${cgroup_sched_framework}/sched_controller/include",
-    "${cgroup_sched_framework}/process_group/include",
-    "${cgroup_sched_framework}/utils/include/",
-    "../common/include",
-  ]
+  include_dirs = [ "../common/include" ]
 
   sources = [
     "../scene_recognize/src/background_sensitive_task_overlapping_scene_recognizer.cpp",
@@ -82,7 +76,6 @@ ohos_shared_library("resschedsvc") {
   ]
 
   deps = [
-    "${cgroup_sched_framework}:cgroup_sched",
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
     "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
     "../common:ressched_common_utils",
@@ -186,12 +179,7 @@ ohos_static_library("resschedsvc_static") {
 
   defines = []
 
-  include_dirs = [
-    "../common/include",
-    "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/utils/include/",
-    "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/sched_controller/include/",
-    "//foundation/resourceschedule/resource_schedule_service/cgroup_sched/framework/process_group/include/",
-  ]
+  include_dirs = [ "../common/include" ]
 
   sources = [
     "../scene_recognize/src/background_sensitive_task_overlapping_scene_recognizer.cpp",
@@ -221,7 +209,6 @@ ohos_static_library("resschedsvc_static") {
   ]
 
   deps = [
-    "${cgroup_sched_framework}:cgroup_sched",
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
     "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
     "../common:ressched_common_utils",

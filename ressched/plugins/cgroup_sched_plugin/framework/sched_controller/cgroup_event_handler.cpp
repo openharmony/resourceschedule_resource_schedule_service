@@ -42,7 +42,6 @@ namespace {
     constexpr uint32_t DELAYED_RETRY_REGISTER_DURATION = 100;
     constexpr uint32_t MAX_RETRY_TIMES = 100;
     constexpr uint32_t MAX_SPAN_SERIAL = 99;
-
     const std::string MMI_SERVICE_NAME = "mmi_service";
 }
 
@@ -85,10 +84,11 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
                     },
                     std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
                 if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
-                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                    "COMPONENT_NAME", "MAIN",
-                    "ERR_TYPE", "register failure",
-                    "ERR_MSG", "Subscribe app status change observer failed.");
+                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                        HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Subscribe app status change observer failed.");
                 }
             }
             break;
@@ -105,10 +105,11 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
                     },
                     std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
                 if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
-                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                    "COMPONENT_NAME", "MAIN",
-                    "ERR_TYPE", "register failure",
-                    "ERR_MSG", "Subscribe background task observer failed.");
+                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                        HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Subscribe background task observer failed.");
                 }
             }
             break;
@@ -972,6 +973,50 @@ void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t va
         AdjustSource::ADJS_REPORT_WEBVIEW_SCREEN_CAPTURE);
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType,
         procRecord->screenCaptureState_);
+}
+
+void CgroupEventHandler::ReportAbilityStatus(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t saId = -1;
+    if (payload.contains("saId") && payload.at("saId").is_number_integer()) {
+        saId = payload["saId"].get<int32_t>();
+    }
+    std::string deviceId = "";
+    if (payload.contains("deviceId") && payload.at("deviceId").is_string()) {
+        deviceId = payload["deviceId"].get<std::string>();
+    }
+    CGS_LOGD("%{public}s saId: %{public}d, status: %{public}lld", __func__, saId, (long long)value);
+    PostTask([saId, deviceId, value, this] {
+        if (value > 0) {
+            HandleAbilityAdded(saId, deviceId);
+        } else {
+            HandleAbilityRemoved(saId, deviceId);
+        }
+    });
+}
+
+void CgroupEventHandler::UpdateMmiStatus(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    if (supervisor_ == nullptr) {
+        return;
+    }
+    if (!payload.contains("pid") || !payload.at("pid").is_number_integer()) {
+        return;
+    }
+    if (!payload.contains("uid") || !payload.at("uid").is_number_integer()) {
+        return;
+    }
+    if (!payload.contains("status") || !payload.at("status").is_number_integer()) {
+        return;
+    }
+    int32_t pid = payload["pid"].get<int32_t>();
+    int32_t uid = payload["uid"].get<int32_t>();
+    int32_t status = payload["status"].get<int32_t>();
+    auto app = supervisor_->GetAppRecord(uid);
+    auto procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (procRecord) {
+        procRecord->mmiStatus_ = status;
+    }
 }
 
 void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t value, const nlohmann::json& payload)
