@@ -246,6 +246,8 @@ enum : uint32_t {
     RES_TYPE_REPORT_VSYNC_TID = 106,
     // report cloud config update
     RES_TYPE_CLOUD_CONFIG_UPDATE = 107,
+    // report media output device change
+    RES_TYPE_OUTPUT_DEVICE_CHANGE = 108,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
