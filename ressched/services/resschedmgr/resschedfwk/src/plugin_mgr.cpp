@@ -87,6 +87,7 @@ void PluginMgr::Init(bool isRssExe)
         ParsePluginSwitch(switchStrs);
     }
     RESSCHED_LOGI("PluginMgr::Init success!");
+    isInit = true;
 }
 
 std::vector<std::string> PluginMgr::GetConfigReaderStr()
@@ -402,6 +403,10 @@ std::string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resDat
 
 void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 {
+    if (!isInit.load()) {
+        RESSCHED_LOGE("%{public}s, not init.", __func__);
+        return;
+    }
     if (!resData) {
         RESSCHED_LOGE("%{public}s, failed, null res data.", __func__);
         return;

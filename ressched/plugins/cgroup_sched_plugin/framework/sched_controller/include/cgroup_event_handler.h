@@ -72,6 +72,8 @@ public:
     void PostTask(const std::function<void()> task);
     void PostTask(const std::function<void()> task, const std::string &taskName, const int32_t delayTime);
     void RemoveTask(const std::string &taskName);
+    void ReportAbilityStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void UpdateMmiStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
     bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);

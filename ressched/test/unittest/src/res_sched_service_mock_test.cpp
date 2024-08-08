@@ -31,8 +31,6 @@
 #include "res_sched_systemload_notifier_stub.h"
 #include "res_type.h"
 #include "token_setproc.h"
-#include "sched_controller.h"
-#include "supervisor.h"
 
 namespace OHOS {
 namespace system {
@@ -278,14 +276,6 @@ HWTEST_F(ResSchedServiceMockTest, ServiceDump002, Function | MediumTest | Level0
     Security::AccessToken::g_mockDumpTokenKit = 0;
     resSchedServiceAbility_->OnStart();
     std::shared_ptr<ResSchedService> resSchedService = make_shared<ResSchedService>();
-    int32_t uid = 100;
-    int32_t pid = 10000;
-    auto app = SchedController::GetInstance().GetSupervisor()->GetAppRecordNonNull(uid);
-    auto processRecord = app->GetProcessRecordNonNull(pid);
-    processRecord->GetAbilityInfoNonNull(1000);
-    processRecord->GetWindowInfoNonNull(1000);
-    processRecord->runningLockState_[1000] = false;
-    int32_t wrongFd = -1;
     int32_t correctFd = -1;
     std::vector<std::u16string> argsNull;
     std::vector<std::u16string> argsOnePlugin1 = {to_utf16("getRunningLockInfo")};
@@ -352,12 +342,6 @@ HWTEST_F(ResSchedServiceMockTest, ServiceDump005, Function | MediumTest | Level0
 {
     std::vector<std::string> args;
     std::string result;
-    resSchedService_->DumpProcessRunningLock(result);
-    EXPECT_NE(result, "");
-    resSchedService_->DumpProcessWindowInfo(result);
-    EXPECT_NE(result, "");
-    resSchedService_->DumpProcessEventState(result);
-    EXPECT_NE(result, "");
     resSchedService_->DumpSystemLoadInfo(result);
     EXPECT_NE(result, "");
     resSchedService_->DumpExecutorDebugCommand(args, result);

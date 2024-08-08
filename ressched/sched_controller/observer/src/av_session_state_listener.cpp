@@ -17,7 +17,6 @@
 
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
-#include "ressched_utils.h"
 #include "res_type.h"
 
 namespace OHOS {
@@ -35,8 +34,7 @@ void AvSessionStateListener::OnSessionCreate(const AVSession::AVSessionDescripto
     RESSCHED_LOGD("Ressched AvSessionStateListener OnSessionCreate");
     nlohmann::json payload;
     MarshallingAVSessionDescriptor(descriptor, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_AV_SESSION_ON_SESSION_CREATE, 0, payload);
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AV_SESSION_ON_SESSION_CREATE, 0, payload);
 }
 
 void AvSessionStateListener::OnSessionRelease(const AVSession::AVSessionDescriptor& descriptor)
@@ -44,8 +42,7 @@ void AvSessionStateListener::OnSessionRelease(const AVSession::AVSessionDescript
     RESSCHED_LOGD("Ressched AvSessionStateListener OnSessionRelease");
     nlohmann::json payload;
     MarshallingAVSessionDescriptor(descriptor, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_AV_SESSION_ON_SESSION_RELEASE, 0, payload);
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AV_SESSION_ON_SESSION_RELEASE, 0, payload);
 }
 
 void AvSessionStateListener::OnTopSessionChange(const AVSession::AVSessionDescriptor& descriptor)
@@ -53,8 +50,7 @@ void AvSessionStateListener::OnTopSessionChange(const AVSession::AVSessionDescri
     RESSCHED_LOGD("Ressched AvSessionStateListener OnTopSessionChange");
     nlohmann::json payload;
     MarshallingAVSessionDescriptor(descriptor, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
-        ResType::RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE, 0, payload);
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE, 0, payload);
 }
 } // OHOS
 } // namespace ResourceSchedule

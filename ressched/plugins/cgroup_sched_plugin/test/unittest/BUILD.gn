@@ -12,6 +12,7 @@
 # limitations under the License.
 
 import("//build/test.gni")
+import("../../cgroup_sched.gni")
 
 process_group_module_output_path =
     "resource_schedule_service/process_group_test"
@@ -47,6 +48,7 @@ ohos_unittest("ProcessGroupSubTest") {
   configs = [ ":process_group_module_private_config" ]
 
   deps = [
+    "${ressched_services}:resschedsvc",
     "../../framework:cgroup_sched",
     "../../framework/process_group:libprocess_group",
     "//third_party/googletest:gtest_main",

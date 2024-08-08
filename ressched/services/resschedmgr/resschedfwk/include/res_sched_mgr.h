@@ -69,7 +69,6 @@ public:
      */
     void InitExecutorPlugin();
 private:
-    void DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload);
     std::shared_ptr<KillProcess> killProcess_ = nullptr;
 };
 } // namespace ResourceSchedule

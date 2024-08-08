@@ -18,7 +18,6 @@
 #include <cinttypes>
 #include <map>
 
-#include "cgroup_sched.h"
 #include "notifier_mgr.h"
 #include "res_exe_type.h"
 #include "res_sched_exe_client.h"
@@ -158,7 +157,6 @@ void ResSchedMgr::Stop()
 void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     ReportDataInner(resType, value, payload);
-    DispatchResourceInner(resType, value, payload);
     SceneRecognizerMgr::GetInstance().DispatchResource(resType, value, payload);
 }
 
@@ -185,11 +183,6 @@ void ResSchedMgr::InitExecutorPlugin()
     payload["config"] = PluginMgr::GetInstance().GetConfigReaderStr();
     payload["switch"] = PluginMgr::GetInstance().GetPluginSwitchStr();
     ResSchedExeClient::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT, 0, payload);
-}
-
-void ResSchedMgr::DispatchResourceInner(uint32_t resType, int64_t value, const nlohmann::json& payload)
-{
-    CgroupSchedDispatch(resType, value, payload);
 }
 
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)

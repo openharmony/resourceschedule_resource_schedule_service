@@ -20,7 +20,6 @@
 #include "plugin_mgr.h"
 #include "config_info.h"
 #include "parameters.h"
-#include "sched_policy.h"
 
 #undef LOG_TAG
 #define LOG_TAG "ueaServer-FrameAwarePlugin"

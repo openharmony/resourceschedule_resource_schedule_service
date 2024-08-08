@@ -25,7 +25,6 @@
 #include "event_controller_intf.h"
 #include "event_listener_mgr.h"
 #include "system_ability_definition.h"
-#include "cgroup_sched.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -62,7 +61,6 @@ void ResSchedServiceAbility::OnStart()
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register ResSchedService failed.");
     }
-    CgroupSchedInit();
     SystemAbilityListenerInit();
     EventControllerInit();
     ObserverManagerInit();
@@ -79,7 +77,6 @@ void ResSchedServiceAbility::OnStop()
     RemoveSystemAbilityListener(APP_MGR_SERVICE_ID);
     RemoveSystemAbilityListener(POWER_MANAGER_SERVICE_ID);
     ResSchedMgr::GetInstance().Stop();
-    CgroupSchedDeinit();
     RESSCHED_LOGI("ResSchedServiceAbility::OnStop!");
 }
 
@@ -88,12 +85,20 @@ void ResSchedServiceAbility::OnAddSystemAbility(int32_t systemAbilityId, const s
     if (systemAbilityId == RES_SCHED_EXE_ABILITY_ID) {
         ResSchedMgr::GetInstance().InitExecutorPlugin();
     }
-    ReportAbilityStatus(systemAbilityId, deviceId, 1);
+    nlohmann::json payload;
+    payload["saId"] = systemAbilityId;
+    payload["deviceId"] = deviceId;
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE,
+        ResType::SystemAbilityStatus::SA_ADD, payload);
 }
 
 void ResSchedServiceAbility::OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
 {
-    ReportAbilityStatus(systemAbilityId, deviceId, 0);
+    nlohmann::json payload;
+    payload["saId"] = systemAbilityId;
+    payload["deviceId"] = deviceId;
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE,
+        ResType::SystemAbilityStatus::SA_REMOVE, payload);
 }
 
 void ResSchedServiceAbility::OnDeviceLevelChanged(int32_t type, int32_t level, std::string& action)

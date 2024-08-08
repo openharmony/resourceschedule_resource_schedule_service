@@ -17,7 +17,6 @@ import("../../ressched.gni")
 config("frame_aware_plugin_config") {
   include_dirs = [
     "include",
-    "../../../cgroup_sched/framework/process_group/include/",
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
   ]

@@ -57,8 +57,6 @@ HWTEST_F(ResSchedMgrTest, ReportData001, TestSize.Level1)
     nlohmann::json payload;
     ResSchedMgr::GetInstance().ReportData(0, 0, payload);
     EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
-
-    ResSchedMgr::GetInstance().DispatchResourceInner(0, 0, payload);
 }
 
 /**
@@ -72,8 +70,6 @@ HWTEST_F(ResSchedMgrTest, ReportData002, TestSize.Level1)
     nlohmann::json payload;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_REPORT_KEY_THREAD, 0, payload);
     EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
-
-    ResSchedMgr::GetInstance().DispatchResourceInner(ResType::RES_TYPE_REPORT_KEY_THREAD, 0, payload);
 }
 
 /**
@@ -87,8 +83,6 @@ HWTEST_F(ResSchedMgrTest, ReportData003, TestSize.Level1)
     nlohmann::json payload;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
     EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
-
-    ResSchedMgr::GetInstance().DispatchResourceInner(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
 }
 
 /**
@@ -139,8 +133,6 @@ HWTEST_F(ResSchedMgrTest, 002, TestSize.Level1)
     nlohmann::json payload;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, 0, payload);
     EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
-
-    ResSchedMgr::GetInstance().DispatchResourceInner(ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, 0, payload);
 }
 
 /**
@@ -154,8 +146,6 @@ HWTEST_F(ResSchedMgrTest, 003, TestSize.Level1)
     nlohmann::json payload;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, 0, payload);
     EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
-
-    ResSchedMgr::GetInstance().DispatchResourceInner(ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, 0, payload);
 }
 
 /**

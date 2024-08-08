@@ -18,7 +18,6 @@
 #include <dlfcn.h>
 #include <string>
 
-#include "cgroup_event_handler.h"
 #include "display_manager.h"
 #include "dm_common.h"
 #include "hisysevent.h"
@@ -27,6 +26,8 @@
 #include "iservice_registry.h"
 #include "parameters.h"
 #include "res_sched_log.h"
+#include "res_sched_mgr.h"
+#include "res_type.h"
 #include "connection_observer_client.h"
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
 #include "telephony_observer_client.h"
@@ -39,8 +40,6 @@
 #endif
 #include "input_manager.h"
 #include "os_account_manager.h"
-#include "sched_controller.h"
-#include "supervisor.h"
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 #include "avsession_manager.h"
 #endif
@@ -211,7 +210,6 @@ void ObserverManager::GetReportFunc()
     }
 
     isNeedReport_ = reportFunc();
-    dlclose(handle);
 }
 
 void ObserverManager::InitHiSysEventObserver()
@@ -455,16 +453,7 @@ void ObserverManager::InitMMiEventObserver()
         return;
     }
     // Get all events registered in multimodal input.
-    auto handler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (handler) {
-        handler->PostTask([weak = weak_from_this()] {
-            auto self = weak.lock();
-            if (self == nullptr) {
-                return;
-            }
-            self->GetAllMmiStatusData();
-        });
-    }
+    GetAllMmiStatusData();
 }
 
 void ObserverManager::DisableMMiEventObserver()
@@ -493,11 +482,6 @@ void ObserverManager::GetAllMmiStatusData()
         RESSCHED_LOGI("get mmi subscribed events is null.");
         return;
     }
-    auto supervisor = SchedController::GetInstance().GetSupervisor();
-    if (supervisor == nullptr) {
-        RESSCHED_LOGE("get supervisor is null.");
-        return;
-    }
 
     for (auto data = mmiStatusData.begin(); data != mmiStatusData.end(); ++data) {
         int32_t pid = std::get<TUPLE_PID>(data->first);
@@ -507,11 +491,12 @@ void ObserverManager::GetAllMmiStatusData()
         RESSCHED_LOGD(
             "get mmi subscribed events, pid:%{public}d, uid:%{public}d, bundleName:%{public}s, status:%{public}d.",
             pid, uid, bundleName.c_str(), status);
-        auto app = supervisor->GetAppRecord(uid);
-        auto procRecord = app ? app->GetProcessRecord(pid) : nullptr;
-        if (procRecord) {
-            procRecord->mmiStatus_ = status;
-        }
+        nlohmann::json payload;
+        payload["pid"] = pid;
+        payload["uid"] = uid;
+        payload["bundleName"] = bundleName;
+        payload["status"] = status;
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_MMI_STATUS_CHANGE, 0, payload);
     }
 }
 
