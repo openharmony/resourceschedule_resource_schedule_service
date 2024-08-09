@@ -136,6 +136,7 @@ namespace {
         ResType::RES_TYPE_REPORT_GAME_SCHED,
         ResType::RES_TYPE_SEND_FRAME_EVENT,
         ResType::RES_TYPE_CLOUD_CONFIG_UPDATE,
+        ResType::RES_TYPE_DEVICE_IDLE,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
