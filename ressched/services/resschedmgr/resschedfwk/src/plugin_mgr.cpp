@@ -446,7 +446,7 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
         std::lock_guard<std::mutex> autoLock(resTypeSyncMutex_);
         auto iter = resTypeLibSyncMap_.find(resData->resType);
         if (iter == resTypeLibSyncMap_.end()) {
-            RESSCHED_LOGE("%{public}s, PluginMgr resType %{public}b no lib register!", __func__, resData->resType);
+            RESSCHED_LOGE("%{public}s, PluginMgr resType %{public}d no lib register!", __func__, resData->resType);
             return PLUGIN_REQUEST_ERROR;
         }
         pluginLib = iter->second;
