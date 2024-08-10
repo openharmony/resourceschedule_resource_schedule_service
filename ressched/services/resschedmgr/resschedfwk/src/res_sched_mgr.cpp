@@ -146,7 +146,7 @@ void ResSchedMgr::Init()
         killProcess_ = std::make_shared<KillProcess>();
     }
 
-    InitExecutorPlugin();
+    InitExecutorPlugin(true);
 }
 
 void ResSchedMgr::Stop()
@@ -177,12 +177,21 @@ int32_t ResSchedMgr::KillProcessByClient(const nlohmann::json& payload)
     return killProcess_->KillProcessByPidWithClient(payload);
 }
 
-void ResSchedMgr::InitExecutorPlugin()
+void ResSchedMgr::InitExecutorPlugin(bool isProcessInit)
 {
+    std::vector<std::string> configStrs = PluginMgr::GetInstance().GetConfigReaderStr();
+    std::vector<std::string> switchStrs = PluginMgr::GetInstance().GetPluginSwitchStr();
+
     nlohmann::json payload;
-    payload["config"] = PluginMgr::GetInstance().GetConfigReaderStr();
-    payload["switch"] = PluginMgr::GetInstance().GetPluginSwitchStr();
-    ResSchedExeClient::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT, 0, payload);
+    nlohmann::json context;
+    payload["config"] = configStrs;
+    payload["switch"] = switchStrs;
+    ResSchedExeClient::GetInstance().SendRequestSync(ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT, 0, payload, context);
+
+    if (isProcessInit) {
+        PluginMgr::GetInstance().ParseConfigReader(configStrs);
+        PluginMgr::GetInstance().ParsePluginSwitch(switchStrs);
+    }
 }
 
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)

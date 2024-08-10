@@ -66,8 +66,10 @@ public:
 
     /**
      * Init resource_schedule_executor plugin manager.
+     *
+     * @param isProcessInit is process init
      */
-    void InitExecutorPlugin();
+    void InitExecutorPlugin(bool isProcessInit = false);
 private:
     std::shared_ptr<KillProcess> killProcess_ = nullptr;
 };
