@@ -156,6 +156,7 @@ HWTEST_F(ResSchedMgrTest, 003, TestSize.Level1)
 HWTEST_F(ResSchedMgrTest, InitExecutorPlugin001, TestSize.Level1)
 {
     ResSchedMgr::GetInstance().InitExecutorPlugin();
+    ResSchedMgr::GetInstance().InitExecutorPlugin(true);
     SUCCEED();
 }
 } // namespace ResourceSchedule

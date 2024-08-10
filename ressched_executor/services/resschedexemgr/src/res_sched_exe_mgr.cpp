@@ -66,11 +66,21 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
     std::string traceStr = BuildTraceStr(__func__, resType, value);
     HitraceScoped hitrace(HITRACE_TAG_OHOS, traceStr);
-    HandleRequestForCgroup(resType, payload, reply);
-    auto resData = std::make_shared<ResData>(resType, value, payload, reply);
-    int32_t ret = PluginMgr::GetInstance().DeliverResource(resData);
-    if (ret != ResIpcErrCode::RSSEXE_PLUGIN_ERROR) {
-        reply["retCode"] = std::to_string(ret);
+    switch (resType) {
+        case ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT:
+            InitPluginMgr(payload);
+            break;
+        case ResExeType::RES_TYPE_CGROUP_SYNC_EVENT:
+        case ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT:
+            HandleRequestForCgroup(resType, payload, reply);
+            break;
+        default:
+            auto resData = std::make_shared<ResData>(resType, value, payload, reply);
+            int32_t ret = PluginMgr::GetInstance().DeliverResource(resData);
+            if (ret != ResIpcErrCode::RSSEXE_PLUGIN_ERROR) {
+                reply["retCode"] = std::to_string(ret);
+            }
+            break;
     }
     return ResErrCode::RSSEXE_NO_ERR;
 }
@@ -95,12 +105,18 @@ void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlo
 
 void ResSchedExeMgr::InitPluginMgr(const nlohmann::json& payload)
 {
+    if (isInit) {
+        RSSEXE_LOGE("plugin manager has init");
+        return;
+    }
+
     if (!payload.contains(STR_CONFIG_READER) || !payload[STR_CONFIG_READER].is_array()
         || !payload.contains(STR_PLUGIN_SWITCH) || !payload[STR_PLUGIN_SWITCH].is_array()) {
         RSSEXE_LOGE("recieve config string error");
         return;
     }
 
+    isInit = true;
     std::vector<std::string> configStrs = payload[STR_CONFIG_READER].get<std::vector<std::string>>();
     std::vector<std::string> switchStrs = payload[STR_PLUGIN_SWITCH].get<std::vector<std::string>>();
     for (auto configStr : configStrs) {

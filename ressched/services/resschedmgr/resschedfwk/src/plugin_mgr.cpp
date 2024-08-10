@@ -79,12 +79,6 @@ void PluginMgr::Init(bool isRssExe)
 
     if (!isRssExe) {
         LoadGetExtConfigFunc();
-
-        std::vector<std::string> configStrs = GetConfigReaderStr();
-        ParseConfigReader(configStrs);
-
-        std::vector<std::string> switchStrs = GetPluginSwitchStr();
-        ParsePluginSwitch(switchStrs);
     }
     RESSCHED_LOGI("PluginMgr::Init success!");
     isInit = true;
@@ -452,7 +446,7 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
         std::lock_guard<std::mutex> autoLock(resTypeSyncMutex_);
         auto iter = resTypeLibSyncMap_.find(resData->resType);
         if (iter == resTypeLibSyncMap_.end()) {
-            RESSCHED_LOGE("%{public}s, PluginMgr resType no lib register!", __func__);
+            RESSCHED_LOGE("%{public}s, PluginMgr resType %{public}d no lib register!", __func__, resData->resType);
             return PLUGIN_REQUEST_ERROR;
         }
         pluginLib = iter->second;
@@ -463,7 +457,7 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
         std::lock_guard<std::mutex> autoLock(pluginMutex_);
         auto itMap = pluginLibMap_.find(pluginLib);
         if (itMap == pluginLibMap_.end()) {
-            RESSCHED_LOGE("%{public}s, no plugin %{public}s !", __func__, pluginLib.c_str());
+            RESSCHED_LOGE("%{public}s, no plugin %{public}s!", __func__, pluginLib.c_str());
             return PLUGIN_REQUEST_ERROR;
         }
         libInfo = itMap->second;
@@ -471,7 +465,7 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
 
     OnDeliverResourceFunc pluginDeliverFunc = libInfo.onDeliverResourceFunc_;
     if (!pluginDeliverFunc) {
-        RESSCHED_LOGE("%{public}s, no DeliverResourceFunc !", __func__);
+        RESSCHED_LOGE("%{public}s, %{public}s no DeliverResourceFunc!", __func__, pluginLib.c_str());
         return PLUGIN_REQUEST_ERROR;
     }
     RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, value = %{public}lld, plugin is %{public}s.",
