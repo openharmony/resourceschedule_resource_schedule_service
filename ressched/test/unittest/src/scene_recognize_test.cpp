@@ -113,6 +113,7 @@ HWTEST_F(SceneRecognizeTest, BgtaskTest001, Function | MediumTest | Level0)
 HWTEST_F(SceneRecognizeTest, SlideTest001, Function | MediumTest | Level0)
 {
     nlohmann::json payload;
+    payload["clientPid"] = "2000";
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_SLIDE_RECOGNIZE,
         ResType::SlideEventStatus::SLIDE_EVENT_DETECTING, payload);
     SUCCEED();
