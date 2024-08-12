@@ -96,6 +96,7 @@ void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
     g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
     if (!payload.contains("clientPid") || !payload["clientPid"].is_string()) {
         RESSCHED_LOGE("payload with no clientPid");
+        return;
     }
     slidePid_ = payload["clientPid"];
 }
@@ -164,6 +165,7 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
         float upSpeed = 0.0;
         if (!payload.contains("clientPid") || !payload["clientPid"].is_string()) {
             RESSCHED_LOGE("payload with no clientPid");
+            return;
         }
         slidePid_ = payload["clientPid"];
         if (!payload.contains(UP_SPEED_KEY) || !payload[UP_SPEED_KEY].is_string()) {
