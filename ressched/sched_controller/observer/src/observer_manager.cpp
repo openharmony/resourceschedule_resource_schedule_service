@@ -345,6 +345,16 @@ void ObserverManager::InitAudioObserver()
     } else {
         RESSCHED_LOGW("ObserverManager init audioVolumeKeyObserver failed");
     }
+
+    AudioStandard::AudioRendererInfo rendererInfo = {};
+    rendererInfo.streamUsage = AudioStandard::StreamUsage::STREAM_USAGE_MUSIC;
+    res = AudioStandard::AudioRoutingManager::GetInstance()
+        ->SetPreferredOutputDeviceChangeCallback(rendererInfo, audioObserver_);
+    if (res == OPERATION_SUCCESS) {
+        RESSCHED_LOGD("ObserverManager init audioOutputDeviceChangeObserver successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager init audioOutputDeviceChangeObserver failed");
+    }
 #endif
 }
 
