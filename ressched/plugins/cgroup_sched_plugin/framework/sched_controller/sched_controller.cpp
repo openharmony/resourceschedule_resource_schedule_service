@@ -581,7 +581,7 @@ void SchedController::DumpProcessWindowInfo(std::string& result)
     }
 }
 
-extern "C" bool OnPluginInit(const std::string& libName)
+extern "C" bool OnPluginInit(std::string& libName)
 {
     if (libName != LIB_NAME) {
         CGS_LOGE("SchedController::OnPluginInit lib name is not match.");
