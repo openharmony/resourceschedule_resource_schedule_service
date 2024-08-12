@@ -252,6 +252,8 @@ enum : uint32_t {
     RES_TYPE_MMI_STATUS_CHANGE = 109,
     // report media output device change
     RES_TYPE_OUTPUT_DEVICE_CHANGE = 110,
+    // report device idle
+    RES_TYPE_DEVICE_IDLE = 111,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -818,6 +820,13 @@ enum UserInteractionScene : int64_t {
 enum GameSchedStatus : int64_t {
     GAME_SCHED_START = 0,
     GAME_SCHED_STOP = 1,
+};
+
+/**
+ * @brief device idle status
+ */
+enum DeviceIdleStatus : int64_t {
+    DEVICE_IDLE_START = 0,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
