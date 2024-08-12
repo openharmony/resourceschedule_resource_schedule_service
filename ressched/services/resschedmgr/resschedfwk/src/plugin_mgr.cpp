@@ -100,6 +100,11 @@ std::vector<std::string> PluginMgr::GetPluginSwitchStr()
 
 void PluginMgr::ParseConfigReader(const std::vector<std::string>& configStrs)
 {
+    if (!configReader_) {
+        RESSCHED_LOGW("%{public}s, configReader null!", __func__);
+        return;
+    }
+
     int32_t configStrsSize = static_cast<int32_t>(configStrs.size());
     RESSCHED_LOGI("plugin configStrs size %{public}d", configStrsSize);
     for (int index = 0; index < configStrsSize; index++) {
@@ -120,6 +125,11 @@ void PluginMgr::ParseConfigReader(const std::vector<std::string>& configStrs)
 
 void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bool isRssExe)
 {
+    if (!pluginSwitch_) {
+        RESSCHED_LOGW("%{public}s, pluginSwitch null!", __func__);
+        return;
+    }
+
     int32_t switchStrsSize = static_cast<int32_t>(switchStrs.size());
     RESSCHED_LOGI("plugin switchStrs size %{public}d", switchStrsSize);
     for (int32_t index = 0; index < switchStrsSize; index++) {
@@ -236,7 +246,7 @@ bool PluginMgr::CheckRealPath(const std::string& partialPath, std::string& fullP
 void PluginMgr::LoadPlugin()
 {
     if (!pluginSwitch_) {
-        RESSCHED_LOGW("%{public}s, configReader null!", __func__);
+        RESSCHED_LOGW("%{public}s, pluginSwitch null!", __func__);
         return;
     }
 
