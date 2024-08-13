@@ -76,7 +76,7 @@ public:
 
     static int64_t GetNowMillTime()
     {
-        auto now = std::chrono::system_clock::now();
+        auto now = std::chrono::steady_clock::now();
         auto millSecs = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
         return millSecs.count();
     }
