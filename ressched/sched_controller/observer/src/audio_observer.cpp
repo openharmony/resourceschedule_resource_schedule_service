@@ -67,6 +67,18 @@ void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
         volumeEvent.volume, payload);
 }
+
+void AudioObserver::OnPreferredOutputDeviceUpdated(const std::vector<sptr<AudioStandard::AudioDeviceDescriptor>> &descs)
+{
+    for (const auto &desc : descs) {
+        RESSCHED_LOGD("device change, id: %{public}d, type: %{public}d", desc->deviceId_, desc->deviceType_);
+        nlohmann::json payload;
+        payload["deviceType"] = std::to_string(desc->deviceType_);
+        payload["deviceId"] = std::to_string(desc->deviceId_);
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_OUTPUT_DEVICE_CHANGE,
+            desc->deviceId_, payload);
+    }
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
 #endif

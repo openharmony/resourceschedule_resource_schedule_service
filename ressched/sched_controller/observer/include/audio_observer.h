@@ -21,16 +21,21 @@
 #include "nlohmann/json.hpp"
 #include "audio_stream_manager.h"
 #include "audio_system_manager.h"
+#include "audio_routing_manager.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-class AudioObserver : public AudioStandard::AudioRendererStateChangeCallback,
-    public AudioStandard::AudioRingerModeCallback, public AudioStandard::VolumeKeyEventCallback {
+class AudioObserver :
+    public AudioStandard::AudioRendererStateChangeCallback,
+    public AudioStandard::AudioRingerModeCallback,
+    public AudioStandard::VolumeKeyEventCallback,
+    public AudioStandard::AudioPreferredOutputDeviceChangeCallback {
 public:
     void OnRendererStateChange(
         const std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos) override;
     void OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode) override;
     void OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent) override;
+    void OnPreferredOutputDeviceUpdated(const std::vector<sptr<AudioStandard::AudioDeviceDescriptor>> &descs)  override;
 private:
     int32_t mode_ = -1;
     void MarshallingAudioRendererChangeInfo(
