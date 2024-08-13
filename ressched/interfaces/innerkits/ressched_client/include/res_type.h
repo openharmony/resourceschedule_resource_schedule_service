@@ -262,6 +262,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_THAW_ONE_APP,
     // get all suspend state
     SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
+    // get thermal data
+    SYNC_RES_TYPE_GET_THERMAL_DATA,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
