@@ -747,9 +747,9 @@ void PluginMgr::DispatchResourceToPluginAsync(const std::list<std::string>& plug
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         dispatchers_[pluginLib]->submit(
             [pluginLib, resData, pluginDispatchFunc] {
-                StartTrace(HITRACE_TAG_OHOS, pluginLib);
+                StartTrace(HITRACE_TAG_APP, pluginLib);
                 pluginDispatchFunc(std::make_shared<ResData>(resData->resType, resData->value, resData->payload));
-                FinishTrace(HITRACE_TAG_OHOS);
+                FinishTrace(HITRACE_TAG_APP);
             });
     }
 }
