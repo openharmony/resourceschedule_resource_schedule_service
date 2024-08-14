@@ -70,6 +70,17 @@ ohos_unittest("event_controller_test") {
     defines += [ "RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE" ]
     external_deps += [ "av_session:avsession_client" ]
   }
+  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
+    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
+    external_deps += [ "audio_framework:audio_client" ]
+  }
+  if (ressched_with_telephony_state_registry_enable) {
+    defines += [ "RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE" ]
+    external_deps += [
+      "core_service:tel_core_service_api",
+      "state_registry:tel_state_registry_api",
+    ]
+  }
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

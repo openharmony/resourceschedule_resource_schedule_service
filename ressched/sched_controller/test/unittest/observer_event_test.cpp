@@ -203,6 +203,8 @@ HWTEST_F(ObserverEventTest, hisysEventRunningLockEvent_001, testing::ext::TestSi
     // running lock state proxied
     sysEvent["STATE"] = RunningLockState::RUNNINGLOCK_STATE_PROXIED;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
+    sysEvent["STATE"] = -1;
+    hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
     EXPECT_NE(hisysEventObserver_, nullptr);
 }
 
@@ -240,6 +242,8 @@ HWTEST_F(ObserverEventTest, hisysEventAudioEvent_001, testing::ext::TestSize.Lev
 
     // audio state stopped
     sysEvent["STATE"] = AudioState::AUDIO_STATE_STOPPED;
+    hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
+    sysEvent["STATE"] = -1;
     hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
     EXPECT_NE(hisysEventObserver_, nullptr);
 }
@@ -354,6 +358,10 @@ HWTEST_F(ObserverEventTest, hisysEventWifiEvent_001, testing::ext::TestSize.Leve
     // wifi scan state
     eventName = "WIFI_SCAN";
     hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
+    sysEvent["TYPE"] = -1;
+    hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
+    eventName = "test";
+    hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
     EXPECT_NE(hisysEventObserver_, nullptr);
 }
 
@@ -390,6 +398,8 @@ HWTEST_F(ObserverEventTest, hisysEventScreenCaptureEvent_001, testing::ext::Test
 
     // STOP_SCREEN_CAPTURE
     sysEvent["STATUS"] = "stop";
+    hisysEventObserver_->ProcessScreenCaptureEvent(sysEvent, eventName);
+    sysEvent["STATUS"] = "test";
     hisysEventObserver_->ProcessScreenCaptureEvent(sysEvent, eventName);
     EXPECT_NE(hisysEventObserver_, nullptr);
 }
@@ -430,6 +440,33 @@ HWTEST_F(ObserverEventTest, processHiSysEvent_002, testing::ext::TestSize.Level1
 
     sysEvent["domain_"] = "INVAILD";
     eventName = "RUNNINGLOCK";
+    hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+    EXPECT_NE(hisysEventObserver_, nullptr);
+}
+
+/**
+ * @tc.name: processHiSysEvent_003
+ * @tc.desc: the process hisysevent test
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ */
+HWTEST_F(ObserverEventTest, processHiSysEvent_003, testing::ext::TestSize.Level1)
+{
+    nlohmann::json sysEvent;
+    sysEvent["domain_"] = "INVAILD";
+    eventName = "CAMERA_CONNECT";
+    hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+    eventName = "CAMERA_DISCONNECT";
+    hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+    eventName = "BR_SWITCH_STATE";
+    hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+    eventName = "BLE_SWITCH_STATE";
+    hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+    eventName = "WIFI_CONNECTION";
+    hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+    eventName = "WIFI_SCAN";
+    hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+    eventName = "PLAYER_STATE";
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
     EXPECT_NE(hisysEventObserver_, nullptr);
 }
@@ -664,6 +701,8 @@ HWTEST_F(ObserverEventTest, OnEvent_001, testing::ext::TestSize.Level1)
 {
     nlohmann::json sysEvent;
     sysEvent["domain_"] = "RUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTEST";
+    hisysEventObserver_->OnEvent(std::make_shared<HiviewDFX::HiSysEventRecord>(
+        sysEvent.dump(JSON_FORMAT)));
     sysEvent["name_"] = "RUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTEST1";
     sysEvent["test1"] = "RUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTEST1";
     sysEvent["test2"] = "RUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTESTRUNNINGLOCKTEST1";
@@ -687,6 +726,10 @@ HWTEST_F(ObserverEventTest, OnEvent_001, testing::ext::TestSize.Level1)
     sysEvent["PID"] = TEST_PID;
     hisysEventObserver_->OnEvent(std::make_shared<HiviewDFX::HiSysEventRecord>(
         sysEvent.dump(JSON_FORMAT)));
+    sysEvent["domain_"] = 1;
+    hisysEventObserver_->OnEvent(std::make_shared<HiviewDFX::HiSysEventRecord>(
+        sysEvent.dump(JSON_FORMAT)));
+    EXPECT_NE(hisysEventObserver_, nullptr);
     EXPECT_NE(hisysEventObserver_, nullptr);
 }
 
@@ -929,5 +972,86 @@ HWTEST_F(ObserverEventTest, GetAllMmiStatusData_001, testing::ext::TestSize.Leve
     }
     SUCCEED();
 }
+
+/**
+ * @tc.name: AddItemToSysAbilityListener_001
+ * @tc.desc: test AddItemToSysAbilityListener
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ */
+HWTEST_F(ObserverEventTest, AddItemToSysAbilityListener_001, testing::ext::TestSize.Level1)
+{
+    sptr<ISystemAbilityManager> systemAbilityManager
+        = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->AddItemToSysAbilityListener(DFX_SYS_EVENT_SERVICE_ABILITY_ID, systemAbilityManager);
+        instance->AddItemToSysAbilityListener(-1, systemAbilityManager);
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: OnRemoveSystemAbility_001
+ * @tc.desc: test OnRemoveSystemAbility
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ */
+HWTEST_F(ObserverEventTest, OnRemoveSystemAbility_001, testing::ext::TestSize.Level1)
+{
+    std::string deviceId = "test";
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->OnAddSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, deviceId);
+        instance->OnRemoveSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, deviceId);
+
+        instance->OnAddSystemAbility(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, deviceId);
+        instance->OnRemoveSystemAbility(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, deviceId);
+
+        instance->OnAddSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
+        instance->OnRemoveSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
+
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
+        instance->OnAddSystemAbility(AVSESSION_SERVICE_ID, deviceId);
+        instance->OnRemoveSystemAbility(AVSESSION_SERVICE_ID, deviceId);
+#endif
+
+        instance->OnAddSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, deviceId);
+        instance->OnRemoveSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, deviceId);
+
+        instance->OnRemoveSystemAbility(-1, deviceId);
+    }
+    SUCCEED();
+}
+
+/**
+ * @tc.name: InitDisplayModeObserver_001
+ * @tc.desc: test InitDisplayModeObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ */
+HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.Level1)
+{
+    auto observerManager = std::make_shared<ObserverManager>();
+    observerManager->InitDisplayModeObserver();
+    observerManager->DisableDisplayModeObserver();
+    SUCCEED();
+}
+
+/**
+ * @tc.name: InitAccountObserver_001
+ * @tc.desc: test InitAccountObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ */
+HWTEST_F(ObserverEventTest, InitAccountObserver_001, testing::ext::TestSize.Level1)
+{
+    auto observerManager = std::make_shared<ObserverManager>();
+    observerManager->InitAccountObserver();
+    observerManager->DisableAccountObserver();
+    observerManager->DisableAccountObserver();
+    SUCCEED();
+}
+
 }
 }
