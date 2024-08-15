@@ -116,6 +116,7 @@ public:
     bool screenCaptureState_ = false;
     bool videoState_ = false;
 
+    int32_t processType_ = ProcRecordType::NORMAL;
     uint32_t continuousTaskFlag_ = 0;
     int32_t audioPlayingState_ = -1;
     int32_t renderTid_ = 0;
@@ -128,7 +129,6 @@ public:
     int32_t wifiState_ = -1;
     int32_t mmiStatus_ {-1};
     int32_t hostPid_ = -1;
-    int32_t processType_ = ProcRecordType::NORMAL;
 
     std::map<uint32_t, bool> runningLockState_;
     std::map<int32_t, bool> avCodecState_;

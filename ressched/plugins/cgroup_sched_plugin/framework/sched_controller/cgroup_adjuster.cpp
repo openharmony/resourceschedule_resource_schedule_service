@@ -131,9 +131,9 @@ void CgroupAdjuster::AdjustAllProcessGroup(Application &app, AdjustSource source
 {
     for (auto &iter : app.GetPidsMap()) {
         const auto &procRecord = iter.second;
-        if (procRecord && (ProcessRecord->processType_ != ProcRecordType::RENDER) &&
-            (ProcessRecord->processType_ != ProcRecordType::GPU) &&
-            (ProcessRecord->processType_ != ProcRecordType::LINUX)) {
+        if (procRecord && (procRecord->processType_ != ProcRecordType::RENDER) &&
+            (procRecord->processType_ != ProcRecordType::GPU) &&
+            (procRecord->processType_ != ProcRecordType::LINUX)) {
             AdjustProcessGroup(app, *procRecord, source);
         }
     }
