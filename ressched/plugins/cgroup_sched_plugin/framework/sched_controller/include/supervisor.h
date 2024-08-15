@@ -36,6 +36,14 @@ using OHOS::ResourceSchedule::CgroupSetting::SP_SYSTEM_BACKGROUND;
 using OHOS::ResourceSchedule::CgroupSetting::SP_TOP_APP;
 using OHOS::ResourceSchedule::CgroupSetting::SP_UPPER_LIMIT;
 
+enum ProcRecordType : int32_t {
+    NORMAL = 0,
+    EXTENSION,
+    RENDER,
+    GPU,
+    LINUX,
+};
+
 class AbilityInfo;
 class WindowInfo {
 public:
@@ -100,12 +108,9 @@ public:
     SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
-    bool isRenderProcess_ = false;
-    bool isGPUProcess_ = false;
     bool runningTransientTask_ = false;
     bool isActive_ {false};
     bool inSelfRenderCgroup_ = false;
-    bool isExtensionProcess_ = false;
     bool isNapState_ = false;
     bool processDrawingState_ = false;
     bool screenCaptureState_ = false;
@@ -123,6 +128,7 @@ public:
     int32_t wifiState_ = -1;
     int32_t mmiStatus_ {-1};
     int32_t hostPid_ = -1;
+    int32_t processType_ = ProcRecordType::NORMAL;
 
     std::map<uint32_t, bool> runningLockState_;
     std::map<int32_t, bool> avCodecState_;
