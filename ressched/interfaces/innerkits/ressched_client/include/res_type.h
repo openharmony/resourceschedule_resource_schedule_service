@@ -254,6 +254,8 @@ enum : uint32_t {
     RES_TYPE_OUTPUT_DEVICE_CHANGE = 110,
     // report device idle
     RES_TYPE_DEVICE_IDLE = 111,
+    // report media output device change
+    RES_TYPE_BT_SERVICE_EVENT = 112,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -829,6 +831,15 @@ enum GameSchedStatus : int64_t {
  */
 enum DeviceIdleStatus : int64_t {
     DEVICE_IDLE_START = 0,
+};
+
+/**
+ * @brief bt service status
+ */
+enum BtServiceEvent : int64_t {
+    GATT_CONNECT_STATE = 0,
+    GATT_APP_REGISTER = 1,
+    SPP_CONNECT_STATE = 2
 };
 } // namespace ResType
 } // namespace ResourceSchedule

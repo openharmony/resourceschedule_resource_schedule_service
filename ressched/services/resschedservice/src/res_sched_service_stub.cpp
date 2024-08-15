@@ -73,6 +73,7 @@ namespace {
         ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE,
         ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
         ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
+        ResType::RES_TYPE_BT_SERVICE_EVENT,
     };
     static const std::unordered_set<uint32_t> saRes_ = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
@@ -132,11 +133,13 @@ namespace {
         ResType::RES_TYPE_THERMAL_SCENARIO_REPORT,
         ResType::RES_TYPE_BOOT_COMPLETED,
         ResType::RES_TYPE_CONTINUOUS_STARTUP,
+        ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
         ResType::RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK,
         ResType::RES_TYPE_REPORT_GAME_SCHED,
         ResType::RES_TYPE_SEND_FRAME_EVENT,
         ResType::RES_TYPE_CLOUD_CONFIG_UPDATE,
         ResType::RES_TYPE_DEVICE_IDLE,
+        ResType::RES_TYPE_BT_SERVICE_EVENT,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
