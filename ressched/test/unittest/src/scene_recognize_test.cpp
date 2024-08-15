@@ -18,13 +18,16 @@
 #include "res_type.h"
 #include "scene_recognize_test.h"
 #include "scene_recognizer_mgr.h"
+#include "slide_recognizer.h"
+#include "continuous_app_install_recognizer.h"
+#include "system_upgrade_scene_recognizer.h"
 
 using namespace std;
 using namespace testing::ext;
 
 namespace OHOS {
 namespace ResourceSchedule {
-
+static uint32_t g_slideState = SlideRecognizeStat::IDLE;
 void SceneRecognizeTest::SetUpTestCase() {}
 
 void SceneRecognizeTest::TearDownTestCase() {}
@@ -294,21 +297,6 @@ HWTEST_F(SceneRecognizeTest, SetListFlingTimeoutTime_001, Function | MediumTest 
 {
     auto slideRecognizer = std::make_shared<SlideRecognizer>();
     int64_t value = 100;
-    slideRecognizer->SetListFlingTimeoutTime(payload);
-    EXPECT_EQ(slideRecognizer->listFlingTimeOutTime_, value);
-}
-
-/**
- * @tc.name: SceneRecognizer SetListFlingTimeoutTime_001
- * @tc.desc: test the interface SetListFlingTimeoutTime
- * @tc.type: FUNC
- * @tc.require: issuesIAJZVI
- * @tc.author: fengyang
- */
-HWTEST_F(SceneRecognizeTest, SetListFlingTimeoutTime_001, Function | MediumTest | Level0)
-{
-    auto slideRecognizer = std::make_shared<SlideRecognizer>();
-    int64_t value = 100;
     slideRecognizer->SetListFlingTimeoutTime(value);
     EXPECT_EQ(slideRecognizer->listFlingTimeOutTime_, value);
 }
@@ -335,7 +323,7 @@ HWTEST_F(SceneRecognizeTest, SetListFlingEndTime_001, Function | MediumTest | Le
  * @tc.require: issuesIAJZVI
  * @tc.author: fengyang
  */
-HWTEST_F(SceneRecognizeTest, SetListFlingEndTime_001, Function | MediumTest | Level0)
+HWTEST_F(SceneRecognizeTest, SetListFlingSpeedLimit_001, Function | MediumTest | Level0)
 {
     auto slideRecognizer = std::make_shared<SlideRecognizer>();
     int64_t value = 100;
@@ -350,7 +338,7 @@ HWTEST_F(SceneRecognizeTest, SetListFlingEndTime_001, Function | MediumTest | Le
  * @tc.require: issuesIAJZVI
  * @tc.author: fengyang
  */
-HWTEST_F(SceneRecognizeTest, SetListFlingEndTime_001, Function | MediumTest | Level0)
+HWTEST_F(SceneRecognizeTest, SetSlideNormalDetectingTime_001, Function | MediumTest | Level0)
 {
     auto slideRecognizer = std::make_shared<SlideRecognizer>();
     int64_t value = 100;

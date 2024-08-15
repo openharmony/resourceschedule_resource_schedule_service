@@ -231,6 +231,8 @@ HWTEST_F(ObserverEventTest, hisysEventAudioEvent_001, testing::ext::TestSize.Lev
 
     // incorrect state keyword
     sysEvent["PID"] = TEST_PID;
+    sysEvent["STATE"] = -1;
+    hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
     sysEvent["state"] = 0;
     hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
     EXPECT_NE(hisysEventObserver_, nullptr);
@@ -242,8 +244,6 @@ HWTEST_F(ObserverEventTest, hisysEventAudioEvent_001, testing::ext::TestSize.Lev
 
     // audio state stopped
     sysEvent["STATE"] = AudioState::AUDIO_STATE_STOPPED;
-    hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
-    sysEvent["STATE"] = -1;
     hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
     EXPECT_NE(hisysEventObserver_, nullptr);
 }
@@ -454,7 +454,7 @@ HWTEST_F(ObserverEventTest, processHiSysEvent_003, testing::ext::TestSize.Level1
 {
     nlohmann::json sysEvent;
     sysEvent["domain_"] = "INVAILD";
-    eventName = "CAMERA_CONNECT";
+    std::string eventName = "CAMERA_CONNECT";
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
     eventName = "CAMERA_DISCONNECT";
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
@@ -535,7 +535,7 @@ HWTEST_F(ObserverEventTest, schedTelephonyObserverEvent_001, testing::ext::TestS
     int32_t slotId = 0;
     int32_t callState = 0;
     std::u16string phoneNumber;
-    schedTelephonyObserver_->onCallStateUpdated(slotId, callState, phoneNumber);
+    schedTelephonyObserver_->OnCallStateUpdated(slotId, callState, phoneNumber);
     SUCCEED();
 #endif
 }
@@ -577,19 +577,21 @@ HWTEST_F(ObserverEventTest, connectionSubscriberEvent_001, testing::ext::TestSiz
 HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level1)
 {
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
-    std::unique_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo;
+    std::unique_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo = 
+        std::make_unique<AudioStandard::AudioRendererChangeInfo>();
     nlohmann::json payload;
     audioObserver_->MarshallingAudioRendererChangeInfo(audioRendererChangeInfo, payload);
     SUCCEED();
-    audioObserver_->OnRendererStateChange(audioRendererChangeInfo);
+    std::vector<std::unique_ptr<AudioStandard::AudioDeviceDescriptor>> audioRenderVector;
+    audioRenderVector.emplace_back(std::move(audioRendererChangeInfo));
+    audioObserver_->OnRendererStateChange(audioRenderVector);
     SUCCEED();
 
     //ringerMode equals mode_
-    AudioStandard::AudioRingerMode ringerMode = -1;.
+    AudioStandard::AudioRingerMode ringerMode = AudioStandard::AudioRingerMode::RINGER_MODE_NORMAL;
     audioObserver_->OnRingerModeUpdated(ringerMode);
     SUCCEED();
     //ringerMode is not mode_
-    AudioStandard::AudioRingerMode ringerMode1 = 0;
     audioObserver_->OnRingerModeUpdated(ringerMode);
     SUCCEED();
 
@@ -954,6 +956,8 @@ HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.
     if (instance) {
         instance->foldDisplayModeObserver_ = nullptr;
         instance->InitDisplayModeObserver();
+        instance->InitDisplayModeObserver();
+        instance->DisableDisplayModeObserver();
     }
     SUCCEED();
 }
@@ -1002,39 +1006,26 @@ HWTEST_F(ObserverEventTest, OnRemoveSystemAbility_001, testing::ext::TestSize.Le
     std::string deviceId = "test";
     auto instance = ObserverManager::GetInstance();
     if (instance) {
-        instance->OnAddSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, deviceId);
-        instance->OnRemoveSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, deviceId);
+        instance->InitSysAbilityListener();
+        instance->sysAbilityListener_->OnAddSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, deviceId);
+        instance->sysAbilityListener_->OnRemoveSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, deviceId);
 
-        instance->OnAddSystemAbility(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, deviceId);
-        instance->OnRemoveSystemAbility(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, deviceId);
+        instance->sysAbilityListener_->OnAddSystemAbility(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, deviceId);
+        instance->sysAbilityListener_->OnRemoveSystemAbility(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, deviceId);
 
-        instance->OnAddSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
-        instance->OnRemoveSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
+        instance->sysAbilityListener_->OnAddSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
+        instance->sysAbilityListener_->OnRemoveSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
 
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
-        instance->OnAddSystemAbility(AVSESSION_SERVICE_ID, deviceId);
-        instance->OnRemoveSystemAbility(AVSESSION_SERVICE_ID, deviceId);
+        instance->sysAbilityListener_->OnAddSystemAbility(AVSESSION_SERVICE_ID, deviceId);
+        instance->sysAbilityListener_->OnRemoveSystemAbility(AVSESSION_SERVICE_ID, deviceId);
 #endif
 
-        instance->OnAddSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, deviceId);
-        instance->OnRemoveSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, deviceId);
+        instance->sysAbilityListener_->OnAddSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, deviceId);
+        instance->sysAbilityListener_->OnRemoveSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, deviceId);
 
-        instance->OnRemoveSystemAbility(-1, deviceId);
+        instance->sysAbilityListener_->OnRemoveSystemAbility(-1, deviceId);
     }
-    SUCCEED();
-}
-
-/**
- * @tc.name: InitDisplayModeObserver_001
- * @tc.desc: test InitDisplayModeObserver
- * @tc.type: FUNC
- * @tc.require: issuesIAJZVI
- */
-HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.Level1)
-{
-    auto observerManager = std::make_shared<ObserverManager>();
-    observerManager->InitDisplayModeObserver();
-    observerManager->DisableDisplayModeObserver();
     SUCCEED();
 }
 
