@@ -81,7 +81,6 @@ void PluginMgr::Init(bool isRssExe)
         LoadGetExtConfigFunc();
     }
     RESSCHED_LOGI("PluginMgr::Init success!");
-    isInit = true;
 }
 
 std::vector<std::string> PluginMgr::GetConfigReaderStr()
@@ -165,6 +164,8 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
         }
 #endif
     }
+    isInit = true;
+    RESSCHED_LOGI("PluginMgr load plugin success!");
 }
 
 void PluginMgr::LoadGetExtConfigFunc()
@@ -446,6 +447,11 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 
 int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
 {
+    if (!isInit.load()) {
+        RESSCHED_LOGE("%{public}s, not init.", __func__);
+        return PLUGIN_REQUEST_ERROR;
+    }
+
     if (!resData) {
         RESSCHED_LOGE("%{public}s, failed, null res data.", __func__);
         return PLUGIN_REQUEST_ERROR;
