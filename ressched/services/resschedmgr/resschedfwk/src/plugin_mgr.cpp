@@ -81,7 +81,6 @@ void PluginMgr::Init(bool isRssExe)
         LoadGetExtConfigFunc();
     }
     RESSCHED_LOGI("PluginMgr::Init success!");
-    isInit = true;
 }
 
 std::vector<std::string> PluginMgr::GetConfigReaderStr()
@@ -165,6 +164,8 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
         }
 #endif
     }
+    isInit = true;
+    RESSCHED_LOGI("PluginMgr load plugin success!");
 }
 
 void PluginMgr::LoadGetExtConfigFunc()
@@ -446,6 +447,11 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 
 int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
 {
+    if (!isInit.load()) {
+        RESSCHED_LOGE("%{public}s, not init.", __func__);
+        return PLUGIN_REQUEST_ERROR;
+    }
+
     if (!resData) {
         RESSCHED_LOGE("%{public}s, failed, null res data.", __func__);
         return PLUGIN_REQUEST_ERROR;
@@ -756,9 +762,9 @@ void PluginMgr::DispatchResourceToPluginAsync(const std::list<std::string>& plug
         std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
         dispatchers_[pluginLib]->submit(
             [pluginLib, resData, pluginDispatchFunc] {
-                StartTrace(HITRACE_TAG_OHOS, pluginLib);
+                StartTrace(HITRACE_TAG_APP, pluginLib);
                 pluginDispatchFunc(std::make_shared<ResData>(resData->resType, resData->value, resData->payload));
-                FinishTrace(HITRACE_TAG_OHOS);
+                FinishTrace(HITRACE_TAG_APP);
             });
     }
 }
