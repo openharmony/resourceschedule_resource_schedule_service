@@ -701,7 +701,7 @@ namespace ResourceSchedule {
         uid_t uid = GetData<uid_t>();
         pid_t pid = GetData<pid_t>();
         ProcessRecord pr(uid, pid);
-        pr.processType_ == ProcRecordType::RENDER;
+        pr.processType_ = ProcRecordType::RENDER;
         pr.isActive_ = true;
         ProcessRecord mainProc(uid, pid);
         auto cgroupEventHandler =
