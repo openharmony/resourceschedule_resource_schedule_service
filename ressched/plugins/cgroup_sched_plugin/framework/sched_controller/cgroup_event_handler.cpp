@@ -951,7 +951,8 @@ void CgroupEventHandler::HandleSceneBoardState(uint32_t resType, int64_t value, 
 
 bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc)
 {
-    return pr.processType_ == ProcRecordType::RENDER && pr.isActive_ && !mainProc.GetWindowInfoNonNull(pr.linkedWindowId_)->isVisible_;
+    return (pr.processType_ == ProcRecordType::RENDER) && pr.isActive_ &&
+        !mainProc.GetWindowInfoNonNull(pr.linkedWindowId_)->isVisible_;
 }
 
 void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload)
