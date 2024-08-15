@@ -67,7 +67,7 @@ HWTEST_F(SceneRecognizeTest, AppInstallTest001, Function | MediumTest | Level0)
  */
 HWTEST_F(SceneRecognizeTest, AppInstallTest002, Function | MediumTest | Level0)
 {
-    auto continuousAppInstallRecognizer = std::make_shared<ContinuousAppInstallRecognizer>()
+    auto continuousAppInstallRecognizer = std::make_shared<ContinuousAppInstallRecognizer>();
     nlohmann::json payload;
     continuousAppInstallRecognizer->OnDispatchResource(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
         ResType::AppInstallStatus::APP_INSTALL_END, payload);
@@ -206,7 +206,7 @@ HWTEST_F(SceneRecognizeTest, HandleSlideDetecting_001, Function | MediumTest | L
     slideRecognizer->HandleSlideDetecting(payload);
     payload["clientPid"] = "2000";
     slideRecognizer->HandleListFlingStart(payload);
-    slideRecognizer->g_slideState = SlideRecognizeStat::LIST_FLING;
+    g_slideState = SlideRecognizeStat::LIST_FLING;
     slideRecognizer->HandleSlideDetecting(payload);
     SUCCEED();
 }
@@ -223,7 +223,7 @@ HWTEST_F(SceneRecognizeTest, HandleListFlingStart_001, Function | MediumTest | L
     auto slideRecognizer = std::make_shared<SlideRecognizer>();
     nlohmann::json payload;
     payload["clientPid"] = "2000";
-    slideRecognizer->g_slideState = SlideRecognizeStat::LIST_FLING;
+    g_slideState = SlideRecognizeStat::LIST_FLING;
     slideRecognizer->HandleListFlingStart(payload);
     slideRecognizer->HandleListFlingStart(payload);
     SUCCEED();
@@ -241,9 +241,9 @@ HWTEST_F(SceneRecognizeTest, HandleSendFrameEvent_001, Function | MediumTest | L
     auto slideRecognizer = std::make_shared<SlideRecognizer>();
     nlohmann::json payload;
     payload["clientPid"] = "2000";
-    slideRecognizer->g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
+    g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
     slideRecognizer->HandleSendFrameEvent(payload);
-    slideRecognizer->g_slideState = SlideRecognizeStat::LIST_FLING;
+    g_slideState = SlideRecognizeStat::LIST_FLING;
     slideRecognizer->HandleSendFrameEvent(payload);
     SUCCEED();
 }
@@ -260,9 +260,9 @@ HWTEST_F(SceneRecognizeTest, HandleClickEvent_001, Function | MediumTest | Level
     auto slideRecognizer = std::make_shared<SlideRecognizer>();
     int64_t value = ResType::SlideEventStatus::SLIDE_EVENT_ON;
     nlohmann::json payload;
-    slideRecognizer->g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
+    g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
     slideRecognizer->HandleClickEvent(value, payload);
-    slideRecognizer->g_slideState = SlideRecognizeStat::SLIDE_NORMAL;
+    g_slideState = SlideRecognizeStat::SLIDE_NORMAL;
     slideRecognizer->HandleClickEvent(value, payload);
     payload["clientPid"] = "2000";
     payload["up_speed"] = std::to_string(slideRecognizer->listFlingTimeOutTime_ + 1);

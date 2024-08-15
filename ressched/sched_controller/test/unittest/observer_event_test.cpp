@@ -582,7 +582,7 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level
     nlohmann::json payload;
     audioObserver_->MarshallingAudioRendererChangeInfo(audioRendererChangeInfo, payload);
     SUCCEED();
-    std::vector<std::unique_ptr<AudioStandard::AudioDeviceDescriptor>> audioRenderVector;
+    std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> audioRenderVector;
     audioRenderVector.emplace_back(std::move(audioRendererChangeInfo));
     audioObserver_->OnRendererStateChange(audioRenderVector);
     SUCCEED();
