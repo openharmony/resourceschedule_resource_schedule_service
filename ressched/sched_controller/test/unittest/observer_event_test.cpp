@@ -577,7 +577,7 @@ HWTEST_F(ObserverEventTest, connectionSubscriberEvent_001, testing::ext::TestSiz
 HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level1)
 {
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
-    std::unique_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo = 
+    std::unique_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo =
         std::make_unique<AudioStandard::AudioRendererChangeInfo>();
     nlohmann::json payload;
     audioObserver_->MarshallingAudioRendererChangeInfo(audioRendererChangeInfo, payload);
