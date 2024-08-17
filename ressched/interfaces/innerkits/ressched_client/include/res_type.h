@@ -886,7 +886,7 @@ enum HeavyLoadMutexAddReasons : int64_t {
     HeavyLoadMutexStatusAddFailByMutex = 2,
     HeavyLoadMutexStatusAddFailByParams = 3,
     HeavyLoadMutexStatusCloseFailByUnOpened = 4,
-    eavyLoadMutexStatusCloseSucc = 0,
+    HeavyLoadMutexStatusCloseSucc = 0,
 };
 
 /**
