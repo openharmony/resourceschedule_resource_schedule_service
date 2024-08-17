@@ -257,9 +257,9 @@ enum : uint32_t {
     // report media output device change
     RES_TYPE_BT_SERVICE_EVENT = 112,
     // report to hisi, let bmm_report begin change
-    RES_TYPE_BMM_MONITER_CHANAGE_EVENT = 113,
+    RES_TYPE_BMM_MONITER_CHANGE_EVENT = 113,
     // report to request mutex status
-    RES_TYPE_BMM_MONITER_CHANAGE_EVENT = 120,
+    RES_TYPE_REQUEST_MUTEX_STATUS = 120,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
