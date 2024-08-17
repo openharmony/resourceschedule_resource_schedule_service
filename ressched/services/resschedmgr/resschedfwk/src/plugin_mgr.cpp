@@ -428,10 +428,10 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     }
     std::string libNameAll = "";
     string trace_str = BuildDispatchTrace(resData, libNameAll, __func__, pluginList);
-    StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
+    StartTrace(HITRACE_TAG_APP, trace_str, -1);
     RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, value = %{public}lld, pluginlist is %{public}s.",
         __func__, resData->resType, (long long)resData->value, libNameAll.c_str());
-    FinishTrace(HITRACE_TAG_OHOS);
+    FinishTrace(HITRACE_TAG_APP);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     DispatchResourceToPluginAsync(pluginList, resData);
 #else
@@ -710,11 +710,11 @@ void PluginMgr::DispatchResourceToPluginSync(const std::list<std::string>& plugi
             continue;
         }
 
-        StartTrace(HITRACE_TAG_OHOS, pluginLib);
+        StartTrace(HITRACE_TAG_APP, pluginLib);
         auto beginTime = Clock::now();
         pluginDispatchFunc(std::make_shared<ResData>(resData->resType, resData->value, resData->payload));
         auto endTime = Clock::now();
-        FinishTrace(HITRACE_TAG_OHOS);
+        FinishTrace(HITRACE_TAG_APP);
         int32_t costTimeUs = (endTime - beginTime) / std::chrono::microseconds(1);
         int32_t costTime = costTimeUs / 1000;
         pluginStat_[pluginLib].Update(costTimeUs);
