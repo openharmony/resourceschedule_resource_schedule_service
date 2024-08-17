@@ -287,6 +287,7 @@ enum SystemAbilityStatus : int64_t {
 enum EventType : uint32_t {
     EVENT_START = 0,
     EVENT_DRAW_FRAME_REPORT,
+    EVENT_MUTEX_STATUS,
     EVENT_DDR_BOUND_CHANGE_REPORT = 3,
     EVENT_END,
 };
@@ -885,7 +886,7 @@ enum HeavyLoadMutexAddReasons : int64_t {
     HeavyLoadMutexStatusAddFailByAdded = 1,
     HeavyLoadMutexStatusAddFailByMutex = 2,
     HeavyLoadMutexStatusAddFailByParams = 3,
-    HeavyLoadMutexStatusCloseFailByUnOpened = 4,
+    HeavyLoadMutexStatusCloseFailByUnopened = 4,
     HeavyLoadMutexStatusCloseSucc = 0,
 };
 
