@@ -69,7 +69,8 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_LOAD_URL              = 10070;
     const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
     const int32_t PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE       = 10073;
-    const int32_t PERF_REQUEST_CMD_ID_BMM_MONITER_END       = 10074;
+    const int32_t PERF_REQUEST_CMD_ID_BMM_MONITER_START     = 10081;
+    const int32_t PERF_REQUEST_CMD_ID_BMM_MONITER_END       = 10082;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
