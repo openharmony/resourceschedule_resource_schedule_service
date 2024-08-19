@@ -184,8 +184,6 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleCustEventBegin(data); } },
         { RES_TYPE_SOCPERF_CUST_EVENT_END,
             [this](const std::shared_ptr<ResData>& data) { HandleCustEventEnd(data); } },
-        { RES_TYPE_BMM_MONITER_CHANGE_EVENT,
-            [this](const std::shared_ptr<ResData>& data) { HandleBmmMoniterStatus(data); } },
     };
     AddEventToFunctionMap();
 }
@@ -196,6 +194,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleAppColdStartEx(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_SCENE_ROTATION,
         [this](const std::shared_ptr<ResData>& data) { HandleSceneRotation(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_BMM_MONITER_CHANGE_EVENT,
+        [this](const std::shared_ptr<ResData>& data) { HandleBmmMoniterStatus(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
@@ -630,7 +630,8 @@ bool SocPerfPlugin::HandleBmmMoniterStatus(const std::shared_ptr<ResData> &data)
     if (data == nullptr) {
         return false;
     }
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->PERF_REQUEST_CMD_ID_BMM_MONITER_CHANGE: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->PERF_REQUEST_CMD_ID_BMM_MONITER_CHANGE: %{public}lld",
+        (long long)data->value);
     if (data->value == BmmMoniterStatus::BMM_BACKGROUND) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_BMM_MONITER_START, true, "");
         return true;
