@@ -256,6 +256,8 @@ enum : uint32_t {
     RES_TYPE_DEVICE_IDLE = 111,
     // report media output device change
     RES_TYPE_BT_SERVICE_EVENT = 112,
+    // report to hisi, let bmm_report begin change
+    RES_TYPE_BMM_MONITER_CHANGE_EVENT = 113,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -266,6 +268,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
     // get thermal data
     SYNC_RES_TYPE_GET_THERMAL_DATA,
+    // report to request mutex status
+    RES_TYPE_REQUEST_MUTEX_STATUS = 120,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
@@ -283,6 +287,8 @@ enum SystemAbilityStatus : int64_t {
 enum EventType : uint32_t {
     EVENT_START = 0,
     EVENT_DRAW_FRAME_REPORT,
+    EVENT_MUTEX_STATUS,
+    EVENT_DDR_BOUND_CHANGE_REPORT = 3,
     EVENT_END,
 };
 
@@ -290,6 +296,10 @@ enum EventValue : uint32_t {
     EVENT_VALUE_START = 0,
     EVENT_VALUE_DRAW_FRAME_REPORT_START,
     EVENT_VALUE_DRAW_FRAME_REPORT_STOP,
+    EVENT_VALUE_DDR_BOUND_REPORT_START,
+    EVENT_VALUE_DDR_BOUND_REPORT_STOP,
+    EVENT_VALUE_DDR_BOUND_REPORT_REPORT,
+    EVENT_VALUE_HEAVY_LOAD_MUTEX_REPORT,
     EVENT_VALUE_END,
 };
 
@@ -841,6 +851,53 @@ enum BtServiceEvent : int64_t {
     GATT_APP_REGISTER = 1,
     SPP_CONNECT_STATE = 2
 };
+
+/**
+ * @brief LargeModelScene
+ */
+enum LargeModelScene : int64_t {
+    ENTER_LARGE_MODEL_SCENE = 0,
+    EXIT_LARGE_MODEL_SCENE = 1,
+};
+
+/**
+ * @brief Bmm status
+ */
+enum BmmMoniterStatus : int64_t {
+    BMM_CLOSE = 0,
+    BMM_FOREGROUND = 1,
+    BMM_BACKGROUND = 2
+};
+
+/**
+ * @brief Heavy Load Mutex Scene
+ */
+enum HeavyLoadMutexAddScene : int64_t {
+    MUTEX_STATUS_REQUIRE = 0,
+    MUTEX_STATUS_RELEASE = 1,
+};
+
+/**
+ * @brief Heavy Load Mutex Reasons
+ */
+enum HeavyLoadMutexAddReasons : int64_t {
+    HeavyLoadMutexStatusAddSucc = 0,
+    HeavyLoadMutexStatusAddFailByAdded = 1,
+    HeavyLoadMutexStatusAddFailByMutex = 2,
+    HeavyLoadMutexStatusAddFailByParams = 3,
+    HeavyLoadMutexStatusCloseFailByUnopened = 4,
+    HeavyLoadMutexStatusCloseSucc = 0,
+};
+
+/**
+ * @brief Heavy Load Mutex Boardcast Scene
+ */
+enum HeavyLoadMutexSceneBoardcastScene : int64_t {
+    HeavyLoadMutexBoardcastNeedProactiveAvoidance = 0,
+    HeavyLoadMutexBoardcastNeedProactiveDownspeeding = 1,
+    HeavyLoadMutexBoardcastNeedCancelDownspeeding = 2,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
