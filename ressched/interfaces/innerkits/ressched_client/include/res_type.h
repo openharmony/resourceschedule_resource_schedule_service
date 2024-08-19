@@ -258,8 +258,6 @@ enum : uint32_t {
     RES_TYPE_BT_SERVICE_EVENT = 112,
     // report to hisi, let bmm_report begin change
     RES_TYPE_BMM_MONITER_CHANGE_EVENT = 113,
-    // report to request mutex status
-    RES_TYPE_REQUEST_MUTEX_STATUS = 120,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -270,6 +268,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
     // get thermal data
     SYNC_RES_TYPE_GET_THERMAL_DATA,
+    // report to request mutex status
+    RES_TYPE_REQUEST_MUTEX_STATUS = 120,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
