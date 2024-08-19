@@ -233,6 +233,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_SOCPERF_CUST_EVENT_END,
         RES_TYPE_ONLY_PERF_APP_COLD_START,
         RES_TYPE_SCENE_ROTATION,
+        RES_TYPE_BMM_MONITER_CHANGE_EVENT,
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
