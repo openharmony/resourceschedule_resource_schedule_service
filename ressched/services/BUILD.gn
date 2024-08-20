@@ -237,6 +237,7 @@ ohos_static_library("resschedsvc_static") {
     "init:libbegetutil",
     "input:libmmi-client",
     "ipc:ipc_single",
+    "jsoncpp:jsoncpp",
     "libxml2:libxml2",
     "os_account:os_account_innerkits",
     "safwk:system_ability_fwk",

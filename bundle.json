@@ -61,7 +61,8 @@
         "power_manager",
         "av_session",
         "json",
-        "libxml2"
+        "libxml2",
+        "jsoncpp"
       ]
     },
     "build": {
