@@ -36,6 +36,7 @@ public:
 
     void OnTransientTaskStart(const std::shared_ptr<TransientTaskAppInfo>& info) override;
     void OnTransientTaskEnd(const std::shared_ptr<TransientTaskAppInfo>& info) override;
+    void OnTransientTaskErr(const std::shared_ptr<TransientTaskAppInfo>& info) override;
     void OnContinuousTaskStart(const std::shared_ptr<ContinuousTaskCallbackInfo> &continuousTaskCallbackInfo) override;
     void OnContinuousTaskStop(const std::shared_ptr<ContinuousTaskCallbackInfo> &continuousTaskCallbackInfo) override;
     void OnContinuousTaskUpdate(const std::shared_ptr<ContinuousTaskCallbackInfo> &continuousTaskCallbackInfo) override;
