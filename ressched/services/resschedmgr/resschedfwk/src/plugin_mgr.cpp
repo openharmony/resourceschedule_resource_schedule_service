@@ -148,19 +148,18 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
     LoadPlugin();
     std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-    if (dispatchers_.empty()) {
-        for (const auto& [libPath, libInfo] : pluginLibMap_) {
-            auto callback = [pluginName = libPath, time = pluginBlockTime]() {
-                PluginMgr::GetInstance().HandlePluginTimeout(pluginName);
-                ffrt::submit([pluginName]() {
-                    PluginMgr::GetInstance().EnablePluginIfResume(pluginName);
-                    }, {}, {}, ffrt::task_attr().delay(time));
-            };
-            dispatchers_.emplace(libPath, std::make_shared<ffrt::queue>(libPath.c_str(),
-                ffrt::queue_attr().qos(ffrt::qos_user_interactive).
-                timeout(pluginBlockTime).
-                callback(callback)));
-        }
+    dispatchers_.clear();
+    for (const auto& [libPath, libInfo] : pluginLibMap_) {
+        auto callback = [pluginName = libPath, time = pluginBlockTime]() {
+            PluginMgr::GetInstance().HandlePluginTimeout(pluginName);
+            ffrt::submit([pluginName]() {
+                PluginMgr::GetInstance().EnablePluginIfResume(pluginName);
+                }, {}, {}, ffrt::task_attr().delay(time));
+        };
+        dispatchers_.emplace(libPath, std::make_shared<ffrt::queue>(libPath.c_str(),
+            ffrt::queue_attr().qos(ffrt::qos_user_interactive).
+            timeout(pluginBlockTime).
+            callback(callback)));
     }
 #else
     if (!dispatcher_) {
@@ -802,7 +801,7 @@ void PluginMgr::EnablePluginIfResume(const std::string& pluginLib)
         FinishTrace(HITRACE_TAG_APP);
         ffrt::submit([lib = pluginLib]() {
             PluginMgr::GetInstance().EnablePluginIfResume(lib);
-           }, {}, {}, ffrt::task_attr().delay(pluginBlockTime));
+            }, {}, {}, ffrt::task_attr().delay(pluginBlockTime));
     }
 }
 
