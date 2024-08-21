@@ -31,7 +31,9 @@ namespace {
     const string LIB_NAME = "libunittest_plugin.z.so";
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 atomic<bool> PluginMgrTest::isBlocked = false;
+#endif
 
 void PluginMgrTest::SetUpTestCase() {}
 
