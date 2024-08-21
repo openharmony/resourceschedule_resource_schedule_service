@@ -23,6 +23,7 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include <unordered_set> 
 #include "datetime_ex.h"
 #include "event_handler.h"
 #include "config_reader.h"
@@ -32,9 +33,7 @@
 #include "res_data.h"
 #include "single_instance.h"
 #include "config_info.h"
-#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt.h"
-#endif
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
 #include "res_type.h"
 #endif
@@ -206,6 +205,13 @@ public:
      */
     void ParsePluginSwitch(const std::vector<std::string>& switchStrs, bool isRssExe = false);
 
+    /**
+     * set plugin blocked time.
+     *
+     * @param time over time will be judge blocked
+     */
+    void SetBlockedTime(const int64_t time);
+
 private:
     PluginMgr() = default;
     void OnDestroy();
@@ -219,6 +225,9 @@ private:
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     void DispatchResourceToPluginAsync(const std::list<std::string>& pluginList,
         const std::shared_ptr<ResData>& resData);
+    void HandlePluginTimeout(const std::string& pluginLib);
+    void EnablePluginIfResume(const std::string& pluginLib);
+    void RecordRinningStat(std::string pluginLib, bool isRunning);
 #endif
     void RepairPlugin(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo);
     void RemoveDisablePluginHandler();
@@ -247,6 +256,7 @@ private:
     const int32_t MAX_PLUGIN_TIMEOUT_TIMES = 3;
     const int32_t DISABLE_PLUGIN_TIME = 60000;
     const int32_t DUMP_ONE_STRING_SIZE = 32;
+    int64_t pluginBlockTime = 10 * 60 * 1000 * 1000;
     std::unique_ptr<ConfigReader> configReader_ = nullptr;
     std::unique_ptr<PluginSwitch> pluginSwitch_ = nullptr;
 
@@ -259,7 +269,7 @@ private:
     // mutex for resTypeStrMap_
     std::mutex resTypeStrMutex_;
     std::mutex pluginMutex_;
-    std::mutex dispatcherHandlerMutex_;
+    ffrt::mutex dispatcherHandlerMutex_;
     std::mutex libPathMutex_;
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
     std::map<uint32_t, std::string> resTypeLibSyncMap_;
@@ -267,6 +277,8 @@ private:
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::map<std::string, std::shared_ptr<ffrt::queue>> dispatchers_;
+    std::map<std::string, std::atomic<bool>> runningStats_;
+    std::unordered_set<std::string> disablePlugins_;
 #else
     std::shared_ptr<AppExecFwk::EventHandler> dispatcher_ = nullptr;
 #endif

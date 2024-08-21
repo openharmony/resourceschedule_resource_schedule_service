@@ -29,6 +29,11 @@ public:
     static void TearDownTestCase();
     void SetUp();
     void TearDown();
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+    std::shared_ptr<PluginLib> GetTestPlugin();
+    void LoadTestPlugin();
+    static std::atomic<bool> isBlocked;
+#endif
 protected:
     std::string GetSubItemValue(std::string PluginName, std::string configName);
     std::shared_ptr<MockPluginMgr> pluginMgr_ = nullptr;
