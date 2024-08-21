@@ -23,7 +23,7 @@
 #include <memory>
 #include <map>
 #include <vector>
-#include <unordered_set> 
+#include <unordered_set>
 #include "datetime_ex.h"
 #include "event_handler.h"
 #include "config_reader.h"

@@ -89,7 +89,7 @@ void PluginMgrTest::LoadTestPlugin()
         PluginMgr::GetInstance().HandlePluginTimeout(pluginName);
         ffrt::submit([pluginName]() {
             PluginMgr::GetInstance().EnablePluginIfResume(pluginName);
-        }, {}, {}, ffrt::task_attr().delay(time));
+            }, {}, {}, ffrt::task_attr().delay(time));
     };
     PluginMgr::GetInstance().dispatchers_.emplace(LIB_NAME, std::make_shared<ffrt::queue>(LIB_NAME.c_str(),
         ffrt::queue_attr().timeout(PluginMgr::GetInstance().pluginBlockTime).callback(callback)));

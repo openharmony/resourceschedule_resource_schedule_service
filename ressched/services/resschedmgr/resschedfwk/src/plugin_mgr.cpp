@@ -146,32 +146,30 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
         RESSCHED_LOGI("PluginMgr load switch config file index:%{public}d success!", index);
     }
     LoadPlugin();
-    {
-        std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
+    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-        if (dispatchers_.empty()) {
-            for (const auto& [libPath, libInfo] : pluginLibMap_) {
-                auto callback = [pluginName = libPath, time = pluginBlockTime]() {
-                    PluginMgr::GetInstance().HandlePluginTimeout(pluginName);
-                    ffrt::submit([pluginName]() {
-                        PluginMgr::GetInstance().EnablePluginIfResume(pluginName);
+    if (dispatchers_.empty()) {
+        for (const auto& [libPath, libInfo] : pluginLibMap_) {
+            auto callback = [pluginName = libPath, time = pluginBlockTime]() {
+                PluginMgr::GetInstance().HandlePluginTimeout(pluginName);
+                ffrt::submit([pluginName]() {
+                    PluginMgr::GetInstance().EnablePluginIfResume(pluginName);
                     }, {}, {}, ffrt::task_attr().delay(time));
-                };
-                dispatchers_.emplace(libPath, std::make_shared<ffrt::queue>(libPath.c_str(),
-                    ffrt::queue_attr().qos(ffrt::qos_user_interactive).
-                    timeout(pluginBlockTime).
-                    callback(callback)));
-            }
+            };
+            dispatchers_.emplace(libPath, std::make_shared<ffrt::queue>(libPath.c_str(),
+                ffrt::queue_attr().qos(ffrt::qos_user_interactive).
+                timeout(pluginBlockTime).
+                callback(callback)));
         }
-#else
-        if (!dispatcher_) {
-            dispatcher_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
-        }
-        if (!dispatcher_) {
-            RESSCHED_LOGI("create dispatcher failed");
-        }
-#endif
     }
+#else
+    if (!dispatcher_) {
+        dispatcher_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
+    }
+    if (!dispatcher_) {
+        RESSCHED_LOGI("create dispatcher failed");
+    }
+#endif
     isInit = true;
     RESSCHED_LOGI("PluginMgr load plugin success!");
 }
@@ -799,12 +797,12 @@ void PluginMgr::EnablePluginIfResume(const std::string& pluginLib)
     if (!isRunning) {
         disablePlugins_.erase(pluginLib);
     } else {
-        StartTrace(HITRACE_TAG_APP, "Blocked plugin:" + pluginLib, -1); 
+        StartTrace(HITRACE_TAG_APP, "Blocked plugin:" + pluginLib, -1);
         RESSCHED_LOGI("plugin:%{public}s been locked!", pluginLib.c_str());
         FinishTrace(HITRACE_TAG_APP);
         ffrt::submit([lib = pluginLib]() {
             PluginMgr::GetInstance().EnablePluginIfResume(lib);
-        }, {}, {}, ffrt::task_attr().delay(pluginBlockTime));
+           }, {}, {}, ffrt::task_attr().delay(pluginBlockTime));
     }
 }
 
@@ -824,7 +822,6 @@ void PluginMgr::HandlePluginTimeout(const std::string& pluginLib)
     } else {
         RESSCHED_LOGI("%{public}s, %{public}s all tasks cancled!", __func__, pluginLib.c_str());
     }
-
 }
 
 void PluginMgr::RecordRinningStat(std::string pluginLib, bool isRunning)
@@ -912,7 +909,8 @@ PluginMgr::InnerTimeUtil::~InnerTimeUtil()
     }
 }
 extern "C" {
-    void SetBlockedTime(const int64_t time) {
+    void SetBlockedTime(const int64_t time)
+    {
         PluginMgr::GetInstance().SetBlockedTime(time);
     }
 }
