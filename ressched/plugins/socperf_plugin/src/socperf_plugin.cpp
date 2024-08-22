@@ -70,7 +70,6 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
     const int32_t PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE       = 10073;
     const int32_t PERF_REQUEST_CMD_ID_BMM_MONITER_START     = 10081;
-    const int32_t PERF_REQUEST_CMD_ID_BMM_MONITER_END       = 10082;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -638,7 +637,7 @@ bool SocPerfPlugin::HandleBmmMoniterStatus(const std::shared_ptr<ResData> &data)
         return true;
     }
     if (data->value == BmmMoniterStatus::BMM_CLOSE) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_BMM_MONITER_END, true, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_BMM_MONITER_START, false, "");
         return true;
     }
     return false;
