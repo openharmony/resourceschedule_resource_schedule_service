@@ -13,15 +13,19 @@
  * limitations under the License.
  */
 
+#include <dlfcn.h>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
-#include "sched_controller.h"
-#include "window_state_observer.h"
 #include "app_startup_scene_rec.h"
+#include "cgroup_sched_common.h"
+#include "res_type.h"
+#include "sched_controller.h"
+#include "sched_policy.h"
+#include "supervisor.h"
+#include "window_state_observer.h"
 #include "window_manager.h"
 #include "wm_common.h"
-#include "sched_policy.h"
 
 using namespace testing::ext;
 using namespace OHOS::ResourceSchedule::CgroupSetting;
@@ -145,6 +149,23 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_WindowStateObserver_002, Function | Me
 }
 
 /**
+ * @tc.name: CGroupSchedTest_CgroupSchedlog_001
+ * @tc.desc: Window Mode Observer Test
+ * @tc.type: FUNC
+ * @tc.require: issuesI9BU37
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupSchedlog_001, Function | MediumTest | Level1)
+{
+    CgroupSchedLog::level_ = LOG_DEBUG;
+    bool ret = CgroupSchedLog::JudgeLevel(LOG_INFO);
+    EXPECT_TRUE(ret);
+    CgroupSchedLog::level_ = LOG_INFO;
+    ret = CgroupSchedLog::JudgeLevel(LOG_DEBUG);
+    EXPECT_FALSE(ret);
+}
+
+/**
  * @tc.name: CGroupSchedTest_WindowStateObserver_002
  * @tc.desc: Window Mode Observer Test
  * @tc.type: FUNC
@@ -159,6 +180,127 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_001, Function | Medium
     SUCCEED();
     schedController.UnsubscribeWindowState();
     SUCCEED();
+}
+
+/**
+ * @tc.name: CGroupSchedTest_schedController_002
+ * @tc.desc: schedController dump test
+ * @tc.type: FUNC
+ * @tc.require: issuesI9BU37
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_002, Function | MediumTest | Level1)
+{
+    auto &schedController = SchedController::GetInstance();
+    schedController.Init();
+    auto processRecord = schedController.GetSupervisor()->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
+    ProcessRecord->runningLockState_[0] = ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE;
+    ProcessRecord->GetWindowInfoNonNull(0);
+    std::vector<std::string> args = {};
+    std::string result;
+    schedController.Dump(args, result);
+
+    args = { "-h" };
+    result = "";
+    schedController.Dump(args, result);
+    EXPECT_NE(result.find("show the cgroup_sched_plugin help"), std::string::npos);
+
+    result = "";
+    args = { "-getRunningLockInfo" };
+    schedController.Dump(args, result);
+    EXPECT_NE(result.find("lockType"), std::string::npos);
+
+    result = "";
+    args = { "-getProcessEventInfo" };
+    schedController.Dump(args, result);
+    EXPECT_NE(result.find("processState"), std::string::npos);
+
+    result = "";
+    args = { "-getProcessWindowInfo" };
+    schedController.Dump(args, result);
+    EXPECT_NE(result.find("windowInfo"), std::string::npos);
+
+    result = "";
+    args = { "-invalid" };
+    schedController.Dump(args, result);
+    EXPECT_EQ(result, "");
+
+    result = "";
+    args = { "-invalid", "-error" };
+    schedController.Dump(args, result);
+    EXPECT_EQ(result, "");
+}
+
+/**
+ * @tc.name: CGroupSchedTest_schedController_003
+ * @tc.desc: schedController dlopen function test
+ * @tc.type: FUNC
+ * @tc.require: issuesI9BU37
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_003, Function | MediumTest | Level1)
+{
+    using OnPluginInitFunc = bool (*)(std::string& libName);
+    using OnPluginDisableFunc = void (*)();
+    using OnDispatchResourceFunc = void (*)(const std::shared_ptr<ResData>& data);
+    using GetProcessGroupFunc = int (*)(const pid_t pid);
+    using OnDumpFunc = void (*)(const std::vector<std::string>& args, std::string& result);
+    std::string cgroupLibName = "libcgroup_sched.z.so";
+    std::string errorLibName = "error.z.so";
+    auto handle = dlopen(cgroupLibName.c_str(), RTLD_NOW);
+    EXPECT_NE(handle, nullptr);
+    OnPluginInitFunc onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(handle, "OnPluginInit"));
+    EXPECT_NE(onPluginInitFunc, nullptr);
+    EXPECT_TRUE(onPluginInitFunc(cgroupLibName));
+    EXPECT_FALSE(onPluginInitFunc(errorLibName));
+
+    OnDispatchResourceFunc onDispatchResourceFunc = reinterpret_cast<OnDispatchResourceFunc>(dlsym(handle,
+        "OnDispatchResource"));
+    EXPECT_NE(onDispatchResourceFunc, nullptr);
+    const std::shared_ptr<ResData>& data = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, nullptr);
+    onDispatchResourceFunc(data);
+    const std::shared_ptr<ResData>& dataInvalid = std::make_shared<ResData>(-1, -1, nullptr);
+    onDispatchResourceFunc(dataInvalid);
+
+    GetProcessGroupFunc getProcessGroupFunc = reinterpret_cast<GetProcessGroupFunc>(dlsym(handle, "GetProcessGroup"));
+    EXPECT_NE(getProcessGroupFunc, nullptr);
+    getProcessGroupFunc(1000);
+
+    std::vector<std::string> args = {};
+    std::string result;
+    OnDumpFunc onDumpFunc = reinterpret_cast<OnDumpFunc>(dlsym(handle, "OnDump"));
+    EXPECT_NE(onDumpFunc, nullptr);
+    onDumpFunc(args, result);
+
+    OnPluginDisableFunc onPluginDisableFunc = reinterpret_cast<OnPluginDisableFunc>(dlsym(handle, "OnPluginDisable"));
+    EXPECT_NE(onPluginDisableFunc, nullptr);
+    onPluginDisableFunc();
+    SUCCEED();
+}
+
+/**
+ * @tc.name: CGroupSchedTest_WindowStateOberver_002
+ * @tc.desc: Window Mode Observer test
+ * @tc.type: FUNC
+ * @tc.require: issuesI9BU37
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_004, Function | MediumTest | Level1)
+{
+    const std::shared_ptr<ResData>& data = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, nullptr);
+    auto &schedController = SchedController::GetInstance();
+    schedController.DispatchResource(data);
+    schedController.DispatchOtherResource(ResType::RES_TYPE_REPORT_SCREEN_CAPTURE,
+        ResType::AppStartType::APP_COLD_START, nullptr);
+    schedController.DispatchOtherResource(ResType::RES_TYPE_AV_CODEC_STATE,
+        ResType::AppStartType::APP_COLD_START, nullptr);
+    schedController.Init();
+    auto processRecord = schedController.GetSupervisor()->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
+    ProcessRecord->runningLockState_[0] = ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE;
+    ProcessRecord->GetWindowInfoNonNull(0);
+    EXPECT_EQ(schedController.GetProcessGroup(1000), SP_UPPER_LIMIT);
 }
 
 /**
