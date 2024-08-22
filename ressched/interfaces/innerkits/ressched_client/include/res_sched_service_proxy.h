@@ -78,21 +78,6 @@ public:
      * @param bundleName bundleName of the application.
      */
     bool IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode) override;
-
-    /**
-     * @brief Register event listener.
-     *
-     * @param listener remote listener object
-     * @param eventType the event type
-     */
-    void RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType) override;
-
-    /**
-     * @brief UnRegister event listener.
-     *
-     * @param eventType the event type
-     */
-    void UnRegisterEventListener(uint32_t eventType) override;
 public:
     /**
      * @brief Construct a new ResSchedServiceProxy object.

@@ -13,18 +13,19 @@
  * limitations under the License.
  */
 
-#include "res_sched_common_death_recipient.h"
-
-#include "res_sched_log.h"
+#ifndef RESSCHED_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_UTILS_H
+#define RESSCHED_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_UTILS_H
+#include <chrono>
 
 namespace OHOS {
 namespace ResourceSchedule {
-void ResSchedCommonDeathRecipient::OnRemoteDied(const wptr<IRemoteObject>& remote)
-{
-    RESSCHED_LOGD("called");
-    if (deathRecipientCb_ != nullptr) {
-        deathRecipientCb_(remote.promote());
-    }
-}
+class ResSchedUtils {
+public:
+    ResSchedUtils() = default;
+    ~ResSchedUtils() = default;
+    static int64_t GetNowMillTime();
+};
 } // namespace ResourceSchedule
 } // namespace OHOS
+
+#endif // RESSCHED_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_UTILS_H

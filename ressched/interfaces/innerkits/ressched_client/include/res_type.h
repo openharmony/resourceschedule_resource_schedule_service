@@ -236,8 +236,6 @@ enum : uint32_t {
     RES_TYPE_USER_INTERACTION_SCENE = 101,
     // report game sched, value 0 start, value 1 stop
     RES_TYPE_REPORT_GAME_SCHED = 102,
-    // report send frame event
-    RES_TYPE_SEND_FRAME_EVENT = 103,
     // report app cold start only perf, value 0 start, value 1 stop
     RES_TYPE_ONLY_PERF_APP_COLD_START = 104,
     // report scene rotation, value 0 start, value 1 stop
@@ -260,19 +258,6 @@ enum : uint32_t {
     SYNC_RES_TYPE_LAST,
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
-};
-
-enum EventType : uint32_t {
-    EVENT_START = 0,
-    EVENT_DRAW_FRAME_REPORT,
-    EVENT_END,
-};
-
-enum EventValue : uint32_t {
-    EVENT_VALUE_START = 0,
-    EVENT_VALUE_DRAW_FRAME_REPORT_START,
-    EVENT_VALUE_DRAW_FRAME_REPORT_STOP,
-    EVENT_VALUE_END,
 };
 
 /**
@@ -365,11 +350,8 @@ enum WindowVisibilityStatus : int64_t {
 enum SlideEventStatus : int64_t {
     SLIDE_EVENT_OFF = 0,
     SLIDE_EVENT_ON = 1,
-    SLIDE_EVENT_DETECTING = 2,
     SLIDE_NORMAL_BEGIN = 3,
     SLIDE_NORMAL_END = 4,
-    AUTO_PLAY_ON = 5,
-    AUTO_PLAY_OFF = 6,
 };
 
 /**
@@ -381,7 +363,6 @@ enum ClickEventType : int64_t {
     TOUCH_EVENT_DOWN = 1,
     CLICK_EVENT = 2,
     TOUCH_EVENT_UP = 3,
-    TOUCH_EVENT_PULL_UP = 4,
 };
 
 /**

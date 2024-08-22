@@ -17,7 +17,7 @@
 
 #include "ipc_skeleton.h"
 #include "notifier_mgr.h"
-#include "res_sched_common_death_recipient.h"
+#include "res_sched_notifier_death_recipient.h"
 #include "res_sched_systemload_notifier_proxy.h"
 #include "res_sched_systemload_notifier_stub.h"
 

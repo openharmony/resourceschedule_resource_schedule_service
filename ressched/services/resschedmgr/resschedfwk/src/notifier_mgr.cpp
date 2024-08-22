@@ -22,7 +22,7 @@
 #include "app_mgr_constants.h"
 #include "parameters.h"
 #include "res_sched_log.h"
-#include "res_sched_common_death_recipient.h"
+#include "res_sched_notifier_death_recipient.h"
 #include "res_sched_systemload_notifier_proxy.h"
 
 namespace OHOS {
@@ -67,7 +67,7 @@ void NotifierMgr::Init()
         return;
     }
     notifierDeathRecipient_ = sptr<IRemoteObject::DeathRecipient>(
-        new (std::nothrow) ResSchedCommonDeathRecipient([](const sptr<IRemoteObject>& notifier) {
+        new (std::nothrow) ResSchedNotifierDeathRecipient([](const sptr<IRemoteObject>& notifier) {
             NotifierMgr::GetInstance().OnRemoteNotifierDied(notifier);
         }));
     notifierHandler_ = std::make_shared<ffrt::queue>("DeviceNotifyQueue");
