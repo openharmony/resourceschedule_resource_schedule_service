@@ -280,8 +280,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_003, Function | Medium
 }
 
 /**
- * @tc.name: CGroupSchedTest_WindowStateOberver_002
- * @tc.desc: Window Mode Observer test
+ * @tc.name: CGroupSchedTest_WindowStateObserver_002
+ * @tc.desc: Window Mode Observer Test
  * @tc.type: FUNC
  * @tc.require: issuesI9BU37
  * @tc.desc:
