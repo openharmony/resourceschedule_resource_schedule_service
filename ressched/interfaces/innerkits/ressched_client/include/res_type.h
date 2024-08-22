@@ -269,7 +269,7 @@ enum : uint32_t {
     // get thermal data
     SYNC_RES_TYPE_GET_THERMAL_DATA,
     // report to request mutex status
-    RES_TYPE_REQUEST_MUTEX_STATUS = 120,
+    RES_TYPE_REQUEST_MUTEX_STATUS,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
