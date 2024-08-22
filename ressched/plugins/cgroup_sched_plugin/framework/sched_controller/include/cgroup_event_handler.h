@@ -69,6 +69,7 @@ public:
     void HandleSceneBoardState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportWebviewVideoState(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleReportScreenCaptureEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void PostTask(const std::function<void()> task);
     void PostTask(const std::function<void()> task, const std::string &taskName, const int32_t delayTime);
     void RemoveTask(const std::string &taskName);

@@ -876,20 +876,40 @@ void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value,
             }
             break;
         }
-        case ResType::RES_TYPE_REPORT_SCREEN_CAPTURE: {
-            if (value == ResType::ScreenCaptureStatus::START_SCREEN_CAPTURE) {
-                procRecord->screenCaptureState_ = true;
-            } else {
-                procRecord->screenCaptureState_ = false;
-            }
-            CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-                AdjustSource::ADJS_REPORT_SCREEN_CAPTURE);
-            break;
-        }
         default: {
             break;
         }
     }
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+        resType, static_cast<int32_t>(value));
+}
+
+void CgroupEventHandler::HandleReportScreenCaptureEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr.", __func__);
+        return;
+    }
+
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+        return;
+    }
+    if (uid <= 0 || pid <= 0) {
+        return;
+    }
+    std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
+        return;
+    }
+
+    procRecord->screenCaptureState_ = (value == ResType::ScreenCaptureStatus::START_SCREEN_CAPTURE);
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_REPORT_SCREEN_CAPTURE);
+
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
         resType, static_cast<int32_t>(value));
 }

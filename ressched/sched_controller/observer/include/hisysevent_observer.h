@@ -40,7 +40,6 @@ private:
     void ProcessCameraEvent(const nlohmann::json& root, const std::string& eventName);
     void ProcessBluetoothEvent(const nlohmann::json& root, const std::string& eventName);
     void ProcessWifiEvent(const nlohmann::json& root, const std::string& eventName);
-    void ProcessScreenCaptureEvent(const nlohmann::json& root, const std::string& eventName);
     bool CheckJsonValue(const nlohmann::json& value, std::initializer_list<std::string> params);
 
     std::map<std::string,
