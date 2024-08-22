@@ -149,13 +149,13 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_WindowStateObserver_002, Function | Me
 }
 
 /**
- * @tc.name: CGroupSchedTest_CgroupSchedlog_001
+ * @tc.name: CGroupSchedTest_CgroupSchedLog_001
  * @tc.desc: Window Mode Observer Test
  * @tc.type: FUNC
  * @tc.require: issuesI9BU37
  * @tc.desc:
  */
-HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupSchedlog_001, Function | MediumTest | Level1)
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupSchedLog_001, Function | MediumTest | Level1)
 {
     CgroupSchedLog::level_ = LOG_DEBUG;
     bool ret = CgroupSchedLog::JudgeLevel(LOG_INFO);
@@ -194,8 +194,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_002, Function | Medium
     auto &schedController = SchedController::GetInstance();
     schedController.Init();
     auto processRecord = schedController.GetSupervisor()->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
-    ProcessRecord->runningLockState_[0] = ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE;
-    ProcessRecord->GetWindowInfoNonNull(0);
+    processRecord->runningLockState_[0] = ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE;
+    processRecord->GetWindowInfoNonNull(0);
     std::vector<std::string> args = {};
     std::string result;
     schedController.Dump(args, result);
@@ -298,8 +298,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_004, Function | Medium
         ResType::AppStartType::APP_COLD_START, nullptr);
     schedController.Init();
     auto processRecord = schedController.GetSupervisor()->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
-    ProcessRecord->runningLockState_[0] = ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE;
-    ProcessRecord->GetWindowInfoNonNull(0);
+    processRecord->runningLockState_[0] = ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE;
+    processRecord->GetWindowInfoNonNull(0);
     EXPECT_EQ(schedController.GetProcessGroup(1000), SP_UPPER_LIMIT);
 }
 
