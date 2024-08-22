@@ -58,6 +58,7 @@ ohos_unittest("ProcessGroupSubTest") {
     "c_utils:utils",
     "ffrt:libffrt",
     "hilog:libhilog",
+    "resource_schedule_service:ressched_client",
     "samgr:samgr_proxy",
     "window_manager:libwm",
   ]
