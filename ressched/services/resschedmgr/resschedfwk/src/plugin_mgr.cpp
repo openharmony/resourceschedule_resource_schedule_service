@@ -146,24 +146,29 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
         RESSCHED_LOGI("PluginMgr load switch config file index:%{public}d success!", index);
     }
     LoadPlugin();
-    {
-        std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
+    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-        if (dispatchers_.empty()) {
-            for (const auto& [libPath, libInfo] : pluginLibMap_) {
-                dispatchers_.emplace(libPath, std::make_shared<ffrt::queue>(libPath.c_str(),
-                    ffrt::queue_attr().qos(ffrt::qos_user_interactive)));
-            }
-        }
-#else
-        if (!dispatcher_) {
-            dispatcher_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
-        }
-        if (!dispatcher_) {
-            RESSCHED_LOGI("create dispatcher failed");
-        }
-#endif
+    dispatchers_.clear();
+    for (const auto& [libPath, libInfo] : pluginLibMap_) {
+        auto callback = [pluginName = libPath, time = pluginBlockTime]() {
+            PluginMgr::GetInstance().HandlePluginTimeout(pluginName);
+            ffrt::submit([pluginName]() {
+                PluginMgr::GetInstance().EnablePluginIfResume(pluginName);
+                }, {}, {}, ffrt::task_attr().delay(time));
+        };
+        dispatchers_.emplace(libPath, std::make_shared<ffrt::queue>(libPath.c_str(),
+            ffrt::queue_attr().qos(ffrt::qos_user_interactive).
+            timeout(pluginBlockTime).
+            callback(callback)));
     }
+#else
+    if (!dispatcher_) {
+        dispatcher_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
+    }
+    if (!dispatcher_) {
+        RESSCHED_LOGI("create dispatcher failed");
+    }
+#endif
     isInit = true;
     RESSCHED_LOGI("PluginMgr load plugin success!");
 }
@@ -393,6 +398,11 @@ std::string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resDat
 {
     libNameAll.append("[");
     for (const auto& libName : pluginList) {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+        if (disablePlugins_.find(libName) != disablePlugins_.end()) {
+            continue;
+        }
+#endif
         libNameAll.append(libName);
         libNameAll.append(",");
     }
@@ -435,7 +445,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     DispatchResourceToPluginAsync(pluginList, resData);
 #else
-    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
+    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) {
         dispatcher_->PostTask(
             [pluginList, resData, this] {
@@ -727,7 +737,7 @@ void PluginMgr::DispatchResourceToPluginSync(const std::list<std::string>& plugi
                 RepairPlugin(endTime, pluginLib, libInfo);
             };
 #ifndef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-            std::lock_guard<std::mutex> autoLock2(dispatcherHandlerMutex_);
+            std::lock_guard<ffrt::mutex> autoLock2(dispatcherHandlerMutex_);
             if (dispatcher_) {
                 dispatcher_->PostTask(task);
             }
@@ -744,6 +754,9 @@ void PluginMgr::DispatchResourceToPluginAsync(const std::list<std::string>& plug
     const std::shared_ptr<ResData>& resData)
 {
     for (auto& pluginLib : pluginList) {
+        if (disablePlugins_.find(pluginLib) != disablePlugins_.end()) {
+            continue;
+        }
         PluginLib libInfo;
         {
             std::lock_guard<std::mutex> autoLock(pluginMutex_);
@@ -759,14 +772,60 @@ void PluginMgr::DispatchResourceToPluginAsync(const std::list<std::string>& plug
             RESSCHED_LOGE("%{public}s, no DispatchResourceFun !", __func__);
             continue;
         }
-        std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
+        std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
         dispatchers_[pluginLib]->submit(
             [pluginLib, resData, pluginDispatchFunc] {
+                PluginMgr::GetInstance().RecordRinningStat(pluginLib, true);
                 StartTrace(HITRACE_TAG_APP, pluginLib);
                 pluginDispatchFunc(std::make_shared<ResData>(resData->resType, resData->value, resData->payload));
                 FinishTrace(HITRACE_TAG_APP);
+                PluginMgr::GetInstance().RecordRinningStat(pluginLib, false);
             });
     }
+}
+
+void PluginMgr::EnablePluginIfResume(const std::string& pluginLib)
+{
+    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
+    ffrt_queue_cancel_all(*reinterpret_cast<ffrt_queue_t*>(dispatchers_[pluginLib].get()));
+    auto stateItem = runningStats_.find(pluginLib);
+    if (stateItem == runningStats_.end()) {
+        return;
+    }
+    auto isRunning = stateItem->second.load();
+    if (!isRunning) {
+        disablePlugins_.erase(pluginLib);
+    } else {
+        StartTrace(HITRACE_TAG_APP, "Blocked plugin:" + pluginLib, -1);
+        RESSCHED_LOGI("plugin:%{public}s been locked!", pluginLib.c_str());
+        FinishTrace(HITRACE_TAG_APP);
+        ffrt::submit([lib = pluginLib]() {
+            PluginMgr::GetInstance().EnablePluginIfResume(lib);
+            }, {}, {}, ffrt::task_attr().delay(pluginBlockTime));
+    }
+}
+
+void PluginMgr::HandlePluginTimeout(const std::string& pluginLib)
+{
+    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
+    ffrt_queue_cancel_all(*reinterpret_cast<ffrt_queue_t*>(dispatchers_[pluginLib].get()));
+    auto stateItem = runningStats_.find(pluginLib);
+    if (stateItem == runningStats_.end()) {
+        return;
+    }
+    auto isRunning = stateItem->second.load();
+    if (isRunning) {
+        RESSCHED_LOGI("%{public}s, %{public}s has blocked task, stop dispatch resource to it!",
+            __func__, pluginLib.c_str());
+            disablePlugins_.insert(pluginLib);
+    } else {
+        RESSCHED_LOGI("%{public}s, %{public}s all tasks cancled!", __func__, pluginLib.c_str());
+    }
+}
+
+void PluginMgr::RecordRinningStat(std::string pluginLib, bool isRunning)
+{
+    runningStats_[pluginLib] = isRunning;
 }
 #endif
 
@@ -790,7 +849,7 @@ void PluginMgr::OnDestroy()
     configReader_ = nullptr;
     pluginSwitch_ = nullptr;
     ClearResource();
-    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
+    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     dispatchers_.clear();
 #else
@@ -805,6 +864,11 @@ void PluginMgr::SetResTypeStrMap(const std::map<uint32_t, std::string>& resTypeS
 {
     std::lock_guard<std::mutex> autoLock(resTypeStrMutex_);
     resTypeStrMap_ = resTypeStr;
+}
+
+void PluginMgr::SetBlockedTime(const int64_t time)
+{
+    pluginBlockTime = time;
 }
 
 std::string PluginMgr::GetStrFromResTypeStrMap(uint32_t resType)
@@ -841,6 +905,12 @@ PluginMgr::InnerTimeUtil::~InnerTimeUtil()
     if (costTime > DISPATCH_WARNING_TIME) {
         RESSCHED_LOGW("%{public}s, WARNING :%{public}s plugin cost time(%{public}d ms) over %{public}d ms!",
             functionName_.c_str(), pluginName_.c_str(), costTime, DISPATCH_WARNING_TIME);
+    }
+}
+extern "C" {
+    void SetBlockedTime(const int64_t time)
+    {
+        PluginMgr::GetInstance().SetBlockedTime(time);
     }
 }
 } // namespace ResourceSchedule

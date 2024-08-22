@@ -119,6 +119,10 @@ ohos_unittest("resschedfwk_test") {
     defines += [ "RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE" ]
   }
 
+  if (resource_schedule_service_with_ffrt_enable) {
+    defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE" ]
+  }
+
   sanitize = {
     cfi = true
     cfi_cross_dso = true
