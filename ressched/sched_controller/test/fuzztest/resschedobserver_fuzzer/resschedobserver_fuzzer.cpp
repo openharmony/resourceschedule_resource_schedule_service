@@ -295,34 +295,6 @@ namespace {
         return true;
     }
 
-    bool HisysEventScreenCaptureEventFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        if (size <= FIVE_PARAMETERS * sizeof(int32_t) + DATA_LENGTH) {
-            return false;
-        }
-
-        // initialize
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
-
-        nlohmann::json sysEvent;
-        sysEvent["UID"] = GetData<int32_t>();
-        sysEvent["PID"] = GetData<int32_t>();
-        sysEvent["STATUS"] = GetData<int32_t>();
-        sysEvent["APP_UID"] = GetData<int32_t>();
-        sysEvent["APP_PID"] = GetData<int32_t>();
-        std::string eventName = GetStringFromData(DATA_LENGTH);
-        sysEvent["name_"] = eventName;
-        std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
-        hisysEventObserver_->ProcessScreenCaptureEvent(sysEvent, eventName);
-        return true;
-    }
-
     bool ProcessHiSysEventFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -741,7 +713,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::HisysEventCameraEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventBluetoothFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventWifiEventFuzzTest(data, size);
-    OHOS::ResourceSchedule::HisysEventScreenCaptureEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ProcessHiSysEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ObserverManagerFuzzTest(data, size);
     OHOS::ResourceSchedule::MmiObserverSyncBundleNameFuzzTest(data, size);
