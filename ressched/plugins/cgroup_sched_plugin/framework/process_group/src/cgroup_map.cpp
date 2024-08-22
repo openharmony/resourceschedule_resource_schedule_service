@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #include "cgroup_map.h"
+#include <algorithm>
 #include <cstdint>              // for uint32_t
 #include <string>               // for basic_string, operator<
 #include <cstring>              // for strcmp
@@ -78,8 +79,16 @@ bool CgroupMap::CheckCgroupConfigFormat(const nlohmann::json& cgroupObj)
     return true;
 }
 
-bool CgroupMap::LoadConfigFromJsonObj(const nlohmann::json& jsonObj)
+bool CgroupMap::LoadConfigFromJsonObj(std::vector<nlohmann::json>& jsonObjects)
 {
+    reverse(jsonObjects.begin(), jsonObjects.end());
+    nlohmann::json jsonObj;
+    for (auto obj : jsonObjects) {
+        if (obj.contains(JSON_KEY_CGROUPS)) {
+            jsonObj = obj;
+            break;
+        }
+    }
     // check json format
     if (!jsonObj.is_object() || !jsonObj.contains(JSON_KEY_CGROUPS)
         || !jsonObj.at(JSON_KEY_CGROUPS).is_array()) {

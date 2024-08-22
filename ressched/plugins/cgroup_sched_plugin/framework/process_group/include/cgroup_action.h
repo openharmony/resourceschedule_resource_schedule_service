@@ -59,7 +59,7 @@ private:
     bool LoadConfigFile();
     bool IsEnabled();
     bool IsSchedPolicyValid(SchedPolicy policy);
-    static bool ParseConfigFileToJsonObj(nlohmann::json& jsonObjRoot);
+    static bool ParseConfigFileToJsonObj(std::vector<nlohmann::json>& jsonObjRoot);
 };
 } // namespace CgroupSetting
 } // namespace ResourceSchedule

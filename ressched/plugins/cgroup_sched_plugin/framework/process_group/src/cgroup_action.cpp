@@ -150,11 +150,11 @@ bool CgroupAction::SetThreadGroupSchedPolicy(int tid, SchedPolicy policy)
 bool CgroupAction::LoadConfigFile()
 {
     PGCGS_LOGI("%{public}s CgroupAction::LoadConfigFile loading config file", __func__);
-    nlohmann::json jsonObjRoot;
-    if (!ParseConfigFileToJsonObj(jsonObjRoot)) {
+    std::vector<nlohmann::json> jsonObjects;
+    if (!ParseConfigFileToJsonObj(jsonObjects)) {
         return false;
     }
-    return CgroupMap::GetInstance().LoadConfigFromJsonObj(jsonObjRoot);
+    return CgroupMap::GetInstance().LoadConfigFromJsonObj(jsonObjects);
 }
 
 bool CgroupAction::IsEnabled()
@@ -211,29 +211,36 @@ int CgroupAction::GetSchedPolicyByName(const std::string& name, SchedPolicy* pol
     return -1;
 }
 
-bool CgroupAction::ParseConfigFileToJsonObj(nlohmann::json& jsonObjRoot)
+bool CgroupAction::ParseConfigFileToJsonObj(std::vector<nlohmann::json>& jsonObjects)
 {
-    char buf[PATH_MAX + 1];
-    char* configFilePath = GetOneCfgFile(CGROUP_SETTING_CONFIG_FILE, buf, PATH_MAX + 1);
-    char tmpPath[PATH_MAX + 1] = {0};
-    if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
-        !realpath(configFilePath, tmpPath)) {
-        PGCGS_LOGE("%{public}s: read cgroup_action_config.json failed", __func__);
+    auto cfgFilePaths = GetCfgFiles(CGROUP_SETTING_CONFIG_FILE);
+    if (!cfgFilePaths) {
         return false;
     }
-    std::string realConfigFile(tmpPath);
-    std::string jsonString;
-    if (!ReadFileToString(realConfigFile, jsonString)) {
-        PGCGS_LOGE("%{public}s: read config file failed", __func__);
-        return false;
+    for (const auto& configFilePath : cfgFilePaths->paths) {
+        char tmpPath[PATH_MAX + 1] = {0};
+        if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
+            !realpath(configFilePath, tmpPath)) {
+            PGCGS_LOGE("%{public}s: read %{public}s failed", __func__, tmpPath);
+            continue;
+        }
+        std::string realConfigFile(tmpPath);
+        std::string jsonString;
+        if (!ReadFileToString(realConfigFile, jsonString)) {
+            PGCGS_LOGE("%{public}s: read %{public}s failed", __func__, realConfigFile.c_str());
+            continue;
+        }
+        if (jsonString.empty()) {
+            continue;
+        }
+        nlohmann::json jsonObjRoot = nlohmann::json::parse(jsonString, nullptr, false);
+        if (jsonObjRoot.is_discarded()) {
+            PGCGS_LOGE("%{public}s: json obj parse failed, jsonString=%{public}s", __func__, jsonString.c_str());
+            continue;
+        }
+        jsonObjects.emplace_back(jsonObjRoot);
     }
-
-    if (jsonString.empty()) {
-        return false;
-    }
-    jsonObjRoot = nlohmann::json::parse(jsonString, nullptr, false);
-    if (jsonObjRoot.is_discarded()) {
-        PGCGS_LOGE("%{public}s: json obj parse failed, jsonString=%{public}s", __func__, jsonString.c_str());
+    if (jsonObjects.empty()) {
         return false;
     }
     return true;
