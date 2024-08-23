@@ -82,7 +82,7 @@ bool CgroupMap::CheckCgroupConfigFormat(const nlohmann::json& cgroupObj)
 bool CgroupMap::LoadConfigFromJsonObj(std::vector<nlohmann::json>& jsonObjects)
 {
     reverse(jsonObjects.begin(), jsonObjects.end());
-    const nlohmann::json jsonObj;
+    nlohmann::json jsonObj;
     for (const auto& obj : jsonObjects) {
         if (obj.contains(JSON_KEY_CGROUPS)) {
             jsonObj = obj;
