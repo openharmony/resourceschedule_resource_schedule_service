@@ -258,6 +258,8 @@ enum : uint32_t {
     RES_TYPE_BT_SERVICE_EVENT = 112,
     // report to hisi, let bmm_report begin change
     RES_TYPE_BMM_MONITER_CHANGE_EVENT = 113,
+    // app frame drop event
+    RES_TYPE_APP_FRAME_DROP = 114,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -301,6 +303,11 @@ enum EventValue : uint32_t {
     EVENT_VALUE_DDR_BOUND_REPORT_REPORT,
     EVENT_VALUE_HEAVY_LOAD_MUTEX_REPORT,
     EVENT_VALUE_END,
+};
+
+enum AppFrameDropType : int32_t {
+    JANK_FRAME_APP = 1,    // 通用丢帧
+    INTERACTION_APP_JANK,  // 动效丢帧
 };
 
 /**
