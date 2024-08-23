@@ -378,7 +378,7 @@ bool ResSchedServiceStub::IsAllowedAppPreloadInner(MessageParcel& data, MessageP
 bool ResSchedServiceStub::IsLimitRequest(int32_t uid)
 {
     std::lock_guard<std::mutex> lock(mutex_);
-    int64_t nowTime = ResCommonUtil::GetNowMillTime();
+    int64_t nowTime = ResSchedUtil::GetNowMillTime();
     CheckAndUpdateLimitData(nowTime);
     if (allRequestCount_.load() >= ALL_UID_REQUEST_LIMIT_COUNT) {
         RESSCHED_LOGD("all uid request is limit, %{public}d request fail", uid);
