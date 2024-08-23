@@ -70,6 +70,7 @@ namespace {
         ResType::RES_TYPE_REPORT_DISTRIBUTE_TID,
         ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE,
         ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
+        ResType::RES_TYPE_APP_FRAME_DROP,
     };
     static const std::unordered_set<uint32_t> saRes_ = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,

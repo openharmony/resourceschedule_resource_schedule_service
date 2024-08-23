@@ -250,6 +250,8 @@ enum : uint32_t {
     RES_TYPE_MMI_STATUS_CHANGE = 109,
     // report media output device change
     RES_TYPE_OUTPUT_DEVICE_CHANGE = 110,
+    // app frame drop event
+    RES_TYPE_APP_FRAME_DROP = 114,
     // report rss cloud config update
     RES_TYPE_RSS_CLOUD_CONFIG_UPDATE = 115,
     // last async resType
@@ -264,6 +266,11 @@ enum : uint32_t {
     SYNC_RES_TYPE_LAST,
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
+};
+
+enum AppFrameDropType : int32_t {
+    JANK_FRAME_APP = 1,    // 通用丢帧
+    INTERACTION_APP_JANK,  // 动效丢帧
 };
 
 /**
