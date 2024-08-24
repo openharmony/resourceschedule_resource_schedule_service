@@ -18,7 +18,6 @@
 #include <dlfcn.h>
 #include <string>
 
-#include "cgroup_event_handler.h"
 #include "display_manager.h"
 #include "dm_common.h"
 #include "hisysevent.h"
@@ -148,7 +147,7 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(DISPLAY_MANAGER_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(ABILITY_MGR_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, systemAbilityManager);
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESSCHED_REQUEST_REQUEST
     AddItemToSysAbilityListener(DOWNLOAD_SERVICE_ID, systemAbilityManager);
 #endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
@@ -166,7 +165,8 @@ inline void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a staus change listener of the " + std::to_string(systemAbilityId) + " SA failed!");
+                        "ERR_MSG", "Register a staus change listener of the " +
+                        std::to_string(systemAbilityId) + " SA failed!");
     }
 }
 
@@ -405,11 +405,11 @@ void ObserverManager::InitDeviceMovementObserver()
     }
     if (Msdp::MovementClient::GetInstance().SubscribeCallback(
         Msdp::MovementDataUtils::MovementType::TYPE_STILL, deviceMovementObserver_) != ERR_OK) {
-            HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a device movement observer failed!");
-        }
+    }
 #endif
 }
 
@@ -455,7 +455,8 @@ void ObserverManager::InitMMiEventObserver()
         return;
     }
     // Get all events registered in multimodal input.
-    auto handler = SchedController::GetInstance().GetCgroupEventHandler();
+    AppExecFwk::EventHandler* handler = reinterpret_cast<AppExecFwk::EventHandler*>(
+        SchedController::GetInstance().GetCgroupEventHandler().get());
     if (handler) {
         handler->PostTask([weak = weak_from_this()] {
             auto self = weak.lock();
@@ -531,7 +532,6 @@ void ObserverManager::InitDisplayModeObserver()
             return;
         }
     }
-
     auto ret = OHOS::Rosen::DisplayManager::GetInstance().RegisterDisplayModeListener(foldDisplayModeObserver_);
     if (ret == OHOS::Rosen::DMError::DM_OK) {
         RESSCHED_LOGI("ObserverManager init displayModeObserver successfully");
@@ -564,7 +564,7 @@ void ObserverManager::DisableDisplayModeObserver()
 
 void ObserverManager::InitConnectionSubscriber()
 {
-    if (connectionSubscriber_ == nullptr) {
+    if (!connectionSubscriber_) {
         connectionSubscriber_ = std::make_shared<ConnectionSubscriber>();
     }
 
@@ -583,7 +583,7 @@ void ObserverManager::InitConnectionSubscriber()
 void ObserverManager::DisableConnectionSubscriber()
 {
     RESSCHED_LOGI("Disable connect subscriber state listener");
-    if (connectionSubscriber_ == nullptr) {
+    if (!connectionSubscriber_) {
         RESSCHED_LOGD("ObserverManager has been disable connect subscriber state listener");
         return;
     }
@@ -634,7 +634,7 @@ void ObserverManager::DisableAVSessionStateChangeListener()
     avSessionStateListener_ = nullptr;
 }
 #endif
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESSCHED_REQUEST_REQUEST
 void ObserverManager::InitDownloadUploadObserver()
 {
     if (downLoadUploadObserver_ == nullptr) {

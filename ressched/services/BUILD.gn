@@ -58,7 +58,6 @@ ohos_shared_library("resschedsvc") {
     "../scene_recognize/src/background_sensitive_task_overlapping_scene_recognizer.cpp",
     "../scene_recognize/src/continuous_app_install_recognizer.cpp",
     "../scene_recognize/src/scene_recognizer_mgr.cpp",
-    "../scene_recognize/src/slide_recognizer.cpp",
     "../scene_recognize/src/system_upgrade_scene_recognizer.cpp",
     "../sched_controller/common_event/src/event_controller.cpp",
     "../sched_controller/observer/src/account_observer.cpp",
@@ -70,7 +69,6 @@ ohos_shared_library("resschedsvc") {
     "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
     "resschedmgr/resschedfwk/src/config_reader.cpp",
-    "resschedmgr/resschedfwk/src/event_listener_mgr.cpp",
     "resschedmgr/resschedfwk/src/kill_process.cpp",
     "resschedmgr/resschedfwk/src/notifier_mgr.cpp",
     "resschedmgr/resschedfwk/src/plugin_mgr.cpp",
@@ -79,6 +77,7 @@ ohos_shared_library("resschedsvc") {
     "resschedservice/src/res_sched_service.cpp",
     "resschedservice/src/res_sched_service_ability.cpp",
     "resschedservice/src/res_sched_service_stub.cpp",
+    "resschedservice/src/res_sched_service_utils.cpp"
   ]
 
   deps = [
@@ -116,10 +115,7 @@ ohos_shared_library("resschedsvc") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libdm",
-    "window_manager:libwm_lite",
   ]
-
-  public_external_deps = [ "json:nlohmann_json_static" ]
 
   if (device_movement_perception_enable) {
     defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
@@ -140,24 +136,26 @@ ohos_shared_library("resschedsvc") {
     defines += [ "RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE" ]
     external_deps += [ "bluetooth:btframework" ]
   }
+  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
+    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
+    external_deps += [ "audio_framework:audio_client" ]
+  }
   if (ressched_with_resourceschedule_multimedia_av_session_enable) {
     defines += [ "RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE" ]
     sources +=
         [ "../sched_controller/observer/src/av_session_state_listener.cpp" ]
     external_deps += [ "av_session:avsession_client" ]
   }
-  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
-    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
-    external_deps += [ "audio_framework:audio_client" ]
-  }
+
   if (resource_schedule_service_with_ffrt_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE" ]
   }
   if (resource_schedule_service_with_ext_res_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
   }
+
   if (rss_request_enable) {
-    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    defines += [ "RESSCHED_REQUEST_REQUEST" ]
     external_deps += [ "request:request_native" ]
   }
   external_deps += [ "data_share:datashare_consumer" ]
@@ -166,8 +164,9 @@ ohos_shared_library("resschedsvc") {
   shlib_type = "sa"
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
-  branch_protector_ret = "pac_ret"
 
+  branch_protector_ret = "pac_ret"
+ 
   sanitize = {
     cfi = true
     cfi_cross_dso = true
@@ -197,7 +196,6 @@ ohos_static_library("resschedsvc_static") {
     "../scene_recognize/src/background_sensitive_task_overlapping_scene_recognizer.cpp",
     "../scene_recognize/src/continuous_app_install_recognizer.cpp",
     "../scene_recognize/src/scene_recognizer_mgr.cpp",
-    "../scene_recognize/src/slide_recognizer.cpp",
     "../scene_recognize/src/system_upgrade_scene_recognizer.cpp",
     "../sched_controller/common_event/src/event_controller.cpp",
     "../sched_controller/observer/src/account_observer.cpp",
@@ -209,7 +207,6 @@ ohos_static_library("resschedsvc_static") {
     "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
     "resschedmgr/resschedfwk/src/config_reader.cpp",
-    "resschedmgr/resschedfwk/src/event_listener_mgr.cpp",
     "resschedmgr/resschedfwk/src/kill_process.cpp",
     "resschedmgr/resschedfwk/src/notifier_mgr.cpp",
     "resschedmgr/resschedfwk/src/plugin_mgr.cpp",
@@ -218,6 +215,7 @@ ohos_static_library("resschedsvc_static") {
     "resschedservice/src/res_sched_service.cpp",
     "resschedservice/src/res_sched_service_ability.cpp",
     "resschedservice/src/res_sched_service_stub.cpp",
+    "resschedservice/src/res_sched_service_utils.cpp",
   ]
 
   deps = [
@@ -255,7 +253,6 @@ ohos_static_library("resschedsvc_static") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libdm",
-    "window_manager:libwm_lite",
   ]
 
   if (device_movement_perception_enable) {
@@ -277,29 +274,32 @@ ohos_static_library("resschedsvc_static") {
     defines += [ "RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE" ]
     external_deps += [ "bluetooth:btframework" ]
   }
+  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
+    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
+    external_deps += [ "audio_framework:audio_client" ]
+  }
   if (ressched_with_resourceschedule_multimedia_av_session_enable) {
     defines += [ "RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE" ]
     sources +=
         [ "../sched_controller/observer/src/av_session_state_listener.cpp" ]
     external_deps += [ "av_session:avsession_client" ]
   }
-  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
-    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
-    external_deps += [ "audio_framework:audio_client" ]
-  }
+
   if (resource_schedule_service_with_ext_res_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
   }
+
   if (rss_request_enable) {
-    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    defines += [ "RESSCHED_REQUEST_REQUEST" ]
     external_deps += [ "request:request_native" ]
   }
   external_deps += [ "data_share:datashare_consumer" ]
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
-  branch_protector_ret = "pac_ret"
 
+  branch_protector_ret = "pac_ret"
+ 
   sanitize = {
     cfi = true
     cfi_cross_dso = true

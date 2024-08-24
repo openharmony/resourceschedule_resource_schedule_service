@@ -242,6 +242,16 @@ HWTEST_F(ObserverEventTest, hisysEventAudioEvent_001, testing::ext::TestSize.Lev
     sysEvent["STATE"] = AudioState::AUDIO_STATE_STOPPED;
     hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
     EXPECT_NE(hisysEventObserver_, nullptr);
+
+    // audio state released
+    sysEvent["STATE"] = AudioState::AUDIO_STATE_RELEASED;
+    hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
+    EXPECT_NE(hisysEventObserver_, nullptr);
+
+    // audio state released
+    sysEvent["STATE"] = AudioState::AUDIO_STATE_PAUSED;
+    hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
+    EXPECT_NE(hisysEventObserver_, nullptr);
 }
 
 /**
@@ -588,7 +598,8 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_002, testing::ext::TestSize.Level1)
     }
     SUCCEED();
 }
-#ifndef RESOURCE_REQUEST_REQUEST
+
+#ifdef RESSCHED_REQUEST_REQUEST
 /**
  * @tc.name: foldDisplayModeObserver_001
  * @tc.desc: test fold display mode status interface
