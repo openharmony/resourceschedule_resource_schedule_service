@@ -849,7 +849,7 @@ HWTEST_F(ResSchedServiceTest, ReportBigData001, Function | MediumTest | Level0)
     resSchedServiceStub_->ReportBigData();
     resSchedServiceStub_->isReportBigData_.store(true);
     resSchedServiceStub_->ReportBigData();
-    resSchedServiceStub_->nextReportBigDataTime_ = ResCommonUtil::GetNowMillTime();
+    resSchedServiceStub_->nextReportBigDataTime_ = ResSchedUtils::GetNowMillTime();
     resSchedServiceStub_->ReportBigData();
 }
 
