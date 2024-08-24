@@ -45,6 +45,7 @@ namespace {
     static const std::string ABBR_SP_FOREGROUND = "fg";
     static const std::string ABBR_SP_SYSTEM_BACKGROUND = "sy";
     static const std::string ABBR_SP_TOP_APP = "ta";
+    constexpr const char * const JSON_KEY_CGROUPS = "Cgroups";
 }
 
 CgroupAction& CgroupAction::GetInstance()
@@ -150,11 +151,11 @@ bool CgroupAction::SetThreadGroupSchedPolicy(int tid, SchedPolicy policy)
 bool CgroupAction::LoadConfigFile()
 {
     PGCGS_LOGI("%{public}s CgroupAction::LoadConfigFile loading config file", __func__);
-    std::vector<nlohmann::json> jsonObjects;
-    if (!ParseConfigFileToJsonObj(jsonObjects)) {
+    nlohmann::json jsonObjRoot;
+    if (!ParseConfigFileToJsonObj(jsonObjRoot)) {
         return false;
     }
-    return CgroupMap::GetInstance().LoadConfigFromJsonObj(jsonObjects);
+    return CgroupMap::GetInstance().LoadConfigFromJsonObj(jsonObjRoot);
 }
 
 bool CgroupAction::IsEnabled()
@@ -211,38 +212,36 @@ int CgroupAction::GetSchedPolicyByName(const std::string& name, SchedPolicy* pol
     return -1;
 }
 
-bool CgroupAction::ParseConfigFileToJsonObj(std::vector<nlohmann::json>& jsonObjects)
+bool CgroupAction::ParseConfigFileToJsonObj(nlohmann::json& jsonObjRoot)
 {
     auto cfgFilePaths = GetCfgFiles(CGROUP_SETTING_CONFIG_FILE);
     if (!cfgFilePaths) {
         return false;
     }
+    nlohmann::json jsonTemp;
     for (const auto& configFilePath : cfgFilePaths->paths) {
         char tmpPath[PATH_MAX + 1] = {0};
         if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
             !realpath(configFilePath, tmpPath)) {
-            PGCGS_LOGE("%{public}s: read %{public}s failed", __func__, tmpPath);
             continue;
         }
         std::string realConfigFile(tmpPath);
         std::string jsonString;
         if (!ReadFileToString(realConfigFile, jsonString)) {
-            PGCGS_LOGE("%{public}s: read %{public}s failed", __func__, realConfigFile.c_str());
             continue;
         }
         if (jsonString.empty()) {
             continue;
         }
-        nlohmann::json jsonObjRoot = nlohmann::json::parse(jsonString, nullptr, false);
-        if (jsonObjRoot.is_discarded()) {
-            PGCGS_LOGE("%{public}s: json obj parse failed, jsonString=%{public}s", __func__, jsonString.c_str());
+        nlohmann::json jsonTemp = nlohmann::json::parse(jsonString, nullptr, false);
+        if (jsonTemp.is_discarded()) {
             continue;
         }
-        jsonObjects.emplace_back(jsonObjRoot);
+        if (jsonTemp.contains(JSON_KEY_CGROUPS)) {
+            jsonObjRoot = jsonTemp;
+        }
     }
-    if (jsonObjects.empty()) {
-        return false;
-    }
+    FreeCfgFiles(cfgFilePaths);
     return true;
 }
 } // namespace CgroupSetting

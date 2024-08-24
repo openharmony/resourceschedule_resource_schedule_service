@@ -33,7 +33,7 @@ public:
     static CgroupMap& GetInstance();
 
     bool SetThreadSchedPolicy(int tid, SchedPolicy policy, bool isSetThreadGroup);
-    bool LoadConfigFromJsonObj(std::vector<nlohmann::json>& jsonObjects);
+    bool LoadConfigFromJsonObj(const nlohmann::json& jsonObj);
     bool FindAllEnableCgroupControllers(std::vector<CgroupController *> &controllers);
 
 private:
