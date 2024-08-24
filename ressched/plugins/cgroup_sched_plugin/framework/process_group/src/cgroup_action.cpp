@@ -214,9 +214,10 @@ int CgroupAction::GetSchedPolicyByName(const std::string& name, SchedPolicy* pol
 
 bool CgroupAction::ParseConfigFileToJsonObj(nlohmann::json& jsonObjRoot)
 {
+    bool result = false;
     auto cfgFilePaths = GetCfgFiles(CGROUP_SETTING_CONFIG_FILE);
     if (!cfgFilePaths) {
-        return false;
+        return result;
     }
     nlohmann::json jsonTemp;
     for (const auto& configFilePath : cfgFilePaths->paths) {
@@ -239,10 +240,11 @@ bool CgroupAction::ParseConfigFileToJsonObj(nlohmann::json& jsonObjRoot)
         }
         if (jsonTemp.contains(JSON_KEY_CGROUPS)) {
             jsonObjRoot = jsonTemp;
+            result = true;
         }
     }
     FreeCfgFiles(cfgFilePaths);
-    return true;
+    return result;
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
