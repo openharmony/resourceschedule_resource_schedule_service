@@ -677,14 +677,13 @@ void ObserverManager::DisableAccountObserver()
         RESSCHED_LOGI("ObserverManager has benn disable acount observer");
         return;
     }
-    ErrCode errCode = AccountSA::OsAccountManager::UnSubscribeOsAccount(accountObserver_);
+    ErrCode errCode = AccountSA::OsAccountManager::UnsubscribeOsAccount(accountObserver_);
     if (errCode == ERR_OK) {
         RESSCHED_LOGI("account observer register success");
         accountObserver_ = nullptr;
     } else {
         RESSCHED_LOGE("account observer unRegister failed");
     }
-    
 }
 
 extern "C" void ObserverManagerInit()
