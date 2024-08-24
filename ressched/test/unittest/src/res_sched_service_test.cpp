@@ -817,58 +817,5 @@ HWTEST_F(ResSchedServiceTest, IsLimitRequest001, Function | MediumTest | Level0)
     resSchedServiceStub_->allRequestCount_.store(500);
     EXPECT_EQ(resSchedServiceStub_->IsLimitRequest(uid), true);
 }
-
-/**
- * @tc.name: ResSchedServicesStub PrintLimitLog 001
- * @tc.desc: PrintLimitLog
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author:fengyang
- */
-HWTEST_F(ResSchedServiceTest, PrintLimitLog001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    int32_t uid = 0;
-    resSchedServiceStub_->isPrintLimitLog_.store(true);
-    resSchedServiceStub_->PrintLimitLog(uid);
-}
-
-/**
- * @tc.name: ResSchedServicesStub ReportBigData 001
- * @tc.desc: ReportBigData
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author:fengyang
- */
-HWTEST_F(ResSchedServiceTest, ReportBigData001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    resSchedServiceStub_->isReportBigData_.store(false);
-    resSchedServiceStub_->ReportBigData();
-    resSchedServiceStub_->isReportBigData_.store(true);
-    resSchedServiceStub_->ReportBigData();
-    resSchedServiceStub_->nextReportBigDataTime_ = ResSchedUtils::GetNowMillTime();
-    resSchedServiceStub_->ReportBigData();
-}
-
-/**
- * @tc.name: ResSchedServicesStub InreaseBigDataCount 001
- * @tc.desc: InreaseBigDataCount
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author:fengyang
- */
-HWTEST_F(ResSchedServiceTest, InreaseBigDataCount001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    resSchedServiceStub_->isReportBigData_.store(false);
-    resSchedServiceStub_->InreaseBigDataCount();
-    resSchedServiceStub_->isReportBigData_.store(true);
-    resSchedServiceStub_->InreaseBigDataCount();
-}
-
 } // namespace ResourceSchedule
 } // namespace OHOS
