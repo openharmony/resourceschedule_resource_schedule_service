@@ -219,7 +219,6 @@ bool CgroupAction::ParseConfigFileToJsonObj(nlohmann::json& jsonObjRoot)
     if (!cfgFilePaths) {
         return result;
     }
-    nlohmann::json jsonTemp;
     for (const auto& configFilePath : cfgFilePaths->paths) {
         char tmpPath[PATH_MAX + 1] = {0};
         if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
