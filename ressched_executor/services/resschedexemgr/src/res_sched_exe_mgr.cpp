@@ -74,12 +74,6 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     return ResErrCode::RSSEXE_NO_ERR;
 }
 
-int32_t ResSchedExeMgr::KillProcess(pid_t pid)
-{
-    int32_t killRes = kill(pid, SIGNAL_KILL);
-    return killRes;
-}
-
 void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
@@ -90,6 +84,12 @@ void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlo
     std::string traceStr = BuildTraceStr(__func__, resType, value);
     HitraceScoped hitrace(HITRACE_TAG_OHOS, traceStr);
     PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
+}
+
+int32_t ResSchedExeMgr::KillProcess(pid_t pid)
+{
+    int32_t killRes = kill(pid, SIGNAL_KILL);
+    return killRes;
 }
 
 void ResSchedExeMgr::InitPluginMgr(const nlohmann::json& payload)
