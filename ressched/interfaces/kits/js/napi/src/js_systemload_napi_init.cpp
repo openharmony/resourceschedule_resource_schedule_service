@@ -30,14 +30,14 @@ static napi_value EnumSystemloadLevelConstructor(napi_env env, napi_callback_inf
 {
     size_t argc = 0;
     napi_value args[1] = { nullptr };
-    napi_value res = nullptr;
-    void* data = nullptr;
+    napi_value retValue = nullptr;
+    void* dataInfo = nullptr;
 
-    napi_status status = napi_get_cb_info(env, info, &argc, args, &res, &data);
+    napi_status status = napi_get_cb_info(env, info, &argc, args, &retValue, &dataInfo);
     if (status != napi_ok) {
         return nullptr;
     }
-    return res;
+    return retValue;
 }
 
 static napi_value InitSystemloadLevelType(napi_env env, napi_value exports)
