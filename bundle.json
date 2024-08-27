@@ -30,6 +30,7 @@
         "ability_runtime",
         "access_token",
         "audio_framework",
+        "av_session",
         "background_task_mgr",
         "bluetooth",
         "bundle_framework",
@@ -38,8 +39,8 @@
         "config_policy",
         "core_service",
         "data_share",
+        "device_standby",
         "eventhandler",
-        "ffrt",
         "frame_aware_sched",
         "ffrt",
         "hilog",
@@ -57,9 +58,7 @@
         "soc_perf",
         "state_registry",
         "window_manager",
-        "device_standby",
         "power_manager",
-        "av_session",
         "json",
         "libxml2"
       ]
@@ -73,7 +72,6 @@
         ],
         "fwk_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
-          "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client:resschedexe_client",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi:systemload",
           "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
         ],
