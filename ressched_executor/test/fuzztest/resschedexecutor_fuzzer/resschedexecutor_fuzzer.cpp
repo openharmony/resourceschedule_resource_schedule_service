@@ -34,13 +34,13 @@ typedef int errno_t;
 
 namespace OHOS {
 namespace ResourceSchedule {
-    const uint8_t* g_data = nullptr;
+    const uint8_t* G_DATA = nullptr;
     constexpr errno_t NO_ERROR = 0;
     size_t g_size = 0;
     size_t g_pos;
 
     /**
-     * describe: get data from outside untrusted data(g_data) which size is according to sizeof(T)
+     * describe: get data from outside untrusted data(G_DATA) which size is according to sizeof(T)
      * tips: only support basic type
      */
     template<class T>
@@ -48,10 +48,10 @@ namespace ResourceSchedule {
     {
         T object {};
         size_t objectSize = sizeof(object);
-        if (g_data == nullptr || objectSize > g_size - g_pos) {
+        if (G_DATA == nullptr || objectSize > g_size - g_pos) {
             return object;
         }
-        errno_t ret = memcpy_s(&object, objectSize, g_data + g_pos, objectSize);
+        errno_t ret = memcpy_s(&object, objectSize, G_DATA + g_pos, objectSize);
         if (ret != NO_ERROR) {
             return {};
         }
@@ -88,7 +88,7 @@ namespace ResourceSchedule {
         }
 
         // initialize
-        g_data = data;
+        G_DATA = data;
         g_size = size;
         g_pos = 0;
         if (static_cast<int>(size) < 0) {

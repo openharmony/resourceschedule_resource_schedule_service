@@ -26,30 +26,15 @@ describe("SystemloadJsTest", function () {
     }
 
     beforeAll(function() {
-        /*
-         * @tc.setup: setup invoked before all testcases
-         */
-        console.info('beforeAll called')
     })
 
     afterAll(function() {
-        /*
-         * @tc.teardown: teardown invoked after all testcases
-         */
-        console.info('afterAll called')
     })
 
     beforeEach(function() {
-        /*
-         * @tc.setup: setup invoked before each testcases
-         */
-        console.info('beforeEach called')
     })
 
     afterEach(function() {
-        /*
-         * @tc.teardown: teardown invoked after each testcases
-         */
         systemload.off("systemLoadChange", onSystemloadChange1);
         systemload.off("test", onSystemloadChange1);
         console.info('afterEach called')

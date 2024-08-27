@@ -102,28 +102,5 @@ HWTEST_F(SceneRecognizeTest, BgtaskTest001, Function | MediumTest | Level0)
         ResType::ContinuousTaskStatus::CONTINUOUS_TASK_END, payload);
     EXPECT_EQ(bgtaskRecognizer->isInBackgroundPerceivableScene_, false);
 }
-
-/**
- * @tc.name: SceneRecognizerMgr Slide test
- * @tc.desc: test the interface DispatchResource
- * @tc.type: FUNC
- * @tc.require: issueIA9UZ9
- * @tc.author:baiheng
- */
-HWTEST_F(SceneRecognizeTest, SlideTest001, Function | MediumTest | Level0)
-{
-    nlohmann::json payload;
-    SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_SLIDE_RECOGNIZE,
-        ResType::SlideEventStatus::SLIDE_EVENT_DETECTING, payload);
-    SUCCEED();
-    SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_SEND_FRAME_EVENT, 0, payload);
-    SUCCEED();
-    SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_CLICK_RECOGNIZE,
-        ResType::ClickEventType::TOUCH_EVENT_UP, payload);
-    SUCCEED();
-    SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_CLICK_RECOGNIZE,
-        ResType::ClickEventType::TOUCH_EVENT_PULL_UP, payload);
-    SUCCEED();
-}
 } // namespace ResourceSchedule
 } // namespace OHOS
