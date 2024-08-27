@@ -43,8 +43,6 @@ private:
     int32_t KillProcessInner(MessageParcel& data, MessageParcel& reply);
     void RegisterSystemloadNotifierInner(MessageParcel& data, MessageParcel& reply);
     void UnRegisterSystemloadNotifierInner(MessageParcel& data, MessageParcel& reply);
-    void RegisterEventListenerInner(MessageParcel& data, MessageParcel& reply);
-    void UnRegisterEventListenerInner(MessageParcel& data, MessageParcel& reply);
     int32_t GetSystemloadLevelInner(MessageParcel& data, MessageParcel& reply);
     bool IsAllowedAppPreloadInner(MessageParcel& data, MessageParcel& reply);
     nlohmann::json StringToJsonObj(const std::string& str);

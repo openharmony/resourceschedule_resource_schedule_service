@@ -30,9 +30,7 @@ ohos_shared_library("ressched_client") {
 
   sources = [
     "src/res_sched_client.cpp",
-    "src/res_sched_common_death_recipient.cpp",
-    "src/res_sched_event_listener_proxy.cpp",
-    "src/res_sched_event_listener_stub.cpp",
+    "src/res_sched_notifier_death_recipient.cpp",
     "src/res_sched_service_proxy.cpp",
     "src/res_sched_systemload_notifier_proxy.cpp",
     "src/res_sched_systemload_notifier_stub.cpp",

@@ -15,7 +15,6 @@
 
 #include "background_sensitive_task_overlapping_scene_recognizer.h"
 #include "continuous_app_install_recognizer.h"
-#include "slide_recognizer.h"
 #include "res_sched_log.h"
 #include "scene_recognizer_mgr.h"
 #include "system_upgrade_scene_recognizer.h"
@@ -27,11 +26,9 @@ IMPLEMENT_SINGLE_INSTANCE(SceneRecognizerMgr);
 SceneRecognizerMgr::SceneRecognizerMgr()
 {
     sceneRecognizers_ = {
-        { RecognizeType::CONTINUOUS_APP_INSTALL_RECOGNIZER, std::make_shared<ContinuousAppInstallRecognizer>() },
-        { RecognizeType::SYSTEM_UPGRADE_SCENE_RECOGNIZER, std::make_shared<SystemUpgradeSceneRecognizer>() },
-        { RecognizeType::BACKGROUND_SENSITIVE_TASK_OVERLAPPING_SCENE_RECOGNIZER,
-            std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>() },
-        { RecognizeType::SLIDE_RECOGNIZER, std::make_shared<SlideRecognizer>()},
+        std::make_shared<ContinuousAppInstallRecognizer>(),
+        std::make_shared<SystemUpgradeSceneRecognizer>(),
+        std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>(),
         };
     ffrtQueue_ = std::make_shared<ffrt::queue>("scene_recognizers_queue",
         ffrt::queue_attr().qos(ffrt::qos_user_interactive));
@@ -46,52 +43,10 @@ SceneRecognizerMgr::~SceneRecognizerMgr()
 
 void SceneRecognizerMgr::DispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    for (auto recognizerItem : sceneRecognizers_) {
-        auto recognizer = recognizerItem.second;
+    for (auto recognizer : sceneRecognizers_) {
         ffrtQueue_->submit([resType, value, payload, recognizer]() {
             recognizer->OnDispatchResource(resType, value, payload);
         });
-    }
-}
-
-void SceneRecognizerMgr::SetListFlingTimeoutTime(int64_t value)
-{
-    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
-        SetListFlingTimeoutTime(value);
-}
-
-void SceneRecognizerMgr::SetListFlingEndTime(int64_t value)
-{
-    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
-        SetListFlingEndTime(value);
-}
-void SceneRecognizerMgr::SetListFlingSpeedLimit(float value)
-{
-    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
-        SetListFlingSpeedLimit(value);
-}
-void SceneRecognizerMgr::SetSlideNormalDetectingTime(int64_t value)
-{
-    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
-        SetSlideNormalDetectingTime(value);
-}
-
-extern "C" {
-    void SetListFlingTimeoutTime(int64_t value)
-    {
-        SceneRecognizerMgr::GetInstance().SetListFlingTimeoutTime(value);
-    }
-    void SetListFlingEndTime(int64_t value)
-    {
-        SceneRecognizerMgr::GetInstance().SetListFlingEndTime(value);
-    }
-    void SetListFlingSpeedLimit(float value)
-    {
-        SceneRecognizerMgr::GetInstance().SetListFlingSpeedLimit(value);
-    }
-    void SetSlideNormalDetectingTime(int64_t value)
-    {
-        SceneRecognizerMgr::GetInstance().SetSlideNormalDetectingTime(value);
     }
 }
 } // namespace ResourceSchedule

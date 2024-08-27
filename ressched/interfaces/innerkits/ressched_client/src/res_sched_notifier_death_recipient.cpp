@@ -13,22 +13,18 @@
  * limitations under the License.
  */
 
+#include "res_sched_notifier_death_recipient.h"
 
-#ifndef RESSCHED_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_EVENT_LISTENER_MGR_TEST_H
-#define RESSCHED_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_EVENT_LISTENER_MGR_TEST_H
-
-#include "gtest/gtest.h"
+#include "res_sched_log.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-class EventListenerMgrTest : public testing::Test {
-public:
-    static void SetUpTestCase();
-    static void TearDownTestCase();
-    void SetUp();
-    void TearDown();
-};
+void ResSchedNotifierDeathRecipient::OnRemoteDied(const wptr<IRemoteObject>& remote)
+{
+    RESSCHED_LOGD("called");
+    if (deathRecipientCb_ != nullptr) {
+        deathRecipientCb_(remote.promote());
+    }
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
-
-#endif // RESSCHED_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_EVENT_LISTENER_MGR_TEST_H

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_COMMON_DEATH_RECIPIENT_H
-#define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_COMMON_DEATH_RECIPIENT_H
+#ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_NOTIFIER_DEATH_RECIPIENT_H
+#define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_NOTIFIER_DEATH_RECIPIENT_H
 
 #include <functional>
 
@@ -23,16 +23,16 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-class ResSchedCommonDeathRecipient : public IRemoteObject::DeathRecipient {
+class ResSchedNotifierDeathRecipient : public IRemoteObject::DeathRecipient {
 public:
     using DeathRecipientCb = std::function<void(const sptr<IRemoteObject>&)>;
-    explicit ResSchedCommonDeathRecipient(DeathRecipientCb cb)
+    explicit ResSchedNotifierDeathRecipient(DeathRecipientCb cb)
         : deathRecipientCb_(cb) {}
-    virtual ~ResSchedCommonDeathRecipient() = default;
+    virtual ~ResSchedNotifierDeathRecipient() = default;
     void OnRemoteDied(const wptr<IRemoteObject>& remote) override;
 private:
     DeathRecipientCb deathRecipientCb_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif // RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_COMMON_DEATH_RECIPIENT_H
+#endif // RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_NOTIFIER_DEATH_RECIPIENT_H

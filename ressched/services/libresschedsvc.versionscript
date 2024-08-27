@@ -25,10 +25,6 @@
     *Observer*;
     *Listener*;
     *ReportAppStateInProcess*;
-    SetListFlingTimeoutTime;
-    SetListFlingEndTime;
-    SetListFlingSpeedLimit;
-    SetSlideNormalDetectingTime;
   local:
     *;
 };
