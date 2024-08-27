@@ -87,7 +87,7 @@ void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
         }
         listFlingEndTask_ = nullptr;
         listFlingTimeOutTask_ = nullptr;
-        g_reportListFlingLockedEnd(payload);
+        g_reportListFlingLockedEnd(FillRealPid(payload);
     }
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
@@ -187,10 +187,9 @@ nlohmann::json SlideRecognizer::FillRealPid(const nlohmann::json& payload)
     if (slidePid_.empty()) {
         return payload;
     }
-    const nlohmann::json* payloadP = &payload;
-    nlohmann::json* payloadM = const_cast<nlohmann::json*>(payloadP);
-    (*payloadM)["clientPid"] = slidePid_;
-    return *payloadM;
+    nlohmann::json payloadM = payload;
+    payloadM["clientPid"] = slidePid_;
+    return payloadM;
 }
 
 void SlideRecognizer::SetListFlingTimeoutTime(int64_t value)
