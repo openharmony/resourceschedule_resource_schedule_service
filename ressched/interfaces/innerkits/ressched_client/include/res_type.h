@@ -270,6 +270,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
     // get thermal data
     SYNC_RES_TYPE_GET_THERMAL_DATA,
+    // check shoul force kill process,
+    SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
     // report to request mutex status
     RES_TYPE_REQUEST_MUTEX_STATUS,
     // last sync resType
