@@ -820,9 +820,9 @@ HWTEST_F(ResSchedServiceTest, IsLimitRequest001, Function | MediumTest | Level0)
     resSchedServiceStub_->Init();
     int32_t uid = 0;
     EXPECT_EQ(resSchedServiceStub_->IsLimitRequest(uid), false);
-    resSchedServiceStub_->appRequestCountMap_[uid] = 100;
+    resSchedServiceStub_->appRequestCountMap_[uid] = 300;
     EXPECT_EQ(resSchedServiceStub_->IsLimitRequest(uid), true);
-    resSchedServiceStub_->allRequestCount_.store(500);
+    resSchedServiceStub_->allRequestCount_.store(800);
     EXPECT_EQ(resSchedServiceStub_->IsLimitRequest(uid), true);
 }
 
