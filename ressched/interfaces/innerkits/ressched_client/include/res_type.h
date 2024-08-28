@@ -264,14 +264,14 @@ enum : uint32_t {
     ASYNC_RES_TYPE_LAST,
     // first sync resType
     SYNC_RES_TYPE_FIRST = ASYNC_RES_TYPE_LAST,
+    // report to request mutex status
+    RES_TYPE_REQUEST_MUTEX_STATUS,
     // thaw one application
     SYNC_RES_TYPE_THAW_ONE_APP,
     // get all suspend state
     SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
     // get thermal data
     SYNC_RES_TYPE_GET_THERMAL_DATA,
-    // report to request mutex status
-    RES_TYPE_REQUEST_MUTEX_STATUS,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
@@ -300,8 +300,6 @@ enum EventValue : uint32_t {
     EVENT_VALUE_DRAW_FRAME_REPORT_STOP,
     EVENT_VALUE_DDR_BOUND_REPORT_START,
     EVENT_VALUE_DDR_BOUND_REPORT_STOP,
-    EVENT_VALUE_DDR_BOUND_REPORT_REPORT,
-    EVENT_VALUE_HEAVY_LOAD_MUTEX_REPORT,
     EVENT_VALUE_END,
 };
 
