@@ -89,7 +89,7 @@ void ResSchedUtils::LoadUtilsExtra()
     if (!reportArbitrationResultFunc_) {
         CGS_LOGD("%{public}s load function:ReportArbitrationResult failed! errno:%{public}d", __func__, errno);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MIAN",
+                        "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "ResSchedUtils dlsym 'ReportArbitrationResult' in " + RES_SCHED_CG_EXT_SO + "!");
         dlclose(handle);
@@ -101,7 +101,7 @@ void ResSchedUtils::LoadUtilsExtra()
     if (!dispatchResourceExtFunc_) {
         CGS_LOGD("%{public}s load function:DispatchResourceExt failed! errno:%{public}d", __func__, errno);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MIAN",
+                        "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "ResSchedUtils dlsym 'DispatchResourceExt' in " + RES_SCHED_CG_EXT_SO + "!");
         dlclose(handle);
@@ -113,7 +113,7 @@ void ResSchedUtils::LoadUtilsExtra()
     if (!reportSysEventFunc_) {
         CGS_LOGD("%{public}s load function:ReportSysEvent failed! errno:%{public}d", __func__, errno);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", RES_SCHED_SERCICE_SO,
+                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
                         "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "ResSchedUtils don't found ReportSysEvent in " + RES_SCHED_CG_EXT_SO + "!");
         dlclose(handle);

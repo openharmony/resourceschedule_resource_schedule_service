@@ -119,7 +119,7 @@ void RmsApplicationStateObserver::MarshallingProcessData(const ProcessData &proc
     payload["isKeepAlive"] = std::to_string(processData.isKeepAlive);
     payload["isTestMode"] = std::to_string(processData.isTestMode);
     payload["processName"] = processData.processName;
-	payload["exitReason"] = std::to_string(processData.exitReason);
+    payload["exitReason"] = std::to_string(processData.exitReason);
     payload["hostPid"] = std::to_string(processData.hostPid);
 }
 
