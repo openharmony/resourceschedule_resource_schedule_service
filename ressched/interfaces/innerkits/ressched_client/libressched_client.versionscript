@@ -21,16 +21,12 @@
     *ResSchedClient*StopRemoteObject*;
     *ResSchedClient*RegisterSystemloadNotifier*;
     *ResSchedClient*UnRegisterSystemloadNotifier*;
-    *ResSchedClient*RegisterEventListener*;
-    *ResSchedClient*UnRegisterEventListener*;
     *ResSchedClient*GetSystemloadLevel*;
     *ResSchedClient*IsAllowedAppPreload*;
     *ResSchedServiceProxy*;
     *ResSchedSystemloadNotifierProxy*;
     *ResSchedSystemloadNotifierStub*;
-    *ResSchedCommonDeathRecipient*;
-    *ResSchedEventListenerStub*;
-    *ResSchedEventListenerProxy*;
+    *ResSchedNotifierDeathRecipient*;
     ReportData;
     KillProcess;
   local:

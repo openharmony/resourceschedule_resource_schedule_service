@@ -31,7 +31,6 @@
 #include "sched_controller.h"
 #include "supervisor.h"
 #include "ressched_utils.h"
-#include "event_listener_mgr.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -75,16 +74,6 @@ void ResSchedService::RegisterSystemloadNotifier(const sptr<IRemoteObject>& noti
 void ResSchedService::UnRegisterSystemloadNotifier()
 {
     NotifierMgr::GetInstance().UnRegisterNotifier(IPCSkeleton::GetCallingPid());
-}
-
-void ResSchedService::RegisterEventListener(const sptr<IRemoteObject>& eventListener, uint32_t eventType)
-{
-    EventListenerMgr::GetInstance().RegisterEventListener(IPCSkeleton::GetCallingPid(), eventListener, eventType);
-}
-
-void ResSchedService::UnRegisterEventListener(uint32_t eventType)
-{
-    EventListenerMgr::GetInstance().UnRegisterEventListener(IPCSkeleton::GetCallingPid(), eventType);
 }
 
 int32_t ResSchedService::GetSystemloadLevel()

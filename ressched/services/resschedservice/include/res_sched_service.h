@@ -37,10 +37,6 @@ public:
 
     void UnRegisterSystemloadNotifier() override;
 
-    void RegisterEventListener(const sptr<IRemoteObject>& eventListener, uint32_t eventType) override;
-
-    void UnRegisterEventListener(uint32_t eventType) override;
-
     int32_t GetSystemloadLevel() override;
 
     void OnDeviceLevelChanged(int32_t type, int32_t level);
