@@ -53,7 +53,7 @@ void DownLoadUploadObserver::HandleEnterScene()
     const nlohmann::json payload = nlohmann::json::object();
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
         ResType::KeyUploadOrDownloadStatus::ENTER_UPLOAD_DOWNLOAD_SCENE, payload);
-    isReportScene_ = true;
+    isReportedScene_ = true;
 }
 
 void DownLoadUploadObserver::HandleExitScene()
@@ -61,7 +61,7 @@ void DownLoadUploadObserver::HandleExitScene()
     const nlohmann::json payload = nlohmann::json::object();
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
         ResType::KeyUploadOrDownloadStatus::EXIT_UPLOAD_DOWNLOAD_SCENE, payload);
-    isReportScene_ = false;
+    isReportedScene_ = false;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
