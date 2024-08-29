@@ -244,6 +244,10 @@ enum : uint32_t {
     RES_TYPE_REPORT_VSYNC_TID = 106,
     // report cloud config update
     RES_TYPE_CLOUD_CONFIG_UPDATE = 107,
+    // system ability status change
+    RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE = 108,
+    // mmi status change
+    RES_TYPE_MMI_STATUS_CHANGE = 109,
     // report media output device change
     RES_TYPE_OUTPUT_DEVICE_CHANGE = 110,
     // last async resType
