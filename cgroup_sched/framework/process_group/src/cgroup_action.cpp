@@ -218,7 +218,7 @@ bool CgroupAction::ParseConfigFileToJsonObj(nlohmann::json& jsonObjRoot)
     char tmpPath[PATH_MAX + 1] = {0};
     if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
         !realpath(configFilePath, tmpPath)) {
-        PGCGS_LOGE("%{public}s: read cgroup_action_config.json failed", __func__);
+        PGCGS_LOGE("%{public}s: read %{public}s failed", __func__, CGROUP_SETTING_CONFIG_FILE);
         return false;
     }
     std::string realConfigFile(tmpPath);

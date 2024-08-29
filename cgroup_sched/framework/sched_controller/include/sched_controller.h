@@ -48,8 +48,8 @@ public:
     bool SubscribeBackgroundTask();
     void UnsubscribeBackgroundTask();
     void SubscribeWindowState();
-    void UnsubscribeWindowState();
     void SubscribeWindowModeChange();
+    void UnsubscribeWindowState();
     void UnsubscribeWindowModeChange();
     void UnregisterStateObservers();
     int GetProcessGroup(pid_t pid);

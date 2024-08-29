@@ -39,8 +39,6 @@ ohos_shared_library("libprocess_group") {
     "ipc:ipc_single",
   ]
 
-  public_external_deps = [ "json:nlohmann_json_static" ]
-
   sanitize = {
     cfi = true
     cfi_cross_dso = true
@@ -48,6 +46,8 @@ ohos_shared_library("libprocess_group") {
   }
   branch_protector_ret = "pac_ret"
 
+  public_external_deps = [ "json:nlohmann_json_static" ]
+  
   part_name = "resource_schedule_service"
   subsystem_name = "resourceschedule"
 }
