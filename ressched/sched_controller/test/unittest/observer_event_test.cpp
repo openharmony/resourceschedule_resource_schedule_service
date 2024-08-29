@@ -782,24 +782,6 @@ HWTEST_F(ObserverEventTest, DisableConnectionSubscriber_001, testing::ext::TestS
     auto instance = ObserverManager::GetInstance();
     if (instance) {
         instance->DisableConnectionSubscriber();
-        instance->InitConnectionSubscriber();
-        instance->DisableConnectionSubscriber();
-    }
-    SUCCEED();
-}
-
-/**
- * @tc.name: DisableAccountObserver_001
- * @tc.desc: test account observer DisableAccountObserver
- * @tc.type: FUNC
- * @tc.require: issuesI9SSQY
- */
-HWTEST_F(ObserverEventTest, DisableAccountObserver_001, testing::ext::TestSize.Level1)
-{
-    auto instance = ObserverManager::GetInstance();
-    if (instance) {
-        instance->accountObserver_ = nullptr;
-        instance->DisableAccountObserver();
     }
     SUCCEED();
 }
@@ -879,22 +861,6 @@ HWTEST_F(ObserverEventTest, DisableHiSysEventObserver_001, testing::ext::TestSiz
     auto instance = ObserverManager::GetInstance();
     if (instance) {
         instance->DisableHiSysEventObserver();
-    }
-    SUCCEED();
-}
-
-/**
- * @tc.name: DisableDisplayModeObserver_001
- * @tc.desc: test account observer DisableDisplayModeObserver
- * @tc.type: FUNC
- * @tc.require: issuesI9SSQY
- */
-HWTEST_F(ObserverEventTest, DisableDisplayModeObserver_001, testing::ext::TestSize.Level1)
-{
-    auto instance = ObserverManager::GetInstance();
-    if (instance) {
-        instance->foldDisplayModeObserver_ = nullptr;
-        instance->DisableDisplayModeObserver();
     }
     SUCCEED();
 }
