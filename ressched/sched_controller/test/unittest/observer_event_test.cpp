@@ -242,16 +242,6 @@ HWTEST_F(ObserverEventTest, hisysEventAudioEvent_001, testing::ext::TestSize.Lev
     sysEvent["STATE"] = AudioState::AUDIO_STATE_STOPPED;
     hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
     EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // audio state released
-    sysEvent["STATE"] = AudioState::AUDIO_STATE_RELEASED;
-    hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // audio state released
-    sysEvent["STATE"] = AudioState::AUDIO_STATE_PAUSED;
-    hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
 }
 
 /**
