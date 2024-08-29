@@ -53,7 +53,7 @@ public:
     int32_t windowType_ = 0;
     uint64_t displayId_ = 0;
     std::shared_ptr<AbilityInfo> ability_ = nullptr;
-    // webview render corresponding with top tab page in this window
+    // webview render app corresponding with top tab page in this window
     uid_t topWebviewRenderUid_ = 0;
 };
 
