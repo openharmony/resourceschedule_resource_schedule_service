@@ -788,12 +788,7 @@ void PluginMgr::EnablePluginIfResume(const std::string& pluginLib)
 {
     std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
     ffrt_queue_cancel_all(*reinterpret_cast<ffrt_queue_t*>(dispatchers_[pluginLib].get()));
-    auto stateItem = runningStats_.find(pluginLib);
-    if (stateItem == runningStats_.end()) {
-        return;
-    }
-    auto isRunning = stateItem->second.load();
-    if (!isRunning) {
+    if (!IsPluginRunning(pluginLib)) {
         disablePlugins_.erase(pluginLib);
     } else {
         StartTrace(HITRACE_TAG_APP, "Blocked plugin:" + pluginLib, -1);
@@ -809,12 +804,7 @@ void PluginMgr::HandlePluginTimeout(const std::string& pluginLib)
 {
     std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
     ffrt_queue_cancel_all(*reinterpret_cast<ffrt_queue_t*>(dispatchers_[pluginLib].get()));
-    auto stateItem = runningStats_.find(pluginLib);
-    if (stateItem == runningStats_.end()) {
-        return;
-    }
-    auto isRunning = stateItem->second.load();
-    if (isRunning) {
+    if (IsPluginRunning(pluginLib)) {
         RESSCHED_LOGI("%{public}s, %{public}s has blocked task, stop dispatch resource to it!",
             __func__, pluginLib.c_str());
             disablePlugins_.insert(pluginLib);
@@ -825,7 +815,18 @@ void PluginMgr::HandlePluginTimeout(const std::string& pluginLib)
 
 void PluginMgr::RecordRinningStat(std::string pluginLib, bool isRunning)
 {
+    std::lock_guard<ffrt::mutex> autoLock(runningStatsMutex_);
     runningStats_[pluginLib] = isRunning;
+}
+
+bool PluginMgr::IsPluginRunning(const std::string& pluginLib)
+{
+    std::lock_guard<ffrt::mutex> autoLock(runningStatsMutex_);
+    auto stateItem = runningStats_.find(pluginLib);
+    if (stateItem == runningStats_.end()) {
+        return false;
+    }
+    return stateItem->second;
 }
 #endif
 

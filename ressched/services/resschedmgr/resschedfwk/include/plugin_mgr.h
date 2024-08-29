@@ -228,6 +228,7 @@ private:
     void HandlePluginTimeout(const std::string& pluginLib);
     void EnablePluginIfResume(const std::string& pluginLib);
     void RecordRinningStat(std::string pluginLib, bool isRunning);
+    bool IsPluginRunning(const std::string& pluginLib);
 #endif
     void RepairPlugin(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo);
     void RemoveDisablePluginHandler();
@@ -277,7 +278,8 @@ private:
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::map<std::string, std::shared_ptr<ffrt::queue>> dispatchers_;
-    std::map<std::string, std::atomic<bool>> runningStats_;
+    ffrt::mutex runningStatsMutex_;
+    std::map<std::string, bool> runningStats_;
     std::unordered_set<std::string> disablePlugins_;
 #else
     std::shared_ptr<AppExecFwk::EventHandler> dispatcher_ = nullptr;
