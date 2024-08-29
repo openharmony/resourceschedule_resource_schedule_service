@@ -28,7 +28,7 @@ private:
     bool IsReporExitScene(int count);
     void HandleEnterScene();
     void HandleExitScene();
-    bool isReportScene_ = false;
+    bool isReportedScene_ = false;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
