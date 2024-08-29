@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -42,6 +42,10 @@ int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload)
     pid_t pid = static_cast<int32_t>(atoi(payload["pid"].get<string>().c_str()));
     std::string processName = payload.contains("processName") && payload["processName"].is_string() ?
                                   payload["processName"].get<string>() : UNKNOWN_PROCESS;
+    if (pid <= 0) {
+        RESSCHED_LOGE("process %{public}d:%{public}s is invalid", pid, processName.c_str());
+        return RES_SCHED_KILL_PROCESS_FAIL;
+    }
     if (payload.contains("killReason") && payload["killReason"].is_string()) {
         std::string killReason = payload["killReason"].get<string>();
         AAFwk::ExitReason reason = {AAFwk::REASON_PERFORMANCE_CONTROL, killReason};
