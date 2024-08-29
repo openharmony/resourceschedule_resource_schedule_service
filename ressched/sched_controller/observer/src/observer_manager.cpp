@@ -612,7 +612,7 @@ void ObserverManager::DisableDataShareObserver()
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 void ObserverManager::InitAVSessionStateChangeListener()
 {
-    if (avSessionStateListener_ == nullptr) {
+    if (!avSessionStateListener_) {
         avSessionStateListener_ = std::make_shared<AvSessionStateListener>();
     }
 

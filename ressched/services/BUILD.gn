@@ -77,7 +77,7 @@ ohos_shared_library("resschedsvc") {
     "resschedservice/src/res_sched_service.cpp",
     "resschedservice/src/res_sched_service_ability.cpp",
     "resschedservice/src/res_sched_service_stub.cpp",
-    "resschedservice/src/res_sched_service_utils.cpp"
+    "resschedservice/src/res_sched_service_utils.cpp",
   ]
 
   deps = [

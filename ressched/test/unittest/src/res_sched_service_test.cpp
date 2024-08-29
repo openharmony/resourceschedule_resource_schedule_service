@@ -22,6 +22,7 @@
 #include "nativetoken_kit.h"
 #include "notifier_mgr.h"
 #include "plugin_mgr.h"
+#include "res_common_util.h"
 #include "res_sched_ipc_interface_code.h"
 #include "res_sched_notifier_death_recipient.h"
 #include "res_sched_service.h"
@@ -811,11 +812,10 @@ HWTEST_F(ResSchedServiceTest, IsLimitRequest001, Function | MediumTest | Level0)
     resSchedServiceStub_->Init();
     int32_t uid = 0;
     EXPECT_EQ(resSchedServiceStub_->IsLimitRequest(uid), false);
-    resSchedServiceStub_->appRequestCountMap_[uid] = 300;
+    resSchedServiceStub_->appRequestCountMap_[uid] = 100;
     EXPECT_EQ(resSchedServiceStub_->IsLimitRequest(uid), true);
-    resSchedServiceStub_->allRequestCount_.store(800);
+    resSchedServiceStub_->allRequestCount_.store(500);
     EXPECT_EQ(resSchedServiceStub_->IsLimitRequest(uid), true);
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS
