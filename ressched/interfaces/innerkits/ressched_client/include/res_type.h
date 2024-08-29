@@ -265,7 +265,7 @@ enum : uint32_t {
     // first sync resType
     SYNC_RES_TYPE_FIRST = ASYNC_RES_TYPE_LAST,
     // report to request mutex status
-    RES_TYPE_REQUEST_MUTEX_STATUS = 500,
+    SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // thaw one application
     SYNC_RES_TYPE_THAW_ONE_APP,
     // get all suspend state
