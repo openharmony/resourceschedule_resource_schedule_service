@@ -57,8 +57,8 @@ bool AppStartupSceneRec::IsAppStartUp(int32_t abilityState)
     return abilityState == APP_START_UP;
 }
 
-void AppStartupSceneRec::RecordIsContinuousStartup(const int32_t abilityState, const std::string uid, 
-	const std::string bundleName)
+void AppStartupSceneRec::RecordIsContinuousStartup(const int32_t abilityState, const std::string uid,
+    const std::string bundleName)
 {
     if (!IsAppStartUp(abilityState)) {
         CGS_LOGE("abilityState is not app startUp");
@@ -75,8 +75,6 @@ void AppStartupSceneRec::RecordIsContinuousStartup(const int32_t abilityState, c
     auto tarEndTimePoint = std::chrono::steady_clock::now();
     auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
     int64_t curTime = tarDuration.count();
-	CGS_LOGI("recordIsContinuousStartup uid: %{public}s bundleName: %{public}s curTime:%{public}ld",
-		uid.c_str(), bundleName.c_str(), curTime);
     if (curTime - lastAppStartTime_ >= CONTINUOUS_START_TIME_OUT) {
         CleanRecordSceneData();
     }
@@ -84,7 +82,7 @@ void AppStartupSceneRec::RecordIsContinuousStartup(const int32_t abilityState, c
     if (IsContinuousStartup() && !isReportContinuousStartup_.load()) {
         nlohmann::json payload;
         ResSchedUtils::GetInstance().ReportDataInProcess(
-			ResType::RES_TYPE_CONTINUOUS_STARTUP, ResType::ContinuousStartupStatus::START_CONTINUOUS_STARTUP, payload);
+            ResType::RES_TYPE_CONTINUOUS_STARTUP, ResType::ContinuousStartupStatus::START_CONTINUOUS_STARTUP, payload);
         isReportContinuousStartup_ = true;
     }
     exitContinuousStartupTask = ffrtQueue_->submit_h([this] {
@@ -106,8 +104,8 @@ void AppStartupSceneRec::CleanRecordSceneData()
         isReportContinuousStartup_ = false;
     }
 }
-void AppStartupSceneRec::UpdateAppStartupNum(const std::string uid, const int64_t curTime, 
-	const std::string bundleName)
+void AppStartupSceneRec::UpdateAppStartupNum(const std::string uid, const int64_t curTime,
+    const std::string bundleName)
 {
     std::unique_lock<ffrt::mutex> lock(mutex_);
     lastAppStartTime_ = curTime;

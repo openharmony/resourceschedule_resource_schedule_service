@@ -36,7 +36,7 @@ public:
     void ReportArbitrationResult(Application &app, ProcessRecord &pr, AdjustSource source);
     void ReportSysEvent(Application &app, ProcessRecord &pr, uint32_t resType, int32_t state);
     std::string GetProcessFilePath(int32_t uid, std::string bundleName, int32_t pid);
-	bool CheckTidIsInPid(int32_t pid, int32_t tid);
+    bool CheckTidIsInPid(int32_t pid, int32_t tid);
     void DispatchResourceExt(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void ReportAppStateInProcess(int32_t state, int32_t pid);
 

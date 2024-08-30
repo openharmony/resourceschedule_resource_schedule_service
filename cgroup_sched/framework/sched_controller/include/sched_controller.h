@@ -91,7 +91,7 @@ private:
     sptr<WindowVisibilityObserver> windowVisibilityObserver_;
     sptr<WindowDrawingContentObserver> windowDrawingContentObserver_;
     std::unordered_map<uint32_t, std::function<void(std::shared_ptr<CgroupEventHandler>,
-        uint32_t, int64_t, const nlohmann::json&)>> dispatchResFuncMap_;    
+        uint32_t, int64_t, const nlohmann::json&)>> dispatchResFuncMap_;
     sptr<WindowModeObserver> windowModeObserver_;
 
     inline void InitCgroupHandler();

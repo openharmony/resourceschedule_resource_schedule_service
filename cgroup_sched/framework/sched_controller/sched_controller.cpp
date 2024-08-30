@@ -338,12 +338,12 @@ void SchedController::SubscribeWindowState()
     if (!windowStateObserver_) {
         windowStateObserver_ = new (std::nothrow)WindowStateObserver();
         if (windowStateObserver_) {
-			OHOS::Rosen::WMError ret = 
-				OHOS::Rosen::WindowManagerLite::GetInstance().RegisterFocusChangedListener(windowStateObserver_);
+            OHOS::Rosen::WMError ret =
+                OHOS::Rosen::WindowManagerLite::GetInstance().RegisterFocusChangedListener(windowStateObserver_);
             if (ret != OHOS::Rosen::WMError::WM_OK) {
-                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", 
+                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
 								HiviewDFX::HiSysEvent::EventType::FAULT,
-                                "COMPONENT_NAME", "MAIN", 
+                                "COMPONENT_NAME", "MAIN",
 								"ERR_TYPE", "register failure",
                                 "ERR_MSG", "Register a listener of window focus change failed.");
             }
@@ -355,10 +355,10 @@ void SchedController::SubscribeWindowState()
 			OHOS::Rosen::WMError ret = OHOS::Rosen::WindowManagerLite::GetInstance().
 				RegisterVisibilityChangedListener(windowVisibilityObserver_);
             if (ret != OHOS::Rosen::WMError::WM_OK) {
-                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", 
-								HiviewDFX::HiSysEvent::EventType::FAULT,
-                                "COMPONENT_NAME", "MAIN", 
-								"ERR_TYPE", "register failure",
+                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                                HiviewDFX::HiSysEvent::EventType::FAULT,
+                                "COMPONENT_NAME", "MAIN",
+                                "ERR_TYPE", "register failure",
                                 "ERR_MSG", "Register a listener of window visibility change failed.");
             }
         }
