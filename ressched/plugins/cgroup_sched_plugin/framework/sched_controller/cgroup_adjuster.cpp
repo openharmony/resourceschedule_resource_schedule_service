@@ -103,7 +103,7 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
         return;
     }
 
-    /* Let the sched group of render process, GPU process, and child process follow the sched group of host process */
+    /* Let the sched group of render process, gpu process, and child process follow the sched group of host process */
     for (const auto &iter : app.GetPidsMap()) {
         const auto &procRecord = iter.second;
         if (procRecord && ((procRecord->processType_ == ProcRecordType::RENDER) ||
