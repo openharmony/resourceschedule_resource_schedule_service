@@ -140,7 +140,7 @@ namespace {
         ResType::RES_TYPE_DEVICE_IDLE,
         ResType::RES_TYPE_BT_SERVICE_EVENT,
         ResType::RES_TYPE_BMM_MONITER_CHANGE_EVENT,
-        ResType::RES_TYPE_REQUEST_MUTEX_STATUS,
+        ResType::SYNC_RES_TYPE_REQUEST_MUTEX_STATUS,
         ResType::SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
