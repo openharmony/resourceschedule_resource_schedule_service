@@ -38,6 +38,7 @@ ohos_shared_library("socperf_executor_plugin") {
   external_deps = [
     "config_policy:configpolicy_util",
     "hilog:libhilog",
+    "hitrace:hitrace_meter",
     "libxml2:libxml2",
   ]
 
