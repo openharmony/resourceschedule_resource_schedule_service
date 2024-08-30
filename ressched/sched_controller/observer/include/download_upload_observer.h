@@ -14,7 +14,7 @@
  */
 #ifndef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_DOWNLOAD_UPLOAD_OBSERVER_H
 #define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_DOWNLOAD_UPLOAD_OBSERVER_H
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESSCHED_REQUEST_REQUEST
 #include "running_task_count.h"
 namespace OHOS {
 namespace ResourceSchedule {
@@ -24,9 +24,13 @@ public:
     ~DownLoadUploadObserver() = default;
     virtual void OnRunningTaskCountUpdate(int count) override;
 private:
-    bool isReportScene = false;
+    bool IsReporEnterScene(int count);
+    bool IsReporExitScene(int count);
+    void HandleEnterScene();
+    void HandleExitScene();
+    bool isReportedScene_ = false;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif
+#endif // RESSCHED_REQUEST_REQUEST
 #endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_DOWNLOAD_UPLOAD_OBSERVER_H

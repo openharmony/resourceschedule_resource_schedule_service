@@ -89,7 +89,7 @@ ohos_fuzztest("ResSchedObserverFuzzTest") {
     external_deps += [ "audio_framework:audio_client" ]
   }
   if (rss_request_enable) {
-    defines += [ "RESOURCE_REQUEST_REQUEST" ]
+    defines += [ "RESSCHED_REQUEST_REQUEST" ]
     external_deps += [ "request:request_native" ]
   }
 
