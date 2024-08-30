@@ -312,7 +312,7 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t host
             procRecord->processType_ = ProcRecordType::EXTENSION;
             procRecord->extensionType_ = extensionType;
             break;
-        case processType == static_cast<int32_t>(ProcessType::GPU):
+        case static_cast<int32_t>(ProcessType::GPU):
             procRecord->processType_ = ProcRecordType::GPU;
             procRecord->hostPid_ = hostPid;
             app->AddHostProcess(hostPid);
