@@ -30,19 +30,6 @@ SocPerfExecutorWirteNode& SocPerfExecutorWirteNode::GetInstance()
     return instance;
 }
 
-SocPerfExecutorWirteNode::SocPerfExecutorWirteNode() {}
-
-SocPerfExecutorWirteNode::~SocPerfExecutorWirteNode()
-{
-    for (auto it = fdInfo_.begin(); it != fdInfo_.end(); ++it) {
-        int fd = it->second;
-        if (fd >= 0) {
-            close(fd);
-        }
-    }
-    fdInfo_.clear();
-}
-
 void SocPerfExecutorWirteNode::InitThreadWraps()
 {
     socPerfConfig_.Init();
