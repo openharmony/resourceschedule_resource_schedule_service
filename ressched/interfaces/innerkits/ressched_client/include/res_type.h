@@ -264,8 +264,6 @@ enum : uint32_t {
     ASYNC_RES_TYPE_LAST,
     // first sync resType
     SYNC_RES_TYPE_FIRST = ASYNC_RES_TYPE_LAST,
-    // report to request mutex status
-    SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // thaw one application
     SYNC_RES_TYPE_THAW_ONE_APP,
     // get all suspend state
@@ -274,6 +272,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_THERMAL_DATA,
     // check shoul force kill process,
     SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
+    // report to request mutex status
+    SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
