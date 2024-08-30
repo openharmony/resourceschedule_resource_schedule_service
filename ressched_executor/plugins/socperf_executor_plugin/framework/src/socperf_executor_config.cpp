@@ -14,7 +14,12 @@
  */
 #include "socperf_executor_config.h"
 
+#include <chrono>
+#include <dlfcn.h>
+
 #include "config_policy_utils.h"
+#include "hisysevent.h"
+#include "hitrace_meter.h"
 #include "socperf_common.h"
 #include "socperf_log.h"
 
@@ -38,7 +43,7 @@ SocPerfConfig::~SocPerfConfig() {}
 bool SocPerfConfig::Init()
 {
     if (!LoadConfigXmlFile(SOCPERF_RESOURCE_CONFIG_XML)) {
-        SOC_PERF_LOGE("Failed to load %{private}s", SOCPERF_RESOURCE_CONFIG_XML.c_str());
+        SOC_PERF_LOGE("Failed to load %{public}s", SOCPERF_RESOURCE_CONFIG_XML.c_str());
         return false;
     }
     PrintCachedInfo();
@@ -70,7 +75,7 @@ std::string SocPerfConfig::GetRealConfigPath(const std::string& configFile)
     char tmpPath[PATH_MAX + 1] = {0};
     if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
         !realpath(configFilePath, tmpPath)) {
-        SOC_PERF_LOGE("load %{private}s file fail", configFile.c_str());
+        SOC_PERF_LOGE("load %{public}s file fail", configFile.c_str());
         return "";
     }
     return std::string(tmpPath);
@@ -108,7 +113,7 @@ bool SocPerfConfig::LoadConfigXmlFile(const std::string& configFile)
         return false;
     }
     xmlFreeDoc(file);
-    SOC_PERF_LOGD("Success to Load %{private}s", configFile.c_str());
+    SOC_PERF_LOGD("Success to Load %{public}s", configFile.c_str());
     return true;
 }
 
@@ -209,7 +214,7 @@ bool SocPerfConfig::LoadFreqResourceContent(int32_t persistMode, xmlNode* greatG
     xmlFree(def);
     xmlFree(path);
     if (node && !LoadResourceAvailable(resNode, node)) {
-        SOC_PERF_LOGE("Invalid resource node for %{private}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource node for %{public}s", configFile.c_str());
         xmlFree(node);
         return false;
     }
@@ -278,7 +283,7 @@ bool SocPerfConfig::TraversalGovResource(int32_t persistMode, xmlNode* greatGran
         if (!xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("default"))) {
             char* def = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
             if (!def || !IsNumber(def)) {
-                SOC_PERF_LOGE("Invalid governor resource default for %{private}s", configFile.c_str());
+                SOC_PERF_LOGE("Invalid governor resource default for %{public}s", configFile.c_str());
                 xmlFree(def);
                 return false;
             }
@@ -288,7 +293,7 @@ bool SocPerfConfig::TraversalGovResource(int32_t persistMode, xmlNode* greatGran
             !xmlStrcmp(greatGrandson->name, reinterpret_cast<const xmlChar*>("path"))) {
             char* path = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
             if (!path) {
-                SOC_PERF_LOGE("Invalid governor resource path for %{private}s", configFile.c_str());
+                SOC_PERF_LOGE("Invalid governor resource path for %{public}s", configFile.c_str());
                 return false;
             }
             govResNode->paths.push_back(path);
@@ -300,7 +305,7 @@ bool SocPerfConfig::TraversalGovResource(int32_t persistMode, xmlNode* greatGran
             char* node = reinterpret_cast<char*>(xmlNodeGetContent(greatGrandson));
             if (!level || !IsNumber(level) || !node
                 || !LoadGovResourceAvailable(govResNode, level, node)) {
-                SOC_PERF_LOGE("Invalid governor resource node for %{private}s", configFile.c_str());
+                SOC_PERF_LOGE("Invalid governor resource node for %{public}s", configFile.c_str());
                 xmlFree(level);
                 xmlFree(node);
                 return false;
@@ -329,19 +334,19 @@ bool SocPerfConfig::CheckResourceTag(const char* id, const char* name, const cha
     const char* persistMode, const std::string& configFile) const
 {
     if (!id || !IsNumber(id) || !IsValidRangeResId(atoi(id))) {
-        SOC_PERF_LOGE("Invalid resource id for %{private}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource id for %{public}s", configFile.c_str());
         return false;
     }
     if (!name) {
-        SOC_PERF_LOGE("Invalid resource name for %{private}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource name for %{public}s", configFile.c_str());
         return false;
     }
     if (pair && (!IsNumber(pair) || !IsValidRangeResId(atoi(pair)))) {
-        SOC_PERF_LOGE("Invalid resource pair for %{private}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource pair for %{public}s", configFile.c_str());
         return false;
     }
     if (mode && !IsNumber(mode)) {
-        SOC_PERF_LOGE("Invalid resource mode for %{private}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource mode for %{public}s", configFile.c_str());
         return false;
     }
     return CheckResourcePersistMode(persistMode, configFile);
@@ -350,7 +355,7 @@ bool SocPerfConfig::CheckResourceTag(const char* id, const char* name, const cha
 bool SocPerfConfig::CheckResourcePersistMode(const char* persistMode, const std::string& configFile) const
 {
     if (persistMode && (!IsNumber(persistMode) || !IsValidPersistMode(atoi(persistMode)))) {
-        SOC_PERF_LOGE("Invalid resource persistMode for %{private}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource persistMode for %{public}s", configFile.c_str());
         return false;
     }
     return true;
@@ -360,11 +365,11 @@ bool SocPerfConfig::CheckResourceTag(int32_t persistMode, const char* def,
     const char* path, const std::string& configFile) const
 {
     if (!def || !IsNumber(def)) {
-        SOC_PERF_LOGE("Invalid resource default for %{private}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource default for %{public}s", configFile.c_str());
         return false;
     }
     if (persistMode != REPORT_TO_PERFSO && !path) {
-        SOC_PERF_LOGE("Invalid resource path for %{private}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid resource path for %{public}s", configFile.c_str());
         return false;
     }
     return true;
@@ -419,15 +424,15 @@ bool SocPerfConfig::CheckGovResourceTag(const char* id, const char* name,
     const char* persistMode, const std::string& configFile) const
 {
     if (!id || !IsNumber(id) || !IsValidRangeResId(atoi(id))) {
-        SOC_PERF_LOGE("Invalid governor resource id for %{private}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid governor resource id for %{public}s", configFile.c_str());
         return false;
     }
     if (!name) {
-        SOC_PERF_LOGE("Invalid governor resource name for %{private}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid governor resource name for %{public}s", configFile.c_str());
         return false;
     }
     if (persistMode && (!IsNumber(persistMode) || !IsValidPersistMode(atoi(persistMode)))) {
-        SOC_PERF_LOGE("Invalid governor resource persistMode for %{private}s", configFile.c_str());
+        SOC_PERF_LOGE("Invalid governor resource persistMode for %{public}s", configFile.c_str());
         return false;
     }
     return true;

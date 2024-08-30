@@ -37,8 +37,6 @@ private:
     SocPerfConfig &socPerfConfig_ = SocPerfConfig::GetInstance();
     std::unordered_map<std::string, int32_t> fdInfo_;
 private:
-    SocPerfExecutorWirteNode();
-    ~SocPerfExecutorWirteNode();
     void InitResourceNodeInfo(std::shared_ptr<ResourceNode> resourceNode);
     void UpdateResIdCurrentValue(int32_t resId, int64_t currValue);
     void UpdateCurrentValue(int32_t resId, int64_t currValue);
