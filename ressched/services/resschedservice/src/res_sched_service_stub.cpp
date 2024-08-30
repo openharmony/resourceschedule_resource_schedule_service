@@ -66,12 +66,10 @@ namespace {
         ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
         ResType::RES_TYPE_REPORT_RENDER_THREAD,
         ResType::RES_TYPE_LONG_FRAME,
+        ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
         ResType::RES_TYPE_REPORT_DISTRIBUTE_TID,
-        ResType::RES_TYPE_REPORT_VSYNC_TID,
-        ResType::RES_TYPE_WEB_DRAG_RESIZE,
         ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE,
         ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
-        ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
     };
     static const std::unordered_set<uint32_t> saRes_ = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
@@ -111,25 +109,41 @@ namespace {
         ResType::RES_TYPE_MMI_INPUT_STATE,
         ResType::RES_TYPE_ANCO_CUST,
         ResType::RES_TYPE_TIMEZONE_CHANGED,
+        ResType::RES_TYPE_CONNECTION_OBSERVER,
+        ResType::RES_TYPE_AV_SESSION_ON_SESSION_CREATE,
+        ResType::RES_TYPE_AV_SESSION_ON_SESSION_RELEASE,
+        ResType::RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE,
+        ResType::RES_TYPE_ON_APP_STATE_CHANGED,
+        ResType::RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED,
+        ResType::RES_TYPE_AV_CODEC_STATE,
+        ResType::RES_TYPE_NITZ_TIME_CHANGED,
+        ResType::RES_TYPE_TIME_CHANGED,
+        ResType::RES_TYPE_NITZ_TIMEZONE_CHANGED,
+        ResType::RES_TYPE_CHARGING_DISCHARGING,
+        ResType::RES_TYPE_USB_DEVICE,
+        ResType::RES_TYPE_CALL_STATE_CHANGED,
+        ResType::RES_TYPE_WIFI_P2P_STATE_CHANGED,
         ResType::RES_TYPE_APP_ASSOCIATED_START,
         ResType::RES_TYPE_THERMAL_STATE,
-        ResType::RES_TYPE_REPORT_SCREEN_CAPTURE,
+        ResType::RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
+        ResType::RES_TYPE_SOCPERF_CUST_EVENT_END,
         ResType::RES_TYPE_KEY_PERF_SCENE,
         ResType::RES_TYPE_SUPER_LAUNCHER,
         ResType::RES_TYPE_CAST_SCREEN,
         ResType::RES_TYPR_SCREEN_COLLABROATION,
+        ResType::RES_TYPE_REPORT_SCREEN_CAPTURE,
         ResType::RES_TYPE_SA_CONTROL_APP_EVENT,
+        ResType::RES_TYPE_LOCATION_STATUS_CHANGE,
+        ResType::RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE,
         ResType::RES_TYPE_SYSTEM_CPU_LOAD,
         ResType::RES_TYPE_UPLOAD_DOWNLOAD,
         ResType::RES_TYPE_SPLIT_SCREEN,
         ResType::RES_TYPE_FLOATING_WINDOW,
         ResType::RES_TYPE_FRAME_RATE_REPORT,
-        ResType::RES_TYPE_LOCATION_STATUS_CHANGE,
-        ResType::RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE,
-        ResType::RES_TYPE_FORM_STATE_CHANGE_EVENT,
-        ResType::RES_TYPE_THERMAL_SCENARIO_REPORT,
         ResType::RES_TYPE_BOOT_COMPLETED,
         ResType::RES_TYPE_CONTINUOUS_STARTUP,
+        ResType::RES_TYPE_THERMAL_SCENARIO_REPORT,
+        ResType::RES_TYPE_FORM_STATE_CHANGE_EVENT,
         ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
         ResType::RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK,
         ResType::RES_TYPE_REPORT_GAME_SCHED,
@@ -289,7 +303,8 @@ int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel
     }
     uint32_t accessToken = IPCSkeleton::GetCallingTokenID();
     int32_t uid = IPCSkeleton::GetCallingUid();
-    Security::AccessToken::ATokenTypeEnum tokenTypeFlag = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(accessToken);
+    Security::AccessToken::ATokenTypeEnum tokenTypeFlag =
+        Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(accessToken);
     if ((uid != MEMMGR_UID && uid != SAMGR_UID && uid != HIVIEW_UID)
         || tokenTypeFlag != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
         RESSCHED_LOGE("no permission， kill process fail");
@@ -351,7 +366,6 @@ bool ResSchedServiceStub::IsAllowedAppPreloadInner(MessageParcel& data, MessageP
     if (!IsValidToken(data)) {
         return false;
     }
-
     AccessToken::AccessTokenID tokenId = IPCSkeleton::GetCallingTokenID();
     int32_t uid = IPCSkeleton::GetCallingUid();
     AccessToken::ATokenTypeEnum tokenTypeFlag = AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
@@ -366,7 +380,6 @@ bool ResSchedServiceStub::IsAllowedAppPreloadInner(MessageParcel& data, MessageP
         RESSCHED_LOGE("IsAllowedAppPreloadInner ReadParcelable failed");
         return false;
     }
-
     bool isAllowedPreload = IsAllowedAppPreload(bundleName, preloadMode);
     if (!reply.WriteBool(isAllowedPreload)) {
         RESSCHED_LOGE("IsAllowedAppPreloadInner write isAllowedPreload failed");
