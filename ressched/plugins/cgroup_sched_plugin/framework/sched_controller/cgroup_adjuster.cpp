@@ -107,7 +107,8 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
     for (const auto &iter : app.GetPidsMap()) {
         const auto &procRecord = iter.second;
         if (procRecord && ((procRecord->processType_ == ProcRecordType::RENDER) ||
-            (procRecord->processType_ == ProcRecordType::GPU))) {
+            (procRecord->processType_ == ProcRecordType::GPU) ||
+            (procRecord->processType_ == ProcRecordType::CHILD))) {
             auto hostProcRecord = app.GetProcessRecord(procRecord->hostPid_);
             if (!hostProcRecord || (procRecord->hostPid_ != pr.GetPid())) {
                 continue;
@@ -133,7 +134,8 @@ void CgroupAdjuster::AdjustAllProcessGroup(Application &app, AdjustSource source
         const auto &procRecord = iter.second;
         if (procRecord && (procRecord->processType_ != ProcRecordType::RENDER) &&
             (procRecord->processType_ != ProcRecordType::GPU) &&
-            (procRecord->processType_ != ProcRecordType::LINUX)) {
+            (procRecord->processType_ != ProcRecordType::LINUX) &&
+            (procRecord->processType_ != ProcRecordType::CHILD)) {
             AdjustProcessGroup(app, *procRecord, source);
         }
     }
