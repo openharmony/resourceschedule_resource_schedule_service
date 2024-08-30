@@ -56,7 +56,7 @@ void ResSchedUtils::LoadUtils()
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "ResSchedUtils dlsym 'ReportDataInProcess' in " + 
+                        "ERR_MSG", "ResSchedUtils dlsym 'ReportDataInProcess' in " +
 						RES_SCHED_SERVICE_SO + " failed!");
         dlclose(handle);
         return;
