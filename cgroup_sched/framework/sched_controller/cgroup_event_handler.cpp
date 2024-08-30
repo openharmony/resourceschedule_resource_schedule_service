@@ -74,7 +74,7 @@ void CgroupEventHandler::ProcessEvent(const AppExecFwk::InnerEvent::Pointer& eve
                 this->SendEvent(event, DELAYED_RETRY_REGISTER_DURATION);
                 if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
-                    HiviewDFX::HiSysEvent::EventType::FAULT,
+                        HiviewDFX::HiSysEvent::EventType::FAULT,
                     "COMPONENT_NAME", "MAIN",
                     "ERR_TYPE", "register failure",
                     "ERR_MSG", "Subscribe app status change observer failed.");
