@@ -205,9 +205,7 @@ enum : uint32_t {
     // report silent playback
     RES_TYPE_AUDIO_SILENT_PLAYBACK = 86,
     // report display mode event, value status, payload mode.
-    RES_TYPE_DEVICE_MODE_STATUS = 87,
-    // report systemload level
-    RES_TYPE_SYSTEMLOAD_LEVEL = 88,
+    RES_TYPE_DEVICE_MODE_STATUS = 88,
     // report distribute component change
     RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE = 89,
     // report web drag resize
