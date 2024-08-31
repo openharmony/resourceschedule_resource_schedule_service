@@ -205,9 +205,7 @@ enum : uint32_t {
     // report silent playback
     RES_TYPE_AUDIO_SILENT_PLAYBACK = 86,
     // report display mode event, value status, payload mode.
-    RES_TYPE_DEVICE_MODE_STATUS = 87,
-    // report systemload level
-    RES_TYPE_SYSTEMLOAD_LEVEL = 88,
+    RES_TYPE_DEVICE_MODE_STATUS = 88,
     // report distribute component change
     RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE = 89,
     // report web drag resize
@@ -270,8 +268,10 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
     // get thermal data
     SYNC_RES_TYPE_GET_THERMAL_DATA,
+    // check shoul force kill process,
+    SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
     // report to request mutex status
-    RES_TYPE_REQUEST_MUTEX_STATUS,
+    SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
@@ -300,8 +300,6 @@ enum EventValue : uint32_t {
     EVENT_VALUE_DRAW_FRAME_REPORT_STOP,
     EVENT_VALUE_DDR_BOUND_REPORT_START,
     EVENT_VALUE_DDR_BOUND_REPORT_STOP,
-    EVENT_VALUE_DDR_BOUND_REPORT_REPORT,
-    EVENT_VALUE_HEAVY_LOAD_MUTEX_REPORT,
     EVENT_VALUE_END,
 };
 
