@@ -29,6 +29,7 @@
     SetListFlingEndTime;
     SetListFlingSpeedLimit;
     SetSlideNormalDetectingTime;
+    SetBlockedTime;
   local:
     *;
 };

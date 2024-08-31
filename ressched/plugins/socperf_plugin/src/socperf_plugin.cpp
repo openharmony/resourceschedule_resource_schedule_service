@@ -69,6 +69,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_LOAD_URL              = 10070;
     const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
     const int32_t PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE       = 10073;
+    const int32_t PERF_REQUEST_CMD_ID_BMM_MONITER_START     = 10081;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -193,6 +194,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleAppColdStartEx(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_SCENE_ROTATION,
         [this](const std::shared_ptr<ResData>& data) { HandleSceneRotation(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_BMM_MONITER_CHANGE_EVENT,
+        [this](const std::shared_ptr<ResData>& data) { HandleBmmMoniterStatus(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
@@ -230,6 +233,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_SOCPERF_CUST_EVENT_END,
         RES_TYPE_ONLY_PERF_APP_COLD_START,
         RES_TYPE_SCENE_ROTATION,
+        RES_TYPE_BMM_MONITER_CHANGE_EVENT,
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -355,7 +359,7 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
     SOC_PERF_LOGD("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
     static int counter = 0;
     static uint64_t lastTime = 0;
-    if (data->value == SlideEventStatus::SLIDE_EVENT_ON) {
+    if (data->value == SlideEventStatus::SLIDE_EVENT_ON || data->value == SlideEventStatus::SLIDE_NORMAL_BEGIN) {
         auto now = std::chrono::system_clock::now();
         uint64_t curMs = static_cast<uint64_t>(
             std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
@@ -365,15 +369,11 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
         lastTime = curMs;
         counter++;
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, true, "");
-    } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
+    } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF || data->value == SlideEventStatus::SLIDE_NORMAL_END) {
         counter--;
         if (counter == 0) {
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, false, "");
         }
-    } else if (data->value == SlideEventStatus::SLIDE_NORMAL_BEGIN) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER, true, "");
-    } else if (data->value == SlideEventStatus::SLIDE_NORMAL_END) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER, false, "");
     }
 }
 
@@ -623,6 +623,24 @@ bool SocPerfPlugin::HandleSceneRotation(const std::shared_ptr<ResData> &data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_ROTATION, false, "");
     }
     return true;
+}
+
+bool SocPerfPlugin::HandleBmmMoniterStatus(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->PERF_REQUEST_CMD_ID_BMM_MONITER_CHANGE: %{public}lld",
+        (long long)data->value);
+    if (data->value == BmmMoniterStatus::BMM_BACKGROUND) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_BMM_MONITER_START, true, "");
+        return true;
+    }
+    if (data->value == BmmMoniterStatus::BMM_CLOSE) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_BMM_MONITER_START, false, "");
+        return true;
+    }
+    return false;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)

@@ -45,6 +45,7 @@ namespace {
     static const std::string ABBR_SP_FOREGROUND = "fg";
     static const std::string ABBR_SP_SYSTEM_BACKGROUND = "sy";
     static const std::string ABBR_SP_TOP_APP = "ta";
+    constexpr const char * const JSON_KEY_CGROUPS = "Cgroups";
 }
 
 CgroupAction& CgroupAction::GetInstance()
@@ -213,30 +214,36 @@ int CgroupAction::GetSchedPolicyByName(const std::string& name, SchedPolicy* pol
 
 bool CgroupAction::ParseConfigFileToJsonObj(nlohmann::json& jsonObjRoot)
 {
-    char buf[PATH_MAX + 1];
-    char* configFilePath = GetOneCfgFile(CGROUP_SETTING_CONFIG_FILE, buf, PATH_MAX + 1);
-    char tmpPath[PATH_MAX + 1] = {0};
-    if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
-        !realpath(configFilePath, tmpPath)) {
-        PGCGS_LOGE("%{public}s: read cgroup_action_config.json failed", __func__);
-        return false;
+    bool result = false;
+    auto cfgFilePaths = GetCfgFiles(CGROUP_SETTING_CONFIG_FILE);
+    if (!cfgFilePaths) {
+        return result;
     }
-    std::string realConfigFile(tmpPath);
-    std::string jsonString;
-    if (!ReadFileToString(realConfigFile, jsonString)) {
-        PGCGS_LOGE("%{public}s: read config file failed", __func__);
-        return false;
+    for (const auto& configFilePath : cfgFilePaths->paths) {
+        char tmpPath[PATH_MAX + 1] = {0};
+        if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
+            !realpath(configFilePath, tmpPath)) {
+            continue;
+        }
+        std::string realConfigFile(tmpPath);
+        std::string jsonString;
+        if (!ReadFileToString(realConfigFile, jsonString)) {
+            continue;
+        }
+        if (jsonString.empty()) {
+            continue;
+        }
+        nlohmann::json jsonTemp = nlohmann::json::parse(jsonString, nullptr, false);
+        if (jsonTemp.is_discarded()) {
+            continue;
+        }
+        if (jsonTemp.contains(JSON_KEY_CGROUPS)) {
+            jsonObjRoot = jsonTemp;
+            result = true;
+        }
     }
-
-    if (jsonString.empty()) {
-        return false;
-    }
-    jsonObjRoot = nlohmann::json::parse(jsonString, nullptr, false);
-    if (jsonObjRoot.is_discarded()) {
-        PGCGS_LOGE("%{public}s: json obj parse failed, jsonString=%{public}s", __func__, jsonString.c_str());
-        return false;
-    }
-    return true;
+    FreeCfgFiles(cfgFilePaths);
+    return result;
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule

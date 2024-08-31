@@ -18,13 +18,16 @@
 #include "res_type.h"
 #include "scene_recognize_test.h"
 #include "scene_recognizer_mgr.h"
+#include "slide_recognizer.h"
+#include "continuous_app_install_recognizer.h"
+#include "system_upgrade_scene_recognizer.h"
 
 using namespace std;
 using namespace testing::ext;
 
 namespace OHOS {
 namespace ResourceSchedule {
-
+static uint32_t g_slideState = SlideRecognizeStat::IDLE;
 void SceneRecognizeTest::SetUpTestCase() {}
 
 void SceneRecognizeTest::TearDownTestCase() {}
@@ -53,6 +56,26 @@ HWTEST_F(SceneRecognizeTest, AppInstallTest001, Function | MediumTest | Level0)
     SUCCEED();
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
         ResType::AppInstallStatus::APP_INSTALL_END, payload);
+}
+
+/**
+ * @tc.name: ContinuousAppInstallRecognizer AppInstallTest test
+ * @tc.desc: test the interface OnDispatchResource
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ * @tc.author: fengyang
+ */
+HWTEST_F(SceneRecognizeTest, AppInstallTest002, Function | MediumTest | Level0)
+{
+    auto continuousAppInstallRecognizer = std::make_shared<ContinuousAppInstallRecognizer>();
+    nlohmann::json payload;
+    continuousAppInstallRecognizer->OnDispatchResource(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+        ResType::AppInstallStatus::APP_INSTALL_END, payload);
+    continuousAppInstallRecognizer->OnDispatchResource(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+        ResType::AppInstallStatus::APP_INSTALL_END, payload);
+    continuousAppInstallRecognizer->OnDispatchResource(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+        ResType::AppInstallStatus::APP_INSTALL_START, payload);
+    SUCCEED();
 }
 
 /**
@@ -101,18 +124,27 @@ HWTEST_F(SceneRecognizeTest, BgtaskTest001, Function | MediumTest | Level0)
     bgtaskRecognizer->OnDispatchResource(ResType::RES_TYPE_CONTINUOUS_TASK,
         ResType::ContinuousTaskStatus::CONTINUOUS_TASK_END, payload);
     EXPECT_EQ(bgtaskRecognizer->isInBackgroundPerceivableScene_, false);
+    payload["typeIds"] = { 1, 2 };
+    bgtaskRecognizer->OnDispatchResource(ResType::RES_TYPE_CONTINUOUS_TASK,
+        ResType::ContinuousTaskStatus::CONTINUOUS_TASK_END, payload);
+    bgtaskRecognizer->OnDispatchResource(ResType::RES_TYPE_CONTINUOUS_TASK,
+        -1, payload);
+    bgtaskRecognizer->HandleForeground(ResType::RES_TYPE_CONTINUOUS_TASK,
+        ResType::ContinuousTaskStatus::CONTINUOUS_TASK_END, payload);
+    SUCCEED();
 }
 
 /**
  * @tc.name: SceneRecognizerMgr Slide test
  * @tc.desc: test the interface DispatchResource
  * @tc.type: FUNC
- * @tc.require: issueIA9UZ9
- * @tc.author:baiheng
+ * @tc.require: issuesIAJZVI
+ * @tc.author: fengyang
  */
 HWTEST_F(SceneRecognizeTest, SlideTest001, Function | MediumTest | Level0)
 {
     nlohmann::json payload;
+    payload["clientPid"] = "2000";
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_SLIDE_RECOGNIZE,
         ResType::SlideEventStatus::SLIDE_EVENT_DETECTING, payload);
     SUCCEED();
@@ -125,5 +157,194 @@ HWTEST_F(SceneRecognizeTest, SlideTest001, Function | MediumTest | Level0)
         ResType::ClickEventType::TOUCH_EVENT_PULL_UP, payload);
     SUCCEED();
 }
+
+/**
+ * @tc.name: SystemUpgradeSceneRecognizer Slide test
+ * @tc.desc: test the interface OnDispatchResource
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ * @tc.author: fengyang
+ */
+HWTEST_F(SceneRecognizeTest, SystemUpgradeSceneRecognizer_001, Function | MediumTest | Level0)
+{
+    auto systemUpgradeSceneRecognizer = std::make_shared<SystemUpgradeSceneRecognizer>();
+    systemUpgradeSceneRecognizer->isSystemUpgraded_ = true;
+    int64_t value = 0;
+    nlohmann::json payload;
+    systemUpgradeSceneRecognizer->OnDispatchResource(ResType::RES_TYPE_BOOT_COMPLETED, value, payload);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: SceneRecognizer HandleSlideEvent
+ * @tc.desc: test the interface HandleSlideEvent
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ * @tc.author: fengyang
+ */
+HWTEST_F(SceneRecognizeTest, slideRecognizer_001, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    int64_t value = ResType::SlideEventStatus::SLIDE_EVENT_ON;
+    nlohmann::json payload;
+    payload["clientPid"] = "2000";
+    slideRecognizer->HandleSlideEvent(value, payload);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: SceneRecognizer HandleSlideDetecting_001
+ * @tc.desc: test the interface HandleSlideDetecting
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ * @tc.author: fengyang
+ */
+HWTEST_F(SceneRecognizeTest, HandleSlideDetecting_001, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    nlohmann::json payload;
+    slideRecognizer->HandleSlideDetecting(payload);
+    payload["clientPid"] = "2000";
+    slideRecognizer->HandleListFlingStart(payload);
+    g_slideState = SlideRecognizeStat::LIST_FLING;
+    slideRecognizer->HandleSlideDetecting(payload);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: SceneRecognizer HandleListFlingStart_001
+ * @tc.desc: test the interface HandleListFlingStart
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ * @tc.author: fengyang
+ */
+HWTEST_F(SceneRecognizeTest, HandleListFlingStart_001, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    nlohmann::json payload;
+    payload["clientPid"] = "2000";
+    g_slideState = SlideRecognizeStat::LIST_FLING;
+    slideRecognizer->HandleListFlingStart(payload);
+    slideRecognizer->HandleListFlingStart(payload);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: SceneRecognizer HandleSendFrameEvent_001
+ * @tc.desc: test the interface HandleSendFrameEvent
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ * @tc.author: fengyang
+ */
+HWTEST_F(SceneRecognizeTest, HandleSendFrameEvent_001, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    nlohmann::json payload;
+    payload["clientPid"] = "2000";
+    g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
+    slideRecognizer->HandleSendFrameEvent(payload);
+    g_slideState = SlideRecognizeStat::LIST_FLING;
+    slideRecognizer->HandleSendFrameEvent(payload);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: SceneRecognizer HandleClickEvent_001
+ * @tc.desc: test the interface HandleClickEvent
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ * @tc.author: fengyang
+ */
+HWTEST_F(SceneRecognizeTest, HandleClickEvent_001, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    int64_t value = ResType::SlideEventStatus::SLIDE_EVENT_ON;
+    nlohmann::json payload;
+    g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
+    slideRecognizer->HandleClickEvent(value, payload);
+    g_slideState = SlideRecognizeStat::SLIDE_NORMAL;
+    slideRecognizer->HandleClickEvent(value, payload);
+    payload["clientPid"] = "2000";
+    payload["up_speed"] = std::to_string(slideRecognizer->listFlingTimeOutTime_ + 1);
+    slideRecognizer->HandleClickEvent(value, payload);
+    slideRecognizer->HandleClickEvent(value, payload);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: SceneRecognizer FillRealPid_001
+ * @tc.desc: test the interface FillRealPid
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ * @tc.author: fengyang
+ */
+HWTEST_F(SceneRecognizeTest, FillRealPid_001, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    nlohmann::json payload;
+    auto result = slideRecognizer->FillRealPid(payload);
+    EXPECT_EQ(payload, result);
+}
+
+/**
+ * @tc.name: SceneRecognizer SetListFlingTimeoutTime_001
+ * @tc.desc: test the interface SetListFlingTimeoutTime
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ * @tc.author: fengyang
+ */
+HWTEST_F(SceneRecognizeTest, SetListFlingTimeoutTime_001, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    int64_t value = 100;
+    slideRecognizer->SetListFlingTimeoutTime(value);
+    EXPECT_EQ(slideRecognizer->listFlingTimeOutTime_, value);
+}
+
+/**
+ * @tc.name: SceneRecognizer SetListFlingEndTime_001
+ * @tc.desc: test the interface SetListFlingEndTime
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ * @tc.author: fengyang
+ */
+HWTEST_F(SceneRecognizeTest, SetListFlingEndTime_001, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    int64_t value = 100;
+    slideRecognizer->SetListFlingEndTime(value);
+    EXPECT_EQ(slideRecognizer->listFlingEndTime_, value);
+}
+
+/**
+ * @tc.name: SceneRecognizer SetListFlingSpeedLimit_001
+ * @tc.desc: test the interface SetListFlingSpeedLimit
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ * @tc.author: fengyang
+ */
+HWTEST_F(SceneRecognizeTest, SetListFlingSpeedLimit_001, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    int64_t value = 100;
+    slideRecognizer->SetListFlingSpeedLimit(value);
+    EXPECT_EQ(slideRecognizer->listFlingSpeedLimit_, value);
+}
+
+/**
+ * @tc.name: SceneRecognizer SetSlideNormalDetectingTime_001
+ * @tc.desc: test the interface SetSlideNormalDetectingTime
+ * @tc.type: FUNC
+ * @tc.require: issuesIAJZVI
+ * @tc.author: fengyang
+ */
+HWTEST_F(SceneRecognizeTest, SetSlideNormalDetectingTime_001, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    int64_t value = 100;
+    slideRecognizer->SetSlideNormalDetectingTime(value);
+    EXPECT_EQ(slideRecognizer->slideNormalDecectingTime_, value);
+}
+
 } // namespace ResourceSchedule
 } // namespace OHOS

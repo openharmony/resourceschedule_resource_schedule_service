@@ -34,6 +34,7 @@ namespace {
     const std::map<uint32_t, std::string> resTypeToStr = {
         { ResType::SYNC_RES_TYPE_THAW_ONE_APP, "SYNC_RES_TYPE_THAW_ONE_APP"},
         { ResType::SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE, "SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE"},
+        { ResType::SYNC_RES_TYPE_GET_THERMAL_DATA, "SYNC_RES_TYPE_GET_THERMAL_DATA"},
         { ResType::RES_TYPE_SCREEN_STATUS, "SCREEN_STATUS" },
         { ResType::RES_TYPE_APP_STATE_CHANGE, "APP_STATE_CHANGE" },
         { ResType::RES_TYPE_ABILITY_STATE_CHANGE, "ABILITY_STATE_CHANGE" },
@@ -122,16 +123,18 @@ namespace {
         { ResType::RES_TYPE_LOCATION_STATUS_CHANGE, "RES_TYPE_LOCATION_STATUS_CHANGE"},
         { ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK, "RES_TYPE_AUDIO_SILENT_PLAYBACK" },
         { ResType::RES_TYPE_DEVICE_MODE_STATUS, "RES_TYPE_DEVICE_MODE_STATUS"},
-        { ResType::RES_TYPE_SYSTEMLOAD_LEVEL, "RES_TYPE_SYSTEMLOAD_LEVEL"},
         { ResType::RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE, "RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE"},
         { ResType::RES_TYPE_FORM_STATE_CHANGE_EVENT, "RES_TYPE_FORM_STATE_CHANGE_EVENT"},
         { ResType::RES_TYPE_POWER_MODE_CHANGED, "RES_TYPE_POWER_MODE_CHANGED" },
         { ResType::RES_TYPE_THERMAL_SCENARIO_REPORT, "RES_TYPE_THERMAL_SCENARIO_REPORT" },
+        { ResType::SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS, "SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS" },
         { ResType::RES_TYPE_BOOT_COMPLETED, "RES_TYPE_BOOT_COMPLETED" },
         { ResType::RES_TYPE_CONTINUOUS_STARTUP, "RES_TYPE_CONTINUOUS_STARTUP" },
         { ResType::RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK, "RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK"},
         { ResType::RES_TYPE_REPORT_GAME_SCHED, "RES_TYPE_REPORT_GAME_SCHED" },
-        { ResType::RES_TYPE_REPORT_VSYNC_TID, "RES_TYPE_REPORT_VSYNC_TID" }
+        { ResType::RES_TYPE_REPORT_VSYNC_TID, "RES_TYPE_REPORT_VSYNC_TID" },
+        { ResType::RES_TYPE_BT_SERVICE_EVENT, "RES_TYPE_BT_SERVICE_EVENT"},
+        { ResType::RES_TYPE_APP_FRAME_DROP, "RES_TYPE_APP_FRAME_DROP"},
     };
 }
 
@@ -146,7 +149,7 @@ void ResSchedMgr::Init()
         killProcess_ = std::make_shared<KillProcess>();
     }
 
-    InitExecutorPlugin();
+    InitExecutorPlugin(true);
 }
 
 void ResSchedMgr::Stop()
@@ -177,12 +180,21 @@ int32_t ResSchedMgr::KillProcessByClient(const nlohmann::json& payload)
     return killProcess_->KillProcessByPidWithClient(payload);
 }
 
-void ResSchedMgr::InitExecutorPlugin()
+void ResSchedMgr::InitExecutorPlugin(bool isProcessInit)
 {
+    std::vector<std::string> configStrs = PluginMgr::GetInstance().GetConfigReaderStr();
+    std::vector<std::string> switchStrs = PluginMgr::GetInstance().GetPluginSwitchStr();
+
     nlohmann::json payload;
-    payload["config"] = PluginMgr::GetInstance().GetConfigReaderStr();
-    payload["switch"] = PluginMgr::GetInstance().GetPluginSwitchStr();
-    ResSchedExeClient::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT, 0, payload);
+    nlohmann::json context;
+    payload["config"] = configStrs;
+    payload["switch"] = switchStrs;
+    ResSchedExeClient::GetInstance().SendRequestSync(ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT, 0, payload, context);
+
+    if (isProcessInit) {
+        PluginMgr::GetInstance().ParseConfigReader(configStrs);
+        PluginMgr::GetInstance().ParsePluginSwitch(switchStrs);
+    }
 }
 
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)

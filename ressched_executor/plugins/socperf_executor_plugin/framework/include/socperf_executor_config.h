@@ -39,7 +39,9 @@ private:
     SocPerfConfig();
     ~SocPerfConfig();
     std::string GetRealConfigPath(const std::string& configFile);
-    bool LoadConfigXmlFile(const std::string& configFile);
+    std::vector<std::string> GetAllRealConfigPath(const std::string& configFile);
+    bool LoadAllConfigXmlFile(const std::string& configFile);
+    bool LoadConfigXmlFile(const std::string& realConfigFile);
     bool ParseResourceXmlFile(const xmlNode* rootNode, const std::string& realConfigFile, xmlDoc* file);
     bool LoadResource(xmlNode* rootNode, const std::string& configFile);
     bool TraversalFreqResource(xmlNode* grandson, const std::string& configFile);

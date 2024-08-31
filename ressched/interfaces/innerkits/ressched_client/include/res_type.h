@@ -205,9 +205,7 @@ enum : uint32_t {
     // report silent playback
     RES_TYPE_AUDIO_SILENT_PLAYBACK = 86,
     // report display mode event, value status, payload mode.
-    RES_TYPE_DEVICE_MODE_STATUS = 87,
-    // report systemload level
-    RES_TYPE_SYSTEMLOAD_LEVEL = 88,
+    RES_TYPE_DEVICE_MODE_STATUS = 88,
     // report distribute component change
     RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE = 89,
     // report web drag resize
@@ -252,6 +250,14 @@ enum : uint32_t {
     RES_TYPE_MMI_STATUS_CHANGE = 109,
     // report media output device change
     RES_TYPE_OUTPUT_DEVICE_CHANGE = 110,
+    // report device idle
+    RES_TYPE_DEVICE_IDLE = 111,
+    // report media output device change
+    RES_TYPE_BT_SERVICE_EVENT = 112,
+    // report to hisi, let bmm_report begin change
+    RES_TYPE_BMM_MONITER_CHANGE_EVENT = 113,
+    // app frame drop event
+    RES_TYPE_APP_FRAME_DROP = 114,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -260,6 +266,12 @@ enum : uint32_t {
     SYNC_RES_TYPE_THAW_ONE_APP,
     // get all suspend state
     SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
+    // get thermal data
+    SYNC_RES_TYPE_GET_THERMAL_DATA,
+    // check shoul force kill process,
+    SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
+    // report to request mutex status
+    SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
@@ -277,6 +289,8 @@ enum SystemAbilityStatus : int64_t {
 enum EventType : uint32_t {
     EVENT_START = 0,
     EVENT_DRAW_FRAME_REPORT,
+    EVENT_MUTEX_STATUS,
+    EVENT_DDR_BOUND_CHANGE_REPORT = 3,
     EVENT_END,
 };
 
@@ -284,7 +298,14 @@ enum EventValue : uint32_t {
     EVENT_VALUE_START = 0,
     EVENT_VALUE_DRAW_FRAME_REPORT_START,
     EVENT_VALUE_DRAW_FRAME_REPORT_STOP,
+    EVENT_VALUE_DDR_BOUND_REPORT_START,
+    EVENT_VALUE_DDR_BOUND_REPORT_STOP,
     EVENT_VALUE_END,
+};
+
+enum AppFrameDropType : int32_t {
+    JANK_FRAME_APP = 1,    // 通用丢帧
+    INTERACTION_APP_JANK,  // 动效丢帧
 };
 
 /**
@@ -334,6 +355,7 @@ enum ProcessStatus : int64_t {
 enum TransientTaskStatus : int64_t {
     TRANSIENT_TASK_START = 0,
     TRANSIENT_TASK_END = 1,
+    TRANSIENT_TASK_ERR = 2,
 };
 
 /**
@@ -819,6 +841,69 @@ enum GameSchedStatus : int64_t {
     GAME_SCHED_START = 0,
     GAME_SCHED_STOP = 1,
 };
+
+/**
+ * @brief device idle status
+ */
+enum DeviceIdleStatus : int64_t {
+    DEVICE_IDLE_START = 0,
+};
+
+/**
+ * @brief bt service status
+ */
+enum BtServiceEvent : int64_t {
+    GATT_CONNECT_STATE = 0,
+    GATT_APP_REGISTER = 1,
+    SPP_CONNECT_STATE = 2
+};
+
+/**
+ * @brief LargeModelScene
+ */
+enum LargeModelScene : int64_t {
+    ENTER_LARGE_MODEL_SCENE = 0,
+    EXIT_LARGE_MODEL_SCENE = 1,
+};
+
+/**
+ * @brief Bmm status
+ */
+enum BmmMoniterStatus : int64_t {
+    BMM_CLOSE = 0,
+    BMM_FOREGROUND = 1,
+    BMM_BACKGROUND = 2
+};
+
+/**
+ * @brief Heavy Load Mutex Scene
+ */
+enum HeavyLoadMutexAddScene : int64_t {
+    MUTEX_STATUS_REQUIRE = 0,
+    MUTEX_STATUS_RELEASE = 1,
+};
+
+/**
+ * @brief Heavy Load Mutex Reasons
+ */
+enum HeavyLoadMutexAddReasons : int64_t {
+    HeavyLoadMutexStatusAddSucc = 0,
+    HeavyLoadMutexStatusAddFailByAdded = 1,
+    HeavyLoadMutexStatusAddFailByMutex = 2,
+    HeavyLoadMutexStatusAddFailByParams = 3,
+    HeavyLoadMutexStatusCloseFailByUnopened = 4,
+    HeavyLoadMutexStatusCloseSucc = 0,
+};
+
+/**
+ * @brief Heavy Load Mutex Boardcast Scene
+ */
+enum HeavyLoadMutexSceneBoardcastScene : int64_t {
+    HeavyLoadMutexBoardcastNeedProactiveAvoidance = 0,
+    HeavyLoadMutexBoardcastNeedProactiveDownspeeding = 1,
+    HeavyLoadMutexBoardcastNeedCancelDownspeeding = 2,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS

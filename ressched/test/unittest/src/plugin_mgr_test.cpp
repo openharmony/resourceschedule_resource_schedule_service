@@ -31,6 +31,10 @@ namespace {
     const string LIB_NAME = "libunittest_plugin.z.so";
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+atomic<bool> PluginMgrTest::isBlocked = false;
+#endif
+
 void PluginMgrTest::SetUpTestCase() {}
 
 void PluginMgrTest::TearDownTestCase() {}
@@ -67,6 +71,32 @@ std::string PluginMgrTest::GetSubItemValue(std::string PluginName, std::string c
     }
     return subItemValue;
 }
+
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+std::shared_ptr<PluginLib> PluginMgrTest::GetTestPlugin()
+{
+    PluginLib libInfo;
+    libInfo.onDispatchResourceFunc_ = [](const std::shared_ptr<ResData>& data) {
+        while (PluginMgrTest::isBlocked.load()) {}
+    };
+    return  make_shared<PluginLib>(libInfo);
+}
+
+void PluginMgrTest::LoadTestPlugin()
+{
+    auto plugin = GetTestPlugin();
+    PluginMgr::GetInstance().pluginLibMap_.emplace(LIB_NAME, *plugin);
+    PluginMgr::GetInstance().SubscribeResource(LIB_NAME, ResType::RES_TYPE_SLIDE_RECOGNIZE);
+    auto callback = [pluginName = LIB_NAME, time = PluginMgr::GetInstance().pluginBlockTime]() {
+        PluginMgr::GetInstance().HandlePluginTimeout(pluginName);
+        ffrt::submit([pluginName]() {
+            PluginMgr::GetInstance().EnablePluginIfResume(pluginName);
+            }, {}, {}, ffrt::task_attr().delay(time));
+    };
+    PluginMgr::GetInstance().dispatchers_.emplace(LIB_NAME, std::make_shared<ffrt::queue>(LIB_NAME.c_str(),
+        ffrt::queue_attr().timeout(PluginMgr::GetInstance().pluginBlockTime).callback(callback)));
+}
+#endif
 
 /**
  * @tc.name: Plugin mgr test Init 001
@@ -230,10 +260,12 @@ HWTEST_F(PluginMgrTest, UnSubscribeResource003, TestSize.Level1)
 HWTEST_F(PluginMgrTest, DispatchResource001, TestSize.Level1)
 {
     pluginMgr_->Init();
+#ifndef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     if (pluginMgr_->dispatcher_ == nullptr) {
         pluginMgr_->dispatcher_ = std::make_shared<AppExecFwk::EventHandler>(
             AppExecFwk::EventRunner::Create("rssDispatcher"));
     }
+#endif
     nlohmann::json payload;
     auto data = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
         ResType::AppStartType::APP_COLD_START, payload);
@@ -251,10 +283,12 @@ HWTEST_F(PluginMgrTest, DispatchResource001, TestSize.Level1)
  */
 HWTEST_F(PluginMgrTest, DispatchResource002, TestSize.Level1)
 {
+#ifndef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     if (PluginMgr::GetInstance().dispatcher_ == nullptr) {
         PluginMgr::GetInstance().dispatcher_ = std::make_shared<AppExecFwk::EventHandler>(
             AppExecFwk::EventRunner::Create("rssDispatcher"));
     }
+#endif
     nlohmann::json payload;
     auto data = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
         ResType::AppStartType::APP_COLD_START, payload);
@@ -583,7 +617,9 @@ HWTEST_F(PluginMgrTest, DumPluginInfoAppend_001, TestSize.Level1)
 HWTEST_F(PluginMgrTest, DispatchResource003, TestSize.Level1)
 {
     nlohmann::json payload;
+#ifndef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     PluginMgr::GetInstance().dispatcher_ = nullptr;
+#endif
     auto data = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
         ResType::AppStartType::APP_COLD_START, payload);
     PluginMgr::GetInstance().UnSubscribeResource("test", ResType::RES_TYPE_APP_ABILITY_START);
@@ -740,5 +776,32 @@ HWTEST_F(PluginMgrTest, ParsePluginSwitchr001, TestSize.Level0)
     pluginMgr_->ParsePluginSwitch(switchStrs);
     SUCCEED();
 }
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+/**
+ * @tc.name: Plugin mgr test DispatchResource
+ * @tc.desc: Plugin mgr test DispatchResource when plugin blocked.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PluginMgrTest, DispatchResource006, TestSize.Level0)
+{
+    PluginMgr::GetInstance().Init();
+    auto switchStrs = PluginMgr::GetInstance().GetPluginSwitchStr();
+    PluginMgr::GetInstance().ParsePluginSwitch(switchStrs);
+    PluginMgr::GetInstance().pluginBlockTime = 10 * 1000 * 1000;
+    LoadTestPlugin();
+    SUCCEED();
+    isBlocked = true;
+    nlohmann::json payload;
+    auto data = std::make_shared<ResData>(ResType::RES_TYPE_SLIDE_RECOGNIZE,
+        ResType::SlideEventStatus::SLIDE_EVENT_ON, payload);
+    std::list<std::string> pluginList = { LIB_NAME };
+    PluginMgr::GetInstance().DispatchResourceToPluginAsync(pluginList, data);
+    sleep(30);
+    EXPECT_TRUE(!PluginMgr::GetInstance().disablePlugins_.empty());
+    isBlocked = false;
+    sleep(15);
+    EXPECT_TRUE(PluginMgr::GetInstance().disablePlugins_.empty());
+}
+#endif
 } // namespace ResourceSchedule
 } // namespace OHOS

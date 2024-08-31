@@ -67,16 +67,18 @@ namespace {
         ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
         ResType::RES_TYPE_REPORT_RENDER_THREAD,
         ResType::RES_TYPE_LONG_FRAME,
-        ResType::RES_TYPE_REPORT_DISTRIBUTE_TID,
         ResType::RES_TYPE_REPORT_VSYNC_TID,
         ResType::RES_TYPE_WEB_DRAG_RESIZE,
         ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE,
         ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
         ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
+        ResType::RES_TYPE_BT_SERVICE_EVENT,
+        ResType::RES_TYPE_APP_FRAME_DROP,
     };
     static const std::unordered_set<uint32_t> saRes_ = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
         ResType::SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
+        ResType::SYNC_RES_TYPE_GET_THERMAL_DATA,
         ResType::RES_TYPE_SCREEN_STATUS,
         ResType::RES_TYPE_APP_STATE_CHANGE,
         ResType::RES_TYPE_ABILITY_STATE_CHANGE,
@@ -131,11 +133,15 @@ namespace {
         ResType::RES_TYPE_THERMAL_SCENARIO_REPORT,
         ResType::RES_TYPE_BOOT_COMPLETED,
         ResType::RES_TYPE_CONTINUOUS_STARTUP,
-        ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
         ResType::RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK,
         ResType::RES_TYPE_REPORT_GAME_SCHED,
         ResType::RES_TYPE_SEND_FRAME_EVENT,
         ResType::RES_TYPE_CLOUD_CONFIG_UPDATE,
+        ResType::RES_TYPE_DEVICE_IDLE,
+        ResType::RES_TYPE_BT_SERVICE_EVENT,
+        ResType::RES_TYPE_BMM_MONITER_CHANGE_EVENT,
+        ResType::SYNC_RES_TYPE_REQUEST_MUTEX_STATUS,
+        ResType::SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";

@@ -303,14 +303,14 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t host
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
     app->SetName(bundleName);
     if (processType == static_cast<int32_t>(ProcessType::RENDER)) {
-        procRecord->isRenderProcess_ = true;
+        procRecord->processType_ = ProcRecordType::RENDER;
         procRecord->hostPid_ = hostPid;
         app->AddHostProcess(hostPid);
     } else if (processType == static_cast<int32_t>(ProcessType::EXTENSION)) {
-        procRecord->isExtensionProcess_ = true;
+        procRecord->processType_ = ProcRecordType::EXTENSION;
         procRecord->extensionType_ = extensionType;
     } else if (processType == static_cast<int32_t>(ProcessType::GPU)) {
-        procRecord->isGPUProcess_ = true;
+        procRecord->processType_ = ProcRecordType::GPU;
         procRecord->hostPid_ = hostPid;
         app->AddHostProcess(hostPid);
         app->pidofGPUProcess_ = pid;
@@ -876,20 +876,40 @@ void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value,
             }
             break;
         }
-        case ResType::RES_TYPE_REPORT_SCREEN_CAPTURE: {
-            if (value == ResType::ScreenCaptureStatus::START_SCREEN_CAPTURE) {
-                procRecord->screenCaptureState_ = true;
-            } else {
-                procRecord->screenCaptureState_ = false;
-            }
-            CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-                AdjustSource::ADJS_REPORT_SCREEN_CAPTURE);
-            break;
-        }
         default: {
             break;
         }
     }
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+        resType, static_cast<int32_t>(value));
+}
+
+void CgroupEventHandler::HandleReportScreenCaptureEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr.", __func__);
+        return;
+    }
+
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+        return;
+    }
+    if (uid <= 0 || pid <= 0) {
+        return;
+    }
+    std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
+        return;
+    }
+
+    procRecord->screenCaptureState_ = (value == ResType::ScreenCaptureStatus::START_SCREEN_CAPTURE);
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_REPORT_SCREEN_CAPTURE);
+
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
         resType, static_cast<int32_t>(value));
 }
@@ -951,7 +971,8 @@ void CgroupEventHandler::HandleSceneBoardState(uint32_t resType, int64_t value, 
 
 bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc)
 {
-    return pr.isRenderProcess_ && pr.isActive_ && !mainProc.GetWindowInfoNonNull(pr.linkedWindowId_)->isVisible_;
+    return (pr.processType_ == ProcRecordType::RENDER) && pr.isActive_ &&
+        !mainProc.GetWindowInfoNonNull(pr.linkedWindowId_)->isVisible_;
 }
 
 void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload)

@@ -177,6 +177,31 @@ namespace {
         return true;
     }
 
+    bool SyncEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= MIN_LEN) {
+            return false;
+        }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        MessageParcel fuzzData;
+        fuzzData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
+        fuzzData.WriteBuffer(g_data + g_pos, g_size - g_pos);
+        fuzzData.RewindRead(0);
+        MessageParcel fuzzReply;
+        DelayedSingleton<ResSchedService>::GetInstance()->ReportSyncEventInner(fuzzData, fuzzReply);
+        return true;
+    }
+
     bool ResSchedClientFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -323,6 +348,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     /* Run your code on data */
     OHOS::ResourceSchedule::DoSomethingInterestingWithMyAPI(data, size);
     OHOS::ResourceSchedule::OnRemoteRequest(data, size);
+    OHOS::ResourceSchedule::SyncEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ResSchedClientFuzzTest(data, size);
     OHOS::ResourceSchedule::OnSystemloadLevelFuzzTest(data, size);
     OHOS::ResourceSchedule::NotifierMgrFuzzTest(data, size);
