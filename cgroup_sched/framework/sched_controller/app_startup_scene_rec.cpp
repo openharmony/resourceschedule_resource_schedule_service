@@ -57,7 +57,8 @@ bool AppStartupSceneRec::IsAppStartUp(int32_t abilityState)
     return abilityState == APP_START_UP;
 }
 
-void AppStartupSceneRec::RecordIsContinuousStartup(int32_t abilityState, std::string uid, std::string bundleName)
+void AppStartupSceneRec::RecordIsContinuousStartup(const int32_t abilityState, const std::string uid,
+    const std::string bundleName)
 {
     if (!IsAppStartUp(abilityState)) {
         CGS_LOGE("abilityState is not app startUp");
@@ -80,8 +81,8 @@ void AppStartupSceneRec::RecordIsContinuousStartup(int32_t abilityState, std::st
     UpdateAppStartupNum(uid, curTime, bundleName);
     if (IsContinuousStartup() && !isReportContinuousStartup_.load()) {
         nlohmann::json payload;
-        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CONTINUOUS_STARTUP,
-            ResType::ContinuousStartupStatus::START_CONTINUOUS_STARTUP, payload);
+        ResSchedUtils::GetInstance().ReportDataInProcess(
+            ResType::RES_TYPE_CONTINUOUS_STARTUP, ResType::ContinuousStartupStatus::START_CONTINUOUS_STARTUP, payload);
         isReportContinuousStartup_ = true;
     }
     exitContinuousStartupTask = ffrtQueue_->submit_h([this] {
@@ -103,7 +104,8 @@ void AppStartupSceneRec::CleanRecordSceneData()
         isReportContinuousStartup_ = false;
     }
 }
-void AppStartupSceneRec::UpdateAppStartupNum(std::string uid, int64_t curTime, std::string bundleName)
+void AppStartupSceneRec::UpdateAppStartupNum(const std::string uid, const int64_t curTime,
+    const std::string bundleName)
 {
     std::unique_lock<ffrt::mutex> lock(mutex_);
     lastAppStartTime_ = curTime;

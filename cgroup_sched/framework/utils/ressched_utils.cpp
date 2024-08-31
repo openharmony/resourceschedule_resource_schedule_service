@@ -44,7 +44,7 @@ void ResSchedUtils::LoadUtils()
     if (!handle) {
         CGS_LOGW("%{public}s load %{public}s failed!", __func__, RES_SCHED_SERVICE_SO.c_str());
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
+                        "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "ResSchedUtils dlopen " + RES_SCHED_SERVICE_SO + " failed!");
         return;
@@ -54,9 +54,10 @@ void ResSchedUtils::LoadUtils()
     if (!reportFunc_) {
         CGS_LOGW("%{public}s load function:ReportDataInProcess failed!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
+                        "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "ResSchedUtils don't found dlsym " + RES_SCHED_SERVICE_SO + "!");
+                        "ERR_MSG", "ResSchedUtils dlsym 'ReportDataInProcess' in " +
+						RES_SCHED_SERVICE_SO + " failed!");
         dlclose(handle);
         return;
     }
@@ -77,7 +78,7 @@ void ResSchedUtils::LoadUtilsExtra()
     if (!handle) {
         CGS_LOGD("%{public}s load %{public}s failed! errno:%{public}d", __func__, RES_SCHED_CG_EXT_SO.c_str(), errno);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", RES_SCHED_CG_EXT_SO,
+                        "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "ResSchedUtils dlopen " + RES_SCHED_CG_EXT_SO + " failed!");
         return;
@@ -88,9 +89,9 @@ void ResSchedUtils::LoadUtilsExtra()
     if (!reportArbitrationResultFunc_) {
         CGS_LOGD("%{public}s load function:ReportArbitrationResult failed! errno:%{public}d", __func__, errno);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", RES_SCHED_CG_EXT_SO,
+                        "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "ResSchedUtils don't found dlsym " + RES_SCHED_CG_EXT_SO + "!");
+                        "ERR_MSG", "ResSchedUtils dlsym 'ReportArbitrationResult' in " + RES_SCHED_CG_EXT_SO + "!");
         dlclose(handle);
         return;
     }
@@ -100,9 +101,9 @@ void ResSchedUtils::LoadUtilsExtra()
     if (!dispatchResourceExtFunc_) {
         CGS_LOGD("%{public}s load function:DispatchResourceExt failed! errno:%{public}d", __func__, errno);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", RES_SCHED_CG_EXT_SO,
+                        "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "ResSchedUtils don't found dlsym " + RES_SCHED_CG_EXT_SO + "!");
+                        "ERR_MSG", "ResSchedUtils dlsym 'DispatchResourceExt' in " + RES_SCHED_CG_EXT_SO + "!");
         dlclose(handle);
         return;
     }
@@ -112,7 +113,7 @@ void ResSchedUtils::LoadUtilsExtra()
     if (!reportSysEventFunc_) {
         CGS_LOGD("%{public}s load function:ReportSysEvent failed! errno:%{public}d", __func__, errno);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", RES_SCHED_CG_EXT_SO,
+                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
                         "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "ResSchedUtils don't found ReportSysEvent in " + RES_SCHED_CG_EXT_SO + "!");
         dlclose(handle);
@@ -147,6 +148,21 @@ void ResSchedUtils::ReportSysEvent(Application &app, ProcessRecord &pr, uint32_t
     reportSysEventFunc_(app, pr, resType, state);
 }
 
+bool ResSchedUtils::CheckTidIsInPid(int32_t pid, int32_t tid)
+{
+    nlohmann::json payload;
+    payload["pid"] = pid;
+    payload["tid"] = tid;
+    nlohmann::json reply;
+    ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(
+        ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT, 0, payload, reply);
+    std::string resStr{"res"};
+    if (!reply.contains(resStr) || !reply[resStr].is_boolean()) {
+        return false;
+    }
+    return reply[resStr];
+}
+
 std::string ResSchedUtils::GetProcessFilePath(int32_t uid, std::string bundleName, int32_t pid)
 {
     if (uid < 0 || pid < 0) {
@@ -177,21 +193,6 @@ void ResSchedUtils::DispatchResourceExt(uint32_t resType, int64_t value, const n
         return;
     }
     dispatchResourceExtFunc_(resType, value, payload);
-}
-
-bool ResSchedUtils::CheckTidIsInPid(int32_t pid, int32_t tid)
-{
-    nlohmann::json payload;
-    payload["pid"] = pid;
-    payload["tid"] = tid;
-    nlohmann::json reply;
-    ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(
-        ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT, 0, payload, reply);
-    std::string resStr{"res"};
-    if (!reply.contains(resStr) || !reply[resStr].is_boolean()) {
-        return false;
-    }
-    return reply[resStr];
 }
 
 void ResSchedUtils::ReportAppStateInProcess(int32_t state, int32_t pid)

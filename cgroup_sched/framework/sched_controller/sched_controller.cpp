@@ -45,7 +45,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    const std::string CG_HANDLER_QUEUE = "CgroupEventHandlerQueue";
+    const std::string CG_HANDLER_THREAD = "CgroupEventHandler";
 }
 
 #ifdef CONFIG_BGTASK_MGR
@@ -83,6 +83,7 @@ void SchedController::Init()
 void SchedController::Deinit()
 {
     if (cgHandler_) {
+        cgHandler_->RemoveAllEvents();
         cgHandler_ = nullptr;
     }
     if (supervisor_) {
@@ -193,7 +194,7 @@ std::string SchedController::GetBundleNameByUid(const int32_t uid)
 
 inline void SchedController::InitCgroupHandler()
 {
-    cgHandler_ = std::make_shared<CgroupEventHandler>(CG_HANDLER_QUEUE);
+    cgHandler_ = std::make_shared<CgroupEventHandler>(OHOS::AppExecFwk::EventRunner::Create(CG_HANDLER_THREAD));
     cgHandler_->SetSupervisor(supervisor_);
 }
 
@@ -207,15 +208,6 @@ inline void SchedController::InitSupervisor()
     supervisor_ = std::make_shared<Supervisor>();
 }
 
-inline void SchedController::InitAppStartupSceneRec()
-{
-    AppStartupSceneRec::GetInstance().Init();
-}
-
-inline void SchedController::DeinitAppStartupSceneRec()
-{
-    AppStartupSceneRec::GetInstance().Deinit();
-}
 void SchedController::InitDispatchResFuncMap()
 {
     dispatchResFuncMap_ = {
@@ -250,6 +242,16 @@ void SchedController::InitDispatchResFuncMap()
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleReportWebviewVideoState(resType, value, payload); } },
     };
+}
+
+inline void SchedController::InitAppStartupSceneRec()
+{
+    AppStartupSceneRec::GetInstance().Init();
+}
+
+inline void SchedController::DeinitAppStartupSceneRec()
+{
+    AppStartupSceneRec::GetInstance().Deinit();
 }
 
 bool SchedController::SubscribeAppState()
@@ -336,10 +338,13 @@ void SchedController::SubscribeWindowState()
     if (!windowStateObserver_) {
         windowStateObserver_ = new (std::nothrow)WindowStateObserver();
         if (windowStateObserver_) {
-            if (OHOS::Rosen::WindowManagerLite::GetInstance().
-            RegisterFocusChangedListener(windowStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
-                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+            OHOS::Rosen::WMError ret =
+                OHOS::Rosen::WindowManagerLite::GetInstance().RegisterFocusChangedListener(windowStateObserver_);
+            if (ret != OHOS::Rosen::WMError::WM_OK) {
+                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                                HiviewDFX::HiSysEvent::EventType::FAULT,
+                                "COMPONENT_NAME", "MAIN",
+								"ERR_TYPE", "register failure",
                                 "ERR_MSG", "Register a listener of window focus change failed.");
             }
         }
@@ -347,10 +352,13 @@ void SchedController::SubscribeWindowState()
     if (!windowVisibilityObserver_) {
         windowVisibilityObserver_ = new (std::nothrow)WindowVisibilityObserver();
         if (windowVisibilityObserver_) {
-            if (OHOS::Rosen::WindowManagerLite::GetInstance().
-            RegisterVisibilityChangedListener(windowVisibilityObserver_) != OHOS::Rosen::WMError::WM_OK) {
-                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+            OHOS::Rosen::WMError ret = OHOS::Rosen::WindowManagerLite::GetInstance().
+				RegisterVisibilityChangedListener(windowVisibilityObserver_);
+            if (ret != OHOS::Rosen::WMError::WM_OK) {
+                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                                HiviewDFX::HiSysEvent::EventType::FAULT,
+                                "COMPONENT_NAME", "MAIN",
+                                "ERR_TYPE", "register failure",
                                 "ERR_MSG", "Register a listener of window visibility change failed.");
             }
         }
@@ -378,7 +386,6 @@ void SchedController::SubscribeWindowModeChange()
         if (windowModeObserver_) {
             if (OHOS::Rosen::WindowManagerLite::GetInstance().
                 RegisterWindowModeChangedListener(windowModeObserver_) != OHOS::Rosen::WMError::WM_OK) {
-                    CGS_LOGE("RegisterWindowModeChangedListener fail");
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS,
                                     "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                                     "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",

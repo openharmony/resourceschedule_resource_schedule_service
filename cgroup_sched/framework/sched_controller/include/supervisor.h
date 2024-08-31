@@ -53,7 +53,7 @@ public:
     int32_t windowType_ = 0;
     uint64_t displayId_ = 0;
     std::shared_ptr<AbilityInfo> ability_ = nullptr;
-    // webview app corresponding with top tab page in this window
+    // webview render app corresponding with top tab page in this window
     uid_t topWebviewRenderUid_ = 0;
 };
 
@@ -118,10 +118,10 @@ public:
     int32_t linkedWindowId_ {-1};
     int32_t serialNum_ {-1};
     int32_t extensionType_ = -1;
+    int32_t mmiStatus_ {-1};
     int32_t cameraState_ = -1;
     int32_t bluetoothState_ = -1;
     int32_t wifiState_ = -1;
-    int32_t mmiStatus_ {-1};
     int32_t hostPid_ = -1;
 
     std::map<uint32_t, bool> runningLockState_;

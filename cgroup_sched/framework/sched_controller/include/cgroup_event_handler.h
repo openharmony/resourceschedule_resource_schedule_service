@@ -17,21 +17,22 @@
 #define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_CGROUP_EVENT_HANDLER_H_
 
 #include <sys/types.h>
-#include "ffrt.h"
-#include "ffrt_inner.h"
+#include "event_handler.h"
 #include "nlohmann/json.hpp"
 #include "supervisor.h"
 #include "wm_common.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
+using OHOS::AppExecFwk::EventHandler;
+using OHOS::AppExecFwk::EventRunner;
 using OHOS::Rosen::WindowType;
 
-class CgroupEventHandler {
+class CgroupEventHandler : public EventHandler {
 public:
-    explicit CgroupEventHandler(const std::string &queueName);
+    explicit CgroupEventHandler(const std::shared_ptr<EventRunner> &runner);
     ~CgroupEventHandler();
-    void ProcessEvent(uint32_t eventId, int64_t eventParam);
+    void ProcessEvent(const AppExecFwk::InnerEvent::Pointer& event) override;
     void SetSupervisor(std::shared_ptr<Supervisor> supervisor);
     void HandleAbilityAdded(int32_t saId, const std::string& deviceId);
     void HandleAbilityRemoved(int32_t saId, const std::string& deviceId);
@@ -69,9 +70,6 @@ public:
     void HandleSceneBoardState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportWebviewVideoState(uint32_t resType, int64_t value, const nlohmann::json& payload);
-    void PostTask(const std::function<void()> task);
-    void PostTask(const std::function<void()> task, const std::string &taskName, const int32_t delayTime);
-    void RemoveTask(const std::string &taskName);
 
 private:
     bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);
@@ -83,10 +81,6 @@ private:
     void UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, int32_t windowId, int32_t state,
         const std::shared_ptr<ProcessRecord>& proc);
     std::shared_ptr<Supervisor> supervisor_;
-    std::shared_ptr<ffrt::queue> cgroupEventQueue_;
-    std::unordered_map<std::string, ffrt::task_handle> delayTaskMap_;
-    ffrt::mutex delayTaskMapMutex_;
-    int32_t ffrtSwitch_ = 1000; // delayTime transfer to ffrt
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
