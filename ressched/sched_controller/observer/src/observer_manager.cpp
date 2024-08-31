@@ -43,6 +43,8 @@
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 #include "avsession_manager.h"
 #endif
+#include <iostream>
+
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -655,9 +657,12 @@ void ObserverManager::InitDownloadUploadObserver()
 
 void ObserverManager::DisableDownloadUploadObserver()
 {
+    std::cout << "DisableDownloadUploadObserver 1: " << (downLoadUploadObserver_ == nullptr) << std::endl;
     OHOS::Request::UnsubscribeRunningTaskCount(downLoadUploadObserver_);
+    std::cout << "DisableDownloadUploadObserver 2:" << std::endl;
     RESSCHED_LOGI("Disable download Upload observer");
     downLoadUploadObserver_ = nullptr;
+    std::cout << "DisableDownloadUploadObserver 3:" << std::endl;
 }
 #endif
 
