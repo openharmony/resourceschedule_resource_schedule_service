@@ -30,6 +30,8 @@
 #include "observer_manager.h"
 #include "download_upload_observer.h"
 
+#include <iostream>
+
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
@@ -833,6 +835,10 @@ HWTEST_F(ObserverEventTest, DisableDownloadUploadObserver_001, testing::ext::Tes
 {
     auto instance = ObserverManager::GetInstance();
     if (instance) {
+        if (instance->downLoadUploadObserver_ == nullptr) {
+            std::cout << "downLoadUploadObserver_ is null" << std::endl;
+            SUCCEED();
+        }
         instance->DisableDownloadUploadObserver();
     }
     SUCCEED();
