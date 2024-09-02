@@ -81,6 +81,19 @@ void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientT
         ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TRANSIENT_TASK_END, payload);
 }
 
+void BackgroundTaskObserver::OnTransientTaskErr(const std::shared_ptr<TransientTaskAppInfo>& info)
+{
+    if (!ValidateTaskInfo(info)) {
+        CGS_LOGE("%{public}s failed, invalid app info!", __func__);
+        return;
+    }
+
+    nlohmann::json payload;
+    MarshallingTransientTaskAppInfo(info, payload);
+    ResSchedUtils::GetInstance().ReportDataInProcess(
+        ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TRANSIENT_TASK_ERR, payload);
+}
+
 void BackgroundTaskObserver::MarshallingContinuousTaskCallbackInfo(
     const std::shared_ptr<ContinuousTaskCallbackInfo>& continuousTaskCallbackInfo, nlohmann::json& payload)
 {
