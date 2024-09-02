@@ -26,7 +26,7 @@ int64_t ResSchedUtils::GetNowMillTime()
         RESSCHED_LOGD("Get now time error ");
         return 0;
     }
-    auto tarEndTimePoint = std::chrono::system_clock::from_time_t(now);
+    auto tarEndTimePoint = std::chrono::steady_clock::now();
     auto tarDuration = std::chrono::duration_cast<std::chrono::milliseconds>(tarEndTimePoint.time_since_epoch());
     int64_t tarDate = tarDuration.count();
     if (tarDate < 0) {
