@@ -67,8 +67,9 @@ int32_t ResSchedEventListenerStub::OnReceiveEventInner(MessageParcel& data, Mess
 {
     uint32_t eventType = 0;
     uint32_t eventValue = 0;
+    uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON;
     std::string extInfo;
-    int32_t ret = ParseAndCheckEventParcel(data, eventType, eventValue, extInfo);
+    int32_t ret = ParseAndCheckEventParcel(data, eventType, eventValue, listenerGroup, extInfo);
     if (ret != ERR_OK) {
         RESSCHED_LOGE("%{public}s: parse fail=%{public}d", __func__, ret);
         return ret;
@@ -78,7 +79,7 @@ int32_t ResSchedEventListenerStub::OnReceiveEventInner(MessageParcel& data, Mess
 }
 
 int32_t ResSchedEventListenerStub::ParseAndCheckEventParcel(MessageParcel& data, uint32_t& eventType,
-    uint32_t& eventValue, std::string& extInfo)
+    uint32_t& eventValue, uint32_t& listenerGroup, std::string& extInfo)
 {
     std::u16string descriptor = IResSchedEventListener::GetDescriptor();
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
@@ -87,6 +88,7 @@ int32_t ResSchedEventListenerStub::ParseAndCheckEventParcel(MessageParcel& data,
     }
     READ_PARCEL(data, Uint32, eventType, ERR_RES_SCHED_PARCEL_ERROR, ResSchedEventListenerStub);
     READ_PARCEL(data, Uint32, eventValue, ERR_RES_SCHED_PARCEL_ERROR, ResSchedEventListenerStub);
+    READ_PARCEL(data, Uint32, listenerGroup, ERR_RES_SCHED_PARCEL_ERROR, ResSchedEventListenerStub);
     READ_PARCEL(data, String, extInfo, ERR_RES_SCHED_PARCEL_ERROR, ResSchedEventListenerStub);
     return ERR_OK;
 }

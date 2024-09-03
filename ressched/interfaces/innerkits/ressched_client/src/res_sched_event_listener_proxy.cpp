@@ -26,14 +26,14 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-void ResSchedEventListenerProxy::OnReceiveEvent(uint32_t eventType, uint32_t eventValue,
+void ResSchedEventListenerProxy::OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup
     const nlohmann::json& extInfo)
 {
     int32_t error;
     MessageParcel data;
     MessageParcel reply;
     MessageOption option = { MessageOption::TF_ASYNC };
-    error = WriteParcelForReceiveEvent(eventType, eventValue, extInfo, data);
+    error = WriteParcelForReceiveEvent(eventType, eventValue, listenerGroup, extInfo, data);
     if (error != NO_ERROR) {
         RESSCHED_LOGE("%{public}s:write parcel error: %{public}d.", __func__, error);
         return;
@@ -48,12 +48,13 @@ void ResSchedEventListenerProxy::OnReceiveEvent(uint32_t eventType, uint32_t eve
 }
 
 int32_t ResSchedEventListenerProxy::WriteParcelForReceiveEvent(const uint32_t eventType,
-    const uint32_t eventValue, const nlohmann::json& extInfo, MessageParcel& data)
+    const uint32_t eventValue, const uint32_t listenerGroup, const nlohmann::json& extInfo, MessageParcel& data)
 {
     WRITE_PARCEL(data, InterfaceToken, ResSchedEventListenerProxy::GetDescriptor(), RES_SCHED_DATA_ERROR,
         ResSchedEventListenerProxy);
     WRITE_PARCEL(data, Uint32, eventType, RES_SCHED_DATA_ERROR, ResSchedEventListenerProxy);
     WRITE_PARCEL(data, Uint32, eventValue, RES_SCHED_DATA_ERROR, ResSchedEventListenerProxy);
+    WRITE_PARCEL(data, Uint32, listenerGroup, RES_SCHED_DATA_ERROR, ResSchedEventListenerProxy);
     WRITE_PARCEL(data, String, extInfo.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace),
         RES_SCHED_DATA_ERROR, ResSchedEventListenerProxy);
     return NO_ERROR;

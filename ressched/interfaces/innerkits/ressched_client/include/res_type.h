@@ -303,6 +303,16 @@ enum EventValue : uint32_t {
     EVENT_VALUE_END,
 };
 
+enum EventListenerGroup : uint32_t {
+    LISTENER_GROUP_BEGIN = 0,
+    LISTENER_GROUP_COMMON = 1,
+    LISTENER_GROUP_LIM = 2,
+    LISTENER_GROUP_GAME = 3,
+    LISTENER_GROUP_CAMERA = 4,
+    LISTENER_GROUP_DH = 5,
+    LISTENER_GROUP_END
+}
+
 enum AppFrameDropType : int32_t {
     JANK_FRAME_APP = 1,    // 通用丢帧
     INTERACTION_APP_JANK,  // 动效丢帧

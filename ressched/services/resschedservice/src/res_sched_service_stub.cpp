@@ -391,17 +391,19 @@ void ResSchedServiceStub::RegisterEventListenerInner(MessageParcel& data,
         return;
     }
     uint32_t eventType = ResType::EventType::EVENT_START;
+    uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON;
     sptr<IRemoteObject> listener =data.ReadRemoteObject();
     if (listener == nullptr) {
         RESSCHED_LOGE("%{public}s:read listener is null.", __func__);
         return;
     }
     READ_PARCEL(data, Uint32, eventType, void(), ResSchedServiceStub);
+    READ_PARCEL(data, Uint32, listenerGroup, void(), ResSchedServiceStub);
     if (listener == nullptr || eventType == ResType::EventType::EVENT_START) {
         RESSCHED_LOGE("%{public}s:parse parcel failed.", __func__);
         return;
     }
-    RegisterEventListener(listener, eventType);
+    RegisterEventListener(listener, eventType, listenerGroup);
 }
 
 void ResSchedServiceStub::UnRegisterEventListenerInner(MessageParcel& data,
@@ -412,8 +414,10 @@ void ResSchedServiceStub::UnRegisterEventListenerInner(MessageParcel& data,
         return;
     }
     uint32_t eventType = ResType::EventType::EVENT_START;
+    uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON;
     READ_PARCEL(data, Uint32, eventType, void(), ResSchedServiceStub);
-    UnRegisterEventListener(eventType);
+    READ_PARCEL(data, Uint32, listenerGroup, void(), ResSchedServiceStub);
+    UnRegisterEventListener(eventType, listenerGroup);
 }
 
 bool ResSchedServiceStub::IsLimitRequest(int32_t uid)

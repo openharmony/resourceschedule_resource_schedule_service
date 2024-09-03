@@ -32,6 +32,7 @@
 #include "system_ability_status_change_stub.h"      // for SystemAbilityStatusChangeStub
 #include "res_sched_event_listener.h"               // for ResSchedEvenetListener
 #include "res_sched_event_listener_stub.h"          // for ResSchedEvenetListenerStub
+#include "res_type.h"                               // for ResType
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -109,7 +110,8 @@ public:
      * @param eventListener event listener object.
      * @param eventType event type.
      */
-    void RegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType);
+    void RegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType, uint32_t listenerGroup =
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
 
     /**
      * @brief UnRegister event listener.
@@ -117,7 +119,8 @@ public:
      * @param eventListener event listener object.
      * @param eventType event type
      */
-    void UnRegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType);
+    void UnRegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType, uint32_t listenerGroup =
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
 
     /**
      * @brief client get systemload level.
@@ -142,6 +145,7 @@ private:
     int32_t InitInnerEventListenerLocked();
     void UnRegisterSystemloadListenersLocked();
     void UnRegisterEventListenerLocked(uint32_t eventType);
+    void RecoverEventListener();
     class SystemloadLevelListener : public ResSchedSystemloadNotifierStub {
     public:
         SystemloadLevelListener() = default;
@@ -158,14 +162,17 @@ private:
     public:
         InnerEventListener() = default;
         virtual ~InnerEventListener();
-        void RegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType);
-        void UnRegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType);
-        void OnReceiveEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json& extInfo) override;
-        bool IsInnerEventMapEmpty(uint32_t eventType);
+        void RegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType,
+            uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+        void UnRegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType,
+            uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+        void OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup,
+            const nlohmann::json& extInfo) override;
+        bool IsInnerEventMapEmpty(uint32_t eventType, uint32_t listenerGroup);
         std::vector<uint32_t> GetRegisteredTypes();
     private:
         std::mutex eventMutex_;
-        std::unordered_map<uint32_t, std::list<sptr<ResSchedEventListener>>> eventListeners_;
+        std::unordered_map<uint32_t, std::unordered_map<uint32_t, std::list<sptr<ResSchedEventListener>>> eventListeners_;
     };
     class ResSchedDeathRecipient : public IRemoteObject::DeathRecipient {
     public:
@@ -188,7 +195,7 @@ private:
     sptr<InnerEventListener> innerEventListener_;
     sptr<ResSchedSvcStatusChange> resSchedSvcStatusListener_;
     bool systemloadCbRegistered_ = false;
-    std::unordered_set<uint32_t> registeredInnerEvents;
+    std::unordered_map<uint32_t, std::list<uint32_t>> registeredInnerEvents;
     DISALLOW_COPY_AND_MOVE(ResSchedClient);
 };
 } // namespace ResourceSchedule

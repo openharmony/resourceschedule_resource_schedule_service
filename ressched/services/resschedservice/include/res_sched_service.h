@@ -37,9 +37,10 @@ public:
 
     void UnRegisterSystemloadNotifier() override;
 
-    void RegisterEventListener(const sptr<IRemoteObject>& eventListener, uint32_t eventType) override;
+    void RegisterEventListener(const sptr<IRemoteObject>& eventListener, uint32_t eventType,
+        uint32_t listenerGroup) override;
 
-    void UnRegisterEventListener(uint32_t eventType) override;
+    void UnRegisterEventListener(uint32_t eventType, uint32_t listenerGroup) override;
 
     int32_t GetSystemloadLevel() override;
 

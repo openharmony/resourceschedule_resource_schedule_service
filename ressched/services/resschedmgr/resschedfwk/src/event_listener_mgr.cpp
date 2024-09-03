@@ -52,7 +52,7 @@ void EventListenerMgr::Deinit()
 }
 
 void EventListenerMgr::RegisterEventListener(int32_t callingPid,
-    const sptr<IRemoteObject>& listener, uint32_t eventType)
+    const sptr<IRemoteObject>& listener, uint32_t eventType, uint32_t listenerGroup)
 {
     RESSCHED_LOGD("%{public}s:called, pid = %{public}d.", __func__, callingPid);
     if (listener == nullptr) {
@@ -66,20 +66,27 @@ void EventListenerMgr::RegisterEventListener(int32_t callingPid,
     std::lock_guard<std::mutex> autoLock(mutex_);
     auto iter = eventListenerMap_.find(eventType);
     if (iter != eventListenerMap_.end() && iter->second.find((pid_t)callingPid) != iter->second.end()) {
-        RESSCHED_LOGE("%{public}s:pid %{public}d has benn registered eventType %{public}d",
-            __func__, callingPid, eventType);
+        if (!iter->second[(pid_t)callingPid].groups.contains(listenerGroup)) {
+            iter->second[(pid_t)callingPid].groups.emplace(listenerGroup);
+            RESSCHED_LOGI("%{public}s:pid = %{public}d register eventType %{public}d group %{public}d succeed.",
+                __func__, callingPid, eventType, listenerGroup);
+        } else {
+            RESSCHED_LOGE("%{public}s:pid %{public}d has benn registered eventType %{public}d group %{public}d",
+                __func__, callingPid, eventType, listenerGroup);
+        }
         return;
     }
     EventListenerInfo info;
     info.listener = listener;
     info.pid = (pid_t)callingPid;
+    info.groups.emplace(listenerGroup);
     eventListenerMap_[eventType][info.pid] = info;
     listener->AddDeathRecipient(eventListenerDeathRecipient_);
-    RESSCHED_LOGI("%{public}s:pid = %{public}d register eventType %{public}d succeed.",
-        __func__, callingPid, eventType);
+    RESSCHED_LOGI("%{public}s:pid = %{public}d register eventType %{public}d group %{public}d succeed.",
+        __func__, callingPid, eventType, listenerGroup);
 }
 
-void EventListenerMgr::UnRegisterEventListener(int32_t callingPid, uint32_t eventType)
+void EventListenerMgr::UnRegisterEventListener(int32_t callingPid, uint32_t eventType, uint32_t listenerGroup)
 {
     RESSCHED_LOGD("%{public}s: called", __func__);
     std::lock_guard<std::mutex> autoLock(mutex_);
@@ -87,6 +94,10 @@ void EventListenerMgr::UnRegisterEventListener(int32_t callingPid, uint32_t even
     if (iter != eventListenerMap_.end()) {
         auto listenerItem = iter->second.find(callingPid);
         if (listenerItem != iter->second.end()) {
+            listenerItem->second.groups.erase(listenerGroup);
+            if (listenerItem->second.groups.erase.size() != 0) {
+                return;
+            }
             listenerItem->second.listener->RemoveDeathRecipient(eventListenerDeathRecipient_);
             iter->second.erase(callingPid);
             if (iter->second.empty()) {
@@ -108,7 +119,8 @@ void EventListenerMgr::OnRemoteListenerDied(const sptr<IRemoteObject>& listener)
     RemoveListenerLock(listener);
 }
 
-void EventListenerMgr::SendEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo)
+void EventListenerMgr::SendEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo,
+    unint32_t listenerGroup)
 {
     RESSCHED_LOGD("%{public}s:called", __func__);
     if (eventType < ResType::EventType::EVENT_START ||
@@ -120,7 +132,7 @@ void EventListenerMgr::SendEvent(uint32_t eventType, uint32_t eventValue, const 
         RESSCHED_LOGE("%{public}s:error due to eventSenderQueue_ null.", __func__);
         return;
     }
-    SendEventLock(eventType, eventValue, extInfo);
+    SendEventLock(eventType, eventValue, extInfo, listenerGroup);
 }
 
 void EventListenerMgr::RemoveListenerLock(const sptr<IRemoteObject>& listener)
@@ -139,7 +151,8 @@ void EventListenerMgr::RemoveListenerLock(const sptr<IRemoteObject>& listener)
     }
 }
 
-void EventListenerMgr::SendEventLock(uint32_t eventType, uint32_t eventValue, const nlohmann::json& extInfo)
+void EventListenerMgr::SendEventLock(uint32_t eventType, uint32_t eventValue, const nlohmann::json& extInfo,
+    uint32_t listenerGroup)
 {
     std::vector<sptr<IRemoteObject>> listenerArray;
     {
@@ -150,10 +163,12 @@ void EventListenerMgr::SendEventLock(uint32_t eventType, uint32_t eventValue, co
             return;
         }
         for (auto& listenerItem : listeners->second) {
-            listenerArray.push_back(listenerItem.second.listener);
+            if (listenerItem.second.groups.contains(listenerGroup)) {
+                listenerArray.push_back(listenerItem.second.listener);
+            }
         }
     }
-    HandleSendEvent(listenerArray, eventType, eventValue, extInfo);
+    HandleSendEvent(listenerArray, eventType, eventValue, extInfo, listenerGroup);
 }
 
 std::unordered_map<int32_t, std::vector<pid_t>> EventListenerMgr::DumpRegisterInfo()
@@ -172,7 +187,7 @@ std::unordered_map<int32_t, std::vector<pid_t>> EventListenerMgr::DumpRegisterIn
 }
 
 void EventListenerMgr::HandleSendEvent(std::vector<sptr<IRemoteObject>>& listenerVec,
-    uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo)
+    uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo, uint32_t listenerGroup)
 {
     auto func = [listenerVec, eventType, eventValue, extInfo] () {
         for (auto& listener : listenerVec) {
@@ -180,7 +195,7 @@ void EventListenerMgr::HandleSendEvent(std::vector<sptr<IRemoteObject>>& listene
                 continue;
             }
             auto proxy = std::make_unique<ResSchedEventListenerProxy>(listener);
-            proxy->OnReceiveEvent(eventType, eventValue, extInfo);
+            proxy->OnReceiveEvent(eventType, eventValue, listenerGroup, extInfo);
         }
     };
     eventSenderQueue_->submit(func);

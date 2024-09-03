@@ -37,22 +37,26 @@ public:
     struct EventListenerInfo {
         sptr<IRemoteObject> listener = nullptr;
         pid_t pid;
+        std::unordered_set<uint32_t> groups;
     };
     using EventListenerMap = std::map<uint32_t, std::map<pid_t, EventListenerInfo>>;
     void Init();
     void Deinit();
-    void RegisterEventListener(int32_t callingPid, const sptr<IRemoteObject>& listener, uint32_t eventType);
-    void UnRegisterEventListener(int32_t callingPid, uint32_t eventType);
+    void RegisterEventListener(int32_t callingPid, const sptr<IRemoteObject>& listener, uint32_t eventType,
+        uint32_t listenerGroup);
+    void UnRegisterEventListener(int32_t callingPid, uint32_t eventType, uint32_t listenerGroup);
     void OnRemoteNotifierDied(const sptr<IRemoteObject>& notifier);
-    void SendEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo);
+    void SendEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo,
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     std::unordered_map<int32_t, std::vector<pid_t>> DumpRegisterInfo();
 private:
     EventListenerMgr() = default;
     ~EventListenerMgr();
     void RemoveListenerLock(const sptr<IRemoteObject>& listener);
-    void SendEventLock(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo);
+    void SendEventLock(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo,
+        uint32_t listenerGroup);
     void HandleSendEvent(std::vector<sptr<IRemoteObject>>& listenerVec,
-        uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo);
+        uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo, uint32_t listenerGroup);
     void OnRemoteListenerDied(const sptr<IRemoteObject>& listener);
 
     bool initialized_ = false;
