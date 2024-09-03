@@ -63,10 +63,10 @@ void EventListenerMgr::RegisterEventListener(int32_t callingPid,
         RESSCHED_LOGE("%{public}s:error due to eventListenerDeathRecipient_ null", __func__);
         return;
     }
-    std::lock_guard<std::mutex> autoLock(mutex_);
+    std::lock_guard<std::mutex> autoLock(mutex_); 
     auto iter = eventListenerMap_.find(eventType);
     if (iter != eventListenerMap_.end() && iter->second.find((pid_t)callingPid) != iter->second.end()) {
-        if (!iter->second[(pid_t)callingPid].groups.contains(listenerGroup)) {
+        if (iter->second[(pid_t)callingPid].groups.count(listenerGroup) == 0) {
             iter->second[(pid_t)callingPid].groups.emplace(listenerGroup);
             RESSCHED_LOGI("%{public}s:pid = %{public}d register eventType %{public}d group %{public}d succeed.",
                 __func__, callingPid, eventType, listenerGroup);
@@ -95,7 +95,7 @@ void EventListenerMgr::UnRegisterEventListener(int32_t callingPid, uint32_t even
         auto listenerItem = iter->second.find(callingPid);
         if (listenerItem != iter->second.end()) {
             listenerItem->second.groups.erase(listenerGroup);
-            if (listenerItem->second.groups.erase.size() != 0) {
+            if (listenerItem->second.groups.size() != 0) {
                 return;
             }
             listenerItem->second.listener->RemoveDeathRecipient(eventListenerDeathRecipient_);
@@ -163,7 +163,7 @@ void EventListenerMgr::SendEventLock(uint32_t eventType, uint32_t eventValue, co
             return;
         }
         for (auto& listenerItem : listeners->second) {
-            if (listenerItem.second.groups.contains(listenerGroup)) {
+            if (listenerItem.second.groups.count(listenerGroup) == 1) {
                 listenerArray.push_back(listenerItem.second.listener);
             }
         }
@@ -189,7 +189,7 @@ std::unordered_map<int32_t, std::vector<pid_t>> EventListenerMgr::DumpRegisterIn
 void EventListenerMgr::HandleSendEvent(std::vector<sptr<IRemoteObject>>& listenerVec,
     uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo, uint32_t listenerGroup)
 {
-    auto func = [listenerVec, eventType, eventValue, extInfo] () {
+    auto func = [listenerVec, eventType, eventValue, extInfo, listenerGroup] () {
         for (auto& listener : listenerVec) {
             if (listener == nullptr) {
                 continue;

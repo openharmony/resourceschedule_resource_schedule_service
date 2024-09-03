@@ -74,7 +74,7 @@ int32_t ResSchedEventListenerStub::OnReceiveEventInner(MessageParcel& data, Mess
         RESSCHED_LOGE("%{public}s: parse fail=%{public}d", __func__, ret);
         return ret;
     }
-    OnReceiveEvent(eventType, eventValue, StringToStringJsonObj(extInfo));
+    OnReceiveEvent(eventType, eventValue, listenerGroup, StringToStringJsonObj(extInfo));
     return ERR_OK;
 }
 

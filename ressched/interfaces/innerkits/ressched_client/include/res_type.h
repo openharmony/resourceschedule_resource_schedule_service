@@ -311,7 +311,7 @@ enum EventListenerGroup : uint32_t {
     LISTENER_GROUP_CAMERA = 4,
     LISTENER_GROUP_DH = 5,
     LISTENER_GROUP_END
-}
+};
 
 enum AppFrameDropType : int32_t {
     JANK_FRAME_APP = 1,    // 通用丢帧

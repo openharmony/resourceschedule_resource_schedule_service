@@ -16,10 +16,11 @@
 #ifndef RESSCHED_SERVICES_RESSCHEDMGR_RESSCHEDFWK_INCLUDE_EVENT_LISTENER_MGR_H
 #define RESSCHED_SERVICES_RESSCHEDMGR_RESSCHEDFWK_INCLUDE_EVENT_LISTENER_MGR_H
 
+#include <list>
 #include <map>
 #include <mutex>
 #include <string>
-#include <list>
+#include <unordered_set>
 #include <vector>
 
 #include "ffrt.h"

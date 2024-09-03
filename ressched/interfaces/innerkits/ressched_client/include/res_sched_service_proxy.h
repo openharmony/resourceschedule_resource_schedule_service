@@ -85,14 +85,16 @@ public:
      * @param listener remote listener object
      * @param eventType the event type
      */
-    void RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType) override;
+    void RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType,
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON) override;
 
     /**
      * @brief UnRegister event listener.
      *
      * @param eventType the event type
      */
-    void UnRegisterEventListener(uint32_t eventType) override;
+    void UnRegisterEventListener(uint32_t eventType,
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON) override;
 public:
     /**
      * @brief Construct a new ResSchedServiceProxy object.

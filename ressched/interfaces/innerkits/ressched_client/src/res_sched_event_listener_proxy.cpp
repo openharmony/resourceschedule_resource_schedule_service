@@ -26,7 +26,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-void ResSchedEventListenerProxy::OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup
+void ResSchedEventListenerProxy::OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup,
     const nlohmann::json& extInfo)
 {
     int32_t error;

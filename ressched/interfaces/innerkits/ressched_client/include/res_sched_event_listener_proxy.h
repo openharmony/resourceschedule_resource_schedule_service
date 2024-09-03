@@ -31,8 +31,8 @@ public:
     void OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup, const nlohmann::json& extInfo) override;
 
 private:
-    int32_t WriteParcelForReceiveEvent(const uint32_t eventType, const uint32_t eventValue,
-        const nlohmann::json& extInfo, MessageParcel& data);
+    int32_t WriteParcelForReceiveEvent(const uint32_t eventType,
+        const uint32_t eventValue, const uint32_t listenerGroup, const nlohmann::json& extInfo, MessageParcel& data);
     DISALLOW_COPY_AND_MOVE(ResSchedEventListenerProxy);
     static inline BrokerDelegator<ResSchedEventListenerProxy> delegator_;
 };
