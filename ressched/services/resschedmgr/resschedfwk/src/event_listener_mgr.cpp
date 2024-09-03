@@ -120,7 +120,7 @@ void EventListenerMgr::OnRemoteListenerDied(const sptr<IRemoteObject>& listener)
 }
 
 void EventListenerMgr::SendEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo,
-    unint32_t listenerGroup)
+    uint32_t listenerGroup)
 {
     RESSCHED_LOGD("%{public}s:called", __func__);
     if (eventType < ResType::EventType::EVENT_START ||

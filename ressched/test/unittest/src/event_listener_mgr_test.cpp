@@ -29,21 +29,24 @@ namespace OHOS {
 namespace ResourceSchedule {
 static constexpr int32_t APP_STATE_EXIT = 4;
 
-class TestEventListener : public ResSchedEventListenerStub {
+class TestEventListener : public   {
 public:
     TestEventListener() = default;
 
-    void OnReceiveEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json& extInfo)
+    void OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup, const nlohmann::json& extInfo)
     {
         eventType_ = eventType;
         eventValue_ = eventValue;
+        listenerGroup_ = listenerGroup;
     }
 
     static uint32_t eventType_;
     static uint32_t eventValue_;
+    static uint32_t listenerGroup_; 
 };
 uint32_t TestEventListener::eventType_ = 0;
 uint32_t TestEventListener::eventValue_ = 0;
+uint32_t TestEventListener::listenerGroup_ = 0;
 void EventListenerMgrTest::SetUpTestCase()
 {
     EventListenerMgr::GetInstance().Init();
@@ -55,8 +58,9 @@ void EventListenerMgrTest::SetUp() {}
 
 void EventListenerMgrTest::TearDown()
 {
-    EventListenerMgr::GetInstance().UnRegisterEventListener(IPCSkeleton::GetCallingPid()
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    EventListenerMgr::GetInstance().UnRegisterEventListener(IPCSkeleton::GetCallingPid(),
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     TestEventListener::eventType_ = 0;
     TestEventListener::eventValue_ = 0;
 }
@@ -73,7 +77,8 @@ HWTEST_F(EventListenerMgrTest, TestEventListener001, Function | MediumTest | Lev
     sptr<IRemoteObject> eventListener = new (std::nothrow) TestEventListener();
     EXPECT_TRUE(eventListener != nullptr);
     EventListenerMgr::GetInstance().RegisterEventListener(IPCSkeleton::GetCallingPid(), eventListener,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON,);
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
@@ -97,7 +102,8 @@ HWTEST_F(EventListenerMgrTest, TestEventListener002, Function | MediumTest | Lev
     EXPECT_TRUE(eventListener != nullptr);
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().RegisterEventListener(IPCSkeleton::GetCallingPid(), eventListener,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP, extInfo);
     sleep(1);
@@ -122,9 +128,11 @@ HWTEST_F(EventListenerMgrTest, RegisterEventListener001, Function | MediumTest |
     EXPECT_TRUE(eventListener != nullptr);
     auto callingPid = IPCSkeleton::GetCallingPid();
     EventListenerMgr::GetInstance().RegisterEventListener(callingPid, eventListener,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     EventListenerMgr::GetInstance().RegisterEventListener(callingPid, eventListener1,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     auto realEventListener = EventListenerMgr::GetInstance().
         eventListenerMap_[ResType::EventType::EVENT_DRAW_FRAME_REPORT][callingPid].listener;
     EXPECT_TRUE(eventListener.GetRefPtr() == realEventListener.GetRefPtr());
@@ -143,9 +151,11 @@ HWTEST_F(EventListenerMgrTest, RegisterEventListener002, Function | MediumTest |
     EXPECT_TRUE(eventListener != nullptr);
     auto callingPid = IPCSkeleton::GetCallingPid();
     EventListenerMgr::GetInstance().RegisterEventListener(callingPid, eventListener,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     EventListenerMgr::GetInstance().RegisterEventListener(callingPid, eventListener,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     auto size = EventListenerMgr::GetInstance().eventListenerMap_.size();
     EXPECT_TRUE(size == 1);
 }
@@ -162,7 +172,8 @@ HWTEST_F(EventListenerMgrTest, RegisterEventListener003, Function | MediumTest |
     sptr<IRemoteObject> eventListener;
     auto callingPid = IPCSkeleton::GetCallingPid();
     EventListenerMgr::GetInstance().RegisterEventListener(callingPid, eventListener,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     SUCCEED();
 }
 
@@ -180,7 +191,8 @@ HWTEST_F(EventListenerMgrTest, RegisterEventListener004, Function | MediumTest |
     auto callingPid = IPCSkeleton::GetCallingPid();
     EventListenerMgr::GetInstance().eventListenerDeathRecipient_ = nullptr;
     EventListenerMgr::GetInstance().RegisterEventListener(callingPid, eventListener,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
 }
 
 /**
@@ -197,9 +209,11 @@ HWTEST_F(EventListenerMgrTest, UnRegisterEventListener001, Function | MediumTest
     EventListenerMgr::GetInstance().Init();
     auto callingPid = IPCSkeleton::GetCallingPid();
     EventListenerMgr::GetInstance().RegisterEventListener(callingPid, eventListener,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     EventListenerMgr::GetInstance().UnRegisterEventListener(callingPid,
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     auto size = EventListenerMgr::GetInstance().eventListenerMap_.size();
     EXPECT_TRUE(size == 0);
 }
@@ -214,7 +228,8 @@ HWTEST_F(EventListenerMgrTest, UnRegisterEventListener001, Function | MediumTest
 HWTEST_F(EventListenerMgrTest, UnRegisterEventListener002, Function | MediumTest | Level0)
 {
     EventListenerMgr::GetInstance().UnRegisterEventListener(IPCSkeleton::GetCallingPid(),
-        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     auto size = EventListenerMgr::GetInstance().eventListenerMap_.size();
     EXPECT_TRUE(size == 0);
 }
@@ -247,11 +262,13 @@ HWTEST_F(EventListenerMgrTest, Dump002, Function | MediumTest | Level0)
     EventListenerMgr::GetInstance().initialized_ = false;
     EventListenerMgr::GetInstance().Init();
     EventListenerMgr::GetInstance().RegisterEventListener(IPCSkeleton::GetCallingPid(),
-        eventListener, ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+        eventListener, ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     auto res = EventListenerMgr::GetInstance().DumpRegisterInfo();
     EXPECT_TRUE(res.size() == 1);
     EventListenerMgr::GetInstance().UnRegisterEventListener(IPCSkeleton::GetCallingPid(),
-         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+         ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+         ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     res = EventListenerMgr::GetInstance().DumpRegisterInfo();
     EXPECT_TRUE(res.size() == 0);
 }
