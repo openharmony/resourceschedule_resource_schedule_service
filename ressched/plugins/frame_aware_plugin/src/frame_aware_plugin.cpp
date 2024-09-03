@@ -167,7 +167,7 @@ void FrameAwarePlugin::HandleCgroupAdjuster(const std::shared_ptr<ResData>& data
     int pid = ConvertToInteger(data, "pid");
     int uid = ConvertToInteger(data, "uid");
     int oldGroup = ConvertToInteger(data, "oldGroup");
-    int oldGroup = ConvertToInteger(data, "newGroup");
+    int newGroup = ConvertToInteger(data, "newGroup");
     if (!data->value) {
         RME::FrameMsgIntf::GetInstance().ReportCgroupChange(pid, uid, oldGroup, newGroup);
     }
@@ -244,8 +244,8 @@ void FrameAwarePlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
         return;
     }
 
-    int pid = ConvertToInteger(data, "pid");
-    int uid = ConvertToInteger(data, "uid");
+    int pid = ConvertToInteger(data, "clientPid");
+    int uid = ConvertToInteger(data, "callingUid");
     RME::FrameMsgIntf::GetInstance().ReportSlideEvent(pid, uid, data->value);
 }
 
