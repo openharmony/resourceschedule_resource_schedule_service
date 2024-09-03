@@ -287,7 +287,7 @@ void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
     }
 }
 
-int FrameAwarePlugin::ConvertToInteger(const std::shared_ptr<ResData>& data, char* idtype)
+int FrameAwarePlugin::ConvertToInteger(const std::shared_ptr<ResData>& data, const char* idtype)
 {
     char* endPtr = nullptr;
     int result = strtol(data->payload[idtype].get<std::string>().c_str(), &endPtr, DECIMAL);

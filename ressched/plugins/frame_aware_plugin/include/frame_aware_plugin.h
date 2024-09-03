@@ -53,7 +53,7 @@ private:
     void HandleScreenLock(const std::shared_ptr<ResData>& data);
     void HandleScreenStatus(const std::shared_ptr<ResData>& data);
     void HandleInteractionScene(const std::shared_ptr<ResData>& data);
-    int ConvertToInteger(const std::shared_ptr<ResData>& data, char* idtype);
+    int ConvertToInteger(const std::shared_ptr<ResData>& data, const char* idtype);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
