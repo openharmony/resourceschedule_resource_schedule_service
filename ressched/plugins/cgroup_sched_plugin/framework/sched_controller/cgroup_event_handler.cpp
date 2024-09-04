@@ -302,18 +302,28 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t host
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
     app->SetName(bundleName);
-    if (processType == static_cast<int32_t>(ProcessType::RENDER)) {
-        procRecord->processType_ = ProcRecordType::RENDER;
-        procRecord->hostPid_ = hostPid;
-        app->AddHostProcess(hostPid);
-    } else if (processType == static_cast<int32_t>(ProcessType::EXTENSION)) {
-        procRecord->processType_ = ProcRecordType::EXTENSION;
-        procRecord->extensionType_ = extensionType;
-    } else if (processType == static_cast<int32_t>(ProcessType::GPU)) {
-        procRecord->processType_ = ProcRecordType::GPU;
-        procRecord->hostPid_ = hostPid;
-        app->AddHostProcess(hostPid);
-        app->pidofGPUProcess_ = pid;
+    switch (processType) {
+        case static_cast<int32_t>(ProcessType::RENDER):
+            procRecord->processType_ = ProcRecordType::RENDER;
+            procRecord->hostPid_ = hostPid;
+            app->AddHostProcess(hostPid);
+            break;
+        case static_cast<int32_t>(ProcessType::EXTENSION):
+            procRecord->processType_ = ProcRecordType::EXTENSION;
+            procRecord->extensionType_ = extensionType;
+            break;
+        case static_cast<int32_t>(ProcessType::GPU):
+            procRecord->processType_ = ProcRecordType::GPU;
+            procRecord->hostPid_ = hostPid;
+            app->AddHostProcess(hostPid);
+            break;
+        case static_cast<int32_t>(ProcessType::CHILD):
+            procRecord->processType_ = ProcRecordType::CHILD;
+            procRecord->hostPid_ = hostPid;
+            app->AddHostProcess(hostPid);
+            break;
+        default:
+            break;
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_CREATE);
