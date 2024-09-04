@@ -510,8 +510,8 @@ std::unordered_map<uint32_t, std::list<uint32_t>> ResSchedClient::InnerEventList
     std::lock_guard<std::mutex> lock(eventMutex_);
     for (auto item : eventListeners_) {
         ret.emplace(item.first, std::list<uint32_t>());
-        for(auto listenerItem : item.second) {
-            ret[item.first].emplace_back(listenerItem.first);    
+        for (auto listenerItem : item.second) {
+            ret[item.first].emplace_back(listenerItem.first);
         }
     }
     return ret;

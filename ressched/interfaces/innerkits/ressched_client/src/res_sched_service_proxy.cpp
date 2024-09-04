@@ -143,7 +143,8 @@ void ResSchedServiceProxy::RegisterSystemloadNotifier(const sptr<IRemoteObject>&
     RESSCHED_LOGD("%{public}s, success.", __func__);
 }
 
-void ResSchedServiceProxy::RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType, uint32_t group)
+void ResSchedServiceProxy::RegisterEventListener(const sptr<IRemoteObject>& listener,
+    uint32_t eventType, uint32_t group)
 {
     int32_t error;
     MessageParcel data;

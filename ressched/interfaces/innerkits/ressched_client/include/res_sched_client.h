@@ -110,8 +110,8 @@ public:
      * @param eventListener event listener object.
      * @param eventType event type.
      */
-    void RegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType, uint32_t listenerGroup =
-        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+    void RegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType,
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
 
     /**
      * @brief UnRegister event listener.
@@ -119,8 +119,8 @@ public:
      * @param eventListener event listener object.
      * @param eventType event type
      */
-    void UnRegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType, uint32_t listenerGroup =
-        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+    void UnRegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType,
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
 
     /**
      * @brief client get systemload level.
@@ -175,7 +175,7 @@ private:
         std::unordered_map<uint32_t, std::unordered_map<uint32_t,
             std::list<sptr<ResSchedEventListener>>>> eventListeners_;
     };
-    class ResSchedDeathRecipient : public IRemoteObject::DeathRecipient { 
+    class ResSchedDeathRecipient : public IRemoteObject::DeathRecipient {
     public:
         explicit ResSchedDeathRecipient(ResSchedClient &resSchedClient);
 

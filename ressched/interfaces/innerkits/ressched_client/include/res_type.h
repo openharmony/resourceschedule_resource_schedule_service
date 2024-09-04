@@ -272,6 +272,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
     // report to request mutex status
     SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
+    // report to check mutex before start
+    SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START = 501,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
@@ -291,6 +293,7 @@ enum EventType : uint32_t {
     EVENT_DRAW_FRAME_REPORT,
     EVENT_MUTEX_STATUS,
     EVENT_DDR_BOUND_CHANGE_REPORT = 3,
+    EVENT_MUTEX_STATUS_BEFORE_START = 4,
     EVENT_END,
 };
 

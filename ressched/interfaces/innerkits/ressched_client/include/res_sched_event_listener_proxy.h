@@ -28,7 +28,8 @@ public:
         : IRemoteProxy<IResSchedEventListener>(impl) {}
     virtual ~ResSchedEventListenerProxy() = default;
 
-    void OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup, const nlohmann::json& extInfo) override;
+    void OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup,
+        const nlohmann::json& extInfo) override;
 
 private:
     int32_t WriteParcelForReceiveEvent(const uint32_t eventType,

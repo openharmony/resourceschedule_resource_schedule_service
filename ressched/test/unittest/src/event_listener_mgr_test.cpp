@@ -29,7 +29,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 static constexpr int32_t APP_STATE_EXIT = 4;
 
-class TestEventListener : public   {
+class TestEventListener : public ResSchedEventListenerStub {
 public:
     TestEventListener() = default;
 
@@ -104,9 +104,10 @@ HWTEST_F(EventListenerMgrTest, TestEventListener002, Function | MediumTest | Lev
     EventListenerMgr::GetInstance().RegisterEventListener(IPCSkeleton::GetCallingPid(), eventListener,
         ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+    sleep(2);
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP, extInfo);
-    sleep(1);
+    sleep(2);
     EXPECT_TRUE(TestEventListener::eventType_ ==
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     EXPECT_TRUE(TestEventListener::eventValue_ ==

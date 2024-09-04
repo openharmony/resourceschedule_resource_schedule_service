@@ -63,7 +63,7 @@ void EventListenerMgr::RegisterEventListener(int32_t callingPid,
         RESSCHED_LOGE("%{public}s:error due to eventListenerDeathRecipient_ null", __func__);
         return;
     }
-    std::lock_guard<std::mutex> autoLock(mutex_); 
+    std::lock_guard<std::mutex> autoLock(mutex_);
     auto iter = eventListenerMap_.find(eventType);
     if (iter != eventListenerMap_.end() && iter->second.find((pid_t)callingPid) != iter->second.end()) {
         if (iter->second[(pid_t)callingPid].groups.count(listenerGroup) == 0) {
