@@ -42,7 +42,7 @@ public:
 
     static uint32_t eventType_;
     static uint32_t eventValue_;
-    static uint32_t listenerGroup_; 
+    static uint32_t listenerGroup_;
 };
 uint32_t TestEventListener::eventType_ = 0;
 uint32_t TestEventListener::eventValue_ = 0;
