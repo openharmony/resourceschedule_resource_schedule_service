@@ -78,7 +78,7 @@ HWTEST_F(EventListenerMgrTest, TestEventListener001, Function | MediumTest | Lev
     EXPECT_TRUE(eventListener != nullptr);
     EventListenerMgr::GetInstance().RegisterEventListener(IPCSkeleton::GetCallingPid(), eventListener,
         ResType::EventType::EVENT_DRAW_FRAME_REPORT,
-        ResType::EventListenerGroup::LISTENER_GROUP_COMMON,);
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
