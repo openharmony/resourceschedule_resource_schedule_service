@@ -24,6 +24,9 @@ namespace ResourceSchedule {
 void AudioObserver::MarshallingAudioRendererChangeInfo(
     const std::unique_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo, nlohmann::json &payload)
 {
+    if (audioRendererChangeInfo == nullptr) {
+        return;
+    }
     payload["uid"] = std::to_string(audioRendererChangeInfo->clientUID);
     payload["sessionId"] = std::to_string(audioRendererChangeInfo->sessionId);
     payload["rendererState"] = static_cast<int32_t>(audioRendererChangeInfo->rendererState);
