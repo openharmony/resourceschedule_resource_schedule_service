@@ -30,6 +30,7 @@ namespace ResourceSchedule {
 using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libframe_aware_plugin.z.so";
+    const int DECIMAL = 10;
 }
 IMPLEMENT_SINGLE_INSTANCE(FrameAwarePlugin)
 
@@ -104,8 +105,8 @@ void FrameAwarePlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data
         return;
     }
 
-    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
-    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
+    int uid = ConvertToInteger(data, "uid");
+    int pid = ConvertToInteger(data, "pid");
     std::string bundleName = data->payload["bundleName"].get<std::string>().c_str();
     RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
     RME::FrameMsgIntf::GetInstance().ReportAppInfo(pid, uid, bundleName, state);
@@ -124,8 +125,8 @@ void FrameAwarePlugin::HandleProcessStateChange(const std::shared_ptr<ResData>& 
         return;
     }
 
-    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
-    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
+    int pid = ConvertToInteger(data, "pid");
+    int uid = ConvertToInteger(data, "uid");
     std::string bundleName = data->payload["bundleName"].get<std::string>().c_str();
     RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
     RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, uid, bundleName, state);
@@ -142,8 +143,8 @@ void FrameAwarePlugin::HandleContinuousTask(const std::shared_ptr<ResData>& data
         return;
     }
 
-    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
-    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
+    int pid = ConvertToInteger(data, "pid");
+    int uid = ConvertToInteger(data, "uid");
     RME::FrameMsgIntf::GetInstance().ReportContinuousTask(pid, uid, data->value);
 }
 
@@ -164,10 +165,10 @@ void FrameAwarePlugin::HandleCgroupAdjuster(const std::shared_ptr<ResData>& data
         RME_LOGI("FrameAwarePlugin::HandleCgroupAdjuster payload is not contains oldGroup or newGroup");
         return;
     }
-    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
-    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
-    int oldGroup = atoi(data->payload["oldGroup"].get<std::string>().c_str());
-    int newGroup = atoi(data->payload["newGroup"].get<std::string>().c_str());
+    int pid = ConvertToInteger(data, "pid");
+    int uid = ConvertToInteger(data, "uid");
+    int oldGroup = ConvertToInteger(data, "oldGroup");
+    int newGroup = ConvertToInteger(data, "newGroup");
     if (!data->value) {
         RME::FrameMsgIntf::GetInstance().ReportCgroupChange(pid, uid, oldGroup, newGroup);
     }
@@ -185,8 +186,8 @@ void FrameAwarePlugin::HandleWindowsFocus(const std::shared_ptr<ResData>& data)
         return;
     }
 
-    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
-    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
+    int pid = ConvertToInteger(data, "pid");
+    int uid = ConvertToInteger(data, "uid");
     RME::FrameMsgIntf::GetInstance().ReportWindowFocus(pid, uid, data->value);
 }
 
@@ -202,8 +203,8 @@ void FrameAwarePlugin::HandleReportRender(const std::shared_ptr<ResData>& data)
         return;
     }
 
-    int pid = atoi(data->payload["pid"].get<std::string>().c_str());
-    int uid = atoi(data->payload["uid"].get<std::string>().c_str());
+    int pid = ConvertToInteger(data, "pid");
+    int uid = ConvertToInteger(data, "uid");
     RME::FrameMsgIntf::GetInstance().ReportRenderThread(pid, uid, data->value);
 }
 
@@ -244,8 +245,8 @@ void FrameAwarePlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
         return;
     }
 
-    int pid = atoi(data->payload["clientPid"].get<std::string>().c_str());
-    int uid = atoi(data->payload["callingUid"].get<std::string>().c_str());
+    int pid = ConvertToInteger(data, "clientPid");
+    int uid = ConvertToInteger(data, "callingUid");
     RME::FrameMsgIntf::GetInstance().ReportSlideEvent(pid, uid, data->value);
 }
 
@@ -285,6 +286,18 @@ void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
             function(data);
         }
     }
+}
+
+int FrameAwarePlugin::ConvertToInteger(const std::shared_ptr<ResData>& data, const char* idtype)
+{
+    char* endPtr = nullptr;
+    const char* target = data->payload[idtype].get<std::string>().c_str();
+    int result = strtol(target, &endPtr, DECIMAL);
+    if (errno == ERANGE || endPtr == target || !endPtr || *endPtr != '\0') {
+        RME_LOGE("FrameAwarePlugin:Failed to convert integer!");
+        return -1;
+    }
+    return result;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
