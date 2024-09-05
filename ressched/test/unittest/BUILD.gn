@@ -40,6 +40,7 @@ ohos_unittest("resschedservice_test") {
   sources = [
     "${ressched_common}/src/oobe_datashare_utils.cpp",
     "${ressched_common}/src/oobe_manager.cpp",
+    "src/event_listener_mgr_test.cpp",
     "src/oobe_datashare_utils_test.cpp",
     "src/oobe_mgr_test.cpp",
     "src/res_sched_client_test.cpp",

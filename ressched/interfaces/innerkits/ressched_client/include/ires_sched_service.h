@@ -18,6 +18,7 @@
 
 #include "iremote_broker.h"
 #include "nlohmann/json.hpp"
+#include "res_type.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -64,15 +65,19 @@ public:
      *
      * @param listener remote listener object
      * @param eventType the event type
+     * @param listenerGroup the listener group
      */
-    virtual void RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType) = 0;
+    virtual void RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType,
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON) = 0;
 
     /**
      * @brief UnRegister event listener.
      *
      * @param eventType the event type
+     * @param listenerGroup the listener group
      */
-    virtual void UnRegisterEventListener(uint32_t eventType) = 0;
+    virtual void UnRegisterEventListener(uint32_t eventType,
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON) = 0;
 
     /**
      * @brief UnRegister systemload remote listener.
