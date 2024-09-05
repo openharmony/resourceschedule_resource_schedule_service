@@ -34,6 +34,7 @@ public:
         static ResSchedSaInit instance;
         return instance;
     }
+};
 } // namespace ResourceSchedule
 } // namespace OHOS
 
