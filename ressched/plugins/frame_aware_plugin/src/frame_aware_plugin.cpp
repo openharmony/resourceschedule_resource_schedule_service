@@ -293,7 +293,6 @@ int FrameAwarePlugin::ConvertToInteger(const std::shared_ptr<ResData>& data, con
     char* endPtr = nullptr;
     const char* target = data->payload[idtype].get<std::string>().c_str();
     int result = strtol(target, &endPtr, DECIMAL);
-    errno = 0;
     if (errno == ERANGE || endPtr == target || !endPtr || *endPtr != '\0') {
         RME_LOGE("FrameAwarePlugin:Failed to convert integer!");
         return -1;
