@@ -305,7 +305,7 @@ enum EventValue : uint32_t {
 enum EventListenerGroup : uint32_t {
     LISTENER_GROUP_BEGIN = 0,
     LISTENER_GROUP_COMMON = 1,
-    LISTENER_GROUP_LIM = 2,
+    LISTENER_GROUP_LLM = 2,
     LISTENER_GROUP_GAME = 3,
     LISTENER_GROUP_CAMERA = 4,
     LISTENER_GROUP_DH = 5,
