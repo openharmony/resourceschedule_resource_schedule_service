@@ -37,12 +37,17 @@ SceneRecognizerMgr::SceneRecognizerMgr()
 SceneRecognizerMgr::~SceneRecognizerMgr()
 {
     sceneRecognizers_.clear();
-    ffrtQueue_.reset();
+    if (ffrtQueue_ != nullptr) {
+        ffrtQueue_.reset();
+    }
     RESSCHED_LOGI("~SceneRecognizerMgr");
 }
 
 void SceneRecognizerMgr::DispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
+    if (ffrtQueue_ == nullptr) {
+        return;
+    }
     for (auto recognizer : sceneRecognizers_) {
         ffrtQueue_->submit([resType, value, payload, recognizer]() {
             recognizer->OnDispatchResource(resType, value, payload);
