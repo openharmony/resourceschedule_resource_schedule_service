@@ -105,6 +105,7 @@ void BackgroundTaskObserver::MarshallingContinuousTaskCallbackInfo(
     payload["abilityId"] = std::to_string(continuousTaskCallbackInfo->GetAbilityId());
     payload["isFromWebview"] = continuousTaskCallbackInfo->IsFromWebview();
     payload["typeIds"] = continuousTaskCallbackInfo->GetTypeIds();
+    payload["tokenId"] = continuousTaskCallbackInfo->GetTokenId();
 }
 
 void BackgroundTaskObserver::OnContinuousTaskStart(
