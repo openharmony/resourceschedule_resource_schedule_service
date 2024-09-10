@@ -16,6 +16,10 @@
 #include "supervisor.h"
 #include "ability_info.h"
 #include "cgroup_sched_common.h"
+#include "if_system_ability_manager.h"
+#include "iservice_registry.h"
+#include "system_ability_definition.h"
+#include "cgroup_sched_log.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -270,6 +274,92 @@ void Supervisor::SetSystemLoadLevelState(int32_t level)
 int32_t Supervisor::GetSystemLoadLevel()
 {
     return systemLoadLevel_;
+}
+
+void Supervisor::ConnectAppManagerService()
+{
+    sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
+        OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    sptr<OHOS::IRemoteObject> object = systemAbilityManager->GetSystemAbility(OHOS::APP_MGR_SERVICE_ID);
+    appManager_ = OHOS::iface_cast<OHOS::AppExecFwk::IAppMgr>(object);
+}
+
+void Supervisor::ReloadApplication()
+{
+    if (appManager_ == nullptr) {
+        return;
+    }
+    std::vector<AppExecFwk::RunningProcessInfo> runningProcess;
+    appManager_->GetAllRunningProcesses(runningProcess);
+    for (const auto& process : runningProcess) {
+        std::shared_ptr<Application> app = GetAppRecordNonNull(process.uid_);
+        if (process.bundleNames.size() != 0) {
+            app->SetName(process.bundleNames[0]);
+        }
+        std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(process.pid_);
+        if (process.isFocused) {
+            app->focusedProcess_ = procRecord;
+            procRecord->isActive_ = true;
+            procRecord->linkedWindowId_ = 0;
+            auto win = procRecord->GetWindowInfoNonNull(procRecord->linkedWindowId_);
+            win->isFocused_ = true;
+        }
+        CGS_LOGI("reload application cache uid:%{public}d pid:%{public}d bundleName:%{public}s isFocused:%{public}d",
+            process.uid_, process.pid_, app->GetName().c_str(), process.isFocused);
+    }
+}
+
+void Supervisor::ReloadRenderProcess()
+{
+    if (appManager_ == nullptr) {
+        return;
+    }
+    std::vector<AppExecFwk::RenderProcessInfo> renderProcess;
+    appManager_->GetAllRenderProcesses(renderProcess);
+    for (const auto& process : renderProcess) {
+        std::shared_ptr<Application> app = GetAppRecordNonNull(process.hostUid_);
+        app->AddHostProcess(process.hostPid_);
+        auto procRecord = app->GetProcessRecordNonNull(process.pid_);
+        procRecord->processType_ = ProcRecordType::RENDER;
+        procRecord->hostPid_ = process.hostPid_;
+        procRecord->isReload_ = true;
+        CGS_LOGI("reload render process bundleName:%{public}s processName:%{public}s pid:%{public}d \
+            uid:%{public}d hostUid:%{public}d hostPid:%{public}d state:%{public}d",
+            process.bundleName_.c_str(), process.processName_.c_str(), process.pid_,
+            process.uid_, process.hostUid_, process.hostPid_, process.state_);
+    }
+}
+
+void Supervisor::ReloadChildProcess()
+{
+    if (appManager_ == nullptr) {
+        return;
+    }
+    std::vector<AppExecFwk::ChildProcessInfo> childProcess;
+    appManager_->GetAllChildrenProcesses(childProcess);
+    for (const auto& process : childProcess) {
+        std::shared_ptr<Application> app = GetAppRecordNonNull(process.hostUid);
+        app->AddHostProcess(process.hostPid);
+        auto procRecord = app->GetProcessRecordNonNull(process.pid);
+        procRecord->processType_ = ProcRecordType::CHILD;
+        procRecord->hostPid_ = process.hostPid;
+        procRecord->isReload_ = true;
+        CGS_LOGI("reload child process bundleName:%{public}s processName:%{public}s pid:%{public}d \
+            uid:%{public}d hostUid:%{public}d hostPid:%{public}d",
+            process.bundleName.c_str(), process.processName.c_str(), process.pid,
+            process.uid, process.hostUid, process.hostPid);
+    }
+}
+
+void Supervisor::InitSuperVisorContent()
+{
+    ConnectAppManagerService();
+    /* reload application info */
+    ReloadApplication();
+    /* reload render process */
+    ReloadRenderProcess();
+    /* reload child process */
+    ReloadChildProcess();
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
