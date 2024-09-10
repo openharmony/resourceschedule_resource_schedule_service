@@ -138,6 +138,9 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
                     },
                     std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
             }
+            if (supervisor_ != nullptr) {
+                supervisor_->InitSuperVisorContent();
+            }
             break;
         case WINDOW_MANAGER_SERVICE_ID:
             SchedController::GetInstance().SubscribeWindowState();
@@ -659,6 +662,7 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
 
     if (value == ResType::ReportChangeStatus::CREATE) {
         procRecord->keyThreadRoleMap_.emplace(keyTid, role);
+        procRecord->isReload_ = false;
     } else {
         procRecord->keyThreadRoleMap_.erase(keyTid);
     }
