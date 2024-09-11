@@ -131,7 +131,7 @@ public:
     int32_t wifiState_ = -1;
     int32_t mmiStatus_ {-1};
     int32_t hostPid_ = -1;
-    int32_t suppressState_ = 0;
+    uint32_t suppressState_ = 0;
     bool isReload_ = false;
 
     std::map<uint32_t, bool> runningLockState_;
