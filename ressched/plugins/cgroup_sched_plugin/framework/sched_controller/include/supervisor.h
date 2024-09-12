@@ -217,7 +217,6 @@ public:
     }
 private:
     void ReloadApplication();
-    void ReloadRenderProcess();
     void ReloadChildProcess();
 private:
     std::map<int32_t, std::shared_ptr<Application>> uidsMap_;
