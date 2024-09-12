@@ -296,37 +296,9 @@ void Supervisor::ReloadApplication()
         if (process.bundleNames.size() != 0) {
             app->SetName(process.bundleNames[0]);
         }
-        std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(process.pid_);
-        if (process.isFocused) {
-            app->focusedProcess_ = procRecord;
-            procRecord->isActive_ = true;
-            procRecord->linkedWindowId_ = 0;
-            auto win = procRecord->GetWindowInfoNonNull(procRecord->linkedWindowId_);
-            win->isFocused_ = true;
-        }
+        app->GetProcessRecordNonNull(process.pid_);
         CGS_LOGI("reload application cache uid:%{public}d pid:%{public}d bundleName:%{public}s isFocused:%{public}d",
             process.uid_, process.pid_, app->GetName().c_str(), process.isFocused);
-    }
-}
-
-void Supervisor::ReloadRenderProcess()
-{
-    if (appManager_ == nullptr) {
-        return;
-    }
-    std::vector<AppExecFwk::RenderProcessInfo> renderProcess;
-    appManager_->GetAllRenderProcesses(renderProcess);
-    for (const auto& process : renderProcess) {
-        std::shared_ptr<Application> app = GetAppRecordNonNull(process.hostUid_);
-        app->AddHostProcess(process.hostPid_);
-        auto procRecord = app->GetProcessRecordNonNull(process.pid_);
-        procRecord->processType_ = ProcRecordType::RENDER;
-        procRecord->hostPid_ = process.hostPid_;
-        procRecord->isReload_ = true;
-        CGS_LOGI("reload render process bundleName:%{public}s processName:%{public}s pid:%{public}d \
-            uid:%{public}d hostUid:%{public}d hostPid:%{public}d state:%{public}d",
-            process.bundleName_.c_str(), process.processName_.c_str(), process.pid_,
-            process.uid_, process.hostUid_, process.hostPid_, process.state_);
     }
 }
 
@@ -356,8 +328,6 @@ void Supervisor::InitSuperVisorContent()
     ConnectAppManagerService();
     /* reload application info */
     ReloadApplication();
-    /* reload render process */
-    ReloadRenderProcess();
     /* reload child process */
     ReloadChildProcess();
 }
