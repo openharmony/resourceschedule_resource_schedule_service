@@ -296,14 +296,6 @@ void Supervisor::ReloadApplication()
         if (process.bundleNames.size() != 0) {
             app->SetName(process.bundleNames[0]);
         }
-        std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(process.pid_);
-        if (process.isFocused) {
-            app->focusedProcess_ = procRecord;
-            procRecord->isActive_ = true;
-            procRecord->linkedWindowId_ = 0;
-            auto win = procRecord->GetWindowInfoNonNull(procRecord->linkedWindowId_);
-            win->isFocused_ = true;
-        }
         CGS_LOGI("reload application cache uid:%{public}d pid:%{public}d bundleName:%{public}s isFocused:%{public}d",
             process.uid_, process.pid_, app->GetName().c_str(), process.isFocused);
     }
