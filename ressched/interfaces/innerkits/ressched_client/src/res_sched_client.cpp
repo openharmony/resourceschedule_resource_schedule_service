@@ -24,6 +24,7 @@
 #include "res_sched_errors.h"           // for GET_RES_SCHED_SERVICE_FAILED
 #include "res_sched_log.h"              // for RESSCHED_LOGE, RESSCHED_LOGD
 #include "system_ability_definition.h"  // for RES_SCHED_SYS_ABILITY_ID
+#include "ffrt_inner.h"                 // for future
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -67,7 +68,26 @@ int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t va
         RESSCHED_LOGD("%{public}s: fail to get rss.", __func__);
         return RES_SCHED_CONNECT_FAIL;
     }
-    return proxy->ReportSyncEvent(resType, value, payload, reply);
+    if (resType == ResType::SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START) {
+        ffrt::future<std::pair<int32_t, nlohmann::json>> fut = ffrt::async([resType, value, payload, proxy] {
+            nlohmann::json ffrtReply;
+            if (proxy == nullptr) {
+                return std::pair<int32_t, nlohmann::json>(RES_SCHED_CONNECT_FAIL, ffrtReply);
+            }
+            int32_t ret = proxy->ReportSyncEvent(resType, value, payload, ffrtReply);
+            return std::pair<int32_t, nlohmann::json>(ret, ffrtReply);
+        });
+
+        ffrt::future_status status = fut.wait_for(std::chrono::milliseconds(500));
+        if (status == ffrt::future_status::ready) {
+            auto result = fut.get();
+            reply = std::move(result.second);
+            return result.first;
+        }
+        return 0;
+    } else {
+        return proxy->ReportSyncEvent(resType, value, payload, reply);
+    }
 }
 
 int32_t ResSchedClient::KillProcess(const std::unordered_map<std::string, std::string>& mapPayload)
