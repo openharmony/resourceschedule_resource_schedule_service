@@ -73,7 +73,24 @@ void SlideRecognizer::HandleSlideEvent(int64_t value, const nlohmann::json& payl
         HandleSlideDetecting(payload);
     } else if (value == ResType::SlideEventStatus::SLIDE_EVENT_ON) {
         HandleListFlingStart(payload);
+    } else if (value == ResType::SlideEventStatus::SLIDE_EVENT_OFF) {
+        HandleSlideOFFEvent();
     }
+}
+
+void SlideRecognizer::HandleSlideOFFEvent()
+{
+    std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
+    if (listFlingEndTask_) {
+        ffrt::skip(listFlingEndTask_);
+    }
+    if (listFlingTimeOutTask_) {
+        ffrt::skip(listFlingTimeOutTask_);
+    }
+    nlohmann::json extInfo;
+    EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP, extInfo);
+    g_slideState = SlideRecognizeStat::IDLE; 
 }
 
 void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
