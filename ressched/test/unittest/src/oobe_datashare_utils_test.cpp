@@ -214,8 +214,8 @@ HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_010, Function | MediumTest |
 }
 
 /**
- * @tc.name: oobe dataShareUtils TestDataShareUtils_010
- * @tc.desc: test the interface SetDataShareReadyFlag of dataShareUtils
+ * @tc.name: oobe dataShareUtils TestDataShareUtils_011
+ * @tc.desc: test the interface Set and Get DataShareReadyUtils of dataShareUtils
  * @tc.type: FUNC
  * @tc.require: issueIA5MRN
  * @tc.author:fengyang
@@ -226,5 +226,7 @@ HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_011, Function | MediumTest |
     dataShareUtils.SetDataShareReadyFlag(true);
     EXPECT_EQ(dataShareUtils.GetDataShareReadyFlag(), true);
 }
+#undef private
+#undef protected
 } // namespace ResourceSchedule
 } // namespace OHOS

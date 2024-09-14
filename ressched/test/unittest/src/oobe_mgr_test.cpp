@@ -183,5 +183,7 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_008, Function | MediumTest | Level0)
     oobeMgr.OnReceiveDataShareReadyCallBack();
     EXPECT_EQ(0, oobeMgr.dataShareFunctions_.size());
 }
+#undef private
+#undef protected
 } // namespace ResourceSchedule
 } // namespace OHOS
