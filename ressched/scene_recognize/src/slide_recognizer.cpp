@@ -90,7 +90,7 @@ void SlideRecognizer::HandleSlideOFFEvent()
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP, extInfo);
-    g_slideState = SlideRecognizeStat::IDLE; 
+    g_slideState = SlideRecognizeStat::IDLE;
 }
 
 void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
