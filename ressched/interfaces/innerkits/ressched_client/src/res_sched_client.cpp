@@ -28,6 +28,10 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+namespace {
+constexpr int32_t CHECK_MUTEX_TIMEOUT = 500;  // 500ms
+}
+
 ResSchedClient& ResSchedClient::GetInstance()
 {
     static ResSchedClient instance;
@@ -78,13 +82,14 @@ int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t va
             return std::pair<int32_t, nlohmann::json>(ret, ffrtReply);
         });
 
-        ffrt::future_status status = fut.wait_for(std::chrono::milliseconds(500));
+        ffrt::future_status status = fut.wait_for(std::chrono::milliseconds(CHECK_MUTEX_TIMEOUT));
         if (status == ffrt::future_status::ready) {
             auto result = fut.get();
             reply = std::move(result.second);
             return result.first;
         }
-        return 0;
+        RESSCHED_LOGW("sync time out")
+        return RES_SCHED_REQUEST_FAIL;
     } else {
         return proxy->ReportSyncEvent(resType, value, payload, reply);
     }
