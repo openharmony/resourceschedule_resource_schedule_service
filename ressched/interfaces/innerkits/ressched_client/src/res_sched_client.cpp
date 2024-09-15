@@ -88,7 +88,7 @@ int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t va
             reply = std::move(result.second);
             return result.first;
         }
-        RESSCHED_LOGW("sync time out")
+        RESSCHED_LOGW("%{public}s: sync time out", __func__);
         return RES_SCHED_REQUEST_FAIL;
     } else {
         return proxy->ReportSyncEvent(resType, value, payload, reply);
