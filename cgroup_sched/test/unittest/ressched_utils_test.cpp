@@ -64,7 +64,7 @@ HWTEST_F(ResschedUtilsTest, ProcessGroupSubTest_SchedPolicyType_001, Function | 
  */
 HWTEST_F(ResschedUtilsTest, ProcessGroupSubTest_SchedPolicyType_002, Function | MediumTest | Level0)
 {
-    EXPECT_EQ(ResSchedUtils::GetInstance().CheckTidIsInPid(1, 1), false);
+    EXPECT_EQ(ResSchedUtils::GetInstance().CheckTidIsInPid(1, 1), true);
 }
 
 /**
