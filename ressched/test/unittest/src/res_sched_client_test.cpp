@@ -198,6 +198,19 @@ HWTEST_F(ResSchedClientTest, ReportSyncEvent, Function | MediumTest | Level0)
 }
 
 /**
+ * @tc.name: StopRemoteObject
+ * @tc.desc: Stop Remote Object
+ * @tc.type: FUNC
+ * @tc.require: I78O6Y
+ * @tc.author: lujunchao
+ */
+HWTEST_F(ResSchedClientTest, StopRemoteObject, Function | MediumTest | Level0)
+{
+    ResSchedClient::GetInstance().StopRemoteObject();
+    EXPECT_TRUE(nullptr == ResSchedClient::GetInstance().rss_);
+}
+
+/**
  * @tc.name: RegisterSystemloadNotifier001
  * @tc.desc: Register systemload notifier
  * @tc.type: FUNC
@@ -320,19 +333,6 @@ HWTEST_F(ResSchedClientTest, IsAllowedAppPreload, Function | MediumTest | Level0
     std::string bundleName = "com.ohos.test";
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
     EXPECT_TRUE(!ResSchedClient::GetInstance().IsAllowedAppPreload(bundleName, 0));
-}
-
-/**
- * @tc.name: StopRemoteObject
- * @tc.desc: Stop Remote Object
- * @tc.type: FUNC
- * @tc.require: I78O6Y
- * @tc.author: lujunchao
- */
-HWTEST_F(ResSchedClientTest, StopRemoteObject, Function | MediumTest | Level0)
-{
-    ResSchedClient::GetInstance().StopRemoteObject();
-    EXPECT_TRUE(nullptr == ResSchedClient::GetInstance().rss_);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
