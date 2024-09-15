@@ -42,6 +42,7 @@ namespace {
         { ResExeType::RES_TYPE_COMMON_ASYNC, "RES_TYPE_COMMON_ASYNC" },
         { ResExeType::RES_TYPE_THERMAL_AWARE_SYNC_EVENT, "THERMAL_AWARE_SYNC_EVENT" },
         { ResExeType::RES_TYPE_THERMAL_AWARE_ASYNC_EVENT, "THERMAL_AWARE_ASYNC_EVENT" },
+        { ResExeType::RES_TYPE_SOCK_EXECUTOR_ASYNC_EVENT, "SOCK_EXECUTOR_ASYNC_EVENT" },
         { ResExeType::RES_TYPE_DEBUG, "DEBUG_COMMAND" },
     };
 }
@@ -99,7 +100,6 @@ void ResSchedExeMgr::InitPluginMgr(const nlohmann::json& payload)
         RSSEXE_LOGE("recieve config string error");
         return;
     }
-
     std::vector<std::string> configStrs = payload[STR_CONFIG_READER].get<std::vector<std::string>>();
     std::vector<std::string> switchStrs = payload[STR_PLUGIN_SWITCH].get<std::vector<std::string>>();
     for (auto configStr : configStrs) {
@@ -166,7 +166,6 @@ void ResSchedExeMgr::GetCgroupFileContent(uint32_t resType, const nlohmann::json
     std::stringstream ss;
     ss << fin.rdbuf();
     reply["res"] = ss.str();
-    return;
 }
 
 void ResSchedExeMgr::CheckProcTaskForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply)
