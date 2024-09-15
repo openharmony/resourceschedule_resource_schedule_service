@@ -156,9 +156,9 @@ enum : uint32_t {
     RES_TYPE_USB_DEVICE = 62,
     RES_TYPE_CALL_STATE_CHANGED = 63,
     RES_TYPE_WIFI_P2P_STATE_CHANGED = 64,
-    //report app associated start to performance radar
+    // report app associated start to performance radar
     RES_TYPE_APP_ASSOCIATED_START = 65,
-    //report thermal state event
+    // report thermal state event
     RES_TYPE_THERMAL_STATE = 66,
     // socperf event begin
     RES_TYPE_SOCPERF_CUST_EVENT_BEGIN = 67,
