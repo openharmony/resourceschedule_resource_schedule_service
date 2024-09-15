@@ -144,6 +144,7 @@ namespace {
         ResType::SYNC_RES_TYPE_REQUEST_MUTEX_STATUS,
         ResType::SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
         ResType::RES_TYPE_CLICK_RECOGNIZE,
+        ResType::RES_TYPE_RSS_CLOUD_CONFIG_UPDATE,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";

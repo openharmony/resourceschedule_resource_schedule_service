@@ -258,6 +258,8 @@ enum : uint32_t {
     RES_TYPE_BMM_MONITER_CHANGE_EVENT = 113,
     // app frame drop event
     RES_TYPE_APP_FRAME_DROP = 114,
+    // report rss cloud config update
+    RES_TYPE_RSS_CLOUD_CONFIG_UPDATE = 115,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
