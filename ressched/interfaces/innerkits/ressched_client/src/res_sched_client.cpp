@@ -285,10 +285,15 @@ void ResSchedClient::RecoverEventListener()
     for (auto typeAndGroup : innerEventListener_->GetRegisteredTypesAndGroup()) {
         auto type = typeAndGroup.first;
         for (auto group : typeAndGroup.second) {
-            auto item = registeredInnerEvents.find(type);
-            if (item != registeredInnerEvents.end() && item->second.count(group) == 1 && rss_) {
-                rss_->RegisterEventListener(innerEventListener_, type, group);
+            if (!rss_) {
+                return;
             }
+            rss_->RegisterEventListener(innerEventListener_, type, group);
+            if (registeredInnerEvents.find(type) == registeredInnerEvents.end()) {
+                registeredInnerEvents.emplace(type, std::unordered_set<uint32_t>());
+            }
+            registeredInnerEvents[type].insert(group);
+            
         }
     }
 }
