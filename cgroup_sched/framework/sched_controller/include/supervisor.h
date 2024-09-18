@@ -37,6 +37,15 @@ using OHOS::ResourceSchedule::CgroupSetting::SP_SYSTEM_BACKGROUND;
 using OHOS::ResourceSchedule::CgroupSetting::SP_TOP_APP;
 using OHOS::ResourceSchedule::CgroupSetting::SP_UPPER_LIMIT;
 
+enum ProcRecordType : int32_t {
+    NORMAL = 0,
+    EXTENSION,
+    RENDER,
+    GPU,
+    LINUX,
+    CHILD,
+};
+
 class AbilityInfo;
 class WindowInfo {
 public:
@@ -112,6 +121,7 @@ public:
     bool screenCaptureState_ = false;
     bool videoState_ = false;
 
+    int32_t processType_ = ProcRecordType::NORMAL;
     uint32_t continuousTaskFlag_ = 0;
     int32_t audioPlayingState_ = -1;
     int32_t renderTid_ = 0;
