@@ -65,12 +65,6 @@ declare_args() {
     communication_bluetooth_perception_enable = false
   }
 
-  ressched_with_resourceschedule_multimedia_av_session_enable = true
-  if (defined(global_parts_info) &&
-      !defined(global_parts_info.multimedia_av_session)) {
-    ressched_with_resourceschedule_multimedia_av_session_enable = false
-  }
-
   ressched_power_manager_enable = true
   if (defined(global_parts_info) &&
       !defined(global_parts_info.powermgr_power_manager)) {
@@ -83,11 +77,18 @@ declare_args() {
     ressched_with_resourceschedule_multimedia_audio_framework_enable = false
   }
 
+  ressched_with_resourceschedule_multimedia_av_session_enable = true
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.multimedia_av_session)) {
+    ressched_with_resourceschedule_multimedia_av_session_enable = false
+  }
+
   rss_device_standby_enable = true
   if (defined(global_parts_info) &&
       !defined(global_parts_info.resourceschedule_device_standby)) {
     rss_device_standby_enable = false
   }
+
   rss_request_enable = true
   if (defined(global_parts_info) &&
       !defined(global_parts_info.request_request)) {
