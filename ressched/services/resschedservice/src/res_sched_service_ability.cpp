@@ -13,11 +13,13 @@
  * limitations under the License.
  */
 
+
+#include "res_sched_service_ability.h"
+
 #include "res_common_util.h"
 #include "ffrt_inner.h"
 #include "hisysevent.h"
 #include "notifier_mgr.h"
-#include "res_sched_service_ability.h"
 #include "observer_manager_intf.h"
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
