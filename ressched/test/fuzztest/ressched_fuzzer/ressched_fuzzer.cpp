@@ -20,6 +20,8 @@
 #include <cstdlib>
 #include <securec.h>
 #include <vector>
+#include <unordered_set>
+#include <random>
 
 #include "iremote_stub.h"
 #include "ires_sched_service.h"
@@ -36,6 +38,9 @@
 #include "res_sched_systemload_notifier_client.h"
 #include "res_sched_systemload_notifier_proxy.h"
 #include "notifier_mgr.h"
+#include "res_type.h"
+#include "accesstoken_kit.h"
+#include "token_setproc.h"
 
 #define private public
 #define protected public
@@ -52,8 +57,82 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     static const int32_t TWO_PARAMETERS = 2;
-}
 
+    static const std::unordered_set<uint32_t> THIRDPARTY_RES = {
+        ResType::RES_TYPE_CLICK_RECOGNIZE,
+        ResType::RES_TYPE_PUSH_PAGE,
+        ResType::RES_TYPE_SLIDE_RECOGNIZE,
+        ResType::RES_TYPE_POP_PAGE,
+        ResType::RES_TYPE_LOAD_PAGE,
+        ResType::RES_TYPE_WEB_GESTURE,
+        ResType::RES_TYPE_REPORT_KEY_THREAD,
+        ResType::RES_TYPE_REPORT_WINDOW_STATE,
+        ResType::RES_TYPE_REPORT_SCENE_SCHED,
+        ResType::RES_TYPE_WEB_GESTURE_MOVE,
+        ResType::RES_TYPE_WEB_SLIDE_NORMAL,
+        ResType::RES_TYPE_LOAD_URL,
+        ResType::RES_TYPE_MOUSEWHEEL,
+        ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
+        ResType::RES_TYPE_REPORT_RENDER_THREAD,
+        ResType::RES_TYPE_LONG_FRAME,
+        ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
+        ResType::RES_TYPE_REPORT_DISTRIBUTE_TID,
+        ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE,
+        ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
+        ResType::RES_TYPE_BT_SERVICE_EVENT,
+    };
+
+    static const std::unordered_map<uint32_t, std::vector<std::string>> RESTYPE_TO_PARAMS = {
+        {ResType::RES_TYPE_CLICK_RECOGNIZE, {"clientPid", "name"}},
+        {ResType::RES_TYPE_PUSH_PAGE, {"pageUrl"}},
+        {ResType::RES_TYPE_SLIDE_RECOGNIZE, {"clientPid"}},
+        {ResType::RES_TYPE_POP_PAGE, {}},
+        {ResType::RES_TYPE_LOAD_PAGE, {}},
+        {ResType::RES_TYPE_WEB_GESTURE, {}},
+        {ResType::RES_TYPE_REPORT_KEY_THREAD, {"uid", "pid", "tid", "role"}},
+        {ResType::RES_TYPE_REPORT_WINDOW_STATE, {"uid", "pid", "windowid", "serialNum", "state"}},
+        {ResType::RES_TYPE_REPORT_SCENE_SCHED, {"uid", "sceneid"}},
+        {ResType::RES_TYPE_WEB_GESTURE_MOVE, {}},
+        {ResType::RES_TYPE_WEB_SLIDE_NORMAL, {}},
+        {ResType::RES_TYPE_LOAD_URL, {}},
+        {ResType::RES_TYPE_MOUSEWHEEL, {}},
+        {ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, {"uid", "pid", "tid"}},
+        {ResType::RES_TYPE_REPORT_RENDER_THREAD, {"uid", "pid"}},
+        {ResType::RES_TYPE_LONG_FRAME, {"pid", "uid", "bundleName", "abilityName"}},
+        {ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK, {"uid"}},
+        {ResType::RES_TYPE_REPORT_DISTRIBUTE_TID, {"uid", "pid"}},
+        {ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, {"uid", "pid"}},
+        {ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, {"uid", "pid"}},
+        {ResType::RES_TYPE_BT_SERVICE_EVENT, {"ADDRESS", "STATE", "ROLE", "CONNEECTIF", "STATUS"}}
+    };
+
+    static const int32_t DEFAULT_API_VERSION = 11;
+    static const int32_t PAYLOAD_MAX_SIZE = 3500;
+
+    Security::AccessToken::PermissionStateFull HapState = {
+        .permissionName = "",
+        .isGeneral = true,
+        .resDeviceID = {"local"},
+        .grantStatus = {Security::AccessToken::PermissionState::PERMISSION_GRANTED},
+        .grantFFlags = {1}
+    };
+
+    Security::AccessToken::HapPolicyParams HapPolicyParams = {
+        .apl = Security::AccessToken::APL_SYSTEM_BASIC,
+        .domain = "test.domain.ressched",
+        .permList = {},
+        .permStateList = {HapState}
+    };
+
+    Security::AccessToken::HapInfoParams info = {
+        .userID = 100,
+        .bundleName = "com.hos.ressched",
+        .insIndex = 0,
+        .appIDDesc = "thirdParty",
+        .apiVersion = DEFAULT_API_VERSION,
+        .isSystemApp = false
+    };
+}
 
     constexpr int32_t MAX_CODE = 5;
     constexpr int32_t MIN_LEN = 4;
@@ -339,6 +418,66 @@ namespace {
         DataShareUtils::GetInstance().SetDataShareReadyFlag(true);
         return true;
     }
+
+    void SetHapToken()
+    {
+        Security::AccessToken::AccessTokenIDEx tokenIdEx = {0};
+        tokenIdEx = Security::AccessToken::AccessTokenKit::AllocHapToken(info, HapPolicyParams);
+        SetSelfTokenID(tokenIdEx.tokenIDEx);
+    }
+
+    void DeleteHapToken()
+    {
+        Security::AccessToken::AccessTokenID tokenId = Security::AccessToken::AccessTokenKit::GetHapTokenId(info.userID,
+            info.bundleName, info.instIndex);
+        Security::AccessToken::AccessTokenKit::DeleteToken(tokenId);
+    }
+
+    std::unordered_map<std::string, std::string> GetPayload(uint32_t resType)
+    {
+        std::unordered_map<std::string, std::string> payload;
+        const auto &params = RESTYPE_TO_PARAMS.at(resType);
+        size_t paramSize = params.size();
+        if (paramSize == 0) {
+            return payload;
+        }
+        size_t maxLen = PAYLOAD_MAX_SIZE / paramSize;
+        size_t minLen = sizeof(int32_t);
+        if (minLen > maxLen) {
+            minLen = maxLen;
+        }
+        std::mt19937_64 gen(std::random_device{}());
+        std::uniform_int_distribution<size_t> dis(minLen, maxLen);
+        for (const auto &param : params) {
+            payload[param] = GetStringFromData(dis(gen));
+        }
+        return payload;
+    }
+
+    bool ResSchedThirdPartyFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr || size < sizeof(uint32_t)) {
+            return false;
+        }
+        uint32_t selfToken = GetSelfTokenID();
+        SetHapToken();
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
+        uint32_t resType = GetData<uint32_t>() % ResType::RES_TYPE_LAST;
+        if (THIRDPARTY_RES.find(resType) == THIRDPARTY_RES.end()) {
+            return false;
+        }
+
+        int64_t value = GetData<int64_t>;
+        auto mapPayload = GetPayload(resType);
+        ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
+
+        DeleteHapToken();
+        SetSelfTokenID(selfToken);
+        return true;
+    }
 } // namespace ResourceSchedule
 } // namespace OHOS
 
@@ -350,6 +489,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::OnRemoteRequest(data, size);
     OHOS::ResourceSchedule::SyncEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ResSchedClientFuzzTest(data, size);
+    OHOS::ResourceSchedule::ResSchedThirdPartyFuzzTest(data, size);
     OHOS::ResourceSchedule::OnSystemloadLevelFuzzTest(data, size);
     OHOS::ResourceSchedule::NotifierMgrFuzzTest(data, size);
     OHOS::ResourceSchedule::OOBEManagerFuzzTest(data, size);
