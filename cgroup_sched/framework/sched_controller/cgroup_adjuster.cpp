@@ -94,7 +94,7 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
 
 void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
 {
-    CGS_LOGD("%{public}s for %{public}d, source : %{public}d", __func__, pr.GetPid(), source);
+    CGS_LOGI("%{public}s for %{public}d, source : %{public}d", __func__, pr.GetPid(), source);
     ComputeProcessGroup(app, pr, source);
     ResSchedUtils::GetInstance().ReportArbitrationResult(app, pr, source);
     ApplyProcessGroup(app, pr);
