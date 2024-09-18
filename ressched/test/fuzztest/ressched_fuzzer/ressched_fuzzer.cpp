@@ -79,7 +79,7 @@ namespace {
         ResType::RES_TYPE_REPORT_DISTRIBUTE_TID,
         ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE,
         ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
-        ResType::RES_TYPE_BT_SERVICE_EVENT,
+        ResType::RES_TYPE_BT_SERVICE_EVENT
     };
 
     static const std::unordered_map<uint32_t, std::vector<std::string>> RESTYPE_TO_PARAMS = {
@@ -90,8 +90,8 @@ namespace {
         {ResType::RES_TYPE_LOAD_PAGE, {}},
         {ResType::RES_TYPE_WEB_GESTURE, {}},
         {ResType::RES_TYPE_REPORT_KEY_THREAD, {"uid", "pid", "tid", "role"}},
-        {ResType::RES_TYPE_REPORT_WINDOW_STATE, {"uid", "pid", "windowid", "serialNum", "state"}},
-        {ResType::RES_TYPE_REPORT_SCENE_SCHED, {"uid", "sceneid"}},
+        {ResType::RES_TYPE_REPORT_WINDOW_STATE, {"uid", "pid", "windowId", "serialNum", "state"}},
+        {ResType::RES_TYPE_REPORT_SCENE_SCHED, {"uid", "sceneId"}},
         {ResType::RES_TYPE_WEB_GESTURE_MOVE, {}},
         {ResType::RES_TYPE_WEB_SLIDE_NORMAL, {}},
         {ResType::RES_TYPE_LOAD_URL, {}},
@@ -103,7 +103,7 @@ namespace {
         {ResType::RES_TYPE_REPORT_DISTRIBUTE_TID, {"uid", "pid"}},
         {ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, {"uid", "pid"}},
         {ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, {"uid", "pid"}},
-        {ResType::RES_TYPE_BT_SERVICE_EVENT, {"ADDRESS", "STATE", "ROLE", "CONNEECTIF", "STATUS"}}
+        {ResType::RES_TYPE_BT_SERVICE_EVENT, {"ADDRESS", "STATE", "ROLE", "CONNECTIF", "STATUS"}}
     };
 
     static const int32_t DEFAULT_API_VERSION = 11;
@@ -114,7 +114,7 @@ namespace {
         .isGeneral = true,
         .resDeviceID = {"local"},
         .grantStatus = {Security::AccessToken::PermissionState::PERMISSION_GRANTED},
-        .grantFFlags = {1}
+        .grantFlags = {1}
     };
 
     Security::AccessToken::HapPolicyParams HapPolicyParams = {
@@ -127,7 +127,7 @@ namespace {
     Security::AccessToken::HapInfoParams info = {
         .userID = 100,
         .bundleName = "com.hos.ressched",
-        .insIndex = 0,
+        .instIndex = 0,
         .appIDDesc = "thirdParty",
         .apiVersion = DEFAULT_API_VERSION,
         .isSystemApp = false
@@ -428,7 +428,7 @@ namespace {
 
     void DeleteHapToken()
     {
-        Security::AccessToken::AccessTokenID tokenId = Security::AccessToken::AccessTokenKit::GetHapTokenId(info.userID,
+        Security::AccessToken::AccessTokenID tokenId = Security::AccessToken::AccessTokenKit::GetHapTokenID(info.userID,
             info.bundleName, info.instIndex);
         Security::AccessToken::AccessTokenKit::DeleteToken(tokenId);
     }
