@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -344,7 +344,7 @@ void SchedController::SubscribeWindowState()
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                                 HiviewDFX::HiSysEvent::EventType::FAULT,
                                 "COMPONENT_NAME", "MAIN",
-								"ERR_TYPE", "register failure",
+                                "ERR_TYPE", "register failure",
                                 "ERR_MSG", "Register a listener of window focus change failed.");
             }
         }
@@ -353,7 +353,7 @@ void SchedController::SubscribeWindowState()
         windowVisibilityObserver_ = new (std::nothrow)WindowVisibilityObserver();
         if (windowVisibilityObserver_) {
             OHOS::Rosen::WMError ret = OHOS::Rosen::WindowManagerLite::GetInstance().
-				RegisterVisibilityChangedListener(windowVisibilityObserver_);
+                RegisterVisibilityChangedListener(windowVisibilityObserver_);
             if (ret != OHOS::Rosen::WMError::WM_OK) {
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                                 HiviewDFX::HiSysEvent::EventType::FAULT,

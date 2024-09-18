@@ -24,6 +24,7 @@
 #include <set>
 #include <unordered_set>
 
+#include "app_mgr_interface.h"
 #include "sched_policy.h"
 
 namespace OHOS {
@@ -194,6 +195,7 @@ public:
         uint32_t windowId);
     void SetSystemLoadLevelState(int32_t level);
     int32_t GetSystemLoadLevel();
+    void InitSuperVisorContent();
 
     int32_t sceneBoardPid_ = -1;
     int32_t installsPid_ = -1;
@@ -204,10 +206,14 @@ public:
     {
         return uidsMap_;
     }
-
+private:
+    void ConnectAppManagerService();
+    void ReloadApplication();
+    void ReloadChildProcess();
 private:
     std::map<int32_t, std::shared_ptr<Application>> uidsMap_;
     int32_t systemLoadLevel_ = -1;
+    sptr<OHOS::AppExecFwk::IAppMgr> appManager_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
