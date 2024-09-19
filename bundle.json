@@ -90,7 +90,8 @@
           "//foundation/resourceschedule/resource_schedule_service/ressched_executor/sa_profile:resschedexe_sa_profile",
           "//foundation/resourceschedule/resource_schedule_service/ressched_executor/etc/init:resource_schedule_executor.cfg",
           "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin/framework:cgroup_sched",
-          "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin/framework/process_group:libprocess_group"
+          "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin/framework/process_group:libprocess_group",
+          "//foundation/resourceschedule/resource_schedule_service/ressched_executor/plugins/cgroup_executor_plugin:cgroup_executor_plugin"
         ]
       },
       "inner_kits": [
