@@ -30,7 +30,7 @@ IMPLEMENT_SINGLE_INSTANCE(CgroupExecutorPlugin)
 
 void CgroupExecutorPlugin::Init()
 {
-    resType_ = {
+    resTypes_ = {
         ResExeType::RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT,
         ResExeType::RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT,
     };
@@ -49,7 +49,7 @@ void CgroupExecutorPlugin::Disable()
     CGS_LOGI("%{public}s : Disable success", __func__);
 }
 
-void CgroupExecutorPlugin::DeliverResource(const std::shared_ptr<ResData>& resData)
+int32_t CgroupExecutorPlugin::DeliverResource(const std::shared_ptr<ResData>& resData)
 {
     int32_t ret = -1;
     if (!(resTypes_.count(resData->resType))) {
