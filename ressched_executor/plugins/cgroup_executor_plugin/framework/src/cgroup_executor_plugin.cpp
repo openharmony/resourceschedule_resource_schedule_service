@@ -105,9 +105,9 @@ extern "C" void OnPluginDisable()
     CgroupExecutorPlugin::GetInstance().Disable();
 }
 
-extern "C" void OnDeliverResource(const std::shared_ptr<ResData>& data)
+extern "C" int32_t OnDeliverResource(const std::shared_ptr<ResData>& data)
 {
-    CgroupExecutorPlugin::GetInstance().DeliverResource(data);
+    return CgroupExecutorPlugin::GetInstance().DeliverResource(data);
 }
 
 extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& data)
