@@ -470,7 +470,7 @@ namespace {
             return false;
         }
 
-        int64_t value = GetData<int64_t>;
+        int64_t value = GetData<int64_t>();
         auto mapPayload = GetPayload(resType);
         ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
 
