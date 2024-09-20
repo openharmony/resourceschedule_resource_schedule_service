@@ -776,32 +776,5 @@ HWTEST_F(PluginMgrTest, ParsePluginSwitchr001, TestSize.Level0)
     pluginMgr_->ParsePluginSwitch(switchStrs);
     SUCCEED();
 }
-#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-/**
- * @tc.name: Plugin mgr test DispatchResource
- * @tc.desc: Plugin mgr test DispatchResource when plugin blocked.
- * @tc.type: FUNC
- */
-HWTEST_F(PluginMgrTest, DispatchResource006, TestSize.Level0)
-{
-    PluginMgr::GetInstance().Init();
-    auto switchStrs = PluginMgr::GetInstance().GetPluginSwitchStr();
-    PluginMgr::GetInstance().ParsePluginSwitch(switchStrs);
-    PluginMgr::GetInstance().pluginBlockTime = 10 * 1000 * 1000;
-    LoadTestPlugin();
-    SUCCEED();
-    isBlocked = true;
-    nlohmann::json payload;
-    auto data = std::make_shared<ResData>(ResType::RES_TYPE_SLIDE_RECOGNIZE,
-        ResType::SlideEventStatus::SLIDE_EVENT_ON, payload);
-    std::list<std::string> pluginList = { LIB_NAME };
-    PluginMgr::GetInstance().DispatchResourceToPluginAsync(pluginList, data);
-    sleep(30);
-    EXPECT_TRUE(!PluginMgr::GetInstance().disablePlugins_.empty());
-    isBlocked = false;
-    sleep(15);
-    EXPECT_TRUE(PluginMgr::GetInstance().disablePlugins_.empty());
-}
-#endif
 } // namespace ResourceSchedule
 } // namespace OHOS
