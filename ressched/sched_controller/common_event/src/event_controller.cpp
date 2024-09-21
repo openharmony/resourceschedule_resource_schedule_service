@@ -196,7 +196,7 @@ void EventController::SystemAbilityStatusChangeListener::SubscribeLockScreenComm
     lockScreenSkills.AddEvent("common.event.UNLOCK_SCREEN");
     lockScreenSkills.AddEvent("common.event.LOCK_SCREEN");
     CommonEventSubscribeInfo subscriberInfo(lockScreenSkills);
-    subscriberInfo.SetPublisherBundleNmae(SCENE_BOARD_NAME);
+    subscriberInfo.SetPublisherBundleName(SCENE_BOARD_NAME);
     lockScreenSubscriber_ = std::make_shared<EventController>(subscriberInfo);
     SubscribeCommonEvent(lockScreenSubscriber_);
 }
