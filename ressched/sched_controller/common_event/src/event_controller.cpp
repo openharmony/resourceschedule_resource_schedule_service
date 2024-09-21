@@ -188,7 +188,6 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
     SubscribeCommonEvent(subscriber_);
     SubscribeLockScreenCommonEvent();
-
 }
 
 void EventController::SystemAbilityStatusChangeListener::SubscribeLockScreenCommonEvent()
