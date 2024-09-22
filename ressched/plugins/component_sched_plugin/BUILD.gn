@@ -20,6 +20,12 @@ config("component_sched_plugin_config") {
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
   ]
+
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+  ]
 }
 
 ohos_shared_library("component_sched_plugin") {

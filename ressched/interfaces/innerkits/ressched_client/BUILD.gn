@@ -17,10 +17,22 @@ import("../../../ressched.gni")
 
 config("client_private_config") {
   include_dirs = [ "${ressched_common}/include" ]
+
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+  ]
 }
 
 config("client_public_config") {
   include_dirs = [ "include" ]
+
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+  ]
 }
 
 ohos_shared_library("ressched_client") {

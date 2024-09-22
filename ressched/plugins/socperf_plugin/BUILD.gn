@@ -20,6 +20,12 @@ config("socperf_plugin_config") {
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
   ]
+
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+  ]
 }
 
 ohos_shared_library("socperf_plugin") {

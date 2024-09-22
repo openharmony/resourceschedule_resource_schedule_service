@@ -22,6 +22,12 @@ config("ressched_config") {
     "resschedmgr/resschedfwk/include",
     "resschedmgr/pluginbase/include",
   ]
+
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+  ]
 }
 
 config("resschedsvc_public_config") {
@@ -30,6 +36,12 @@ config("resschedsvc_public_config") {
     "resschedmgr/resschedfwk/include",
     "resschedmgr/pluginbase/include",
   ]
+
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+  ]
 }
 
 config("resschedsvc_private_config") {
@@ -37,6 +49,12 @@ config("resschedsvc_private_config") {
     "resschedservice/include",
     "../sched_controller/common_event/include",
     "../sched_controller/observer/include",
+  ]
+
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
   ]
 }
 
