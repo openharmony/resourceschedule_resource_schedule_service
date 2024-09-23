@@ -15,6 +15,12 @@ import("//build/ohos.gni")
 
 config("libprocess_group_config") {
   include_dirs = [ "./include" ]
+
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+  ]
 }
 
 ohos_shared_library("libprocess_group") {
