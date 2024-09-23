@@ -18,6 +18,7 @@
 #include "standby_service_client.h"
 #include "standby_res_data.h"
 #include "standby_service_log.h"
+
 #include "config_info.h"
 #include "plugin_mgr.h"
 #include "res_type.h"
