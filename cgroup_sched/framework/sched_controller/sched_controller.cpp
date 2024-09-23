@@ -378,7 +378,6 @@ void SchedController::SubscribeWindowState()
     SubscribeWindowModeChange();
     CGS_LOGI("%{public}s success.", __func__);
 }
-
 void SchedController::SubscribeWindowModeChange()
 {
     if (!windowModeObserver_) {
