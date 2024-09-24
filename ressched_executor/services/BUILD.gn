@@ -37,7 +37,9 @@ ohos_shared_library("resschedexesvc") {
 
   defines = []
 
-  include_dirs = []
+  include_dirs = [
+    "${resourcescheduleservice_path}/ressched/plugins/cgroup_sched_plugin/framework/process_group/include",
+  ]
 
   sources = [
     "${resschedexe_plugins}/resschedfwk/src/config_reader.cpp",
@@ -49,7 +51,10 @@ ohos_shared_library("resschedexesvc") {
     "resschedexeservice/src/res_sched_exe_service_stub.cpp",
   ]
 
-  deps = [ "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client" ]
+  deps = [
+    "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
+    "${resourcescheduleservice_path}/ressched/plugins/cgroup_sched_plugin/framework/process_group:libprocess_group",
+  ]
 
   external_deps = [
     "access_token:libaccesstoken_sdk",
@@ -98,7 +103,9 @@ ohos_static_library("resschedexesvc_static") {
 
   defines = []
 
-  include_dirs = []
+  include_dirs = [
+    "${resourcescheduleservice_path}/ressched/plugins/cgroup_sched_plugin/framework/process_group/include",
+  ]
 
   sources = [
     "${resschedexe_plugins}/resschedfwk/src/config_reader.cpp",
@@ -110,7 +117,10 @@ ohos_static_library("resschedexesvc_static") {
     "resschedexeservice/src/res_sched_exe_service_stub.cpp",
   ]
 
-  deps = [ "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client" ]
+  deps = [
+    "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
+    "${resourcescheduleservice_path}/ressched/plugins/cgroup_sched_plugin/framework/process_group:libprocess_group",
+  ]
 
   external_deps = [
     "access_token:libaccesstoken_sdk",

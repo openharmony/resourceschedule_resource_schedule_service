@@ -33,21 +33,10 @@ int SetThreadSchedPolicy(int tid, int policy)
     }
     SchedPolicy schedPolicy = SchedPolicy(policy);
     int ret = CgroupAction::GetInstance().SetThreadSchedPolicy(tid, schedPolicy) ? 0 : -1;
-    bool isLinuxKernel = system::GetParameter("ohos.boot.kernel", "").size() > 0;
+    bool isLinuxKernel = system::GetParameter("ohos.boot.kernel", "").size() <= 0;
     if (isLinuxKernel) {
-        nlohmann::json payload;
-        payload["tid"] = tid;
-        payload["policy"] = policy;
-        nlohmann::json reply;
-        ret = ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(
-            ResourceSchedule::ResExeType::RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT, 0, payload, reply);
-        if (ret != 0) {
-            PGCGS_LOGE("%{public}s SendRequestSync RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT failed", __func__);
-            return ret;
-        }
-        if (reply.contains("ret") && reply.at("ret").is_string()) {
-            ret = atoi(reply["ret"].get<std::string>().c_str());
-        }
+        ret = SetSchedPolicyByExecutor(pid, policy,
+            ResourceSchedule::ResExeType::RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT);
     }
     return ret;
 }
@@ -62,21 +51,28 @@ int SetThreadGroupSchedPolicy(int pid, int policy)
     }
     SchedPolicy schedPolicy = SchedPolicy(policy);
     int ret = CgroupAction::GetInstance().SetThreadGroupSchedPolicy(pid, schedPolicy) ? 0 : -1;
-    bool isLinuxKernel = system::GetParameter("ohos.boot.kernel", "").size() > 0;
+    bool isLinuxKernel = system::GetParameter("ohos.boot.kernel", "").size() <= 0;
     if (isLinuxKernel) {
-        nlohmann::json payload;
-        payload["tid"] = pid;
-        payload["policy"] = policy;
-        nlohmann::json reply;
-        ret = ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(
-            ResourceSchedule::ResExeType::RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT, 0, payload, reply);
-        if (ret != 0) {
-            PGCGS_LOGE("%{public}s SendRequestSync RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT failed", __func__);
-            return ret;
-        }
-        if (reply.contains("ret") && reply.at("ret").is_string()) {
-            ret = atoi(reply["ret"].get<std::string>().c_str());
-        }
+        ret = SetSchedPolicyByExecutor(pid, policy,
+            ResourceSchedule::ResExeType::RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT);
+    }
+    return ret;
+}
+
+int SetSchedPolicyByExecutor(int tid, int policy, uint32_t resType)
+{
+    int ret = 0;
+    nlohmann::json payload;
+    payload["tid"] = std::to_string(pid);
+    payload["policy"] = std::to_string(policy);
+    nlohmann::json reply;
+    ret = ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(resType, 0, payload, reply);
+    if (ret != 0) {
+        PGCGS_LOGE("%{public}s SendRequestSync %{public}d failed", __func__, resType);
+        return ret;
+    }
+    if (reply.contains("ret") && reply.at("ret").is_string()) {
+        ret = atoi(reply["ret"].get<std::string>().c_str());
     }
     return ret;
 }
