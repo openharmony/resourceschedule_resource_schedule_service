@@ -37,9 +37,7 @@ ohos_shared_library("resschedexesvc") {
 
   defines = []
 
-  include_dirs = [
-    "${resourcescheduleservice_path}/ressched/plugins/cgroup_sched_plugin/framework/process_group/include",
-  ]
+  include_dirs = [ "${resourcescheduleservice_path}/ressched/plugins/cgroup_sched_plugin/framework/process_group/include" ]
 
   sources = [
     "${resschedexe_plugins}/resschedfwk/src/config_reader.cpp",
@@ -103,9 +101,7 @@ ohos_static_library("resschedexesvc_static") {
 
   defines = []
 
-  include_dirs = [
-    "${resourcescheduleservice_path}/ressched/plugins/cgroup_sched_plugin/framework/process_group/include",
-  ]
+  include_dirs = [ "${resourcescheduleservice_path}/ressched/plugins/cgroup_sched_plugin/framework/process_group/include" ]
 
   sources = [
     "${resschedexe_plugins}/resschedfwk/src/config_reader.cpp",
