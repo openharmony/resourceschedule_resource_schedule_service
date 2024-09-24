@@ -50,7 +50,9 @@ public:
     void Stop();
 
 private:
+    void SubscribeLockScreenCommonEvent();
     std::shared_ptr<EventController> subscriber_ = nullptr;
+    std::shared_ptr<EventController> lockScreenSubscriber_ = nullptr;
 };
 
     void DataShareIsReady();

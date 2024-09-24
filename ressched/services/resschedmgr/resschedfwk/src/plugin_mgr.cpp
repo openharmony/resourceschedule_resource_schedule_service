@@ -157,9 +157,7 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
                 }, {}, {}, ffrt::task_attr().delay(time));
         };
         dispatchers_.emplace(libPath, std::make_shared<ffrt::queue>(libPath.c_str(),
-            ffrt::queue_attr().qos(ffrt::qos_user_interactive).
-            timeout(pluginBlockTime).
-            callback(callback)));
+            ffrt::queue_attr().qos(ffrt::qos_user_interactive)));
     }
 #else
     if (!dispatcher_) {
@@ -775,11 +773,9 @@ void PluginMgr::DispatchResourceToPluginAsync(const std::list<std::string>& plug
         std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
         dispatchers_[pluginLib]->submit(
             [pluginLib, resData, pluginDispatchFunc] {
-                PluginMgr::GetInstance().RecordRinningStat(pluginLib, true);
                 StartTrace(HITRACE_TAG_APP, pluginLib);
                 pluginDispatchFunc(std::make_shared<ResData>(resData->resType, resData->value, resData->payload));
                 FinishTrace(HITRACE_TAG_APP);
-                PluginMgr::GetInstance().RecordRinningStat(pluginLib, false);
             });
     }
 }

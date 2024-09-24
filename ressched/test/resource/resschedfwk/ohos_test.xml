@@ -36,11 +36,15 @@
             <option name="push" value="parseswitch/invalid_format.xml -> /system/data/test/resource/resschedfwk/parseswitch" src="res"/>
             <option name="push" value="parseswitch/system/res_sched_plugin_switch.xml -> /system/data/test/resource/resschedfwk/parseswitch" src="res"/>
             <option name="shell" value="mv /sys_prod/etc/ressched/res_sched_plugin_switch.xml /sys_prod/etc/ressched/res_sched_plugin_switch_copy.xml"/>
+            <option name="shell" value="mv /system/variant/phone/base/etc/ressched/res_sched_plugin_switch.xml /system/variant/phone/base/etc/ressched/res_sched_plugin_switch_copy.xml"/>
             <option name="push" value="switchconfig/res_sched_plugin_switch.xml -> /sys_prod/etc/ressched/" src="res"/>
+            <option name="push" value="switchconfig/res_sched_plugin_switch.xml -> /system/variant/phone/base/etc/ressched/" src="res"/>
         </preparer>
         <cleaner>
             <option name="shell" value="rm -rf /sys_prod/etc/ressched/res_sched_plugin_switch.xml"/>
+            <option name="shell" value="rm -rf /system/variant/phone/base/etc/ressched/res_sched_plugin_switch.xml"/>
             <option name="shell" value="mv /sys_prod/etc/ressched/res_sched_plugin_switch_copy.xml /sys_prod/etc/ressched/res_sched_plugin_switch.xml"/>
+            <option name="shell" value="mv /system/variant/phone/base/etc/ressched/res_sched_plugin_switch_copy.xml /system/variant/phone/base/etc/ressched/res_sched_plugin_switch.xml"/>
         </cleaner>
     </target>
     <target name="resschedservice_test">
@@ -49,10 +53,13 @@
             <option name="shell" value="target mount"/>
             <option name="shell" value="mv /sys_prod/etc/ressched/res_sched_plugin_switch.xml /sys_prod/etc/ressched/res_sched_plugin_switch_copy.xml"/>
             <option name="push" value="switchconfig/res_sched_plugin_switch.xml -> /sys_prod/etc/ressched/" src="res"/>
+            <option name="shell" value="mv /system/variant/phone/base/etc/ressched/res_sched_plugin_switch.xml /system/variant/phone/base/etc/ressched/res_sched_plugin_switch_copy.xml"/>
         </preparer>
         <cleaner>
             <option name="shell" value="rm -rf /sys_prod/etc/ressched/res_sched_plugin_switch.xml"/>
+            <option name="shell" value="rm -rf /system/variant/phone/base/etc/ressched/res_sched_plugin_switch.xml"/>
             <option name="shell" value="mv /sys_prod/etc/ressched/res_sched_plugin_switch_copy.xml /sys_prod/etc/ressched/res_sched_plugin_switch.xml"/>
+            <option name="shell" value="mv /system/variant/phone/base/etc/ressched/res_sched_plugin_switch_copy.xml /system/variant/phone/base/etc/ressched/res_sched_plugin_switch.xml"/>
         </cleaner>
     </target>
 </configuration>

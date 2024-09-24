@@ -99,6 +99,7 @@
             "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client/include",
             "header_files": [
               "ires_sched_service.h",
+              "res_sa_init.h",
               "res_sched_client.h",
               "res_sched_errors.h",
               "res_sched_service_proxy.h",

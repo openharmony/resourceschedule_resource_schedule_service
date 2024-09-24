@@ -24,6 +24,7 @@
 #include <set>
 #include <unordered_set>
 
+#include "app_mgr_interface.h"
 #include "sched_policy.h"
 
 namespace OHOS {
@@ -42,6 +43,7 @@ enum ProcRecordType : int32_t {
     RENDER,
     GPU,
     LINUX,
+    CHILD,
 };
 
 class AbilityInfo;
@@ -129,6 +131,8 @@ public:
     int32_t wifiState_ = -1;
     int32_t mmiStatus_ {-1};
     int32_t hostPid_ = -1;
+    uint32_t suppressState_ = 0;
+    bool isReload_ = false;
 
     std::map<uint32_t, bool> runningLockState_;
     std::map<int32_t, bool> avCodecState_;
@@ -179,7 +183,6 @@ public:
     SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
-    pid_t pidofGPUProcess_ = -1;
 
 private:
     uid_t uid_;
@@ -200,6 +203,8 @@ public:
         uint32_t windowId);
     void SetSystemLoadLevelState(int32_t level);
     int32_t GetSystemLoadLevel();
+    void InitSuperVisorContent();
+    void ConnectAppManagerService();
 
     int32_t sceneBoardPid_ = -1;
     int32_t installsPid_ = -1;
@@ -210,10 +215,13 @@ public:
     {
         return uidsMap_;
     }
-
+private:
+    void ReloadApplication();
+    void ReloadChildProcess();
 private:
     std::map<int32_t, std::shared_ptr<Application>> uidsMap_;
     int32_t systemLoadLevel_ = -1;
+    sptr<OHOS::AppExecFwk::IAppMgr> appManager_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
