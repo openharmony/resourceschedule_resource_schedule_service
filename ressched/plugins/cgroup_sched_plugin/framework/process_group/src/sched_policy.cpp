@@ -18,7 +18,6 @@
 #include "parameters.h"     // for GetParameter
 #include "process_group_log.h" // for PGCGS_LOGI, PGCGS_LOGE
 #include "res_exe_type.h"   // for ResExeType
-#include "res_sched_exe_client.h" // for ResSchedExeClient
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -35,7 +34,7 @@ int SetThreadSchedPolicy(int tid, int policy)
     int ret = CgroupAction::GetInstance().SetThreadSchedPolicy(tid, schedPolicy) ? 0 : -1;
     bool isLinuxKernel = system::GetParameter("ohos.boot.kernel", "").size() <= 0;
     if (isLinuxKernel) {
-        ret = SetSchedPolicyByExecutor(pid, policy,
+        ret = CgroupAction::GetInstance().SetSchedPolicyByExecutor(tid, policy,
             ResourceSchedule::ResExeType::RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT);
     }
     return ret;
@@ -53,26 +52,8 @@ int SetThreadGroupSchedPolicy(int pid, int policy)
     int ret = CgroupAction::GetInstance().SetThreadGroupSchedPolicy(pid, schedPolicy) ? 0 : -1;
     bool isLinuxKernel = system::GetParameter("ohos.boot.kernel", "").size() <= 0;
     if (isLinuxKernel) {
-        ret = SetSchedPolicyByExecutor(pid, policy,
+        ret = CgroupAction::GetInstance().SetSchedPolicyByExecutor(pid, policy,
             ResourceSchedule::ResExeType::RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT);
-    }
-    return ret;
-}
-
-int SetSchedPolicyByExecutor(int tid, int policy, uint32_t resType)
-{
-    int ret = 0;
-    nlohmann::json payload;
-    payload["tid"] = std::to_string(pid);
-    payload["policy"] = std::to_string(policy);
-    nlohmann::json reply;
-    ret = ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(resType, 0, payload, reply);
-    if (ret != 0) {
-        PGCGS_LOGE("%{public}s SendRequestSync %{public}d failed", __func__, resType);
-        return ret;
-    }
-    if (reply.contains("ret") && reply.at("ret").is_string()) {
-        ret = atoi(reply["ret"].get<std::string>().c_str());
     }
     return ret;
 }

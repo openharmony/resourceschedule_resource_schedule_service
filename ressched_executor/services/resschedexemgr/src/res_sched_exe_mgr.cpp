@@ -164,6 +164,7 @@ void ResSchedExeMgr::HandleRequestForCgroup(uint32_t resType, const nlohmann::js
     }
     CgroupSetting::SchedPolicy schedPolicy = CgroupSetting::SchedPolicy(policy);
 
+    int ret = 0;
     switch (resType) {
         case ResExeType::RES_TYPE_CGROUP_SYNC_EVENT:
             GetCgroupFileContent(resType, payload, reply);
@@ -172,11 +173,11 @@ void ResSchedExeMgr::HandleRequestForCgroup(uint32_t resType, const nlohmann::js
             CheckProcTaskForCgroup(resType, payload, reply);
             break;
         case ResExeType::RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT:
-            int ret = CgroupSetting::CgroupAction::GetInstance().SetThreadSchedPolicy(tid, schedPolicy) ? 0 : -1;
+            ret = CgroupSetting::CgroupAction::GetInstance().SetThreadSchedPolicy(tid, schedPolicy) ? 0 : -1;
             reply["ret"] = std::to_string(ret);
             break;
         case ResExeType::RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT:
-            int ret = CgroupSetting::CgroupAction::GetInstance().SetThreadGroupSchedPolicy(tid, schedPolicy) ? 0 : -1;
+            ret = CgroupSetting::CgroupAction::GetInstance().SetThreadGroupSchedPolicy(tid, schedPolicy) ? 0 : -1;
             reply["ret"] = std::to_string(ret);
             break;
         default:
