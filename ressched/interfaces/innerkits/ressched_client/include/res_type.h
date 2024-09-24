@@ -260,6 +260,8 @@ enum : uint32_t {
     RES_TYPE_APP_FRAME_DROP = 114,
     // report rss cloud config update
     RES_TYPE_RSS_CLOUD_CONFIG_UPDATE = 115,
+    // report game info
+    RES_TYPE_GAME_INFO_NOTIFY = 116,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
