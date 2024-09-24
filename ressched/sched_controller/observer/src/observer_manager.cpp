@@ -21,6 +21,7 @@
 #include "display_manager.h"
 #include "dm_common.h"
 #include "hisysevent.h"
+
 #include "hisysevent_manager.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
