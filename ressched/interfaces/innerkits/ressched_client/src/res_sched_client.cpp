@@ -30,7 +30,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
 constexpr int32_t CHECK_MUTEX_TIMEOUT = 500;  // 500ms
-bool isDestoryed = false
+bool g_isDestroyed = false;
 }
 
 ResSchedClient& ResSchedClient::GetInstance()
@@ -41,7 +41,7 @@ ResSchedClient& ResSchedClient::GetInstance()
 ResSchedClient::~ResSchedClient()
 {
     std::lock_guard<std::mutex> lock(mutex_);
-    isDestoryed = true;
+    g_isDestroyed = true;
     if (rss_ && rss_->AsObject()) {
         rss_->AsObject()->RemoveDeathRecipient(recipient_);
     }
@@ -224,7 +224,7 @@ sptr<IResSchedService> ResSchedClient::GetProxy()
 ErrCode ResSchedClient::TryConnect()
 {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (isDestoryed) {
+    if (g_isDestroyed) {
         return GET_RES_SCHED_SERVICE_FAILED;
     }
     if (rss_) {
