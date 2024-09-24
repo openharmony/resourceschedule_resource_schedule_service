@@ -19,7 +19,6 @@
 #include <memory>
 #include "account_observer.h"
 #include "if_system_ability_manager.h"
-
 #include "system_ability_status_change_stub.h"
 #include "singleton.h"
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
@@ -118,6 +117,7 @@ public:
 #endif
     std::shared_ptr<AccountObserver> accountObserver_ = nullptr;
     bool isNeedReport_ = true;
+    int32_t powerKeySubscribeId_ = -1;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
