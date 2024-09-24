@@ -17,7 +17,6 @@
 #define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_TYPE_H
 
 #include <cstdint>
-
 #include <vector>
 
 namespace OHOS {
@@ -259,6 +258,8 @@ enum : uint32_t {
     RES_TYPE_BMM_MONITER_CHANGE_EVENT = 113,
     // app frame drop event
     RES_TYPE_APP_FRAME_DROP = 114,
+    // report power key down
+    RES_TYPE_MMI_INPUT_POWER_KEY = 116,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
