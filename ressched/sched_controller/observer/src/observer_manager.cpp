@@ -21,7 +21,6 @@
 #include "display_manager.h"
 #include "dm_common.h"
 #include "hisysevent.h"
-
 #include "hisysevent_manager.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
@@ -433,6 +432,17 @@ void ObserverManager::DisableDeviceMovementObserver()
 
 void ObserverManager::InitMMiEventObserver()
 {
+    std::shared_ptr<OHOS::MMI::KeyOption> keyOption = std::make_shared<OHOS::MMI::KeyOption>();
+    keyOption = std::make_shared<OHOS::MMI::KeyOption>();
+    keyOption->SetFinalKey(OHOS::MMI::KeyEvent::KEYCODE_POWER);
+    keyOption->SetFinalKeyDown(true);
+    keyOption->SetFinalKeyDownDuration(0);
+    powerKeySubscribeId_ = MMI::InputManager::GetInstance()->SubscribeKeyEvent(keyOption,
+        [](std::shared_ptr<OHOS::MMI::KeyEvent> keyEvent) {
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_MMI_INPUT_POWER_KEY, keyEvent->GetKeyCode());
+    });
+    RESSCHED_LOGI("Subscribe power key event successfully.");
+
     if (!isNeedReport_) {
         RESSCHED_LOGI("not need init mmi observer.");
         return;
@@ -459,6 +469,8 @@ void ObserverManager::InitMMiEventObserver()
 
 void ObserverManager::DisableMMiEventObserver()
 {
+    RESSCHED_LOGI("Unsubscribes power key event");
+    MMI::InputManager::GetInstance()->UnsubscribeKeyEvent(powerKeySubscribeId_);
     RESSCHED_LOGI("Disable mmi observer");
     if (!mmiEventObserver_) {
         RESSCHED_LOGD("ObserverManager has been disable mmiEventObserver");
