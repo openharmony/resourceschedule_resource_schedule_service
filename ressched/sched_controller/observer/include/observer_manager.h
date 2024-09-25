@@ -117,6 +117,7 @@ public:
 #endif
     std::shared_ptr<AccountObserver> accountObserver_ = nullptr;
     bool isNeedReport_ = true;
+    int32_t powerKeySubscribeId_ = -1;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

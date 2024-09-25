@@ -45,6 +45,7 @@ void DeviceStandbyPlugin::Init()
     resTypes_.insert(RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED);
     resTypes_.insert(RES_TYPE_POWER_MODE_CHANGED);
     resTypes_.insert(RES_TYPE_CLICK_RECOGNIZE);
+    resTypes_.insert(RES_TYPE_MMI_INPUT_POWER_KEY);
 
     for (auto resType : resTypes_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
