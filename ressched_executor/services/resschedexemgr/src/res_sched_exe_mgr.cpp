@@ -158,11 +158,15 @@ void ResSchedExeMgr::HandleRequestForCgroup(uint32_t resType, const nlohmann::js
 
     int tid;
     int policy;
-    if (!(ParseValue(tid, "tid", payload)) || !(ParseValue(policy, "policy", payload))) {
-        RSSEXE_LOGE("%{public}s : ParseValue failed", __func__);
-        return;
+    CgroupSetting::SchedPolicy schedPolicy;
+    if (resType == ResExeType::RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT ||
+        resType == ResExeType::RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT) {
+        if (!(ParseValue(tid, "tid", payload)) || !(ParseValue(policy, "policy", payload))) {
+            RSSEXE_LOGE("%{public}s : ParseValue failed", __func__);
+            return;
+        }
+        schedPolicy = CgroupSetting::SchedPolicy(policy);
     }
-    CgroupSetting::SchedPolicy schedPolicy = CgroupSetting::SchedPolicy(policy);
 
     int ret = 0;
     switch (resType) {
