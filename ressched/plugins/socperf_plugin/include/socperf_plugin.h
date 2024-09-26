@@ -78,6 +78,7 @@ private:
     bool HandleAppColdStartEx(const std::shared_ptr<ResData>& data);
     bool HandleSceneRotation(const std::shared_ptr<ResData>& data);
     bool HandleBmmMoniterStatus(const std::shared_ptr<ResData>& data);
+    bool HandlePowerModeChanged(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

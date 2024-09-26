@@ -42,8 +42,10 @@ namespace {
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
+    const int32_t POWERMODE_ON                              = 601;
     const int64_t TIME_INTERVAL                             = 5000;
     const int32_t PERF_REQUEST_CMD_ID_RGM_BOOTING_START     = 1000;
+    const int32_t PERF_REQUEST_CMD_ID_POWERMODE_CHANGED     = 9000;
     const int32_t PERF_REQUEST_CMD_ID_APP_START             = 10000;
     const int32_t PERF_REQUEST_CMD_ID_WARM_START            = 10001;
     const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH         = 10002;
@@ -196,6 +198,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleSceneRotation(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_BMM_MONITER_CHANGE_EVENT,
         [this](const std::shared_ptr<ResData>& data) { HandleBmmMoniterStatus(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_POWER_MODE_CHANGED,
+        [this](const std::shared_ptr<ResData>& data) { HandlePowerModeChanged(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
@@ -234,6 +238,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_ONLY_PERF_APP_COLD_START,
         RES_TYPE_SCENE_ROTATION,
         RES_TYPE_BMM_MONITER_CHANGE_EVENT,
+        RES_TYPE_POWER_MODE_CHANGED,
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -641,6 +646,20 @@ bool SocPerfPlugin::HandleBmmMoniterStatus(const std::shared_ptr<ResData> &data)
         return true;
     }
     return false;
+}
+
+bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandlePowerModeChanged: %{public}lld", (long long)data->value);
+    if (data->value == POWERMODE_ON) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_POWERMODE_CHANGED, true, "");
+    } else {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_POWERMODE_CHANGED, false, "");
+    }
+    return true;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
