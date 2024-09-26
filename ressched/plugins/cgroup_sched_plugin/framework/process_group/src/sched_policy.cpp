@@ -16,7 +16,6 @@
 #include <unistd.h>         // for gettid, getpid
 #include "cgroup_action.h"  // for CgroupAction
 #include "parameters.h"     // for GetParameter
-#include "process_group_log.h" // for PGCGS_LOGI, PGCGS_LOGE
 #include "res_exe_type.h"   // for ResExeType
 
 namespace OHOS {
