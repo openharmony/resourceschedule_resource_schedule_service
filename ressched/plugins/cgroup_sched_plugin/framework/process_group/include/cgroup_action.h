@@ -39,6 +39,7 @@ public:
 
     bool SetThreadSchedPolicy(int tid, SchedPolicy policy);
     bool SetThreadGroupSchedPolicy(int tid, SchedPolicy policy);
+    int SetSchedPolicyByExecutor(int tid, int policy, uint32_t resType);
     int GetSchedPolicy(int tid, SchedPolicy* policy);
     int GetSchedPolicyByName(const std::string& name, SchedPolicy* policy);
 

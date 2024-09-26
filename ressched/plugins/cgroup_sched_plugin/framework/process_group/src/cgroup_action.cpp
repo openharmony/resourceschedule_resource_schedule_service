@@ -26,6 +26,7 @@
 #include "nlohmann/json.hpp"           // for Value
 #include "process_group_log.h"    // for PGCGS_LOGI, PGCGS_LOGE
 #include "process_group_util.h"   // for ReadFileToString
+#include "res_sched_exe_client.h" // for ResSchedExeClient
 #include "sched_policy.h"         // for SchedPolicy, SP_UPPER_LIMIT, SP_DEF...
 
 namespace OHOS {
@@ -146,6 +147,24 @@ bool CgroupAction::SetThreadGroupSchedPolicy(int tid, SchedPolicy policy)
         return false;
     }
     return CgroupMap::GetInstance().SetThreadSchedPolicy(tid, policy, true);
+}
+
+int CgroupAction::SetSchedPolicyByExecutor(int tid, int policy, uint32_t resType)
+{
+    int ret = 0;
+    nlohmann::json payload;
+    payload["tid"] = std::to_string(tid);
+    payload["policy"] = std::to_string(policy);
+    nlohmann::json reply;
+    ret = ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(resType, 0, payload, reply);
+    if (ret != 0) {
+        PGCGS_LOGE("%{public}s SendRequestSync %{public}d failed", __func__, resType);
+        return ret;
+    }
+    if (reply.contains("ret") && reply.at("ret").is_string()) {
+        ret = atoi(reply["ret"].get<std::string>().c_str());
+    }
+    return ret;
 }
 
 bool CgroupAction::LoadConfigFile()
