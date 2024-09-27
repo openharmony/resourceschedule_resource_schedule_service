@@ -428,8 +428,8 @@ namespace {
 
     void DeleteHapToken()
     {
-        Security::AccessToken::AccessTokenID tokenId = Security::AccessToken::AccessTokenKit::GetHapTokenID(info.userID,
-            info.bundleName, info.instIndex);
+        Security::AccessToken::AccessTokenID tokenId =
+            Security::AccessToken::AccessTokenKit::GetHapTokenID(info.userID, info.bundleName, info.instIndex);
         Security::AccessToken::AccessTokenKit::DeleteToken(tokenId);
     }
 
