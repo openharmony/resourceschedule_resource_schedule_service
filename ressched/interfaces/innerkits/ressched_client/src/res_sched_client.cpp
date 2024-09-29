@@ -27,6 +27,9 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+namespace {
+    bool g_isDestroyed = false;
+}
 ResSchedClient& ResSchedClient::GetInstance()
 {
     static ResSchedClient instance;
@@ -34,7 +37,13 @@ ResSchedClient& ResSchedClient::GetInstance()
 }
 ResSchedClient::~ResSchedClient()
 {
-    StopRemoteObject();
+    std::lock_guard<std::mutex> lock(mutex_);
+    g_isDestroyed = true;
+    if (rss_ && rss_->AsObject()) {
+        rss_->AsObject()->RemoveDeathRecipient(recipient_);
+    }
+    rss_ = nullptr;
+    systemloadCbRegistered_ = false;
 }
 
 void ResSchedClient::ReportData(uint32_t resType, int64_t value,
@@ -156,6 +165,9 @@ sptr<IResSchedService> ResSchedClient::GetProxy()
 ErrCode ResSchedClient::TryConnect()
 {
     std::lock_guard<std::mutex> lock(mutex_);
+    if (g_isDestroyed) {
+        return GET_RES_SCHED_SERVICE_FAILED;
+    }
     if (rss_) {
         return ERR_OK;
     }
