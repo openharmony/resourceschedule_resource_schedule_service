@@ -38,6 +38,7 @@ namespace ResourceSchedule {
 IMPLEMENT_SINGLE_INSTANCE(EventController);
 
 const std::string DATA_SHARE_READY = "usual.event.DATA_SHARE_READY";
+const std::string SCENE_BOARD_NAME = "com.ohos.sceneboard";
 void EventController::Init()
 {
     if (sysAbilityListener_ != nullptr) {
@@ -141,6 +142,19 @@ void EventController::DataShareIsReady()
     ResourceSchedule::OOBEManager::GetInstance().OnReceiveDataShareReadyCallBack();
 }
 
+inline void SubscribeCommonEvent(std::shared_ptr<EventController> subscriber)
+{
+    if (CommonEventManager::SubscribeCommonEvent(subscriber)) {
+        RESSCHED_LOGD("SubscribeCommonEvent ok");
+    } else {
+        RESSCHED_LOGW("SubscribeCommonEvent fail");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "EventController subscribe common events failed!");
+    }
+}
+
 void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
@@ -168,21 +182,23 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_CALL_STATE_CHANGED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_WIFI_P2P_STATE_CHANGED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_SAVE_MODE_CHANGED);
-    matchingSkills.AddEvent("common.event.UNLOCK_SCREEN");
-    matchingSkills.AddEvent("common.event.LOCK_SCREEN");
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
     matchingSkills.AddEvent(DATA_SHARE_READY);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
-    if (CommonEventManager::SubscribeCommonEvent(subscriber_)) {
-        RESSCHED_LOGD("SubscribeCommonEvent ok");
-    } else {
-        RESSCHED_LOGW("SubscribeCommonEvent fail");
-        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "EventController subscribe common events failed!");
-    }
+    SubscribeCommonEvent(subscriber_);
+    SubscribeLockScreenCommonEvent();
+}
+
+void EventController::SystemAbilityStatusChangeListener::SubscribeLockScreenCommonEvent()
+{
+    MatchingSkills lockScreenSkills;
+    lockScreenSkills.AddEvent("common.event.UNLOCK_SCREEN");
+    lockScreenSkills.AddEvent("common.event.LOCK_SCREEN");
+    CommonEventSubscribeInfo subscriberInfo(lockScreenSkills);
+    subscriberInfo.SetPublisherBundleName(SCENE_BOARD_NAME);
+    lockScreenSubscriber_ = std::make_shared<EventController>(subscriberInfo);
+    SubscribeCommonEvent(lockScreenSubscriber_);
 }
 
 void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
@@ -343,14 +359,17 @@ void EventController::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
 {
     RESSCHED_LOGW("common event service is removed.");
     subscriber_ = nullptr;
+    lockScreenSubscriber_ = nullptr;
 }
 
 void EventController::SystemAbilityStatusChangeListener::Stop()
 {
-    if (subscriber_ == nullptr) {
+    if (subscriber_ == nullptr || lockScreenSubscriber_ == nullptr) {
         return;
     }
     CommonEventManager::UnSubscribeCommonEvent(subscriber_);
+    CommonEventManager::UnSubscribeCommonEvent(lockScreenSubscriber_);
+    lockScreenSubscriber_ = nullptr;
     subscriber_ = nullptr;
 }
 
