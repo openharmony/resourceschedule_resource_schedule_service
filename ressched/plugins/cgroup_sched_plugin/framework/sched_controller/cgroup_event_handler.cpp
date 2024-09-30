@@ -756,6 +756,7 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
         pid = payload["pid"].get<std::int32_t>();
     }
     if (uid <= 0 || pid <= 0) {
+        CGS_LOGE("%{public}s : uid or pid is less than 0", __func__);
         return;
     }
 
@@ -849,6 +850,70 @@ void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t 
 #endif
 }
 
+void CgroupEventHandler::HandleReportBluetoothConnectState(
+    uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr.", __func__);
+        return;
+    }
+
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+        CGS_LOGE("%{public}s : payload does not contain uid or pid", __func__);
+        return;
+    }
+    if (uid <= 0 || pid <= 0) {
+        CGS_LOGE("%{public}s : uid or pid is less than 0", __func__);
+        return;
+    }
+    CGS_LOGD("report bluetooth connect state, uid:%{public}d, pid:%{public}d, value:%{public}lld",
+        uid, pid, (long long)value);
+    std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
+        return;
+    }
+    procRecord->bluetoothState_ = static_cast<int32_t>(value);
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+        resType, static_cast<int32_t>(value));
+}
+
+void CgroupEventHandler::HandleMmiInputState(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr.", __func__);
+        return;
+    }
+
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+        CGS_LOGE("%{public}s : payload does not contain uid or pid", __func__);
+        return;
+    }
+    if (uid <= 0 || pid <= 0) {
+        CGS_LOGE("%{public}s : uid or pid is less than 0", __func__);
+        return;
+    }
+    CGS_LOGD("report mmi input state, uid:%{public}d, pid:%{public}d, value:%{public}lld",
+        uid, pid, (long long)value);
+    std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
+        return;
+    }
+
+    if (payload.contains("syncStatus") && payload.at("syncStatus").is_string()) {
+        procRecord->mmiStatus_ = atoi(payload["syncStatus"].get<std::string>().c_str());
+    }
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+        resType, static_cast<int32_t>(value));
+}
+
 void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     int32_t uid = 0;
@@ -874,10 +939,6 @@ void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value,
     switch (resType) {
         case ResType::RES_TYPE_REPORT_CAMERA_STATE: {
             procRecord->cameraState_ = static_cast<int32_t>(value);
-            break;
-        }
-        case ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE: {
-            procRecord->bluetoothState_ = static_cast<int32_t>(value);
             break;
         }
         case ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE: {
@@ -909,11 +970,15 @@ void CgroupEventHandler::HandleReportScreenCaptureEvent(uint32_t resType, int64_
     }
 
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+        CGS_LOGE("%{public}s : payload does not contain uid or pid", __func__);
         return;
     }
     if (uid <= 0 || pid <= 0) {
+        CGS_LOGE("%{public}s : uid or pid is less than 0", __func__);
         return;
     }
+    CGS_LOGD("report Screen capture, uid:%{public}d, pid:%{public}d, value:%{public}lld",
+        uid, pid, (long long)value);
     std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
     std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
     if (!app || !procRecord) {

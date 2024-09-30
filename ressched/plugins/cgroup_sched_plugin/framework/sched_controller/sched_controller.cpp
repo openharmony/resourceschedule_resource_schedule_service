@@ -173,10 +173,16 @@ void SchedController::DispatchOtherResource(uint32_t resType, int64_t value, con
     handler->PostTask([handler, resType, value, payload] {
         switch (resType) {
             case ResType::RES_TYPE_REPORT_CAMERA_STATE:
-            case ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE:
-            case ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE:
-            case ResType::RES_TYPE_MMI_INPUT_STATE: {
+            case ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE: {
                 handler->HandleReportHisysEvent(resType, value, payload);
+                break;
+            }
+            case ResType::RES_TYPE_MMI_INPUT_STATE: {
+                handler->HandleMmiInputState(resType, value, payload);
+                break;
+            }
+            case ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE: {
+                handler->HandleReportBluetoothConnectState(resType, value, payload);
                 break;
             }
             case ResType::RES_TYPE_AV_CODEC_STATE: {

@@ -192,58 +192,6 @@ namespace {
         return true;
     }
 
-    bool HisysEventAudioEventFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        if (size <= THREE_PARAMETERS * sizeof(int32_t) + DATA_LENGTH) {
-            return false;
-        }
-
-        // initialize
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
-
-        nlohmann::json sysEvent;
-        sysEvent["UID"] = GetData<int32_t>();
-        sysEvent["PID"] = GetData<int32_t>();
-        sysEvent["STATE"] = GetData<int32_t>();
-        std::string eventName = GetStringFromData(DATA_LENGTH);
-        sysEvent["name_"] = eventName;
-        std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
-        hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
-        return true;
-    }
-
-    bool HisysEventBluetoothFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        if (size <= THREE_PARAMETERS * sizeof(int32_t) + DATA_LENGTH) {
-            return false;
-        }
-
-        // initialize
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
-
-        nlohmann::json sysEvent;
-        sysEvent["UID"] = GetData<int32_t>();
-        sysEvent["PID"] = GetData<int32_t>();
-        sysEvent["STATE"] = GetData<int32_t>();
-        std::string eventName = GetStringFromData(DATA_LENGTH);
-        sysEvent["name_"] = eventName;
-        std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
-        hisysEventObserver_->ProcessBluetoothEvent(sysEvent, eventName);
-        return true;
-    }
-
     bool HisysEventCameraEventFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -709,9 +657,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     OHOS::ResourceSchedule::HisysEventAvCodecEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventRunningLockEventFuzzTest(data, size);
-    OHOS::ResourceSchedule::HisysEventAudioEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventCameraEventFuzzTest(data, size);
-    OHOS::ResourceSchedule::HisysEventBluetoothFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventWifiEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ProcessHiSysEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ObserverManagerFuzzTest(data, size);
