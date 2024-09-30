@@ -945,12 +945,6 @@ void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value,
             procRecord->wifiState_ = static_cast<int32_t>(value);
             break;
         }
-        case ResType::RES_TYPE_MMI_INPUT_STATE: {
-            if (payload.contains("syncStatus") && payload.at("syncStatus").is_string()) {
-                procRecord->mmiStatus_ = atoi(payload["syncStatus"].get<std::string>().c_str());
-            }
-            break;
-        }
         default: {
             break;
         }
