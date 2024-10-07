@@ -148,6 +148,7 @@ namespace {
         ResType::RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK,
         ResType::RES_TYPE_REPORT_GAME_SCHED,
         ResType::RES_TYPE_CLOUD_CONFIG_UPDATE,
+        ResType::RES_TYPE_RSS_CLOUD_CONFIG_UPDATE,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
