@@ -54,7 +54,6 @@ namespace {
     static const int32_t TWO_PARAMETERS = 2;
 }
 
-
     constexpr int32_t MAX_CODE = 5;
     constexpr int32_t MIN_LEN = 4;
     std::mutex mutexLock;
