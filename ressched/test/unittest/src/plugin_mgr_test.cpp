@@ -730,7 +730,7 @@ HWTEST_F(PluginMgrTest, SubscribeSyncResource002, TestSize.Level0)
     std::string pluginLib;
     uint32_t resType = 0;
     PluginMgr::GetInstance().SubscribeSyncResource(pluginLib, resType);
-    EXPECT_EQ(PluginMgr::GetInstance().resTypeLibSyncMap_.SIZE(), 0);
+    EXPECT_EQ(PluginMgr::GetInstance().resTypeLibSyncMap_.size(), 0);
     PluginMgr::GetInstance().UnSubscribeSyncResource(pluginLib, resType);
 }
 
