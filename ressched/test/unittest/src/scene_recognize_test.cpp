@@ -189,7 +189,7 @@ HWTEST_F(SceneRecognizeTest, slideRecognizer_001, Function | MediumTest | Level0
     nlohmann::json payload;
     payload["clientPid"] = "2000";
     slideRecognizer->HandleSlideEvent(value, payload);
-    SUCCEED();
+    EXPECT_EQ(g_slideState, SlideRecognizeStat::IDLE);
 }
 
 /**

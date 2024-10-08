@@ -221,6 +221,7 @@ HWTEST_F(NotifierMgrTest, RegisterNotifier003, Function | MediumTest | Level0)
     sptr<IRemoteObject> notifier;
     auto callingPid = IPCSkeleton::GetCallingPid();
     NotifierMgr::GetInstance().RegisterNotifier(callingPid, notifier);
+    EXPECT_EQ(NotifierMgr::GetInstance().notifierMap_.size(), 0);
 }
 
 /**
@@ -345,6 +346,7 @@ HWTEST_F(NotifierMgrTest, Dump002, Function | MediumTest | Level0)
 HWTEST_F(NotifierMgrTest, Deinit001, Function | MediumTest | Level0)
 {
     NotifierMgr::GetInstance().Init();
+    EXPECT_TRUE(NotifierMgr::GetInstance().initialized_);
     NotifierMgr::GetInstance().Deinit();
 }
 
@@ -359,6 +361,7 @@ HWTEST_F(NotifierMgrTest, OnRemoteNotifierDied001, Function | MediumTest | Level
 {
     sptr<IRemoteObject> notifier;
     NotifierMgr::GetInstance().OnRemoteNotifierDied(notifier);
+    EXPECT_TRUE(NotifierMgr::GetInstance().notifierMap_.size() == 0);
 }
 
 /**
@@ -386,6 +389,7 @@ HWTEST_F(NotifierMgrTest, OnDeviceLevelChanged001, Function | MediumTest | Level
 {
     sptr<IRemoteObject> notifier = nullptr;
     NotifierMgr::GetInstance().OnDeviceLevelChanged(0, 2);
+    EXPECT_EQ(NotifierMgr::GetInstance().systemloadLevel_, 2);
 }
 
 /**
@@ -397,7 +401,9 @@ HWTEST_F(NotifierMgrTest, OnDeviceLevelChanged001, Function | MediumTest | Level
  */
 HWTEST_F(NotifierMgrTest, OnApplicationStateChange001, Function | MediumTest | Level0)
 {
+    NotifierMgr::GetInstance().Init();
     NotifierMgr::GetInstance().OnApplicationStateChange(2, IPCSkeleton::GetCallingPid());
+    EXPECT_TRUE(NotifierMgr::GetInstance().initialized_);
 }
 
 /**

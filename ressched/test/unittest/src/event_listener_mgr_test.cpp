@@ -298,7 +298,7 @@ HWTEST_F(EventListenerMgrTest, OnRemoteEventListenerDied001, Function | MediumTe
 {
     sptr<IRemoteObject> eventListener;
     EventListenerMgr::GetInstance().OnRemoteListenerDied(eventListener);
-    SUCCEED();
+    EXPECT_EQ(EventListenerMgr::GetInstance().eventListenerMap_.size(), 0);
 }
 
 /**
