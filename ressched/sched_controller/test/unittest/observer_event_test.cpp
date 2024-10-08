@@ -782,7 +782,7 @@ HWTEST_F(ObserverEventTest, DisableMMiEventObserver_002, testing::ext::TestSize.
         instance->InitMMiEventObserver();
         instance->DisableMMiEventObserver();
     }
-    EXPECT_EQ(instance->mmiObserver_, nullptr);
+    EXPECT_EQ(instance->mmiEventObserver_, nullptr);
 }
 
 /**
