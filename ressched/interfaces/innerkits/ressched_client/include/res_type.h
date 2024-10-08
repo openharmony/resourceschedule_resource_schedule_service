@@ -250,6 +250,8 @@ enum : uint32_t {
     RES_TYPE_MMI_STATUS_CHANGE = 109,
     // report media output device change
     RES_TYPE_OUTPUT_DEVICE_CHANGE = 110,
+    // report rss cloud config update
+    RES_TYPE_RSS_CLOUD_CONFIG_UPDATE = 115,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
