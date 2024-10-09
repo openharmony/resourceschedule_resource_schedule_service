@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-
 class ResSchedEventListener : public virtual RefBase {
 public:
     ResSchedEventListener() = default;
