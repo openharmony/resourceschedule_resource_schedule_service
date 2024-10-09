@@ -186,6 +186,7 @@ void OOBEManager::StartListen()
 
 void OOBEManager::OnReceiveDataShareReadyCallBack()
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     for (auto function : dataShareFunctions_) {
         function();
     }
