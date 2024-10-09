@@ -56,11 +56,13 @@ void SlideRecognizer::OnDispatchResource(uint32_t resType, int64_t value, const 
             HandleSlideEvent(value, payload);
             break;
         case ResType::RES_TYPE_SEND_FRAME_EVENT:
-            HandleSendFrameEvent(payload);
+            HandleSendFrameEvent(FillRealPid(payload));
             break;
         case ResType::RES_TYPE_CLICK_RECOGNIZE:
             HandleClickEvent(value, payload);
+            break;
         default:
+            RESSCHED_LOGD("unkonw resType");
             break;
     }
 }
@@ -71,7 +73,24 @@ void SlideRecognizer::HandleSlideEvent(int64_t value, const nlohmann::json& payl
         HandleSlideDetecting(payload);
     } else if (value == ResType::SlideEventStatus::SLIDE_EVENT_ON) {
         HandleListFlingStart(payload);
+    } else if (value == ResType::SlideEventStatus::SLIDE_EVENT_OFF) {
+        HandleSlideOFFEvent();
     }
+}
+
+void SlideRecognizer::HandleSlideOFFEvent()
+{
+    std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
+    if (listFlingEndTask_) {
+        ffrt::skip(listFlingEndTask_);
+    }
+    if (listFlingTimeOutTask_) {
+        ffrt::skip(listFlingTimeOutTask_);
+    }
+    nlohmann::json extInfo;
+    EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP, extInfo);
+    g_slideState = SlideRecognizeStat::IDLE;
 }
 
 void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
@@ -85,13 +104,18 @@ void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
         }
         listFlingEndTask_ = nullptr;
         listFlingTimeOutTask_ = nullptr;
-        g_reportListFlingLockedEnd(payload);
+        g_reportListFlingLockedEnd(FillRealPid(payload));
     }
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
     slideDetectingTime_ = ResCommonUtil::GetNowMillTime();
     g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
+    if (!payload.contains("clientPid") || !payload["clientPid"].is_string()) {
+        RESSCHED_LOGE("payload with no clientPid");
+        return;
+    }
+    slidePid_ = payload["clientPid"];
 }
 
 void SlideRecognizer::HandleListFlingStart(const nlohmann::json& payload)
@@ -150,12 +174,21 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
     if (g_slideState != SlideRecognizeStat::SLIDE_NORMAL) {
         return;
     }
+    if (value == ResType::ClickEventType::TOUCH_EVENT_DOWN) {
+        g_slideState = SlideRecognizeStat::IDLE;
+        return;
+    }
     // receive up event, silde normal end
     if (value == ResType::ClickEventType::TOUCH_EVENT_UP ||
         value == ResType::ClickEventType::TOUCH_EVENT_PULL_UP) {
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
             ResType::SlideEventStatus::SLIDE_NORMAL_END, payload);
         float upSpeed = 0.0;
+        if (!payload.contains("clientPid") || !payload["clientPid"].is_string()) {
+            RESSCHED_LOGE("payload with no clientPid");
+            return;
+        }
+        slidePid_ = payload["clientPid"];
         if (!payload.contains(UP_SPEED_KEY) || !payload[UP_SPEED_KEY].is_string()) {
             return;
         }
@@ -168,6 +201,16 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
                 ResType::SlideEventStatus::SLIDE_EVENT_ON, payload);
         }
     }
+}
+
+nlohmann::json SlideRecognizer::FillRealPid(const nlohmann::json& payload)
+{
+    if (slidePid_.empty()) {
+        return payload;
+    }
+    nlohmann::json payloadM = payload;
+    payloadM["clientPid"] = slidePid_;
+    return payloadM;
 }
 
 void SlideRecognizer::SetListFlingTimeoutTime(int64_t value)

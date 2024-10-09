@@ -48,6 +48,8 @@ private:
     void HandleClickEvent(int64_t value, const nlohmann::json& payload);
     void HandleSlideDetecting(const nlohmann::json& payload);
     void HandleListFlingStart(const nlohmann::json& payload);
+    void HandleSlideOFFEvent();
+    nlohmann::json FillRealPid(const nlohmann::json& payload);
     ffrt::task_handle listFlingEndTask_ = nullptr;
     ffrt::task_handle listFlingTimeOutTask_ = nullptr;
     int64_t slideDetectingTime_ = -1;
@@ -56,6 +58,7 @@ private:
     int64_t listFlingEndTime_ = DEFAULT_LIST_FLINT_END_TIME;
     float listFlingSpeedLimit_ = DEFAULT_LIST_FLING_SPEED_LIMIT;
     int64_t slideNormalDecectingTime_ = DEFAULT_SLIDE_NORMAL_DETECTING_TIME;
+    std::string slidePid_ = "";
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
