@@ -209,7 +209,7 @@ HWTEST_F(PluginMgrTest, GetConfig003, TestSize.Level1)
 {
     PluginMgr::GetInstance().configReader_ = nullptr;
     PluginConfig config = pluginMgr_->GetConfig("", "");
-    SUCCEED();
+    EXPECT_EQ(config.itemList.size(), 0);
 }
 
 /**
@@ -226,7 +226,7 @@ HWTEST_F(PluginMgrTest, SubscribeResource002, TestSize.Level1)
     PluginMgr::GetInstance().SubscribeResource("test", 1);
     SUCCEED();
     PluginMgr::GetInstance().UnSubscribeResource("test", 1);
-    SUCCEED();
+    EXPECT_EQ(PluginMgr::GetInstance().resTypeLibMap_.size(), 0);
 }
 
 /**
@@ -247,7 +247,7 @@ HWTEST_F(PluginMgrTest, UnSubscribeResource003, TestSize.Level1)
     PluginMgr::GetInstance().UnSubscribeResource("test1", 1);
     SUCCEED();
     PluginMgr::GetInstance().UnSubscribeResource("test2", 1);
-    SUCCEED();
+    EXPECT_EQ(PluginMgr::GetInstance().resTypeLibMap_.size(), 0);
 }
 
 /**
@@ -604,7 +604,7 @@ HWTEST_F(PluginMgrTest, DumPluginInfoAppend_001, TestSize.Level1)
     PluginInfo info;
     info.switchOn = false;
     PluginMgr::GetInstance().DumpPluginInfoAppend(result, info);
-    SUCCEED();
+    EXPECT_FALSE(result.empty());
 }
 
 /**
@@ -687,7 +687,8 @@ HWTEST_F(PluginMgrTest, GetPluginLib001, TestSize.Level0)
 HWTEST_F(PluginMgrTest, GetPluginLib002, TestSize.Level0)
 {
     std::shared_ptr<PluginLib> libInfoPtr = pluginMgr_->GetPluginLib("libapp_preload_plugin.z.so");
-    SUCCEED();
+    EXPECT_TRUE(pluginMgr_->pluginLibMap_.find("libapp_preload_plugin.z.so") == pluginMgr_->pluginLibMap_.end() ?
+        libInfoPtr == nullptr : libInfoPtr != nullptr);
 }
 
 /**
@@ -700,6 +701,8 @@ HWTEST_F(PluginMgrTest, GetPluginLib002, TestSize.Level0)
 HWTEST_F(PluginMgrTest, InnerTimeUtil001, TestSize.Level0)
 {
     PluginMgr::InnerTimeUtil innerTimeUtil("test1", "test2");
+    EXPECT_EQ(innerTimeUtil.functionName_, "test1");
+    EXPECT_EQ(innerTimeUtil.pluginName_, "test2");
 }
 
 /**
@@ -712,6 +715,7 @@ HWTEST_F(PluginMgrTest, InnerTimeUtil001, TestSize.Level0)
 HWTEST_F(PluginMgrTest, LoadPlugin001, TestSize.Level0)
 {
     PluginMgr::GetInstance().LoadPlugin();
+    EXPECT_EQ(PluginMgr::GetInstance().pluginLibMap_.size(), 0);
 }
 
 /**
@@ -726,6 +730,7 @@ HWTEST_F(PluginMgrTest, SubscribeSyncResource002, TestSize.Level0)
     std::string pluginLib;
     uint32_t resType = 0;
     PluginMgr::GetInstance().SubscribeSyncResource(pluginLib, resType);
+    EXPECT_EQ(PluginMgr::GetInstance().resTypeLibSyncMap_.size(), 0);
     PluginMgr::GetInstance().UnSubscribeSyncResource(pluginLib, resType);
 }
 
