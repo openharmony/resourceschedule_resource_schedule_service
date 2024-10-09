@@ -51,10 +51,52 @@ void SceneRecognizerMgr::DispatchResource(uint32_t resType, int64_t value, const
     if (ffrtQueue_ == nullptr) {
         return;
     }
-    for (auto recognizer : sceneRecognizers_) {
+    for (auto recognizerItem : sceneRecognizers_) {
+        auto recognizer = recognizerItem.second;
         ffrtQueue_->submit([resType, value, payload, recognizer]() {
             recognizer->OnDispatchResource(resType, value, payload);
         });
+    }
+}
+
+void SceneRecognizerMgr::SetListFlingTimeoutTime(int64_t value)
+{
+    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
+        SetListFlingTimeoutTime(value);
+}
+
+void SceneRecognizerMgr::SetListFlingEndTime(int64_t value)
+{
+    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
+        SetListFlingEndTime(value);
+}
+void SceneRecognizerMgr::SetListFlingSpeedLimit(float value)
+{
+    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
+        SetListFlingSpeedLimit(value);
+}
+void SceneRecognizerMgr::SetSlideNormalDetectingTime(int64_t value)
+{
+    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
+        SetSlideNormalDetectingTime(value);
+}
+
+extern "C" {
+    void SetListFlingTimeoutTime(int64_t value)
+    {
+        SceneRecognizerMgr::GetInstance().SetListFlingTimeoutTime(value);
+    }
+    void SetListFlingEndTime(int64_t value)
+    {
+        SceneRecognizerMgr::GetInstance().SetListFlingEndTime(value);
+    }
+    void SetListFlingSpeedLimit(float value)
+    {
+        SceneRecognizerMgr::GetInstance().SetListFlingSpeedLimit(value);
+    }
+    void SetSlideNormalDetectingTime(int64_t value)
+    {
+        SceneRecognizerMgr::GetInstance().SetSlideNormalDetectingTime(value);
     }
 }
 } // namespace ResourceSchedule
