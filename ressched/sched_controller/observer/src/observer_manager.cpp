@@ -18,6 +18,7 @@
 #include <dlfcn.h>
 #include <string>
 
+#include "cgroup_event_handler.h"
 #include "display_manager.h"
 #include "dm_common.h"
 #include "hisysevent.h"
@@ -455,8 +456,7 @@ void ObserverManager::InitMMiEventObserver()
         return;
     }
     // Get all events registered in multimodal input.
-    AppExecFwk::EventHandler* handler = reinterpret_cast<AppExecFwk::EventHandler*>(
-        SchedController::GetInstance().GetCgroupEventHandler().get());
+    auto handler = SchedController::GetInstance().GetCgroupEventHandler();
     if (handler) {
         handler->PostTask([weak = weak_from_this()] {
             auto self = weak.lock();
