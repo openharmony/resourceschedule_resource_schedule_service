@@ -74,6 +74,7 @@ namespace {
     static const std::unordered_set<uint32_t> saRes_ = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
         ResType::SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
+        ResType::SYNC_RES_TYPE_GET_THERMAL_DATA,
         ResType::RES_TYPE_SCREEN_STATUS,
         ResType::RES_TYPE_APP_STATE_CHANGE,
         ResType::RES_TYPE_ABILITY_STATE_CHANGE,
