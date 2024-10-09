@@ -43,23 +43,23 @@ ohos_shared_library("ressched_client") {
     "samgr:samgr_proxy",
   ]
 
+  public_external_deps = [ "json:nlohmann_json_static" ]
+
   install_images = [
     system_base_dir,
     updater_base_dir,
   ]
 
-  public_external_deps = [ "json:nlohmann_json_static" ]
-
   innerapi_tags = [ "platformsdk" ]
   version_script = "libressched_client.versionscript"
-  subsystem_name = "resourceschedule"
-  part_name = "resource_schedule_service"
-
-  branch_protector_ret = "pac_ret"
 
   sanitize = {
     cfi = true
     cfi_cross_dso = true
     debug = false
   }
+  branch_protector_ret = "pac_ret"
+  
+  subsystem_name = "resourceschedule"
+  part_name = "resource_schedule_service"
 }
