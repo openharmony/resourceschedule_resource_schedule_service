@@ -880,7 +880,7 @@ HWTEST_F(ObserverEventTest, DisableHiSysEventObserver_001, testing::ext::TestSiz
     if (instance) {
         instance->DisableHiSysEventObserver();
     }
-    EXPECT_EQ(instance->hisysEventObserver_, nullptr);;
+    EXPECT_EQ(instance->hiSysEventObserver_, nullptr);;
 }
 
 /**
