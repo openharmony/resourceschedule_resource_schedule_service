@@ -59,7 +59,7 @@ ohos_shared_library("ressched_client") {
     debug = false
   }
   branch_protector_ret = "pac_ret"
-  
+
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
 }
