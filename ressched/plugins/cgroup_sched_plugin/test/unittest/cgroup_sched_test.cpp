@@ -175,11 +175,10 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupSchedLog_001, Function | MediumT
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_001, Function | MediumTest | Level1)
 {
     auto &schedController = SchedController::GetInstance();
-    SUCCEED();
+    EXPECT_EQ(nullptr, schedController.windowStateObserver_);
     schedController.SubscribeWindowState();
-    SUCCEED();
     schedController.UnsubscribeWindowState();
-    SUCCEED();
+    EXPECT_EQ(nullptr, schedController.windowStateObserver_);
 }
 
 /**
