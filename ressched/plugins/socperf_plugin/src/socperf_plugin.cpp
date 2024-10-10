@@ -624,7 +624,7 @@ bool SocPerfPlugin::HandleBmmMoniterStatus(const std::shared_ptr<ResData> &data)
         return true;
     }
     if (data->value == BmmMoniterStatus::BMM_CLOSE) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_BMM_MONITER_END, true, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_BMM_MONITER_START, true, "");
         return true;
     }
     return false;
