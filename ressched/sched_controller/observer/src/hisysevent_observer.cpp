@@ -374,7 +374,8 @@ void HiSysEventObserver::ProcessWifiEvent(const nlohmann::json& root, const std:
 void HiSysEventObserver::ProcessScreenCaptureEvent(const nlohmann::json& root, const std::string& eventName)
 {
     std::string str = root.dump(INDENT, ' ', false, nlohmann::json::error_handler_t::replace);
-    RESSCHED_LOGD("Process screen capture event, event root:%{public}s, eventName:%{public}s", str.c_str(), eventName.c_str());
+    RESSCHED_LOGD("Process screen capture event, event root:%{public}s, eventName:%{public}s", str.c_str(),
+        eventName.c_str());
     nlohmann::json payload;
     if (root.contains("APP_UID") && root.at("APP_UID").is_number_integer()) {
         payload["uid"] = std::to_string(root.at("APP_UID").get<std::int32_t>());

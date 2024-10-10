@@ -60,6 +60,21 @@ public:
     virtual void RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier) = 0;
 
     /**
+     * @brief Register event listener.
+     *
+     * @param listener remote listener object
+     * @param eventType the event type
+     */
+    virtual void RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType) = 0;
+
+    /**
+     * @brief UnRegister event listener.
+     *
+     * @param eventType the event type
+     */
+    virtual void UnRegisterEventListener(uint32_t eventType) = 0;
+
+    /**
      * @brief UnRegister systemload remote listener.
      */
     virtual void UnRegisterSystemloadNotifier() = 0;
