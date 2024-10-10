@@ -13,19 +13,23 @@
  * limitations under the License.
  */
 
-#ifndef RESSCHED_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_UTILS_H
-#define RESSCHED_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_UTILS_H
-#include <chrono>
+#ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_EVENT_LISTENER_H
+#define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_EVENT_LISTENER_H
+
+#include <cstdint>
+#include <string>
+
+#include "refbase.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-class ResSchedUtils {
+class ResSchedEventListener : public virtual RefBase {
 public:
-    ResSchedUtils() = default;
-    ~ResSchedUtils() = default;
-    static int64_t GetNowMillTime();
+    ResSchedEventListener() = default;
+    virtual ~ResSchedEventListener() = default;
+    virtual void OnReceiveEvent(uint32_t eventType, uint32_t eventValue,
+        std::unordered_map<std::string, std::string> extInfo) = 0;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-
-#endif // RESSCHED_SERVICES_RESSCHEDSERVICE_INCLUDE_RES_SCHED_UTILS_H
+#endif // RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SCHED_EVENT_LISTENER_H

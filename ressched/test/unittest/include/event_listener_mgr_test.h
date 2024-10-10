@@ -12,29 +12,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "res_sched_service_utils.h"
-#include "res_sched_log.h"
+
+
+#ifndef RESSCHED_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_EVENT_LISTENER_MGR_TEST_H
+#define RESSCHED_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_EVENT_LISTENER_MGR_TEST_H
+
+#include "gtest/gtest.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-
-int64_t ResSchedUtils::GetNowMillTime()
-{
-    time_t now;
-    (void)time(&now);
-    if (static_cast<int64_t>(now) < 0) {
-        RESSCHED_LOGD("Get now time error ");
-        return 0;
-    }
-    auto tarEndTimePoint = std::chrono::steady_clock::now();
-    auto tarDuration = std::chrono::duration_cast<std::chrono::milliseconds>(tarEndTimePoint.time_since_epoch());
-    int64_t tarDate = tarDuration.count();
-    if (tarDate < 0) {
-        RESSCHED_LOGD("tarDuration is less than 0");
-        return -1;
-    }
-    return static_cast<int64_t>(tarDate);
-}
+class EventListenerMgrTest : public testing::Test {
+public:
+    static void SetUpTestCase();
+    static void TearDownTestCase();
+    void SetUp();
+    void TearDown();
+};
 } // namespace ResourceSchedule
 } // namespace OHOS
 
+#endif // RESSCHED_SERVICES_RESSCHEDMGR_TEST_UNITTEST_INCLUDE_EVENT_LISTENER_MGR_TEST_H
