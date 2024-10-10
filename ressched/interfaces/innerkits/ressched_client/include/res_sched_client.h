@@ -18,6 +18,7 @@
 
 #include <cstdint>                                  // for int64_t, uint32_t
 #include <unordered_map>                            // for unordered_map
+#include <unordered_set>                              // for unordered_set
 #include <mutex>                                    // for mutex
 #include <iosfwd>                                   // for string
 #include <list>                                     // for list
@@ -29,6 +30,9 @@
 #include "res_sched_systemload_notifier_client.h"   // for ResSchedSystemloadNotifierClient
 #include "res_sched_systemload_notifier_stub.h"     // for ResSchedSystemloadNotifierStub
 #include "system_ability_status_change_stub.h"      // for SystemAbilityStatusChangeStub
+#include "res_sched_event_listener.h"               // for ResSchedEvenetListener
+#include "res_sched_event_listener_stub.h"          // for ResSchedEvenetListenerStub
+#include "res_type.h"                               // for ResType
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -100,6 +104,24 @@ public:
      */
     void UnRegisterSystemloadNotifier(const sptr<ResSchedSystemloadNotifierClient>& callbackObj);
 
+        /**
+     * @brief Register event listener.
+     *
+     * @param eventListener event listener object.
+     * @param eventType event type.
+     */
+    void RegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType,
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+
+    /**
+     * @brief UnRegister event listener.
+     *
+     * @param eventListener event listener object.
+     * @param eventType event type
+     */
+    void UnRegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType,
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+
     /**
      * @brief client get systemload level.
      */
@@ -120,7 +142,10 @@ private:
     void AddResSaListenerLocked();
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId);
     int32_t InitSystemloadListenersLocked();
+    int32_t InitInnerEventListenerLocked();
     void UnRegisterSystemloadListenersLocked();
+    void UnRegisterEventListenerLocked(uint32_t eventType, uint32_t listenerGroup);
+    void RecoverEventListener();
     class SystemloadLevelListener : public ResSchedSystemloadNotifierStub {
     public:
         SystemloadLevelListener() = default;
@@ -132,6 +157,23 @@ private:
     private:
         std::mutex listMutex_;
         std::list<sptr<ResSchedSystemloadNotifierClient>> systemloadLevelCbs_;
+    };
+    class InnerEventListener : public ResSchedEventListenerStub {
+    public:
+        InnerEventListener() = default;
+        virtual ~InnerEventListener();
+        void RegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType,
+            uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+        void UnRegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType,
+            uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+        void OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup,
+            const nlohmann::json& extInfo) override;
+        bool IsInnerEventMapEmpty(uint32_t eventType, uint32_t listenerGroup);
+        std::unordered_map<uint32_t, std::list<uint32_t>> GetRegisteredTypesAndGroup();
+    private:
+        std::mutex eventMutex_;
+        std::unordered_map<uint32_t, std::unordered_map<uint32_t,
+            std::list<sptr<ResSchedEventListener>>>> eventListeners_;
     };
     class ResSchedDeathRecipient : public IRemoteObject::DeathRecipient {
     public:
@@ -151,8 +193,10 @@ private:
     sptr<IRemoteObject> remoteObject_;
     sptr<IResSchedService> rss_;
     sptr<SystemloadLevelListener> systemloadLevelListener_;
+    sptr<InnerEventListener> innerEventListener_;
     sptr<ResSchedSvcStatusChange> resSchedSvcStatusListener_;
     bool systemloadCbRegistered_ = false;
+    std::unordered_map<uint32_t, std::unordered_set<uint32_t>> registeredInnerEvents;
     DISALLOW_COPY_AND_MOVE(ResSchedClient);
 };
 } // namespace ResourceSchedule

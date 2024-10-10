@@ -236,6 +236,8 @@ enum : uint32_t {
     RES_TYPE_USER_INTERACTION_SCENE = 101,
     // report game sched, value 0 start, value 1 stop
     RES_TYPE_REPORT_GAME_SCHED = 102,
+    // report send frame event
+    RES_TYPE_SEND_FRAME_EVENT = 103,
     // report app cold start only perf, value 0 start, value 1 stop
     RES_TYPE_ONLY_PERF_APP_COLD_START = 104,
     // report scene rotation, value 0 start, value 1 stop
@@ -262,10 +264,38 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
     // get thermal data
     SYNC_RES_TYPE_GET_THERMAL_DATA,
+    // check shoul force kill process,
+    SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
+    // report to request mutex status
+    SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
+    // report to check mutex before start
+    SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START = 501,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
+};
+
+enum EventType : uint32_t {
+    EVENT_START = 0, EVENT_DRAW_FRAME_REPORT, EVENT_MUTEX_STATUS, EVENT_DDR_BOUND_CHANGE_REPORT = 3,
+    EVENT_MUTEX_STATUS_BEFORE_START = 4, EVENT_APP_STATE_BACKGROUND_FOREGROUND = 5, EVENT_END,
+};
+
+enum EventValue : uint32_t {
+    EVENT_VALUE_START = 0,
+    EVENT_VALUE_DRAW_FRAME_REPORT_START,
+    EVENT_VALUE_DRAW_FRAME_REPORT_STOP,
+    EVENT_VALUE_END,
+};
+
+enum EventListenerGroup : uint32_t {
+    LISTENER_GROUP_BEGIN = 0,
+    LISTENER_GROUP_COMMON = 1,
+    LISTENER_GROUP_LLM = 2,
+    LISTENER_GROUP_GAME = 3,
+    LISTENER_GROUP_CAMERA = 4,
+    LISTENER_GROUP_DH = 5,
+    LISTENER_GROUP_END
 };
 
 /**
@@ -359,8 +389,11 @@ enum WindowVisibilityStatus : int64_t {
 enum SlideEventStatus : int64_t {
     SLIDE_EVENT_OFF = 0,
     SLIDE_EVENT_ON = 1,
+    SLIDE_EVENT_DETECTING = 2,
     SLIDE_NORMAL_BEGIN = 3,
     SLIDE_NORMAL_END = 4,
+    AUTO_PLAY_ON = 5,
+    AUTO_PLAY_OFF = 6,
 };
 
 /**
@@ -372,6 +405,7 @@ enum ClickEventType : int64_t {
     TOUCH_EVENT_DOWN = 1,
     CLICK_EVENT = 2,
     TOUCH_EVENT_UP = 3,
+    TOUCH_EVENT_PULL_UP = 4,
 };
 
 /**

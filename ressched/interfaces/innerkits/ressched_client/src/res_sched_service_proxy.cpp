@@ -143,6 +143,44 @@ void ResSchedServiceProxy::RegisterSystemloadNotifier(const sptr<IRemoteObject>&
     RESSCHED_LOGD("%{public}s, success.", __func__);
 }
 
+void ResSchedServiceProxy::RegisterEventListener(const sptr<IRemoteObject>& listener,
+    uint32_t eventType, uint32_t group)
+{
+    int32_t error;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option = { MessageOption::TF_SYNC };
+    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), void(), ResSchedServiceProxy);
+    WRITE_PARCEL(data, RemoteObject, listener, void(), ResSchedServiceProxy);
+    WRITE_PARCEL(data, Uint32, eventType, void(), ResSchedServiceProxy);
+    WRITE_PARCEL(data, Uint32, group, void(), ResSchedServiceProxy);
+    error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::REGISTER_EVENT_LISTENER),
+        data, reply, option);
+    if (error != NO_ERROR) {
+        RESSCHED_LOGE("%{public}s:Send request error: %{public}d.", __func__, error);
+        return;
+    }
+    RESSCHED_LOGD("%{public}s, success.", __func__);
+}
+
+void ResSchedServiceProxy::UnRegisterEventListener(uint32_t eventType, uint32_t listenerGroup)
+{
+    int32_t error;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option = { MessageOption::TF_SYNC };
+    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), void(), ResSchedServiceProxy);
+    WRITE_PARCEL(data, Uint32, eventType, void(), ResSchedServiceProxy);
+    WRITE_PARCEL(data, Uint32, listenerGroup, void(), ResSchedServiceProxy);
+    error = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::UNREGISTER_EVENT_LISTENER),
+        data, reply, option);
+    if (error != NO_ERROR) {
+        RESSCHED_LOGE("%{public}s:Send request error: %{public}d.", __func__, error);
+        return;
+    }
+    RESSCHED_LOGD("%{public}s, success.", __func__);
+}
+
 void ResSchedServiceProxy::UnRegisterSystemloadNotifier()
 {
     int32_t error;

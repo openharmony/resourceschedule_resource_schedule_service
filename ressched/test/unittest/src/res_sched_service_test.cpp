@@ -24,7 +24,7 @@
 #include "plugin_mgr.h"
 #include "res_common_util.h"
 #include "res_sched_ipc_interface_code.h"
-#include "res_sched_notifier_death_recipient.h"
+#include "res_sched_common_death_recipient.h"
 #include "res_sched_service.h"
 #include "res_sched_service_ability.h"
 #include "res_sched_systemload_notifier_proxy.h"
@@ -537,6 +537,16 @@ public:
     }
 
     void UnRegisterSystemloadNotifier() override
+    {
+    }
+
+    void RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType,
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON) override
+    {
+    }
+
+    void UnRegisterEventListener(uint32_t eventType,
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON) override
     {
     }
 
