@@ -66,6 +66,7 @@ namespace {
     static const int32_t SIX_PARAMETERS = 6;
     static const int32_t ENUM_MAX = 4;
     static const int32_t ENUM_MIN = 0;
+    static const int32_t DATA_LENGTH = 10;
     const int32_t INDENT = -1;
 }
     const uint8_t* g_data = nullptr;
@@ -141,7 +142,7 @@ namespace {
             return false;
         }
 
-        if (size <= SIX_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+        if (size <= SIX_PARAMETERS * sizeof(int32_t) + DATA_LENGTH) {
             return false;
         }
 
@@ -157,7 +158,7 @@ namespace {
         sysEvent["CLIENT_PID"] = GetData<int32_t>();
         sysEvent["INSTANCE_ID"] = GetData<int32_t>();
         sysEvent["CODEC_INSTANCE_ID"] = GetData<int32_t>();
-        std::string eventName = GetStringFromData(int(size) - SIX_PARAMETERS * sizeof(int32_t));
+        std::string eventName = GetStringFromData(DATA_LENGTH);
         sysEvent["name_"] = eventName;
         std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
         hisysEventObserver_->ProcessAvCodecEvent(sysEvent, eventName);
@@ -170,7 +171,7 @@ namespace {
             return false;
         }
 
-        if (size <= FOUR_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+        if (size <= FOUR_PARAMETERS * sizeof(int32_t) + DATA_LENGTH) {
             return false;
         }
 
@@ -184,7 +185,7 @@ namespace {
         sysEvent["PID"] = GetData<int32_t>();
         sysEvent["TYPE"] = GetData<int32_t>();
         sysEvent["STATE"] = GetData<int32_t>();
-        std::string eventName = GetStringFromData(int(size) - FOUR_PARAMETERS * sizeof(int32_t));
+        std::string eventName = GetStringFromData(DATA_LENGTH);
         sysEvent["name_"] = eventName;
         std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
         hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
@@ -197,7 +198,7 @@ namespace {
             return false;
         }
 
-        if (size <= THREE_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+        if (size <= THREE_PARAMETERS * sizeof(int32_t) + DATA_LENGTH) {
             return false;
         }
 
@@ -210,7 +211,7 @@ namespace {
         sysEvent["UID"] = GetData<int32_t>();
         sysEvent["PID"] = GetData<int32_t>();
         sysEvent["STATE"] = GetData<int32_t>();
-        std::string eventName = GetStringFromData(int(size) - THREE_PARAMETERS * sizeof(int32_t));
+        std::string eventName = GetStringFromData(DATA_LENGTH);
         sysEvent["name_"] = eventName;
         std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
         hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
@@ -223,7 +224,7 @@ namespace {
             return false;
         }
 
-        if (size <= THREE_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+        if (size <= THREE_PARAMETERS * sizeof(int32_t) + DATA_LENGTH) {
             return false;
         }
 
@@ -236,7 +237,7 @@ namespace {
         sysEvent["UID"] = GetData<int32_t>();
         sysEvent["PID"] = GetData<int32_t>();
         sysEvent["STATE"] = GetData<int32_t>();
-        std::string eventName = GetStringFromData(int(size) - THREE_PARAMETERS * sizeof(int32_t));
+        std::string eventName = GetStringFromData(DATA_LENGTH);
         sysEvent["name_"] = eventName;
         std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
         hisysEventObserver_->ProcessBluetoothEvent(sysEvent, eventName);
@@ -249,7 +250,7 @@ namespace {
             return false;
         }
 
-        if (size <= TWO_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+        if (size <= TWO_PARAMETERS * sizeof(int32_t) + DATA_LENGTH) {
             return false;
         }
 
@@ -261,7 +262,7 @@ namespace {
         nlohmann::json sysEvent;
         sysEvent["UID"] = GetData<int32_t>();
         sysEvent["PID"] = GetData<int32_t>();
-        std::string eventName = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t));
+        std::string eventName = GetStringFromData(DATA_LENGTH);
         sysEvent["name_"] = eventName;
         std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
         hisysEventObserver_->ProcessCameraEvent(sysEvent, eventName);
@@ -274,7 +275,7 @@ namespace {
             return false;
         }
 
-        if (size <= THREE_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+        if (size <= THREE_PARAMETERS * sizeof(int32_t) + DATA_LENGTH) {
             return false;
         }
 
@@ -287,7 +288,7 @@ namespace {
         sysEvent["UID"] = GetData<int32_t>();
         sysEvent["PID"] = GetData<int32_t>();
         sysEvent["TYPE"] = GetData<int32_t>();
-        std::string eventName = GetStringFromData(int(size) - THREE_PARAMETERS * sizeof(int32_t));
+        std::string eventName = GetStringFromData(DATA_LENGTH);
         sysEvent["name_"] = eventName;
         std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
         hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
@@ -300,7 +301,7 @@ namespace {
             return false;
         }
 
-        if (size <= FIVE_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+        if (size <= FIVE_PARAMETERS * sizeof(int32_t) + DATA_LENGTH) {
             return false;
         }
 
@@ -315,7 +316,7 @@ namespace {
         sysEvent["STATUS"] = GetData<int32_t>();
         sysEvent["APP_UID"] = GetData<int32_t>();
         sysEvent["APP_PID"] = GetData<int32_t>();
-        std::string eventName = GetStringFromData(int(size) - FIVE_PARAMETERS * sizeof(int32_t));
+        std::string eventName = GetStringFromData(DATA_LENGTH);
         sysEvent["name_"] = eventName;
         std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
         hisysEventObserver_->ProcessScreenCaptureEvent(sysEvent, eventName);
@@ -328,7 +329,7 @@ namespace {
             return false;
         }
 
-        if (size <=  TWO_PARAMETERS * sizeof(std::string)) {
+        if (size <=  TWO_PARAMETERS * DATA_LENGTH) {
             return false;
         }
 
@@ -338,8 +339,8 @@ namespace {
         g_pos = 0;
 
         nlohmann::json sysEvent;
-        sysEvent["domain_"] = GetStringFromData(int(size));
-        std::string eventName = GetStringFromData(int(size) - sizeof(std::string));
+        sysEvent["domain_"] = GetStringFromData(DATA_LENGTH);
+        std::string eventName = GetStringFromData(DATA_LENGTH);
         sysEvent["name_"] = eventName;
         std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
         hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
@@ -352,7 +353,7 @@ namespace {
             return false;
         }
 
-        if (size <=  TWO_PARAMETERS * sizeof(std::string)) {
+        if (size <= DATA_LENGTH) {
             return false;
         }
 
@@ -373,7 +374,7 @@ namespace {
             return false;
         }
 
-        if (size <=  TWO_PARAMETERS * sizeof(std::string)) {
+        if (size <=  TWO_PARAMETERS * (sizeof(int32_t) + DATA_LENGTH)) {
             return false;
         }
 
@@ -385,9 +386,8 @@ namespace {
         nlohmann::json sysEvent;
         sysEvent["UID"] = GetData<int32_t>();
         sysEvent["PID"] = GetData<int32_t>();
-        sysEvent["domain_"] = GetStringFromData(int(size) - TWO_PARAMETERS * sizeof(int32_t));
-        std::string eventName = GetStringFromData(int(size) -
-        TWO_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
+        sysEvent["domain_"] = GetStringFromData(DATA_LENGTH);
+        std::string eventName = GetStringFromData(DATA_LENGTH);
         sysEvent["name_"] = eventName;
         std::string tmp = sysEvent.dump(INDENT, ' ', false, nlohmann::json::error_handler_t::replace);
 
@@ -416,7 +416,7 @@ namespace {
             return false;
         }
 
-        if (size <=  THREE_PARAMETERS * sizeof(int32_t) + sizeof(std::string)) {
+        if (size <=  THREE_PARAMETERS * sizeof(int32_t) + DATA_LENGTH) {
             return false;
         }
 
@@ -429,7 +429,7 @@ namespace {
         int32_t uid = GetData<int32_t>();
         int32_t syncStatus = GetData<int32_t>();
 
-        std::string bundleName = GetStringFromData(int(size) - THREE_PARAMETERS * sizeof(int32_t));
+        std::string bundleName = GetStringFromData(DATA_LENGTH);
         auto mmiObserver = std::make_shared<MmiObserver>();
         mmiObserver->SyncBundleName(pid, uid, bundleName, syncStatus);
         return true;
@@ -441,7 +441,7 @@ namespace {
             return false;
         }
 
-        if (size <= FIVE_PARAMETERS * sizeof(int32_t) + THREE_PARAMETERS * sizeof(std::string)) {
+        if (size <= FIVE_PARAMETERS * sizeof(int32_t) + FOUR_PARAMETERS * DATA_LENGTH) {
             return false;
         }
 
@@ -456,13 +456,10 @@ namespace {
         connectionData.callerPid = GetData<int32_t>();
         connectionData.callerUid = GetData<int32_t>();
         connectionData.extensionType = AppExecFwk::ExtensionAbilityType(GetData<int32_t>());
-        connectionData.extensionBundleName = GetStringFromData(int(size) - FIVE_PARAMETERS * sizeof(int32_t));
-        connectionData.extensionModuleName = GetStringFromData(int(size) -
-         FIVE_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
-        connectionData.extensionName = GetStringFromData(int(size) -
-        FIVE_PARAMETERS * sizeof(int32_t) - TWO_PARAMETERS * sizeof(std::string));
-        connectionData.callerName = GetStringFromData(int(size) -
-        FIVE_PARAMETERS * sizeof(int32_t) - THREE_PARAMETERS * sizeof(std::string));
+        connectionData.extensionBundleName = GetStringFromData(DATA_LENGTH);
+        connectionData.extensionModuleName = GetStringFromData(DATA_LENGTH);
+        connectionData.extensionName = GetStringFromData(DATA_LENGTH);
+        connectionData.callerName = GetStringFromData(DATA_LENGTH);
 
         auto connectionSubscriber = std::make_unique<ConnectionSubscriber>();
         connectionSubscriber->OnExtensionConnected(connectionData);
@@ -476,7 +473,7 @@ namespace {
             return false;
         }
 
-        if (size <= FIVE_PARAMETERS * sizeof(int32_t) + THREE_PARAMETERS * sizeof(std::string)) {
+        if (size <= THREE_PARAMETERS * sizeof(int32_t) + FOUR_PARAMETERS * DATA_LENGTH) {
             return false;
         }
 
@@ -489,13 +486,10 @@ namespace {
         targetConnectionData.targetPid = GetData<int32_t>();
         targetConnectionData.callerPid = GetData<int32_t>();
         targetConnectionData.callerUid = GetData<int32_t>();
-        targetConnectionData.callerName = GetStringFromData(int(size) - THREE_PARAMETERS * sizeof(int32_t));
-        targetConnectionData.targetBundleName = GetStringFromData(int(size) -
-        THREE_PARAMETERS * sizeof(int32_t) - sizeof(std::string));
-        targetConnectionData.targetModuleName = GetStringFromData(int(size) -
-        THREE_PARAMETERS * sizeof(int32_t) - TWO_PARAMETERS * sizeof(std::string));
-        targetConnectionData.targetAbilityName = GetStringFromData(int(size) -
-        THREE_PARAMETERS * sizeof(int32_t) - THREE_PARAMETERS * sizeof(std::string));
+        targetConnectionData.callerName = GetStringFromData(DATA_LENGTH);
+        targetConnectionData.targetBundleName = GetStringFromData(DATA_LENGTH);
+        targetConnectionData.targetModuleName = GetStringFromData(DATA_LENGTH);
+        targetConnectionData.targetAbilityName = GetStringFromData(DATA_LENGTH);
 
         auto connectionSubscriber = std::make_unique<ConnectionSubscriber>();
         connectionSubscriber->OnDlpAbilityOpened(targetConnectionData);
@@ -507,6 +501,10 @@ namespace {
     bool FoldDisplayModeObserverFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= sizeof(uint32_t)) {
             return false;
         }
 
@@ -527,13 +525,17 @@ namespace {
             return false;
         }
 
+        if (size <= TWO_PARAMETERS * sizeof(pid_t) + DATA_LENGTH) {
+            return false;
+        }
+
         // initialize
         g_data = data;
         g_size = size;
         g_pos = 0;
 
         AVSession::AVSessionDescriptor descriptor;
-        descriptor.sessionId_ = GetStringFromData(int(size));
+        descriptor.sessionId_ = GetStringFromData(DATA_LENGTH);
         descriptor.pid_ = GetData<pid_t>();
         descriptor.uid_ = GetData<pid_t>();
         
@@ -583,6 +585,10 @@ namespace {
             return false;
         }
 
+        if (size <= sizeof(int32_t)) {
+            return false;
+        }
+
         // initialize
         g_data = data;
         g_size = size;
@@ -597,6 +603,10 @@ namespace {
     bool AudioObserverEventFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= THREE_PARAMETERS * sizeof(int32_t) + sizeof(bool)) {
             return false;
         }
 
@@ -624,7 +634,7 @@ namespace {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(int32_t)) {
+        if (size <= TWO_PARAMETERS * sizeof(int32_t) + DATA_LENGTH) {
             return false;
         }
 
@@ -636,7 +646,7 @@ namespace {
         // getdata
         int32_t slotId = GetData<int32_t>();
         int32_t callState = GetData<int32_t>();
-        std::u16string phoneNumber = GetU16StringFromData(int(size) - sizeof(int32_t) - sizeof(int32_t));
+        std::u16string phoneNumber = GetU16StringFromData(DATA_LENGTH);
         auto telephonyObserver = std::make_unique<SchedTelephonyObserver>();
         telephonyObserver->OnCallStateUpdated(slotId, callState, phoneNumber);
 
@@ -651,7 +661,7 @@ namespace {
             return false;
         }
 
-        if (size <= sizeof(int32_t) + sizeof(int32_t)) {
+        if (size <= sizeof(uint32_t)) {
             return false;
         }
 
@@ -702,6 +712,10 @@ namespace {
     bool DownLoadUploadObserverFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= sizeof(int)) {
             return false;
         }
         // initialize
