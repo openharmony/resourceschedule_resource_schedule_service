@@ -19,7 +19,6 @@
 #include <cstdint>
 #include <map>
 #include <unordered_set>
-
 #include "iremote_stub.h"
 #include "ires_sched_service.h"
 #include "res_type.h"

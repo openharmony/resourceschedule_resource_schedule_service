@@ -174,10 +174,6 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
     if (g_slideState != SlideRecognizeStat::SLIDE_NORMAL) {
         return;
     }
-    if (value == ResType::ClickEventType::TOUCH_EVENT_DOWN) {
-        g_slideState = SlideRecognizeStat::IDLE;
-        return;
-    }
     // receive up event, silde normal end
     if (value == ResType::ClickEventType::TOUCH_EVENT_UP ||
         value == ResType::ClickEventType::TOUCH_EVENT_PULL_UP) {

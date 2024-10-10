@@ -688,11 +688,6 @@ void ObserverManager::InitAccountObserver()
 void ObserverManager::DisableAccountObserver()
 {
     RESSCHED_LOGI("Disable account observer");
-    if (!accountObserver_) {
-        RESSCHED_LOGI("ObserverManager has benn disable acount observer");
-        return;
-    }
-    accountObserver_ = nullptr;
 }
 
 extern "C" void ObserverManagerInit()

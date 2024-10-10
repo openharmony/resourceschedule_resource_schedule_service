@@ -32,7 +32,8 @@ public:
      * @param eventValue Indicates the event value.
      * @param extInfo Indicates the extra info.
      */
-    virtual void OnReceiveEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json& extInfo) = 0;
+    virtual void OnReceiveEvent(uint32_t eventType, uint32_t eventValue,
+        uint32_t listenerGroup, const nlohmann::json& extInfo) = 0;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
