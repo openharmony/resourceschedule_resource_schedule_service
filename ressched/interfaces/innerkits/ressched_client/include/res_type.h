@@ -252,6 +252,8 @@ enum : uint32_t {
     RES_TYPE_MMI_STATUS_CHANGE = 109,
     // report media output device change
     RES_TYPE_OUTPUT_DEVICE_CHANGE = 110,
+    // report to hisi, let bmm_report begin change
+    RES_TYPE_BMM_MONITER_CHANGE_EVENT = 113,
     // report rss cloud config update
     RES_TYPE_RSS_CLOUD_CONFIG_UPDATE = 115,
     // last async resType
@@ -285,6 +287,8 @@ enum EventValue : uint32_t {
     EVENT_VALUE_START = 0,
     EVENT_VALUE_DRAW_FRAME_REPORT_START,
     EVENT_VALUE_DRAW_FRAME_REPORT_STOP,
+    EVENT_VALUE_DDR_BOUND_REPORT_START,
+    EVENT_VALUE_DDR_BOUND_REPORT_STOP,
     EVENT_VALUE_END,
 };
 
@@ -830,6 +834,53 @@ enum GameSchedStatus : int64_t {
     GAME_SCHED_START = 0,
     GAME_SCHED_STOP = 1,
 };
+
+/**
+ * @brief LargeModelScene
+ */
+enum LargeModelScene : int64_t {
+    ENTER_LARGE_MODEL_SCENE = 0,
+    EXIT_LARGE_MODEL_SCENE = 1,
+};
+
+/**
+ * @brief Bmm status
+ */
+enum BmmMoniterStatus : int64_t {
+    BMM_CLOSE = 0,
+    BMM_FOREGROUND = 1,
+    BMM_BACKGROUND = 2
+};
+
+/**
+ * @brief Heavy Load Mutex Scene
+ */
+enum HeavyLoadMutexAddScene : int64_t {
+    MUTEX_STATUS_REQUIRE = 0,
+    MUTEX_STATUS_RELEASE = 1,
+};
+
+/**
+ * @brief Heavy Load Mutex Reasons
+ */
+enum HeavyLoadMutexAddReasons : int64_t {
+    HeavyLoadMutexStatusAddSucc = 0,
+    HeavyLoadMutexStatusAddFailByAdded = 1,
+    HeavyLoadMutexStatusAddFailByMutex = 2,
+    HeavyLoadMutexStatusAddFailByParams = 3,
+    HeavyLoadMutexStatusCloseFailByUnopened = 4,
+    HeavyLoadMutexStatusCloseSucc = 0,
+};
+
+/**
+ * @brief Heavy Load Mutex Boardcast Scene
+ */
+enum HeavyLoadMutexSceneBoardcastScene : int64_t {
+    HeavyLoadMutexBoardcastNeedProactiveAvoidance = 0,
+    HeavyLoadMutexBoardcastNeedProactiveDownspeeding = 1,
+    HeavyLoadMutexBoardcastNeedCancelDownspeeding = 2,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
