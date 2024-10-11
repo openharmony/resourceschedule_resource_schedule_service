@@ -94,13 +94,15 @@ void NetworkLatencyController::HandleRequest(long long value, const std::string 
 void NetworkLatencyController::HandleAddRequest(const std::string &identity)
 {
     // cancel auto disable task first
-    std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
-    for (auto iter = taskHandlerMap_.begin(); iter != taskHandlerMap_.end();) {
-        if (iter->first == identity) {
-            ffrtQueue_->cancel(iter->second);
-            taskHandlerMap_.erase(iter++);
-        } else {
-            iter++;
+    {
+        std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
+        for (auto iter = taskHandlerMap_.begin(); iter != taskHandlerMap_.end();) {
+            if (iter->first == identity) {
+                ffrtQueue_->cancel(iter->second);
+                taskHandlerMap_.erase(iter++);
+            } else {
+                iter++;
+            }
         }
     }
     std::unique_lock<std::mutex> lk(mtx);
@@ -120,13 +122,15 @@ void NetworkLatencyController::HandleAddRequest(const std::string &identity)
 void NetworkLatencyController::HandleDelRequest(const std::string &identity)
 {
     // cancel auto disable task first
-    std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
-    for (auto iter = taskHandlerMap_.begin(); iter != taskHandlerMap_.end();) {
-        if (iter->first == identity) {
-            ffrtQueue_->cancel(iter->second);
-            taskHandlerMap_.erase(iter++);
-        } else {
-            iter++;
+    {
+        std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
+        for (auto iter = taskHandlerMap_.begin(); iter != taskHandlerMap_.end();) {
+            if (iter->first == identity) {
+                ffrtQueue_->cancel(iter->second);
+                taskHandlerMap_.erase(iter++);
+            } else {
+                iter++;
+            }
         }
     }
     std::unique_lock<std::mutex> lk(mtx);
