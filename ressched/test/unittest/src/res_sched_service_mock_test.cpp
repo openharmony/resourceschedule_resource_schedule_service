@@ -115,11 +115,13 @@ public:
     {
     }
 
-    void RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType) override
+    void RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType,
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON) override
     {
     }
 
-    void UnRegisterEventListener(uint32_t eventType) override
+    void UnRegisterEventListener(uint32_t eventType,
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON) override
     {
     }
 
