@@ -687,7 +687,7 @@ void ObserverManager::InitAccountObserver()
 
 void ObserverManager::DisableAccountObserver()
 {
-    RESSCHED_LOGI("Disable account observer");
+    RESSCHED_LOGI("account sa removed");
 }
 
 extern "C" void ObserverManagerInit()

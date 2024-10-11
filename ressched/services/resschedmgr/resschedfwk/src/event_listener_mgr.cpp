@@ -128,11 +128,6 @@ void EventListenerMgr::SendEvent(uint32_t eventType, uint32_t eventValue, const 
         RESSCHED_LOGW("invalid eventType:%{public}d", eventType);
         return;
     }
-    if (eventValue < ResType::EventValue::EVENT_VALUE_START ||
-        eventValue > ResType::EventValue::EVENT_VALUE_END) {
-        RESSCHED_LOGW("invalid eventValue:%{public}d", eventValue);
-        return;
-    }
     if (eventSenderQueue_ == nullptr) {
         RESSCHED_LOGE("%{public}s:error due to eventSenderQueue_ null.", __func__);
         return;
