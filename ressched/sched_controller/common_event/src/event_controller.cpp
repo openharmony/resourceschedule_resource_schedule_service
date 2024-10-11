@@ -369,8 +369,8 @@ void EventController::SystemAbilityStatusChangeListener::Stop()
     }
     CommonEventManager::UnSubscribeCommonEvent(subscriber_);
     CommonEventManager::UnSubscribeCommonEvent(lockScreenSubscriber_);
-    lockScreenSubscriber_ = nullptr;
     subscriber_ = nullptr;
+    lockScreenSubscriber_ = nullptr;
 }
 
 extern "C" void EventControllerInit()

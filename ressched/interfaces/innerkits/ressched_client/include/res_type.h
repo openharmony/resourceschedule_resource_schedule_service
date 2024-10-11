@@ -266,7 +266,7 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_THERMAL_DATA,
     // check shoul force kill process,
     SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
-    // report to request mutex status
+    // report to request or release mutex status
     SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // report to check mutex before start
     SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START = 501,
