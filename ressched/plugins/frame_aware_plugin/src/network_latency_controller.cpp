@@ -116,7 +116,7 @@ void NetworkLatencyController::HandleAddRequest(const std::string &identity)
             [this, identity] { AutoDisableTask(identity); },
             ffrt::task_attr().delay(
                 std::chrono::duration_cast<std::chrono::milliseconds>(TIMEOUT).count() * switchToFfrt_
-                )
+            )
         );    
     }
 }
