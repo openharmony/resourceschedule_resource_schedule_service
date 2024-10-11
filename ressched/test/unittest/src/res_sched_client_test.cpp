@@ -271,7 +271,8 @@ HWTEST_F(ResSchedClientTest, RegisterEventListener001, Function | MediumTest | L
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     nlohmann::json extInfo;
     ResSchedClient::GetInstance().innerEventListener_->OnReceiveEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
-        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON, extInfo);
     EXPECT_TRUE(ResSchedEventListenerMock::type == ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     EXPECT_TRUE(ResSchedEventListenerMock::value == ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START);
     ResSchedEventListenerMock::type = 0;
@@ -299,7 +300,8 @@ HWTEST_F(ResSchedClientTest, UnRegisterEventListener001, Function | MediumTest |
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     nlohmann::json extInfo;
     ResSchedClient::GetInstance().innerEventListener_->OnReceiveEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
-        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON, extInfo);
     EXPECT_TRUE(ResSchedEventListenerMock::type == 0);
     EXPECT_TRUE(ResSchedEventListenerMock::value == 0);
 }

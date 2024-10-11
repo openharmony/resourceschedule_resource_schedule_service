@@ -49,6 +49,7 @@ namespace {
         ResType::RES_TYPE_RESIZE_WINDOW,
         ResType::RES_TYPE_ONLY_PERF_APP_COLD_START,
         ResType::RES_TYPE_SCENE_ROTATION,
+        ResType::SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START,
     };
     static const std::unordered_set<uint32_t> thirdPartRes_ = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -76,6 +77,7 @@ namespace {
     static const std::unordered_set<uint32_t> saRes_ = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
         ResType::SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
+        ResType::SYNC_RES_TYPE_GET_THERMAL_DATA,
         ResType::RES_TYPE_SCREEN_STATUS,
         ResType::RES_TYPE_APP_STATE_CHANGE,
         ResType::RES_TYPE_ABILITY_STATE_CHANGE,
@@ -399,18 +401,20 @@ void ResSchedServiceStub::RegisterEventListenerInner(MessageParcel& data,
         RESSCHED_LOGE("%{public}s:Register invalid token.", __func__);
         return;
     }
-    uint32_t eventType = -1;
+    uint32_t eventType = ResType::EventType::EVENT_START;
+    uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON;
     sptr<IRemoteObject> listener =data.ReadRemoteObject();
     if (listener == nullptr) {
         RESSCHED_LOGE("%{public}s:read listener is null.", __func__);
         return;
     }
     READ_PARCEL(data, Uint32, eventType, void(), ResSchedServiceStub);
-    if (listener == nullptr || eventType == -1) {
+    READ_PARCEL(data, Uint32, listenerGroup, void(), ResSchedServiceStub);
+    if (listener == nullptr || eventType == ResType::EventType::EVENT_START) {
         RESSCHED_LOGE("%{public}s:parse parcel failed.", __func__);
         return;
     }
-    RegisterEventListener(listener, eventType);
+    RegisterEventListener(listener, eventType, listenerGroup);
 }
 
 void ResSchedServiceStub::UnRegisterEventListenerInner(MessageParcel& data,
@@ -420,15 +424,17 @@ void ResSchedServiceStub::UnRegisterEventListenerInner(MessageParcel& data,
         RESSCHED_LOGE("UnRegister invalid token.");
         return;
     }
-    uint32_t eventType = -1;
+    uint32_t eventType = ResType::EventType::EVENT_START;
+    uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON;
     READ_PARCEL(data, Uint32, eventType, void(), ResSchedServiceStub);
-    UnRegisterEventListener(eventType);
+    READ_PARCEL(data, Uint32, listenerGroup, void(), ResSchedServiceStub);
+    UnRegisterEventListener(eventType, listenerGroup);
 }
 
 bool ResSchedServiceStub::IsLimitRequest(int32_t uid)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
     int64_t nowTime = ResCommonUtil::GetNowMillTime();
+    std::lock_guard<std::mutex> lock(mutex_);
     CheckAndUpdateLimitData(nowTime);
     if (allRequestCount_.load() >= ALL_UID_REQUEST_LIMIT_COUNT) {
         RESSCHED_LOGD("all uid request is limit, %{public}d request fail", uid);

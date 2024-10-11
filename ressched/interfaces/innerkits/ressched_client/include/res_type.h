@@ -264,6 +264,14 @@ enum : uint32_t {
     SYNC_RES_TYPE_THAW_ONE_APP,
     // get all suspend state
     SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
+    // get thermal data
+    SYNC_RES_TYPE_GET_THERMAL_DATA,
+    // check shoul force kill process,
+    SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
+    // report to request mutex status
+    SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
+    // report to check mutex before start
+    SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START = 501,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
@@ -271,9 +279,8 @@ enum : uint32_t {
 };
 
 enum EventType : uint32_t {
-    EVENT_START = 0,
-    EVENT_DRAW_FRAME_REPORT,
-    EVENT_END,
+    EVENT_START = 0, EVENT_DRAW_FRAME_REPORT, EVENT_MUTEX_STATUS, EVENT_DDR_BOUND_CHANGE_REPORT = 3,
+    EVENT_MUTEX_STATUS_BEFORE_START = 4, EVENT_APP_STATE_BACKGROUND_FOREGROUND = 5, EVENT_END,
 };
 
 enum EventValue : uint32_t {
@@ -281,6 +288,16 @@ enum EventValue : uint32_t {
     EVENT_VALUE_DRAW_FRAME_REPORT_START,
     EVENT_VALUE_DRAW_FRAME_REPORT_STOP,
     EVENT_VALUE_END,
+};
+
+enum EventListenerGroup : uint32_t {
+    LISTENER_GROUP_BEGIN = 0,
+    LISTENER_GROUP_COMMON = 1,
+    LISTENER_GROUP_LLM = 2,
+    LISTENER_GROUP_GAME = 3,
+    LISTENER_GROUP_CAMERA = 4,
+    LISTENER_GROUP_DH = 5,
+    LISTENER_GROUP_END
 };
 
 enum AppFrameDropType : int32_t {
