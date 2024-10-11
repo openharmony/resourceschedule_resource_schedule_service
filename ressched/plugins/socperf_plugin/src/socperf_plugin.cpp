@@ -68,6 +68,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_ACCOUNT_ACTIVATING    = 10043;
     const int32_t PERF_REQUEST_CMD_ID_LOAD_URL              = 10070;
     const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
+    const int32_t PERF_REQUEST_CMD_ID_BMM_MONITER_START     = 10081;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -190,6 +191,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleAppColdStartEx(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_SCENE_ROTATION,
         [this](const std::shared_ptr<ResData>& data) { HandleSceneRotation(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_BMM_MONITER_CHANGE_EVENT,
+        [this](const std::shared_ptr<ResData>& data) { HandleBmmMoniterStatus(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
@@ -226,6 +229,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_SOCPERF_CUST_EVENT_END,
         RES_TYPE_ONLY_PERF_APP_COLD_START,
         RES_TYPE_SCENE_ROTATION,
+        RES_TYPE_BMM_MONITER_CHANGE_EVENT,
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -606,6 +610,24 @@ bool SocPerfPlugin::HandleSceneRotation(const std::shared_ptr<ResData> &data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_ROTATION, false, "");
     }
     return true;
+}
+
+bool SocPerfPlugin::HandleBmmMoniterStatus(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->PERF_REQUEST_CMD_ID_BMM_MONITER_CHANGE: %{public}lld",
+        (long long)data->value);
+    if (data->value == BmmMoniterStatus::BMM_BACKGROUND) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_BMM_MONITER_START, true, "");
+        return true;
+    }
+    if (data->value == BmmMoniterStatus::BMM_CLOSE) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_BMM_MONITER_START, true, "");
+        return true;
+    }
+    return false;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
