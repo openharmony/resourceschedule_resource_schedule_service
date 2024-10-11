@@ -47,6 +47,7 @@ ohos_unittest("resschedservice_test") {
     "src/oobe_datashare_utils_test.cpp",
     "src/oobe_mgr_test.cpp",
     "src/res_sched_client_test.cpp",
+    "src/res_sched_service_mock_test.cpp",
     "src/res_sched_service_test.cpp",
     "src/scene_recognize_test.cpp",
   ]
