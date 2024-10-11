@@ -66,12 +66,15 @@ public:
      * @param pid the pid whiche will be killed.
      */
     int32_t KillProcess(pid_t pid);
+
 private:
-    void InitPluginMgr(const nlohmann::json& payload);
     std::string BuildTraceStr(const std::string& func, uint32_t resType, int64_t value);
+    void InitPluginMgr(const nlohmann::json& payload);
     void HandleRequestForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply);
     void GetCgroupFileContent(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply);
     void CheckProcTaskForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply);
+
+    bool isInit = false;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

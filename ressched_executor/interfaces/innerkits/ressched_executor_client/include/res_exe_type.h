@@ -34,6 +34,8 @@ enum : uint32_t {
     RES_TYPE_CGROUP_SYNC_EVENT,
     // cgroup read proc task sync
     RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT,
+    // init executor plugin manager
+    RES_TYPE_EXECUTOR_PLUGIN_INIT,
     // last sync resType, please add sync resType before
     RES_TYPE_SYNC_END,
 
@@ -45,8 +47,6 @@ enum : uint32_t {
     RES_TYPE_THERMAL_AWARE_ASYNC_EVENT,
     // socperf wirte node async
     EWS_TYPE_SOCPERF_EXECUTOR_ASYNC_EVENT,
-    // init executor plugin manager
-    RES_TYPE_EXECUTOR_PLUGIN_INIT,
     // last resType, please add resType before
     RES_TYPE_LAST = 1000,
     // resType for debug ipc
