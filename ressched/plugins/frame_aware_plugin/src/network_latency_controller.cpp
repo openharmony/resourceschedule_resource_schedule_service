@@ -94,49 +94,54 @@ void NetworkLatencyController::HandleRequest(long long value, const std::string 
 void NetworkLatencyController::HandleAddRequest(const std::string &identity)
 {
     // cancel auto disable task first
-    std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
-    for (auto iter = taskHandlerMap_.begin(); iter != taskHandlerMap_.end();) {
-        if (iter->first == identity) {
-            ffrtQueue_->cancel(iter->second);
-            taskHandlerMap_.erase(iter++);
-        } else {
-            iter++;
+    {
+        std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
+        for (auto iter = taskHandlerMap_.begin(); iter != taskHandlerMap_.end();) {
+            if (iter->first == identity) {
+                ffrtQueue_->cancel(iter->second);
+                taskHandlerMap_.erase(iter++);
+            } else {
+                iter++;
+            }
         }
     }
-    std::unique_lock<std::mutex> lk(mtx);
 
     RME_LOGD("%{public}s: add new request from %{public}s", __func__, identity.c_str());
     AddRequest(identity);
 
     // set up the auto disable timer
-    taskHandlerMap_[identity] = ffrtQueue_->submit_h(
-        [this, identity] { AutoDisableTask(identity); },
-        ffrt::task_attr().delay(
-            std::chrono::duration_cast<std::chrono::milliseconds>(TIMEOUT).count() * switchToFfrt_
+    {
+        std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
+        taskHandlerMap_[identity] = ffrtQueue_->submit_h(
+            [this, identity] { AutoDisableTask(identity); },
+            ffrt::task_attr().delay(
+                std::chrono::duration_cast<std::chrono::milliseconds>(TIMEOUT).count() * switchToFfrt_
             )
-    );
+        );
+    }
 }
 
 void NetworkLatencyController::HandleDelRequest(const std::string &identity)
 {
     // cancel auto disable task first
-    std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
-    for (auto iter = taskHandlerMap_.begin(); iter != taskHandlerMap_.end();) {
-        if (iter->first == identity) {
-            ffrtQueue_->cancel(iter->second);
-            taskHandlerMap_.erase(iter++);
-        } else {
-            iter++;
+    {
+        std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
+        for (auto iter = taskHandlerMap_.begin(); iter != taskHandlerMap_.end();) {
+            if (iter->first == identity) {
+                ffrtQueue_->cancel(iter->second);
+                taskHandlerMap_.erase(iter++);
+            } else {
+                iter++;
+            }
         }
     }
-    std::unique_lock<std::mutex> lk(mtx);
-
     RME_LOGD("%{public}s: delete request from %{public}s", __func__, identity.c_str());
     DelRequest(identity);
 }
 
 void NetworkLatencyController::AddRequest(const std::string &identity)
 {
+    std::unique_lock<std::mutex> lk(mtx);
     bool wasEmpty = requests.empty();
     requests.insert(identity);
 
@@ -149,6 +154,7 @@ void NetworkLatencyController::AddRequest(const std::string &identity)
 
 void NetworkLatencyController::DelRequest(const std::string &identity)
 {
+    std::unique_lock<std::mutex> lk(mtx);
     bool wasEmpty = requests.empty();
     requests.erase(identity);
 
@@ -161,8 +167,6 @@ void NetworkLatencyController::DelRequest(const std::string &identity)
 
 void NetworkLatencyController::AutoDisableTask(const std::string &identity)
 {
-    std::unique_lock<std::mutex> lk(mtx);
-
     RME_LOGD("%{public}s: identity %{public}s timed out", __func__, identity.c_str());
     DelRequest(identity);
 }
