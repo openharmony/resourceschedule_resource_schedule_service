@@ -254,6 +254,8 @@ enum : uint32_t {
     RES_TYPE_OUTPUT_DEVICE_CHANGE = 110,
     // report to hisi, let bmm_report begin change
     RES_TYPE_BMM_MONITER_CHANGE_EVENT = 113,
+    // app frame drop event
+    RES_TYPE_APP_FRAME_DROP = 114,
     // report rss cloud config update
     RES_TYPE_RSS_CLOUD_CONFIG_UPDATE = 115,
     // last async resType
@@ -300,6 +302,11 @@ enum EventListenerGroup : uint32_t {
     LISTENER_GROUP_CAMERA = 4,
     LISTENER_GROUP_DH = 5,
     LISTENER_GROUP_END
+};
+
+enum AppFrameDropType : int32_t {
+    JANK_FRAME_APP = 1,    // 通用丢帧
+    INTERACTION_APP_JANK,  // 动效丢帧
 };
 
 /**
