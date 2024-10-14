@@ -247,6 +247,7 @@ HWTEST_F(ResSchedServiceTest, TestResSchedSystemloadListener001, Function | Medi
     sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
     EXPECT_TRUE(notifier != nullptr);
     NotifierMgr::GetInstance().Init();
+    resSchedService_->UnRegisterSystemloadNotifier();
     resSchedService_->RegisterSystemloadNotifier(notifier);
     resSchedService_->OnDeviceLevelChanged(0, 2);
     NotifierMgr::GetInstance().OnApplicationStateChange(2, IPCSkeleton::GetCallingPid());
