@@ -76,7 +76,7 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
     const char *flag = "\n";
     char *line = strtok(fileContent, flag);
     while (line != NULL) {
-        int32_t forkPid = std::atoi(line);
+        int32_t forkPid = std::stoi(line);
         line = strtok(NULL, flag);
         if (forkPid != pr.GetPid()) {
             int ret = CgroupSetting::SetThreadGroupSchedPolicy(forkPid, pr.curSchedGroup_);
