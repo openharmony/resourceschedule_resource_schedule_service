@@ -107,6 +107,7 @@ void NotifierMgr::RegisterNotifier(int32_t pid, const sptr<IRemoteObject>& notif
         info.hapApp = IsHapApp();
         notifierMap_[pid] = info;
         notifier->AddDeathRecipient(notifierDeathRecipient_);
+        printf("test 7777");
     }
 }
 
