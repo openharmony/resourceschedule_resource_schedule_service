@@ -249,8 +249,8 @@ HWTEST_F(ResSchedServiceTest, TestResSchedSystemloadListener001, Function | Medi
     NotifierMgr::GetInstance().Init();
     resSchedService_->UnRegisterSystemloadNotifier();
     resSchedService_->RegisterSystemloadNotifier(notifier);
-    resSchedService_->OnDeviceLevelChanged(0, 2);
     NotifierMgr::GetInstance().OnApplicationStateChange(2, IPCSkeleton::GetCallingPid());
+    resSchedService_->OnDeviceLevelChanged(0, 2);
     sleep(1);
     printf("result: %d\n", TestResSchedSystemloadListener::testSystemloadLevel);
     EXPECT_TRUE(TestResSchedSystemloadListener::testSystemloadLevel == 2);
