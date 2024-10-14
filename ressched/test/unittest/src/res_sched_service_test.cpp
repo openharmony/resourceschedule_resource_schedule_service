@@ -60,7 +60,7 @@ public:
     }
     void OnSystemloadLevel(int32_t level)
     {
-        printf("test 333\n")
+        printf("test 333\n");
         testSystemloadLevel = level;
     }
 
