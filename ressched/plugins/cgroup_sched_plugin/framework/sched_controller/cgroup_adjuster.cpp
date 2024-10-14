@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <cerrno>
+#include <charconv>
 #include <string>
 #include "app_mgr_constants.h"
 #include "cgroup_event_handler.h"
@@ -76,7 +77,12 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
     const char *flag = "\n";
     char *line = strtok(fileContent, flag);
     while (line != NULL) {
-        int32_t forkPid = std::stoi(line);
+        int32_t forkPid;
+        auto result = std::from_chars(line, line + strlen(line), forkPid);
+        if (result.ec == std::errc()) {
+            CGS_LOGE("%{public}s str to int failed, str = %{public}s!", __func__, line);
+            continue;
+        }
         line = strtok(NULL, flag);
         if (forkPid != pr.GetPid()) {
             int ret = CgroupSetting::SetThreadGroupSchedPolicy(forkPid, pr.curSchedGroup_);
