@@ -77,9 +77,8 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
     const char *flag = "\n";
     char *line = strtok(fileContent, flag);
     while (line != NULL) {
-        int forkPid;
-        auto result = std::from_chars(line, line + strlen(line), forkPid);
-        if (result.ec != std::errc()) {
+        int32_t forkPid = std::atoi(line);
+        if (forkPid == 0) {
             CGS_LOGE("%{public}s str to int failed, str = %{public}s", __func__, line);
             line = strtok(NULL, flag);
             continue;
