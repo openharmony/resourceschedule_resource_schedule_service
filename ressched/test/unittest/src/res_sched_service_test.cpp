@@ -52,9 +52,15 @@ protected:
 class TestResSchedSystemloadListener : public ResSchedSystemloadNotifierStub {
 public:
     TestResSchedSystemloadListener() = default;
-
+    int32_t OnRemoteRequest(uint32_t code, MessageParcel& data,
+        MessageParcel& reply, MessageOption& option) override
+    {
+        printf("test 111\n");
+        return ResSchedSystemloadNotifierStub::OnRemoteRequest(code, data, reply, option);
+    }
     void OnSystemloadLevel(int32_t level)
     {
+        printf("test 333\n")
         testSystemloadLevel = level;
     }
 
