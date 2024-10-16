@@ -22,6 +22,7 @@
 #include "ioobe_task.h"
 #include <functional>
 #include <vector>
+#include "ffrt.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
