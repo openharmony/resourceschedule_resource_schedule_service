@@ -22,7 +22,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-std::mutex OOBEManager::mutex_;
+std::recursive_mutex OOBEManager::mutex_;
 std::vector<std::shared_ptr<IOOBETask>> OOBEManager::oobeTasks_;
 std::vector<std::function<void()>> OOBEManager::dataShareFunctions_;
 sptr<OOBEManager::ResDataAbilityObserver> OOBEManager::observer_ = nullptr;
