@@ -25,6 +25,8 @@ public:
     static constexpr char CPU_HIGHLOAD[] = "Kill Reason:CPU Highload";
     static constexpr char CPU_EXT_HIGHLOAD[] = "Kill Reason:CPU_EXT Highload";
     static constexpr char IO_MANAGE_CONTROL[] = "Kill Reason:IO Manage Control";
+    static constexpr char ION_MANAGE_CONTROL[] = "Kill Reason:ION Manage Control";
+    static constexpr char MEMORY_SOFT_DETERIORATION[] = "Kill Reason:App Memory Soft Deterioration";
     static constexpr char MEMORY_DETERIORATION[] = "Kill Reason:App Memory Deterioration";
     static constexpr char MEMORY_PRESSURE[] = "Kill Reason:Memory Pressure";
     static constexpr char TEMPERATURE_CONTROL[] = "Kill Reason:Temperature Control";
