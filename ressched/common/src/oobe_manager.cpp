@@ -48,13 +48,13 @@ OOBEManager& OOBEManager::GetInstance()
 
 bool OOBEManager::GetOOBValue()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return g_oobeValue;
 }
 
 ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (!DataShareUtils::GetInstance().GetDataShareReadyFlag()) {
         RESSCHED_LOGE("RegisterObserver: dataShare is not ready!");
         std::function dataShareFunction = [key, func, this]() {
@@ -141,7 +141,7 @@ void OOBEManager::Initialize()
 
 bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (task == nullptr) {
         RESSCHED_LOGE("Bad task passed!");
         return false;
@@ -159,7 +159,7 @@ void OOBEManager::StartListen()
     int resultValue = 0;
     ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
     if (resultValue != 0) {
-        std::lock_guard<std::mutex> lock(mutex_);
+        std::lock_guard<std::recursive_mutex> lock(mutex_);
         g_oobeValue = true;
         for (auto task : oobeTasks_) {
             task->ExcutingTask();
@@ -171,7 +171,7 @@ void OOBEManager::StartListen()
         ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
         if (result != 0) {
             RESSCHED_LOGI("User consent authorization!");
-            std::lock_guard<std::mutex> lock(mutex_);
+            std::lock_guard<std::recursive_mutex> lock(mutex_);
             g_oobeValue = true;
             for (auto task : oobeTasks_) {
                 task->ExcutingTask();
@@ -186,7 +186,7 @@ void OOBEManager::StartListen()
 
 void OOBEManager::OnReceiveDataShareReadyCallBack()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     for (auto function : dataShareFunctions_) {
         function();
     }
