@@ -381,6 +381,8 @@ namespace {
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
         auto slideRecognizer = std::make_shared<SlideRecognizer>();
+        slideRecognizer->SetListFlingTimeoutTime(0);
+        slideRecognizer->SetListFlingEndTime(0);
         slideRecognizer->OnDispatchResource(resType, value, payload);
         slideRecognizer->HandleSlideDetecting(payload);
         slideRecognizer->HandleSlideEvent(value, payload);
