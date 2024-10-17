@@ -387,6 +387,7 @@ namespace {
         slideRecognizer->HandleSendFrameEvent(payload);
         slideRecognizer->HandleClickEvent(value, payload);
         slideRecognizer->HandleSlideOFFEvent();
+        return true;
     }
 
     bool OOBEManagerFuzzTest(const uint8_t* data, size_t size)
@@ -518,5 +519,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::NotifierMgrFuzzTest(data, size);
     OHOS::ResourceSchedule::OOBEManagerFuzzTest(data, size);
     OHOS::ResourceSchedule::OOBEDatashareUtilsFuzzTest(data, size);
+    OHOS::ResourceSchedule::SlideRecognizerFuzzTest(data, size);
     return 0;
 }
