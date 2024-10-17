@@ -34,6 +34,7 @@
 #include "singleton.h"
 #include "system_ability_definition.h"
 #include "slide_recognizer.h"
+#include "ffrt_inner.h"
 #include "res_sched_client.h"
 #include "res_sched_service_stub.h"
 #include "res_sched_systemload_notifier_client.h"
@@ -387,6 +388,12 @@ namespace {
         slideRecognizer->HandleSendFrameEvent(payload);
         slideRecognizer->HandleClickEvent(value, payload);
         slideRecognizer->HandleSlideOFFEvent();
+        if (slideRecognizer->listFlingEndTask_) {
+            ffrt::skip(slideRecognizer->listFlingEndTask_);
+        }
+        if (slideRecognizer->listFlingTimeOutTask_) {
+            ffrt::skip(slideRecognizer->listFlingTimeOutTask_);
+        }
         return true;
     }
 
