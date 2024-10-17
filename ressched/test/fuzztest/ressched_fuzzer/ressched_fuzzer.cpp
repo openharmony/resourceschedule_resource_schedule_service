@@ -33,6 +33,8 @@
 #include "res_sched_service.h"
 #include "singleton.h"
 #include "system_ability_definition.h"
+#include "slide_recognizer.h"
+#include "ffrt_inner.h"
 #include "res_sched_client.h"
 #include "res_sched_service_stub.h"
 #include "res_sched_systemload_notifier_client.h"
@@ -365,6 +367,38 @@ namespace {
         return true;
     }
 
+    bool SlideRecognizerFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= sizeof(uint32_t) + sizeof(int64_t)) {
+            return false;
+        }
+
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
+        nlohmann::json payload;
+        auto slideRecognizer = std::make_shared<SlideRecognizer>();
+        slideRecognizer->SetListFlingTimeoutTime(0);
+        slideRecognizer->SetListFlingEndTime(0);
+        slideRecognizer->OnDispatchResource(resType, value, payload);
+        slideRecognizer->HandleSlideDetecting(payload);
+        slideRecognizer->HandleSlideEvent(value, payload);
+        slideRecognizer->HandleListFlingStart(payload);
+        slideRecognizer->HandleSendFrameEvent(payload);
+        slideRecognizer->HandleClickEvent(value, payload);
+        slideRecognizer->HandleSlideOFFEvent();
+        if (slideRecognizer->listFlingEndTask_) {
+            ffrt::skip(slideRecognizer->listFlingEndTask_);
+        }
+        if (slideRecognizer->listFlingTimeOutTask_) {
+            ffrt::skip(slideRecognizer->listFlingTimeOutTask_);
+        }
+        return true;
+    }
+
     bool OOBEManagerFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -494,5 +528,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::NotifierMgrFuzzTest(data, size);
     OHOS::ResourceSchedule::OOBEManagerFuzzTest(data, size);
     OHOS::ResourceSchedule::OOBEDatashareUtilsFuzzTest(data, size);
+    OHOS::ResourceSchedule::SlideRecognizerFuzzTest(data, size);
     return 0;
 }
