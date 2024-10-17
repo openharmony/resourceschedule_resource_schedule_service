@@ -33,6 +33,7 @@
 #include "res_sched_service.h"
 #include "singleton.h"
 #include "system_ability_definition.h"
+#include "slide_recognizer.h"
 #include "res_sched_client.h"
 #include "res_sched_service_stub.h"
 #include "res_sched_systemload_notifier_client.h"
@@ -363,6 +364,29 @@ namespace {
         NotifierMgr::GetInstance().DumpRegisterInfo();
         NotifierMgr::GetInstance().Deinit();
         return true;
+    }
+
+    bool SlideRecognizerFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= sizeof(uint32_t) + sizeof(int64_t)) {
+            return false;
+        }
+
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
+        nlohmann::json payload;
+        auto slideRecognizer = std::make_shared<SlideRecognizer>();
+        slideRecognizer->OnDispatchResource(resType, value, payload);
+        slideRecognizer->HandleSlideDetecting(payload);
+        slideRecognizer->HandleSlideEvent(value, payload);
+        slideRecognizer->HandleListFlingStart(payload);
+        slideRecognizer->HandleSendFrameEvent(payload);
+        slideRecognizer->HandleClickEvent(value, payload);
+        slideRecognizer->HandleSlideOFFEvent();
     }
 
     bool OOBEManagerFuzzTest(const uint8_t* data, size_t size)
