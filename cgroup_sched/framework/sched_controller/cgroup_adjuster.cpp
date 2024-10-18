@@ -94,7 +94,7 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
 
 void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
 {
-    CGS_LOGD("%{public}s for %{public}d, source : %{public}d", __func__, pr.GetPid(), source);
+    CGS_LOGI("%{public}s for %{public}d, source : %{public}d", __func__, pr.GetPid(), source);
     ComputeProcessGroup(app, pr, source);
     ResSchedUtils::GetInstance().ReportArbitrationResult(app, pr, source);
     ApplyProcessGroup(app, pr);
@@ -103,19 +103,23 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
         return;
     }
 
-    /* Let the sched group of render process follow the sched group of host process */
+    /* Let the sched group of render process, gpu process, and child process follow the sched group of host process */
     for (const auto &iter : app.GetPidsMap()) {
         const auto &procRecord = iter.second;
-        if (procRecord && (procRecord->isRenderProcess_ || procRecord->isGPUProcess_)) {
+        if (procRecord && ((procRecord->processType_ == ProcRecordType::RENDER) ||
+            (procRecord->processType_ == ProcRecordType::GPU) ||
+            (procRecord->processType_ == ProcRecordType::CHILD))) {
             auto hostProcRecord = app.GetProcessRecord(procRecord->hostPid_);
             if (!hostProcRecord || (procRecord->hostPid_ != pr.GetPid())) {
                 continue;
             }
-            CGS_LOGI("%{public}s for %{public}d, source : %{public}d for render process",
+            CGS_LOGD("%{public}s for %{public}d, source : %{public}d for render process",
                 __func__, procRecord->GetPid(), source);
             procRecord->setSchedGroup_ = hostProcRecord->curSchedGroup_;
-            if (procRecord->isRenderProcess_ ||
-                (procRecord->isGPUProcess_ && hostProcRecord->curSchedGroup_ == SP_TOP_APP)) {
+            if (procRecord->processType_ == ProcRecordType::RENDER ||
+                ((procRecord->processType_ == ProcRecordType::GPU) && (hostProcRecord->curSchedGroup_ == SP_TOP_APP))) {
+                CGS_LOGI("%{public}s for %{public}d, source : %{public}d for render process",
+                    __func__,procRecord->GetPid(), AdjustSource::ADJS_SELF_RENDER_THREAD);
                 ResSchedUtils::GetInstance().ReportArbitrationResult(app, *(procRecord.get()),
                     AdjustSource::ADJS_SELF_RENDER_THREAD);
             }
@@ -128,7 +132,10 @@ void CgroupAdjuster::AdjustAllProcessGroup(Application &app, AdjustSource source
 {
     for (auto &iter : app.GetPidsMap()) {
         const auto &procRecord = iter.second;
-        if (procRecord && !procRecord->isRenderProcess_ && !procRecord->isGPUProcess_) {
+        if (procRecord && (procRecord->processType_ != ProcRecordType::RENDER) &&
+            (procRecord->processType_ != ProcRecordType::GPU) &&
+            (procRecord->processType_ != ProcRecordType::LINUX) &&
+            (procRecord->processType_ != ProcRecordType::CHILD)) {
             AdjustProcessGroup(app, *procRecord, source);
         }
     }
@@ -150,7 +157,7 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
 
     {
         ChronoScope cs("ComputeProcessGroup");
-        if (pr.isRenderProcess_) {
+        if (pr.processType_ == ProcRecordType::RENDER) {
             auto hostProcRecord = app.GetProcessRecord(pr.hostPid_);
             group = hostProcRecord ? hostProcRecord->curSchedGroup_ : SP_DEFAULT;
         } else if (source == AdjustSource::ADJS_PROCESS_CREATE) {
