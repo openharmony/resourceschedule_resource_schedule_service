@@ -1417,7 +1417,7 @@ namespace ResourceSchedule {
         OHOS::ResourceSchedule::HandleReportWebviewAudioStateFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportRunningLockEventFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportHisysEventFuzzTest(data, size);
-        OHOS:ResourceSchedule::HandleReportScreenCaptureEventFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportScreenCaptureEventFuzzTest(data, size);
         OHOS::ResourceSchedule::CheckVisibilityForRenderProcessFuzzTest(data, size);
         OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);
