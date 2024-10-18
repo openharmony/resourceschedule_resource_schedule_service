@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <vector>
 #include "nativetoken_kit.h"
+#include "res_sa_init.h"
 #include "res_sched_client.h"
 #include "res_type.h"
 #include "res_sched_systemload_notifier_client.h"
@@ -391,6 +392,19 @@ HWTEST_F(ResSchedClientTest, IsAllowedAppPreload, Function | MediumTest | Level0
     std::string bundleName = "com.ohos.test";
     EXPECT_TRUE(ResSchedClient::GetInstance().rss_);
     EXPECT_TRUE(!ResSchedClient::GetInstance().IsAllowedAppPreload(bundleName, 0));
+}
+
+/**
+ * @tc.name: SaInitXmlMutex
+ * @tc.desc: Sa Init Xml Mutex
+ * @tc.type: FUNC
+ * @tc.require: I78O6Y
+ * @tc.author: lujunchao
+ */
+HWTEST_F(ResSchedClientTest, SaInitXmlMutex, Function | MediumTest | Level0)
+{
+    std::lock_guard<std::mutex> xmlLock(ResourceSchedule::ResSchedSaInit::GetInstance().saInitXmlMutex_);
+    EXPECT_TRUE(nullptr != ResSchedClient::GetInstance().rss_);
 }
 
 /**
