@@ -673,7 +673,7 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
         return;
     }
     CGS_LOGI("%{pblic}s : appName: %{public}s, uid: %{public}d, pid: %{public}d, keyTid: %{public}d",
-        __func__, app->GetName().c_str(), uid, pid, keyTid)
+        __func__, app->GetName().c_str(), uid, pid, keyTid);
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(hostProcRecord.get()),
         AdjustSource::ADJS_REPORT_IMPORTANT_DISPLAY_THREAD);
 }
