@@ -706,7 +706,7 @@ namespace ResourceSchedule {
         nlohmann::json payload;
         payload["uid"] = std::to_string(uid);
         payload["pid"] = std::to_string(pid);
-        auto cgroupEventHandler = 
+        auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
         cgroupEventHandler->HandleReportScreenCaptureEvent(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);

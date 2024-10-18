@@ -278,7 +278,7 @@ int32_t Supervisor::GetSystemLoadLevel()
 
 void Supervisor::ConnectAppManagerService()
 {
-    sptr<OHOS::ISystemAbilityManager> systemAbilityManager = 
+    sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
         OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     sptr<OHOS::IRemoteObject> object = systemAbilityManager->GetSystemAbility(OHOS::APP_MGR_SERVICE_ID);
     appManager_ = OHOS::iface_cast<OHOS::AppExecFwk::IAppMgr>(object);
@@ -315,7 +315,7 @@ void Supervisor::ReloadChildProcess()
         auto procRecord = app->GetProcessRecordNonNull(process.pid);
         procRecord->processType_ = ProcRecordType::CHILD;
         procRecord->hostPid_ = process.hostPid;
-        CGS_LOGI("reload child process bundleName:%{public}s processName:{public}s pid:%{public}d 
+        CGS_LOGI("reload child process bundleName:%{public}s processName:%{public}s pid:%{public}d 
             uid:%{public}d hostUid:%{public}d hostPid:%{public}d",
             process.bundleName.c_str(), process.processName.c_str(), process.pid,
             process.uid, process.hostUid, process.hostPid);

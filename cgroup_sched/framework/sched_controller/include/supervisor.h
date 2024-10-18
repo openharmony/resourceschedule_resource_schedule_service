@@ -131,7 +131,7 @@ public:
     int32_t bluetoothState_ = -1;
     int32_t wifiState_ = -1;
     int32_t hostPid_ = -1;
-    Uint32_t suppressState_ = 0;
+    uint32_t suppressState_ = 0;
 
     std::map<uint32_t, bool> runningLockState_;
     std::map<int32_t, bool> avCodecState_;
