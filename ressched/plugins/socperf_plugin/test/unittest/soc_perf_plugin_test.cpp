@@ -105,7 +105,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_001, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleAppAbilityStart(warmStartData);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleAppAbilityStart(invalidData);
-    SUCCEED();
+    EXPECT_NE(coldStartData, nullptr);
 }
 
 /*
@@ -121,7 +121,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_002, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleWindowFocus(data);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleWindowFocus(invalidData);
-    SUCCEED();
+    EXPECT_NE(data, nullptr);
 }
 
 /*
@@ -143,7 +143,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_003, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleEventClick(touchUpData);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleEventClick(invalidData);
-    SUCCEED();
+    EXPECT_NE(touchDownData, nullptr);
 }
 
 /*
@@ -163,7 +163,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_004, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleLoadPage(loadPageEndData);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleLoadPage(invalidData);
-    SUCCEED();
+    EXPECT_NE(loadPageStartData, nullptr);
 }
 
 /*
@@ -188,7 +188,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_005, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleEventSlide(slideNormalEndData);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleEventSlide(invalidData);
-    SUCCEED();
+    EXPECT_NE(slideEventOnData, nullptr);
 }
 
 /*
@@ -208,7 +208,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_006, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleEventWebGesture(nullptr);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleEventWebGesture(invalidData);
-    SUCCEED();
+    EXPECT_NE(webGestureStartData, nullptr);
 }
 
 /*
@@ -228,7 +228,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_007, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleResizeWindow(nullptr);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleResizeWindow(invalidData);
-    SUCCEED();
+    EXPECT_NE(windowResizingData, nullptr);
 }
 
 /*
@@ -248,7 +248,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_008, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleMoveWindow(nullptr);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleMoveWindow(invalidData);
-    SUCCEED();
+    EXPECT_NE(windowMovingData, nullptr);
 }
 
 /*
@@ -275,7 +275,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_009, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleRemoteAnimation(unlockEndData);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleRemoteAnimation(invalidData);
-    SUCCEED();
+    EXPECT_NE(animationEndData, nullptr);
 }
 
 /*
@@ -295,7 +295,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_010, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleDragStatusBar(nullptr);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleDragStatusBar(invalidData);
-    SUCCEED();
+    EXPECT_NE(dragStartData, nullptr);
 }
 
 /*
@@ -315,7 +315,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_011, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleWebGestureMove(nullptr);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleWebGestureMove(invalidData);
-    SUCCEED();
+    EXPECT_NE(webGestureMoveStartData, nullptr);
 }
 
 /*
@@ -335,7 +335,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_012, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleWebSlideNormal(nullptr);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleWebSlideNormal(invalidData);
-    SUCCEED();
+    EXPECT_NE(webSlideNormalStartData, nullptr);
 }
 
 /*
@@ -348,7 +348,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_013, Function | MediumTes
 {
     const std::shared_ptr<ResData>& data = std::make_shared<ResData>(ResType::RES_TYPE_LOAD_URL, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleLoadUrl(data);
-    SUCCEED();
+    EXPECT_NE(data, nullptr);
 }
 
 /*
@@ -361,7 +361,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_014, Function | MediumTes
 {
     const std::shared_ptr<ResData>& data = std::make_shared<ResData>(ResType::RES_TYPE_MOUSEWHEEL, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleMousewheel(data);
-    SUCCEED();
+    EXPECT_NE(data, nullptr);
 }
 
 /*
@@ -374,7 +374,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_015, Function | MediumTes
 {
     const std::shared_ptr<ResData>& data = std::make_shared<ResData>(ResType::RES_TYPE_POP_PAGE, -1, nullptr);
     SocPerfPlugin::GetInstance().HandlePopPage(data);
-    SUCCEED();
+    EXPECT_NE(data, nullptr);
 }
 
 /*
@@ -464,10 +464,10 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_017, Function | MediumTes
 
     nlohmann::json payload5;
     payload["deviceMode"] = "ABCEDFGHABCEDFGHABCEDFGHABCEDFGHABCEDFGHABCEDFGHABCEDFGHABCEDFGHZ";
-    std::shared_ptr<ResData> maxLenPayload = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
+    const std::shared_ptr<ResData>& maxLenPayload = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
         ResType::DeviceModeStatus::MODE_ENTER, payload5);
     SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(maxLenPayload);
-    SUCCEED();
+    EXPECT_NE(maxLenPayload, nullptr);
 }
 
 /*
