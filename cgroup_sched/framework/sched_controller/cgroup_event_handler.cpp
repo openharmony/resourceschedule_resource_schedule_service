@@ -898,7 +898,7 @@ void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value,
         resType, static_cast<int32_t>(value));
 }
 
-void CgroupEventHandler::HandleReportScreenCaptureEvent(uint32_t res_type, int64_t value, const nlohmann::json& payload)
+void CgroupEventHandler::HandleReportScreenCaptureEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     int32_t uid = 0;
     int32_t pid = 0;

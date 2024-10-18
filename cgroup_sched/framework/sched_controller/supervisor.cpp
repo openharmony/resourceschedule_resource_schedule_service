@@ -290,14 +290,14 @@ void Supervisor::ReloadApplication()
         return;
     }
     std::vector<AppExecFwk::RunningProcessInfo> runningProcess;
-    appManager_->GetAllRunningProcess(runningProcess);
+    appManager_->GetAllRunningProcesses(runningProcess);
     for (const auto& process : runningProcess) {
         std::shared_ptr<Application> app = GetAppRecordNonNull(process.uid_);
         if (process.bundleNames.size() != 0) {
-            app -> SetName(Process.bundleNames[0]);
+            app -> SetName(process.bundleNames[0]);
         }
         std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(process.pid_);
-        CGS_LOGI("reload application cache uid:%{public}d pid:{public}d bundleName:%{public}s isFocused:%{public}d",
+        CGS_LOGI("reload application cache uid:%{public}d pid:%{public}d bundleName:%{public}s isFocused:%{public}d",
             process.uid_, process.pid_, app->GetName().c_str(), process.isFocused);
     }
 }
@@ -315,7 +315,7 @@ void Supervisor::ReloadChildProcess()
         auto procRecord = app->GetProcessRecordNonNull(process.pid);
         procRecord->processType_ = ProcRecordType::CHILD;
         procRecord->hostPid_ = process.hostPid;
-        CGS_LOGI("reload child process bundleName:%{public}s processName:%{public}s pid:%{public}d 
+        CGS_LOGI("reload child process bundleName:%{public}s processName:%{public}s pid:%{public}d \
             uid:%{public}d hostUid:%{public}d hostPid:%{public}d",
             process.bundleName.c_str(), process.processName.c_str(), process.pid,
             process.uid, process.hostUid, process.hostPid);
