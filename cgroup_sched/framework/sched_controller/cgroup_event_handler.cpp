@@ -672,7 +672,7 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
     if (!hostProcRecord) {
         return;
     }
-    CGS_LOGI("%{pblic}s : appName: %{public}s, uid: %{public}d, pid: %{public}d, keyTid: %{public}d",
+    CGS_LOGI("%{public}s : appName: %{public}s, uid: %{public}d, pid: %{public}d, keyTid: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, keyTid);
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(hostProcRecord.get()),
         AdjustSource::ADJS_REPORT_IMPORTANT_DISPLAY_THREAD);
@@ -716,7 +716,7 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     if (!hostProcRecord) {
         return;
     }
-    CGS_LOGI("%{pblic}s : pid: %{public}d, winId: %{public}d, isActive_: %{public}d",
+    CGS_LOGI("%{public}s : pid: %{public}d, winId: %{public}d, isActive_: %{public}d",
         __func__, pid, procRecord->linkedWindowId_, procRecord->isActive_);
     UpdateActivepWebRenderInfo(uid, pid, windowId, state, hostProcRecord);
     if (CheckVisibilityForRenderProcess(*(procRecord.get()), *hostProcRecord)) {
@@ -905,6 +905,7 @@ void CgroupEventHandler::HandleReportScreenCaptureEvent(uint32_t resType, int64_
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s: supervisor nullptr.", __func__);
+        return;
     }
 
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {

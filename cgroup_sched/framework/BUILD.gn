@@ -61,8 +61,6 @@ ohos_shared_library("cgroup_sched") {
     "window_manager:libwmutil_base",
   ]
 
-  defines = []
-
   if (has_bg_task_mgr) {
     defines = [ "CONFIG_BGTASK_MGR" ]
     sources += [ "sched_controller/background_task_observer.cpp" ]

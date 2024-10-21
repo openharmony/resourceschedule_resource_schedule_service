@@ -307,9 +307,9 @@ void Supervisor::ReloadChildProcess()
     if (appManager_ == nullptr) {
         return;
     }
-    std::vector<AppExecFwk::ChildProcessInfo> ChildProcess;
-    appManager_->GetAllChildrenProcesses(ChildProcess);
-    for (const auto& process : ChildProcess) {
+    std::vector<AppExecFwk::ChildProcessInfo> childProcess;
+    appManager_->GetAllChildrenProcesses(childProcess);
+    for (const auto& process : childProcess) {
         std::shared_ptr<Application> app = GetAppRecordNonNull(process.hostUid);
         app->AddHostProcess(process.hostPid);
         auto procRecord = app->GetProcessRecordNonNull(process.pid);
