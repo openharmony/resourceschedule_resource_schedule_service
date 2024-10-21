@@ -40,7 +40,7 @@ void AudioObserver::OnRendererStateChange(
     const std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos)
 {
     for (const auto &audioRendererChangeInfo : audioRendererChangeInfos) {
-        RESSCHED_LOGD("enter AudioRenderStateObserver::OnRendererStateChange, state: %{public}d",
+        RESSCHED_LOGI("enter AudioRenderStateObserver::OnRendererStateChange, state: %{public}d",
             audioRendererChangeInfo->rendererState);
         nlohmann::json payload;
         MarshallingAudioRendererChangeInfo(audioRendererChangeInfo, payload);
@@ -53,7 +53,7 @@ void AudioObserver::OnRendererStateChange(
 void AudioObserver::OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode)
 {
     if (ringerMode != mode_) {
-        RESSCHED_LOGD("enter AudioRingModeObserver::OnRingerModeUpdated, ringerMode: %{public}d", ringerMode);
+        RESSCHED_LOGI("enter AudioRingModeObserver::OnRingerModeUpdated, ringerMode: %{public}d", ringerMode);
         mode_ = ringerMode;
         const nlohmann::json payload = nlohmann::json::object();
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RING_MODE_CHANGE, ringerMode, payload);
@@ -62,7 +62,7 @@ void AudioObserver::OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ri
 
 void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
 {
-    RESSCHED_LOGD("enter AudioVolumeKeyObserver::OnVolumeKeyEvent, streamType: %{public}d, volumeLevel: %{public}d",
+    RESSCHED_LOGI("enter AudioVolumeKeyObserver::OnVolumeKeyEvent, streamType: %{public}d, volumeLevel: %{public}d",
         volumeEvent.volumeType, volumeEvent.volume);
     nlohmann::json payload;
     payload["volumeType"] = std::to_string(volumeEvent.volumeType);
@@ -74,7 +74,7 @@ void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
 void AudioObserver::OnPreferredOutputDeviceUpdated(const std::vector<sptr<AudioStandard::AudioDeviceDescriptor>> &descs)
 {
     for (const auto &desc : descs) {
-        RESSCHED_LOGD("device change, id: %{public}d, type: %{public}d", desc->deviceId_, desc->deviceType_);
+        RESSCHED_LOGI("device change, id: %{public}d, type: %{public}d", desc->deviceId_, desc->deviceType_);
         nlohmann::json payload;
         payload["deviceType"] = std::to_string(desc->deviceType_);
         payload["deviceId"] = std::to_string(desc->deviceId_);

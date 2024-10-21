@@ -166,6 +166,8 @@ inline void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a staus change listener of the " + std::to_string(systemAbilityId) + " SA failed!");
+    } else {
+        RESSCHED_LOGI("%{public}s: subscribe system ability id: %{public}d succeed", __func__, systemAbilityId);
     }
 }
 

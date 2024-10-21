@@ -72,6 +72,8 @@ void EventController::Init()
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "EventController subscribe the event service SA failed!");
         sysAbilityListener_ = nullptr;
+    } else {
+        RESSCHED_LOGI("subscribe system ability id: %{public}d succeed", COMMON_EVENT_SERVICE_ID);
     }
 }
 
@@ -137,7 +139,7 @@ void EventController::Stop()
 
 void EventController::DataShareIsReady()
 {
-    RESSCHED_LOGD("Data_share is ready! Call back to create data_share helper");
+    RESSCHED_LOGI("Data_share is ready! Call back to create data_share helper");
     ResourceSchedule::DataShareUtils::GetInstance().SetDataShareReadyFlag(true);
     ResourceSchedule::OOBEManager::GetInstance().OnReceiveDataShareReadyCallBack();
 }
@@ -145,7 +147,7 @@ void EventController::DataShareIsReady()
 inline void SubscribeCommonEvent(std::shared_ptr<EventController> subscriber)
 {
     if (CommonEventManager::SubscribeCommonEvent(subscriber)) {
-        RESSCHED_LOGD("SubscribeCommonEvent ok");
+        RESSCHED_LOGI("SubscribeCommonEvent ok");
     } else {
         RESSCHED_LOGW("SubscribeCommonEvent fail");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
@@ -158,6 +160,7 @@ inline void SubscribeCommonEvent(std::shared_ptr<EventController> subscriber)
 void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
+    RESSCHED_LOGI("common event service is added");
     MatchingSkills matchingSkills;
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_CONNECTIVITY_CHANGE);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_PACKAGE_INSTALLATION_STARTED);
@@ -205,7 +208,7 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
 {
     Want want = data.GetWant();
     std::string action = want.GetAction();
-    RESSCHED_LOGD("Recieved common event:%{public}s", action.c_str());
+    RESSCHED_LOGI("Recieved common event:%{public}s", action.c_str());
 
     nlohmann::json payload = nlohmann::json::object();
     if (HandlePkgCommonEvent(action, want, payload)) {
@@ -369,6 +372,7 @@ void EventController::SystemAbilityStatusChangeListener::Stop()
     }
     CommonEventManager::UnSubscribeCommonEvent(subscriber_);
     CommonEventManager::UnSubscribeCommonEvent(lockScreenSubscriber_);
+    RESSCHED_LOGI("unsubscribe all common event.");
     subscriber_ = nullptr;
     lockScreenSubscriber_ = nullptr;
 }

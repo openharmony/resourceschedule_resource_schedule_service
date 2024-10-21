@@ -31,7 +31,7 @@ void AvSessionStateListener::MarshallingAVSessionDescriptor(const AVSession::AVS
 
 void AvSessionStateListener::OnSessionCreate(const AVSession::AVSessionDescriptor& descriptor)
 {
-    RESSCHED_LOGD("Ressched AvSessionStateListener OnSessionCreate");
+    RESSCHED_LOGI("Ressched AvSessionStateListener OnSessionCreate");
     nlohmann::json payload;
     MarshallingAVSessionDescriptor(descriptor, payload);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AV_SESSION_ON_SESSION_CREATE, 0, payload);
@@ -39,7 +39,7 @@ void AvSessionStateListener::OnSessionCreate(const AVSession::AVSessionDescripto
 
 void AvSessionStateListener::OnSessionRelease(const AVSession::AVSessionDescriptor& descriptor)
 {
-    RESSCHED_LOGD("Ressched AvSessionStateListener OnSessionRelease");
+    RESSCHED_LOGI("Ressched AvSessionStateListener OnSessionRelease");
     nlohmann::json payload;
     MarshallingAVSessionDescriptor(descriptor, payload);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AV_SESSION_ON_SESSION_RELEASE, 0, payload);
@@ -47,7 +47,7 @@ void AvSessionStateListener::OnSessionRelease(const AVSession::AVSessionDescript
 
 void AvSessionStateListener::OnTopSessionChange(const AVSession::AVSessionDescriptor& descriptor)
 {
-    RESSCHED_LOGD("Ressched AvSessionStateListener OnTopSessionChange");
+    RESSCHED_LOGI("Ressched AvSessionStateListener OnTopSessionChange");
     nlohmann::json payload;
     MarshallingAVSessionDescriptor(descriptor, payload);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE, 0, payload);

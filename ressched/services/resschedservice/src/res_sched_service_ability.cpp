@@ -90,6 +90,7 @@ void ResSchedServiceAbility::OnAddSystemAbility(int32_t systemAbilityId, const s
     payload["deviceId"] = deviceId;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE,
         ResType::SystemAbilityStatus::SA_ADD, payload);
+    RESSCHED_LOGI("OnAddSystemAbility systemAbilityId:%{public}d", systemAbilityId);
 }
 
 void ResSchedServiceAbility::OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
@@ -125,31 +126,37 @@ void ResSchedServiceAbility::SystemAbilityListenerInit()
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of app manager service failed.");
+        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", APP_MGR_SERVICE_ID);
     }
     if (!AddSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of window manager service failed.");
+        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", WINDOW_MANAGER_SERVICE_ID);
     }
     if (!AddSystemAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of background task manager service failed.");
+        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", BACKGROUND_TASK_MANAGER_SERVICE_ID);
     }
     if (!AddSystemAbilityListener(RES_SCHED_EXE_ABILITY_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of background task manager service failed.");
+        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", RES_SCHED_EXE_ABILITY_ID);
     }
     if (!AddSystemAbilityListener(POWER_MANAGER_SERVICE_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of power manager service failed.");
+        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", POWER_MANAGER_SERVICE_ID);
     }
+    RESSCHED_LOGI("Init SystemAbilityListener finish");
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
