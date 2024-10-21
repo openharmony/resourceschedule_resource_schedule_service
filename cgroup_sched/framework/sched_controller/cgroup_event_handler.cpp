@@ -86,10 +86,10 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
                     std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
                 if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", 
-                    HiviewDFX::HiSysEvent::EventType::FAULT,
-                    "COMPONENT_NAME", "MAIN",
-                    "ERR_TYPE", "register failure",
-                    "ERR_MSG", "Subscribe app status change observer failed.");
+                        HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Subscribe app status change observer failed.");
                 }
             }
             break;
@@ -107,10 +107,10 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
                     std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
                 if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", 
-                    HiviewDFX::HiSysEvent::EventType::FAULT,
-                    "COMPONENT_NAME", "MAIN",
-                    "ERR_TYPE", "register failure",
-                    "ERR_MSG", "Subscribe background task observer failed.");
+                        HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Subscribe background task observer failed.");
                 }
             }
             break;
@@ -301,7 +301,7 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t host
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d",
-         __func__, uid, pid, hostPid, processType, bundleName.c_str(), extensionType);
+        __func__, uid, pid, hostPid, processType, bundleName.c_str(), extensionType);
     ChronoScope cs("HandleProcessCreated");
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
@@ -907,7 +907,7 @@ void CgroupEventHandler::HandleReportScreenCaptureEvent(uint32_t resType, int64_
         CGS_LOGE("%{public}s: supervisor nullptr.", __func__);
     }
 
-    if (!ParseValue(uid, "uid" ,payload) || !ParseValue(pid, "pid", payload)) {
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
         CGS_LOGE("%{public}s : payload does not contain uid or pid", __func__);
         return;
     }
@@ -922,7 +922,7 @@ void CgroupEventHandler::HandleReportScreenCaptureEvent(uint32_t resType, int64_
         return;
     }
     procRecord->screenCaptureState_ = (value == ResType::ScreenCaptureStatus::START_SCREEN_CAPTURE);
-    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()),*(procRecord.get()),
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_SCREEN_CAPTURE);
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
         resType, static_cast<int32_t>(value));
