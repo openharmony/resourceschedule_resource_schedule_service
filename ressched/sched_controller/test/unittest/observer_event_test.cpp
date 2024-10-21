@@ -538,12 +538,12 @@ HWTEST_F(ObserverEventTest, connectionSubscriberEvent_001, testing::ext::TestSiz
 HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level1)
 {
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
-    std::unique_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo =
-        std::make_unique<AudioStandard::AudioRendererChangeInfo>();
+    std::shared_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo =
+        std::make_shared<AudioStandard::AudioRendererChangeInfo>();
     nlohmann::json payload;
     audioObserver_->MarshallingAudioRendererChangeInfo(audioRendererChangeInfo, payload);
     SUCCEED();
-    std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> audioRenderVector;
+    std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> audioRenderVector;
     audioRenderVector.emplace_back(std::move(audioRendererChangeInfo));
     audioObserver_->OnRendererStateChange(audioRenderVector);
     SUCCEED();
