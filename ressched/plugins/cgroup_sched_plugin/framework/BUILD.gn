@@ -58,8 +58,7 @@ ohos_shared_library("cgroup_sched") {
     "hitrace:hitrace_meter",
     "ipc:ipc_single",
     "samgr:samgr_proxy",
-    "window_manager:libwm_lite",
-    "window_manager:libwmutil_base",
+    "window_manager:libwm",
   ]
 
   defines = []
