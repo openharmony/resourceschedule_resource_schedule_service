@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -154,9 +154,12 @@ void SchedController::DispatchOtherResource(uint32_t resType, int64_t value, con
             case ResType::RES_TYPE_REPORT_CAMERA_STATE:
             case ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE:
             case ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE:
-            case ResType::RES_TYPE_MMI_INPUT_STATE:
-            case ResType::RES_TYPE_REPORT_SCREEN_CAPTURE: {
+            case ResType::RES_TYPE_MMI_INPUT_STATE: {
                 handler->HandleReportHisysEvent(resType, value, payload);
+                break;
+            }
+            case ResType::RES_TYPE_REPORT_SCREEN_CAPTURE: {
+                handler->HandleReportScreenCaptureEvent(resType, value, payload);
                 break;
             }
             case ResType::RES_TYPE_AV_CODEC_STATE: {

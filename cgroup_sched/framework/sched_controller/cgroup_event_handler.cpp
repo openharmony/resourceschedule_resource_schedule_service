@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -85,10 +85,11 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
                     },
                     std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
                 if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
-                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                    "COMPONENT_NAME", "MAIN",
-                    "ERR_TYPE", "register failure",
-                    "ERR_MSG", "Subscribe app status change observer failed.");
+                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                        HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Subscribe app status change observer failed.");
                 }
             }
             break;
@@ -105,10 +106,11 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
                     },
                     std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
                 if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
-                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                    "COMPONENT_NAME", "MAIN",
-                    "ERR_TYPE", "register failure",
-                    "ERR_MSG", "Subscribe background task observer failed.");
+                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                        HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Subscribe background task observer failed.");
                 }
             }
             break;
@@ -136,6 +138,9 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
                         this->ProcessEvent(eventId, eventParam);
                     },
                     std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
+            }
+            if (supervisor_ != nullptr) {
+                supervisor_->InitSuperVisorContent();
             }
             break;
         case WINDOW_MANAGER_SERVICE_ID:
@@ -295,24 +300,34 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t host
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}s", __func__, uid, pid, hostPid,
-        bundleName.c_str());
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d",
+        __func__, uid, pid, hostPid, processType, bundleName.c_str(), extensionType);
     ChronoScope cs("HandleProcessCreated");
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
     app->SetName(bundleName);
-    if (processType == static_cast<int32_t>(ProcessType::RENDER)) {
-        procRecord->isRenderProcess_ = true;
-        procRecord->hostPid_ = hostPid;
-        app->AddHostProcess(hostPid);
-    } else if (processType == static_cast<int32_t>(ProcessType::EXTENSION)) {
-        procRecord->isExtensionProcess_ = true;
-        procRecord->extensionType_ = extensionType;
-    } else if (processType == static_cast<int32_t>(ProcessType::GPU)) {
-        procRecord->isGPUProcess_ = true;
-        procRecord->hostPid_ = hostPid;
-        app->AddHostProcess(hostPid);
-        app->pidofGPUProcess_ = pid;
+    switch (processType) {
+        case static_cast<int32_t>(ProcessType::RENDER):
+            procRecord->processType_ = ProcRecordType::RENDER;
+            procRecord->hostPid_ = hostPid;
+            app->AddHostProcess(hostPid);
+            break;
+        case static_cast<int32_t>(ProcessType::EXTENSION):
+            procRecord->processType_ = ProcRecordType::EXTENSION;
+            procRecord->extensionType_ = extensionType;
+            break;
+        case static_cast<int32_t>(ProcessType::GPU):
+            procRecord->processType_ = ProcRecordType::GPU;
+            procRecord->hostPid_ = hostPid;
+            app->AddHostProcess(hostPid);
+            break;
+        case static_cast<int32_t>(ProcessType::CHILD):
+            procRecord->processType_ = ProcRecordType::CHILD;
+            procRecord->hostPid_ = hostPid;
+            app->AddHostProcess(hostPid);
+            break;
+        default:
+            break;
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_CREATE);
@@ -657,6 +672,8 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
     if (!hostProcRecord) {
         return;
     }
+    CGS_LOGI("%{public}s : appName: %{public}s, uid: %{public}d, pid: %{public}d, keyTid: %{public}d",
+        __func__, app->GetName().c_str(), uid, pid, keyTid);
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(hostProcRecord.get()),
         AdjustSource::ADJS_REPORT_IMPORTANT_DISPLAY_THREAD);
 }
@@ -680,7 +697,7 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
         CGS_LOGW("%{public}s : param is not valid or not exist", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : render process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+    CGS_LOGI("%{public}s : render process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, state);
     if (nowSerialNum <= procRecord->serialNum_ &&
         (procRecord->serialNum_ - nowSerialNum <= static_cast<int32_t>(MAX_SPAN_SERIAL))) {
@@ -699,6 +716,8 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     if (!hostProcRecord) {
         return;
     }
+    CGS_LOGI("%{public}s : pid: %{public}d, winId: %{public}d, isActive_: %{public}d",
+        __func__, pid, procRecord->linkedWindowId_, procRecord->isActive_);
     UpdateActivepWebRenderInfo(uid, pid, windowId, state, hostProcRecord);
     if (CheckVisibilityForRenderProcess(*(procRecord.get()), *hostProcRecord)) {
         CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d, winId: %{public}d" \
@@ -746,7 +765,7 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
         return;
     }
     procRecord->audioPlayingState_ = static_cast<int32_t>(value);
-    CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+    CGS_LOGI("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
@@ -783,7 +802,7 @@ void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t
 
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(procRecord->GetUid());
     procRecord->audioPlayingState_ = static_cast<int32_t>(value);
-    CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+    CGS_LOGI("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
@@ -814,7 +833,7 @@ void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t 
         type = static_cast<uint32_t>(atoi(payload["type"].get<std::string>().c_str()));
     }
     state = static_cast<int32_t>(value);
-    CGS_LOGD("report running lock event, uid:%{public}d, pid:%{public}d, lockType:%{public}d, state:%{public}d",
+    CGS_LOGI("report running lock event, uid:%{public}d, pid:%{public}d, lockType:%{public}d, state:%{public}d",
         uid, pid, type, state);
 #ifdef POWER_MANAGER_ENABLE
     if (type == static_cast<uint32_t>(PowerMgr::RunningLockType::RUNNINGLOCK_PROXIMITY_SCREEN_CONTROL)) {
@@ -871,16 +890,41 @@ void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value,
             }
             break;
         }
-        case ResType::RES_TYPE_REPORT_SCREEN_CAPTURE: {
-            procRecord->screenCaptureState_ = (value == ResType::ScreenCaptureStatus::START_SCREEN_CAPTURE);
-            CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-                AdjustSource::ADJS_REPORT_SCREEN_CAPTURE);
-            break;
-        }
         default: {
             break;
         }
     }
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+        resType, static_cast<int32_t>(value));
+}
+
+void CgroupEventHandler::HandleReportScreenCaptureEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s: supervisor nullptr.", __func__);
+        return;
+    }
+
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
+        CGS_LOGE("%{public}s : payload does not contain uid or pid", __func__);
+        return;
+    }
+    if (uid <= 0 || pid <= 0) {
+        return;
+    }
+    CGS_LOGI("report screen capture event, uid:%{public}d, pid:%{public}d, value:%{public}d",
+        uid, pid, static_cast<int32_t>(value));
+    std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
+        return;
+    }
+    procRecord->screenCaptureState_ = (value == ResType::ScreenCaptureStatus::START_SCREEN_CAPTURE);
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+        AdjustSource::ADJS_REPORT_SCREEN_CAPTURE);
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
         resType, static_cast<int32_t>(value));
 }
@@ -910,7 +954,7 @@ void CgroupEventHandler::HandleReportAvCodecEvent(uint32_t resType, int64_t valu
         return;
     }
     state = static_cast<int32_t>(value);
-    CGS_LOGD("report av_codec event, uid:%{public}d, pid:%{public}d, instanceId:%{public}d, state:%{public}d",
+    CGS_LOGI("report av_codec event, uid:%{public}d, pid:%{public}d, instanceId:%{public}d, state:%{public}d",
         uid, pid, instanceId, state);
     std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
     std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
@@ -937,12 +981,13 @@ void CgroupEventHandler::HandleSceneBoardState(uint32_t resType, int64_t value, 
     }
 
     supervisor_->sceneBoardPid_ = sceneBoardPid;
-    CGS_LOGD("%{public}s : set sceneboard pid: %{public}d", __func__, sceneBoardPid);
+    CGS_LOGI("%{public}s : set sceneboard pid: %{public}d", __func__, sceneBoardPid);
 }
 
 bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc)
 {
-    return pr.isRenderProcess_ && pr.isActive_ && !mainProc.GetWindowInfoNonNull(pr.linkedWindowId_)->isVisible_;
+    return (pr.processType_ == ProcRecordType::RENDER) && pr.isActive_ &&
+         !mainProc.GetWindowInfoNonNull(pr.linkedWindowId_)->isVisible_;
 }
 
 void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -957,7 +1002,7 @@ void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t va
     }
 
     procRecord->screenCaptureState_= (value == ResType::WebScreenCapture::WEB_SCREEN_CAPTURE_START);
-    CGS_LOGD("%{public}s : screen capture process: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+    CGS_LOGI("%{public}s : screen capture process: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->screenCaptureState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
@@ -978,7 +1023,7 @@ void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t
     }
 
     procRecord->videoState_ = (value == ResType::WebVideoState::WEB_VIDEO_PLAYING_START);
-    CGS_LOGD("%{public}s : video process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+    CGS_LOGI("%{public}s : video process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->videoState_);
 
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType,
@@ -1000,7 +1045,7 @@ bool CgroupEventHandler::GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::s
     }
     app = supervisor_->GetAppRecord(uid);
     if (app) {
-        procRecord = app->GetProcessRecord(pid);
+        procRecord = app->GetProcessRecordNonNull(pid);
     }
     if (!app || !procRecord) {
         CGS_LOGW("%{public}s : app record or proc record is not exist, uid: %{public}d, pid: %{public}d!",
