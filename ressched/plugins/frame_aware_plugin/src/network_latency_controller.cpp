@@ -61,13 +61,16 @@ void NetworkLatencyController::Init()
 
 void NetworkLatencyController::Init(std::unique_ptr<INetworkLatencySwitcher> sw)
 {
-    ffrtQueue_ = std::make_shared<ffrt::queue>("network_manager_ffrtQueue",
-        ffrt::queue_attr().qos(ffrt::qos_user_interactive));
-    if (ffrtQueue_ == nullptr) {
-        RME_LOGE("%{public}s: failed: cannot allocate event handler", __func__);
-        return;
+    {
+        std::unique_lock<ffrt::mutex> autoLock(latencyFfrtMutex_);
+        ffrtQueue_ = std::make_shared<ffrt::queue>("network_manager_ffrtQueue",
+            ffrt::queue_attr().qos(ffrt::qos_user_interactive));
+        if (ffrtQueue_ == nullptr) {
+            RME_LOGE("%{public}s: failed: cannot allocate event handler", __func__);
+            return;
+        }
     }
-
+    std::unique_lock<std::mutex> lk(mtx);
     switcher = std::move(sw);
 }
 
