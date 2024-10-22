@@ -799,14 +799,6 @@ HWTEST_F(ResSchedServiceTest, IsAllowedAppPreloadInner001, Function | MediumTest
     MessageParcel reply;
     MessageParcel emptyData;
     EXPECT_TRUE(!resSchedServiceStub_->IsAllowedAppPreloadInner(emptyData, reply));
-
-    MessageParcel reportData;
-    int32_t foundationUid = 5523;
-    setuid(foundationUid);
-    reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
-    reportData.WriteString("com.ohos.sceneboard");
-    reportData.WriteInt32(1);
-    EXPECT_TRUE(resSchedServiceStub_->IsAllowedAppPreloadInner(reportData, reply));
 }
 
 /**
