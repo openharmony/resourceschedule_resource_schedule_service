@@ -81,6 +81,9 @@ void SlideRecognizer::HandleSlideEvent(int64_t value, const nlohmann::json& payl
 void SlideRecognizer::HandleSlideOFFEvent()
 {
     std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
+    if (g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING) {
+        return;
+    }
     if (listFlingEndTask_) {
         ffrt::skip(listFlingEndTask_);
     }
