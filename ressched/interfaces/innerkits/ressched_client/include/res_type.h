@@ -16,8 +16,6 @@
 #ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_TYPE_H
 #define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_TYPE_H
 
-#include <cstdint>
-#include <vector>
 #include "res_value.h"
 
 namespace OHOS {

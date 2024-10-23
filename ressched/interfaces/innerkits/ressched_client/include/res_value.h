@@ -13,6 +13,12 @@
  * limitations under the License.
  */
 
+#ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_VALUE_H
+#define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_VALUE_H
+
+#include <cstdint>
+#include <vector>
+
 namespace OHOS {
 namespace ResourceSchedule {
 namespace ResType {
@@ -651,3 +657,5 @@ enum HeavyLoadMutexSceneBoardcastScene : int64_t {
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
+
+#endif // RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_VALUE_H
