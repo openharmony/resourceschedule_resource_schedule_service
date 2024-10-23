@@ -535,9 +535,9 @@ namespace {
         g_pos = 0;
 
         nlohmann::json payload;
-        std::unique_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo =
-            std::make_unique<AudioStandard::AudioRendererChangeInfo>();
-        std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> audioRendererChangeInfos;
+        std::shared_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo =
+            std::make_shared<AudioStandard::AudioRendererChangeInfo>();
+        std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> audioRendererChangeInfos;
 
         audioRendererChangeInfo->clientUID = GetData<int32_t>();
         audioRendererChangeInfo->sessionId = GetData<int32_t>();

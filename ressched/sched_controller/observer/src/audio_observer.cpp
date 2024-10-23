@@ -22,7 +22,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 void AudioObserver::MarshallingAudioRendererChangeInfo(
-    const std::unique_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo, nlohmann::json &payload)
+    const std::shared_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo, nlohmann::json &payload)
 {
     if (audioRendererChangeInfo == nullptr) {
         return;
@@ -37,7 +37,7 @@ void AudioObserver::MarshallingAudioRendererChangeInfo(
 }
 
 void AudioObserver::OnRendererStateChange(
-    const std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos)
+    const std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos)
 {
     for (const auto &audioRendererChangeInfo : audioRendererChangeInfos) {
         RESSCHED_LOGI("enter AudioRenderStateObserver::OnRendererStateChange, state: %{public}d",

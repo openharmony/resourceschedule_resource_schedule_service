@@ -32,14 +32,14 @@ class AudioObserver :
     public AudioStandard::AudioPreferredOutputDeviceChangeCallback {
 public:
     void OnRendererStateChange(
-        const std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos) override;
+        const std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos) override;
     void OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode) override;
     void OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent) override;
     void OnPreferredOutputDeviceUpdated(const std::vector<sptr<AudioStandard::AudioDeviceDescriptor>> &descs)  override;
 private:
     int32_t mode_ = -1;
     void MarshallingAudioRendererChangeInfo(
-        const std::unique_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo,
+        const std::shared_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo,
         nlohmann::json &payload);
 };
 } // namespace ResourceSchedule
