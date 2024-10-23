@@ -264,6 +264,8 @@ enum : uint32_t {
     RES_TYPE_GAME_INFO_NOTIFY = 116,
     // report power key down
     RES_TYPE_MMI_INPUT_POWER_KEY = 117,
+    // report application stopped
+    RES_TYPE_APP_STOPPED = 118,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
