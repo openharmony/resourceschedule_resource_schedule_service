@@ -258,5 +258,17 @@ void RmsApplicationStateObserver::OnProcessStateChanged(const ProcessData &proce
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_PROCESS_STATE_CHANGE, static_cast<int32_t>(processData.state), payload);
 }
+
+void RmsApplicationStateObserver::OnAppStopped(const AppStateData &appStateData)
+{
+    if (!ValidateAppStateData(appStateData)) {
+        CGS_LOGE("%{public}s : validate app state data failed!", __func__);
+        return;
+    }
+
+    nlohmann::json payload;
+    MarshallingAppStateData(appStateData, payload);
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STOPPED, appStateData.state, payload);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
