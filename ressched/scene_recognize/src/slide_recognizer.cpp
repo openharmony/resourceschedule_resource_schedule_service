@@ -88,13 +88,6 @@ void SlideRecognizer::HandleSlideOFFEvent()
     if (listFlingTimeOutTask_) {
         ffrt::skip(listFlingTimeOutTask_);
     }
-    SceneRecognizerMgr::GetInstance().SubmitTask([this, payload]() {
-        StartDetecting(payload);
-    });
-}
-
-void SlideRecognizer::StartDetecting(const nlohmann::json& payload)
-{
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP, extInfo);
@@ -114,6 +107,13 @@ void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
         listFlingTimeOutTask_ = nullptr;
         g_reportListFlingLockedEnd(FillRealPid(payload));
     }
+    SceneRecognizerMgr::GetInstance().SubmitTask([this, payload]() {
+        StartDetecting(payload);
+    });
+}
+
+void SlideRecognizer::StartDetecting(const nlohmann::json& payload)
+{
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
