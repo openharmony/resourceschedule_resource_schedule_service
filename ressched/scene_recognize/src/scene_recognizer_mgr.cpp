@@ -59,7 +59,7 @@ void SceneRecognizerMgr::DispatchResource(uint32_t resType, int64_t value, const
     }
 }
 
-void SceneRecognizerMgr::SubmitTask(const std::function<void>& task)
+void SceneRecognizerMgr::SubmitTask(const std::function<void()>& task)
 {
     if (ffrtQueue_ == nullptr) {
         return;

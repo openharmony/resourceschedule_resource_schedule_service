@@ -45,7 +45,7 @@ public:
     void SetListFlingEndTime(int64_t value);
     void SetListFlingSpeedLimit(float value);
     void SetSlideNormalDetectingTime(int64_t value);
-    void SubmitTask(const std::function<void>& task);
+    void SubmitTask(const std::function<void()>& task);
 private:
     std::unordered_map<uint32_t, std::shared_ptr<SceneRecognizerBase>> sceneRecognizers_;
     std::shared_ptr<ffrt::queue> ffrtQueue_;
