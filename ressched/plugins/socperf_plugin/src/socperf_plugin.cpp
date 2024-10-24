@@ -41,9 +41,8 @@ namespace {
     const std::string EXTENSION_TYPE_KEY = "extensionType";
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
     const std::string DISPLAY_MODE_FULL = "displayFull";
-    const std::string DISPLAY_MODE_SUB = "displaySub";
     const std::string DISPLAY_MODE_MAIN = "displayMain";
-    const std::string DEVICE_MODE_STR = "deviceMode";
+    const std::string DISPLAY_MODE_SUB = "displaySub";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t POWERMODE_ON                              = 601;
@@ -206,6 +205,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleBmmMoniterStatus(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_POWER_MODE_CHANGED,
         [this](const std::shared_ptr<ResData>& data) { HandlePowerModeChanged(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_SCREEN_STATUS,
+        [this](const std::shared_ptr<ResData>& data) { HandleScreenStatusAnalysis(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
@@ -245,6 +246,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_SCENE_ROTATION,
         RES_TYPE_BMM_MONITER_CHANGE_EVENT,
         RES_TYPE_POWER_MODE_CHANGED,
+        RES_TYPE_SCREEN_STATUS,
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -525,10 +527,10 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
     bool status = (data->value == DeviceModeStatus::MODE_ENTER);
     OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceMode, status);
     SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceMode.c_str(), status);
-    if (deviceMode == DISPLAY_MODE_FULL) {
+    if (deviceMode == DISPLAY_MODE_FULL && ScreenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
-    } else if (deviceMode == DISPLAY_MODE_MAIN) {
+    } else if (deviceMode == DISPLAY_MODE_MAIN && ScreenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
     }
@@ -673,6 +675,14 @@ bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_POWERMODE_CHANGED, false, "");
     }
     return true;
+}
+
+void HandleScreenStatusAnalysis(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    ScreenStatus_ = data->value;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)

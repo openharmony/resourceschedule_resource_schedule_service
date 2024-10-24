@@ -40,6 +40,7 @@ private:
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
     std::string perfReqAppTypeSoPath_;
     std::string perfReqAppTypeSoFunc_;
+    int64_t ScreenStatus_;
     void* handle_ = nullptr;
     ReqAppTypeFunc reqAppTypeFunc_ = nullptr;
     int32_t RES_TYPE_SCENE_BOARD_ID = 0;
@@ -79,6 +80,7 @@ private:
     bool HandleSceneRotation(const std::shared_ptr<ResData>& data);
     bool HandleBmmMoniterStatus(const std::shared_ptr<ResData>& data);
     bool HandlePowerModeChanged(const std::shared_ptr<ResData>& data);
+    void HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
