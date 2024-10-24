@@ -59,6 +59,14 @@ void SceneRecognizerMgr::DispatchResource(uint32_t resType, int64_t value, const
     }
 }
 
+void SceneRecognizerMgr::SubmitTask(const std::function<void>& task)
+{
+    if (ffrtQueue_ == nullptr) {
+        return;
+    }
+    ffrtQueue_->submit(task);
+}
+
 void SceneRecognizerMgr::SetListFlingTimeoutTime(int64_t value)
 {
     std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->

@@ -23,6 +23,7 @@
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "res_type.h"
+#include "scene_recognizer_mgr.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -81,15 +82,19 @@ void SlideRecognizer::HandleSlideEvent(int64_t value, const nlohmann::json& payl
 void SlideRecognizer::HandleSlideOFFEvent()
 {
     std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
-    if (g_slideState == SlideRecognizeStat::SLIDE_NORMAL_DETECTING) {
-        return;
-    }
     if (listFlingEndTask_) {
         ffrt::skip(listFlingEndTask_);
     }
     if (listFlingTimeOutTask_) {
         ffrt::skip(listFlingTimeOutTask_);
     }
+    SceneRecognizerMgr::GetInstance().SubmitTask([this, payload]() {
+        StartDetecting(payload);
+    });
+}
+
+void SlideRecognizer::StartDetecting(const nlohmann::json& payload)
+{
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP, extInfo);

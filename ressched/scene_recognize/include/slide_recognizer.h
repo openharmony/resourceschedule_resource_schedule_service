@@ -49,6 +49,7 @@ private:
     void HandleSlideDetecting(const nlohmann::json& payload);
     void HandleListFlingStart(const nlohmann::json& payload);
     void HandleSlideOFFEvent();
+    void StartDetecting(const nlohmann::json& payload);
     nlohmann::json FillRealPid(const nlohmann::json& payload);
     ffrt::task_handle listFlingEndTask_ = nullptr;
     ffrt::task_handle listFlingTimeOutTask_ = nullptr;
