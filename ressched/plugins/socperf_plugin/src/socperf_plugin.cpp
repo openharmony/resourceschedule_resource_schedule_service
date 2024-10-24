@@ -40,6 +40,10 @@ namespace {
     const std::string SOCPERF_TYPE_RGM = "socperf_type_rgm";
     const std::string EXTENSION_TYPE_KEY = "extensionType";
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
+    const std::string DISPLAY_MODE_FULL = "displayFull";
+    const std::string DISPLAY_MODE_SUB = "displaySub";
+    const std::string DISPLAY_MODE_MAIN = "displayMain";
+    const std::string DEVICE_MODE_STR = "deviceMode";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t POWERMODE_ON                              = 601;
@@ -521,10 +525,10 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
     bool status = (data->value == DeviceModeStatus::MODE_ENTER);
     OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceMode, status);
     SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceMode.c_str(), status);
-    if (deviceMode == "displayFull") {
+    if (deviceMode == DISPLAY_MODE_FULL) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
-    } else if (deviceMode == "displayMain") {
+    } else if (deviceMode == DISPLAY_MODE_MAIN) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
     }
