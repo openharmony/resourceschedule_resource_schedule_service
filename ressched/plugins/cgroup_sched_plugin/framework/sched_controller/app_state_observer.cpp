@@ -205,6 +205,7 @@ void RmsApplicationStateObserver::MarshallingAppStateData(const AppStateData &ap
     payload["bundleName"] = appStateData.bundleName;
     payload["state"] = static_cast<uint32_t>(appStateData.state);
     payload["extensionType"] = static_cast<uint32_t>(appStateData.extensionType);
+    payload["isFocused"] = static_cast<bool>(appStateData.isFocused);
 }
 
 void RmsApplicationStateObserver::OnAppStateChanged(const AppStateData &appStateData)
