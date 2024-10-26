@@ -677,7 +677,7 @@ bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
     return true;
 }
 
-void HandleScreenStatusAnalysis(const std::shared_ptr<ResData> &data)
+void SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData> &data)
 {
     if (data == nullptr) {
         return;
