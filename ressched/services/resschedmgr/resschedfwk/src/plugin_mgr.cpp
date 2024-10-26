@@ -32,6 +32,7 @@
 #include "refbase.h"
 #include "res_sched_log.h"
 #include "hitrace_meter.h"
+#include "batch_log_printer.h"
 
 using namespace std;
 
@@ -44,6 +45,8 @@ namespace {
     const int32_t DISPATCH_WARNING_TIME = 10; // ms
     const int32_t PLUGIN_SWITCH_FILE_IDX = 0;
     const int32_t CONFIG_FILE_IDX = 1;
+    const int32_t SIMPLIFY_LIB_INDEX = 3;
+    const int32_t SIMPLIFY_LIB_LENGTH = 5;
     const int32_t MAX_FILE_LENGTH = 32 * 1024 * 1024;
     const int32_t PLUGIN_REQUEST_ERROR = -1;
     const std::string RUNNER_NAME = "rssDispatcher";
@@ -380,6 +383,16 @@ bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>&
     return true;
 }
 
+inline void BuildSimplifyLibAll(std::list<std::string>& pluginList, std::string& simplifyLibAll)
+{
+    for (const auto& libName : pluginList) {
+        if (simplifyLibAll.length() != 0) {
+            simplifyLibAll.append(":");
+        }
+        simplifyLibAll.append(libName.substr(SIMPLIFY_LIB_INDEX,SIMPLIFY_LIB_LENGTH));
+    }
+}
+
 std::shared_ptr<PluginLib> PluginMgr::GetPluginLib(const std::string& libPath)
 {
     std::lock_guard<std::mutex> autoLock(libPathMutex_);
@@ -440,6 +453,10 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     RESSCHED_LOGD("%{public}s, PluginMgr, resType = %{public}d, value = %{public}lld, pluginlist is %{public}s.",
         __func__, resData->resType, (long long)resData->value, libNameAll.c_str());
     FinishTrace(HITRACE_TAG_APP);
+    std::string simplifyLibAll = "";
+    BuildSimplifyLibAll(pluginList, simplifyLibAll);
+    BatchLogPrinter::GetInstance().SubmitLog(std::to_string(resData->resType).
+        append(",").append(std::to_string(resData->value)).append(",").append(simplifyLibAll));
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     DispatchResourceToPluginAsync(pluginList, resData);
 #else
