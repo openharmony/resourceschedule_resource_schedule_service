@@ -28,7 +28,7 @@ ohos_shared_library("ressched_common_utils") {
   public_configs = [ ":common_private_config" ]
 
   sources = [
-    "../common/src/batch_log_printer.cpp"
+    "../common/src/batch_log_printer.cpp",
     "../common/src/oobe_datashare_utils.cpp",
     "../common/src/oobe_manager.cpp",
   ]

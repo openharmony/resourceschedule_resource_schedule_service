@@ -389,7 +389,7 @@ inline void BuildSimplifyLibAll(std::list<std::string>& pluginList, std::string&
         if (simplifyLibAll.length() != 0) {
             simplifyLibAll.append(":");
         }
-        simplifyLibAll.append(libName.substr(SIMPLIFY_LIB_INDEX,SIMPLIFY_LIB_LENGTH));
+        simplifyLibAll.append(libName.substr(SIMPLIFY_LIB_INDEX, SIMPLIFY_LIB_LENGTH));
     }
 }
 

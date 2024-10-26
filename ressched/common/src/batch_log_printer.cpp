@@ -73,7 +73,6 @@ void BatchLogPrinter::GetBatch(std::vector<std::string>& batchLogs)
         batchLogs.push_back(batch);
     }
     allLogs_.clear();
-
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

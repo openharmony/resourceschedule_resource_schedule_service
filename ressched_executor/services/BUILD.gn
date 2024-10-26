@@ -50,9 +50,9 @@ ohos_shared_library("resschedexesvc") {
   ]
 
   deps = [
+    "../../ressched/common:ressched_common_utils",
     "${resourcescheduleservice_path}/ressched/plugins/cgroup_sched_plugin/framework/process_group:libprocess_group",
     "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
-    "../../ressched/common:ressched_common_utils",
   ]
 
   external_deps = [
