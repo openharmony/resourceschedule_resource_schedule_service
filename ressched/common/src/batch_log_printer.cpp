@@ -47,7 +47,7 @@ void BatchLogPrinter::RecordLog(const std::string& log, const int64_t& timestamp
 {
     std::string recordLog = ResCommonUtil::ConvertTimestampToStr(timestamp) + ":" + log;
     allLogs_.push_back(recordLog);
-    if (allLogs_.size() > PRINT_SIZE) {
+    if (allLogs_.size() >= PRINT_SIZE) {
         std::vector<std::string> batchLogs = std::vector<std::string>();
         GetBatch(batchLogs);
         for (auto& item : batchLogs) {
