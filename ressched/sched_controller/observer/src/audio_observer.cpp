@@ -73,7 +73,8 @@ void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
         volumeEvent.volume, payload);
 }
 
-void AudioObserver::OnPreferredOutputDeviceUpdated(const std::vector<sptr<AudioStandard::AudioDeviceDescriptor>> &descs)
+void AudioObserver::OnPreferredOutputDeviceUpdated(
+    const std::vector<std::shared_ptr<AudioStandard::AudioDeviceDescriptor>> &descs)
 {
     for (const auto &desc : descs) {
         RESSCHED_LOGI("device change, type: %{public}d", desc->deviceType_);
