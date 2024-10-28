@@ -20,6 +20,7 @@
 #include "app_startup_scene_rec.h"
 #include "cgroup_sched_common.h"
 #include "res_type.h"
+#include "cgroup_event_handler.h"
 #include "sched_controller.h"
 #include "sched_policy.h"
 #include "supervisor.h"
@@ -40,6 +41,7 @@ namespace {
 namespace CgroupSetting {
 class CGroupSchedTest : public testing::Test {
 public:
+    std::shared_ptr<Supervisor> supervisor_;
     static void SetUpTestCase(void);
     static void TearDownTestCase(void);
     void SetUp();
@@ -57,11 +59,13 @@ void CGroupSchedTest::TearDownTestCase(void)
 void CGroupSchedTest::SetUp(void)
 {
     AppStartupSceneRec::GetInstance().Init();
+    supervisor_ = std::make_shared<Supervisor>();
 }
 
 void CGroupSchedTest::TearDown(void)
 {
     AppStartupSceneRec::GetInstance().Deinit();
+    supervisor_ = nullptr;
 }
 
 /**
@@ -372,6 +376,167 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_AppStartupSceneRec_002, Function | Med
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(APP_START_UP, uid, bundleName);
     isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
     EXPECT_EQ(isReportContinuousStartup, false);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_001
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB0CYC
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_001, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    uint32_t resType = 0;
+    int64_t value = ResType::ScreenCaptureStatus::START_SCREEN_CAPTURE;
+    nlohmann::json payload;
+    payload["uid"] = "1000";
+    payload["pid"] = "1000";
+    auto processRecord = supervisor_->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
+    cgroupEventHandler->HandleReportScreenCaptureEvent(resType, value, payload);
+    EXPECT_TRUE(processRecord->screenCaptureState_);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_002
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB0CYC
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_002, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    uint32_t resType = 0;
+    int64_t value = ResType::ScreenCaptureStatus::START_SCREEN_CAPTURE;
+    nlohmann::json payload;
+    payload["saId"] = "1000";
+    payload["deviceId"] = "1000";
+    cgroupEventHandler->ReportAbilityStatus(resType, value, payload);
+    EXPECT_EQ(resType, 0);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_003
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB0CYC
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_003, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    supervisor_->InitSuperVisorContent();
+    EXPECT_NE(supervisor_->appManager_, nullptr);
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    auto procRecord = cgroupEventHandler->supervisor_->GetAbilityInfoNonNull(1000)->GetProcessRecordNonNull(1000);
+    EXPECT_NE(procRecord, nullptr);
+    EXPECT_EQ(procRecord->mmiStatus_, -1);
+    uint32_t resType = 0;
+    int64_t value = ResType::ScreenCaptureStatus::START_SCREEN_CAPTURE;
+    nlohmann::json payload;
+    payload["uid"] = 1000;
+    payload["pid"] = 1000;
+    payload["status"] = 1;
+    cgroupEventHandler->UpdateMmiStatus(resType, value, payload);
+    EXPECT_EQ(procRecord->mmiStatus_, 1);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_004
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB0CYC
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_004, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    uint32_t resType = 0;
+    int64_t value = ResType::ScreenCaptureStatus::WEB_VIDEO_PLAYING_START;
+    nlohmann::json payload;
+    payload["uid"] = "1000";
+    payload["pid"] = "1000";
+    auto processRecord = supervisor_->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
+    cgroupEventHandler->HandleReportWebviewVideoState(resType, value, payload);
+    EXPECT_TRUE(processRecord->videoState_);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_005
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB0CYC
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_005, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    uint32_t resType = 0;
+    int64_t value = ResType::ScreenCaptureStatus::CODEC_START_INFO;
+    nlohmann::json payload;
+    payload["uid"] = "1000";
+    payload["pid"] = "1000";
+    payload["instanceId"] = "1000";
+    auto processRecord = supervisor_->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
+    cgroupEventHandler->HandleReportAvCodecEvent(resType, value, payload);
+    EXPECT_TRUE(processRecord->avCodecState_[1000]);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_006
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB0CYC
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_006, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    uint32_t resType = 0;
+    int64_t value = ResType::ScreenCaptureStatus::RUNNINGLOCK_STATE_ENABLE;
+    nlohmann::json payload;
+    payload["uid"] = "1000";
+    payload["pid"] = "1000";
+    payload["type"] = "1000";
+    auto processRecord = supervisor_->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
+    cgroupEventHandler->HandleReportRunningLockEvent(resType, value, payload);
+#ifdef POWER_MANAGER_ENABLE
+    EXPECT_TRUE(processRecord->runningLockState_[1000]);
+#endif
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_007
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB0CYC
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_007, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    uint32_t resType = 0;
+    int64_t value = ResType::ScreenCaptureStatus::WEB_VIDEO_PLAYING_START;
+    nlohmann::json payload;
+    payload["uid"] = "1000";
+    payload["pid"] = "1000";
+    cgroupEventHandler->HandleSceneBoardState(resType, value, payload);
+    EXPECT_TRUE(cgroupEventHandler->supervisor_->sceneBoardPid_, 1000);
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
