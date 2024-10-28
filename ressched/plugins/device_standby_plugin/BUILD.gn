@@ -41,6 +41,7 @@ ohos_shared_library("device_standby_plugin") {
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
+    "libxml2:libxml2",
   ]
 
   defines = []

@@ -57,6 +57,7 @@ ohos_shared_library("cgroup_sched") {
     "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",
     "ipc:ipc_single",
+    "libxml2:libxml2",
     "samgr:samgr_proxy",
     "window_manager:libwm",
     "window_manager:libwmutil_base",

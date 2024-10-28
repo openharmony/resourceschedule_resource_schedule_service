@@ -54,6 +54,7 @@ ohos_shared_library("frame_aware_plugin") {
     "frame_aware_sched:rtg_interface",
     "hilog:libhilog",
     "init:libbegetutil",
+    "libxml2:libxml2",
   ]
 
   subsystem_name = "resourceschedule"
