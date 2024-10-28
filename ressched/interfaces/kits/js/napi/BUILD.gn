@@ -46,6 +46,7 @@ ohos_shared_library("systemload") {
     "hilog:libhilog",
     "ipc:ipc_single",
     "napi:ace_napi",
+    "samgr:samgr_proxy",
   ]
 
   relative_install_dir = "module/resourceschedule"

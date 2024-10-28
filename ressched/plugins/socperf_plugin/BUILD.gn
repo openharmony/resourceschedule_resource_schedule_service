@@ -33,6 +33,7 @@ ohos_shared_library("socperf_plugin") {
     "ability_runtime:app_manager",
     "ffrt:libffrt",
     "hilog:libhilog",
+    "libxml2:libxml2",
   ]
   defines = []
   if (ressched_with_resourceschedule_soc_perf_enable) {
