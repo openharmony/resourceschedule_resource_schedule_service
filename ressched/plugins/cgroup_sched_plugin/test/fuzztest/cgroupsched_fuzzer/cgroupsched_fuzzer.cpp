@@ -1407,7 +1407,7 @@ namespace ResourceSchedule {
         uint32_t resType = GetData<uint32_t>();
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
-        auto resData = std::make_shared<resData>(resType, value, payload);
+        auto resData = std::make_shared<ResData>(resType, value, payload);
         auto sched_Controller = std::make_unique<SchedController>();
         sched_Controller->DispatchResource(resData);
 
@@ -1516,7 +1516,7 @@ namespace ResourceSchedule {
         windowInfoPtrSend->pid_ = pid;
         windowInfoPtrSend->uid_ = uid;
         windowInfoPtrSend->visibilityState_ = static_cast<OHOS::Rosen::WindowVisibilityState>(1);
-        windowInfoPtrSend->WindowType_ = Rosen::WindowType::WINDOW_TYPE_APP_SUB_WINDOW;
+        windowInfoPtrSend->windowType_ = Rosen::WindowType::WINDOW_TYPE_APP_SUB_WINDOW;
         auto windowVisibilityObserver = std::make_shared<WindowVisibilityObserver>();
         windowVisibilityObserver->MarshallingWindowVisibilityInfo(windowInfoPtrSend, payload);
 
@@ -1539,7 +1539,7 @@ namespace ResourceSchedule {
         int32_t pid = GetData<int32_t>();
         int32_t uid = GetData<int32_t>();
         std::vector<sptr<WindowDrawingContentInfo>> changeInfo;
-        OHOS:sptr<OHOS:Rosen::WindowDrawingContentInfo> info = new OHOS::Rosen:WindowDrawingContentInfo();
+        OHOS::sptr<OHOS:Rosen::WindowDrawingContentInfo> info = new OHOS::Rosen:WindowDrawingContentInfo();
         changeInfo.push_back(info);
         auto windowDrawingContentObserver = std::make_shared<WindowDrawingContentObserver>();
         windowDrawingContentObserver->OnWindowDrawingContentChanged(changeInfo);
@@ -1578,7 +1578,7 @@ namespace ResourceSchedule {
         // getdata
         int tid = GetData<int>();
         int fd = GetData<int>();
-        auto cgroupController = std::make_shared<CgroupSetting::cgroupController>("cpuset", "/dev/cpuset");
+        auto cgroupController = std::make_shared<CgroupSetting::CgroupController>("cpuset", "/dev/cpuset");
         cgroupController->AddTidToCgroup(tid, fd);
         return true;
     }
@@ -1596,7 +1596,7 @@ namespace ResourceSchedule {
 
         // getdata
         std::string subGroup(std::to_string(*data));
-        auto cgroupController = std::make_shared<CgroupSetting::cgroupController>("cpuset", "/dev/cpuset");
+        auto cgroupController = std::make_shared<CgroupSetting::CgroupController>("cpuset", "/dev/cpuset");
         cgroupController->AddSchedPolicy(CgroupSetting::SP_BACKGROUND, subGroup);
         return true;
     }
@@ -1614,7 +1614,7 @@ namespace ResourceSchedule {
 
         // getdata
         std::string subGroup(std::to_string(*data));
-        auto cgroupController = std::make_shared<CgroupSetting::cgroupController>("cpuset", "/dev/cpuset");
+        auto cgroupController = std::make_shared<CgroupSetting::CgroupController>("cpuset", "/dev/cpuset");
         cgroupController->AddThreadSchedPolicy(CgroupSetting::SP_BACKGROUND, subGroup);
         return true;
     }
@@ -1632,7 +1632,7 @@ namespace ResourceSchedule {
 
         // getdata
         std::string subGroup(std::to_string(*data));
-        auto cgroupController = std::make_shared<CgroupSetting::cgroupController>("cpuset", "/dev/cpuset");
+        auto cgroupController = std::make_shared<CgroupSetting::CgroupController>("cpuset", "/dev/cpuset");
         cgroupController->AddThreadGroupSchedPolicy(CgroupSetting::SP_BACKGROUND, subGroup);
         return true;
     }

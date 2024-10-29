@@ -47,7 +47,7 @@ ohos_fuzztest("CgroupSchedFuzzTest") {
     "${ressched_services}:resschedsvc",
     "${ressched_services_executor}/interfaces/innerkits/ressched_executor_client:resschedexe_client",
     "${cgroup_sched_framework}/process_group:libprocess_group",
-    ]
+  ]
 
   external_deps = [
     "ability_runtime:app_manager",
