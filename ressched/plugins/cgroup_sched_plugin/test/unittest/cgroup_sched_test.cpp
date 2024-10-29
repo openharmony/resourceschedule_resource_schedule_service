@@ -536,7 +536,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_007, Function | Med
     payload["uid"] = "1000";
     payload["pid"] = "1000";
     cgroupEventHandler->HandleSceneBoardState(resType, value, payload);
-    EXPECT_TRUE(cgroupEventHandler->supervisor_->sceneBoardPid_, 1000);
+    EXPECT_EQ(cgroupEventHandler->supervisor_->sceneBoardPid_, 1000);
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
