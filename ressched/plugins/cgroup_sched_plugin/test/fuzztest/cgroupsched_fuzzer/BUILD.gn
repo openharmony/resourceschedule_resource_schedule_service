@@ -45,7 +45,7 @@ ohos_fuzztest("CgroupSchedFuzzTest") {
   deps = [ 
     "${cgroup_sched_framework}:cgroup_sched",
     "${ressched_services}:resschedsvc",
-    "${ressched_services_executor}/interfaces/innerkits/ressched_executor_client::resschedexe_client",
+    "${ressched_services_executor}/interfaces/innerkits/ressched_executor_client:resschedexe_client",
     "${cgroup_sched_framework}/process_group:libprocess_group",
     ]
 
