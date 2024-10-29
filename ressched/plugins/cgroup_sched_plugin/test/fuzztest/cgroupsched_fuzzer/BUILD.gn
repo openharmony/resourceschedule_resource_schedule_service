@@ -28,7 +28,7 @@ ohos_fuzztest("CgroupSchedFuzzTest") {
     "${cgroup_sched_interfaces}/innerkits/ressched_client/include",
     "${cgroup_sched_common}/include",
     "${cgroup_sched_framework}/utils/include",
-    "${cgroup_sched_framework}/process_group/include"
+    "${cgroup_sched_framework}/process_group/include",
   ]
 
   cflags = [
@@ -46,7 +46,7 @@ ohos_fuzztest("CgroupSchedFuzzTest") {
     "${cgroup_sched_framework}:cgroup_sched",
     "${ressched_services}:resschedsvc",
     "${ressched_services_executor}/interfaces/innerkits/ressched_executor_client::resschedexe_client",
-    "${cgroup_sched_framework}/process_group:libprocess_group"
+    "${cgroup_sched_framework}/process_group:libprocess_group",
     ]
 
   external_deps = [

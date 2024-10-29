@@ -1392,7 +1392,7 @@ namespace ResourceSchedule {
         return true;
     }
 
-    void DispatchResourceFuzzTest(const uint8_t* data, size_t size)
+    bool DispatchResourceFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
             return false;
@@ -1409,7 +1409,7 @@ namespace ResourceSchedule {
         nlohmann::json payload;
         auto resData = std::make_shared<resData>(resType, value, payload);
         auto sched_Controller = std::make_unique<SchedController>();
-        sched_Controller->DispatchResource(resData)
+        sched_Controller->DispatchResource(resData);
 
         return true;
     }
@@ -1429,11 +1429,10 @@ namespace ResourceSchedule {
         uint32_t resType = GetData<uint32_t>();
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
-        auto resData = std::make_shared<resData>(resType, value, payload);
-        auto schedController = std::make_unique<SchedController>();
+        auto sched_Controller = std::make_shared<SchedController>();
+        sched_Controller->DispatchOtherResource(resType, value, payload);
 
         return true;
-
     }
 
     bool DumpProcessRunningLockFuzzTest(const uint8_t* data, size_t size)
