@@ -44,9 +44,9 @@ ohos_fuzztest("CgroupSchedFuzzTest") {
 
   deps = [ 
     "${cgroup_sched_framework}:cgroup_sched",
-    "${ressched_services}:resschedsvc",
-    "${ressched_services_executor}/interfaces/innerkits/ressched_executor_client:resschedexe_client",
     "${cgroup_sched_framework}/process_group:libprocess_group",
+    "${ressched_services_executor}/interfaces/innerkits/ressched_executor_client:resschedexe_client",
+    "${ressched_services}:resschedsvc",
   ]
 
   external_deps = [
@@ -54,17 +54,17 @@ ohos_fuzztest("CgroupSchedFuzzTest") {
     "ability_runtime:wantagent_innerkits",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
+    "config_policy:configpolicy_util",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",
+    "init:libbegetutil",
     "ipc:ipc_single",
     "samgr:samgr_proxy",
     "window_manager:libwm",
     "window_manager:libwmutil_base",
-    "config_policy:configpolicy_util",
-    "init:libbegetutil",
   ]
 
   if (has_bg_task_mgr) {

@@ -1539,7 +1539,7 @@ namespace ResourceSchedule {
         int32_t pid = GetData<int32_t>();
         int32_t uid = GetData<int32_t>();
         std::vector<sptr<WindowDrawingContentInfo>> changeInfo;
-        OHOS::sptr<OHOS:Rosen::WindowDrawingContentInfo> info = new OHOS::Rosen:WindowDrawingContentInfo();
+        OHOS::sptr<OHOS:Rosen::WindowDrawingContentInfo> info = new OHOS::Rosen::WindowDrawingContentInfo();
         changeInfo.push_back(info);
         auto windowDrawingContentObserver = std::make_shared<WindowDrawingContentObserver>();
         windowDrawingContentObserver->OnWindowDrawingContentChanged(changeInfo);
