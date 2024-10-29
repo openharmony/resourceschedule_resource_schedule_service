@@ -59,7 +59,7 @@ void CGroupSchedTest::TearDownTestCase(void)
 void CGroupSchedTest::SetUp(void)
 {
     AppStartupSceneRec::GetInstance().Init();
-    supervisor_ = std:make_shared<Supervisor>();
+    supervisor_ = std::make_shared<Supervisor>();
 }
 
 void CGroupSchedTest::TearDown(void)
