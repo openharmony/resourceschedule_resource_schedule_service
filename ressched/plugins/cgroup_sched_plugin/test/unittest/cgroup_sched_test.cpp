@@ -435,7 +435,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_003, Function | Med
     EXPECT_NE(supervisor_->appManager_, nullptr);
     cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
-    auto procRecord = cgroupEventHandler->supervisor_->GetAbilityInfoNonNull(1000)->GetProcessRecordNonNull(1000);
+    auto procRecord = cgroupEventHandler->supervisor_->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
     EXPECT_NE(procRecord, nullptr);
     EXPECT_EQ(procRecord->mmiStatus_, -1);
     uint32_t resType = 0;
@@ -461,7 +461,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_004, Function | Med
     cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
     uint32_t resType = 0;
-    int64_t value = ResType::ScreenCaptureStatus::WEB_VIDEO_PLAYING_START;
+    int64_t value = ResType::WebVideoState::WEB_VIDEO_PLAYING_START;
     nlohmann::json payload;
     payload["uid"] = "1000";
     payload["pid"] = "1000";
@@ -483,7 +483,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_005, Function | Med
     cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
     uint32_t resType = 0;
-    int64_t value = ResType::ScreenCaptureStatus::CODEC_START_INFO;
+    int64_t value = ResType::AvCodecState::CODEC_START_INFO;
     nlohmann::json payload;
     payload["uid"] = "1000";
     payload["pid"] = "1000";
@@ -506,7 +506,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_006, Function | Med
     cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
     uint32_t resType = 0;
-    int64_t value = ResType::ScreenCaptureStatus::RUNNINGLOCK_STATE_ENABLE;
+    int64_t value = ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE;
     nlohmann::json payload;
     payload["uid"] = "1000";
     payload["pid"] = "1000";
@@ -531,7 +531,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_007, Function | Med
     cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
     uint32_t resType = 0;
-    int64_t value = ResType::ScreenCaptureStatus::WEB_VIDEO_PLAYING_START;
+    int64_t value = ResType::WebVideoState::WEB_VIDEO_PLAYING_START;
     nlohmann::json payload;
     payload["uid"] = "1000";
     payload["pid"] = "1000";
