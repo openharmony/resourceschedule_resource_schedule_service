@@ -527,10 +527,10 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
     bool status = (data->value == DeviceModeStatus::MODE_ENTER);
     OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceMode, status);
     SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceMode.c_str(), status);
-    if (deviceMode == DISPLAY_MODE_FULL && ScreenStatus_ == SCREEN_ON) {
+    if (deviceMode == DISPLAY_MODE_FULL && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
-    } else if (deviceMode == DISPLAY_MODE_MAIN && ScreenStatus_ == SCREEN_ON) {
+    } else if (deviceMode == DISPLAY_MODE_MAIN && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
     }
@@ -682,7 +682,7 @@ void SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData> &d
     if (data == nullptr) {
         return;
     }
-    ScreenStatus_ = data->value;
+    screenStatus_ = data->value;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
