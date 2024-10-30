@@ -19,6 +19,7 @@
 #include "oobe_datashare_utils.h"
 #include "ioobe_task.h"
 #include "oobe_manager.h"
+#include <thread>
 
 using namespace std;
 using namespace testing::ext;
@@ -181,6 +182,8 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_008, Function | MediumTest | Level0)
         SUCCEED();
     });
     oobeMgr.OnReceiveDataShareReadyCallBack();
+    int64_t sleepTime = 4;
+    std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
     EXPECT_EQ(0, oobeMgr.dataShareFunctions_.size());
 }
 } // namespace ResourceSchedule
