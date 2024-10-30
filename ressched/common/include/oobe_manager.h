@@ -26,7 +26,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 
-class OOBEManager : public std::enable_shared_from_time<OOBEManager> {
+class OOBEManager {
 public:
     static OOBEManager& GetInstance();
     bool SubmitTask(const std::shared_ptr<IOOBETask>& task);
@@ -58,6 +58,8 @@ private:
     void Initialize();
     ErrCode RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func);
     void ReRegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func);
+    void TryExecuteDataShareFunction(int32_t tryTimes);
+    void ExecuteDataShareFunction();
 };
 } // ResourceSchedule
 } // OHOS

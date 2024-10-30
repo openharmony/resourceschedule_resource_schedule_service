@@ -188,39 +188,38 @@ void OOBEManager::StartListen()
 
 void OOBEManager::OnReceiveDataShareReadyCallBack()
 {
-    TryExcuteDataShareFunction(0);
+    TryExecuteDataShareFunction(0);
 }
 
-void OOBEManager::TryExcuteDataShareFunction(int32_t tryTimes)
+void OOBEManager::TryExecuteDataShareFunction(int32_t tryTimes)
 {
     if (tryTimes > MAX_TRY_TIMES) {
-        RESSCHED_LOGE("too many attempts to excuteDataShareFunction");
+        RESSCHED_LOGE("too many attempts to ExecuteDataShareFunction");
         return;
     }
-    auto oobeManager = shared_from_this();
-    ffrt::submit([oobeManager, tryTimes]() {
+    ffrt::submit([tryTimes]() {
         DataShareUtils::GetInstance().SetDataShareReadyFlag(true);
         auto dataShareHelper = ResourceSchedule::DataShareUtils::GetInstance().CreateDataShareHelper();
         if (dataShareHelper == nullptr) {
-            oobeManager->TryExcuteDataShareFunction(tryTimes + 1);
+            OOBEManager::GetInstance().TryExecuteDataShareFunction(tryTimes + 1);
             return;
         }
-        oobeManager->ExcuteDataShareFunction();
+        OOBEManager::GetInstance().ExecuteDataShareFunction();
     });
     
 }
 
-void OOBEManager::ExcuteDataShareFunction()
+void OOBEManager::ExecuteDataShareFunction()
 {
+    RESSCHED_LOGE("execute dataShare Funciton");
+    std::vector<std::function<void()>> dataShareFunctions;
     {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
-        auto dataShareFunctions = std::move(dataShareFunctions_);
+        dataShareFunctions = std::move(dataShareFunctions_);
     }
-
     for (auto function : dataShareFunctions) {
         function();
     }
-    dataShareFunctions_.clear();
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
