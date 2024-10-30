@@ -20,9 +20,9 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    static constexpr char QUEUE_NAME[] = "batch_log_printer_queue";
-    static constexpr int32_t PRINT_SIZE = 64;
-    static constexpr int32_t BATCH_SIZE = 3000;
+    constexpr char QUEUE_NAME[] = "batch_log_printer_queue";
+    constexpr int32_t PRINT_SIZE = 64;
+    constexpr int32_t BATCH_SIZE = 3000;
 }
 
 IMPLEMENT_SINGLE_INSTANCE(BatchLogPrinter);
@@ -61,7 +61,7 @@ void BatchLogPrinter::GetBatch(std::vector<std::string>& batchLogs)
     std::string batch;
     for (auto& item : allLogs_) {
         if (batch.length() + item.length() > BATCH_SIZE) {
-            batchLogs.push_back(batch);
+            batchLogs.push_back(std::move(batch));
             batch = "";
         }
         if (batch.length() != 0) {
@@ -70,7 +70,7 @@ void BatchLogPrinter::GetBatch(std::vector<std::string>& batchLogs)
         batch.append(item);
     }
     if (!batch.empty()) {
-        batchLogs.push_back(batch);
+        batchLogs.push_back(std::move(batch));
     }
     allLogs_.clear();
 }

@@ -23,8 +23,8 @@ using namespace testing::ext;
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    static constexpr int32_t TEST_SUBMIT_NUM = 50;
-    static constexpr int32_t TEST_PRINT_NUM = 50;
+    constexpr int32_t TEST_SUBMIT_NUM = 50;
+    constexpr int32_t TEST_PRINT_NUM = 50;
     const string TEST_LOG = "test log";
 } // namespace
 

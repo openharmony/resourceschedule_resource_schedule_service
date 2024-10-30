@@ -383,7 +383,7 @@ bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>&
     return true;
 }
 
-inline void BuildSimplifyLibAll(std::list<std::string>& pluginList, std::string& simplifyLibAll)
+inline void BuildSimplifyLibAll(const std::list<std::string>& pluginList, std::string& simplifyLibAll)
 {
     for (const auto& libName : pluginList) {
         if (simplifyLibAll.length() != 0) {
