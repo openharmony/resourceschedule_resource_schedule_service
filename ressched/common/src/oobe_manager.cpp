@@ -212,8 +212,12 @@ void OOBEManager::TryExcuteDataShareFunction(int32_t tryTimes)
 
 void OOBEManager::ExcuteDataShareFunction()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    for (auto function : dataShareFunctions_) {
+    {
+        std::lock_guard<std::recursive_mutex> lock(mutex_);
+        auto dataShareFunctions = std::move(dataShareFunctions_);
+    }
+
+    for (auto function : dataShareFunctions) {
         function();
     }
     dataShareFunctions_.clear();
