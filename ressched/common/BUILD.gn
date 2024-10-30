@@ -38,6 +38,7 @@ ohos_shared_library("ressched_common_utils") {
     "ability_base:zuri",
     "ability_runtime:dataobs_manager",
     "c_utils:utils",
+    "ffrt:libffrt",
     "data_share:datashare_consumer",
     "hilog:libhilog",
     "ipc:ipc_core",

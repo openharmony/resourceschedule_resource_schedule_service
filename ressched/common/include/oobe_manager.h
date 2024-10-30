@@ -26,7 +26,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 
-class OOBEManager {
+class OOBEManager : public std::enable_shared_from_time<OOBEManager> {
 public:
     static OOBEManager& GetInstance();
     bool SubmitTask(const std::shared_ptr<IOOBETask>& task);

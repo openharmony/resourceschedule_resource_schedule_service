@@ -16,6 +16,7 @@
 #include "oobe_datashare_utils.h"
 #include "res_sched_log.h"
 #include "oobe_manager.h"
+#include "ffrt.h"
 #include <functional>
 #include <vector>
 #include "ipc_skeleton.h"
@@ -23,6 +24,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 std::recursive_mutex OOBEManager::mutex_;
+constexpr const int32_t MAX_TRY_TIMES = 3;
 std::vector<std::shared_ptr<IOOBETask>> OOBEManager::oobeTasks_;
 std::vector<std::function<void()>> OOBEManager::dataShareFunctions_;
 sptr<OOBEManager::ResDataAbilityObserver> OOBEManager::observer_ = nullptr;
@@ -185,6 +187,30 @@ void OOBEManager::StartListen()
 }
 
 void OOBEManager::OnReceiveDataShareReadyCallBack()
+{
+    TryExcuteDataShareFunction(0);
+}
+
+void OOBEManager::TryExcuteDataShareFunction(int32_t tryTimes)
+{
+    if (tryTimes > MAX_TRY_TIMES) {
+        RESSCHED_LOGE("too many attempts to excuteDataShareFunction");
+        return;
+    }
+    auto oobeManager = shared_from_this();
+    ffrt::submit([oobeManager, tryTimes]() {
+        DataShareUtils::GetInstance().SetDataShareReadyFlag(true);
+        auto dataShareHelper = ResourceSchedule::DataShareUtils::GetInstance().CreateDataShareHelper();
+        if (dataShareHelper == nullptr) {
+            oobeManager->TryExcuteDataShareFunction(tryTimes + 1);
+            return;
+        }
+        oobeManager->ExcuteDataShareFunction();
+    });
+    
+}
+
+void OOBEManager::ExcuteDataShareFunction()
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     for (auto function : dataShareFunctions_) {
