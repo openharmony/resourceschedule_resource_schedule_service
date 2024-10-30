@@ -1539,7 +1539,7 @@ namespace ResourceSchedule {
         int32_t pid = GetData<int32_t>();
         int32_t uid = GetData<int32_t>();
         std::vector<sptr<WindowDrawingContentInfo>> changeInfo;
-        OHOS::sptr<OHOS:Rosen::WindowDrawingContentInfo> info = new OHOS::Rosen::WindowDrawingContentInfo();
+        OHOS::sptr<OHOS::Rosen::WindowDrawingContentInfo> info = new OHOS::Rosen::WindowDrawingContentInfo();
         changeInfo.push_back(info);
         auto windowDrawingContentObserver = std::make_shared<WindowDrawingContentObserver>();
         windowDrawingContentObserver->OnWindowDrawingContentChanged(changeInfo);
@@ -1747,6 +1747,18 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     // app_state_observer.cpp
     OHOS::ResourceSchedule::AppStateObserverFuzzExecute(data, size);
     // app_state_observer.cpp end
+
+    // sched_controller.cpp
+    OHOS::ResourceSchedule::SchedControllerFuzzExecute(data, size);
+    // sched_controller.cpp end
+
+    // window_state_observer.cpp
+    OHOS::ResourceSchedule::WindowStateObserverFuzzExecute(data, size);
+    // window_state_observer.cpp end
+
+    // cgroup_controller.cpp
+    OHOS::ResourceSchedule::CgroupControllerFuzzExecute(data, size);
+    // cgroup_controller.cpp end
 
     return 0;
 }
