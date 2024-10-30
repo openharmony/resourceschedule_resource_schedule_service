@@ -25,6 +25,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 std::recursive_mutex OOBEManager::mutex_;
 constexpr const int32_t MAX_TRY_TIMES = 3;
+constexpr const int32_t DELAY_TIME = 1000 * 1000;
 std::vector<std::shared_ptr<IOOBETask>> OOBEManager::oobeTasks_;
 std::vector<std::function<void()>> OOBEManager::dataShareFunctions_;
 sptr<OOBEManager::ResDataAbilityObserver> OOBEManager::observer_ = nullptr;
@@ -198,6 +199,7 @@ void OOBEManager::TryExecuteDataShareFunction(int32_t tryTimes)
         return;
     }
     ffrt::submit([tryTimes]() {
+        RESSCHED_LOGI("try execute data shareFunction, tryTimes %{public}d", tryTimes);
         DataShareUtils::GetInstance().SetDataShareReadyFlag(true);
         auto dataShareHelper = ResourceSchedule::DataShareUtils::GetInstance().CreateDataShareHelper();
         if (dataShareHelper == nullptr) {
@@ -205,13 +207,12 @@ void OOBEManager::TryExecuteDataShareFunction(int32_t tryTimes)
             return;
         }
         OOBEManager::GetInstance().ExecuteDataShareFunction();
-    });
-    
+    }, ffrt::task_attr().delay(DELAY_TIME));
 }
 
 void OOBEManager::ExecuteDataShareFunction()
 {
-    RESSCHED_LOGE("execute dataShare Funciton");
+    
     std::vector<std::function<void()>> dataShareFunctions;
     {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -220,6 +221,7 @@ void OOBEManager::ExecuteDataShareFunction()
     for (auto function : dataShareFunctions) {
         function();
     }
+    RESSCHED_LOGI("execute dataShare Funciton success");
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
