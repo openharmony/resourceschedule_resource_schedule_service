@@ -28,6 +28,7 @@ ohos_fuzztest("CgroupSchedFuzzTest") {
     "${cgroup_sched_interfaces}/innerkits/ressched_client/include",
     "${cgroup_sched_common}/include",
     "${cgroup_sched_framework}/utils/include",
+    "${cgroup_sched_framework}/process_group/include",
   ]
 
   cflags = [
@@ -41,21 +42,29 @@ ohos_fuzztest("CgroupSchedFuzzTest") {
 
   sources = [ "cgroupsched_fuzzer.cpp" ]
 
-  deps = [ "${cgroup_sched_framework}:cgroup_sched" ]
+  deps = [
+    "${cgroup_sched_framework}:cgroup_sched",
+    "${cgroup_sched_framework}/process_group:libprocess_group",
+    "${ressched_services_executor}/interfaces/innerkits/ressched_executor_client:resschedexe_client",
+    "${ressched_services}:resschedsvc",
+  ]
 
   external_deps = [
     "ability_runtime:app_manager",
     "ability_runtime:wantagent_innerkits",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
+    "config_policy:configpolicy_util",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",
+    "init:libbegetutil",
     "ipc:ipc_single",
     "samgr:samgr_proxy",
     "window_manager:libwm",
+    "window_manager:libwmutil_base",
   ]
 
   if (has_bg_task_mgr) {

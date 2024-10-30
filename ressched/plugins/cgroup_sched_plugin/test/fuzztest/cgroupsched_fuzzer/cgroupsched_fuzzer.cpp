@@ -19,6 +19,9 @@
 #include "cgroup_adjuster.h"
 #include "wm_common.h"
 #include "app_state_observer.h"
+#include "sched_controller.h"
+#include "window_state_observer.h"
+#include "cgroup_controller.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -1389,6 +1392,251 @@ namespace ResourceSchedule {
         return true;
     }
 
+    bool DispatchResourceFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
+        nlohmann::json payload;
+        auto resData = std::make_shared<ResData>(resType, value, payload);
+        auto sched_Controller = std::make_unique<SchedController>();
+        sched_Controller->DispatchResource(resData);
+
+        return true;
+    }
+
+    bool DispatchOtherResourceFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
+        nlohmann::json payload;
+        auto sched_Controller = std::make_shared<SchedController>();
+        sched_Controller->DispatchOtherResource(resType, value, payload);
+
+        return true;
+    }
+
+    bool DumpProcessRunningLockFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        std::string result(std::to_string(*data));
+        auto sched_Controller = std::make_shared<SchedController>();
+        sched_Controller->Init();
+        sched_Controller->DumpProcessRunningLock(result);
+        sched_Controller->Disable();
+        return true;
+    }
+
+    bool DumpProcessEventStateFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        std::string result(std::to_string(*data));
+        auto sched_Controller = std::make_shared<SchedController>();
+        sched_Controller->Init();
+        sched_Controller->DumpProcessEventState(result);
+        sched_Controller->Disable();
+        return true;
+    }
+
+    bool DumpProcessWindowInfoFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        std::string result(std::to_string(*data));
+        auto sched_Controller = std::make_shared<SchedController>();
+        sched_Controller->Init();
+        sched_Controller->DumpProcessWindowInfo(result);
+        sched_Controller->Disable();
+        return true;
+    }
+
+    bool MarshallingWindowVisibilityInfoFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uint32_t winId = GetData<uint32_t>();
+        int32_t pid = GetData<int32_t>();
+        int32_t uid = GetData<int32_t>();
+        nlohmann::json payload;
+        sptr<WindowVisibilityInfo> windowInfoPtrSend = new (std::nothrow)WindowVisibilityInfo();
+        windowInfoPtrSend->windowId_ = winId;
+        windowInfoPtrSend->pid_ = pid;
+        windowInfoPtrSend->uid_ = uid;
+        windowInfoPtrSend->visibilityState_ = static_cast<OHOS::Rosen::WindowVisibilityState>(1);
+        windowInfoPtrSend->windowType_ = Rosen::WindowType::WINDOW_TYPE_APP_SUB_WINDOW;
+        auto windowVisibilityObserver = std::make_shared<WindowVisibilityObserver>();
+        windowVisibilityObserver->MarshallingWindowVisibilityInfo(windowInfoPtrSend, payload);
+
+        return true;
+    }
+
+    bool WindowDrawingContentChangedFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uint32_t winId = GetData<uint32_t>();
+        int32_t pid = GetData<int32_t>();
+        int32_t uid = GetData<int32_t>();
+        std::vector<sptr<WindowDrawingContentInfo>> changeInfo;
+        OHOS::sptr<OHOS::Rosen::WindowDrawingContentInfo> info = new OHOS::Rosen::WindowDrawingContentInfo();
+        changeInfo.push_back(info);
+        auto windowDrawingContentObserver = std::make_shared<WindowDrawingContentObserver>();
+        windowDrawingContentObserver->OnWindowDrawingContentChanged(changeInfo);
+
+        return true;
+    }
+
+    bool WindowModeUpdateFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        auto windowModeObserver = std::make_shared<WindowModeObserver>();
+        windowModeObserver->OnWindowModeUpdate(WindowModeType::WINDOW_MODE_SPLIT_FLOATING);
+        return true;
+    }
+
+    bool AddTidToCgroupFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        int tid = GetData<int>();
+        int fd = GetData<int>();
+        auto cgroupController = std::make_shared<CgroupSetting::CgroupController>("cpuset", "/dev/cpuset");
+        cgroupController->AddTidToCgroup(tid, fd);
+        return true;
+    }
+
+    bool AddSchedPolicyFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        std::string subGroup(std::to_string(*data));
+        auto cgroupController = std::make_shared<CgroupSetting::CgroupController>("cpuset", "/dev/cpuset");
+        cgroupController->AddSchedPolicy(CgroupSetting::SP_BACKGROUND, subGroup);
+        return true;
+    }
+    
+    bool AddThreadSchedPolicyFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        std::string subGroup(std::to_string(*data));
+        auto cgroupController = std::make_shared<CgroupSetting::CgroupController>("cpuset", "/dev/cpuset");
+        cgroupController->AddThreadSchedPolicy(CgroupSetting::SP_BACKGROUND, subGroup);
+        return true;
+    }
+
+    bool AddThreadGroupSchedPolicyFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        std::string subGroup(std::to_string(*data));
+        auto cgroupController = std::make_shared<CgroupSetting::CgroupController>("cpuset", "/dev/cpuset");
+        cgroupController->AddThreadGroupSchedPolicy(CgroupSetting::SP_BACKGROUND, subGroup);
+        return true;
+    }
+
     void BackgroundTaskObserverFuzzExecute(const uint8_t* data, size_t size)
     {
         OHOS::ResourceSchedule::TransientTaskStartFuzzTest(data, size);
@@ -1453,6 +1701,30 @@ namespace ResourceSchedule {
         OHOS::ResourceSchedule::OnAppCacheStateChangedFuzzTest(data, size);
     }
 
+    void SchedControllerFuzzExecute(const uint8_t* data, size_t size)
+    {
+        OHOS::ResourceSchedule::DispatchResourceFuzzTest(data, size);
+        OHOS::ResourceSchedule::DispatchOtherResourceFuzzTest(data, size);
+        OHOS::ResourceSchedule::DumpProcessRunningLockFuzzTest(data, size);
+        OHOS::ResourceSchedule::DumpProcessEventStateFuzzTest(data, size);
+        OHOS::ResourceSchedule::DumpProcessWindowInfoFuzzTest(data, size);
+    }
+
+    void WindowStateObserverFuzzExecute(const uint8_t* data, size_t size)
+    {
+        OHOS::ResourceSchedule::MarshallingWindowVisibilityInfoFuzzTest(data, size);
+        OHOS::ResourceSchedule::WindowDrawingContentChangedFuzzTest(data, size);
+        OHOS::ResourceSchedule::WindowModeUpdateFuzzTest(data, size);
+    }
+
+    void CgroupControllerFuzzExecute(const uint8_t* data, size_t size)
+    {
+        OHOS::ResourceSchedule::AddTidToCgroupFuzzTest(data, size);
+        OHOS::ResourceSchedule::AddSchedPolicyFuzzTest(data, size);
+        OHOS::ResourceSchedule::AddThreadSchedPolicyFuzzTest(data, size);
+        OHOS::ResourceSchedule::AddThreadGroupSchedPolicyFuzzTest(data, size);
+    }
+
 } // namespace ResourceSchedule
 } // namespace OHOS
 
@@ -1475,6 +1747,18 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     // app_state_observer.cpp
     OHOS::ResourceSchedule::AppStateObserverFuzzExecute(data, size);
     // app_state_observer.cpp end
+
+    // sched_controller.cpp
+    OHOS::ResourceSchedule::SchedControllerFuzzExecute(data, size);
+    // sched_controller.cpp end
+
+    // window_state_observer.cpp
+    OHOS::ResourceSchedule::WindowStateObserverFuzzExecute(data, size);
+    // window_state_observer.cpp end
+
+    // cgroup_controller.cpp
+    OHOS::ResourceSchedule::CgroupControllerFuzzExecute(data, size);
+    // cgroup_controller.cpp end
 
     return 0;
 }
