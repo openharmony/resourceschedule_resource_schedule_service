@@ -58,7 +58,11 @@ bool OOBEManager::GetOOBValue()
 ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
-    if (!DataShareUtils::GetInstance().GetDataShareReadyFlag()) {
+    if (!DataShareUtils::GetInstance().IsConnectDataShareSucc()) {
+        if (DataShareUtils::GetInstance().GetDataShareReadyFlag()) {
+            RESSCHED_LOGE("dataShare is ready but conntect fail");
+            return ERR_NO_INIT;
+        }
         RESSCHED_LOGE("RegisterObserver: dataShare is not ready!");
         std::function dataShareFunction = [key, func, this]() {
             ReRegisterObserver(key, func);
@@ -189,25 +193,10 @@ void OOBEManager::StartListen()
 
 void OOBEManager::OnReceiveDataShareReadyCallBack()
 {
-    TryExecuteDataShareFunction(0);
-}
-
-void OOBEManager::TryExecuteDataShareFunction(int32_t tryTimes)
-{
-    if (tryTimes > MAX_TRY_TIMES) {
-        RESSCHED_LOGE("too many attempts to ExecuteDataShareFunction");
-        return;
-    }
-    ffrt::submit([tryTimes]() {
-        RESSCHED_LOGI("try execute data share function, tryTimes %{public}d", tryTimes);
+    ffrt::submit([]() {
         DataShareUtils::GetInstance().SetDataShareReadyFlag(true);
-        auto dataShareHelper = ResourceSchedule::DataShareUtils::GetInstance().CreateDataShareHelper();
-        if (dataShareHelper == nullptr) {
-            OOBEManager::GetInstance().TryExecuteDataShareFunction(tryTimes + 1);
-            return;
-        }
         OOBEManager::GetInstance().ExecuteDataShareFunction();
-        }, ffrt::task_attr().delay(DELAY_TIME));
+        });
 }
 
 void OOBEManager::ExecuteDataShareFunction()

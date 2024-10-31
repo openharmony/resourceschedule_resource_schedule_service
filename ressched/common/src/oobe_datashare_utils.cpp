@@ -91,15 +91,11 @@ std::shared_ptr<DataShare::DataShareHelper> DataShareUtils::CreateDataShareHelpe
     if (ret.first == E_OK) {
         RESSCHED_LOGI("create data_share helper success!");
         auto helper = ret.second;
-        isDataShareReady_ = true;
+        isConnectDataShareSucc = true;
         return helper;
-    } else if (ret.first == E_DATA_SHARE_NOT_READY) {
-        RESSCHED_LOGE("create data_share helper faild!");
-        isDataShareReady_ = false;
-        return nullptr;
     }
-    RESSCHED_LOGE("data_share unknown!");
-    isDataShareReady_ = false;
+    RESSCHED_LOGE("create data_share helper faild!");
+    isConnectDataShareSucc = false;
     return nullptr;
 }
 
@@ -135,6 +131,11 @@ Uri DataShareUtils::AssembleUri(const std::string& key)
 {
     Uri uri(SETTING_URI_PROXY + "&key=" + key);
     return uri;
+}
+
+bool DataShareUtils::IsConnectDataShareSucc()
+{
+    return isConnectDataShareSucc;
 }
 
 bool DataShareUtils::GetDataShareReadyFlag()
