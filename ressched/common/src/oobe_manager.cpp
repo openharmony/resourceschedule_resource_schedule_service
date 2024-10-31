@@ -16,6 +16,7 @@
 #include "oobe_datashare_utils.h"
 #include "res_sched_log.h"
 #include "oobe_manager.h"
+#include "ffrt.h"
 #include <functional>
 #include <vector>
 #include "ipc_skeleton.h"
@@ -55,7 +56,11 @@ bool OOBEManager::GetOOBValue()
 ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
-    if (!DataShareUtils::GetInstance().GetDataShareReadyFlag()) {
+    if (!DataShareUtils::GetInstance().IsConnectDataShareSucc()) {
+        if (DataShareUtils::GetInstance().GetDataShareReadyFlag()) {
+            RESSCHED_LOGE("dataShare is ready but conntect fail");
+            return ERR_NO_INIT;
+        }
         RESSCHED_LOGE("RegisterObserver: dataShare is not ready!");
         std::function dataShareFunction = [key, func, this]() {
             ReRegisterObserver(key, func);
@@ -186,11 +191,23 @@ void OOBEManager::StartListen()
 
 void OOBEManager::OnReceiveDataShareReadyCallBack()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    for (auto function : dataShareFunctions_) {
+    ffrt::submit([]() {
+        DataShareUtils::GetInstance().SetDataShareReadyFlag(true);
+        OOBEManager::GetInstance().ExecuteDataShareFunction();
+        });
+}
+
+void OOBEManager::ExecuteDataShareFunction()
+{
+    std::vector<std::function<void()>> dataShareFunctions;
+    {
+        std::lock_guard<std::recursive_mutex> lock(mutex_);
+        dataShareFunctions = std::move(dataShareFunctions_);
+    }
+    for (auto function : dataShareFunctions) {
         function();
     }
-    dataShareFunctions_.clear();
+    RESSCHED_LOGI("execute data share function success");
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

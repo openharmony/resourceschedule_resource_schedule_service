@@ -34,6 +34,7 @@ public:
     Uri AssembleUri(const std::string& key);
     bool ReleaseDataShareHelper(std::shared_ptr<DataShare::DataShareHelper>& helper);
     std::shared_ptr<DataShare::DataShareHelper> CreateDataShareHelper();
+    bool IsConnectDataShareSucc();
     bool GetDataShareReadyFlag();
     void SetDataShareReadyFlag(bool flag);
 
@@ -45,6 +46,7 @@ private:
     ErrCode GetStringValue(const std::string& key, std::string& value);
     void InitSystemAbilityManager();
     bool isDataShareReady_ = false;
+    bool isConnectDataShareSucc = false;
 };
 
 template <typename T>
