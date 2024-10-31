@@ -58,7 +58,6 @@ private:
     void Initialize();
     ErrCode RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func);
     void ReRegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func);
-    void TryExecuteDataShareFunction(int32_t tryTimes);
     void ExecuteDataShareFunction();
 };
 } // ResourceSchedule

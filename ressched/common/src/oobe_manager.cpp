@@ -24,8 +24,6 @@
 namespace OHOS {
 namespace ResourceSchedule {
 std::recursive_mutex OOBEManager::mutex_;
-constexpr const int32_t MAX_TRY_TIMES = 3;
-constexpr const int32_t DELAY_TIME = 1000 * 1000;
 std::vector<std::shared_ptr<IOOBETask>> OOBEManager::oobeTasks_;
 std::vector<std::function<void()>> OOBEManager::dataShareFunctions_;
 sptr<OOBEManager::ResDataAbilityObserver> OOBEManager::observer_ = nullptr;
