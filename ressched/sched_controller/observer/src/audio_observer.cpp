@@ -30,7 +30,9 @@ void AudioObserver::MarshallingAudioRendererChangeInfo(
     payload["uid"] = std::to_string(audioRendererChangeInfo->clientUID);
     payload["sessionId"] = std::to_string(audioRendererChangeInfo->sessionId);
     payload["rendererState"] = static_cast<int32_t>(audioRendererChangeInfo->rendererState);
-
+    payload["pid"] = std::to_string(audioRendererChangeInfo->clientPid);
+    RESSCHED_LOGD("MarshallingAudioRendererChangeInfo, uid: %{public}d, pid: %{public}d",
+        audioRendererChangeInfo->clientUID, audioRendererChangeInfo->clientPid);
     /* struct AudioRendererInfo */
     payload["rendererInfo.contentType"] = static_cast<int32_t>(audioRendererChangeInfo->rendererInfo.contentType);
     payload["rendererInfo.streamUsage"] = static_cast<int32_t>(audioRendererChangeInfo->rendererInfo.streamUsage);

@@ -15,9 +15,6 @@
 
 #include "hisysevent_observer.h"
 
-#ifdef RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE
-#include "bluetooth_def.h"
-#endif
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "res_type.h"
@@ -46,20 +43,11 @@ HiSysEventObserver::HiSysEventObserver() : HiviewDFX::HiSysEventListener()
         {"RUNNINGLOCK", [this](const nlohmann::json& root, const std::string& eventName) {
             this->ProcessRunningLockEvent(root, eventName);
         }},
-        {"STREAM_CHANGE", [this](const nlohmann::json& root, const std::string& eventName) {
-            this->ProcessAudioEvent(root, eventName);
-        }},
         {"CAMERA_CONNECT", [this](const nlohmann::json& root, const std::string& eventName) {
             this->ProcessCameraEvent(root, eventName);
         }},
         {"CAMERA_DISCONNECT", [this](const nlohmann::json& root, const std::string& eventName) {
             this->ProcessCameraEvent(root, eventName);
-        }},
-        {"BR_SWITCH_STATE", [this](const nlohmann::json& root, const std::string& eventName) {
-            this->ProcessBluetoothEvent(root, eventName);
-        }},
-        {"BLE_SWITCH_STATE", [this](const nlohmann::json& root, const std::string& eventName) {
-            this->ProcessBluetoothEvent(root, eventName);
         }},
         {"WIFI_CONNECTION", [this](const nlohmann::json& root, const std::string& eventName) {
             this->ProcessWifiEvent(root, eventName);
@@ -215,53 +203,6 @@ void HiSysEventObserver::ProcessRunningLockEvent(const nlohmann::json& root, con
     }
 }
 
-void HiSysEventObserver::ProcessAudioEvent(const nlohmann::json& root, const std::string& eventName)
-{
-    std::string str = root.dump(INDENT, ' ', false, nlohmann::json::error_handler_t::replace);
-    RESSCHED_LOGD("Process audio event, event root :%{public}s", str.c_str());
-    nlohmann::json payload;
-    if (root.contains("UID") && root.at("UID").is_number_integer()) {
-        payload["uid"] = root.at("UID").get<std::int32_t>();
-    } else {
-        RESSCHED_LOGE("audio event uid format error!");
-        return;
-    }
-    if (root.contains("PID") && root.at("PID").is_number_integer()) {
-        payload["pid"] = root.at("PID").get<std::int32_t>();
-    } else {
-        RESSCHED_LOGE("audio event pid format error!");
-        return;
-    }
-
-    if (root.contains("STATE") && root.at("STATE").is_number_integer()) {
-        AudioState audioState = AudioState(root.at("STATE").get<std::int32_t>());
-        RESSCHED_LOGD("Process audio event, event type is:%{public}d", audioState);
-        switch (audioState) {
-            case AudioState::AUDIO_STATE_RUNNING:
-                ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
-                    ResType::AudioStatus::RENDERER_RUNNING, payload);
-                break;
-            case AudioState::AUDIO_STATE_STOPPED:
-                ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
-                    ResType::AudioStatus::RENDERER_STOPPED, payload);
-                break;
-            case AudioState::AUDIO_STATE_RELEASED:
-                ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
-                    ResType::AudioStatus::RENDERER_RELEASED, payload);
-                break;
-            case AudioState::AUDIO_STATE_PAUSED:
-                ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
-                    ResType::AudioStatus::RENDERER_PAUSED, payload);
-                break;
-            default:
-                break;
-        }
-    } else {
-        RESSCHED_LOGE("audio event state format error!");
-        return;
-    }
-}
-
 void HiSysEventObserver::ProcessCameraEvent(const nlohmann::json& root, const std::string& eventName)
 {
     std::string str = root.dump(INDENT, ' ', false, nlohmann::json::error_handler_t::replace);
@@ -285,41 +226,6 @@ void HiSysEventObserver::ProcessCameraEvent(const nlohmann::json& root, const st
     } else {
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_REPORT_CAMERA_STATE, CAMERADISCONNECT, payload);
     }
-}
-
-void HiSysEventObserver::ProcessBluetoothEvent(const nlohmann::json& root, const std::string& eventName)
-{
-    std::string str = root.dump(INDENT, ' ', false, nlohmann::json::error_handler_t::replace);
-    RESSCHED_LOGD("Process bluetooth event, event root :%{public}s", str.c_str());
-    nlohmann::json payload;
-    if (root.contains("UID") && root.at("UID").is_number_integer()) {
-        payload["uid"] = std::to_string(root.at("UID").get<std::int32_t>());
-    } else {
-        RESSCHED_LOGE("bluetooth event uid format error!");
-        return;
-    }
-    if (root.contains("PID") && root.at("PID").is_number_integer()) {
-        payload["pid"] = std::to_string(root.at("PID").get<std::int32_t>());
-    } else {
-        RESSCHED_LOGE("bluetooth event pid format error!");
-        return;
-    }
-
-#ifdef RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE
-    if (root.contains("STATE") && root.at("STATE").is_number_integer()) {
-        RESSCHED_LOGD("Process bluetooth event, event type is:%{public}d", root.at("STATE").get<std::int32_t>());
-        if (root.at("STATE").get<std::int32_t>() == Bluetooth::BTStateID::STATE_TURN_ON) {
-            ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE,
-                Bluetooth::BTStateID::STATE_TURN_ON, payload);
-        } else if (root.at("STATE").get<std::int32_t>() == Bluetooth::BTStateID::STATE_TURN_OFF) {
-            ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE,
-                Bluetooth::BTStateID::STATE_TURN_OFF, payload);
-        }
-    } else {
-        RESSCHED_LOGE("Bluetooth event type not support!");
-        return;
-    }
-#endif
 }
 
 void HiSysEventObserver::ProcessWifiEvent(const nlohmann::json& root, const std::string& eventName)

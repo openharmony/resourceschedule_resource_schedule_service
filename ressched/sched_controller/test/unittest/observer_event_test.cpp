@@ -209,46 +209,6 @@ HWTEST_F(ObserverEventTest, hisysEventRunningLockEvent_001, testing::ext::TestSi
 }
 
 /**
- * @tc.name: hisysEventAudioEvent_001
- * @tc.desc: test hisysevent audio event processing
- * @tc.type: FUNC
- * @tc.require: issueI8IDAO
- */
-HWTEST_F(ObserverEventTest, hisysEventAudioEvent_001, testing::ext::TestSize.Level1)
-{
-    nlohmann::json sysEvent;
-    std::string eventName = "INVAILD";
-    // incorrect uid keyword
-    sysEvent["uid"] = TEST_UID;
-    hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // incorrect pid keyword
-    sysEvent["UID"] = TEST_UID;
-    sysEvent["pid"] = TEST_PID;
-    hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // incorrect state keyword
-    sysEvent["PID"] = TEST_PID;
-    sysEvent["STATE"] = -1;
-    hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
-    sysEvent["state"] = 0;
-    hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // audio state running
-    sysEvent["STATE"] = AudioState::AUDIO_STATE_RUNNING;
-    hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // audio state stopped
-    sysEvent["STATE"] = AudioState::AUDIO_STATE_STOPPED;
-    hisysEventObserver_->ProcessAudioEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-}
-
-/**
  * @tc.name: hisysEventCameraEvent_001
  * @tc.desc: test hisysevent camera event processing
  * @tc.type: FUNC
@@ -277,44 +237,6 @@ HWTEST_F(ObserverEventTest, hisysEventCameraEvent_001, testing::ext::TestSize.Le
 
     eventName = "CAMERA_DISCONNECT";
     hisysEventObserver_->ProcessCameraEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-}
-
-/**
- * @tc.name: hisysEventBluetoothEvent_001
- * @tc.desc: test hisysevent bluetooth event processing
- * @tc.type: FUNC
- * @tc.require: issueI8IDAO
- */
-HWTEST_F(ObserverEventTest, hisysEventBluetoothEvent_001, testing::ext::TestSize.Level1)
-{
-    nlohmann::json sysEvent;
-    std::string eventName = "INVAILD";
-    // incorrect uid keyword
-    sysEvent["uid"] = TEST_UID;
-    hisysEventObserver_->ProcessBluetoothEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // incorrect pid keyword
-    sysEvent["UID"] = TEST_UID;
-    sysEvent["pid"] = TEST_PID;
-    hisysEventObserver_->ProcessBluetoothEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // incorrect state keyword
-    sysEvent["PID"] = TEST_PID;
-    sysEvent["state"] = 0;
-    hisysEventObserver_->ProcessBluetoothEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // bluetooth state turn on
-    sysEvent["STATE"] = 1;
-    hisysEventObserver_->ProcessBluetoothEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // bluetooth state turn off
-    sysEvent["STATE"] = 3;
-    hisysEventObserver_->ProcessBluetoothEvent(sysEvent, eventName);
     EXPECT_NE(hisysEventObserver_, nullptr);
 }
 
@@ -418,10 +340,6 @@ HWTEST_F(ObserverEventTest, processHiSysEvent_003, testing::ext::TestSize.Level1
     std::string eventName = "CAMERA_CONNECT";
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
     eventName = "CAMERA_DISCONNECT";
-    hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
-    eventName = "BR_SWITCH_STATE";
-    hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
-    eventName = "BLE_SWITCH_STATE";
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
     eventName = "WIFI_CONNECTION";
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
