@@ -23,6 +23,7 @@ namespace {
     constexpr char QUEUE_NAME[] = "batch_log_printer_queue";
     constexpr int32_t PRINT_SIZE = 64;
     constexpr int32_t BATCH_SIZE = 3000;
+    constexpr int64_t PRINT_DUATION = 10 * 1000;
 }
 
 IMPLEMENT_SINGLE_INSTANCE(BatchLogPrinter);
@@ -30,6 +31,7 @@ IMPLEMENT_SINGLE_INSTANCE(BatchLogPrinter);
 BatchLogPrinter::BatchLogPrinter()
 {
     logQueue_ = std::make_shared<ffrt::queue>(QUEUE_NAME, ffrt::queue_attr().qos(ffrt::qos_default));
+    lastPrintTimestamp_ = ResCommonUtil::GetNowMillTime();
 }
 
 void BatchLogPrinter::SubmitLog(const std::string& log)
@@ -47,12 +49,14 @@ void BatchLogPrinter::RecordLog(const std::string& log, const int64_t& timestamp
 {
     std::string recordLog = ResCommonUtil::ConvertTimestampToStr(timestamp) + ":" + log;
     allLogs_.push_back(recordLog);
-    if (allLogs_.size() >= PRINT_SIZE) {
+    auto currentTImestamp = ResCommonUtil::GetNowMillTime();
+    if (allLogs_.size() >= PRINT_SIZE || currentTImestamp - lastPrintTimestamp_ >= PRINT_DUATION) {
         std::vector<std::string> batchLogs = std::vector<std::string>();
         GetBatch(batchLogs);
         for (auto& item : batchLogs) {
             RESSCHED_LOGI("BatchLong:%{public}s", item.c_str());
         }
+        lastPrintTimestamp_ = currentTImestamp;
     }
 }
 

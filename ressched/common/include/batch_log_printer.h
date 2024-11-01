@@ -34,6 +34,7 @@ private:
     void GetBatch(std::vector<std::string>& batchLogs);
     std::shared_ptr<ffrt::queue> logQueue_;
     std::vector<std::string> allLogs_;
+    int64_t lastPrintTimestamp_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
