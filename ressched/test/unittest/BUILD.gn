@@ -91,6 +91,7 @@ ohos_unittest("resschedfwk_test") {
   ]
 
   sources = [
+    "src/batch_log_printer_test.cpp",
     "src/config_reader_test.cpp",
     "src/notifier_mgr_test.cpp",
     "src/plugin_mgr_test.cpp",

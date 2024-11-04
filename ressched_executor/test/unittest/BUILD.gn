@@ -39,6 +39,7 @@ ohos_unittest("resschedexefwk_test") {
 
   deps = [
     "${resschedexe_services}:resschedexesvc_static",
+    "../../../ressched/common:ressched_common_utils",
     "//third_party/googletest:gtest_main",
   ]
 
