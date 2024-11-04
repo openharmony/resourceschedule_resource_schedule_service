@@ -138,7 +138,6 @@ void EventController::Stop()
 void EventController::DataShareIsReady()
 {
     RESSCHED_LOGD("Data_share is ready! Call back to create data_share helper");
-    ResourceSchedule::DataShareUtils::GetInstance().SetDataShareReadyFlag(true);
     ResourceSchedule::OOBEManager::GetInstance().OnReceiveDataShareReadyCallBack();
 }
 
