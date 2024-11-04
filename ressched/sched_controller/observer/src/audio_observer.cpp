@@ -76,7 +76,7 @@ void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
 void AudioObserver::OnPreferredOutputDeviceUpdated(const std::vector<sptr<AudioStandard::AudioDeviceDescriptor>> &descs)
 {
     for (const auto &desc : descs) {
-        RESSCHED_LOGI("device change, id: %{public}d, type: %{public}d", desc->deviceId_, desc->deviceType_);
+        RESSCHED_LOGI("device change, type: %{public}d", desc->deviceType_);
         nlohmann::json payload;
         payload["deviceType"] = std::to_string(desc->deviceType_);
         payload["deviceId"] = std::to_string(desc->deviceId_);
