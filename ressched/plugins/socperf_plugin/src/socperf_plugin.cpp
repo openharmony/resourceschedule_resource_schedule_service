@@ -19,6 +19,7 @@
 #include "config_info.h"
 #include "dlfcn.h"
 #include "fcntl.h"
+#include "ffrt.h"
 #include "plugin_mgr.h"
 #include "res_type.h"
 #include "socperf_log.h"
@@ -47,6 +48,7 @@ namespace {
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t POWERMODE_ON                              = 601;
     const int64_t TIME_INTERVAL                             = 5000;
+    const int64_t SCREEN_OFF_TIME_DELAY                     = 5000000L;
     const int32_t PERF_REQUEST_CMD_ID_RGM_BOOTING_START     = 1000;
     const int32_t PERF_REQUEST_CMD_ID_POWERMODE_CHANGED     = 9000;
     const int32_t PERF_REQUEST_CMD_ID_APP_START             = 10000;
@@ -65,6 +67,8 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_WEB_GESTURE_MOVE      = 10020;
     const int32_t PERF_REQUEST_CMD_ID_WEB_SLIDE_NORMAL      = 10025;
     const int32_t PERF_REQUEST_CMD_ID_ROTATION              = 10027;
+    const int32_t PERF_REQUEST_CMD_ID_SCREEN_ON             = 10028;
+    const int32_t PERF_REQUEST_CMD_ID_SCREEN_OFF            = 10029;
     const int32_t PERF_REQUEST_CMD_ID_REMOTE_ANIMATION      = 10030;
     const int32_t PERF_REQUEST_CMD_ID_DRAG_STATUS_BAR       = 10034;
     const int32_t PERF_REQUEST_CMD_ID_GAME_START            = 10036;
@@ -511,6 +515,48 @@ bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
     return false;
 }
 
+void SocPerfPlugin::HandleScreenOn()
+{
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_OFF, false, "");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_ON, true, "");
+    if (deviceMode_ == DISPLAY_MODE_FULL) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
+    } else if (deviceMode_ == DISPLAY_MODE_MAIN) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
+    }
+}
+
+void SocPerfPlugin::HandleScreenOff()
+{
+    std::lock_guard<std::mutex> xmlLock(screenMutex_);
+    if (screenStatus_ == SCREEN_OFF) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_ON, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_OFF, true, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+    }
+}
+
+bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    std::lock_guard<std::mutex> xmlLock(screenMutex_);
+    screenStatus_ = data->value;
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleScreenStatusAnalysis: %{public}lld", (long long)screenStatus_);
+    if (screenStatus_ == SCREEN_ON) {
+        HandleScreenOn();
+    } else if (screenStatus_ == SCREEN_OFF) {
+        //post screen off task with 5000 milliseconds delay, to avoid frequent screen status change.
+        std::function<void()> screenOffFunc = [this]() {
+            HandleScreenOff();
+        };
+        ffrt::submit(screenOffFunc, {}, {}, ffrt::task_attr().delay(SCREEN_OFF_TIME_DELAY));
+    }
+    return true;
+}
+
 void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>& data)
 {
     if ((data->value != DeviceModeStatus::MODE_ENTER) && (data->value != DeviceModeStatus::MODE_QUIT)) {
@@ -522,15 +568,15 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
         SOC_PERF_LOGW("SocPerfPlugin: device mode status payload is error");
         return;
     }
-
-    std::string deviceMode = data->payload[DEVICE_MODE_PAYMODE_NAME];
+    std::lock_guard<std::mutex> xmlLock(screenMutex_);
+    deviceMode_ = data->payload[DEVICE_MODE_PAYMODE_NAME];
     bool status = (data->value == DeviceModeStatus::MODE_ENTER);
-    OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceMode, status);
-    SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceMode.c_str(), status);
-    if (deviceMode == DISPLAY_MODE_FULL && screenStatus_ == SCREEN_ON) {
+    OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceMode_, status);
+    SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceMode_.c_str(), status);
+    if (deviceMode_ == DISPLAY_MODE_FULL && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
-    } else if (deviceMode == DISPLAY_MODE_MAIN && screenStatus_ == SCREEN_ON) {
+    } else if (deviceMode_ == DISPLAY_MODE_MAIN && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
     }
@@ -675,14 +721,6 @@ bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_POWERMODE_CHANGED, false, "");
     }
     return true;
-}
-
-void SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData> &data)
-{
-    if (data == nullptr) {
-        return;
-    }
-    screenStatus_ = data->value;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
