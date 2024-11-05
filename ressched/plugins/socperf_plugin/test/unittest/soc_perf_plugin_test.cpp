@@ -545,5 +545,117 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_021, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().HandleCustEventEnd(socPerfCustEventEndDataInvalid);
     EXPECT_FALSE(ret);
 }
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_022
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_022, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& socPerfPowerModeChangedStartData = std::make_shared<ResData>(
+        ResType::RES_TYPE_POWER_MODE_CHANGED, 601, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandlePowerModeChanged(socPerfPowerModeChangedStartData);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& socPerfPowerModeChangedEndData = std::make_shared<ResData>(
+        ResType::RES_TYPE_POWER_MODE_CHANGED, 602, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandlePowerModeChanged(socPerfPowerModeChangedEndData);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_023
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_023, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& socPerfBmmMoniterStartData = std::make_shared<ResData>(
+        ResType::RES_TYPE_BMM_MONITER_CHANGE_EVENT, ResType::BmmMoniterStatus::BMM_BACKGROUND, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleBmmMoniterStatus(socPerfBmmMoniterStartData);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& socPerfBmmMoniterEndData = std::make_shared<ResData>(
+        ResType::RES_TYPE_BMM_MONITER_CHANGE_EVENT, ResType::BmmMoniterStatus::BMM_CLOSE, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleBmmMoniterStatus(socPerfBmmMoniterEndData);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& socPerfBmmMoniterDataInvalid = std::make_shared<ResData>(
+        ResType::RES_TYPE_BMM_MONITER_CHANGE_EVENT, -1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleBmmMoniterStatus(socPerfBmmMoniterDataInvalid);
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_024
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_024, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& socPerfSceneRotationStartData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SCENE_ROTATION, 0, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleSceneRotation(socPerfSceneRotationStartData);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& socPerfSceneRotationEndData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SCENE_ROTATION, 1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleSceneRotation(socPerfSceneRotationEndData);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_025
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_025, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& socPerfAppColdStartData = std::make_shared<ResData>(
+        ResType::RES_TYPE_ONLY_PERF_APP_COLD_START, 0, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleAppColdStartEx(socPerfAppColdStartData);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& socPerfAppColdEndData = std::make_shared<ResData>(
+        ResType::RES_TYPE_ONLY_PERF_APP_COLD_START, 1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleAppColdStartEx(socPerfAppColdEndData);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_026
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_026, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& socPerfRgmBootingStartData = std::make_shared<ResData>(
+        SocPerfPlugin::GetInstance().RES_TYPE_RGM_BOOTING_STATUS, 0, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleRgmBootingStatus(socPerfRgmBootingStartData);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& socPerfRgmBootingEndData = std::make_shared<ResData>(
+        SocPerfPlugin::GetInstance().RES_TYPE_RGM_BOOTING_STATUS, -1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleRgmBootingStatus(socPerfRgmBootingEndData);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_027
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_027, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& socPerfAccountActivatingData = std::make_shared<ResData>(
+        ResType::RES_TYPE_ACCOUNT_ACTIVATING, ResType::AccountActivatingStatus::ACCOUNT_ACTIVATING_START, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleSocperfAccountActivating(socPerfAccountActivatingData);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& socPerfAccountActivatingInvalid = std::make_shared<ResData>(
+        ResType::RES_TYPE_ACCOUNT_ACTIVATING, -1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleSocperfAccountActivating(socPerfAccountActivatingInvalid);
+    EXPECT_TRUE(ret);
+}
 } // namespace SOCPERF
 } // namespace OHOS
