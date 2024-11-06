@@ -18,6 +18,7 @@
 #ifdef RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE
 #include <set>
 #include <unordered_map>
+#include <mutex>
 #include "plugin.h"
 #include "single_instance.h"
 #include "socperf_client.h"
@@ -41,6 +42,8 @@ private:
     std::string perfReqAppTypeSoPath_;
     std::string perfReqAppTypeSoFunc_;
     int64_t screenStatus_;
+    std::string deviceMode_;
+    std::mutex screenMutex_;
     void* handle_ = nullptr;
     ReqAppTypeFunc reqAppTypeFunc_ = nullptr;
     int32_t RES_TYPE_SCENE_BOARD_ID = 0;
@@ -80,7 +83,9 @@ private:
     bool HandleSceneRotation(const std::shared_ptr<ResData>& data);
     bool HandleBmmMoniterStatus(const std::shared_ptr<ResData>& data);
     bool HandlePowerModeChanged(const std::shared_ptr<ResData>& data);
-    void HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& data);
+    bool HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& data);
+    void HandleScreenOn();
+    void HandleScreenOff();
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
