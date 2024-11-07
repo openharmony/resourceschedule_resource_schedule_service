@@ -15,7 +15,10 @@ import("//build/ohos.gni")
 import("../ressched.gni")
 
 config("common_private_config") {
-  include_dirs = [ "${ressched_common}/include" ]
+  include_dirs = [ 
+    "${ressched_common}/include",
+    "../../../ffrt/interfaces/kits"
+  ]
 }
 
 config("common_public_config") {
