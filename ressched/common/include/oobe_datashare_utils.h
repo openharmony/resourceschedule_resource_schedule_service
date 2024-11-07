@@ -22,6 +22,7 @@
 #include "res_sched_log.h"
 #include <map>
 #include "mutex"
+#include "ffrt.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -42,7 +43,7 @@ private:
     DataShareUtils ();
     static constexpr int32_t PARAM_NUM_TEN = 10;
     static sptr<IRemoteObject> remoteObj_;
-    static std::mutex mutex_;
+    static ffrt::mutex mutex_;
     ErrCode GetStringValue(const std::string& key, std::string& value);
     void InitSystemAbilityManager();
     bool isDataShareReady_ = false;

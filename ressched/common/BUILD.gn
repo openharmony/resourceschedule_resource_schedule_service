@@ -39,13 +39,13 @@ ohos_shared_library("ressched_common_utils") {
     "ability_runtime:dataobs_manager",
     "c_utils:utils",
     "data_share:datashare_consumer",
-    "ffrt:libffrt",
     "hilog:libhilog",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
 
+  public_external_deps = [ "ffrt:libffrt" ]
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
   branch_protector_ret = "pac_ret"
