@@ -69,7 +69,7 @@ private:
     {
         return eventData->GetCreatorUid() > 0 && eventData->GetCreatorPid() >= 0
             && eventData->GetAbilityName().size() > 0 && eventData->GetTypeId() > 0
-            && eventData->GetTypeId() <= BackgroundTaskMgr::BackgroundMode::TASK_KEEPING;
+            && eventData->GetTypeId() <= BackgroundTaskMgr::BackgroundMode::END;
     }
 
     inline std::string PackPayload(const std::shared_ptr<TransientTaskAppInfo>& info) const
