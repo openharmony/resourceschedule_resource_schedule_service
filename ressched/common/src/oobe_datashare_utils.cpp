@@ -26,7 +26,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 sptr<IRemoteObject> DataShareUtils::remoteObj_;
-std::mutex DataShareUtils::mutex_;
+ffrt::mutex DataShareUtils::mutex_;
 namespace {
 constexpr const int32_t E_OK = 0;
 constexpr const int32_t E_DATA_SHARE_NOT_READY = 1055;
@@ -140,13 +140,13 @@ bool DataShareUtils::IsConnectDataShareSucc()
 
 bool DataShareUtils::GetDataShareReadyFlag()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     return isDataShareReady_;
 }
 
 void DataShareUtils::SetDataShareReadyFlag(bool readyFlag)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     isDataShareReady_ = readyFlag;
 }
 } // namespace ResourceSchedule
