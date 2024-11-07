@@ -22,6 +22,7 @@
 #include "ioobe_task.h"
 #include <functional>
 #include <vector>
+#include "ffrt.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -49,7 +50,7 @@ private:
     };
 
     bool g_oobeValue = false;
-    static std::recursive_mutex mutex_;
+    static ffrt::recursive_mutex mutex_;
     static std::vector<std::shared_ptr<IOOBETask>> oobeTasks_;
     static std::vector<std::function<void()>> dataShareFunctions_;
     static sptr<OOBEManager::ResDataAbilityObserver> observer_;
