@@ -22,6 +22,7 @@
 #include "res_sched_log.h"
 #include <map>
 #include "mutex"
+#include "ffrt.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
