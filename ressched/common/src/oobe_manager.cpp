@@ -48,13 +48,13 @@ OOBEManager& OOBEManager::GetInstance()
 
 bool OOBEManager::GetOOBValue()
 {
-    ffrt::lock_guard<ffrt::recursive_mutex> lock(mutex_);
+    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     return g_oobeValue;
 }
 
 ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
 {
-    ffrt::lock_guard<ffrt::recursive_mutex> lock(mutex_);
+    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     if (!DataShareUtils::GetInstance().IsConnectDataShareSucc()) {
         if (DataShareUtils::GetInstance().GetDataShareReadyFlag()) {
             RESSCHED_LOGE("dataShare is ready but conntect fail");
@@ -145,7 +145,7 @@ void OOBEManager::Initialize()
 
 bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
 {
-    ffrt::lock_guard<ffrt::recursive_mutex> lock(mutex_);
+    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     if (task == nullptr) {
         RESSCHED_LOGE("Bad task passed!");
         return false;
@@ -163,7 +163,7 @@ void OOBEManager::StartListen()
     int resultValue = 0;
     ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
     if (resultValue != 0) {
-        ffrt::lock_guard<ffrt::recursive_mutex> lock(mutex_);
+        std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
         g_oobeValue = true;
         for (auto task : oobeTasks_) {
             task->ExcutingTask();
@@ -175,7 +175,7 @@ void OOBEManager::StartListen()
         ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
         if (result != 0) {
             RESSCHED_LOGI("User consent authorization!");
-            ffrt::lock_guard<ffrt::recursive_mutex> lock(mutex_);
+            std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
             g_oobeValue = true;
             for (auto task : oobeTasks_) {
                 task->ExcutingTask();
@@ -200,7 +200,7 @@ void OOBEManager::ExecuteDataShareFunction()
 {
     std::vector<std::function<void()>> dataShareFunctions;
     {
-        ffrt::lock_guard<ffrt::recursive_mutex> lock(mutex_);
+        std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
         dataShareFunctions = std::move(dataShareFunctions_);
     }
     for (auto function : dataShareFunctions) {

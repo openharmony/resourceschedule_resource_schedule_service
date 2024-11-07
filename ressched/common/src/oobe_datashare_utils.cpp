@@ -140,13 +140,13 @@ bool DataShareUtils::IsConnectDataShareSucc()
 
 bool DataShareUtils::GetDataShareReadyFlag()
 {
-    ffrt::lock_guard<ffrt::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     return isDataShareReady_;
 }
 
 void DataShareUtils::SetDataShareReadyFlag(bool readyFlag)
 {
-    ffrt::lock_guard<ffrt::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     isDataShareReady_ = readyFlag;
 }
 } // namespace ResourceSchedule
