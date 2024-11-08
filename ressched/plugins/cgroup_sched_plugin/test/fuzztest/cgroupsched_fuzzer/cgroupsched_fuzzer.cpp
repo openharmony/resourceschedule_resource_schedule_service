@@ -1593,9 +1593,6 @@ namespace ResourceSchedule {
         g_pos = 0;
 
         // getdata
-        uint32_t winId = GetData<uint32_t>();
-        int32_t pid = GetData<int32_t>();
-        int32_t uid = GetData<int32_t>();
         std::vector<sptr<WindowDrawingContentInfo>> changeInfo;
         OHOS::sptr<OHOS::Rosen::WindowDrawingContentInfo> info = new OHOS::Rosen::WindowDrawingContentInfo();
         changeInfo.push_back(info);
