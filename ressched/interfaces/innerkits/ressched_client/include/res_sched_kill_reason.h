@@ -25,9 +25,15 @@ public:
     static constexpr char CPU_HIGHLOAD[] = "Kill Reason:CPU Highload";
     static constexpr char CPU_EXT_HIGHLOAD[] = "Kill Reason:CPU_EXT Highload";
     static constexpr char IO_MANAGE_CONTROL[] = "Kill Reason:IO Manage Control";
-    static constexpr char ION_MANAGE_CONTROL[] = "Kill Reason:ION Manage Control";
+    static constexpr char ION_MANAGE_CONTROL[] = "Kill Reason:ResourceLeak:Ion Leak";
     static constexpr char MEMORY_SOFT_DETERIORATION[] = "Kill Reason:App Memory Soft Deterioration";
-    static constexpr char MEMORY_DETERIORATION[] = "Kill Reason:App Memory Deterioration";
+    static constexpr char MEMORY_DETERIORATION[] = "Kill Reason:ResourceLeak:Mem Leak";
+    static constexpr char GPU_RS_HIGHLOAD[] = "Kill Reason:ResourceLeak:Gpu_rs Leak";
+    static constexpr char GPU_HIGHLOAD[] = "Kill Reason:ResourceLeak:Gpu Leak";
+    static constexpr char VMA_LEAK_HIGHLOAD[] = "Kill Reason:ResourceLeak:Vma Leak";
+    static constexpr char FD_HIGHLOAD[] = "Kill Reason:ResourceLeak:Fd Leak";
+    static constexpr char THREAD_HIGHLOAD[] = "Kill Reason:ResourceLeak:Thread Leak";
+    static constexpr char ASHMEM_HIGHLOAD[] = "Kill Reason:ResourceLeak:Ashmem Leak";
     static constexpr char MEMORY_PRESSURE[] = "Kill Reason:Memory Pressure";
     static constexpr char TEMPERATURE_CONTROL[] = "Kill Reason:Temperature Control";
     static constexpr char RESOURCE_OVERLIMIT[] = "Kill Reason:Resource Overlimit";
