@@ -19,6 +19,7 @@
 #include <set>
 #include <unordered_map>
 #include <mutex>
+#include "ffrt.h"
 #include "plugin.h"
 #include "single_instance.h"
 #include "socperf_client.h"
@@ -43,7 +44,7 @@ private:
     std::string perfReqAppTypeSoFunc_;
     int64_t screenStatus_;
     std::string deviceMode_;
-    std::mutex screenMutex_;
+    ffrt::mutex screenMutex_;
     void* handle_ = nullptr;
     ReqAppTypeFunc reqAppTypeFunc_ = nullptr;
     int32_t RES_TYPE_SCENE_BOARD_ID = 0;
