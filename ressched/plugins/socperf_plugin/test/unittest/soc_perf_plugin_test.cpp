@@ -683,7 +683,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_028, Function | MediumTes
     EXPECT_TRUE(ret);
 
     nlohmann::json payload1;
-    payload["deviceMode"] = "displayFull";
+    payload1["deviceMode"] = "displayFull";
     std::shared_ptr<ResData> invalidPayload1 = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
         ResType::DeviceModeStatus::MODE_ENTER, payload1);
     SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(invalidPayload1);
