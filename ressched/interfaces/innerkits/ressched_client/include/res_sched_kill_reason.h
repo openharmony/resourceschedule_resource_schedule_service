@@ -26,8 +26,8 @@ public:
     static constexpr char CPU_EXT_HIGHLOAD[] = "Kill Reason:CPU_EXT Highload";
     static constexpr char IO_MANAGE_CONTROL[] = "Kill Reason:IO Manage Control";
     static constexpr char ION_MANAGE_CONTROL[] = "Kill Reason:ResourceLeak:Ion Leak";
-    static constexpr char MEMORY_SOFT_DETERIORATION[] = "Kill Reason:App Memory Soft Deterioration";
-    static constexpr char MEMORY_DETERIORATION[] = "Kill Reason:ResourceLeak:Mem Leak";
+    static constexpr char MEMORY_SOFT_DETERIORATION[] = "Kill Reason:ResourceLeak:Pss Soft Kill";
+    static constexpr char MEMORY_DETERIORATION[] = "Kill Reason:ResourceLeak:Pss Kill";
     static constexpr char GPU_RS_HIGHLOAD[] = "Kill Reason:ResourceLeak:Gpu_rs Leak";
     static constexpr char GPU_HIGHLOAD[] = "Kill Reason:ResourceLeak:Gpu Leak";
     static constexpr char VMA_LEAK_HIGHLOAD[] = "Kill Reason:ResourceLeak:Vma Leak";
