@@ -54,7 +54,7 @@ void BatchLogPrinter::RecordLog(const std::string& log, const int64_t& timestamp
         std::vector<std::string> batchLogs = std::vector<std::string>();
         GetBatch(batchLogs);
         for (auto& item : batchLogs) {
-            RESSCHED_LOGI("BatchLong:%{public}s", item.c_str());
+            RESSCHED_LOGI("BatchLog:%{public}s", item.c_str());
         }
         lastPrintTimestamp_ = currentTImestamp;
     }

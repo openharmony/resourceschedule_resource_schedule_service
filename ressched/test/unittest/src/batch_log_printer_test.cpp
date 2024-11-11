@@ -24,7 +24,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     constexpr int32_t TEST_SUBMIT_NUM = 50;
-    constexpr int32_t TEST_PRINT_NUM = 50;
+    constexpr int32_t TEST_PRINT_NUM = 64;
     const string TEST_LOG = "test log";
 } // namespace
 
