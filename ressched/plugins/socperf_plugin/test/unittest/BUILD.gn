@@ -36,8 +36,8 @@ ohos_unittest("SocPerfPluginTest") {
 
   defines = []
   external_deps = [
-    "json:nlohmann_json_static",
     "ffrt:libffrt",
+    "json:nlohmann_json_static",
   ]
   if (ressched_with_resourceschedule_soc_perf_enable) {
     external_deps += [ "soc_perf:socperf_client" ]
