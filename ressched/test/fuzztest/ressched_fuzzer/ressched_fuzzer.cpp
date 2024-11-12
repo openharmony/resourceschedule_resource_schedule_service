@@ -31,6 +31,7 @@
 #include "ioobe_task.h"
 #include "plugin_mgr.h"
 #include "res_sched_service.h"
+#include "scene_recognizer_mgr.h"
 #include "singleton.h"
 #include "system_ability_definition.h"
 #include "slide_recognizer.h"
@@ -396,6 +397,8 @@ namespace {
         if (slideRecognizer->listFlingTimeOutTask_) {
             ffrt::skip(slideRecognizer->listFlingTimeOutTask_);
         }
+        auto lastTask = SceneRecognizerMgr::GetInstance().ffrtQueue_->submit_h([]() {});
+        SceneRecognizerMgr::GetInstance().ffrtQueue_->wait(lastTask);
         return true;
     }
 
