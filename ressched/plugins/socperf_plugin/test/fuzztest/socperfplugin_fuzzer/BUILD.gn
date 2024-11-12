@@ -32,6 +32,7 @@ ohos_fuzztest("SocperfPluginFuzzTest") {
   defines = [ "RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE" ]
   deps = [ "${ressched_plugins}/socperf_plugin:socperf_plugin" ]
   external_deps = [
+    "ffrt:libffrt",
     "resource_schedule_service:ressched_client",
     "soc_perf:socperf_client",
   ]

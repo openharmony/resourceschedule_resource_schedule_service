@@ -657,5 +657,49 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_027, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().HandleSocperfAccountActivating(socPerfAccountActivatingInvalid);
     EXPECT_TRUE(ret);
 }
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_028
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_028, Function | MediumTest | Level0)
+{
+    nlohmann::json payload;
+    payload["deviceMode"] = "displayMain";
+    std::shared_ptr<ResData> invalidPayload = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
+        ResType::DeviceModeStatus::MODE_ENTER, payload);
+    SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(invalidPayload);
+
+    std::shared_ptr<ResData> normalValuedata = std::make_shared<ResData>(ResType::RES_TYPE_SCREEN_STATUS,
+        ResType::ScreenStatus::SCREEN_ON, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleScreenStatusAnalysis(normalValuedata);
+    EXPECT_TRUE(ret);
+
+    std::shared_ptr<ResData> normalValuedata2 = std::make_shared<ResData>(ResType::RES_TYPE_SCREEN_STATUS,
+        ResType::ScreenStatus::SCREEN_OFF, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleScreenStatusAnalysis(normalValuedata2);
+    EXPECT_TRUE(ret);
+
+    nlohmann::json payload1;
+    payload1["deviceMode"] = "displayFull";
+    std::shared_ptr<ResData> invalidPayload1 = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
+        ResType::DeviceModeStatus::MODE_ENTER, payload1);
+    SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(invalidPayload1);
+
+    std::shared_ptr<ResData> normalValuedata3 = std::make_shared<ResData>(ResType::RES_TYPE_SCREEN_STATUS,
+        ResType::ScreenStatus::SCREEN_ON, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleScreenStatusAnalysis(normalValuedata3);
+    EXPECT_TRUE(ret);
+
+    std::shared_ptr<ResData> normalValuedata4 = std::make_shared<ResData>(ResType::RES_TYPE_SCREEN_STATUS,
+        ResType::ScreenStatus::SCREEN_OFF, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleScreenStatusAnalysis(normalValuedata4);
+    EXPECT_TRUE(ret);
+
+    ret = SocPerfPlugin::GetInstance().HandleScreenStatusAnalysis(nullptr);
+    EXPECT_FALSE(ret);
+}
 } // namespace SOCPERF
 } // namespace OHOS

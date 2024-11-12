@@ -19,7 +19,6 @@
 #include "config_info.h"
 #include "dlfcn.h"
 #include "fcntl.h"
-#include "ffrt.h"
 #include "plugin_mgr.h"
 #include "res_type.h"
 #include "socperf_log.h"
@@ -528,7 +527,7 @@ void SocPerfPlugin::HandleScreenOn()
 
 void SocPerfPlugin::HandleScreenOff()
 {
-    std::lock_guard<std::mutex> xmlLock(screenMutex_);
+    std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
     if (screenStatus_ == SCREEN_OFF) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_ON, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_OFF, true, "");
@@ -542,7 +541,7 @@ bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& d
     if (data == nullptr) {
         return false;
     }
-    std::lock_guard<std::mutex> xmlLock(screenMutex_);
+    std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
     screenStatus_ = data->value;
     SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleScreenStatusAnalysis: %{public}lld", (long long)screenStatus_);
     if (screenStatus_ == SCREEN_ON) {
@@ -568,7 +567,7 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
         SOC_PERF_LOGW("SocPerfPlugin: device mode status payload is error");
         return;
     }
-    std::lock_guard<std::mutex> xmlLock(screenMutex_);
+    std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
     deviceMode_ = data->payload[DEVICE_MODE_PAYMODE_NAME];
     bool status = (data->value == DeviceModeStatus::MODE_ENTER);
     OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceMode_, status);
