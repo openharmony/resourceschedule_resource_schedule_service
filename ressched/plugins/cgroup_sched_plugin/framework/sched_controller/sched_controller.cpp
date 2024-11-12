@@ -143,6 +143,7 @@ void SchedController::InitResTypes()
         ResType::RES_TYPE_BOOT_COMPLETED,
         ResType::RES_TYPE_SYSTEM_CPU_LOAD,
         ResType::RES_TYPE_THERMAL_STATE,
+        ResType::RES_TYPE_COSMIC_CUBE_STATE_CHANGE,
     };
 }
 
@@ -284,6 +285,9 @@ void SchedController::InitDispatchResFuncMap()
         { ResType::RES_TYPE_MMI_STATUS_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->UpdateMmiStatus(resType, value, payload); } },
+        { ResType::RES_TYPE_COSMIC_CUBE_STATE_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportCosmicCubeState(resType, value, payload); } },
     };
 }
 
