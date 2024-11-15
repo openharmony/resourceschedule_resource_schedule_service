@@ -270,6 +270,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_THERMAL_DATA,
     // check shoul force kill process,
     SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
+    // get nweb preload process set
+    SYNC_RES_TYPE_GET_NWEB_PRELOAD_SET,
     // report to request or release mutex status
     SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // report to check mutex before start
