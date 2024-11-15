@@ -654,6 +654,14 @@ enum HeavyLoadMutexSceneBoardcastScene : int64_t {
     HeavyLoadMutexBoardcastNeedProactiveDownspeeding = 1,
     HeavyLoadMutexBoardcastNeedCancelDownspeeding = 2,
 };
+
+/**
+ * @brief game boost state
+ */
+enum GameBoostState : in64_t {
+    BOOST_START = 0,
+    BOOST_END = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
