@@ -267,6 +267,8 @@ enum : uint32_t {
     RES_TYPE_APP_STOPPED = 118,
     // report audio session enter standby
     RES_TYPE_AUDIO_RENDERER_STANDBY = 119,
+    // game click event
+    RES_TYPE_APP_GAME_CLICK_EVENT = 120
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

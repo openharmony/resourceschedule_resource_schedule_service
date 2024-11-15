@@ -42,6 +42,7 @@ private:
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
     std::string perfReqAppTypeSoPath_;
     std::string perfReqAppTypeSoFunc_;
+    int32_t focusAppType_;
     int64_t screenStatus_;
     std::string deviceMode_;
     ffrt::mutex screenMutex_;
@@ -85,8 +86,11 @@ private:
     bool HandleBmmMoniterStatus(const std::shared_ptr<ResData>& data);
     bool HandlePowerModeChanged(const std::shared_ptr<ResData>& data);
     bool HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& data);
+    bool HandleGameClick(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
     void HandleScreenOff();
+    std::string GetBundleNameByUid(const int32_t uid);
+
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

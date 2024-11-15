@@ -16,12 +16,16 @@
 #ifdef RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE
 #include "socperf_plugin.h"
 #include "app_mgr_constants.h"
+#include "bundle_mgr_interface.h"
 #include "config_info.h"
 #include "dlfcn.h"
 #include "fcntl.h"
+#include "if_system_ability_manager.h"
+#include "iservice_registry.h"
 #include "plugin_mgr.h"
 #include "res_type.h"
 #include "socperf_log.h"
+#include "system_ability_definition.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -80,6 +84,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_BMM_MONITER_START     = 10081;
     const int32_t PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL     = 10082;
     const int32_t PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN     = 10083;
+    const int32_t PERF_REQUEST_CMD_ID_GAME_CLICK            = 10085;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -210,6 +215,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandlePowerModeChanged(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_SCREEN_STATUS,
         [this](const std::shared_ptr<ResData>& data) { HandleScreenStatusAnalysis(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_APP_GAME_CLICK_EVENT,
+        [this](const std::shared_ptr<ResData>& data) { HandleGameClick(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
@@ -250,6 +257,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_BMM_MONITER_CHANGE_EVENT,
         RES_TYPE_POWER_MODE_CHANGED,
         RES_TYPE_SCREEN_STATUS,
+        RES_TYPE_APP_GAME_CLICK_EVENT
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -336,11 +344,41 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
     if (data->value == WindowFocusStatus::WINDOW_FOCUS) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, "");
+        if (data->payload == nullptr || !data->payload.contains("uid") || data->payload.at("uid").is_string()) {
+            return;
+        }
+        std::string bundleName = Get
     }
+}
+
+std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid) {
+    std::string bundleName = "";
+    OHOS:sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
+        OHOS:SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (systemAbilityManager == nullptr) {
+        return bundleName;
+    }
+    OHOS:sptr<OHOS::IRemoteObjece> object =
+        systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    sptr<AppExecFwk::IBundleMgr> iBundleMgr = OHOS::iface_cast<OHOS::AppExecFwk::IBundleMgr>(object);
+    if (!iBundleMgr) {
+        SOC_PERF_LOGD("%{pubilc}s null bundle manager.", __func__);
+        return budleName;
+    }
+
+    ErrCode ret = iBundleMgr->GetNameForUid(uid, bundleName);
+    if (ret != ERR_OK) {
+        SOC_PERF_LOGD("%{pulic}s get bundle name failed for %{pulic}d, err_code:%{public}d.", __func__, uid, ret);
+    }
+    return bundleName;
 }
 
 void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 {
+    if (focusAppType_ == APP_TYPE_GAME) {
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->EVENT_CLICK game can not get click");
+        return;
+    }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK: %{public}lld", (long long)data->value);
     // touch down event
     if (data->value == ClickEventType::TOUCH_EVENT_DOWN) {
@@ -351,6 +389,22 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
     }
 }
+
+bool SocPerfPlugin:HandleGameClick(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->GAME_CLICK null data");
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin:socperf->GAME_CLICK: %{public}lld", (long long)data->value);
+    if (data->value == GameClickState::CLICK_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_CLICK, true, "");
+    } else if (data->value == GameClickState::CLICK_STOP) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_CLICK, false, "");
+    }
+    return true;
+}
+
 
 void SocPerfPlugin::HandleLoadPage(const std::shared_ptr<ResData>& data)
 {
@@ -372,6 +426,10 @@ void SocPerfPlugin::HandlePopPage(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
+    if (focusAppType_ == APP_TYPE_GAME) {
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->EVENT_SLIDE game can not get slide");
+        return;
+    }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
     static int counter = 0;
     static uint64_t lastTime = 0;

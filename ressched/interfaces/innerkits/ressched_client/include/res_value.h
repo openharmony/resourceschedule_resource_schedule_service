@@ -654,6 +654,14 @@ enum HeavyLoadMutexSceneBoardcastScene : int64_t {
     HeavyLoadMutexBoardcastNeedProactiveDownspeeding = 1,
     HeavyLoadMutexBoardcastNeedCancelDownspeeding = 2,
 };
+
+/**
+ * @brief game click state
+ */
+enum GameClickState : in64_t {
+    CLICK_START = 0;
+    CLICK_END = 1;
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
