@@ -285,6 +285,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // report to check mutex before start
     SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START = 501,
+    // report cosmic cube info
+    RES_TYPE_COSMIC_CUBE_STATE_CHANGE = 502,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType

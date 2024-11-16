@@ -654,6 +654,14 @@ enum HeavyLoadMutexSceneBoardcastScene : int64_t {
     HeavyLoadMutexBoardcastNeedProactiveDownspeeding = 1,
     HeavyLoadMutexBoardcastNeedCancelDownspeeding = 2,
 };
+
+/**
+* @brief CosmicCube Status
+*/
+enum CosmicCubeState : int64_t {
+    APPLICATION_ABOUT_TO_APPEAR = 0,
+    APPLICATION_ABOUT_TO_HIDE = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS

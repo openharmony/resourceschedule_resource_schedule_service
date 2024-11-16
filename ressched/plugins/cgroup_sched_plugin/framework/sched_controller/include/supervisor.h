@@ -183,6 +183,7 @@ public:
     SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
+    bool isCosmicCubeStateHide_ = false;
 
 private:
     uid_t uid_;

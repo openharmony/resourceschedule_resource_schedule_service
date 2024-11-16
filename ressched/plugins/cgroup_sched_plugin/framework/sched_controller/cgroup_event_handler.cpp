@@ -1111,6 +1111,31 @@ void CgroupEventHandler::UpdateMmiStatus(uint32_t resType, int64_t value, const 
     }
 }
 
+void CgroupEventHandler::HandleReportCosmicCubeState(uint32_t resType, int64_t value, const nlohmann::json &payload)
+{
+    if (supervisor_ == nullptr) {
+        return;
+    }
+    int32_t uid = 0;
+    int32_t pid = 0;
+    if (!ParsePayload(uid, pid, payload)) {
+        CGS_LOGW("%{public}s : uid or pid invalid, uid:%{public}d, pid:%{public}d!", __func__, uid, pid);
+        return;
+    }
+    std::shared_ptr <Application> app = supervisor_->GetAppRecord(uid);
+    std::shared_ptr <ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
+        CGS_LOGW("%{public}s : app or proc record is not exist, uid:%{public}d, pid:%{public}d!", __func__, uid, pid);
+        return;
+    }
+    app->isCosmicCubeStateHide_ = (value == ResType::CosmicCubeState::APPLICATION_ABOUT_TO_HIDE);
+    if (procRecord->processType_ == ProcRecordType::NORMAL) {
+        CGS_LOGI("%{public}s uid:%{public}d, pid:%{public}d, value:%{public}lld", __func__, uid, pid, (long long)value);
+        CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+            AdjustSource::ADJS_PROCESS_STATE);
+    }
+}
+
 void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     int32_t uid = 0;
