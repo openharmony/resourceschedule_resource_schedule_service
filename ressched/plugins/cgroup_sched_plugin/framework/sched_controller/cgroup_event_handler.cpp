@@ -200,17 +200,6 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
     app->state_ = state;
 }
 
-void CgroupEventHandler::HandleOnAppStopped(uid_t uid, const std::string& bundleName)
-{
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        return;
-    }
-    CGS_LOGI("%{public}s : %{public}d, %{public}s", __func__, uid, bundleName.c_str());
-    ChronoScope cs("HandleOnAppStopped");
-    supervisor_->RemoveApplication(uid);
-}
-
 void CgroupEventHandler::HandleProcessStateChanged(uid_t uid, pid_t pid,
     const std::string& bundleName, int32_t state)
 {
@@ -1159,6 +1148,21 @@ void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t
 
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType,
         procRecord->videoState_);
+}
+
+void CgroupEventHandler::HandleOnAppStopped(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+    int32_t uid;
+    if (!ParseValue(uid, "uid", payload)) {
+        return;
+    }
+    CGS_LOGI("%{public}s : %{public}d, %{public}s", __func__, uid, bundleName.c_str());
+    ChronoScope cs("HandleOnAppStopped");
+    supervisor_->RemoveApplication(uid);
 }
 
 bool CgroupEventHandler::GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::shared_ptr<Application>& app,

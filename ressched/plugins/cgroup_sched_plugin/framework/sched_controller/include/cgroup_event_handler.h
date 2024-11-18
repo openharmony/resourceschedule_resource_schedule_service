@@ -36,7 +36,6 @@ public:
     void HandleAbilityAdded(int32_t saId, const std::string& deviceId);
     void HandleAbilityRemoved(int32_t saId, const std::string& deviceId);
     void HandleApplicationStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
-    void HandleOnAppStopped(uid_t uid, const std::string& bundleName);
     void HandleProcessStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
     void HandleAbilityStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
         const std::string& abilityName, uintptr_t token, int32_t abilityState, int32_t abilityType);
@@ -79,6 +78,7 @@ public:
     void ReportAbilityStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void UpdateMmiStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportCosmicCubeState(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleOnAppStopped(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
     bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);
