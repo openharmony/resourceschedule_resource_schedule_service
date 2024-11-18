@@ -297,6 +297,9 @@ ohos_static_library("resschedsvc_static") {
     defines += [ "RESSCHED_REQUEST_REQUEST" ]
     external_deps += [ "request:request_native" ]
   }
+  if (resource_schedule_service_with_ffrt_enable) {
+    defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE" ]
+  }
   external_deps += [ "data_share:datashare_consumer" ]
 
   subsystem_name = "resourceschedule"
