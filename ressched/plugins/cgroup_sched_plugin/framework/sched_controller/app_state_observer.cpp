@@ -266,6 +266,15 @@ void RmsApplicationStateObserver::OnAppStopped(const AppStateData &appStateData)
         CGS_LOGE("%{public}s : validate app state data failed!", __func__);
         return;
     }
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler) {
+        auto uid = appStateData.uid;
+        auto bundleName = appStateData.bundleName;
+
+        cgHandler->PostTask([cgHandler, uid, bundleName] {
+            cgHandler->HandleOnAppStopped(uid, bundleName);
+        });
+    }
 
     nlohmann::json payload;
     MarshallingAppStateData(appStateData, payload);
