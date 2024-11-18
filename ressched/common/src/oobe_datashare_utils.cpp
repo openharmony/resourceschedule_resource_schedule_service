@@ -26,7 +26,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 sptr<IRemoteObject> DataShareUtils::remoteObj_;
-std::mutex DataShareUtils::mutex_;
+ffrt::mutex DataShareUtils::mutex_;
 namespace {
 constexpr const int32_t E_OK = 0;
 constexpr const int32_t E_DATA_SHARE_NOT_READY = 1055;
@@ -91,15 +91,11 @@ std::shared_ptr<DataShare::DataShareHelper> DataShareUtils::CreateDataShareHelpe
     if (ret.first == E_OK) {
         RESSCHED_LOGI("create data_share helper success!");
         auto helper = ret.second;
-        isDataShareReady_ = true;
+        isConnectDataShareSucc = true;
         return helper;
-    } else if (ret.first == E_DATA_SHARE_NOT_READY) {
-        RESSCHED_LOGE("create data_share helper faild!");
-        isDataShareReady_ = false;
-        return nullptr;
     }
-    RESSCHED_LOGE("data_share unknown!");
-    isDataShareReady_ = false;
+    RESSCHED_LOGE("create data_share helper faild!");
+    isConnectDataShareSucc = false;
     return nullptr;
 }
 
@@ -137,15 +133,20 @@ Uri DataShareUtils::AssembleUri(const std::string& key)
     return uri;
 }
 
+bool DataShareUtils::IsConnectDataShareSucc()
+{
+    return isConnectDataShareSucc;
+}
+
 bool DataShareUtils::GetDataShareReadyFlag()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     return isDataShareReady_;
 }
 
 void DataShareUtils::SetDataShareReadyFlag(bool readyFlag)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     isDataShareReady_ = readyFlag;
 }
 } // namespace ResourceSchedule

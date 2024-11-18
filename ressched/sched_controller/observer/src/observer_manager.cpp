@@ -616,7 +616,7 @@ void ObserverManager::InitAVSessionStateChangeListener()
         avSessionStateListener_ = std::make_shared<AvSessionStateListener>();
     }
 
-    auto res = AVSession::AVSessionManager::GetInstance().RegisterSessionListener(avSessionStateListener_);
+    auto res = AVSession::AVSessionManager::GetInstance().RegisterSessionListenerForAllUsers(avSessionStateListener_);
     if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGI("ObserverManager init session state listener successfully");
     } else {

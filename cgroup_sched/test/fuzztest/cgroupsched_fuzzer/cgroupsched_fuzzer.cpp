@@ -687,6 +687,34 @@ namespace ResourceSchedule {
         return true;
     }
 
+    bool HandleReportScreenCaptureEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uid_t uid = GetData<uid_t>();
+        pid_t pid = GetData<pid_t>();
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
+        nlohmann::json payload;
+        payload["uid"] = std::to_string(uid);
+        payload["pid"] = std::to_string(pid);
+        auto cgroupEventHandler =
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
+        cgroupEventHandler->HandleReportScreenCaptureEvent(resType, value, payload);
+        cgroupEventHandler->SetSupervisor(g_supervisor);
+        cgroupEventHandler->HandleReportScreenCaptureEvent(resType, value, payload);
+
+        return true;
+    }
+
     bool CheckVisibilityForRenderProcessFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -702,7 +730,7 @@ namespace ResourceSchedule {
         uid_t uid = GetData<uid_t>();
         pid_t pid = GetData<pid_t>();
         ProcessRecord pr(uid, pid);
-        pr.isRenderProcess_ = true;
+        pr.processType_ = ProcRecordType::RENDER;
         pr.isActive_ = true;
         ProcessRecord mainProc(uid, pid);
         auto cgroupEventHandler =
@@ -1389,6 +1417,7 @@ namespace ResourceSchedule {
         OHOS::ResourceSchedule::HandleReportWebviewAudioStateFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportRunningLockEventFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportHisysEventFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportScreenCaptureEventFuzzTest(data, size);
         OHOS::ResourceSchedule::CheckVisibilityForRenderProcessFuzzTest(data, size);
         OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);

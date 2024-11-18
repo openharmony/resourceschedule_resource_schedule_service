@@ -366,45 +366,6 @@ HWTEST_F(ObserverEventTest, hisysEventWifiEvent_001, testing::ext::TestSize.Leve
 }
 
 /**
- * @tc.name: hisysEventScreenCaptureEvent_001
- * @tc.desc: test hisysevent screen capture event processing
- * @tc.type: FUNC
- */
-HWTEST_F(ObserverEventTest, hisysEventScreenCaptureEvent_001, testing::ext::TestSize.Level1)
-{
-    nlohmann::json sysEvent;
-    std::string eventName = "INVAILD";
-    // incorrect uid keyword
-    sysEvent["uid"] = TEST_UID;
-    hisysEventObserver_->ProcessScreenCaptureEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // incorrect pid keyword
-    sysEvent["APP_UID"] = TEST_UID;
-    sysEvent["pid"] = TEST_PID;
-    hisysEventObserver_->ProcessScreenCaptureEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // incorrect eventname
-    sysEvent["APP_PID"] = TEST_PID;
-    hisysEventObserver_->ProcessScreenCaptureEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // START_SCREEN_CAPTURE
-    eventName = "PLAYER_STATE";
-    sysEvent["STATUS"] = "start";
-    hisysEventObserver_->ProcessScreenCaptureEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-
-    // STOP_SCREEN_CAPTURE
-    sysEvent["STATUS"] = "stop";
-    hisysEventObserver_->ProcessScreenCaptureEvent(sysEvent, eventName);
-    sysEvent["STATUS"] = "test";
-    hisysEventObserver_->ProcessScreenCaptureEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
-}
-
-/**
  * @tc.name: processHiSysEvent_001
  * @tc.desc: the hisysevent onevent test
  * @tc.type: FUNC

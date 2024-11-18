@@ -22,7 +22,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-std::mutex OOBEManager::mutex_;
+ffrt::recursive_mutex OOBEManager::mutex_;
 std::vector<std::shared_ptr<IOOBETask>> OOBEManager::oobeTasks_;
 std::vector<std::function<void()>> OOBEManager::dataShareFunctions_;
 sptr<OOBEManager::ResDataAbilityObserver> OOBEManager::observer_ = nullptr;
@@ -48,14 +48,18 @@ OOBEManager& OOBEManager::GetInstance()
 
 bool OOBEManager::GetOOBValue()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     return g_oobeValue;
 }
 
 ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
-    if (!DataShareUtils::GetInstance().GetDataShareReadyFlag()) {
+    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
+    if (!DataShareUtils::GetInstance().IsConnectDataShareSucc()) {
+        if (DataShareUtils::GetInstance().GetDataShareReadyFlag()) {
+            RESSCHED_LOGE("dataShare is ready but conntect fail");
+            return ERR_NO_INIT;
+        }
         RESSCHED_LOGE("RegisterObserver: dataShare is not ready!");
         std::function dataShareFunction = [key, func, this]() {
             ReRegisterObserver(key, func);
@@ -141,7 +145,7 @@ void OOBEManager::Initialize()
 
 bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     if (task == nullptr) {
         RESSCHED_LOGE("Bad task passed!");
         return false;
@@ -159,7 +163,7 @@ void OOBEManager::StartListen()
     int resultValue = 0;
     ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
     if (resultValue != 0) {
-        std::lock_guard<std::mutex> lock(mutex_);
+        std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
         g_oobeValue = true;
         for (auto task : oobeTasks_) {
             task->ExcutingTask();
@@ -171,7 +175,7 @@ void OOBEManager::StartListen()
         ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
         if (result != 0) {
             RESSCHED_LOGI("User consent authorization!");
-            std::lock_guard<std::mutex> lock(mutex_);
+            std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
             g_oobeValue = true;
             for (auto task : oobeTasks_) {
                 task->ExcutingTask();
@@ -186,11 +190,23 @@ void OOBEManager::StartListen()
 
 void OOBEManager::OnReceiveDataShareReadyCallBack()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
-    for (auto function : dataShareFunctions_) {
+    ffrt::submit([]() {
+        DataShareUtils::GetInstance().SetDataShareReadyFlag(true);
+        OOBEManager::GetInstance().ExecuteDataShareFunction();
+        });
+}
+
+void OOBEManager::ExecuteDataShareFunction()
+{
+    std::vector<std::function<void()>> dataShareFunctions;
+    {
+        std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
+        dataShareFunctions = std::move(dataShareFunctions_);
+    }
+    for (auto function : dataShareFunctions) {
         function();
     }
-    dataShareFunctions_.clear();
+    RESSCHED_LOGI("execute data share function success");
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

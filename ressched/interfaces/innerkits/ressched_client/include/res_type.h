@@ -156,11 +156,9 @@ enum : uint32_t {
     RES_TYPE_USB_DEVICE = 62,
     RES_TYPE_CALL_STATE_CHANGED = 63,
     RES_TYPE_WIFI_P2P_STATE_CHANGED = 64,
-
-    // last resType
-    //report app associated start to performance radar
+    // report app associated start to performance radar
     RES_TYPE_APP_ASSOCIATED_START = 65,
-    //report thermal state event
+    // report thermal state event
     RES_TYPE_THERMAL_STATE = 66,
     // socperf event begin
     RES_TYPE_SOCPERF_CUST_EVENT_BEGIN = 67,
@@ -185,7 +183,7 @@ enum : uint32_t {
     RES_TYPE_SA_CONTROL_APP_EVENT = 76,
     // report CPU load of the entire machine，payload:cpuPercent
     RES_TYPE_SYSTEM_CPU_LOAD = 77,
-    // report download or upload scene,value 0 enter scene 1 exit scene.
+    // report download Or Upload scene,value 0 enter scene 1 exit scene.
     RES_TYPE_UPLOAD_DOWNLOAD = 78,
     // report main screen split，value 0 enter scene 1 exit scene.
     RES_TYPE_SPLIT_SCREEN = 79,
@@ -195,23 +193,19 @@ enum : uint32_t {
     RES_TYPE_REPORT_DISTRIBUTE_TID = 81,
     // report frame rate
     RES_TYPE_FRAME_RATE_REPORT = 82,
-
     // report web screen capture, value 0 start, value 1 stop
     RES_TYPE_WEBVIEW_SCREEN_CAPTURE = 83,
     // report video state. value 0 start playing, value 1 stop playing
     RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE = 84,
+
     // report location status. value 0 app status, value 1 switch status
     RES_TYPE_LOCATION_STATUS_CHANGE = 85,
     // report silent playback
     RES_TYPE_AUDIO_SILENT_PLAYBACK = 86,
     // report display mode event, value status, payload mode.
-    RES_TYPE_DEVICE_MODE_STATUS = 87,
-    // report systemload level
-    RES_TYPE_SYSTEMLOAD_LEVEL = 88,
+    RES_TYPE_DEVICE_MODE_STATUS = 88,
     // report distribute component change
     RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE = 89,
-    // report web drag resize
-    RES_TYPE_WEB_DRAG_RESIZE = 90,
     // report formCard create start/end
     RES_TYPE_FORM_STATE_CHANGE_EVENT = 91,
     // report power mode changed
@@ -252,12 +246,18 @@ enum : uint32_t {
     RES_TYPE_MMI_STATUS_CHANGE = 109,
     // report media output device change
     RES_TYPE_OUTPUT_DEVICE_CHANGE = 110,
+    // report device idle
+    RES_TYPE_DEVICE_IDLE = 111,
+    // report media output device change
+    RES_TYPE_BT_SERVICE_EVENT = 112,
     // report to hisi, let bmm_report begin change
     RES_TYPE_BMM_MONITER_CHANGE_EVENT = 113,
     // app frame drop event
     RES_TYPE_APP_FRAME_DROP = 114,
     // report rss cloud config update
     RES_TYPE_RSS_CLOUD_CONFIG_UPDATE = 115,
+    // report game info
+    RES_TYPE_GAME_INFO_NOTIFY = 116,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -270,6 +270,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_THERMAL_DATA,
     // check shoul force kill process,
     SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
+    // get nweb preload process set
+    SYNC_RES_TYPE_GET_NWEB_PRELOAD_SET,
     // report to request or release mutex status
     SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // report to check mutex before start
@@ -590,17 +592,6 @@ enum AncoConfig : int64_t {
 };
 
 /**
- * @brief connection State
- */
-enum ConnectionObserverStatus : int64_t {
-    EXTENSION_CONNECTED = 0,
-    EXTENSION_DISCONNECTED,
-    DLP_ABILITY_OPENED,
-    DLP_ABILITY_CLOSED,
-};
-
-
-/**
  * @brief charge status
  */
 enum ChargeStatus : int64_t {
@@ -616,13 +607,6 @@ enum UsbDeviceStatus : int64_t {
     USB_DEVICE_DETACHED = 1,
 };
 
-/**
- * @brief av_codec state
-*/
-enum AvCodecState : int64_t {
-    CODEC_START_INFO = 0,
-    CODEC_STOP_INFO = 1,
-};
 
 /**
  * @brief app associated start type
@@ -631,6 +615,25 @@ enum AssociatedStartType : int64_t {
     SCB_START_ABILITY = 0,
     EXTENSION_START_ABILITY = 1,
     MISSION_LIST_START_ABILITY = 2,
+};
+
+
+/**
+ * @brief connection State
+ */
+enum ConnectionObserverStatus : int64_t {
+    EXTENSION_CONNECTED = 0,
+    EXTENSION_DISCONNECTED,
+    DLP_ABILITY_OPENED,
+    DLP_ABILITY_CLOSED,
+};
+
+/**
+ * @brief av_codec state
+*/
+enum AvCodecState : int64_t {
+    CODEC_START_INFO = 0,
+    CODEC_STOP_INFO = 1,
 };
 
 /**
@@ -664,6 +667,16 @@ enum KeyPerfStatus : int64_t {
     ENTER_SCENE = 0,
     EXIT_SCENE = 1,
 };
+/**
+ * @brief ui sensitive extension
+ */
+const std::vector<int32_t > UI_SENSITIVE_EXTENSION = {
+    2, // INPUT_EXTENSION_TYPE
+    255, // UNSPECIFIED_EXTENSION_TYPE
+    256, // UI_EXTENSION_TYPE
+    257, // HMS_ACCOUNT
+    500 // SYS_COMMON_UI_TYPE
+};
 
 /**
  * @brief Collabroation Service status
@@ -685,39 +698,11 @@ enum SaControlAppStatus : int64_t {
 };
 
 /**
- * @brief Key Download Scene status
+ * @brief location state
  */
-enum KeyUploadOrDownloadStatus : int64_t {
-    ENTER_UPLOAD_DOWNLOAD_SCENE = 0,
-    EXIT_UPLOAD_DOWNLOAD_SCENE = 1,
-};
-
-
-/**
- * @brief Key Split Screen Scene status
- */
-enum KeySplitScreenStatus : int64_t {
-    ENTER_SPLIT_SCREEN_SCENE = 0,
-    EXIT_SPLIT_SCREEN_SCENE = 1,
-};
-
-/**
- * @brief Key Floating Window Scene status
- */
-enum KeyFloatingWindowStatus : int64_t {
-    ENTER_FLOATING_WINDOW_SCENE = 0,
-    EXIT_FLOATING_WINDOW_SCENE = 1,
-};
-
-/**
- * @brief ui sensitive extension
- */
-const std::vector<int32_t > UI_SENSITIVE_EXTENSION = {
-    2, // INPUT_EXTENSION_TYPE
-    255, // UNSPECIFIED_EXTENSION_TYPE
-    256, // UI_EXTENSION_TYPE
-    257, // HMS_ACCOUNT
-    500 // SYS_COMMON_UI_TYPE
+enum LocationStatus : int64_t {
+    APP_LOCATION_STATUE_CHANGE = 0,
+    LOCATION_SWTICH_CHANGE = 1,
 };
 
 /**
@@ -743,6 +728,23 @@ enum DeviceStatus : int64_t {
     THERMAL = 2,
     MEMORY_LEVEL = 3,
     HIGH_LOAD = 4,
+    DEVICE_IDLE = 5,
+};
+
+/**
+ * @brief Key Upload Or Download Scene status
+ */
+enum KeyUploadOrDownloadStatus : int64_t {
+    ENTER_UPLOAD_DOWNLOAD_SCENE = 0,
+    EXIT_UPLOAD_DOWNLOAD_SCENE = 1,
+};
+
+/**
+ * @brief Key Split Screen Scene status
+ */
+enum KeySplitScreenStatus : int64_t {
+    ENTER_SPLIT_SCREEN_SCENE = 0,
+    EXIT_SPLIT_SCREEN_SCENE = 1,
 };
 
 /**
@@ -754,43 +756,19 @@ enum DeviceModeStatus : int64_t {
 };
 
 /**
+ * @brief Key Floating Window Scene status
+ */
+enum KeyFloatingWindowStatus : int64_t {
+    ENTER_FLOATING_WINDOW_SCENE = 0,
+    EXIT_FLOATING_WINDOW_SCENE = 1,
+};
+
+/**
  * @brief web screen capture start
  */
 enum WebScreenCapture : int64_t {
     WEB_SCREEN_CAPTURE_START = 0,
     WEB_SCREEN_CAPTURE_STOP = 1,
-};
-
-/**
- * @brief web video state
- */
-enum WebVideoState : int64_t {
-    WEB_VIDEO_PLAYING_START = 0,
-    WEB_VIDEO_PLAYING_STOP = 1,
-};
-
-/**
- * @brief location state
- */
-enum LocationStatus : int64_t {
-    APP_LOCATION_STATUE_CHANGE = 0,
-    LOCATION_SWTICH_CHANGE = 1,
-};
-
-/**
- * @brief form create state
- */
-enum FormCreateStatus : int64_t {
-    FormCreateStart = 0,
-    FormCreateEnd = 1,
-};
-
-/**
- * @brief drag web window resize status
- */
-enum WebDragResizeStatus : int64_t {
-    WEB_DRAG_START = 0,
-    WEB_DRAG_END = 1,
 };
 
 /**
@@ -810,6 +788,22 @@ enum ContinuousStartupStatus : int64_t {
 };
 
 /**
+ * @brief web video state
+ */
+enum WebVideoState : int64_t {
+    WEB_VIDEO_PLAYING_START = 0,
+    WEB_VIDEO_PLAYING_STOP = 1,
+};
+
+/**
+ * @brief form create state
+ */
+enum FormCreateStatus : int64_t {
+    FormCreateStart = 0,
+    FormCreateEnd = 1,
+};
+
+/**
  * @brief account activating status
  */
 enum AccountActivatingStatus : int64_t {
@@ -824,6 +818,9 @@ enum ContinuousInstallStatus : int64_t {
     STOP_CONTINUOUS_INSTALL = 1,
 };
 
+/**
+ * @brief background perceivable status
+ */
 enum BackgroundPerceivableStatus : int64_t {
     PERCEIVABLE_START = 0,
     PERCEIVABLE_STOP = 1,
@@ -840,6 +837,22 @@ enum UserInteractionScene : int64_t {
 enum GameSchedStatus : int64_t {
     GAME_SCHED_START = 0,
     GAME_SCHED_STOP = 1,
+};
+
+/**
+ * @brief device idle status
+ */
+enum DeviceIdleStatus : int64_t {
+    DEVICE_IDLE_START = 0,
+};
+
+/**
+ * @brief bt service status
+ */
+enum BtServiceEvent : int64_t {
+    GATT_CONNECT_STATE = 0,
+    GATT_APP_REGISTER = 1,
+    SPP_CONNECT_STATE = 2
 };
 
 /**
