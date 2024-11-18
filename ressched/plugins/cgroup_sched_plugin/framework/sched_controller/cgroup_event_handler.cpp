@@ -1152,12 +1152,17 @@ void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t
 
 void CgroupEventHandler::HandleOnAppStopped(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+    int32_t uid = 0;
+    if (!ParseValue(uid, "uid", payload)) {
         return;
     }
-    int32_t uid;
-    if (!ParseValue(uid, "uid", payload)) {
+    if (!payload.contains("bundleName") || !payload.at("bundleName").is_string()) {
+        return;
+    }
+    std::string bundleName = payload["pid"].get<std::string>();
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGI("%{public}s : %{public}d, %{public}s", __func__, uid, bundleName.c_str());
