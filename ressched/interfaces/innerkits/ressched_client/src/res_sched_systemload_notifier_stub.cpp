@@ -57,7 +57,6 @@ int32_t ResSchedSystemloadNotifierStub::OnSystemloadLevelInner(MessageParcel& da
         RESSCHED_LOGE("wrong level type.");
         return ERR_INVALID_VALUE;
     }
-    printf("test 2222\n");
     OnSystemloadLevel(level);
     return ERR_OK;
 }
