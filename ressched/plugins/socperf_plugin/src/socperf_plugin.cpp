@@ -357,7 +357,7 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
 
 std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid) {
     std::string bundleName = "";
-    OHOS:sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
+    OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
         OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (systemAbilityManager == nullptr) {
         return bundleName;
