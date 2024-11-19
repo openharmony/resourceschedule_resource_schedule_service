@@ -379,6 +379,52 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_AppStartupSceneRec_002, Function | Med
 }
 
 /**
+ * @tc.name: CGroupSchedTest_HandleReportBluetoothConnectState_001
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB0CYC
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_HandleReportBluetoothConnectState_001, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    uint32_t resType = 0;
+    int64_t value = 1;
+    nlohmann::json payload;
+    payload["uid"] = "1000";
+    payload["pid"] = "1000";
+    auto processRecord = supervisor_->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
+    cgroupEventHandler->HandleReportBluetoothConnectState(resType, value, payload);
+    EXPECT_EQ(processRecord->bluetoothState_, 1);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_HandleMmiInputState_001
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB0CYC
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_HandleMmiInputState_001, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    uint32_t resType = 0;
+    int64_t value = 0;
+    nlohmann::json payload;
+    payload["uid"] = "1000";
+    payload["pid"] = "1000";
+    payload["bundleName"] = "test";
+    payload["syncStatus"] = "0";
+    auto processRecord = supervisor_->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
+    cgroupEventHandler->HandleMmiInputState(resType, value, payload);
+    EXPECT_EQ(processRecord->mmiStatus_, 0);
+}
+
+/**
  * @tc.name: CGroupSchedTest_CgroupEventHandler_001
  * @tc.desc: cgroup event handler Test
  * @tc.type: FUNC
