@@ -658,7 +658,7 @@ enum HeavyLoadMutexSceneBoardcastScene : int64_t {
 /**
  * @brief game boost state
  */
-enum GameBoostState : in64_t {
+enum GameBoostState : int64_t {
     BOOST_START = 0,
     BOOST_END = 1,
 };
