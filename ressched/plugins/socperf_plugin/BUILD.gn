@@ -37,7 +37,7 @@ ohos_shared_library("socperf_plugin") {
     "hilog:libhilog",
     "ipc:ipc_single",
     "libxml2:libxml2",
-    "samgr:samgr_proxy"
+    "samgr:samgr_proxy",
   ]
   defines = []
   if (ressched_with_resourceschedule_soc_perf_enable) {
