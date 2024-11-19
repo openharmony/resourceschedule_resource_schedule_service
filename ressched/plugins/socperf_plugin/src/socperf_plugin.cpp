@@ -346,6 +346,10 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
     if (data->value == WindowFocusStatus::WINDOW_FOCUS) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, "");
+        if (reqAppTypeFunc_ == nullptr) {
+            SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH reqAppTypeFunc_ is null");
+            return;
+        }
         if (data->payload == nullptr || !data->payload.contains("uid") || !data->payload.at("uid").is_string()) {
             return;
         }
