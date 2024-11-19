@@ -47,9 +47,7 @@ ohos_unittest("resschedservice_test") {
     "src/scene_recognize_test.cpp",
   ]
 
-  deps = [
-    "${ressched_services}:resschedsvc_static",
-  ]
+  deps = [ "${ressched_services}:resschedsvc_static" ]
 
   external_deps = [
     "ability_base:zuri",

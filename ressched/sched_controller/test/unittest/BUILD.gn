@@ -30,9 +30,7 @@ ohos_unittest("event_controller_test") {
     "observer_event_test.cpp",
   ]
 
-  deps = [
-    "${ressched_services}:resschedsvc_static",
-  ]
+  deps = [ "${ressched_services}:resschedsvc_static" ]
 
   external_deps = [
     "ability_base:want",
