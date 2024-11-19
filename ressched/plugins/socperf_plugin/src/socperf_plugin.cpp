@@ -381,7 +381,7 @@ std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid)
 void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 {
     if (socperfGameBoostSwitch_ && focusAppType_ == APP_TYPE_GAME) {
-        SOC_PERF_LOGE("SocPerfPlugin: socperf->EVENT_CLICK game can not get click");
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK game can not get click");
         return;
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK: %{public}lld", (long long)data->value);
@@ -398,7 +398,7 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
 {
     if (data == nullptr) {
-        SOC_PERF_LOGE("SocPerfPlugin: socperf->GAME_BOOST null data");
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->GAME_BOOST null data");
         return false;
     }
     SOC_PERF_LOGD("SocPerfPlugin:socperf->GAME_BOOST: %{public}lld", (long long)data->value);
@@ -432,7 +432,7 @@ void SocPerfPlugin::HandlePopPage(const std::shared_ptr<ResData>& data)
 void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
     if (socperfGameBoostSwitch_ && focusAppType_ == APP_TYPE_GAME) {
-        SOC_PERF_LOGE("SocPerfPlugin: socperf->EVENT_SLIDE game can not get slide");
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_SLIDE game can not get slide");
         return;
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
