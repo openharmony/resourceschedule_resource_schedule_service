@@ -350,7 +350,7 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
             return;
         }
         std::string bundleName = GetBundleNameByUid(atoi(data->payload["uid"].get<std::string>().c_str()));
-        focusAppType_ = reqAppTypeFunc_(bunldeName);
+        focusAppType_ = reqAppTypeFunc_(bundleName);
         SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH:%{public}d", focusAppType_);
     }
 }
@@ -363,7 +363,7 @@ std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid)
     if (systemAbilityManager == nullptr) {
         return bundleName;
     }
-    OHOS::sptr<OHOS::IRemoteObjece> object =
+    OHOS::sptr<OHOS::IRemoteObject> object =
         systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     sptr<AppExecFwk::IBundleMgr> iBundleMgr = OHOS::iface_cast<OHOS::AppExecFwk::IBundleMgr>(object);
     if (!iBundleMgr) {
@@ -395,7 +395,7 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
     }
 }
 
-bool SocPerfPlugin:HandleGameBoost(const std::shared_ptr<ResData>& data)
+bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
 {
     if (data == nullptr) {
         SOC_PERF_LOGE("SocPerfPlugin: socperf->GAME_BOOST null data");
