@@ -32,7 +32,6 @@ ohos_unittest("event_controller_test") {
 
   deps = [
     "${ressched_services}:resschedsvc_static",
-    "//third_party/googletest:gtest_main",
   ]
 
   external_deps = [
