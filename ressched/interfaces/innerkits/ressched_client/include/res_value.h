@@ -167,6 +167,7 @@ enum ClickEventType : int64_t {
     CLICK_EVENT = 2,
     TOUCH_EVENT_UP = 3,
     TOUCH_EVENT_PULL_UP = 4,
+    TOUCH_EVENT_DOWN_MNI = 5,
 };
 
 /**
