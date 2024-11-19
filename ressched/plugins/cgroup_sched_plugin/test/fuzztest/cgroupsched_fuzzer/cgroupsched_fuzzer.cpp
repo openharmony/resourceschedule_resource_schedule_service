@@ -1125,7 +1125,7 @@ namespace ResourceSchedule {
         processData.bundleName = std::to_string(*data);
         processData.hostPid = GetData<int32_t>();
         processData.processType = static_cast<AppExecFwk::ProcessType>(GetData<int32_t>());
-        processData.extensionType = static_cast<AppExecFwk::ExtensionAbilityType>(GetData<int32_t>());  
+        processData.extensionType = static_cast<AppExecFwk::ExtensionAbilityType>(GetData<int32_t>());
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
