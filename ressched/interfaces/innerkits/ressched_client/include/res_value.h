@@ -662,6 +662,14 @@ enum GameBoostState : int64_t {
     BOOST_START = 0,
     BOOST_END = 1,
 };
+
+/**
+* @brief CosmicCube Status
+*/
+enum CosmicCubeState : int64_t {
+    APPLICATION_ABOUT_TO_APPEAR = 0,
+    APPLICATION_ABOUT_TO_HIDE = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
