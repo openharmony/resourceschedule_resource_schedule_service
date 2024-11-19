@@ -1152,21 +1152,22 @@ void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t
 
 void CgroupEventHandler::HandleOnAppStopped(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    int32_t uid = 0;
-    if (!ParseValue(uid, "uid", payload)) {
+    if (!payload.contains("uid") || !payload.at("uid").is_number_integer()) {
+        CGS_LOGE("%{public}s : uid invalid!", __func__);
         return;
     }
+    int32_t uid = payload["uid"].get<int32_t>();
     if (!payload.contains("bundleName") || !payload.at("bundleName").is_string()) {
+        CGS_LOGE("%{public}s : bundleName invalid!", __func__);
         return;
     }
-    std::string bundleName = payload["pid"].get<std::string>();
+    std::string bundleName = payload["bundleName"].get<std::string>();
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
     CGS_LOGI("%{public}s : %{public}d, %{public}s", __func__, uid, bundleName.c_str());
-    ChronoScope cs("HandleOnAppStopped");
     supervisor_->RemoveApplication(uid);
 }
 
