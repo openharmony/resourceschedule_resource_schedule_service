@@ -91,7 +91,6 @@ private:
     void HandleScreenOn();
     void HandleScreenOff();
     std::string GetBundleNameByUid(const int32_t uid);
-
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
