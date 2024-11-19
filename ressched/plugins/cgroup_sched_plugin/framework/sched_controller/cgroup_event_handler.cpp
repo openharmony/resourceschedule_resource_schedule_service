@@ -195,6 +195,9 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
     ChronoScope cs("HandleApplicationStateChanged");
+    if (state == (int32_t)(ApplicationState::APP_STATE_TERMINATED)) {
+        return;
+    }
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     app->SetName(bundleName);
     app->state_ = state;
