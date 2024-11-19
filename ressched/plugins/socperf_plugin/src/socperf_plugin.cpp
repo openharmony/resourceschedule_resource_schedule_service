@@ -226,7 +226,7 @@ void SocPerfPlugin::AddEventToFunctionMap()
         functionMap.insert(std::make_pair(RES_TYPE_RGM_BOOTING_STATUS,
             [this](const std::shared_ptr<ResData>& data) { HandleRgmBootingStatus(data); }));
     }
-    socperfGameBoostSwitch_ = InitFeatureSwitch();
+    socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
 void SocPerfPlugin::InitResTypes()
@@ -346,10 +346,10 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
     if (data->value == WindowFocusStatus::WINDOW_FOCUS) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, "");
-        if (data->payload == nullptr || !data->payload.contains("uid") || data->payload.at("uid").is_string()) {
+        if (data->payload == nullptr || !data->payload.contains("uid") || !data->payload.at("uid").is_string()) {
             return;
         }
-        std::string bundleName = GetBundleNameByUid(atoi(data->payload["uid"].get<std::string>().c_str));
+        std::string bundleName = GetBundleNameByUid(atoi(data->payload["uid"].get<std::string>().c_str()));
         focusAppType_ = reqAppTypeFunc_(bunldeName);
         SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH:%{public}d", focusAppType_);
     }
@@ -358,16 +358,16 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
 std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid) {
     std::string bundleName = "";
     OHOS:sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
-        OHOS:SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+        OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (systemAbilityManager == nullptr) {
         return bundleName;
     }
-    OHOS:sptr<OHOS::IRemoteObjece> object =
+    OHOS::sptr<OHOS::IRemoteObjece> object =
         systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     sptr<AppExecFwk::IBundleMgr> iBundleMgr = OHOS::iface_cast<OHOS::AppExecFwk::IBundleMgr>(object);
     if (!iBundleMgr) {
         SOC_PERF_LOGD("%{pubilc}s null bundle manager.", __func__);
-        return budleName;
+        return bundleName;
     }
 
     ErrCode ret = iBundleMgr->GetNameForUid(uid, bundleName);
