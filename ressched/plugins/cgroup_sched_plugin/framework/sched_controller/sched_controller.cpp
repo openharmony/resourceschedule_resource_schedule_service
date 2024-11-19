@@ -144,6 +144,7 @@ void SchedController::InitResTypes()
         ResType::RES_TYPE_SYSTEM_CPU_LOAD,
         ResType::RES_TYPE_THERMAL_STATE,
         ResType::RES_TYPE_COSMIC_CUBE_STATE_CHANGE,
+        ResType::RES_TYPE_APP_STOPPED,
     };
 }
 
@@ -288,6 +289,9 @@ void SchedController::InitDispatchResFuncMap()
         { ResType::RES_TYPE_COSMIC_CUBE_STATE_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleReportCosmicCubeState(resType, value, payload); } },
+        { ResType::RES_TYPE_APP_STOPPED, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleOnAppStopped(resType, value, payload); } },
     };
 }
 

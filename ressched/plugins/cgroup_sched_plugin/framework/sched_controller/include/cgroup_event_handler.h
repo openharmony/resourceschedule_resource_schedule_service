@@ -78,6 +78,7 @@ public:
     void ReportAbilityStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void UpdateMmiStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportCosmicCubeState(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleOnAppStopped(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
     bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);

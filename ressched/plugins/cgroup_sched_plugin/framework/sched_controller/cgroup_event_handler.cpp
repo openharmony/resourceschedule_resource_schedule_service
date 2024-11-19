@@ -195,9 +195,7 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
     ChronoScope cs("HandleApplicationStateChanged");
-    // remove terminated application
     if (state == (int32_t)(ApplicationState::APP_STATE_TERMINATED)) {
-        supervisor_->RemoveApplication(uid);
         return;
     }
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
@@ -1153,6 +1151,27 @@ void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t
 
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType,
         procRecord->videoState_);
+}
+
+void CgroupEventHandler::HandleOnAppStopped(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    if (!payload.contains("uid") || !payload.at("uid").is_number_integer()) {
+        CGS_LOGE("%{public}s : uid invalid!", __func__);
+        return;
+    }
+    int32_t uid = payload["uid"].get<int32_t>();
+    if (!payload.contains("bundleName") || !payload.at("bundleName").is_string()) {
+        CGS_LOGE("%{public}s : bundleName invalid!", __func__);
+        return;
+    }
+    std::string bundleName = payload["bundleName"].get<std::string>();
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+    CGS_LOGI("%{public}s : %{public}d, %{public}s", __func__, uid, bundleName.c_str());
+    supervisor_->RemoveApplication(uid);
 }
 
 bool CgroupEventHandler::GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::shared_ptr<Application>& app,
