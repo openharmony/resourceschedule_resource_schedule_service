@@ -23,7 +23,6 @@
 #include <utility>
 #include <unordered_set>
 
-#include "inner_event.h"
 #include "ffrt.h"
 
 #include "inetwork_latency_switcher.h"
