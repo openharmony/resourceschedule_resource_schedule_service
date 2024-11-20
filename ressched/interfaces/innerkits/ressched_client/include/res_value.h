@@ -656,6 +656,14 @@ enum HeavyLoadMutexSceneBoardcastScene : int64_t {
 };
 
 /**
+ * @brief game boost state
+ */
+enum GameBoostState : int64_t {
+    BOOST_START = 0,
+    BOOST_END = 1,
+};
+
+/**
 * @brief CosmicCube Status
 */
 enum CosmicCubeState : int64_t {
