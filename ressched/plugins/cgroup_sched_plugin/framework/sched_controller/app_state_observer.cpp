@@ -130,12 +130,6 @@ void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processDat
     }
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHandler) {
-        auto uid = processData.uid;
-        auto pid = processData.pid;
-        auto hostPid = processData.hostPid;
-        auto bundleName = processData.bundleName;
-        auto processType = static_cast<int32_t>(processData.processType);
-        auto extensionType = static_cast<int32_t>(processData.extensionType);
         cgHandler->PostTask([cgHandler, processData] {
             cgHandler->HandleProcessCreated(processData);
         });
