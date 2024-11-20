@@ -190,6 +190,10 @@ void BackgroundTaskObserver::OnRemoteDied(const wptr<IRemoteObject> &object)
 void BackgroundTaskObserver::MarshallingResourceInfo(
     const std::shared_ptr<BackgroundTaskMgr::ResourceCallbackInfo> &resourceInfo, nlohmann::json &payload)
 {
+    if (!resourceInfo) {
+        CGS_LOGE("%{public}s : resourceInfo nullptr!",__func__);
+        return;
+    }
     payload["pid"] = resourceInfo->GetPid();
     payload["uid"] = resourceInfo->GetUid();
     payload["resourceNumber"] = resourceInfo->GetResourceNumber();
