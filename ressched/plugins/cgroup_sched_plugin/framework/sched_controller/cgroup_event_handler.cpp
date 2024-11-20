@@ -579,6 +579,10 @@ void CgroupEventHandler::HandleDrawingContentChangeWindow(
     }
     procRecord->processDrawingState_ = drawingContentState;
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
+    if (!windowInfo) {
+        CGS_LOGE("%{public}s : windowInfo nullptr!", __func__);
+        return;
+    }
     windowInfo->drawingContentState_ = drawingContentState;
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
         ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
