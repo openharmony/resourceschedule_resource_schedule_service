@@ -130,14 +130,8 @@ void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processDat
     }
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHandler) {
-        auto uid = processData.uid;
-        auto pid = processData.pid;
-        auto hostPid = processData.hostPid;
-        auto bundleName = processData.bundleName;
-        auto processType = static_cast<int32_t>(processData.processType);
-        auto extensionType = static_cast<int32_t>(processData.extensionType);
-        cgHandler->PostTask([cgHandler, uid, pid, hostPid, processType, bundleName, extensionType] {
-            cgHandler->HandleProcessCreated(uid, pid, hostPid, processType, bundleName, extensionType);
+        cgHandler->PostTask([cgHandler, processData] {
+            cgHandler->HandleProcessCreated(processData);
         });
     }
 
@@ -194,7 +188,10 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     payload["uid"] = std::to_string(appStateData.uid);
     payload["bundleName"] = appStateData.bundleName;
     payload["extensionType"] = std::to_string(static_cast<uint32_t>(appStateData.extensionType));
-    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);
+    if (!appStateData.isPreloadModule) {
+        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state,
+            payload);
+    }
     ResSchedUtils::GetInstance().ReportAppStateInProcess(appStateData.state, appStateData.pid);
 }
 

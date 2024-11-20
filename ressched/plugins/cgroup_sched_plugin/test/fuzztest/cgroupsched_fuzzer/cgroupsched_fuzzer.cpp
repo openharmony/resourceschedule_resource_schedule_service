@@ -1119,18 +1119,19 @@ namespace ResourceSchedule {
         g_pos = 0;
 
         // getdata
-        uid_t uid = GetData<uid_t>();
-        pid_t pid = GetData<pid_t>();
-        std::string bundleName(std::to_string(*data));
-        int32_t hostPid = GetData<int32_t>();
-        int32_t processType = GetData<int32_t>();
-        int32_t extensionType = GetData<int32_t>();
+        ProcessData processData;
+        processData.uid = GetData<uid_t>();
+        processData.pid = GetData<pid_t>();
+        processData.bundleName = std::to_string(*data);
+        processData.hostPid = GetData<int32_t>();
+        processData.processType = static_cast<AppExecFwk::ProcessType>(GetData<int32_t>());
+        processData.extensionType = static_cast<AppExecFwk::ExtensionAbilityType>(GetData<int32_t>());
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
-        cgroupEventHandler->HandleProcessCreated(uid, pid, hostPid, processType, bundleName, extensionType);
+        cgroupEventHandler->HandleProcessCreated(processData);
         cgroupEventHandler->SetSupervisor(g_supervisor);
-        cgroupEventHandler->HandleProcessCreated(uid, pid, hostPid, processType, bundleName, extensionType);
+        cgroupEventHandler->HandleProcessCreated(processData);
 
         return true;
     }

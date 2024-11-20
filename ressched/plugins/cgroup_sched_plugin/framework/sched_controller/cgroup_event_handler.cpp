@@ -290,24 +290,26 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, const
         AdjustSource::ADJS_EXTENSION_STATE);
 }
 
-void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t hostPid, int32_t processType,
-    const std::string& bundleName, int32_t extensionType)
+void CgroupEventHandler::HandleProcessCreated(const ProcessData &processData)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
+    auto processType = static_cast<int32_t>(processData.processType);
+    auto extensionType = static_cast<int32_t>(processData.extensionType);
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d",
-        __func__, uid, pid, hostPid, processType, bundleName.c_str(), extensionType);
+        __func__, processData.uid, processData.pid, processData.hostPid, processType, processData.bundleName.c_str(),
+        extensionType);
     ChronoScope cs("HandleProcessCreated");
-    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
-    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
-    app->SetName(bundleName);
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(processData.uid);
+    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(processData.pid);
+    app->SetName(processData.bundleName);
     switch (processType) {
         case static_cast<int32_t>(ProcessType::RENDER):
             procRecord->processType_ = ProcRecordType::RENDER;
-            procRecord->hostPid_ = hostPid;
-            app->AddHostProcess(hostPid);
+            procRecord->hostPid_ = processData.hostPid;
+            app->AddHostProcess(processData.hostPid);
             break;
         case static_cast<int32_t>(ProcessType::EXTENSION):
             procRecord->processType_ = ProcRecordType::EXTENSION;
@@ -315,19 +317,21 @@ void CgroupEventHandler::HandleProcessCreated(uid_t uid, pid_t pid, int32_t host
             break;
         case static_cast<int32_t>(ProcessType::GPU):
             procRecord->processType_ = ProcRecordType::GPU;
-            procRecord->hostPid_ = hostPid;
-            app->AddHostProcess(hostPid);
+            procRecord->hostPid_ = processData.hostPid;
+            app->AddHostProcess(processData.hostPid);
             break;
         case static_cast<int32_t>(ProcessType::CHILD):
             procRecord->processType_ = ProcRecordType::CHILD;
-            procRecord->hostPid_ = hostPid;
-            app->AddHostProcess(hostPid);
+            procRecord->hostPid_ = processData.hostPid;
+            app->AddHostProcess(processData.hostPid);
             break;
         default:
             break;
     }
-    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-        AdjustSource::ADJS_PROCESS_CREATE);
+    AdjustSource policy = processData.isPreloadModule ? AdjustSource::ADJS_APP_PRELOAD :
+        AdjustSource::ADJS_PROCESS_CREATE;
+
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), policy);
 }
 
 void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, const std::string& bundleName)
