@@ -580,7 +580,7 @@ void CgroupEventHandler::HandleDrawingContentChangeWindow(
     procRecord->processDrawingState_ = drawingContentState;
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
     if (!windowInfo) {
-        CGS_LOGE("{public}s : windowInfo nullptr!", __func__);
+        CGS_LOGE("%{public}s : windowInfo nullptr!", __func__);
         return;
     }
     windowInfo->drawingContentState_ = drawingContentState;
