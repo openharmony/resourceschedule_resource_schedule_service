@@ -61,8 +61,8 @@ ohos_unittest("resschedservice_test") {
     "ffrt:libffrt",
     "hilog:libhilog",
     "ipc:ipc_single",
-    "window_manager:libdm",
     "selinux_adapter:librestorecon",
+    "window_manager:libdm",
   ]
 
   sanitize = {
