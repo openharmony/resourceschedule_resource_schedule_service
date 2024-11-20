@@ -59,10 +59,11 @@ OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
 {
     OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
         OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    OHOS::sptr<OHOS::IRemoteObject> object = systemAbilityManager->GetSystemAbility(OHOS::APP_MGR_SERVICE_ID);
-    if (systemAbilityManager == nullptr) {
+    if (!systemAbilityManager) {
+        CGS_LOGE("%{public}s : systemAbilityManager nullptr!", __func__);
         return nullptr;
     }
+    OHOS::sptr<OHOS::IRemoteObject> object = systemAbilityManager->GetSystemAbility(OHOS::APP_MGR_SERVICE_ID);
     return OHOS::iface_cast<OHOS::AppExecFwk::IAppMgr>(object);
 }
 
