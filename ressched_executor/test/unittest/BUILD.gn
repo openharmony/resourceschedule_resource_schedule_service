@@ -48,9 +48,11 @@ ohos_unittest("resschedexefwk_test") {
     "access_token:libnativetoken",
     "access_token:libtoken_setproc",
     "c_utils:utils",
+    "cJSON:cjson",
     "ffrt:libffrt",
     "hilog:libhilog",
     "ipc:ipc_single",
+    "selinux_adapter:librestorecon",
   ]
 
   public_external_deps = [ "json:nlohmann_json_static" ]

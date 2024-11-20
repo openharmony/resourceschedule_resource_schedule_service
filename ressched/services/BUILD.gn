@@ -92,10 +92,8 @@ ohos_shared_library("resschedsvc") {
     "background_task_mgr:bgtaskmgr_innerkits",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
-    "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
     "config_policy:configpolicy_util",
-    "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
@@ -112,7 +110,11 @@ ohos_shared_library("resschedsvc") {
     "window_manager:libwm_lite",
   ]
 
-  public_external_deps = [ "json:nlohmann_json_static" ]
+  public_external_deps = [
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
+    "json:nlohmann_json_static",
+  ]
 
   if (device_movement_perception_enable) {
     defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
@@ -214,6 +216,12 @@ ohos_static_library("resschedsvc_static") {
     "../common:ressched_common_utils",
   ]
 
+  public_external_deps = [
+    "eventhandler:libeventhandler",
+    "libxml2:libxml2",
+    "safwk:system_ability_fwk",
+  ]
+
   external_deps = [
     "ability_base:want",
     "ability_runtime:app_manager",
@@ -228,7 +236,6 @@ ohos_static_library("resschedsvc_static") {
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
     "config_policy:configpolicy_util",
-    "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
@@ -238,9 +245,7 @@ ohos_static_library("resschedsvc_static") {
     "input:libmmi-client",
     "ipc:ipc_single",
     "jsoncpp:jsoncpp",
-    "libxml2:libxml2",
     "os_account:os_account_innerkits",
-    "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libdm",
     "window_manager:libwm_lite",

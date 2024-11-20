@@ -41,7 +41,6 @@ ohos_fuzztest("ResSchedFuzzTest") {
   deps = [
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
     "${ressched_services}:resschedsvc_static",
-    "//third_party/libxml2:xml2",
   ]
 
   external_deps = [

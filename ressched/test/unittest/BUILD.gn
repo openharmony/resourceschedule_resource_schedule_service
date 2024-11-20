@@ -56,11 +56,13 @@ ohos_unittest("resschedservice_test") {
     "access_token:libnativetoken",
     "access_token:libtoken_setproc",
     "c_utils:utils",
+    "cJSON:cjson",
     "data_share:datashare_consumer",
     "ffrt:libffrt",
     "hilog:libhilog",
     "ipc:ipc_single",
     "window_manager:libdm",
+    "selinux_adapter:librestorecon",
   ]
 
   sanitize = {
@@ -102,10 +104,12 @@ ohos_unittest("resschedfwk_test") {
   external_deps = [
     "ability_runtime:ability_manager",
     "c_utils:utils",
+    "cJSON:cjson",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "ipc:ipc_single",
+    "selinux_adapter:librestorecon",
   ]
 
   defines = []
