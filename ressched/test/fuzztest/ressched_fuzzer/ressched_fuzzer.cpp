@@ -378,6 +378,11 @@ namespace {
             return false;
         }
 
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
         uint32_t resType = GetData<uint32_t>();
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
@@ -412,6 +417,11 @@ namespace {
             return false;
         }
 
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
+
         std::string key = GetStringFromData(int(size));
         OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
         if (!DoInit()) {
@@ -438,6 +448,11 @@ namespace {
         if (size <= TWO_PARAMETERS * sizeof(std::string)) {
             return false;
         }
+
+        // initialize
+        g_data = data;
+        g_size = size;
+        g_pos = 0;
 
         std::string key = GetStringFromData(int(size));
         std::string value = GetStringFromData(int(size));
