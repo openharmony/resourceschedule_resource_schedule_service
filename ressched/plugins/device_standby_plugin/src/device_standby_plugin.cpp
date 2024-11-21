@@ -16,11 +16,11 @@
 #ifdef RSS_DEVICE_STANDBY_ENABLE
 #include "device_standby_plugin.h"
 #include "standby_service_client.h"
-#include "standby_res_data.h"
 #include "standby_service_log.h"
 #include "config_info.h"
 #include "plugin_mgr.h"
 #include "res_type.h"
+#include "nlohmann/json.hpp"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -74,7 +74,7 @@ void DeviceStandbyPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
         data->resType, (long long)(data->value));
 
     DevStandbyMgr::StandbyServiceClient::GetInstance().HandleEvent(
-        std::make_shared<DevStandbyMgr::ResData>(data->resType, data->value, data->payload));
+        std::make_shared<ResData>(data->resType, data->value, data->payload));
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
