@@ -44,6 +44,7 @@
 #include "res_type.h"
 #include "accesstoken_kit.h"
 #include "token_setproc.h"
+#include <fuzzzer/FuzzedDataProvider.h>
 
 #define private public
 #define protected public
@@ -145,44 +146,6 @@ namespace {
     size_t g_size = 0;
     size_t g_pos;
 
-    /**
-     * describe: get data from outside untrusted data(g_data) which size is according to sizeof(T)
-     * tips: only support basic type
-     */
-    template<class T>
-    T GetData()
-    {
-        T object {};
-        size_t objectSize = sizeof(object);
-        if (g_data == nullptr || objectSize > g_size - g_pos) {
-            return object;
-        }
-        errno_t ret = memcpy_s(&object, objectSize, g_data + g_pos, objectSize);
-        if (ret != EOK) {
-            return {};
-        }
-        g_pos += objectSize;
-        return object;
-    }
-
-    std::string GetStringFromData(int strlen)
-    {
-        if (strlen <= 0) {
-            return "";
-        }
-        char cstr[strlen];
-        cstr[strlen - 1] = '\0';
-        for (int i = 0; i < strlen - 1; i++) {
-            char tmp = GetData<char>();
-            if (tmp == '\0') {
-                tmp = '1';
-            }
-            cstr[i] = tmp;
-        }
-        std::string str(cstr);
-        return str;
-    }
-
     bool DoInit()
     {
         std::lock_guard<std::mutex> lock(mutexLock);
@@ -210,47 +173,30 @@ namespace {
         return remoteObj->SendRequest(code, data, reply, option);
     }
 
-    bool DoSomethingInterestingWithMyAPI(const uint8_t* data, size_t size)
+    bool DoSomethingInterestingWithMyAPI(FuzzedDataProvider* fdp)
     {
-        if (size <= MIN_LEN) {
-            return false;
-        }
-
         MessageParcel dataMessageParcel;
         if (!dataMessageParcel.WriteInterfaceToken(IRemoteStub<IResSchedService>::GetDescriptor())) {
             return false;
         }
 
-        uint32_t code = *(reinterpret_cast<const uint32_t*>(data));
-        size -= sizeof(uint32_t);
-
-        dataMessageParcel.WriteBuffer(data + sizeof(uint32_t), size);
+        uint32_t code = fdp->ConsumeIntegral<uint32_t>();
+        std::string data = fdp->ConsumeRandomLengthString();
+        dataMessageParcel.WriteBuffer(data.c_str(), data.size());
         dataMessageParcel.RewindRead(0);
 
         onRemoteRequest(code, dataMessageParcel);
         return true;
     }
 
-    bool OnRemoteRequest(const uint8_t* data, size_t size)
+    bool OnRemoteRequest(FuzzedDataProvider* fdp)
     {
-        if (data == nullptr) {
-            return false;
-        }
-
-        if (size <= MIN_LEN) {
-            return false;
-        }
-
-        // initialize
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
-
         // getdata
-        uint32_t fuzzCode = GetData<uint32_t>();
+        uint32_t fuzzCode = fdp->ConsumeIntegral<uint32_t>();
+        std::string data = fdp->ConsumeRandomLengthString();
         MessageParcel fuzzData;
         fuzzData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
-        fuzzData.WriteBuffer(g_data + g_pos, g_size - g_pos);
+        fuzzData.WriteBuffer(data.c_str(), data.size());
         fuzzData.RewindRead(0);
         MessageParcel fuzzReply;
         MessageOption fuzzOption;
@@ -259,52 +205,26 @@ namespace {
         return true;
     }
 
-    bool SyncEventFuzzTest(const uint8_t* data, size_t size)
+    bool SyncEventFuzzTest(FuzzedDataProvider* fdp)
     {
-        if (data == nullptr) {
-            return false;
-        }
-
-        if (size <= MIN_LEN) {
-            return false;
-        }
-
-        // initialize
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
-
         // getdata
         MessageParcel fuzzData;
+        std::string data = fdp->ConsumeRandomLengthString();
         fuzzData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
-        fuzzData.WriteBuffer(g_data + g_pos, g_size - g_pos);
+        fuzzData.WriteBuffer(data.c_str(), data.size());
         fuzzData.RewindRead(0);
         MessageParcel fuzzReply;
         DelayedSingleton<ResSchedService>::GetInstance()->ReportSyncEventInner(fuzzData, fuzzReply);
         return true;
     }
 
-    bool ResSchedClientFuzzTest(const uint8_t* data, size_t size)
+    bool ResSchedClientFuzzTest(FuzzedDataProvider* fdp)
     {
-        if (data == nullptr) {
-            return false;
-        }
-
-        if (size <= sizeof(uint32_t) + sizeof(int64_t) + TWO_PARAMETERS * sizeof(std::string)) {
-            return false;
-        }
-
-        // initialize
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
-
-        uint32_t resType = GetData<uint32_t>();
-        int64_t value = GetData<int64_t>();
+        uint32_t resType = fdp->ConsumeIntegral<uint32_t>();
+        int64_t value = fdp->ConsumeIntegral<int64_t>();
         std::unordered_map<std::string, std::string> mapPayload;
-        mapPayload["pid"] = GetStringFromData(int(size) - sizeof(uint32_t) - sizeof(int64_t));
-        mapPayload["processName"] = GetStringFromData(int(size) - sizeof(std::string) -
-        sizeof(uint32_t) - sizeof(int64_t));
+        mapPayload["pid"] = fdp->ConsumeRandomLengthString();
+        mapPayload["processName"] = fdp->ConsumeRandomLengthString();
 
         ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
         ResSchedClient::GetInstance().KillProcess(mapPayload);
@@ -317,18 +237,9 @@ namespace {
         return true;
     }
 
-    bool OnSystemloadLevelFuzzTest(const uint8_t* data, size_t size)
+    bool OnSystemloadLevelFuzzTest(FuzzedDataProvider* fdp)
     {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
-
-        int32_t level = GetData<int32_t>();
+        int32_t level = fdp->ConsumeIntegral<int32_t>();
         if (!DoInit()) {
             return false;
         }
@@ -337,21 +248,12 @@ namespace {
         return true;
     }
 
-    bool NotifierMgrFuzzTest(const uint8_t* data, size_t size)
+    bool NotifierMgrFuzzTest(FuzzedDataProvider* fdp)
     {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
-
-        int32_t pid = GetData<int32_t>();
-        int32_t type = GetData<int32_t>();
-        int32_t level = GetData<int32_t>();
-        int32_t state = GetData<int32_t>();
+        int32_t pid = fdp->ConsumeIntegral<int32_t>();
+        int32_t type = fdp->ConsumeIntegral<int32_t>();
+        int32_t level = fdp->ConsumeIntegral<int32_t>();
+        int32_t state = fdp->ConsumeIntegral<int32_t>();
         if (!DoInit()) {
             return false;
         }
@@ -368,23 +270,10 @@ namespace {
         return true;
     }
 
-    bool SlideRecognizerFuzzTest(const uint8_t* data, size_t size)
+    bool SlideRecognizerFuzzTest(FuzzedDataProvider* fdp)
     {
-        if (data == nullptr) {
-            return false;
-        }
-
-        if (size <= sizeof(uint32_t) + sizeof(int64_t)) {
-            return false;
-        }
-
-        // initialize
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
-
-        uint32_t resType = GetData<uint32_t>();
-        int64_t value = GetData<int64_t>();
+        uint32_t resType = fdp->ConsumeIntegral<uint32_t>();
+        int64_t value = fdp->ConsumeIntegral<int64_t>();
         nlohmann::json payload;
         auto slideRecognizer = std::make_shared<SlideRecognizer>();
         slideRecognizer->SetListFlingTimeoutTime(0);
@@ -407,22 +296,9 @@ namespace {
         return true;
     }
 
-    bool OOBEManagerFuzzTest(const uint8_t* data, size_t size)
+    bool OOBEManagerFuzzTest(FuzzedDataProvider* fdp)
     {
-        if (data == nullptr) {
-            return false;
-        }
-
-        if (size <= sizeof(std::string)) {
-            return false;
-        }
-
-        // initialize
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
-
-        std::string key = GetStringFromData(int(size));
+        std::string key = fdp->ConsumeRandomLengthString();
         OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
         if (!DoInit()) {
             return false;
@@ -439,23 +315,10 @@ namespace {
         return true;
     }
 
-    bool OOBEDatashareUtilsFuzzTest(const uint8_t* data, size_t size)
+    bool OOBEDatashareUtilsFuzzTest(FuzzedDataProvider* fdp)
     {
-        if (data == nullptr) {
-            return false;
-        }
-
-        if (size <= TWO_PARAMETERS * sizeof(std::string)) {
-            return false;
-        }
-
-        // initialize
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
-
-        std::string key = GetStringFromData(int(size));
-        std::string value = GetStringFromData(int(size));
+        std::string key = fdp->ConsumeRandomLengthString();
+        std::string value = fdp->ConsumeRandomLengthString();
         if (!DoInit()) {
             return false;
         }
@@ -485,7 +348,7 @@ namespace {
         Security::AccessToken::AccessTokenKit::DeleteToken(tokenId);
     }
 
-    std::unordered_map<std::string, std::string> GetPayload(uint32_t resType)
+    std::unordered_map<std::string, std::string> GetPayload(FuzzedDataProvider* fdp, uint32_t resType)
     {
         std::unordered_map<std::string, std::string> payload;
         const auto &params = RESTYPE_TO_PARAMS.at(resType);
@@ -501,29 +364,23 @@ namespace {
         std::mt19937_64 gen(std::random_device{}());
         std::uniform_int_distribution<size_t> dis(minLen, maxLen);
         for (const auto &param : params) {
-            payload[param] = GetStringFromData(dis(gen));
+            payload[param] = fdp->ConsumeRandomLengthString();
         }
         return payload;
     }
 
-    bool ResSchedThirdPartyFuzzTest(const uint8_t* data, size_t size)
+    bool ResSchedThirdPartyFuzzTest(FuzzedDataProvider* fdp)
     {
-        if (data == nullptr || size < sizeof(uint32_t)) {
-            return false;
-        }
         uint32_t selfToken = GetSelfTokenID();
         SetHapToken();
-        g_data = data;
-        g_size = size;
-        g_pos = 0;
 
-        uint32_t resType = GetData<uint32_t>() % ResType::RES_TYPE_LAST;
+        uint32_t resType =fdp->ConsumeIntegral<uint32_t>() % ResType::RES_TYPE_LAST;
         if (THIRDPARTY_RES.find(resType) == THIRDPARTY_RES.end()) {
             return false;
         }
 
-        int64_t value = GetData<int64_t>();
-        auto mapPayload = GetPayload(resType);
+        int64_t value = fdp->ConsumeIntegral<int64_t>();
+        auto mapPayload = GetPayload(fdp, resType);
         ResSchedClient::GetInstance().ReportData(resType, value, mapPayload);
 
         DeleteHapToken();
@@ -537,15 +394,16 @@ namespace {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     /* Run your code on data */
-    OHOS::ResourceSchedule::DoSomethingInterestingWithMyAPI(data, size);
-    OHOS::ResourceSchedule::OnRemoteRequest(data, size);
-    OHOS::ResourceSchedule::SyncEventFuzzTest(data, size);
-    OHOS::ResourceSchedule::ResSchedClientFuzzTest(data, size);
-    OHOS::ResourceSchedule::ResSchedThirdPartyFuzzTest(data, size);
-    OHOS::ResourceSchedule::OnSystemloadLevelFuzzTest(data, size);
-    OHOS::ResourceSchedule::NotifierMgrFuzzTest(data, size);
-    OHOS::ResourceSchedule::OOBEManagerFuzzTest(data, size);
-    OHOS::ResourceSchedule::OOBEDatashareUtilsFuzzTest(data, size);
-    OHOS::ResourceSchedule::SlideRecognizerFuzzTest(data, size);
+    FuzzedDataProvider fdp(data, size);
+    OHOS::ResourceSchedule::DoSomethingInterestingWithMyAPI(&fdp);
+    OHOS::ResourceSchedule::OnRemoteRequest(&fdp);
+    OHOS::ResourceSchedule::SyncEventFuzzTest(&fdp);
+    OHOS::ResourceSchedule::ResSchedClientFuzzTest(&fdp);
+    OHOS::ResourceSchedule::ResSchedThirdPartyFuzzTest(&fdp);
+    OHOS::ResourceSchedule::OnSystemloadLevelFuzzTest(&fdp);
+    OHOS::ResourceSchedule::NotifierMgrFuzzTest(&fdp);
+    OHOS::ResourceSchedule::OOBEManagerFuzzTest(&fdp);
+    OHOS::ResourceSchedule::OOBEDatashareUtilsFuzzTest(&fdp);
+    OHOS::ResourceSchedule::SlideRecognizerFuzzTest(&fdp);
     return 0;
 }
