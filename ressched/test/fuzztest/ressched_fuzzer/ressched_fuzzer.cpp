@@ -44,7 +44,7 @@
 #include "res_type.h"
 #include "accesstoken_kit.h"
 #include "token_setproc.h"
-#include <fuzzzer/FuzzedDataProvider.h>
+#include <fuzzer/FuzzedDataProvider.h>
 
 #define private public
 #define protected public
@@ -374,7 +374,7 @@ namespace {
         uint32_t selfToken = GetSelfTokenID();
         SetHapToken();
 
-        uint32_t resType =fdp->ConsumeIntegral<uint32_t>() % ResType::RES_TYPE_LAST;
+        uint32_t resType = fdp->ConsumeIntegral<uint32_t>() % ResType::RES_TYPE_LAST;
         if (THIRDPARTY_RES.find(resType) == THIRDPARTY_RES.end()) {
             return false;
         }
