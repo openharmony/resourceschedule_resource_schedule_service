@@ -1117,6 +1117,34 @@ void CgroupEventHandler::UpdateMmiStatus(uint32_t resType, int64_t value, const 
     }
 }
 
+void CgroupEventHandler::HandleEmptyPayloadForCosmicCubeState(uint32_t resType, int64_t value)
+{
+    bool isNeedRecover = resType == ResType::RES_TYPE_COSMIC_CUBE_STATE_CHANGE &&
+        value == ResType::CosmicCubeState::APPLICATION_ABOUT_TO_RECOVER;
+    if (!isNeedRecover) {
+        return;
+    }
+    std::map <int32_t, std::shared_ptr<Application>> uidMap = supervisor_->GetUidsMap();
+    for (auto it = uidMap.begin(); it != uidMap.end(); it++) {
+        int32_t uid = it->first;
+        std::shared_ptr <Application> app = it->second;
+        if (!app->isCosmicCubeStateHide_) {
+            continue;
+        }
+        app->isCosmicCubeStateHide_ = false;
+        std::map <pid_t, std::shared_ptr<ProcessRecord>> pidMap = app->GetPidsMap();
+        for (auto pidIt = pidMap.begin(); pidIt != pidMap.end(); pidIt++) {
+            int32_t pid = pidIt->first;
+            std::shared_ptr <ProcessRecord> procRecord = pidIt->second;
+            if (procRecord->processType_ == ProcRecordType::NORMAL) {
+                CGS_LOGI("%{public}s, uid:%{public}d pid:%{public}d recover", __func__, uid, pid);
+                CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+                    AdjustSource::ADJS_PROCESS_STATE);
+            }
+        }
+    }
+}
+
 void CgroupEventHandler::HandleReportCosmicCubeState(uint32_t resType, int64_t value, const nlohmann::json &payload)
 {
     if (supervisor_ == nullptr) {
@@ -1125,7 +1153,9 @@ void CgroupEventHandler::HandleReportCosmicCubeState(uint32_t resType, int64_t v
     int32_t uid = 0;
     int32_t pid = 0;
     if (!ParsePayload(uid, pid, payload)) {
-        CGS_LOGW("%{public}s : uid or pid invalid, uid:%{public}d, pid:%{public}d!", __func__, uid, pid);
+        CGS_LOGW("%{public}s : uid or pid invalid, uid:%{public}d, pid:%{public}d, value:%{public}lld",
+            __func__, uid, pid, (long long)value);
+        HandleEmptyPayloadForCosmicCubeState(resType, value);
         return;
     }
     std::shared_ptr <Application> app = supervisor_->GetAppRecord(uid);

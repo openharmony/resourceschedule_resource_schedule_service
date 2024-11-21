@@ -584,6 +584,66 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_007, Function | Med
     cgroupEventHandler->HandleSceneBoardState(resType, value, payload);
     EXPECT_EQ(cgroupEventHandler->supervisor_->sceneBoardPid_, 1000);
 }
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_008
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_008, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    uint32_t resType = ResType::RES_TYPE_COSMIC_CUBE_STATE_CHANGE;
+    int64_t valueToHide = ResType::CosmicCubeState::APPLICATION_ABOUT_TO_HIDE;
+    int64_t valueToAppear = ResType::CosmicCubeState::APPLICATION_ABOUT_TO_APPEAR;
+    int64_t valueToRecover = ResType::CosmicCubeState::APPLICATION_ABOUT_TO_RECOVER;
+    // test group with value CosmicCubeState::APPLICATION_ABOUT_TO_HIDE
+    nlohmann::json payload;
+    payload["uid"] = "1000";
+    payload["pid"] = "1000";
+    auto app1000 = supervisor_->GetAppRecordNonNull(1000);
+    auto processRecord1000 = app1000->GetProcessRecordNonNull(1000);
+    cgroupEventHandler->HandleReportCosmicCubeState(resType, valueToHide, payload);
+    EXPECT_TRUE(app1000->isCosmicCubeStateHide_);
+    // test group with value CosmicCubeState::APPLICATION_ABOUT_TO_APPEAR
+    cgroupEventHandler->HandleReportCosmicCubeState(resType, valueToAppear, payload);
+    EXPECT_FALSE(app1000->isCosmicCubeStateHide_);
+
+    // mock payload 1 to change ground to background
+    nlohmann::json payload1;
+    payload1["uid"] = "1001";
+    payload1["pid"] = "1001";
+    auto app1001 = supervisor_->GetAppRecordNonNull(1001);
+    auto processRecord1001 = app1001->GetProcessRecordNonNull(1001);
+    cgroupEventHandler->HandleReportCosmicCubeState(resType, valueToHide, payload1);
+    EXPECT_TRUE(app1001->isCosmicCubeStateHide_);
+    // mock payload 2 to change ground to background
+    nlohmann::json payload2;
+    payload2["uid"] = "1002";
+    payload2["pid"] = "1002";
+    auto app1002 = supervisor_->GetAppRecordNonNull(1002);
+    auto processRecord1002 = app1002->GetProcessRecordNonNull(1002);
+    cgroupEventHandler->HandleReportCosmicCubeState(resType, valueToHide, payload2);
+    EXPECT_TRUE(app1002->isCosmicCubeStateHide_);
+    // test empty payload
+    nlohmann::json emptyPayload;
+    // test empty payload with CosmicCubeState::APPLICATION_ABOUT_TO_HIDE
+    cgroupEventHandler->HandleReportCosmicCubeState(resType, valueToHide, emptyPayload);
+    EXPECT_TRUE(app1001->isCosmicCubeStateHide_);
+    EXPECT_TRUE(app1002->isCosmicCubeStateHide_);
+    // test empty payload with CosmicCubeState::APPLICATION_ABOUT_TO_APPEAR
+    cgroupEventHandler->HandleReportCosmicCubeState(resType, valueToAppear, emptyPayload);
+    EXPECT_TRUE(app1001->isCosmicCubeStateHide_);
+    EXPECT_TRUE(app1002->isCosmicCubeStateHide_);
+    // test empty payload with CosmicCubeState::APPLICATION_ABOUT_TO_RECOVER
+    cgroupEventHandler->HandleReportCosmicCubeState(resType, valueToRecover, emptyPayload);
+    EXPECT_FALSE(app1001->isCosmicCubeStateHide_);
+    EXPECT_FALSE(app1002->isCosmicCubeStateHide_);
+}
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
