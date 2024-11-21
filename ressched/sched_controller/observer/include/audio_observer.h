@@ -35,7 +35,8 @@ public:
         const std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos) override;
     void OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode) override;
     void OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent) override;
-    void OnPreferredOutputDeviceUpdated(const std::vector<sptr<AudioStandard::AudioDeviceDescriptor>> &descs)  override;
+    void OnPreferredOutputDeviceUpdated(
+        const std::vector<std::shared_ptr<AudioStandard::AudioDeviceDescriptor>> &descs)  override;
 private:
     int32_t mode_ = -1;
     void MarshallingAudioRendererChangeInfo(

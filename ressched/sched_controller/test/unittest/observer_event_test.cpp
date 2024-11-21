@@ -480,7 +480,7 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level
     SUCCEED();
 
     // test the interface of OnPreferredOutputDeviceUpdated
-    std::vector<sptr<AudioStandard::AudioDeviceDescriptor>> descs;
+    std::vector<std::shared_ptr<AudioStandard::AudioDeviceDescriptor>> descs;
     audioObserver_->OnPreferredOutputDeviceUpdated(descs);
     SUCCEED();
 #endif
