@@ -89,6 +89,7 @@ private:
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
     void UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, int32_t windowId, int32_t state,
         const std::shared_ptr<ProcessRecord>& proc);
+    void HandleEmptyPayloadForCosmicCubeState(uint32_t resType, int64_t value);
     std::shared_ptr<Supervisor> supervisor_;
     std::shared_ptr<ffrt::queue> cgroupEventQueue_;
     std::unordered_map<std::string, ffrt::task_handle> delayTaskMap_;
