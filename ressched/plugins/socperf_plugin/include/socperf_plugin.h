@@ -40,6 +40,7 @@ private:
     using ReqAppTypeFunc = int32_t (*)(const std::string &bundleName);
     std::set<uint32_t> resTypes;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
+    std::map<int32_t, int32_t> uidToAppTypeMap_;
     std::string perfReqAppTypeSoPath_;
     std::string perfReqAppTypeSoFunc_;
     int32_t focusAppType_;
@@ -88,9 +89,12 @@ private:
     bool HandlePowerModeChanged(const std::shared_ptr<ResData>& data);
     bool HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& data);
     bool HandleGameBoost(const std::shared_ptr<ResData>& data);
+    bool HandleUninstallEvent(const std::shared_ptr<ResData>& data);
+    bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data);
+    bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data, const int32_t appType);
+    int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
     void HandleScreenOff();
-    std::string GetBundleNameByUid(const int32_t uid);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
