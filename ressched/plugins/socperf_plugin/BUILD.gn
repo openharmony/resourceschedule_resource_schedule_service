@@ -31,13 +31,9 @@ ohos_shared_library("socperf_plugin") {
 
   external_deps = [
     "ability_runtime:app_manager",
-    "bundle_framework:appexecfwk_core",
-    "c_utils:utils",
     "ffrt:libffrt",
     "hilog:libhilog",
-    "ipc:ipc_single",
     "libxml2:libxml2",
-    "samgr:samgr_proxy",
   ]
   defines = []
   if (ressched_with_resourceschedule_soc_perf_enable) {
