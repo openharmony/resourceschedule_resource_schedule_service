@@ -420,10 +420,11 @@ bool SocPerfPlugin::HandleUninstallEvent(const std::shared_ptr<ResData>& data)
 int32_t SocPerfPlugin::GetUidByData(const std::shared_ptr<ResData>& data)
 {
     int32_t uid = INVALID_VALUE;
-    if (data->payload == nullptr || !data->payload.contains(UID_NAME) || !data->payload.at(UID_NAME).is_string()) {
+    if (data->payload == nullptr || !data->payload.contains(UID_NAME) ||
+        !data->payload.at(UID_NAME).is_number_integer()) {
         return uid;
     }
-    uid = atoi(data->payload[UID_NAME].get<std::string>().c_str());
+    uid = atoi(data->payload[UID_NAME].get<std::int32_t>().c_str());
     return uid;
 }
 
