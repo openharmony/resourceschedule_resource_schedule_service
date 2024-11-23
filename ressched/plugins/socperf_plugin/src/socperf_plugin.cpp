@@ -455,7 +455,7 @@ bool SocPerfPlugin::HandleUninstallEvent(const std::shared_ptr<ResData>& data)
         !data->payload.at(UID_NAME).is_number_integer()) {
         return false;
     }
-    uid = atoi(data->payload[UID_NAME].get<std::int32_t>().c_str());
+    uid = data->payload[UID_NAME].get<std::int32_t>();
     if (uid == INVALID_VALUE) {
         return false;
     }
