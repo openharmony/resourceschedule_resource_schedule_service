@@ -390,11 +390,11 @@ std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid)
 {
     std::string bundleName = "";
     OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
-        OHOS:SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+        OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (systemAbilityManager == nullptr) {
         return bundleName;
     }
-    OHOS:sptr<OHOS::IRemoteObject> object =
+    OHOS::sptr<OHOS::IRemoteObject> object =
         systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     sptr<AppExecFwk::IBundleMgr> iBundleMgr = OHOS::iface_cast<OHOS::AppExecFwk::IBundleMgr>(object);
     if (!iBundleMgr) {
