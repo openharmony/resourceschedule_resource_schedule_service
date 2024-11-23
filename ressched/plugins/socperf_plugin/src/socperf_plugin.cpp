@@ -383,6 +383,7 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data)
     }
     std::string bundleName = GetBundleNameByUid(uid);
     focusAppType_ = reqAppTypeFunc_(bundleName);
+    uidToAppTypeMap_[uid] = focusAppType_;
     return true;
 }
 
