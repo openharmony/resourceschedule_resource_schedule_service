@@ -16,12 +16,16 @@
 #ifdef RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE
 #include "socperf_plugin.h"
 #include "app_mgr_constants.h"
+#include "bundle_mgr_interface.h"
 #include "config_info.h"
 #include "dlfcn.h"
 #include "fcntl.h"
+#include "if_system_ability_manager.h"
+#include "iservice_registry.h"
 #include "plugin_mgr.h"
 #include "res_type.h"
 #include "socperf_log.h"
+#include "system_ability_definition.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -358,13 +362,51 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
     if (data->value == WindowFocusStatus::WINDOW_FOCUS) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, "");
-        int32_t uid = GetUidByData(data);
-        if (uid == INVALID_VALUE) {
-            return;
-        }
-        focusAppType_ = uidToAppTypeMap_[uid];
-        SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH:%{public}d", focusAppType_);
+        UpdateFocusAppType(data);
     }
+}
+
+bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data)
+{
+    int32_t uid = GetUidByData(data);
+    if (uid == INVALID_VALUE) {
+        return false;
+    }
+    if (uidToAppTypeMap_.count(uid) > 0) {
+        focusAppType_ = uidToAppTypeMap_[uid];
+    } else {
+        if (reqAppTypeFunc_ == nullptr) {
+            SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH reqAppTypeFunc_ is null");
+            return false;
+        }
+        std::string bundleName = GetBundleNameByUid(atoi(data->payload["uid"].get<std::string>().c_str()));
+        focusAppType_ = reqAppTypeFunc_(bundleName);
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH:%{public}d", focusAppType_);
+    return true;
+}
+
+std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid)
+{
+    std::string bundleName = "";
+    OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
+        OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (systemAbilityManager == nullptr) {
+        return bundleName;
+    }
+    OHOS::sptr<OHOS::IRemoteObject> object =
+        systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    sptr<AppExecFwk::IBundleMgr> iBundleMgr = OHOS::iface_cast<OHOS::AppExecFwk::IBundleMgr>(object);
+    if (!iBundleMgr) {
+        SOC_PERF_LOGD("%{pubilc}s null bundle manager.", __func__);
+        return bundleName;
+    }
+
+    ErrCode ret = iBundleMgr->GetNameForUid(uid, bundleName);
+    if (ret != ERR_OK) {
+        SOC_PERF_LOGE("%{pulic}s get bundle name failed for %{pulic}d, err_code:%{public}d.", __func__, uid, ret);
+    }
+    return bundleName;
 }
 
 void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
@@ -408,7 +450,12 @@ bool SocPerfPlugin::HandleUninstallEvent(const std::shared_ptr<ResData>& data)
     if (data->value != AppInstallStatus::APP_UNINSTALL) {
         return false;
     }
-    int32_t uid = GetUidByData(data);
+    int32_t uid = INVALID_VALUE;
+    if (data->payload == nullptr || !data->payload.contains(UID_NAME) ||
+        !data->payload.at(UID_NAME).is_number_integer()) {
+        return false;
+    }
+    uid = atoi(data->payload[UID_NAME].get<std::int32_t>().c_str());
     if (uid == INVALID_VALUE) {
         return false;
     }
@@ -420,11 +467,10 @@ bool SocPerfPlugin::HandleUninstallEvent(const std::shared_ptr<ResData>& data)
 int32_t SocPerfPlugin::GetUidByData(const std::shared_ptr<ResData>& data)
 {
     int32_t uid = INVALID_VALUE;
-    if (data->payload == nullptr || !data->payload.contains(UID_NAME) ||
-        !data->payload.at(UID_NAME).is_number_integer()) {
+    if (data->payload == nullptr || !data->payload.contains(UID_NAME) || !data->payload.at(UID_NAME).is_string()) {
         return uid;
     }
-    uid = atoi(data->payload[UID_NAME].get<std::int32_t>().c_str());
+    uid = atoi(data->payload[UID_NAME].get<std::string>().c_str());
     return uid;
 }
 
