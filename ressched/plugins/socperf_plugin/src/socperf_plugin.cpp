@@ -381,7 +381,7 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data)
         SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH reqAppTypeFunc_ is null");
         return false;
     }
-    std::string bundleName = GetBundleNameByUid(atoi(data->payload[UID_NAME].get<std::string>().c_str()));
+    std::string bundleName = GetBundleNameByUid(uid);
     focusAppType_ = reqAppTypeFunc_(bundleName);
     return true;
 }
