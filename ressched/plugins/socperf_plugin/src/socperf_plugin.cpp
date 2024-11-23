@@ -408,7 +408,12 @@ bool SocPerfPlugin::HandleUninstallEvent(const std::shared_ptr<ResData>& data)
     if (data->value != AppInstallStatus::APP_UNINSTALL) {
         return false;
     }
-    int32_t uid = GetUidByData(data);
+    int32_t uid = INVALID_VALUE;
+    if (data->payload == nullptr || !data->payload.contains(UID_NAME) ||
+        !data->payload.at(UID_NAME).is_number_integer()) {
+        return false;
+    }
+    uid = atoi(data->payload[UID_NAME].get<std::int32_t>().c_str());
     if (uid == INVALID_VALUE) {
         return false;
     }
@@ -420,11 +425,10 @@ bool SocPerfPlugin::HandleUninstallEvent(const std::shared_ptr<ResData>& data)
 int32_t SocPerfPlugin::GetUidByData(const std::shared_ptr<ResData>& data)
 {
     int32_t uid = INVALID_VALUE;
-    if (data->payload == nullptr || !data->payload.contains(UID_NAME) ||
-        !data->payload.at(UID_NAME).is_number_integer()) {
+    if (data->payload == nullptr || !data->payload.contains(UID_NAME) || !data->payload.at(UID_NAME).is_string()) {
         return uid;
     }
-    uid = atoi(data->payload[UID_NAME].get<std::int32_t>().c_str());
+    uid = atoi(data->payload[UID_NAME].get<std::string>().c_str());
     return uid;
 }
 
