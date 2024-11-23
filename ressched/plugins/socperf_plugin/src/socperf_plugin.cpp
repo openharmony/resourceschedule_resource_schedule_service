@@ -363,6 +363,7 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
         SOC_PERF_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, "");
         UpdateFocusAppType(data);
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH:%{public}d", focusAppType_);
     }
 }
 
@@ -374,15 +375,14 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data)
     }
     if (uidToAppTypeMap_.count(uid) > 0) {
         focusAppType_ = uidToAppTypeMap_[uid];
-    } else {
-        if (reqAppTypeFunc_ == nullptr) {
-            SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH reqAppTypeFunc_ is null");
-            return false;
-        }
-        std::string bundleName = GetBundleNameByUid(atoi(data->payload["uid"].get<std::string>().c_str()));
-        focusAppType_ = reqAppTypeFunc_(bundleName);
+        return true;
     }
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH:%{public}d", focusAppType_);
+    if (reqAppTypeFunc_ == nullptr) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH reqAppTypeFunc_ is null");
+        return false;
+    }
+    std::string bundleName = GetBundleNameByUid(atoi(data->payload[UID_NAME].get<std::string>().c_str()));
+    focusAppType_ = reqAppTypeFunc_(bundleName);
     return true;
 }
 
@@ -635,9 +635,30 @@ bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
         ResType::UI_SENSITIVE_EXTENSION.end()) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->APPSTATECHANGE");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+        UpdateUidToAppTypeMap(data);
         return true;
     }
     return false;
+}
+
+bool SocPerfPlugin::UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data)
+{
+    int32_t uid = GetUidByData(data);
+    if (uid == INVALID_VALUE) {
+        return false;
+    }
+    if (uidToAppTypeMap_.count(uid) > 0) {
+        return true;
+    }
+    if (reqAppTypeFunc_ == nullptr || !data->payload.contains(BUNDLE_NAME)) {
+        return false;
+    }
+    std::string bundleName = data->payload[BUNDLE_NAME].get<std::string>().c_str();
+    int32_t appType = reqAppTypeFunc_(bundleName);
+    if (appType != INVALID_VALUE && appType != INVALID_APP_TYPE) {
+        uidToAppTypeMap_[uid] = appType;
+    }
+    return true;
 }
 
 void SocPerfPlugin::HandleScreenOn()
