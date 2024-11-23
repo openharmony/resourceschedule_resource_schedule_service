@@ -89,12 +89,14 @@ private:
     bool HandlePowerModeChanged(const std::shared_ptr<ResData>& data);
     bool HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& data);
     bool HandleGameBoost(const std::shared_ptr<ResData>& data);
+    bool UpdateFocusAppType(const std::shared_ptr<ResData>& data);
     bool HandleUninstallEvent(const std::shared_ptr<ResData>& data);
     bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data);
     bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data, const int32_t appType);
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
     void HandleScreenOff();
+    std::string GetBundleNameByUid(const int32_t uid);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
