@@ -37,6 +37,8 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     static const int32_t APP_START_UP = 0;
+    std::shared_ptr<Supervisor> g_supervisor = nullptr;
+    std::shared_ptr<CgroupEventHandler> g_cgHandler = nullptr;
 }
 namespace CgroupSetting {
 class CGroupSchedTest : public testing::Test {
@@ -643,6 +645,375 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_008, Function | Med
     cgroupEventHandler->HandleReportCosmicCubeState(resType, valueToRecover, emptyPayload);
     EXPECT_FALSE(app1001->isCosmicCubeStateHide_);
     EXPECT_FALSE(app1002->isCosmicCubeStateHide_);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_009
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_009, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandle_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    uint32_t resType = 0;
+    int64_t value = ResType::WebVideoState::WEB_VIDEO_PLAYING_START;
+    nlohmann::json payload;
+    payload["uid"] = 1000;
+    payload["bundleName"] = "test_009";
+    auto app = supervisor_->GetAppRecordNonNull(1000);
+    cgroupEventHandler->HandleOnAppStopped(resType, value, payload);
+    EXPECT_FALSE(app);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_010
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_010, Function | MediumTest | Level1)
+{
+    Rosen::WindowType WindowType = Rosen::WindowType::APP_WINDOW_BASE;
+    uint32_t windowId = 1;
+    EXPECT_TRUE(g_cgHandler->supervisor_ != nullptr);
+    g_cgHandler->HandleWindowVisibilityChanged(windowId, false, WindowType, 12121, 12121);
+    g_cgHandler->HandleWindowVisibilityChanged(windowId, true, WindowType, 12121, 12121);
+
+    g_cgHandler->GetAppRecord(12121)->RemoveProcessRecord(12121);
+    EXPECT_TRUE(g_supervisor->GetAppRecord(12121)->GetProcessRecord(12121) == nullptr);
+    g_cgHandler->HandleWindowVisibilityChanged(windowId, true, WindowType, 12121, 12121);
+
+    g_supervisor->RemoveApplication(12121);
+    EXPECT_TRUE(g_supervisor->GetAppRecord(12121) == nullptr);
+    g_cgHandler->HandleWindowVisibilityChanged(windowId, true, WindowType, 12121, 12121);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_011
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_011, Function | MediumTest | Level1)
+{
+    EXPECT_TRUE(g_cgHandler->supervisor_ != nullptr);
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
+    g_cgHandler->HandleReportMMIProcess(1, 1, payload);
+    g_cgHandler->HandleReportMMIProcess(1, -1, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"-1\", \"pid\": \"1112\"}");
+    g_cgHandler->HandleReportMMIProcess(1, 1, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"-1\"}");
+    g_cgHandler->HandleReportMMIProcess(1, 1, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\"}");
+    g_cgHandler->HandleReportMMIProcess(1, 1, payload);
+
+    payload = nlohmann::json::parse("{\"pid\": \"1112\"}");
+    g_cgHandler->HandleReportMMIProcess(1, 1, payload);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_012
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_012, Function | MediumTest | Level1)
+{
+    EXPECT_TRUE(g_cgHandler->supervisor_ != nullptr);
+    nlohmann:json payload = 
+        nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"tid\": \"1113\", \"role\": \"1114\"}");
+    auto app = g_cgHandler->supervisor_->GetAppRecordNonNull(1111);
+    EXPECT_TRUE(app != nullptr);
+    auto proc = app-> GetAppRecordNonNull(1112);
+    EXPECT_TRUE(proc != nullptr);
+    g_cgHandler->HandleReportKeyThread(1, 1, payload);
+
+    payload = nlohmann:json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"role\": \"1114\"}");
+    g_cgHandler->HandleReportKeyThread(1, 1, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"tid\": \"1113\"}");
+    g_cgHandler->HandleReportKeyThread(1, 1, payload);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_013
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_013, Function | MediumTest | Level1)
+{
+    EXPECT_TRUE(g_cgHandler->supervisor_ != nullptr);
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
+    g_cgHandler->HandleReportWindowState(1, 1, payload);
+    g_cgHandler->HandleReportWindowState(1, 1, payload);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_014
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_014, Function | MediumTest | Level1)
+{
+    EXPECT_TRUE(g_cgHandler->supervisor_ != nullptr);
+    const string payloadStr = ("{\"uid\": \"1111\", \"pid\": \"1112\", \"tid\": \"1112\", \"role\": \"2\"}");
+    nlohmann::json payload = nlohmann::json::parse(payloadStr);
+    g_cgHandler->HandleReportKeyThread(ResType::RES_TYPE_REPORT_KEY_THREAD, 0, payload);
+    g_cgHandler->HandleReportKeyThread(ResType::RES_TYPE_REPORT_KEY_THREAD, 1, payload);
+
+    payload nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"role\": \"2\"}");
+    g_cgHandler->HandleReportKeyThread(ResType::RES_TYPE_REPORT_KEY_THREAD, 0, payload);
+
+    payload nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"tid\": \"1112\"}");
+    g_cgHandler->HandleReportKeyThread(ResType::RES_TYPE_REPORT_KEY_THREAD, 0, payload);
+
+    payload nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
+    g_cgHandler->HandleReportKeyThread(ResType::RES_TYPE_REPORT_KEY_THREAD, 0, payload);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_015
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_015, Function | MediumTest | Level1)
+{
+    EXPECT_TRUE(g_cgHandler->supervisor_ != nullptr);
+    auto app = g_cgHandler->supervisor_->GetAppRecordNonNull(1111);
+    EXPECT_TRUE(app != nullptr);
+    auto proc = app->GetAppRecordNonNull(1112);
+    EXPECT_TRUE(proc != nullptr);
+    auto hostProcRecord = app->GetProcessRecordNonNull(1234);
+    EXPECT_TRUE(hostProcRecord != nullptr);
+    proc->processType_ = ProcRecordType::RENDER;
+    app->AddHostProcess(1234);
+    proc->hostPid_ = 1234;
+    const string payloadStr =
+        "{\"uid\": \"1111\", \"pid\": \"1112\", \"windowId\": \"1112\", \"state\": \"0\", \"serialNum\": \"0\"}";
+    nlohmann::json payload = nlohmann::json::parse(payloadStr);
+    g_cgHandler->HandleReportWindowState(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"windowId\": \"1112\", \"state\": \"1\", \"serialNum\": \"0\"}");
+    g_cgHandler->HandleReportWindowState(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"state\": \"0\", \"serialNum\": \"0\"}");
+    g_cgHandler->HandleReportWindowState(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"windowId\": \"1112\", \"state\": \"0\"}");
+    g_cgHandler->HandleReportWindowState(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"serialNum\": \"0\"}");
+    g_cgHandler->HandleReportWindowState(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
+    g_cgHandler->HandleReportWindowState(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_016
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_016, Function | MediumTest | Level1)
+{
+    auto temp = g_cgHandler->supervisor_;
+    g_cgHandler->supervisor_ = nullptr;
+    nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"1112\"}");
+    g_cgHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    g_cgHandler->supervisor_ = temp;
+
+    EXPECT_TRUE(g_cgHandler->supervisor_ != nullptr);
+    payload = nlohmann::json::parse("{\"pid\": 1112}");
+    g_cgHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": 1112}");
+    g_cgHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+
+    payload = nlohmann::json::parse("{\"pid\": 1112}");
+    g_cgHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": 1111, \"pid\": \"1112\"}");
+    g_cgHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": 0, \"pid\": 1112}");
+    g_cgHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": 1111, \"pid\": 0}");
+    g_cgHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": 1111, \"pid\": 1112}");
+    g_cgHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    auto app = g_cgHandler->supervisor_->GetAppRecordNonNull(1111);
+    EXPECT_TRUE(app != nullptr);
+    g_cgHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    auto proc = app->GetProcessRecordNonNull(1112);
+    EXPECT_TRUE(proc != nullptr);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
+    proc->curSchedGroup_ = CgroupSetting::SP_BACKGROUND;
+    g_cgHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    EXPECT_TRUE(proc->audioPlayingState_ == 2);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_017
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_017, Function | MediumTest | Level1)
+{
+    auto temp = g_cgHandler->supervisor_;
+    g_cgHandler->supervisor_ = nullptr;
+    nlohmann::json payload = nlohmann::json::parse("{\"clientPid\": \"1112\"}");
+    g_cgHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
+    g_cgHandler->supervisor_ = temp;
+
+    EXPECT_TRUE(g_cgHandler->supervisor_ != nullptr);
+    payload = nlohmann::json::parse("{\"clientPid\": \"1112\"}");
+    g_cgHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\"}");
+    g_cgHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"0\", \"clientPid\": \"1112\"}");
+    g_cgHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"clientPid\": \"0\"}");
+    g_cgHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"clientPid\": \"1112\"}");
+    auto app = g_cgHandler->supervisor_->GetAppRecordNonNull(1111);
+    EXPECT_TRUE(app != nullptr);
+    g_cgHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
+    auto proc = app->GetProcessRecordNonNull(1112);
+    EXPECT_TRUE(proc != nullptr);
+
+    proc->curSchedGroup_ = CgroupSetting::SP_BACKGROUND;
+    proc->processType_ = ProcRecordType::RENDER;
+    g_cgHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
+    EXPECT_TRUE(proc->audioPlayingState_ == 0);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_018
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_018, Function | MediumTest | Level1)
+{
+    auto temp = g_cgHandler->supervisor_;
+    g_cgHandler->supervisor_ = nullptr;
+    g_cgHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW, true, 429, 2024);
+    g_cgHandler->supervisor_ = temp;
+
+    EXPECT_TRUE(g_cgHandler->supervisor_ != nullptr);
+    auto app = g_cgHandler->supervisor_->GetAppRecordNonNull(2024);
+    app->RemoveProcessRecord(429);
+    EXPECT_TRUE(app->GetProcessRecord(429) == nullptr);
+    g_cgHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW, true, 429, 2024);
+
+    g_cgHandler->supervisor_->RemoveApplication(2024);
+    EXPECT_TRUE(g_cgHandler->supervisor_->GetAppRecord(2024) == nullptr);
+    g_cgHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW, true, 429, 2024);
+
+    app = g_cgHandler->supervisor_->GetAppRecordNonNull(2024);
+    EXPECT_TRUE(app != nullptr);
+    auto proc = app->GetProcessRecordNonNull(429);
+    EXPECT_TRUE(proc != nullptr);
+
+    g_cgHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW, true, 429, 2024);
+    EXPECT_TRUE(proc->processDrawingState_);
+    auto windowInfo = proc->GetWindowInfoNonNull(2054);
+    EXPECT_TRUE(windowInfo->drawingContentState_);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_019
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_019, Function | MediumTest | Level1)
+{
+    auto temp = g_cgHandler->supervisor_;
+    g_cgHandler->supervisor_ = nullptr;
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"syncStatus\": \"1\"}");
+    g_cgHandler->HandleReportHisysEvent(ResType::RES_TYPE_REPORT_CAMERA_STATE, 0, payload);
+    g_cgHandler->supervisor_ = temp;
+
+    EXPECT_TRUE(g_cgHandler->supervisor_ != nullptr);
+    payload = nlohmann::json::parse("{\"pid\": \"1112\", \"syncStatus\": \"1\"}");
+    g_cgHandler->HandleReportHisysEvent(ResType::RES_TYPE_REPORT_CAMERA_STATE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"syncStatus\": \"1\"}");
+    g_cgHandler->HandleReportHisysEvent(ResType::RES_TYPE_REPORT_CAMERA_STATE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"syncStatus\": \"1\"}");
+    g_cgHandler->HandleReportHisysEvent(ResType::RES_TYPE_REPORT_CAMERA_STATE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"0\", \"pid\": \"1112\", \"syncStatus\": \"1\"}");
+    g_cgHandler->HandleReportHisysEvent(ResType::RES_TYPE_REPORT_CAMERA_STATE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"0\", \"syncStatus\": \"1\"}");
+    g_cgHandler->HandleReportHisysEvent(ResType::RES_TYPE_REPORT_CAMERA_STATE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"syncStatus\": \"1\"}");
+    g_cgHandler->HandleReportHisysEvent(ResType::RES_TYPE_REPORT_CAMERA_STATE, 0, payload);
+    auto app = g_cgHandler->supervisor_->GetAppRecordNonNull(1111);
+    EXPECT_TRUE(app != nullptr);
+    g_cgHandler->HandleReportHisysEvent(ResType::RES_TYPE_REPORT_CAMERA_STATE, 0, payload);
+    auto proc = app->GetProcessRecordNonNull(1112);
+    EXPECT_TRUE(proc != nullptr);
+
+    g_cgHandler->HandleReportHisysEvent(ResType::RES_TYPE_REPORT_CAMERA_STATE, 0, payload);
+    EXPECT_TRUE(proc->cameraState_ == 0);
+    g_cgHandler->HandleReportHisysEvent(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE, 3, payload);
+    EXPECT_TRUE(proc->wifiState_ == 0);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_020
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_020, Function | MediumTest | Level1)
+{
+    EXPECT_TRUE(g_cgHandler->supervisor_ != nullptr);
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\"}");
+    auto app = g_cgHandler->supervisor_->GetAppRecordNonNull(2024);
+    EXPECT_TRUE(app != nullptr);
+    auto proc = app->GetProcessRecordNonNull(429);
+    EXPECT_TRUE(proc != nullptr);
+
+    g_cgHandler->HandleWebviewScreenCapture(ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, 0, payload);
+    EXPECT_TRUE(proc->screenCaptureState_);
+    g_cgHandler->HandleWebviewScreenCapture(ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, 1, payload);
+    EXPECT_FALSE(proc->screenCaptureState_);
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule

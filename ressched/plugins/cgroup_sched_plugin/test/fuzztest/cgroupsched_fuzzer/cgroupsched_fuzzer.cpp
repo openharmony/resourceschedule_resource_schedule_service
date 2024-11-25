@@ -1231,6 +1231,25 @@ namespace ResourceSchedule {
         return true;
     }
 
+    bool HandleOnAppStoppedFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        g_pos = 0;
+
+        // getdata
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
+        nlohmann::json payload;
+        auto cgroupEventHandler->HandleOnAppStopped(resType, value, payload);
+        return true;
+    }
+
     bool AdjustForkProcessGroupFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -1764,6 +1783,7 @@ namespace ResourceSchedule {
         OHOS::ResourceSchedule::HandleWebviewScreenCaptureFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportWebviewVideoStateFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportCosmicCubeStateFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleOnAppStoppedFuzzTest(data, size);
     }
 
     void CgroupAdjusterFuzzExecute(const uint8_t* data, size_t size)
