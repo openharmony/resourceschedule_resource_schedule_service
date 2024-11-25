@@ -49,6 +49,8 @@ namespace {
     const std::string DISPLAY_MODE_FULL = "displayFull";
     const std::string DISPLAY_MODE_MAIN = "displayMain";
     const std::string DISPLAY_MODE_SUB = "displaySub";
+    const std::string POWER_MODE = "powerMode";
+    const std::string PERF_MODE = "perfMode";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -731,6 +733,20 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
     }
 }
 
+bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandlePowerModeChanged: %{public}lld", (long long)data->value);
+    if (data->value == POWERMODE_ON) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(POWER_MODE, true);
+    } else {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(POWER_MODE, false);
+    }
+    return true;
+}
+
 void SocPerfPlugin::HandleWebDragResize(const std::shared_ptr<ResData>& data)
 {
     if (data == nullptr) {
@@ -856,20 +872,6 @@ bool SocPerfPlugin::HandleBmmMoniterStatus(const std::shared_ptr<ResData> &data)
         return true;
     }
     return false;
-}
-
-bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
-{
-    if (data == nullptr) {
-        return false;
-    }
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandlePowerModeChanged: %{public}lld", (long long)data->value);
-    if (data->value == POWERMODE_ON) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_POWERMODE_CHANGED, true, "");
-    } else {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_POWERMODE_CHANGED, false, "");
-    }
-    return true;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
