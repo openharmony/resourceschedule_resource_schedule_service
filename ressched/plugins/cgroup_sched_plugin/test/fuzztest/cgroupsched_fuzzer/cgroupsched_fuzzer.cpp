@@ -1246,7 +1246,9 @@ namespace ResourceSchedule {
         uint32_t resType = GetData<uint32_t>();
         int64_t value = GetData<int64_t>();
         nlohmann::json payload;
-        auto cgroupEventHandler->HandleOnAppStopped(resType, value, payload);
+        auto cgroupEventHandler =
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
+        cgroupEventHandler->HandleOnAppStopped(resType, value, payload);
         return true;
     }
 

@@ -27,6 +27,9 @@
 #include "window_state_observer.h"
 #include "window_manager.h"
 #include "wm_common.h"
+#include "ability_info.h"
+#include "background_mode.h"
+#include "appmgr/app_mgr_constants.h"
 
 using namespace testing::ext;
 using namespace OHOS::ResourceSchedule::CgroupSetting;
@@ -37,8 +40,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     static const int32_t APP_START_UP = 0;
-    std::shared_ptr<Supervisor> g_supervisor = nullptr;
-    std::shared_ptr<CgroupEventHandler> g_cgHandler = nullptr;
+    constexpr int32_t INVALID_EXTENSION_TYPE = -1;
 }
 namespace CgroupSetting {
 class CGroupSchedTest : public testing::Test {
@@ -684,11 +686,11 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_010, Function | Med
     g_cgHandler->HandleWindowVisibilityChanged(windowId, false, WindowType, 12121, 12121);
     g_cgHandler->HandleWindowVisibilityChanged(windowId, true, WindowType, 12121, 12121);
 
-    g_cgHandler->GetAppRecord(12121)->RemoveProcessRecord(12121);
-    EXPECT_TRUE(g_supervisor->GetAppRecord(12121)->GetProcessRecord(12121) == nullptr);
+    supervisor_->GetAppRecord(12121)->RemoveProcessRecord(12121);
+    EXPECT_TRUE(supervisor->GetAppRecord(12121)->GetProcessRecord(12121) == nullptr);
     g_cgHandler->HandleWindowVisibilityChanged(windowId, true, WindowType, 12121, 12121);
 
-    g_supervisor->RemoveApplication(12121);
+    supervisor->RemoveApplication(12121);
     EXPECT_TRUE(g_supervisor->GetAppRecord(12121) == nullptr);
     g_cgHandler->HandleWindowVisibilityChanged(windowId, true, WindowType, 12121, 12121);
 }
@@ -730,7 +732,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_011, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_012, Function | MediumTest | Level1)
 {
     EXPECT_TRUE(g_cgHandler->supervisor_ != nullptr);
-    nlohmann:json payload = 
+    nlohmann::json payload =
         nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"tid\": \"1113\", \"role\": \"1114\"}");
     auto app = g_cgHandler->supervisor_->GetAppRecordNonNull(1111);
     EXPECT_TRUE(app != nullptr);
@@ -809,7 +811,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_015, Function | Med
     nlohmann::json payload = nlohmann::json::parse(payloadStr);
     g_cgHandler->HandleReportWindowState(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
 
-    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"windowId\": \"1112\", \"state\": \"1\", \"serialNum\": \"0\"}");
+    payload =
+        nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"windowId\": \"1112\", \"state\": \"1\", \"serialNum\": \"0\"}");
     g_cgHandler->HandleReportWindowState(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
 
     payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"state\": \"0\", \"serialNum\": \"0\"}");
@@ -1003,17 +1006,419 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_019, Function | Med
  */
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_020, Function | MediumTest | Level1)
 {
-    EXPECT_TRUE(g_cgHandler->supervisor_ != nullptr);
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\"}");
-    auto app = g_cgHandler->supervisor_->GetAppRecordNonNull(2024);
+    auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(2024);
     EXPECT_TRUE(app != nullptr);
     auto proc = app->GetProcessRecordNonNull(429);
     EXPECT_TRUE(proc != nullptr);
 
-    g_cgHandler->HandleWebviewScreenCapture(ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, 0, payload);
+    cgroupEventHandler->HandleWebviewScreenCapture(ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, 0, payload);
     EXPECT_TRUE(proc->screenCaptureState_);
-    g_cgHandler->HandleWebviewScreenCapture(ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, 1, payload);
+    cgroupEventHandler->HandleWebviewScreenCapture(ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE, 1, payload);
     EXPECT_FALSE(proc->screenCaptureState_);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_021
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    auto tmp = cgroupEventHandler->supervisor_;
+    cgroupEventHandler->supervisor_ = nullptr;
+
+    uid_t uid = 1000;
+    pid_t pid = 1234;
+    int32_t hostPid = 2024;
+    std::string bundleName = "com.ohos.test";
+    std::string abilityName = "MainAbility";
+    Rosen::windowType windowType = Rosen::WindowType::APP_WINDOW_BASE;
+    uint64_t displayId = 1;
+    uint32_t windowId = 1;
+    uintptr_t token = 1111;
+    int32_t appState = (int32_t)AppExecFwk::ApplicationState::APP_STATE_CREATE;
+    int32_t abilityState = (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_BACKGROUND;
+    int32_t abilityType = (int32_t)AppExecFwk::AbilityType:UNKNOWN;
+    int32_t extensionState = (int32_t)AppExecFwk::ExtensionState:EXTENSION_STATE_CREATE;
+    int32_t typeId = (int32_t)BackgroundTaskMgr::BackgroundMode::DATA_TRANSFER;
+    uint32_t resType ResType::RES_TYPE_REPORT_RENDER_THREAD;
+    int64_t value = 1235;
+    bool isVisible = true;
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1000\", \"pid\": \"1234\"}");
+    ProcessData processData;
+    processData.uid = uid;
+    processData.pid = pid;
+    processData.bundleName = bundleName;
+    processData.hostPid = hostPid;
+    processData.processType = static_cast<AppExecFwk::ProcessType>((int32_t)AppExecFwk::ProcessType::NORMAL);
+    processData.extensionType = static_cast<AppExecFwk::ExtensionAbilityType>(INVALID_EXTENSION_TYPE);
+
+    EXPECT_TRUE(cgroupEventHandler->supervisor_ == nullptr);
+    cgroupEventHandler->HandleProcessStateChanged(uid, pid, bundleName, appState);
+    cgroupEventHandler->HandleApplicationStateChanged(uid, pid, bundleName, appState);
+    cgroupEventHandler->HandleAbilityStateChanged(uid, pid, bundleName, abilityName, token, abilityState, abilityType);
+    cgroupEventHandler->HandleExtensionStateChanged(uid, pid, bundleName, abilityName, token, abilityState, abilityType);
+    cgroupEventHandler->HandleProcessCreated(processData);
+    cgroupEventHandler->HandleProcessDied(uid, pid, bundleName);
+    cgroupEventHandler->HandleTransientTaskStart(uid, pid, bundleName);
+    cgroupEventHandler->HandleTransientTaskEnd(uid, pid, bundleName);
+    cgroupEventHandler->HandleContinuousTaskUpdate(uid, pid, {typeId}, value);
+    cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, typeId, value);
+    cgroupEventHandler->HandleFocusedWindow(windowId, token, windowType, displayId, pid, uid);
+    cgroupEventHandler->HandleUnfocusedWindow(windowId, token, windowType, displayId, pid, uid);
+    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, isVisible, windowType, pid, uid);
+    cgroupEventHandler->HandleReportMMIProcess(resType, value, payload);
+    cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
+
+    cgroupEventHandler->supervisor_ = tmp;
+    SUCCEED();
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_022
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_022, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->HandleProcessStateChanged(1000, 2000,
+        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_023
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_023, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->HandleApplicationStateChanged(1000, 2000
+        "com.ohos.test", (int32_t)Rosen::ApplicationState::APP_STATE_FOREGROUND);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_024
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_024, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
+        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
+
+    CgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
+        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_025
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_025, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
+        1111, int32_t(AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, ABILITY_TYPE_PAGE));
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) != nullptr);
+
+    cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
+        1111, int32_t(AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, ABILITY_TYPE_PAGE));
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) == nullptr);
+
+    supervisor_->GetAppRecord(1000)->RemoveProcessRecord(1234);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
+    cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
+        1111, int32_t(AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, ABILITY_TYPE_PAGE));
+
+    CgroupEventHandler->RemoveApplication(1000);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+    cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
+        1111, int32_t(AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, ABILITY_TYPE_PAGE));
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_026
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_026, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler-HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
+        1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_READY, (int32_t)AppExecFwk::AbilityType::EXTENSION);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) != nullptr);
+
+    cgroupEventHandler-HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
+        1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED, (int32_t)AppExecFwk::AbilityType::EXTENSION);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) == nullptr);
+
+    supervisor_->GetAppRecord(1000)->RemoveProcessRecord(1234);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
+    cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
+        1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED, (int32_t)AppExecFwk::AbilityType::EXTENSION);
+
+    CgroupEventHandler->RemoveApplication(1000);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+    cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
+        1111, int32_t(AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED, (int32_t)AppExecFwk::AbilityType::EXTENSION));
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_027
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_027, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    CgroupEventHandler->HandleProcessDied(1000, 1234, "com.ohos.test");
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+    ProcessData processData;
+    processData.uid = 1000;
+    processData.pid = 1234;
+    processData.bundleName = "com.ohos.test";
+    processData.hostPid = 2024;
+    processData.processType = static_cast<AppExecFwk::ProcessType>((int32_t)AppExecFwk::ProcessType::NORMAL);
+    processData.extensionType = static_cast<AppExecFwk::ExtensionAbilityType>(INVALID_EXTENSION_TYPE);
+    cgroupEventHandler->HandleProcessCreated(ProcessData);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) != nullptr);
+    EXPECT_FALSE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->processType_ == ProcRecordType::RENDER);
+    processData.pid = 23456;
+    cgroupEventHandler->HandleProcessCreated(processData);
+    processData.pid = 34567;
+    cgroupEventHandler->HandleProcessCreated(processData);
+    processData.pid = 45678;
+    processData.processType = static_cast<AppExecFwk::ProcessType>((int32_t)AppExecFwk::ProcessType::EXTENSION);
+    cgroupEventHandler->HandleProcessCreated(processData);
+    processData.pid = 67890;
+    processData.processType = static_cast<AppExecFwk::ProcessType>((int32_t)AppExecFwk::ProcessType::GPU);
+    cgroupEventHandler->HandleProcessCreated(processData);
+    cgroupEventHandler->HandleProcessDied(1000, 1234,"com.ohos.test");
+    cgroupEventHandler->HandleProcessDied(1000, 23456,"com.ohos.test");
+    cgroupEventHandler->HandleProcessDied(1000, 45678,"com.ohos.test");
+    cgroupEventHandler->HandleProcessDied(1000, 67891,"com.ohos.test");
+    cgroupEventHandler->HandleProcessDied(1000, 67890,"com.ohos.test");
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_028
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_028, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->HandleTransientTaskStart(1000, 1234,"com.ohos.test");
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
+    cgroupEventHandler->HandleTransientTaskEnd(1000, 1234,"com.ohos.test");
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
+
+    ProcessData processData;
+    processData.uid = 1000;
+    processData.pid = 1234;
+    processData.bundleName = "com.ohos.test";
+    processData.hostPid = 2024;
+    processData.processType = static_cast<AppExecFwk::ProcessType>((int32_t)AppExecFwk::ProcessType::NORMAL);
+    processData.extensionType = static_cast<AppExecFwk::ExtensionAbilityType>(INVALID_EXTENSION_TYPE);
+    cgroupEventHandler->HandleProcessCreated(ProcessData);
+    cgroupEventHandler->HandleTransientTaskStart(1000, 1234,"com.ohos.test");
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->runningTransientTask_);
+    cgroupEventHandler->HandleTransientTaskStart(1000, 1234,"com.ohos.test");
+    EXPECT_TRUE(!supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->runningTransientTask_);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_029
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    int32_t abilityId = 1;
+    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234, (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
+
+    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234, {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK}, abilityId);
+    auto proc = supervisor_->GetAppRecord(1000)->GetProcessRecord(1234);
+    EXPECT_TRUE(proc->continuousTaskFlag_ == (1 << (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK));
+    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234, (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
+    EXPECT_TRUE(proc->continuousTaskFlag_ == 0);
+
+    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
+        {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, (int32_t)BackgroundTaskMgr::BackgroundMode::MUTLTI_DEVICE_CONMECTION}, abilityId);
+    EXPECT_TRUE(proc->continuousTaskFlag_ == 68);
+
+    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234, {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK}, abilityId);
+    EXPECT_TRUE(proc->continuousTaskFlag_ == 68);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_030
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_030, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    auto tmp = cgroupEventHandler->supervisor_;
+    cgroupEventHandler->supervisor_ = nullptr;
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
+    cgroupEventHandler->HandleSceneBoardState(ResType::RES_TYPE_REPORT_SCENE_BOARD, 1112, payload);
+    cgroupEventHandler->supervisor_ = tmp;
+
+    EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1111\"}");
+    cgroupEventHandler->HandleSceneBoardState(ResType::RES_TYPE_REPORT_SCENE_BOARD, 1112, payload);
+
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1113\", \"tid\": \"1112\", \"bundleNum\": \"0\"}");
+    cgroupEventHandler->HandleSceneBoardState(ResType::RES_TYPE_REPORT_SCENE_BOARD, 1112, payload);
+    EXPECT_TRUE(cgroupEventHandler->supervisor_->sceneBoardPid_ == 1113);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_031
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_031, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    auto temp = cgroupEventHandler->supervisor_;
+    cgroupEventHandler->supervisor_ = nullptr;
+    nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"429\", \"type\": \"1234\"}");
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
+
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"type\": \"1234\"}");
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
+
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"0\", \"pid\": \"429\", \"type\": \"1234\"}");
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
+
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"0\", \"type\": \"1234\"}");
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
+
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\", \"type\": \"1234\"}");
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
+    auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(2024);
+    EXPECT_TRUE(app != nullptr);
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
+    auto proc = app->GetProcessRecordNonNull(429);
+    EXPECT_TRUE(proc != nullptr);
+
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
+    EXPECT_FALSE(proc->runningLockState_[1234]);
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 2, payload);
+    EXPECT_FALSE(proc->runningLockState_[1234]);
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 3, payload);
+    EXPECT_FALSE(proc->runningLockState_[1234]);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_032
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_032, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    auto temp = cgroupEventHandler->supervisor_;
+    cgroupEventHandler->supervisor_ = nullptr;
+    nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"429\", \"type\": \"1234\"}");
+    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
+    cgroupEventHandler->supervisor_ = temp;
+
+    EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
+    nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"2024\", \"instanceId\": \"1234\"}");
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"instanceId\": \"1234\"}");
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\"}");
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"0\", \"pid\": \"429\", \"instanceId\": \"1234\"}");
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"0\", \"instanceId\": \"1234\"}");
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\", \"instanceId\": \"1234\"}");
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+    auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(2024);
+    EXPECT_TRUE(app != nullptr);
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+    auto proc = app->GetProcessRecordNonNull(429);
+    EXPECT_TRUE(proc != nullptr);
+
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
+    EXPECT_TRUE(proc->avCodecState_[1234]);
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 1, payload);
+    EXPECT_FALSE(proc->runningLockState_[1234]);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_033
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_033, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
+    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\"}");
+    auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(2024);
+    EXPECT_TRUE(app != nullptr);
+    auto proc = app->GetProcessRecordNonNull(429);
+    EXPECT_TRUE(proc != nullptr);
+
+    cgroupEventHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
+    EXPECT_TRUE(proc->videoState_);
+    cgroupEventHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 1, payload);
+    EXPECT_TRUE(proc->videoState_);
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
