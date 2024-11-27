@@ -31,7 +31,6 @@ ohos_unittest("SocPerfPluginTest") {
 
   deps = [
     "${ressched_plugins}/socperf_plugin:socperf_plugin",
-    "//third_party/googletest:gtest_main",
   ]
 
   defines = []

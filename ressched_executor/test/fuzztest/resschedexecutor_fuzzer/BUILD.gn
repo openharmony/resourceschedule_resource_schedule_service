@@ -37,7 +37,6 @@ ohos_fuzztest("ResSchedExecutorFuzzTest") {
 
   deps = [
     "${resschedexe_services}:resschedexesvc_static",
-    "//third_party/json:nlohmann_json_static",
   ]
 
   external_deps = [
@@ -47,6 +46,7 @@ ohos_fuzztest("ResSchedExecutorFuzzTest") {
     "c_utils:utils",
     "ffrt:libffrt",
     "hilog:libhilog",
+    "json:nlohmann_json_static",
     "ipc:ipc_single",
   ]
 }
