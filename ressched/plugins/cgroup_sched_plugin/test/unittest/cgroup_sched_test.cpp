@@ -1289,7 +1289,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     int32_t abilityId = 1;
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
-        (int32_t)BackgroundTaskMgr::BackgroundMode::, abilityId);
+        (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
 
