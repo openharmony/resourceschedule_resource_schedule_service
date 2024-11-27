@@ -1058,10 +1058,10 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     uintptr_t token = 1111;
     int32_t appState = (int32_t)AppExecFwk::ApplicationState::APP_STATE_CREATE;
     int32_t abilityState = (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_BACKGROUND;
-    int32_t abilityType = (int32_t)AppExecFwk::AbilityType:UNKNOWN;
-    int32_t extensionState = (int32_t)AppExecFwk::ExtensionState:EXTENSION_STATE_CREATE;
+    int32_t abilityType = (int32_t)AppExecFwk::AbilityType::UNKNOWN;
+    int32_t extensionState = (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_CREATE;
     int32_t typeId = (int32_t)BackgroundTaskMgr::BackgroundMode::DATA_TRANSFER;
-    uint32_t resType ResType::RES_TYPE_REPORT_RENDER_THREAD;
+    uint32_t resType = ResType::RES_TYPE_REPORT_RENDER_THREAD;
     int64_t value = 1235;
     bool isVisible = true;
     nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1000\", \"pid\": \"1234\"}");
@@ -1120,7 +1120,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_022, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_023, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
-    cgroupEventHandler->HandleApplicationStateChanged(1000, 2000
+    cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
         "com.ohos.test", (int32_t)Rosen::ApplicationState::APP_STATE_FOREGROUND);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 }
@@ -1155,22 +1155,22 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_025, Function | Med
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
-        1111, int32_t(AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, ABILITY_TYPE_PAGE));
+        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, (int32_t)AppExecFwk::AbilityType::PAGE);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) != nullptr);
 
     cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
-        1111, int32_t(AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, ABILITY_TYPE_PAGE));
+        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, (int32_t)AppExecFwk::AbilityType::PAGE);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) == nullptr);
 
     supervisor_->GetAppRecord(1000)->RemoveProcessRecord(1234);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
     cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
-        1111, int32_t(AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, ABILITY_TYPE_PAGE));
+        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, (int32_t)AppExecFwk::AbilityType::PAGE);
 
-    CgroupEventHandler->RemoveApplication(1000);
+    cgroupEventHandler->RemoveApplication(1000);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
     cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
-        1111, int32_t(AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, ABILITY_TYPE_PAGE));
+        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, (int32_t)AppExecFwk::AbilityType::PAGE);
 }
 
 /**
@@ -1202,8 +1202,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_026, Function | Med
     CgroupEventHandler->RemoveApplication(1000);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
     cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
-        1111, int32_t(AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
-        (int32_t)AppExecFwk::AbilityType::EXTENSION));
+        1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
+        (int32_t)AppExecFwk::AbilityType::EXTENSION);
 }
 
 /**
@@ -1216,7 +1216,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_026, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_027, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
-    CgroupEventHandler->HandleProcessDied(1000, 1234, "com.ohos.test");
+    cgroupEventHandler->HandleProcessDied(1000, 1234, "com.ohos.test");
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
     ProcessData processData;
     processData.uid = 1000;
@@ -1271,7 +1271,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_028, Function | Med
     processData.processType = static_cast<AppExecFwk::ProcessType>((int32_t)AppExecFwk::ProcessType::NORMAL);
     processData.extensionType = static_cast<AppExecFwk::ExtensionAbilityType>(INVALID_EXTENSION_TYPE);
     cgroupEventHandler->HandleProcessCreated(ProcessData);
-    cgroupEventHandler->HandleTransientTaskStart(1000, 1234,"com.ohos.test");
+    cgroupEventHandler->HandleTransientTaskStart(1000, 1234, "com.ohos.test");
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->runningTransientTask_);
     cgroupEventHandler->HandleTransientTaskStart(1000, 1234, "com.ohos.test");
     EXPECT_TRUE(!supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->runningTransientTask_);
@@ -1293,8 +1293,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
 
-    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
-        {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK}, abilityId);
+    cgroupEventHandler->HandleContinuousTaskCancel(1000,
+        1234, {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK}, abilityId);
     auto proc = supervisor_->GetAppRecord(1000)->GetProcessRecord(1234);
     EXPECT_TRUE(proc->continuousTaskFlag_ == (1 << (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK));
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
@@ -1303,7 +1303,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
 
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
         {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK,
-        (int32_t)BackgroundTaskMgr::BackgroundMode::MUTLTI_DEVICE_CONMECTION}, abilityId);
+        (int32_t)BackgroundTaskMgr::BackgroundMode::MULTI_DEVICE_CONNECTION}, abilityId);
     EXPECT_TRUE(proc->continuousTaskFlag_ == 68);
 
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
