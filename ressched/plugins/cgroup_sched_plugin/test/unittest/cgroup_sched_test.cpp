@@ -681,6 +681,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_009, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_010, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     Rosen::WindowType WindowType = Rosen::WindowType::APP_WINDOW_BASE;
     uint32_t windowId = 1;
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
@@ -706,6 +707,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_010, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_011, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
     cgroupEventHandler->HandleReportMMIProcess(1, 1, payload);
@@ -734,6 +736,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_011, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_012, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     nlohmann::json payload =
         nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"tid\": \"1113\", \"role\": \"1114\"}");
@@ -760,6 +763,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_012, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_013, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
     cgroupEventHandler->HandleReportWindowState(1, 1, payload);
@@ -776,6 +780,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_013, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_014, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     const string payloadStr = ("{\"uid\": \"1111\", \"pid\": \"1112\", \"tid\": \"1112\", \"role\": \"2\"}");
     nlohmann::json payload = nlohmann::json::parse(payloadStr);
@@ -802,6 +807,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_014, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_015, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(1111);
     EXPECT_TRUE(app != nullptr);
@@ -844,6 +850,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_015, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_016, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
     nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"1112\"}");
@@ -893,6 +900,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_016, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_017, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
     nlohmann::json payload = nlohmann::json::parse("{\"clientPid\": \"1112\"}");
@@ -935,6 +943,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_017, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_018, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
     cgroupEventHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW,
@@ -975,6 +984,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_018, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_019, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
     nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"syncStatus\": \"1\"}");
@@ -1021,6 +1031,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_019, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_020, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\"}");
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(2024);
@@ -1044,6 +1055,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_020, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     auto tmp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
 
@@ -1105,6 +1117,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_022, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     cgroupEventHandler->HandleProcessStateChanged(1000, 2000,
         "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
@@ -1120,6 +1133,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_022, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_023, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
         "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
@@ -1135,12 +1149,13 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_023, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_024, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
-        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
+        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_TERMINATED);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 
     cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
-        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
+        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_TERMINATED);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
 
@@ -1154,6 +1169,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_024, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_025, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
         1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, (int32_t)AppExecFwk::AbilityType::PAGE);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) != nullptr);
@@ -1183,6 +1199,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_025, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_026, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
         1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_READY,
         (int32_t)AppExecFwk::AbilityType::EXTENSION);
@@ -1216,6 +1233,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_026, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_027, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     cgroupEventHandler->HandleProcessDied(1000, 1234, "com.ohos.test");
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
     ProcessData processData;
@@ -1256,6 +1274,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_027, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_028, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     cgroupEventHandler->HandleTransientTaskStart(1000, 1234, "com.ohos.test");
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
@@ -1287,6 +1306,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_028, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     int32_t abilityId = 1;
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
         (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
@@ -1316,6 +1336,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_030, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     auto tmp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
     nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
@@ -1342,6 +1363,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_030, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_031, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
     nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"429\", \"type\": \"1234\"}");
@@ -1387,6 +1409,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_031, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_032, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
     nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"429\", \"type\": \"1234\"}");
@@ -1433,6 +1456,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_032, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_033, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\"}");
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(2024);
