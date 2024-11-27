@@ -1121,7 +1121,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_023, Function | Med
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
-        "com.ohos.test", (int32_t)Rosen::ApplicationState::APP_STATE_FOREGROUND);
+        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 }
 
@@ -1167,7 +1167,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_025, Function | Med
     cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
         1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, (int32_t)AppExecFwk::AbilityType::PAGE);
 
-    cgroupEventHandler->RemoveApplication(1000);
+    supervisor_->RemoveApplication(1000);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
     cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
         1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, (int32_t)AppExecFwk::AbilityType::PAGE);
@@ -1199,7 +1199,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_026, Function | Med
         1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
         (int32_t)AppExecFwk::AbilityType::EXTENSION);
 
-    CgroupEventHandler->RemoveApplication(1000);
+    supervisor_->RemoveApplication(1000);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
     cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
         1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
@@ -1270,7 +1270,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_028, Function | Med
     processData.hostPid = 2024;
     processData.processType = static_cast<AppExecFwk::ProcessType>((int32_t)AppExecFwk::ProcessType::NORMAL);
     processData.extensionType = static_cast<AppExecFwk::ExtensionAbilityType>(INVALID_EXTENSION_TYPE);
-    cgroupEventHandler->HandleProcessCreated(ProcessData);
+    cgroupEventHandler->HandleProcessCreated(processData);
     cgroupEventHandler->HandleTransientTaskStart(1000, 1234, "com.ohos.test");
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->runningTransientTask_);
     cgroupEventHandler->HandleTransientTaskStart(1000, 1234, "com.ohos.test");
@@ -1289,12 +1289,12 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     int32_t abilityId = 1;
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
-        (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
+        (int32_t)BackgroundTaskMgr::BackgroundMode::, abilityId);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
 
     cgroupEventHandler->HandleContinuousTaskCancel(1000,
-        1234, {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK}, abilityId);
+        1234, (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
     auto proc = supervisor_->GetAppRecord(1000)->GetProcessRecord(1234);
     EXPECT_TRUE(proc->continuousTaskFlag_ == (1 << (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK));
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
@@ -1302,12 +1302,12 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
     EXPECT_TRUE(proc->continuousTaskFlag_ == 0);
 
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
-        {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK,
-        (int32_t)BackgroundTaskMgr::BackgroundMode::MULTI_DEVICE_CONNECTION}, abilityId);
+        (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK,
+        (int32_t)BackgroundTaskMgr::BackgroundMode::MULTI_DEVICE_CONNECTION, abilityId);
     EXPECT_TRUE(proc->continuousTaskFlag_ == 68);
 
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
-        {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK}, abilityId);
+        (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
     EXPECT_TRUE(proc->continuousTaskFlag_ == 68);
 }
 
@@ -1328,10 +1328,10 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_030, Function | Med
     cgroupEventHandler->supervisor_ = tmp;
 
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
-    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1111\"}");
+    payload = nlohmann::json::parse("{\"uid\": \"1111\"}");
     cgroupEventHandler->HandleSceneBoardState(ResType::RES_TYPE_REPORT_SCENE_BOARD, 1112, payload);
 
-    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1111\",
+    payload = nlohmann::json::parse("{\"uid\": \"1111\",
         \"pid\": \"1113\", \"tid\": \"1112\", \"bundleNum\": \"0\"}");
     cgroupEventHandler->HandleSceneBoardState(ResType::RES_TYPE_REPORT_SCENE_BOARD, 1112, payload);
     EXPECT_TRUE(cgroupEventHandler->supervisor_->sceneBoardPid_ == 1113);
@@ -1351,17 +1351,22 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_031, Function | Med
     cgroupEventHandler->supervisor_ = nullptr;
     nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"429\", \"type\": \"1234\"}");
     cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
+    cgroupEventHandler->supervisor_ = temp;
 
-    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"type\": \"1234\"}");
+    EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
+    payload = nlohmann::json::parse("{\"pid\": \"429\", \"type\": \"1234\"}");
     cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
 
-    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"0\", \"pid\": \"429\", \"type\": \"1234\"}");
+    payload = nlohmann::json::parse("{\"uid\": \"2024\", \"type\": \"1234\"}");
     cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
 
-    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"0\", \"type\": \"1234\"}");
+    payload = nlohmann::json::parse("{\"uid\": \"0\", \"pid\": \"429\", \"type\": \"1234\"}");
     cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
 
-    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\", \"type\": \"1234\"}");
+    payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"0\", \"type\": \"1234\"}");
+    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
+
+    payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\", \"type\": \"1234\"}");
     cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(2024);
     EXPECT_TRUE(app != nullptr);
@@ -1394,32 +1399,32 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_032, Function | Med
     cgroupEventHandler->supervisor_ = temp;
 
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
-    nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"2024\", \"instanceId\": \"1234\"}");
-    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+    payload = nlohmann::json::parse("{\"pid\": \"2024\", \"instanceId\": \"1234\"}");
+    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
 
-    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"instanceId\": \"1234\"}");
-    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+    payload = nlohmann::json::parse("{\"uid\": \"2024\", \"instanceId\": \"1234\"}");
+    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
 
-    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\"}");
-    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+    payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\"}");
+    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
 
-    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"0\", \"pid\": \"429\", \"instanceId\": \"1234\"}");
-    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+    payload = nlohmann::json::parse("{\"uid\": \"0\", \"pid\": \"429\", \"instanceId\": \"1234\"}");
+    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
 
-    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"0\", \"instanceId\": \"1234\"}");
-    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+    payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"0\", \"instanceId\": \"1234\"}");
+    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
 
-    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\", \"instanceId\": \"1234\"}");
-    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+    payload = nlohmann::json::parse("{\"uid\": \"2024\", \"pid\": \"429\", \"instanceId\": \"1234\"}");
+    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(2024);
     EXPECT_TRUE(app != nullptr);
-    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
+    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
     auto proc = app->GetProcessRecordNonNull(429);
     EXPECT_TRUE(proc != nullptr);
 
-    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
+    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
     EXPECT_TRUE(proc->avCodecState_[1234]);
-    cgroupEventHandler->HandleReportRunningLockEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 1, payload);
+    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 1, payload);
     EXPECT_FALSE(proc->runningLockState_[1234]);
 }
 
