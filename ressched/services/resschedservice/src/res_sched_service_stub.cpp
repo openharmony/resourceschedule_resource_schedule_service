@@ -35,6 +35,7 @@ namespace {
     constexpr int32_t MEMMGR_UID = 1111;
     constexpr int32_t SAMGR_UID = 5555;
     constexpr int32_t FOUNDATION_UID = 5523;
+    constexpr int32_t GRAPHIC_UID = 1003;
     constexpr int32_t HIVIEW_UID = 1201;
     constexpr int32_t SINGLE_UID_REQUEST_LIMIT_COUNT = 250;
     constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 650;
@@ -51,6 +52,7 @@ namespace {
         ResType::RES_TYPE_SCENE_ROTATION,
         ResType::SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START,
         ResType::RES_TYPE_COSMIC_CUBE_STATE_CHANGE,
+        ResType::RES_TYPE_GESTURE_ANIMATION,
     };
     static const std::unordered_set<uint32_t> thirdPartRes_ = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -82,6 +84,7 @@ namespace {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
         ResType::SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
         ResType::SYNC_RES_TYPE_GET_THERMAL_DATA,
+        ResType::RES_TYPE_CLICK_RECOGNIZE,
         ResType::RES_TYPE_SCREEN_STATUS,
         ResType::RES_TYPE_APP_STATE_CHANGE,
         ResType::RES_TYPE_ABILITY_STATE_CHANGE,
@@ -307,7 +310,7 @@ int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel
     uint32_t accessToken = IPCSkeleton::GetCallingTokenID();
     int32_t uid = IPCSkeleton::GetCallingUid();
     Security::AccessToken::ATokenTypeEnum tokenTypeFlag = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(accessToken);
-    if ((uid != MEMMGR_UID && uid != SAMGR_UID && uid != HIVIEW_UID)
+    if ((uid != MEMMGR_UID && uid != SAMGR_UID && uid != HIVIEW_UID && uid != GRAPHIC_UID)
         || tokenTypeFlag != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
         RESSCHED_LOGE("no permission， kill process fail");
         return RES_SCHED_KILL_PROCESS_FAIL;

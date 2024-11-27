@@ -41,6 +41,7 @@ namespace {
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_PATH = "socperf_req_apptype_path";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_FUNC = "socperf_req_apptype_func";
     const std::string BUNDLE_NAME = "bundleName";
+    const std::string UID_NAME = "uid";
     const std::string SOCPERF_TYPE_ID = "socperf_type_id";
     const std::string SOCPERF_TYPE_RGM = "socperf_type_rgm";
     const std::string EXTENSION_TYPE_KEY = "extensionType";
@@ -50,6 +51,7 @@ namespace {
     const std::string DISPLAY_MODE_SUB = "displaySub";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
+    const int32_t INVALID_APP_TYPE                          = 0;
     const int32_t POWERMODE_ON                              = 601;
     const int64_t TIME_INTERVAL                             = 5000;
     const int64_t SCREEN_OFF_TIME_DELAY                     = 5000000L;
@@ -221,6 +223,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleGameBoost(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_KEY_EVENT,
         [this](const std::shared_ptr<ResData>& data) { HandleEventKey(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_APP_INSTALL_UNINSTALL,
+        [this](const std::shared_ptr<ResData>& data) { HandleUninstallEvent(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
@@ -263,7 +267,8 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_BMM_MONITER_CHANGE_EVENT,
         RES_TYPE_POWER_MODE_CHANGED,
         RES_TYPE_SCREEN_STATUS,
-        RES_TYPE_APP_GAME_BOOST_EVENT
+        RES_TYPE_APP_GAME_BOOST_EVENT,
+        RES_TYPE_APP_INSTALL_UNINSTALL,
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -339,10 +344,21 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
             SOC_PERF_LOGI("SocPerfPlugin: socperf->Game cold start");
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_GAME_START, "");
         }
+        UpdateUidToAppTypeMap(data, appType);
     } else if (data->value == AppStartType::APP_WARM_START) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_WARM_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WARM_START, "");
     }
+}
+
+bool SocPerfPlugin::UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data, int32_t appType)
+{
+    int32_t uid = GetUidByData(data);
+    if (appType != INVALID_VALUE && appType != INVALID_APP_TYPE && uid != INVALID_VALUE) {
+        uidToAppTypeMap_[uid] = appType;
+        return true;
+    }
+    return false;
 }
 
 void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
@@ -350,17 +366,31 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
     if (data->value == WindowFocusStatus::WINDOW_FOCUS) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, "");
-        if (reqAppTypeFunc_ == nullptr) {
-            SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH reqAppTypeFunc_ is null");
-            return;
-        }
-        if (data->payload == nullptr || !data->payload.contains("uid") || !data->payload.at("uid").is_string()) {
-            return;
-        }
-        std::string bundleName = GetBundleNameByUid(atoi(data->payload["uid"].get<std::string>().c_str()));
-        focusAppType_ = reqAppTypeFunc_(bundleName);
+        UpdateFocusAppType(data);
         SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH:%{public}d", focusAppType_);
     }
+}
+
+bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data)
+{
+    int32_t uid = GetUidByData(data);
+    if (uid == INVALID_VALUE) {
+        return false;
+    }
+    if (uidToAppTypeMap_.count(uid) > 0) {
+        focusAppType_ = uidToAppTypeMap_[uid];
+        return true;
+    }
+    if (reqAppTypeFunc_ == nullptr) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH reqAppTypeFunc_ is null");
+        return false;
+    }
+    std::string bundleName = GetBundleNameByUid(uid);
+    focusAppType_ = reqAppTypeFunc_(bundleName);
+    if (focusAppType_ != INVALID_VALUE && focusAppType_ != INVALID_APP_TYPE) {
+        uidToAppTypeMap_[uid] = focusAppType_;
+    }
+    return true;
 }
 
 std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid)
@@ -394,7 +424,7 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK: %{public}lld", (long long)data->value);
     // touch down event
-    if (data->value == ClickEventType::TOUCH_EVENT_DOWN) {
+    if (data->value == ClickEventType::TOUCH_EVENT_DOWN_MMI) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
     } else if (data->value == ClickEventType::TOUCH_EVENT_UP) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
@@ -420,7 +450,7 @@ void SocPerfPlugin::HandleEventKey(const std::shared_ptr<ResData>& data)
 
 bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
 {
-    if (data == nullptr) {
+    if (socperfGameBoostSwitch_ || data == nullptr) {
         SOC_PERF_LOGD("SocPerfPlugin: socperf->GAME_BOOST null data");
         return false;
     }
@@ -433,6 +463,38 @@ bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
     return true;
 }
 
+bool SocPerfPlugin::HandleUninstallEvent(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->UNINSTALL null data");
+        return false;
+    }
+    if (data->value != AppInstallStatus::APP_UNINSTALL) {
+        return false;
+    }
+    int32_t uid = INVALID_VALUE;
+    if (data->payload == nullptr || !data->payload.contains(UID_NAME) ||
+        !data->payload.at(UID_NAME).is_number_integer()) {
+        return false;
+    }
+    uid = data->payload[UID_NAME].get<std::int32_t>();
+    if (uid == INVALID_VALUE) {
+        return false;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->UNINSTALL:%{public}d", uid);
+    uidToAppTypeMap_.erase(uid);
+    return true;
+}
+
+int32_t SocPerfPlugin::GetUidByData(const std::shared_ptr<ResData>& data)
+{
+    int32_t uid = INVALID_VALUE;
+    if (data->payload == nullptr || !data->payload.contains(UID_NAME) || !data->payload.at(UID_NAME).is_string()) {
+        return uid;
+    }
+    uid = atoi(data->payload[UID_NAME].get<std::string>().c_str());
+    return uid;
+}
 
 void SocPerfPlugin::HandleLoadPage(const std::shared_ptr<ResData>& data)
 {
@@ -595,9 +657,30 @@ bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
         ResType::UI_SENSITIVE_EXTENSION.end()) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->APPSTATECHANGE");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+        UpdateUidToAppTypeMap(data);
         return true;
     }
     return false;
+}
+
+bool SocPerfPlugin::UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data)
+{
+    int32_t uid = GetUidByData(data);
+    if (uid == INVALID_VALUE) {
+        return false;
+    }
+    if (uidToAppTypeMap_.count(uid) > 0) {
+        return true;
+    }
+    if (reqAppTypeFunc_ == nullptr || !data->payload.contains(BUNDLE_NAME)) {
+        return false;
+    }
+    std::string bundleName = data->payload[BUNDLE_NAME].get<std::string>().c_str();
+    int32_t appType = reqAppTypeFunc_(bundleName);
+    if (appType != INVALID_VALUE && appType != INVALID_APP_TYPE) {
+        uidToAppTypeMap_[uid] = appType;
+    }
+    return true;
 }
 
 void SocPerfPlugin::HandleScreenOn()
