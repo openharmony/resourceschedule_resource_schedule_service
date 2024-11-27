@@ -685,7 +685,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_010, Function | Med
     uint32_t windowId = 1;
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     cgroupEventHandler->HandleWindowVisibilityChanged(windowId, false, WindowType, 12121, 12121);
-    g_cgHacgroupEventHandlerndler->HandleWindowVisibilityChanged(windowId, true, WindowType, 12121, 12121);
+    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, true, WindowType, 12121, 12121);
 
     supervisor_->GetAppRecord(12121)->RemoveProcessRecord(12121);
     EXPECT_TRUE(supervisor_->GetAppRecord(12121)->GetProcessRecord(12121) == nullptr);
@@ -739,7 +739,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_012, Function | Med
         nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"tid\": \"1113\", \"role\": \"1114\"}");
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(1111);
     EXPECT_TRUE(app != nullptr);
-    auto proc = app-> GetAppRecordNonNull(1112);
+    auto proc = app-> GetProcessRecordNonNull(1112);
     EXPECT_TRUE(proc != nullptr);
     cgroupEventHandler->HandleReportKeyThread(1, 1, payload);
 
@@ -805,7 +805,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_015, Function | Med
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(1111);
     EXPECT_TRUE(app != nullptr);
-    auto proc = app->GetAppRecordNonNull(1112);
+    auto proc = app->GetProcessRecordNonNull(1112);
     EXPECT_TRUE(proc != nullptr);
     auto hostProcRecord = app->GetProcessRecordNonNull(1234);
     EXPECT_TRUE(hostProcRecord != nullptr);
@@ -817,8 +817,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_015, Function | Med
     nlohmann::json payload = nlohmann::json::parse(payloadStr);
     cgroupEventHandler->HandleReportWindowState(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
 
-    payload = nlohmann::json::parse("{\"uid\": \"1111\",
-        \"pid\": \"1112\", \"windowId\": \"1112\", \"state\": \"1\", \"serialNum\": \"0\"}");
+    payload = nlohmann::json::parse("{\"uid\": \"1111\","
+        "\"pid\": \"1112\", \"windowId\": \"1112\", \"state\": \"1\", \"serialNum\": \"0\"}");
     cgroupEventHandler->HandleReportWindowState(ResType::RES_TYPE_REPORT_WINDOW_STATE, 0, payload);
 
     payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"state\": \"0\", \"serialNum\": \"0\"}");
@@ -847,39 +847,39 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_016, Function | Med
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
     nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"1112\"}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
     cgroupEventHandler->supervisor_ = temp;
 
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     payload = nlohmann::json::parse("{\"pid\": 1112}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
 
     payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": 1112}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
 
     payload = nlohmann::json::parse("{\"pid\": 1112}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
 
     payload = nlohmann::json::parse("{\"uid\": 1111, \"pid\": \"1112\"}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
 
     payload = nlohmann::json::parse("{\"uid\": 0, \"pid\": 1112}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
 
     payload = nlohmann::json::parse("{\"uid\": 1111, \"pid\": 0}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
 
     payload = nlohmann::json::parse("{\"uid\": 1111, \"pid\": 1112}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(1111);
     EXPECT_TRUE(app != nullptr);
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
     auto proc = app->GetProcessRecordNonNull(1112);
     EXPECT_TRUE(proc != nullptr);
 
     payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
     proc->curSchedGroup_ = CgroupSetting::SP_BACKGROUND;
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATUS_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
     EXPECT_TRUE(proc->audioPlayingState_ == 2);
 }
 
@@ -937,25 +937,29 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_018, Function | Med
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
-    cgroupEventHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW, true, 429, 2024);
+    cgroupEventHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW,
+        true, 429, 2024);
     cgroupEventHandler->supervisor_ = temp;
 
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(2024);
     app->RemoveProcessRecord(429);
     EXPECT_TRUE(app->GetProcessRecord(429) == nullptr);
-    cgroupEventHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW, true, 429, 2024);
+    cgroupEventHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW,
+        true, 429, 2024);
 
     cgroupEventHandler->supervisor_->RemoveApplication(2024);
     EXPECT_TRUE(cgroupEventHandler->supervisor_->GetAppRecord(2024) == nullptr);
-    cgroupEventHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW, true, 429, 2024);
+    cgroupEventHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW,
+        true, 429, 2024);
 
     app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(2024);
     EXPECT_TRUE(app != nullptr);
     auto proc = app->GetProcessRecordNonNull(429);
     EXPECT_TRUE(proc != nullptr);
 
-    cgroupEventHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW, true, 429, 2024);
+    cgroupEventHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW,
+        true, 429, 2024);
     EXPECT_TRUE(proc->processDrawingState_);
     auto windowInfo = proc->GetWindowInfoNonNull(2054);
     EXPECT_TRUE(windowInfo->drawingContentState_);
@@ -1048,7 +1052,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     int32_t hostPid = 2024;
     std::string bundleName = "com.ohos.test";
     std::string abilityName = "MainAbility";
-    Rosen::windowType windowType = Rosen::WindowType::APP_WINDOW_BASE;
+    Rosen::WindowType windowType = Rosen::WindowType::APP_WINDOW_BASE;
     uint64_t displayId = 1;
     uint32_t windowId = 1;
     uintptr_t token = 1111;
@@ -1180,11 +1184,13 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_026, Function | Med
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler-HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
-        1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_READY, (int32_t)AppExecFwk::AbilityType::EXTENSION);
+        1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_READY,
+        (int32_t)AppExecFwk::AbilityType::EXTENSION);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) != nullptr);
 
     cgroupEventHandler-HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
-        1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED, (int32_t)AppExecFwk::AbilityType::EXTENSION);
+        1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
+        (int32_t)AppExecFwk::AbilityType::EXTENSION);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) == nullptr);
 
     supervisor_->GetAppRecord(1000)->RemoveProcessRecord(1234);
@@ -1250,7 +1256,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_027, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_028, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
-    cgroupEventHandler->HandleTransientTaskStart(1000, 1234,"com.ohos.test");
+    cgroupEventHandler->HandleTransientTaskStart(1000, 1234, "com.ohos.test");
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
     cgroupEventHandler->HandleTransientTaskEnd(1000, 1234, "com.ohos.test");
@@ -1282,18 +1288,21 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     int32_t abilityId = 1;
-    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234, (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
+    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
+        (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
 
-    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234, {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK}, abilityId);
+    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
+        {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK}, abilityId);
     auto proc = supervisor_->GetAppRecord(1000)->GetProcessRecord(1234);
     EXPECT_TRUE(proc->continuousTaskFlag_ == (1 << (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK));
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
         (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
     EXPECT_TRUE(proc->continuousTaskFlag_ == 0);
 
-    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234, {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK,
+    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
+        {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK,
         (int32_t)BackgroundTaskMgr::BackgroundMode::MUTLTI_DEVICE_CONMECTION}, abilityId);
     EXPECT_TRUE(proc->continuousTaskFlag_ == 68);
 
