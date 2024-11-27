@@ -50,7 +50,6 @@ namespace {
     const std::string DISPLAY_MODE_MAIN = "displayMain";
     const std::string DISPLAY_MODE_SUB = "displaySub";
     const std::string POWER_MODE = "powerMode";
-    const std::string PERF_MODE = "perfMode";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
