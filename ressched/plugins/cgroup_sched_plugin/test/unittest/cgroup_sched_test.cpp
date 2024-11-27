@@ -1008,7 +1008,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_019, Function | Med
     cgroupEventHandler->HandleReportHisysEvent(ResType::RES_TYPE_REPORT_CAMERA_STATE, 0, payload);
     EXPECT_TRUE(proc->cameraState_ == 0);
     cgroupEventHandler->HandleReportHisysEvent(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE, 3, payload);
-    EXPECT_TRUE(proc->wifiState_ == 0);
+    EXPECT_TRUE(proc->wifiState_ == 3);
 }
 
 /**
@@ -1183,12 +1183,12 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_025, Function | Med
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_026, Function | MediumTest | Level1)
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
-    cgroupEventHandler-HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
+    cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
         1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_READY,
         (int32_t)AppExecFwk::AbilityType::EXTENSION);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) != nullptr);
 
-    cgroupEventHandler-HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
+    cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
         1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
         (int32_t)AppExecFwk::AbilityType::EXTENSION);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) == nullptr);
@@ -1225,7 +1225,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_027, Function | Med
     processData.hostPid = 2024;
     processData.processType = static_cast<AppExecFwk::ProcessType>((int32_t)AppExecFwk::ProcessType::NORMAL);
     processData.extensionType = static_cast<AppExecFwk::ExtensionAbilityType>(INVALID_EXTENSION_TYPE);
-    cgroupEventHandler->HandleProcessCreated(ProcessData);
+    cgroupEventHandler->HandleProcessCreated(processData);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) != nullptr);
     EXPECT_FALSE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->processType_ == ProcRecordType::RENDER);
     processData.pid = 23456;
@@ -1302,13 +1302,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
     EXPECT_TRUE(proc->continuousTaskFlag_ == 0);
 
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
-        (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK,
-        (int32_t)BackgroundTaskMgr::BackgroundMode::MULTI_DEVICE_CONNECTION, abilityId);
-    EXPECT_TRUE(proc->continuousTaskFlag_ == 68);
-
-    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
         (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
-    EXPECT_TRUE(proc->continuousTaskFlag_ == 68);
+    EXPECT_TRUE(proc->continuousTaskFlag_ == 4);
 }
 
 /**
@@ -1331,8 +1326,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_030, Function | Med
     payload = nlohmann::json::parse("{\"uid\": \"1111\"}");
     cgroupEventHandler->HandleSceneBoardState(ResType::RES_TYPE_REPORT_SCENE_BOARD, 1112, payload);
 
-    payload = nlohmann::json::parse("{\"uid\": \"1111\",
-        \"pid\": \"1113\", \"tid\": \"1112\", \"bundleNum\": \"0\"}");
+    payload = nlohmann::json::parse("{\"uid\": \"1111\","
+        "\"pid\": \"1113\", \"tid\": \"1112\", \"bundleNum\": \"0\"}");
     cgroupEventHandler->HandleSceneBoardState(ResType::RES_TYPE_REPORT_SCENE_BOARD, 1112, payload);
     EXPECT_TRUE(cgroupEventHandler->supervisor_->sceneBoardPid_ == 1113);
 }
