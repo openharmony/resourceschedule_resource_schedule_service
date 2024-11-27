@@ -271,6 +271,8 @@ enum : uint32_t {
     RES_TYPE_APP_GAME_BOOST_EVENT = 120,
     // show gesture animation from scb
     RES_TYPE_GESTURE_ANIMATION = 121,
+    // report key touch event
+    RES_TYPE_KEY_EVENT = 122,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

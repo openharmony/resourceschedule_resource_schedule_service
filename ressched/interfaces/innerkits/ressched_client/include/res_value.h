@@ -171,6 +171,15 @@ enum ClickEventType : int64_t {
 };
 
 /**
+* @brief key event type
+*/
+enum KeyEventType : int64_t {
+    // touch down event
+    KEY_EVENT_DOWN = 1,
+    KEY_EVENT_UP = 2,
+};
+
+/**
 * @brief PushPage event type
 */
 enum PushPageType : int64_t {

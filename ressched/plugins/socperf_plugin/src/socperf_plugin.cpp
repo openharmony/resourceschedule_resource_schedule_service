@@ -81,6 +81,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH_UP        = 10040;
     const int32_t PERF_REQUEST_CMD_ID_REMOTE_UNLOCK         = 10041;
     const int32_t PERF_REQUEST_CMD_ID_ACCOUNT_ACTIVATING    = 10043;
+    const int32_t PERF_REQUEST_CMD_ID_EVENT_KEY_DOWN        = 10044;
     const int32_t PERF_REQUEST_CMD_ID_LOAD_URL              = 10070;
     const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
     const int32_t PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE       = 10073;
@@ -220,6 +221,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleScreenStatusAnalysis(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_APP_GAME_BOOST_EVENT,
         [this](const std::shared_ptr<ResData>& data) { HandleGameBoost(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_KEY_EVENT,
+        [this](const std::shared_ptr<ResData>& data) { HandleEventKey(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_APP_INSTALL_UNINSTALL,
         [this](const std::shared_ptr<ResData>& data) { HandleUninstallEvent(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
@@ -238,6 +241,7 @@ void SocPerfPlugin::InitResTypes()
     resTypes = {
         RES_TYPE_WINDOW_FOCUS,
         RES_TYPE_CLICK_RECOGNIZE,
+        RES_TYPE_KEY_EVENT,
         RES_TYPE_LOAD_PAGE,
         RES_TYPE_SLIDE_RECOGNIZE,
         RES_TYPE_WEB_GESTURE,
@@ -426,6 +430,21 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
     } else if (data->value == ClickEventType::CLICK_EVENT) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
+    }
+}
+
+void SocPerfPlugin::HandleEventKey(const std::shared_ptr<ResData>& data)
+{
+    if (socperfGameBoostSwitch_ && focusAppType_ == APP_TYPE_GAME) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_KEY game can not get key_event");
+        return;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_KEY: %{public}lld", (long long)data->value);
+    // key down event
+    if (data->value == KeyEventType::KEY_EVENT_DOWN) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_KEY_DOWN, "");
+    } else if (data->value == KeyEventType::KEY_EVENT_UP) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_KEY_DOWN, "");
     }
 }
 
