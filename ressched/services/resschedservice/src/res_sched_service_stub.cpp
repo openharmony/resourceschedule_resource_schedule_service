@@ -79,6 +79,7 @@ namespace {
         ResType::RES_TYPE_AUDIO_SILENT_PLAYBACK,
         ResType::RES_TYPE_BT_SERVICE_EVENT,
         ResType::RES_TYPE_APP_FRAME_DROP,
+        ResType::RES_TYPE_REPORT_DISTRIBUTE_TID,
     };
     static const std::unordered_set<uint32_t> saRes_ = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
