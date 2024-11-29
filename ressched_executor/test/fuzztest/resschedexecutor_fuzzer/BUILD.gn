@@ -44,8 +44,8 @@ ohos_fuzztest("ResSchedExecutorFuzzTest") {
     "c_utils:utils",
     "ffrt:libffrt",
     "hilog:libhilog",
-    "json:nlohmann_json_static",
     "ipc:ipc_single",
+    "json:nlohmann_json_static",
   ]
 }
 
