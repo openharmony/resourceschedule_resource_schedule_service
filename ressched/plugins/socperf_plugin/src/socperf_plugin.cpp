@@ -405,13 +405,13 @@ std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid)
         systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     sptr<AppExecFwk::IBundleMgr> iBundleMgr = OHOS::iface_cast<OHOS::AppExecFwk::IBundleMgr>(object);
     if (!iBundleMgr) {
-        SOC_PERF_LOGD("%{pubilc}s null bundle manager.", __func__);
+        SOC_PERF_LOGD("%{public}s null bundle manager.", __func__);
         return bundleName;
     }
 
     ErrCode ret = iBundleMgr->GetNameForUid(uid, bundleName);
     if (ret != ERR_OK) {
-        SOC_PERF_LOGE("%{pulic}s get bundle name failed for %{pulic}d, err_code:%{public}d.", __func__, uid, ret);
+        SOC_PERF_LOGE("%{public}s get bundle name failed for %{public}d, err_code:%{public}d.", __func__, uid, ret);
     }
     return bundleName;
 }
