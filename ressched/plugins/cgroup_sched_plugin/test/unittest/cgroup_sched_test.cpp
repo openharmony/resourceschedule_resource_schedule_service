@@ -682,19 +682,19 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_010, Function | Med
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
-    Rosen::WindowType WindowType = Rosen::WindowType::APP_WINDOW_BASE;
+    Rosen::WindowType windowType = Rosen::WindowType::APP_WINDOW_BASE;
     uint32_t windowId = 1;
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
-    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, false, WindowType, 12121, 12121);
-    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, true, WindowType, 12121, 12121);
+    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, false, windowType, 12121, 12121);
+    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, true, windowType, 12121, 12121);
 
     supervisor_->GetAppRecord(12121)->RemoveProcessRecord(12121);
     EXPECT_TRUE(supervisor_->GetAppRecord(12121)->GetProcessRecord(12121) == nullptr);
-    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, true, WindowType, 12121, 12121);
+    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, true, windowType, 12121, 12121);
 
     supervisor_->RemoveApplication(12121);
     EXPECT_TRUE(supervisor_->GetAppRecord(12121) == nullptr);
-    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, true, WindowType, 12121, 12121);
+    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, true, windowType, 12121, 12121);
 }
 
 /**
@@ -742,7 +742,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_012, Function | Med
         nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\", \"tid\": \"1113\", \"role\": \"1114\"}");
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(1111);
     EXPECT_TRUE(app != nullptr);
-    auto proc = app-> GetProcessRecordNonNull(1112);
+    auto proc = app->GetProcessRecordNonNull(1112);
     EXPECT_TRUE(proc != nullptr);
     cgroupEventHandler->HandleReportKeyThread(1, 1, payload);
 
@@ -782,7 +782,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_014, Function | Med
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
-    const string payloadStr = ("{\"uid\": \"1111\", \"pid\": \"1112\", \"tid\": \"1112\", \"role\": \"2\"}");
+    const string payloadStr = "{\"uid\": \"1111\", \"pid\": \"1112\", \"tid\": \"1112\", \"role\": \"2\"}";
     nlohmann::json payload = nlohmann::json::parse(payloadStr);
     cgroupEventHandler->HandleReportKeyThread(ResType::RES_TYPE_REPORT_KEY_THREAD, 0, payload);
     cgroupEventHandler->HandleReportKeyThread(ResType::RES_TYPE_REPORT_KEY_THREAD, 1, payload);
@@ -853,7 +853,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_016, Function | Med
     cgroupEventHandler->SetSupervisor(supervisor_);
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
-    nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"1112\"}");
+    nlohmann::json payload = nlohmann::json::parse("{\"pid\": 1112}");
     cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
     cgroupEventHandler->supervisor_ = temp;
 
@@ -1090,7 +1090,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     cgroupEventHandler->HandleApplicationStateChanged(uid, pid, bundleName, appState);
     cgroupEventHandler->HandleAbilityStateChanged(uid, pid, bundleName, abilityName, token, abilityState, abilityType);
     cgroupEventHandler->HandleExtensionStateChanged(uid, pid,
-        bundleName, abilityName, token, abilityState, abilityType);
+        bundleName, abilityName, token, extensionState, abilityType);
     cgroupEventHandler->HandleProcessCreated(processData);
     cgroupEventHandler->HandleProcessDied(uid, pid, bundleName);
     cgroupEventHandler->HandleTransientTaskStart(uid, pid, bundleName);
@@ -1151,12 +1151,12 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_024, Function | Med
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
     cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
-        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_TERMINATED);
+        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 
     cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
         "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_TERMINATED);
-    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 }
 
 /**
@@ -1175,18 +1175,18 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_025, Function | Med
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) != nullptr);
 
     cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
-        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, (int32_t)AppExecFwk::AbilityType::PAGE);
+        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_TERMINATED, (int32_t)AppExecFwk::AbilityType::PAGE);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) == nullptr);
 
     supervisor_->GetAppRecord(1000)->RemoveProcessRecord(1234);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
     cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
-        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, (int32_t)AppExecFwk::AbilityType::PAGE);
+        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_TERMINATED, (int32_t)AppExecFwk::AbilityType::PAGE);
 
     supervisor_->RemoveApplication(1000);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
     cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
-        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, (int32_t)AppExecFwk::AbilityType::PAGE);
+        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_TERMINATED, (int32_t)AppExecFwk::AbilityType::PAGE);
 }
 
 /**
@@ -1212,13 +1212,13 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_026, Function | Med
 
     supervisor_->GetAppRecord(1000)->RemoveProcessRecord(1234);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
-    cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
+    cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
         1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
         (int32_t)AppExecFwk::AbilityType::EXTENSION);
 
     supervisor_->RemoveApplication(1000);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
-    cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
+    cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
         1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
         (int32_t)AppExecFwk::AbilityType::EXTENSION);
 }
@@ -1258,6 +1258,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_027, Function | Med
     cgroupEventHandler->HandleProcessCreated(processData);
     cgroupEventHandler->HandleProcessDied(1000, 1234, "com.ohos.test");
     cgroupEventHandler->HandleProcessDied(1000, 23456, "com.ohos.test");
+    cgroupEventHandler->HandleProcessDied(1000, 34567, "com.ohos.test");
     cgroupEventHandler->HandleProcessDied(1000, 45678, "com.ohos.test");
     cgroupEventHandler->HandleProcessDied(1000, 67891, "com.ohos.test");
     cgroupEventHandler->HandleProcessDied(1000, 67890, "com.ohos.test");
@@ -1292,7 +1293,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_028, Function | Med
     cgroupEventHandler->HandleProcessCreated(processData);
     cgroupEventHandler->HandleTransientTaskStart(1000, 1234, "com.ohos.test");
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->runningTransientTask_);
-    cgroupEventHandler->HandleTransientTaskStart(1000, 1234, "com.ohos.test");
+    cgroupEventHandler->HandleTransientTaskEnd(1000, 1234, "com.ohos.test");
     EXPECT_TRUE(!supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->runningTransientTask_);
 }
 
@@ -1315,7 +1316,9 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
 
     cgroupEventHandler->HandleContinuousTaskCancel(1000,
         1234, (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
-    auto proc = supervisor_->GetAppRecord(1000)->GetProcessRecord(1234);
+    auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(1111);
+    EXPECT_TRUE(app != nullptr);
+    auto proc = app->GetProcessRecordNonNull(429);
     EXPECT_TRUE(proc->continuousTaskFlag_ == (1 << (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK));
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
         (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
@@ -1412,7 +1415,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_032, Function | Med
     cgroupEventHandler->SetSupervisor(supervisor_);
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
-    nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"429\", \"type\": \"1234\"}");
+    nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"2024\", \"type\": \"1234\"}");
     cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
     cgroupEventHandler->supervisor_ = temp;
 
@@ -1440,10 +1443,10 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_032, Function | Med
     auto proc = app->GetProcessRecordNonNull(429);
     EXPECT_TRUE(proc != nullptr);
 
-    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 0, payload);
+    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_AV_CODEC_STATE, 0, payload);
     EXPECT_TRUE(proc->avCodecState_[1234]);
-    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_RUNNINGLOCK_STATE, 1, payload);
-    EXPECT_FALSE(proc->runningLockState_[1234]);
+    cgroupEventHandler->HandleReportAvCodecEvent(ResType::RES_TYPE_AV_CODEC_STATE, 1, payload);
+    EXPECT_FALSE(proc->avCodecState_[1234]);
 }
 
 /**
@@ -1464,10 +1467,10 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_033, Function | Med
     auto proc = app->GetProcessRecordNonNull(429);
     EXPECT_TRUE(proc != nullptr);
 
-    cgroupEventHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
+    cgroupEventHandler->HandleReportWebviewVideoState(ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, 0, payload);
     EXPECT_TRUE(proc->videoState_);
-    cgroupEventHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 1, payload);
-    EXPECT_TRUE(proc->videoState_);
+    cgroupEventHandler->HandleReportWebviewVideoState(ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, 1, payload);
+    EXPECT_FALSE(proc->videoState_);
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
