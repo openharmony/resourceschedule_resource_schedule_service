@@ -716,7 +716,7 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
         return;
     }
 
-    if (!data->payload.contains(DEVICE_MODE_PAYMODE_NAME) || !data->payload[DEVICE_MODE_PAYMODE_NAME].is_string() ||
+    if (!data->payload.contains(DEVICE_MODE_TYPE_KEY) || !data->payload[DEVICE_MODE_TYPE_KEY].is_string() ||
         !data->payload.contains(DEVICE_MODE_PAYMODE_NAME) || !data->payload[DEVICE_MODE_PAYMODE_NAME].is_string()) {
         SOC_PERF_LOGW("SocPerfPlugin: device mode status payload is error");
         return;
@@ -728,6 +728,7 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
     const std::string deviceModeStr = deviceModeType + ":" + deviceMode_;
     OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceModeStr, status);
     SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceModeStr.c_str(), status);
+    
     if (deviceMode_ == DISPLAY_MODE_FULL && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
