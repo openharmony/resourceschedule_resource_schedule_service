@@ -35,6 +35,7 @@ namespace {
     constexpr int32_t MEMMGR_UID = 1111;
     constexpr int32_t SAMGR_UID = 5555;
     constexpr int32_t FOUNDATION_UID = 5523;
+    constexpr int32_t GRAPHIC_UID = 1003;
     constexpr int32_t HIVIEW_UID = 1201;
     constexpr int32_t SINGLE_UID_REQUEST_LIMIT_COUNT = 250;
     constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 650;
@@ -317,7 +318,7 @@ int32_t ResSchedServiceStub::KillProcessInner(MessageParcel& data, MessageParcel
     int32_t uid = IPCSkeleton::GetCallingUid();
     Security::AccessToken::ATokenTypeEnum tokenTypeFlag =
         Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(accessToken);
-    if ((uid != MEMMGR_UID && uid != SAMGR_UID && uid != HIVIEW_UID)
+    if ((uid != MEMMGR_UID && uid != SAMGR_UID && uid != HIVIEW_UID && uid != GRAPHIC_UID)
         || tokenTypeFlag != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
         RESSCHED_LOGE("no permission， kill process fail");
         return RES_SCHED_KILL_PROCESS_FAIL;
