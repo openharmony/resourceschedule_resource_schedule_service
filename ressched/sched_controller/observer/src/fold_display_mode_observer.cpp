@@ -30,6 +30,8 @@ namespace {
     const std::string DISPLAY_MODE_SUB = "displaySub";
     const std::string DISPLAY_MODE_MAIN = "displayMain";
     const std::string DEVICE_MODE_STR = "deviceMode";
+    const std::string DEVICE_MODE_TYPE_KEY = "deviceModeType";
+    const std::string DISPLAY_MODE_KEY = "display";
 }
 
 void FoldDisplayModeObserver::OnDisplayModeChanged(FoldDisplayMode diplayMode)
@@ -54,6 +56,7 @@ void FoldDisplayModeObserver::OnDisplayModeChanged(FoldDisplayMode diplayMode)
 void FoldDisplayModeObserver::ReportDisplayModeStatus(int64_t status, const std::string& mode)
 {
     nlohmann::json payload;
+    payload[DEVICE_MODE_TYPE_KEY] = DISPLAY_MODE_KEY;
     payload[DEVICE_MODE_STR] = mode;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_DEVICE_MODE_STATUS, status, payload);
 }

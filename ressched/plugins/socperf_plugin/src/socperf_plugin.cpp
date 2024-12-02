@@ -45,10 +45,13 @@ namespace {
     const std::string SOCPERF_TYPE_ID = "socperf_type_id";
     const std::string SOCPERF_TYPE_RGM = "socperf_type_rgm";
     const std::string EXTENSION_TYPE_KEY = "extensionType";
+    const std::string DEVICE_MODE_TYPE_KEY = "deviceModeType";
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
     const std::string DISPLAY_MODE_FULL = "displayFull";
     const std::string DISPLAY_MODE_MAIN = "displayMain";
     const std::string DISPLAY_MODE_SUB = "displaySub";
+    const std::string POWER_MODE_KEY = "power";
+    const std::string POWER_MODE = "powerMode";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -732,15 +735,19 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
         return;
     }
 
-    if (!data->payload.contains(DEVICE_MODE_PAYMODE_NAME) || !data->payload[DEVICE_MODE_PAYMODE_NAME].is_string()) {
+    if (!data->payload.contains(DEVICE_MODE_TYPE_KEY) || !data->payload[DEVICE_MODE_TYPE_KEY].is_string() ||
+        !data->payload.contains(DEVICE_MODE_PAYMODE_NAME) || !data->payload[DEVICE_MODE_PAYMODE_NAME].is_string()) {
         SOC_PERF_LOGW("SocPerfPlugin: device mode status payload is error");
         return;
     }
     std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
     deviceMode_ = data->payload[DEVICE_MODE_PAYMODE_NAME];
     bool status = (data->value == DeviceModeStatus::MODE_ENTER);
-    OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceMode_, status);
-    SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceMode_.c_str(), status);
+    const std::string deviceModeType = data->payload[DEVICE_MODE_TYPE_KEY];
+    const std::string deviceModeStr = deviceModeType + ":" + deviceMode_;
+    OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceModeStr, status);
+    SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceModeStr.c_str(), status);
+    
     if (deviceMode_ == DISPLAY_MODE_FULL && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
@@ -748,6 +755,21 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
     }
+}
+
+bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandlePowerModeChanged: %{public}lld", (long long)data->value);
+    const std::string powerModeStr = POWER_MODE_KEY + ":" + POWER_MODE;
+    if (data->value == POWERMODE_ON) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerModeStr, true);
+    } else {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerModeStr, false);
+    }
+    return true;
 }
 
 void SocPerfPlugin::HandleWebDragResize(const std::shared_ptr<ResData>& data)
@@ -875,20 +897,6 @@ bool SocPerfPlugin::HandleBmmMoniterStatus(const std::shared_ptr<ResData> &data)
         return true;
     }
     return false;
-}
-
-bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
-{
-    if (data == nullptr) {
-        return false;
-    }
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandlePowerModeChanged: %{public}lld", (long long)data->value);
-    if (data->value == POWERMODE_ON) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_POWERMODE_CHANGED, true, "");
-    } else {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_POWERMODE_CHANGED, false, "");
-    }
-    return true;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
