@@ -742,7 +742,7 @@ bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
     if (data == nullptr) {
         return false;
     }
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandlePowerModeChanged: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandlePowerModeChanged: %{public}lld", (long long)data->value);
     const std::string powerModeStr = POWER_MODE_KEY + ":" + POWER_MODE;
     if (data->value == POWERMODE_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerModeStr, true);
