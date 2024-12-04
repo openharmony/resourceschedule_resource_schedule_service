@@ -71,7 +71,6 @@ int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64
 {
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
 
-    std::lock_guard<std::mutex> lock(mutex_);
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         RSSEXE_LOGE("fail to get resource schedule executor.");
