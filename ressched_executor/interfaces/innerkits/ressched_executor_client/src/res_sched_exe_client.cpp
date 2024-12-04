@@ -70,7 +70,6 @@ int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64
     const nlohmann::json& context, nlohmann::json& reply)
 {
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
-
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         RSSEXE_LOGE("fail to get resource schedule executor.");

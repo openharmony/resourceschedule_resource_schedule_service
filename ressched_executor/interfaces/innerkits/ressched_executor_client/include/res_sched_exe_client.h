@@ -93,6 +93,7 @@ private:
     private:
         ResSchedExeClient &resSchedExeClient_;
     };
+
     sptr<IResSchedExeService> GetProxy();
     int32_t TryConnect();
     int32_t SendRequestInner(bool isSync, uint32_t resType, int64_t value,
