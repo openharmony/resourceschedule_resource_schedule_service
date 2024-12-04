@@ -61,6 +61,7 @@ private:
     void HandleWindowFocus(const std::shared_ptr<ResData>& data);
     void HandleEventClick(const std::shared_ptr<ResData>& data);
     void HandleEventKey(const std::shared_ptr<ResData>& data);
+    void HandlePowerEventKey(const std::shared_ptr<ResData>& data);
     void HandleLoadPage(const std::shared_ptr<ResData>& data);
     void HandlePopPage(const std::shared_ptr<ResData>& data);
     void HandleEventSlide(const std::shared_ptr<ResData>& data);

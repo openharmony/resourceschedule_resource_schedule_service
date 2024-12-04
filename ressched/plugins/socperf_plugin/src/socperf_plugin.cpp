@@ -85,6 +85,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_REMOTE_UNLOCK         = 10041;
     const int32_t PERF_REQUEST_CMD_ID_ACCOUNT_ACTIVATING    = 10043;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_KEY_DOWN        = 10044;
+    const int32_t PERF_REQUEST_CMD_ID_POWER_KEY             = 10045;
     const int32_t PERF_REQUEST_CMD_ID_LOAD_URL              = 10070;
     const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
     const int32_t PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE       = 10073;
@@ -226,6 +227,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleGameBoost(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_KEY_EVENT,
         [this](const std::shared_ptr<ResData>& data) { HandleEventKey(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_MMI_INPUT_POWER_KEY,
+        [this](const std::shared_ptr<ResData>& data) { HandlePowerEventKey(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_APP_INSTALL_UNINSTALL,
         [this](const std::shared_ptr<ResData>& data) { HandleUninstallEvent(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
@@ -272,6 +275,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_SCREEN_STATUS,
         RES_TYPE_APP_GAME_BOOST_EVENT,
         RES_TYPE_APP_INSTALL_UNINSTALL,
+        RES_TYPE_MMI_INPUT_POWER_KEY,
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -449,6 +453,16 @@ void SocPerfPlugin::HandleEventKey(const std::shared_ptr<ResData>& data)
     } else if (data->value == KeyEventType::KEY_EVENT_UP) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_KEY_DOWN, "");
     }
+}
+
+void SocPerfPlugin::HandlePowerEventKey(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->POWER_KEY null data");
+        return;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin:socperf->POWER_KEY: %{public}lld", (long long)data->value);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_POWER_KEY, "powerkey");
 }
 
 bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
