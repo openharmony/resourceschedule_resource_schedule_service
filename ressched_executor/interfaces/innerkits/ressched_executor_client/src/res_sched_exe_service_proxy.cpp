@@ -37,7 +37,7 @@ int32_t ResSchedExeServiceProxy::SendRequestSync(uint32_t resType, int64_t value
     MessageParcel data;
     MakeUpParcel(data, resType, value, context);
     MessageParcel response;
-    int32_t error = Remote()->SendRequest(ResIpcType::REQUEST_SEND_SYNC, data, response, option);
+    int32_t error = SendRequestToRemote(ResIpcType::REQUEST_SEND_SYNC, data, response, option);
     if (error != NO_ERROR) {
         RSSEXE_LOGE("Send request error: %{public}d.", error);
         return ResIpcErrCode::RSSEXE_SEND_REQUEST_FAIL;
@@ -61,7 +61,7 @@ void ResSchedExeServiceProxy::SendRequestAsync(uint32_t resType, int64_t value, 
     MessageParcel data;
     MakeUpParcel(data, resType, value, context);
     MessageParcel response;
-    int32_t error = Remote()->SendRequest(ResIpcType::REQUEST_SEND_ASYNC, data, response, option);
+    int32_t error = SendRequestToRemote(ResIpcType::REQUEST_SEND_ASYNC, data, response, option);
     if (error != NO_ERROR) {
         RSSEXE_LOGE("Send request error: %{public}d.", error);
         return;
@@ -78,13 +78,24 @@ int32_t ResSchedExeServiceProxy::KillProcess(pid_t pid)
         ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     WRITE_PARCEL(data, Int32, pid, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     MessageParcel response;
-    int32_t error = Remote()->SendRequest(ResIpcType::REQUEST_KILL_PROCESS, data, response, option);
+    int32_t error = SendRequestToRemote(ResIpcType::REQUEST_KILL_PROCESS, data, response, option);
     if (error != NO_ERROR) {
         RSSEXE_LOGE("Send request error: %{public}d.", error);
         return ResIpcErrCode::RSSEXE_SEND_REQUEST_FAIL;
     }
     RSSEXE_LOGD("KillProcess success.");
     return response.ReadInt32();
+}
+
+int32_t ResSchedExeServiceProxy::SendRequestToRemote(const int32_t code,
+    MessageParcel &data, MessageParcel &reply, MessageOption& option)
+{
+    sptr<IRemoteObject> remote = Remote();
+    if(remote == nullptr) {
+        RSSEXE_LOGE("remote is null, code=%{public}d.", code);
+        return ResIpcErrCode::RSSEXE_CONNECT_FAIL;
+    }
+    return remote->SendRequest(code, data, reply, option);
 }
 
 int32_t ResSchedExeServiceProxy::MakeUpParcel(MessageParcel& data,
@@ -111,7 +122,7 @@ int32_t ResSchedExeServiceProxy::SendDebugCommand(MessageOption& option)
     RSSEXE_LOGD("IPC debug: client send request, current timestamp is %{public}lld.", (long long)curr);
 
     MessageParcel response;
-    int32_t error = Remote()->SendRequest(ResIpcType::REQUEST_SEND_DEBUG, data, response, option);
+    int32_t error = SendRequestToRemote(ResIpcType::REQUEST_SEND_DEBUG, data, response, option);
     if (error != NO_ERROR) {
         RSSEXE_LOGE("Send request error: %{public}d.", error);
         return ResIpcErrCode::RSSEXE_SEND_REQUEST_FAIL;

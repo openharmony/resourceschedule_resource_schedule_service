@@ -31,7 +31,7 @@ public:
      *
      * @param isSaSerial Is SA serialize
      */
-    ResSchedExeServiceStub(bool isSaSerial = true);
+    ResSchedExeServiceStub();
 
     /**
      * @brief Destroy the ResSchedExeServiceStub object.
