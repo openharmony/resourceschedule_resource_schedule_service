@@ -57,38 +57,30 @@ void ResSchedExeClient::SendRequestAsync(uint32_t resType, int64_t value,
 
 int32_t ResSchedExeClient::KillProcess(pid_t pid)
 {
-    if (TryConnect() != ResErrCode::RSSEXE_NO_ERR) {
-        RSSEXE_LOGE("connect executor failed!");
+    RSSEXE_LOGD("kill process receive pid = %{public}d", pid);
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        RSSEXE_LOGE("fail to get resource schedule executor");
         return ResIpcErrCode::RSSEXE_CONNECT_FAIL;
     }
-    RSSEXE_LOGD("kill process receive pid = %{public}d", pid);
-    std::lock_guard<std::mutex> lock(mutex_);
-    if (resSchedExe_ == nullptr) {
-        RSSEXE_LOGE("fail to get resource schedule executor.");
-        return ResIpcErrCode::RSSEXE_REQUEST_FAIL;
-    }
-    return resSchedExe_->KillProcess(pid);
+    return proxy->KillProcess(pid);
 }
 
 int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64_t value,
     const nlohmann::json& context, nlohmann::json& reply)
 {
-    if (TryConnect() != ResErrCode::RSSEXE_NO_ERR) {
-        return ResIpcErrCode::RSSEXE_CONNECT_FAIL;
-    }
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
-
-    std::lock_guard<std::mutex> lock(mutex_);
-    if (resSchedExe_ == nullptr) {
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
         RSSEXE_LOGE("fail to get resource schedule executor.");
-        return ResIpcErrCode::RSSEXE_REQUEST_FAIL;
+        return ResIpcErrCode::RSSEXE_CONNECT_FAIL;
     }
 
     RSSEXE_LOGD("send request.");
     if (isSync) {
-        return resSchedExe_->SendRequestSync(resType, value, context, reply);
+        return proxy->SendRequestSync(resType, value, context, reply);
     } else {
-        resSchedExe_->SendRequestAsync(resType, value, context);
+        proxy->SendRequestAsync(resType, value, context);
         return ResErrCode::RSSEXE_NO_ERR;
     }
 }
@@ -97,6 +89,15 @@ void ResSchedExeClient::SendDebugCommand(bool isSync)
 {
     nlohmann::json tempJson;
     SendRequestInner(isSync, ResExeType::RES_TYPE_DEBUG, 0, tempJson, tempJson);
+}
+
+sptr<IResSchedExeService> ResSchedExeClient::GetProxy()
+{
+    if (TryConnect() == ERR_OK) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return resSchedExe_;
+    }
+    return nullptr;
 }
 
 ErrCode ResSchedExeClient::TryConnect()
