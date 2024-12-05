@@ -35,10 +35,7 @@ ohos_fuzztest("ResSchedExecutorFuzzTest") {
 
   sources = [ "resschedexecutor_fuzzer.cpp" ]
 
-  deps = [
-    "${resschedexe_services}:resschedexesvc_static",
-    "//third_party/json:nlohmann_json_static",
-  ]
+  deps = [ "${resschedexe_services}:resschedexesvc_static" ]
 
   external_deps = [
     "access_token:libaccesstoken_sdk",
@@ -48,6 +45,7 @@ ohos_fuzztest("ResSchedExecutorFuzzTest") {
     "ffrt:libffrt",
     "hilog:libhilog",
     "ipc:ipc_single",
+    "json:nlohmann_json_static",
   ]
 }
 
