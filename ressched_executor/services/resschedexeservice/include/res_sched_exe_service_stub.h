@@ -28,8 +28,6 @@ class ResSchedExeServiceStub : public IRemoteStub<IResSchedExeService> {
 public:
     /**
      * @brief Construct a new ResSchedExeServiceStub object.
-     *
-     * @param isSaSerial Is SA serialize
      */
     ResSchedExeServiceStub();
 
