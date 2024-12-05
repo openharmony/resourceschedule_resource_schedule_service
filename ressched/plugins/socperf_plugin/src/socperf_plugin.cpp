@@ -406,7 +406,8 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 void SocPerfPlugin::HandlePowerEventKey(const std::shared_ptr<ResData>& data)
 {
     if (data == nullptr) {
-        return false;
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->POWER_KEY null data");
+        return;
     }
     SOC_PERF_LOGD("SocPerfPlugin:socperf->POWER_KEY: %{public}lld", (long long)data->value);
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_POWER_KEY, "powerkey");
