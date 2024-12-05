@@ -91,7 +91,7 @@ int32_t ResSchedExeServiceProxy::SendRequestToRemote(const int32_t code,
     MessageParcel &data, MessageParcel &reply, MessageOption& option)
 {
     sptr<IRemoteObject> remote = Remote();
-    if(remote == nullptr) {
+    if (remote == nullptr) {
         RSSEXE_LOGE("remote is null, code=%{public}d.", code);
         return ResIpcErrCode::RSSEXE_CONNECT_FAIL;
     }
