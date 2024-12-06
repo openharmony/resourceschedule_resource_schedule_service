@@ -269,6 +269,8 @@ enum : uint32_t {
     RES_TYPE_AUDIO_RENDERER_STANDBY = 119,
     // game boost event
     RES_TYPE_APP_GAME_BOOST_EVENT = 120,
+    // intent start app
+    RES_TYPE_INTENT_CTRL_APP = 121,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
