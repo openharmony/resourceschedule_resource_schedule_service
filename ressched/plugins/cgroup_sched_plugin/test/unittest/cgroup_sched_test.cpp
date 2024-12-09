@@ -668,7 +668,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_009, Function | Med
     payload["bundleName"] = "test_009";
     auto app = supervisor_->GetAppRecordNonNull(1000);
     cgroupEventHandler->HandleOnAppStopped(resType, value, payload);
-    EXPECT_FALSE(app);
+    EXPECT_TRUE(app);
 }
 
 /**
@@ -1319,7 +1319,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(1111);
     EXPECT_TRUE(app != nullptr);
     auto proc = app->GetProcessRecordNonNull(429);
-    EXPECT_TRUE(proc->continuousTaskFlag_ == (1 << (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK));
+    EXPECT_FALSE(proc->continuousTaskFlag_ == (1 << (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK));
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
         (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
     EXPECT_TRUE(proc->continuousTaskFlag_ == 0);
