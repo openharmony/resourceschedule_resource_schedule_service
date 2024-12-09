@@ -37,7 +37,7 @@ void AppStartupSceneRec::Init()
 }
 void AppStartupSceneRec::Deinit()
 {
-    std::unique_lock<ffrt::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (exitContinuousStartupTask != nullptr) {
         ffrtQueue_->cancel(exitContinuousStartupTask);
         exitContinuousStartupTask = nullptr;
@@ -71,7 +71,7 @@ void AppStartupSceneRec::RecordIsContinuousStartup(int32_t abilityState, std::st
     auto tarEndTimePoint = std::chrono::steady_clock::now();
     auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
     int64_t curTime = tarDuration.count();
-    std::unique_lock<ffrt::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (exitContinuousStartupTask != nullptr) {
         ffrtQueue_->cancel(exitContinuousStartupTask);
         exitContinuousStartupTask = nullptr;
@@ -87,7 +87,7 @@ void AppStartupSceneRec::RecordIsContinuousStartup(int32_t abilityState, std::st
         isReportContinuousStartup_ = true;
     }
     exitContinuousStartupTask = ffrtQueue_->submit_h([this] {
-        std::unique_lock<ffrt::mutex> lock(mutex_);
+        std::lock_guard<ffrt::mutex> lock(mutex_);
         CleanRecordSceneData();
     }, ffrt::task_attr().delay(CONTINUOUS_START_TIME_OUT));
 }
