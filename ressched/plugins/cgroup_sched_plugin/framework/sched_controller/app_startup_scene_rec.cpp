@@ -37,6 +37,7 @@ void AppStartupSceneRec::Init()
 }
 void AppStartupSceneRec::Deinit()
 {
+    std::unique_lock<ffrt::mutex> lock(mutex_);
     if (exitContinuousStartupTask != nullptr) {
         ffrtQueue_->cancel(exitContinuousStartupTask);
         exitContinuousStartupTask = nullptr;
@@ -67,13 +68,14 @@ void AppStartupSceneRec::RecordIsContinuousStartup(int32_t abilityState, std::st
         CGS_LOGE("recordIsContinuousStartup bundleName: %{public}s is IgnorePkg", bundleName.c_str());
         return;
     }
+    auto tarEndTimePoint = std::chrono::steady_clock::now();
+    auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
+    int64_t curTime = tarDuration.count();
+    std::unique_lock<ffrt::mutex> lock(mutex_);
     if (exitContinuousStartupTask != nullptr) {
         ffrtQueue_->cancel(exitContinuousStartupTask);
         exitContinuousStartupTask = nullptr;
     }
-    auto tarEndTimePoint = std::chrono::steady_clock::now();
-    auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
-    int64_t curTime = tarDuration.count();
     if (curTime - lastAppStartTime_ >= CONTINUOUS_START_TIME_OUT) {
         CleanRecordSceneData();
     }
@@ -85,13 +87,13 @@ void AppStartupSceneRec::RecordIsContinuousStartup(int32_t abilityState, std::st
         isReportContinuousStartup_ = true;
     }
     exitContinuousStartupTask = ffrtQueue_->submit_h([this] {
+        std::unique_lock<ffrt::mutex> lock(mutex_);
         CleanRecordSceneData();
     }, ffrt::task_attr().delay(CONTINUOUS_START_TIME_OUT));
 }
 void AppStartupSceneRec::CleanRecordSceneData()
 {
     CGS_LOGI("CleanRecordSceneData");
-    std::unique_lock<ffrt::mutex> lock(mutex_);
     appStartCount_ = 0;
     startPkgs_.clear();
     startUidSet_.clear();
@@ -105,7 +107,6 @@ void AppStartupSceneRec::CleanRecordSceneData()
 }
 void AppStartupSceneRec::UpdateAppStartupNum(std::string uid, int64_t curTime, std::string bundleName)
 {
-    std::unique_lock<ffrt::mutex> lock(mutex_);
     lastAppStartTime_ = curTime;
     appStartCount_++;
     if (isReportContinuousStartup_.load()) {
@@ -117,7 +118,6 @@ void AppStartupSceneRec::UpdateAppStartupNum(std::string uid, int64_t curTime, s
 }
 bool AppStartupSceneRec::IsContinuousStartup()
 {
-    std::unique_lock<ffrt::mutex> lock(mutex_);
     if (startPkgs_.size() >= MAX_CONTINUOUS_START_NUM && startUidSet_.size() >= MAX_NO_REPEAT_APP_COUNT) {
         return true;
     }
