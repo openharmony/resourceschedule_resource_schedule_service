@@ -28,6 +28,9 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
+    static const uint32_t AXIS_EVENT_PAD = 0;
+    static const uint32_t AXIS_EVENT_FACTOR = 10;
+    static const std::string AXIS_EVENT_TYPE = "axis_event_type";
     static const std::string UP_SPEED_KEY = "up_speed";
     static uint32_t g_slideState = SlideRecognizeStat::IDLE;
     static ffrt::recursive_mutex stateMutex;
@@ -61,6 +64,11 @@ void SlideRecognizer::OnDispatchResource(uint32_t resType, int64_t value, const 
             break;
         case ResType::RES_TYPE_CLICK_RECOGNIZE:
             HandleClickEvent(value, payload);
+            break;
+        case ResType::RES_TYPE_AXIS_EVENT:
+            if (value == ResType::AxisEventStatus::AXIS_EVENT_END) {
+                HandleClickEvent(ResType::ClickEventType::TOUCH_EVENT_UP, payload);
+            }
             break;
         default:
             RESSCHED_LOGD("unkonw resType");
@@ -200,8 +208,15 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
         if (!payload.contains(UP_SPEED_KEY) || !payload[UP_SPEED_KEY].is_string()) {
             return;
         }
+        if (!ResCommonUtil::StrToFloat(payload[UP_SPEED_KEY], upSpeed) {
+            return;
+        }
+        if (payload.contains(AXIS_EVENT_TYPE) && payload[AXIS_EVENT_TYPE].is_string() &&
+            payload[AXIS_EVENT_TYPE] == AXIS_EVENT_TYPE) {
+            upSpeed = upSpeed * AXIS_EVENT_FACTOR;
+        }
         // if up speed large than LIST_FLING_SPEED_LIMIT,start recognize list fling.
-        if (ResCommonUtil::StrToFloat(payload[UP_SPEED_KEY], upSpeed) && upSpeed > listFlingSpeedLimit_) {
+        if (upSpeed > listFlingSpeedLimit_) {
             nlohmann::json extInfo;
             EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
                 ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
