@@ -208,7 +208,7 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
         if (!payload.contains(UP_SPEED_KEY) || !payload[UP_SPEED_KEY].is_string()) {
             return;
         }
-        if (!ResCommonUtil::StrToFloat(payload[UP_SPEED_KEY], upSpeed) {
+        if (!ResCommonUtil::StrToFloat(payload[UP_SPEED_KEY], upSpeed)) {
             return;
         }
         if (payload.contains(AXIS_EVENT_TYPE) && payload[AXIS_EVENT_TYPE].is_string() &&
