@@ -158,6 +158,15 @@ enum SlideEventStatus : int64_t {
 };
 
 /**
+* @brief Axis event status
+*/
+enum AxisEventStatus : int64_t {
+    AXIS_EVENT_BEGIN = 0,
+    AXIS_EVENT_END = 1,
+    AXIS_EVENT_UPDATE = 2,
+};
+
+/**
 * @brief Click event type
 */
 enum ClickEventType : int64_t {
