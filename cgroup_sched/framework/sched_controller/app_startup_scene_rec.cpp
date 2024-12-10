@@ -77,7 +77,6 @@ void AppStartupSceneRec::RecordIsContinuousStartup(const int32_t abilityState, c
         ffrtQueue_->cancel(exitContinuousStartupTask);
         exitContinuousStartupTask = nullptr;
     }
-
     CGS_LOGI("recordIsContinuousStartup uid: %{public}s bundleName: %{public}s",
         uid.c_str(), bundleName.c_str());
     if (curTime - lastAppStartTime_ >= CONTINUOUS_START_TIME_OUT) {
