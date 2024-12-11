@@ -690,6 +690,18 @@ enum CosmicCubeState : int64_t {
     APPLICATION_ABOUT_TO_HIDE = 1,
     APPLICATION_ABOUT_TO_RECOVER = 2,
 };
+
+/**
+* @brief game scene Id
+*/
+enum GameSceneId : int64_t {
+    MSG_GAME_STATE_START = 0,
+    MSG_GAME_STATE_END = 1,
+    MSG_GAME_ENTER_PVP_BATTLE = 2,
+    MSG_GAME_EXIT_PVP_BATTLE = 3,
+    MSG_GAME_STATE_FOREGROUND = 4,
+    MSG_GAME_STATE_BACKGROUND = 5,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS

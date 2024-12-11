@@ -275,6 +275,8 @@ enum : uint32_t {
     RES_TYPE_KEY_EVENT = 122,
     // report axis event, value 0: start, value 1: stop value 2: update
     RES_TYPE_AXIS_EVENT = 123,
+    // get game scene information
+    RES_TYPE_GET_GAME_SCENE_INFO = 124,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
