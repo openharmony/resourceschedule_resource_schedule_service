@@ -45,10 +45,13 @@ namespace {
     const std::string SOCPERF_TYPE_ID = "socperf_type_id";
     const std::string SOCPERF_TYPE_RGM = "socperf_type_rgm";
     const std::string EXTENSION_TYPE_KEY = "extensionType";
+    const std::string DEVICE_MODE_TYPE_KEY = "deviceModeType";
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
     const std::string DISPLAY_MODE_FULL = "displayFull";
     const std::string DISPLAY_MODE_MAIN = "displayMain";
     const std::string DISPLAY_MODE_SUB = "displaySub";
+    const std::string POWER_MODE_KEY = "power";
+    const std::string POWER_MODE = "powerMode";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -81,6 +84,8 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH_UP        = 10040;
     const int32_t PERF_REQUEST_CMD_ID_REMOTE_UNLOCK         = 10041;
     const int32_t PERF_REQUEST_CMD_ID_ACCOUNT_ACTIVATING    = 10043;
+    const int32_t PERF_REQUEST_CMD_ID_EVENT_KEY_DOWN        = 10044;
+    const int32_t PERF_REQUEST_CMD_ID_POWER_KEY             = 10045;
     const int32_t PERF_REQUEST_CMD_ID_LOAD_URL              = 10070;
     const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
     const int32_t PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE       = 10073;
@@ -220,6 +225,10 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleScreenStatusAnalysis(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_APP_GAME_BOOST_EVENT,
         [this](const std::shared_ptr<ResData>& data) { HandleGameBoost(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_KEY_EVENT,
+        [this](const std::shared_ptr<ResData>& data) { HandleEventKey(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_MMI_INPUT_POWER_KEY,
+        [this](const std::shared_ptr<ResData>& data) { HandlePowerEventKey(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_APP_INSTALL_UNINSTALL,
         [this](const std::shared_ptr<ResData>& data) { HandleUninstallEvent(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
@@ -238,6 +247,7 @@ void SocPerfPlugin::InitResTypes()
     resTypes = {
         RES_TYPE_WINDOW_FOCUS,
         RES_TYPE_CLICK_RECOGNIZE,
+        RES_TYPE_KEY_EVENT,
         RES_TYPE_LOAD_PAGE,
         RES_TYPE_SLIDE_RECOGNIZE,
         RES_TYPE_WEB_GESTURE,
@@ -265,6 +275,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_SCREEN_STATUS,
         RES_TYPE_APP_GAME_BOOST_EVENT,
         RES_TYPE_APP_INSTALL_UNINSTALL,
+        RES_TYPE_MMI_INPUT_POWER_KEY,
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -401,13 +412,13 @@ std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid)
         systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     sptr<AppExecFwk::IBundleMgr> iBundleMgr = OHOS::iface_cast<OHOS::AppExecFwk::IBundleMgr>(object);
     if (!iBundleMgr) {
-        SOC_PERF_LOGD("%{pubilc}s null bundle manager.", __func__);
+        SOC_PERF_LOGD("%{public}s null bundle manager.", __func__);
         return bundleName;
     }
 
     ErrCode ret = iBundleMgr->GetNameForUid(uid, bundleName);
     if (ret != ERR_OK) {
-        SOC_PERF_LOGE("%{pulic}s get bundle name failed for %{pulic}d, err_code:%{public}d.", __func__, uid, ret);
+        SOC_PERF_LOGE("%{public}s get bundle name failed for %{public}d, err_code:%{public}d.", __func__, uid, ret);
     }
     return bundleName;
 }
@@ -420,13 +431,38 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK: %{public}lld", (long long)data->value);
     // touch down event
-    if (data->value == ClickEventType::TOUCH_EVENT_DOWN) {
+    if (data->value == ClickEventType::TOUCH_EVENT_DOWN_MMI) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
     } else if (data->value == ClickEventType::TOUCH_EVENT_UP) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
     } else if (data->value == ClickEventType::CLICK_EVENT) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
     }
+}
+
+void SocPerfPlugin::HandleEventKey(const std::shared_ptr<ResData>& data)
+{
+    if (socperfGameBoostSwitch_ && focusAppType_ == APP_TYPE_GAME) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_KEY game can not get key_event");
+        return;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_KEY: %{public}lld", (long long)data->value);
+    // key down event
+    if (data->value == KeyEventType::KEY_EVENT_DOWN) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_KEY_DOWN, "");
+    } else if (data->value == KeyEventType::KEY_EVENT_UP) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_KEY_DOWN, "");
+    }
+}
+
+void SocPerfPlugin::HandlePowerEventKey(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->POWER_KEY null data");
+        return;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin:socperf->POWER_KEY: %{public}lld", (long long)data->value);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_POWER_KEY, "powerkey");
 }
 
 bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
@@ -713,15 +749,19 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
         return;
     }
 
-    if (!data->payload.contains(DEVICE_MODE_PAYMODE_NAME) || !data->payload[DEVICE_MODE_PAYMODE_NAME].is_string()) {
+    if (!data->payload.contains(DEVICE_MODE_TYPE_KEY) || !data->payload[DEVICE_MODE_TYPE_KEY].is_string() ||
+        !data->payload.contains(DEVICE_MODE_PAYMODE_NAME) || !data->payload[DEVICE_MODE_PAYMODE_NAME].is_string()) {
         SOC_PERF_LOGW("SocPerfPlugin: device mode status payload is error");
         return;
     }
     std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
     deviceMode_ = data->payload[DEVICE_MODE_PAYMODE_NAME];
     bool status = (data->value == DeviceModeStatus::MODE_ENTER);
-    OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceMode_, status);
-    SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceMode_.c_str(), status);
+    const std::string deviceModeType = data->payload[DEVICE_MODE_TYPE_KEY];
+    const std::string deviceModeStr = deviceModeType + ":" + deviceMode_;
+    OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceModeStr, status);
+    SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceModeStr.c_str(), status);
+    
     if (deviceMode_ == DISPLAY_MODE_FULL && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
@@ -729,6 +769,21 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
     }
+}
+
+bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandlePowerModeChanged: %{public}lld", (long long)data->value);
+    const std::string powerModeStr = POWER_MODE_KEY + ":" + POWER_MODE;
+    if (data->value == POWERMODE_ON) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerModeStr, true);
+    } else {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerModeStr, false);
+    }
+    return true;
 }
 
 void SocPerfPlugin::HandleWebDragResize(const std::shared_ptr<ResData>& data)
@@ -856,20 +911,6 @@ bool SocPerfPlugin::HandleBmmMoniterStatus(const std::shared_ptr<ResData> &data)
         return true;
     }
     return false;
-}
-
-bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
-{
-    if (data == nullptr) {
-        return false;
-    }
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandlePowerModeChanged: %{public}lld", (long long)data->value);
-    if (data->value == POWERMODE_ON) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_POWERMODE_CHANGED, true, "");
-    } else {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_POWERMODE_CHANGED, false, "");
-    }
-    return true;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
