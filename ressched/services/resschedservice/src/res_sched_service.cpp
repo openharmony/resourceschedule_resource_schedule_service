@@ -100,7 +100,7 @@ bool ResSchedService::IsAllowedAppPreload(const std::string& bundleName, int32_t
 {
     LoadAppPreloadPlugin();
     if (!appPreloadFunc_) {
-        RESSCHED_LOGE("%{public}s, no allow AppPreload !", __func__, errno);
+        RESSCHED_LOGE("%{public}s, no allow AppPreload, errno = %{public}d", __func__, errno);
         return false;
     }
     return appPreloadFunc_(bundleName, preloadMode);
