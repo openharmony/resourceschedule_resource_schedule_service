@@ -310,6 +310,16 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
             ResType::BootCompletedStatus::START_BOOT_COMPLETED, payload);
         return;
     }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_CONNETCED) {
+        ReportDataInProcess(ResType::RES_TYPE_POWER_CONNECTED_DISCONNECTED,
+            ResType::DeviceModeStatus::MODE_ENTER, payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_DISCONNETCED) {
+        ReportDataInProcess(ResType::RES_TYPE_POWER_CONNECTED_DISCONNECTED,
+            ResType::DeviceModeStatus::MODE_QUIT, payload);
+        return;
+    }
 }
 
 bool EventController::HandlePkgCommonEvent(const std::string &action, Want &want, nlohmann::json &payload)
