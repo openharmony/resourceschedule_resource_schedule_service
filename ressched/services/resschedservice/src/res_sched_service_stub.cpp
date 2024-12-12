@@ -51,6 +51,7 @@ namespace {
         ResType::RES_TYPE_ONLY_PERF_APP_COLD_START,
         ResType::RES_TYPE_SCENE_ROTATION,
         ResType::SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START,
+        ResType::RES_TYPE_COSMIC_CUBE_STATE_CHANGE,
     };
     static const std::unordered_set<uint32_t> thirdPartRes_ = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,

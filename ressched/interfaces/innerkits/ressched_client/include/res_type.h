@@ -278,6 +278,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // report to check mutex before start
     SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START = 501,
+    // report cosmic cube info
+    RES_TYPE_COSMIC_CUBE_STATE_CHANGE = 502,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
@@ -903,6 +905,14 @@ enum HeavyLoadMutexSceneBoardcastScene : int64_t {
     HeavyLoadMutexBoardcastNeedCancelDownspeeding = 2,
 };
 
+/**
+* @brief CosmicCube Status
+*/
+enum CosmicCubeState : int64_t {
+    APPLICATION_ABOUT_TO_APPEAR = 0,
+    APPLICATION_ABOUT_TO_HIDE = 1,
+    APPLICATION_ABOUT_TO_RECOVER = 2,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
