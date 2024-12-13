@@ -279,6 +279,8 @@ enum : uint32_t {
     RES_TYPE_GET_GAME_SCENE_INFO = 124,
     // report multi screen event
     RES_TYPE_DISPLAY_MULTI_SCREEN = 125,
+    // intent start app
+    RES_TYPE_INTENT_CTRL_APP = 126,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
