@@ -23,12 +23,31 @@
 #include "ffrt.h"
 #include "app_startup_scene_rec.h"
 #include "supervisor.h"
+#include "ui_extension_utils.h"
 
 #undef LOG_TAG
 #define LOG_TAG "RmsAppStateObserver"
 
 namespace OHOS {
 namespace ResourceSchedule {
+
+std::unordered_map<int32_t, int32_t> RmsApplicationStateObserver::extensionStateToAbilityState_ = {
+    {static_cast<int32_t>(AppExecFwk::ExtensionState::EXTENSION_STATE_CREATE),
+        static_cast<int32_t>(AppExecFwk::AbilityState::ABILITY_STATE_CREATE)},
+    {static_cast<int32_t>(AppExecFwk::ExtensionState::EXTENSION_STATE_READY),
+        static_cast<int32_t>(AppExecFwk::AbilityState::ABILITY_STATE_READY)},
+    {static_cast<int32_t>(AppExecFwk::ExtensionState::EXTENSION_STATE_CONNECTED),
+        static_cast<int32_t>(AppExecFwk::AbilityState::ABILITY_STATE_CONNECTED)},
+    {static_cast<int32_t>(AppExecFwk::ExtensionState::EXTENSION_STATE_DISCONNECTED),
+        static_cast<int32_t>(AppExecFwk::AbilityState::ABILITY_STATE_DISCONNECTED)},
+    {static_cast<int32_t>(AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED),
+        static_cast<int32_t>(AppExecFwk::AbilityState::ABILITY_STATE_TERMINATED)},
+    {static_cast<int32_t>(AppExecFwk::ExtensionState::EXTENSION_STATE_FOREGROUND),
+        static_cast<int32_t>(AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND)},
+    {static_cast<int32_t>(AppExecFwk::ExtensionState::EXTENSION_STATE_BACKGROUND),
+        static_cast<int32_t>(AppExecFwk::AbilityState::ABILITY_STATE_BACKGROUND)},
+};
+
 void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateData &appStateData)
 {
     if (!ValidateAppStateData(appStateData)) {
@@ -51,6 +70,15 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
     std::string bundleName = abilityStateData.bundleName;
     int32_t abilityState = abilityStateData.abilityState;
+    nlohmann::json payload;
+
+    // if is uiExtension state changed, need to change extensionState to abilityState and write payload.
+    if (IsUIExtensionAbilityStateChanged(abilityStateData)) {
+        abilityState = extensionStateToAbilityState_[abilityState];
+        payload["extensionAbilityType"] = std::to_string(abilityStateData.extensionAbilityType);
+        payload["processType"] = std::to_string(abilityStateData.processType);
+    }
+
     if (cgHandler) {
         auto uid = abilityStateData.uid;
         auto pid = abilityStateData.pid;
@@ -64,7 +92,6 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         });
     }
 
-    nlohmann::json payload;
     std::string uid = std::to_string(abilityStateData.uid);
     payload["pid"] = std::to_string(abilityStateData.pid);
     payload["uid"] = uid;
@@ -83,6 +110,16 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
         CGS_LOGE("%{public}s : validate extension state data failed!", __func__);
         return;
     }
+
+    // if current is uiExtension, goto onAbilityStateChanged and report
+    if (IsUIExtensionAbilityStateChanged(abilityStateData)) {
+        CGS_LOGD("UIExtensionAbility Changed, extensionType: %{public}d, bundleName: %{public}s,"
+            " abilityState: %{public}d, processType: %{public}d", abilityStateData.extensionAbilityType,
+            abilityStateData.bundleName.c_str(), abilityStateData.abilityState, abilityStateData.processType);
+        OnAbilityStateChanged(abilityStateData);
+        return;
+    }
+
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHandler) {
         auto uid = abilityStateData.uid;
@@ -105,6 +142,29 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
     payload["bundleName"] = abilityStateData.bundleName;
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_EXTENSION_STATE_CHANGE,
         abilityStateData.abilityState, payload);
+}
+
+bool RmsApplicationStateObserver::IsUIExtensionAbilityStateChanged(const AbilityStateData &abilityStateData)
+{
+    if (!ValidateUIExtensionAbilityStateData(abilityStateData)) {
+        CGS_LOGD("%{public}s : Validate UIExtensionAbility state data failed!", __func__);
+        return false;
+    }
+
+    if (abilityStateData.abilityState >= static_cast<int32_t>(extensionStateToAbilityState_.size()) - 1) {
+        CGS_LOGD("%{public}s : Validate UIExtensionAbility data out of bound!", __func__);
+        return false;
+    }
+
+    // trans int32_t to ExtensionAbilityType and check whether it is an UiExtensionAbility or an Extension
+    AppExecFwk::ExtensionAbilityType extType =
+        static_cast<AppExecFwk::ExtensionAbilityType>(abilityStateData.extensionAbilityType);
+    if (!AAFwk::UIExtensionUtils::IsUIExtension(extType)) {
+        CGS_LOGD("%{public}s : Current is not a UIExtensionAbility!", __func__);
+        return false;
+    }
+
+    return true;
 }
 
 void RmsApplicationStateObserver::MarshallingProcessData(const ProcessData &processData, nlohmann::json &payload)
