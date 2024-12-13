@@ -313,7 +313,6 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
             ResType::BootCompletedStatus::START_BOOT_COMPLETED, payload);
         return;
     }
-<<<<<<< HEAD
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_CONNECTED) {
         if (payload == nullptr) {
             return;
@@ -334,16 +333,6 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         }
         ReportDataInProcess(ResType::RES_TYPE_DEVICE_MODE_STATUS,
             ResType::DeviceModeStatus::MODE_ENTER, payload);
-=======
-    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_CONNETCED) {
-        ReportDataInProcess(ResType::RES_TYPE_POWER_CONNECTED_DISCONNECTED,
-            ResType::DeviceModeStatus::MODE_ENTER, payload);
-        return;
-    }
-    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_DISCONNETCED) {
-        ReportDataInProcess(ResType::RES_TYPE_POWER_CONNECTED_DISCONNECTED,
-            ResType::DeviceModeStatus::MODE_QUIT, payload);
->>>>>>> aad0255f41118f2d8125bc4a806f3ff1dabaeed1
         return;
     }
 }
