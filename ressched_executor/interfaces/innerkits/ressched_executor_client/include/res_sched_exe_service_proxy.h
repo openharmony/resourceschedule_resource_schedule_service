@@ -73,6 +73,7 @@ public:
     virtual ~ResSchedExeServiceProxy() {}
 
 private:
+    int32_t SendRequestToRemote(const int32_t code, MessageParcel &data, MessageParcel &reply, MessageOption& option);
     int32_t MakeUpParcel(MessageParcel& data, uint32_t resType, int64_t value, const nlohmann::json& context);
     int32_t SendDebugCommand(MessageOption& option);
 

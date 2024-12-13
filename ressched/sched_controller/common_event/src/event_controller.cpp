@@ -314,23 +314,13 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         return;
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_CONNECTED) {
-        if (payload == nullptr) {
-            return;
-        }
-        if (!payload.contains(DEVICE_MODE_PAYMODE_NAME)) {
-            payload[DEVICE_MODE_PAYMODE_NAME] = "powerConnected";
-        }
+        payload[DEVICE_MODE_PAYMODE_NAME] = "powerConnected";
         ReportDataInProcess(ResType::RES_TYPE_DEVICE_MODE_STATUS,
             ResType::DeviceModeStatus::MODE_ENTER, payload);
         return;
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_DISCONNECTED) {
-        if (payload == nullptr) {
-            return;
-        }
-        if (!payload.contains(DEVICE_MODE_PAYMODE_NAME)) {
-            payload[DEVICE_MODE_PAYMODE_NAME] = "powerDisConnected";
-        }
+        payload[DEVICE_MODE_PAYMODE_NAME] = "powerDisConnected";
         ReportDataInProcess(ResType::RES_TYPE_DEVICE_MODE_STATUS,
             ResType::DeviceModeStatus::MODE_ENTER, payload);
         return;
