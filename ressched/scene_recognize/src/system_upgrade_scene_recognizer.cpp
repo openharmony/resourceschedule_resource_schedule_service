@@ -34,7 +34,6 @@ namespace {
         "const.product.build.type",
         "const.product.brand",
         "const.product.name",
-        "const.product.devicetype",
         "const.product.incremental.version",
         "const.comp.hl.product_base_version.real"
     };
