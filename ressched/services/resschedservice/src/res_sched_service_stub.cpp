@@ -155,6 +155,7 @@ namespace {
         ResType::SYNC_RES_TYPE_GET_NWEB_PRELOAD_SET,
         ResType::RES_TYPE_AUDIO_RENDERER_STANDBY,
         ResType::RES_TYPE_APP_GAME_BOOST_EVENT,
+        ResType::RES_TYPE_DISPLAY_MULTI_SCREEN,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";

@@ -39,6 +39,7 @@ IMPLEMENT_SINGLE_INSTANCE(EventController);
 
 const std::string DATA_SHARE_READY = "usual.event.DATA_SHARE_READY";
 const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
+const std::string DEVICE_MODE_TYPE_KEY = "deviceModeType";
 const std::string SCENE_BOARD_NAME = "com.ohos.sceneboard";
 void EventController::Init()
 {
@@ -314,12 +315,14 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         return;
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_CONNECTED) {
+        payload[DEVICE_MODE_TYPE_KEY] = "powerConnectStatus";
         payload[DEVICE_MODE_PAYMODE_NAME] = "powerConnected";
         ReportDataInProcess(ResType::RES_TYPE_DEVICE_MODE_STATUS,
             ResType::DeviceModeStatus::MODE_ENTER, payload);
         return;
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_DISCONNECTED) {
+        payload[DEVICE_MODE_TYPE_KEY] = "powerConnectStatus";
         payload[DEVICE_MODE_PAYMODE_NAME] = "powerDisConnected";
         ReportDataInProcess(ResType::RES_TYPE_DEVICE_MODE_STATUS,
             ResType::DeviceModeStatus::MODE_ENTER, payload);

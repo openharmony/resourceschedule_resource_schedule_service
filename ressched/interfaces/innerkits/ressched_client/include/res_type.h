@@ -277,8 +277,8 @@ enum : uint32_t {
     RES_TYPE_AXIS_EVENT = 123,
     // get game scene information
     RES_TYPE_GET_GAME_SCENE_INFO = 124,
-    // power connected or disconnected
-    RES_TYPE_POWER_CONNECTED_DISCONNECTED = 125;
+    // report multi screen event
+    RES_TYPE_DISPLAY_MULTI_SCREEN = 125,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
