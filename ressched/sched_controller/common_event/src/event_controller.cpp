@@ -38,6 +38,8 @@ namespace ResourceSchedule {
 IMPLEMENT_SINGLE_INSTANCE(EventController);
 
 const std::string DATA_SHARE_READY = "usual.event.DATA_SHARE_READY";
+const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
+const std::string DEVICE_MODE_TYPE_KEY = "deviceModeType";
 const std::string SCENE_BOARD_NAME = "com.ohos.sceneboard";
 void EventController::Init()
 {
@@ -185,6 +187,8 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_WIFI_P2P_STATE_CHANGED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_SAVE_MODE_CHANGED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_CONNECTED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_DISCONNECTED);
     matchingSkills.AddEvent(DATA_SHARE_READY);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
@@ -308,6 +312,20 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         RESSCHED_LOGI("report boot completed");
         ReportDataInProcess(ResType::RES_TYPE_BOOT_COMPLETED,
             ResType::BootCompletedStatus::START_BOOT_COMPLETED, payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_CONNECTED) {
+        payload[DEVICE_MODE_TYPE_KEY] = "powerConnectStatus";
+        payload[DEVICE_MODE_PAYMODE_NAME] = "powerConnected";
+        ReportDataInProcess(ResType::RES_TYPE_DEVICE_MODE_STATUS,
+            ResType::DeviceModeStatus::MODE_ENTER, payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_DISCONNECTED) {
+        payload[DEVICE_MODE_TYPE_KEY] = "powerConnectStatus";
+        payload[DEVICE_MODE_PAYMODE_NAME] = "powerDisConnected";
+        ReportDataInProcess(ResType::RES_TYPE_DEVICE_MODE_STATUS,
+            ResType::DeviceModeStatus::MODE_ENTER, payload);
         return;
     }
 }
