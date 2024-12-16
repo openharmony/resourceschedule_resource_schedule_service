@@ -396,7 +396,7 @@ std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid)
 void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 {
     if (socperfGameBoostSwitch_ && focusAppType_ == APP_TYPE_GAME) {
-        SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK game can not get click");
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->game can't get click");
         return;
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK: %{public}lld", (long long)data->value);
@@ -421,6 +421,7 @@ bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST, true, "");
     } else if (data->value == GameBoostState::GAME_BOOST_END) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST, false, "");
+        return false;
     }
     return true;
 }
