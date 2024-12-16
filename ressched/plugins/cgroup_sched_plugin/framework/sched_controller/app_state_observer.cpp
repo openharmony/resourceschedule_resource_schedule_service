@@ -248,10 +248,9 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     payload["uid"] = std::to_string(appStateData.uid);
     payload["bundleName"] = appStateData.bundleName;
     payload["extensionType"] = std::to_string(static_cast<uint32_t>(appStateData.extensionType));
-    if (!appStateData.isPreloadModule) {
-        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state,
-            payload);
-    }
+    payload["isPreload"] = std::to_string(appStateData.isPreloadModule);
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state,
+        payload);
     ResSchedUtils::GetInstance().ReportAppStateInProcess(appStateData.state, appStateData.pid);
 }
 
