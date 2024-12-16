@@ -420,7 +420,8 @@ bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
     if (data->value == GameBoostState::GAME_BOOST_START) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST, true, "");
     } else if (data->value == GameBoostState::GAME_BOOST_END) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST, false, "");
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->GAME_BOOST null data");
+        return false;
     }
     return true;
 }
