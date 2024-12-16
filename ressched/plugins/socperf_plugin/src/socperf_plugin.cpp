@@ -382,13 +382,21 @@ std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid)
         systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     sptr<AppExecFwk::IBundleMgr> iBundleMgr = OHOS::iface_cast<OHOS::AppExecFwk::IBundleMgr>(object);
     if (!iBundleMgr) {
+<<<<<<< HEAD
         SOC_PERF_LOGD("%{public}s null bundle manager.", __func__);
+=======
+        SOC_PERF_LOGD("%{pubilc}s null bundle manager.", __func__);
+>>>>>>> da14f4189848cc24656faf79800521ca9a557f02
         return bundleName;
     }
 
     ErrCode ret = iBundleMgr->GetNameForUid(uid, bundleName);
     if (ret != ERR_OK) {
+<<<<<<< HEAD
         SOC_PERF_LOGE("%{public}s get bundle name failed for %{public}d, err_code:%{public}d.", __func__, uid, ret);
+=======
+        SOC_PERF_LOGE("%{pulic}s get bundle name failed for %{pulic}d, err_code:%{public}d.", __func__, uid, ret);
+>>>>>>> da14f4189848cc24656faf79800521ca9a557f02
     }
     return bundleName;
 }
@@ -413,6 +421,7 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
 {
     if (!socperfGameBoostSwitch_ || data == nullptr) {
+<<<<<<< HEAD
         SOC_PERF_LOGD("SocPerfPlugin: socperf->GAME_BOOST invalid data");
         return false;
     }
@@ -420,6 +429,15 @@ bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
     if (data->value == GameBoostState::GAME_BOOST_START) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST, true, "");
     } else if (data->value == GameBoostState::GAME_BOOST_END) {
+=======
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->GAME_BOOST null data");
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin:socperf->GAME_BOOST: %{public}lld", (long long)data->value);
+    if (data->value == GameBoostState::BOOST_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST, true, "");
+    } else if (data->value == GameBoostState::BOOST_END) {
+>>>>>>> da14f4189848cc24656faf79800521ca9a557f02
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST, false, "");
     }
     return true;
