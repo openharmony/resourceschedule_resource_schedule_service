@@ -124,7 +124,7 @@ static void RequestTest(int32_t argc, char *argv[])
     std::unordered_map<std::string, std::string> mapPayload;
     int64_t startTime = GetNowTime();
     int32_t count = 0;
-    while (count < requestCount && GetNowTime() -startTime < requestTime) {
+    while (count < requestCount && GetNowTime() - startTime < requestTime) {
         count++;
         OHOS::ResourceSchedule::ResSchedClient::GetInstance().ReportData(DEFAULT_TYPE, DEFAULT_VALUE, mapPayload);
     }
