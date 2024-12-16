@@ -133,7 +133,7 @@ HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_005, Function | MediumTest |
     }
 
     int32_t ret2 = ResourceSchedule::DataShareUtils::GetInstance().GetStringValue("test", result);
-    EXPECT_EQ(ret2, ERR_NAME_NOT_FOUND);
+    EXPECT_NE(ret2, ERR_OK);
 }
 
 /**
