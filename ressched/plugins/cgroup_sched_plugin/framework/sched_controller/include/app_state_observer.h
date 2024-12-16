@@ -59,8 +59,17 @@ private:
         return processData.uid > 0 && processData.pid >= 0
             && processData.bundleName.size() > 0;
     }
+
+    inline bool ValidateUIExtensionAbilityStateData(const AbilityStateData &abilityStateData) const
+    {
+        return abilityStateData.extensionAbilityType >= 0 &&
+            abilityStateData.processType >= 0;
+    }
     void MarshallingProcessData(const ProcessData &processData, nlohmann::json &payload);
     void MarshallingAppStateData(const AppStateData &appStateData, nlohmann::json &payload);
+    bool IsUIExtensionAbilityStateChanged(const AbilityStateData &abilityStateData);
+
+    static std::unordered_map<int32_t, int32_t> extensionStateToAbilityState_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
