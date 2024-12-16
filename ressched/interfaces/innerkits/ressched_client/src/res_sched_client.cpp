@@ -212,6 +212,21 @@ bool ResSchedClient::IsAllowedAppPreload(const std::string& bundleName, int32_t 
     return rss_->IsAllowedAppPreload(bundleName, preloadMode);
 }
 
+int32_t ResSchedClient::IsAllowedLinkJump(bool& isAllowedLinkJump)
+{
+    RESSCHED_LOGD("enter IsAllowedLinkJump");
+    if (TryConnect() != ERR_OK) {
+        return RES_SCHED_CONNECT_FAIL;
+    }
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (rss_ == nullptr) {
+        RESSCHED_LOGE("ResSchedClient::IsAllowedLinkJump fail to get resource schedule service.");
+        return RES_SCHED_CONNECT_FAIL;
+    }
+    return rss_->IsAllowedLinkJump(isAllowedLinkJump);
+}
+
 sptr<IResSchedService> ResSchedClient::GetProxy()
 {
     if (TryConnect() == ERR_OK) {

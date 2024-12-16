@@ -134,6 +134,14 @@ public:
      */
     bool IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode);
 
+    /**
+     * @brief Check whether the application is in the link jump white list.
+     * Calling from application process.
+     *
+     * @param isAllowedLinkJump true if the application is in the link jump white list.
+     */
+    int32_t IsAllowedLinkJump(bool& isAllowedLinkJump);
+
 protected:
     ResSchedClient() = default;
     virtual ~ResSchedClient();

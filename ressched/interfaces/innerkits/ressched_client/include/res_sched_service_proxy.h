@@ -95,6 +95,14 @@ public:
      */
     void UnRegisterEventListener(uint32_t eventType,
         uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON) override;
+    
+    /**
+     * @brief Check whether the application is in the link jump white list.
+     * Calling from application process.
+     *
+     * @param isAllowedLinkJump true if the application is in the link jump white list.
+     */
+    int32_t IsAllowedLinkJump(bool& isAllowedLinkJump);
 public:
     /**
      * @brief Construct a new ResSchedServiceProxy object.

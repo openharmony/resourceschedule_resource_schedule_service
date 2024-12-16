@@ -31,6 +31,7 @@ namespace ResourceSchedule {
         REPORT_SYNC_EVENT = 7,
         REGISTER_EVENT_LISTENER = 8,
         UNREGISTER_EVENT_LISTENER = 9,
+        LINK_JUMP_OPTIMIZATION = 10,
     };
 
     enum class ResourceSceduleSystemloadNotifierCode {

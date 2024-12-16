@@ -679,6 +679,10 @@ void PluginMgr::ClearResource()
         std::lock_guard<std::mutex> autoLock(resTypeStrMutex_);
         resTypeStrMap_.clear();
     }
+    {
+        std::lock_guard<std::mutex> autoLock(linkJumpOptMutex_);
+        linkJumpOptSet_.clear();
+    }
 }
 
 void PluginMgr::RepairPlugin(TimePoint endTime, const std::string& pluginLib, PluginLib libInfo)
@@ -883,6 +887,23 @@ void PluginMgr::SetResTypeStrMap(const std::map<uint32_t, std::string>& resTypeS
 void PluginMgr::SetBlockedTime(const int64_t time)
 {
     pluginBlockTime = time;
+}
+
+void PluginMgr::SetLinkJumpOptSet(const std::unordered_set<std::string> linkJumpOptSet)
+{
+    std::lock_guard<std::mutex> autoLock(linkJumpOptMutex_);
+    linkJumpOptSet_ = linkJumpOptSet;
+}
+
+bool PluginMgr::GetLinkJumpOptConfig(const std::string& bundleName, bool& isAllowedLinkJump)
+{
+    std::lock_guard<std::mutex> autoLock(linkJumpOptMutex_);
+    auto iter = linkJumpOptSet_.find(bundleName);
+    if (iter != linkJumpOptSet_.end()) {
+        isAllowedLinkJump = true;
+        return true;
+    }
+    return false;
 }
 
 std::string PluginMgr::GetStrFromResTypeStrMap(uint32_t resType)

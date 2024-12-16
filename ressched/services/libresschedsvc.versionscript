@@ -19,6 +19,7 @@
     *PluginMgr*SubscribeResource*;
     *PluginMgr*UnSubscribeResource*;
     *PluginMgr*GetRunner*;
+    *PluginMgr*SetLinkJumpOptSet*;
     ReportDataInProcess;
     *Marshalling*;
     *Subscrib*;

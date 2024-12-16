@@ -248,5 +248,29 @@ bool ResSchedServiceProxy::IsAllowedAppPreload(const std::string& bundleName, in
     RESSCHED_LOGD("%{public}s, success.", __func__);
     return isAllowedPreload;
 }
+
+int32_t ResSchedServiceProxy::IsAllowedLinkJump(bool& isAllowedLinkJump)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option = { MessageOption::TF_SYNC };
+    WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), RES_SCHED_DATA_ERROR,
+        ResSchedServiceProxy);
+    WRITE_PARCEL(data, Bool, isWebFlingOpt, RES_SCHED_DATA_ERROR, ResSchedServiceProxy);
+    int32_t ret = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::LINK_JUMP_OPTIMIZATION),
+        data, reply, option);
+    if (ret != NO_ERROR) {
+        RESSCHED_LOGE("%{public}s:Send request error: %{public}d.", __func__, ret);
+        return RES_SCHED_REQUEST_FAIL;
+    }
+    bool allowedLinkJump = false;
+    if (!reply.ReadBool(allowedLinkJump)) {
+        RESSCHED_LOGE("Read result failed");
+        return RES_SCHED_DATA_ERROR;
+    }
+    isAllowedLinkJump = allowedLinkJump;
+    RESSCHED_LOGD("%{public}s, ret=%{public}d.", __func__, ret);
+    return ret;
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

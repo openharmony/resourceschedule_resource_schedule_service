@@ -436,6 +436,27 @@ void ResSchedServiceStub::UnRegisterEventListenerInner(MessageParcel& data,
     UnRegisterEventListener(eventType, listenerGroup);
 }
 
+int32_t ResSchedServiceStub::IsAllowedLinkJumpInner(MessageParcel& data, MessageParcel& reply)
+{
+    if (!IsValidToken(data)) {
+        RESSCHED_LOGE("IsAllowedLinkJumpInner invalid token.");
+        return ERR_RES_SCHED_PARCEL_ERROR;
+    }
+
+    bool isAllowedLinkJump = false;
+    if (!data.ReadBool(isAllowedLinkJump)) {
+        RESSCHED_LOGE("IsAllowedLinkJumpInner ReadParcelable failed");
+        return RES_SCHED_DATA_ERROR;
+    }
+
+    int32_t ret = IsAllowedLinkJump(isAllowedLinkJump);
+    if (!reply.WriteBool(isAllowedLinkJump)) {
+        RESSCHED_LOGE("IsAllowedLinkJumpInner write isAllowedLinkJump failed");
+        return ERR_RES_SCHED_PARCEL_ERROR;
+    }
+    return ret;
+}
+
 bool ResSchedServiceStub::IsLimitRequest(int32_t uid)
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -537,6 +558,9 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
             return ERR_OK;
         case static_cast<uint32_t>(ResourceScheduleInterfaceCode::UNREGISTER_EVENT_LISTENER):
             UnRegisterEventListenerInner(data, reply);
+            return ERR_OK;
+        case static_cast<uint32_t>(ResourceScheduleInterfaceCode::LINK_JUMP_OPTIMIZATION):
+            IsWebFlingOptInner(data, reply);
             return ERR_OK;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
