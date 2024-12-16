@@ -321,6 +321,7 @@ HWTEST_F(ResSchedServiceMockTest, ServiceDump003, Function | MediumTest | Level0
     EXPECT_EQ(res, ERR_OK);
     std::vector<std::u16string> argsOnePlugin2 = {to_utf16("sendDebugToExecutor"), to_utf16("1")};
     res = resSchedService_->Dump(correctFd, argsOnePlugin2);
+    resSchedService_->UnRegisterSystemloadNotifier();
     EXPECT_EQ(res, ERR_OK);
 }
 
