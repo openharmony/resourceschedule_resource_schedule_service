@@ -260,6 +260,8 @@ enum : uint32_t {
     RES_TYPE_GAME_INFO_NOTIFY = 116,
     // report application stopped
     RES_TYPE_APP_STOPPED = 118,
+    // game boost event
+    RES_TYPE_APP_GAME_BOOST_EVENT = 120,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -913,6 +915,15 @@ enum CosmicCubeState : int64_t {
     APPLICATION_ABOUT_TO_HIDE = 1,
     APPLICATION_ABOUT_TO_RECOVER = 2,
 };
+
+/**
+ * @brief game boost state
+ */
+enum GameBoostState : int64_t {
+    GAME_BOOST_START = 0,
+    GAME_BOOST_END = 1,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
