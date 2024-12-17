@@ -209,7 +209,7 @@ HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_009, Function | MediumTest |
 HWTEST_F(OOBEDataShareUtilsTest, TestDataShareUtils_010, Function | MediumTest | Level0)
 {
     DataShareUtils& dataShareUtils = DataShareUtils::GetInstance();
-    EXPECT_FALSE(dataShareUtils.AssembleUri(KEYWORD).uriString_.empty());
+    EXPECT_EQ(dataShareUtils.AssembleUri(KEYWORD).uriString_.empty(), false);
 }
 
 /**
