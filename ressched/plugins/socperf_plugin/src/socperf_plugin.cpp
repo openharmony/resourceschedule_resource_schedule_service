@@ -52,6 +52,7 @@ namespace {
     const std::string DISPLAY_MODE_SUB = "displaySub";
     const std::string POWER_MODE_KEY = "power";
     const std::string POWER_MODE = "powerMode";
+    const std::string PRELOAD_MODE = "isPreload";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -340,6 +341,11 @@ static int32_t ParsePayload(const std::shared_ptr<ResData>& data, const std::str
 void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 {
     if (data->value == AppStartType::APP_COLD_START) {
+        if (data->payload != nullptr && data->payload.contains(PRELOAD_MODE) &&
+            atoi(data->payload[PRELOAD_MODE].get<std::string>().c_str()) == 1) {
+            SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START is invalid as preload");
+            return;
+        }
         SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
         int32_t appType = INVALID_VALUE;
@@ -672,6 +678,11 @@ bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
     int extensionType = ParsePayload(data, EXTENSION_TYPE_KEY);
     if (std::find(ResType::UI_SENSITIVE_EXTENSION.begin(), ResType::UI_SENSITIVE_EXTENSION.end(), extensionType) !=
         ResType::UI_SENSITIVE_EXTENSION.end()) {
+        if (data->payload != nullptr && data->payload.contains(PRELOAD_MODE) &&
+            atoi(data->payload[PRELOAD_MODE].get<std::string>().c_str()) == 1) {
+            SOC_PERF_LOGI("SocPerfPlugin: socperf->APPSTATECHANGE is invalid as preload");
+            return false;
+        }
         SOC_PERF_LOGI("SocPerfPlugin: socperf->APPSTATECHANGE");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
         UpdateUidToAppTypeMap(data);
