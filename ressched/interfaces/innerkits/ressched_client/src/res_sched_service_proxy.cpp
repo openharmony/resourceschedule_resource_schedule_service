@@ -256,7 +256,7 @@ int32_t ResSchedServiceProxy::IsAllowedLinkJump(bool& isAllowedLinkJump)
     MessageOption option = { MessageOption::TF_SYNC };
     WRITE_PARCEL(data, InterfaceToken, ResSchedServiceProxy::GetDescriptor(), RES_SCHED_DATA_ERROR,
         ResSchedServiceProxy);
-    WRITE_PARCEL(data, Bool, isWebFlingOpt, RES_SCHED_DATA_ERROR, ResSchedServiceProxy);
+    WRITE_PARCEL(data, Bool, isAllowedLinkJump, RES_SCHED_DATA_ERROR, ResSchedServiceProxy);
     int32_t ret = Remote()->SendRequest(static_cast<uint32_t>(ResourceScheduleInterfaceCode::LINK_JUMP_OPTIMIZATION),
         data, reply, option);
     if (ret != NO_ERROR) {

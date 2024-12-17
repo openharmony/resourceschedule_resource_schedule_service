@@ -102,7 +102,7 @@ public:
      *
      * @param isAllowedLinkJump true if the application is in the link jump white list.
      */
-    int32_t IsAllowedLinkJump(bool& isAllowedLinkJump);
+    int32_t IsAllowedLinkJump(bool& isAllowedLinkJump) override;
 public:
     /**
      * @brief Construct a new ResSchedServiceProxy object.
