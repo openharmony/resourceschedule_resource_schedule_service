@@ -62,8 +62,7 @@ private:
 
     inline bool ValidateUIExtensionAbilityStateData(const AbilityStateData &abilityStateData) const
     {
-        return abilityStateData.extensionAbilityType >= 0 &&
-            abilityStateData.processType >= 0;
+        return abilityStateData.extensionAbilityType >= 0;
     }
     void MarshallingProcessData(const ProcessData &processData, nlohmann::json &payload);
     void MarshallingAppStateData(const AppStateData &appStateData, nlohmann::json &payload);
