@@ -658,7 +658,6 @@ enum CosmicCubeState : int64_t {
     APPLICATION_ABOUT_TO_HIDE = 1,
     APPLICATION_ABOUT_TO_RECOVER = 2,
 };
-
 }
 }
 }
