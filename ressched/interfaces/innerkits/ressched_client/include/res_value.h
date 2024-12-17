@@ -651,15 +651,15 @@ enum GameBoostState : int64_t {
 };
 
 /**
-* @brief CosmicCube Status
-*/
+ * @brief CosmicCube Status
+ */
 enum CosmicCubeState : int64_t {
     APPLICATION_ABOUT_TO_APPEAR = 0,
     APPLICATION_ABOUT_TO_HIDE = 1,
     APPLICATION_ABOUT_TO_RECOVER = 2,
 };
-}
-}
-}
+} // namespace ResType
+} // namespace ResourceSchedule
+} // namespace OHOS
 
 #endif // RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_VALUE_H
