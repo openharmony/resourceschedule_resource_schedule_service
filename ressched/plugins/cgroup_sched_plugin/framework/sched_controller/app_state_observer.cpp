@@ -151,7 +151,7 @@ bool RmsApplicationStateObserver::IsUIExtensionAbilityStateChanged(const Ability
         return false;
     }
 
-    if (abilityStateData.abilityState >= static_cast<int32_t>(extensionStateToAbilityState_.size()) - 1) {
+    if (abilityStateData.abilityState >= static_cast<int32_t>(extensionStateToAbilityState_.size())) {
         CGS_LOGD("%{public}s : Validate UIExtensionAbility data out of bound!", __func__);
         return false;
     }
