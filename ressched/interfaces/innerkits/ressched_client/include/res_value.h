@@ -662,3 +662,5 @@ enum CosmicCubeState : int64_t {
 }
 }
 }
+
+#endif // RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_VALUE_H
