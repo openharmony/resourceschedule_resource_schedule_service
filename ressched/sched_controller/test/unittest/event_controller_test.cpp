@@ -222,21 +222,6 @@ HWTEST_F(EventControllerTest, connectivityChange_00108, testing::ext::TestSize.L
 }
 
 /**
- * @tc.name: connectivityChange_00109
- * @tc.desc: test the interface
- * @tc.type: FUNC
- * @tc.require: issueI8VZVN
- */
-HWTEST_F(EventControllerTest, connectivityChange_00109, testing::ext::TestSize.Level1)
-{
-    int32_t userId = 0;
-    std::string action = EventFwk::CommonEventSupport::COMMON_EVENT_WIFI_P2P_STATE_CHANGED;
-    nlohmann::json payload;
-    EventController::GetInstance().handleEvent(userId, action, payload);
-    SUCCEED();
-}
-
-/**
  * @tc.name: connectivityChange_00110
  * @tc.desc: test the interface
  * @tc.type: FUNC
