@@ -560,7 +560,7 @@ int32_t ResSchedServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
             UnRegisterEventListenerInner(data, reply);
             return ERR_OK;
         case static_cast<uint32_t>(ResourceScheduleInterfaceCode::LINK_JUMP_OPTIMIZATION):
-            IsWebFlingOptInner(data, reply);
+            IsAllowedLinkJumpInner(data, reply);
             return ERR_OK;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
