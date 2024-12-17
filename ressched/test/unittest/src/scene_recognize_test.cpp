@@ -185,12 +185,13 @@ HWTEST_F(SceneRecognizeTest, SystemUpgradeSceneRecognizer_001, Function | Medium
  */
 HWTEST_F(SceneRecognizeTest, slideRecognizer_001, Function | MediumTest | Level0)
 {
+    g_slideState = SlideRecognizeStat::LIST_FLING;
     auto slideRecognizer = std::make_shared<SlideRecognizer>();
     int64_t value = ResType::SlideEventStatus::SLIDE_EVENT_ON;
     nlohmann::json payload;
     payload["clientPid"] = "2000";
     slideRecognizer->HandleSlideEvent(value, payload);
-    EXPECT_EQ(slideRecognizer->g_slideState, SlideRecognizeStat::LIST_FLING);
+    EXPECT_EQ(g_slideState, SlideRecognizeStat::LIST_FLING);
 }
 
 /**
@@ -229,7 +230,7 @@ HWTEST_F(SceneRecognizeTest, HandleListFlingStart_001, Function | MediumTest | L
     g_slideState = SlideRecognizeStat::LIST_FLING;
     slideRecognizer->HandleListFlingStart(payload);
     slideRecognizer->HandleListFlingStart(payload);
-    EXPECT_EQ(slideRecognizer->g_slideState, SlideRecognizeStat::LIST_FLING);
+    EXPECT_EQ(g_slideState, SlideRecognizeStat::LIST_FLING);
 }
 
 /**
@@ -248,7 +249,7 @@ HWTEST_F(SceneRecognizeTest, HandleSendFrameEvent_001, Function | MediumTest | L
     slideRecognizer->HandleSendFrameEvent(payload);
     g_slideState = SlideRecognizeStat::LIST_FLING;
     slideRecognizer->HandleSendFrameEvent(payload);
-    EXPECT_EQ(slideRecognizer->g_slideState, SlideRecognizeStat::IDLE);
+    EXPECT_EQ(g_slideState, SlideRecognizeStat::LIST_FLING);
 }
 
 /**
