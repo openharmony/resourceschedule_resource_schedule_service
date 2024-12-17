@@ -95,6 +95,14 @@ public:
      * @param bundleName bundleName of the application.
      */
     virtual bool IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode) = 0;
+
+    /**
+     * @brief Check whether the application is in the link jump white list.
+     * Calling from application process.
+     *
+     * @param isAllowedLinkJump true if the application is in the link jump white list.
+     */
+    virtual int32_t IsAllowedLinkJump(bool& isAllowedLinkJump) = 0;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

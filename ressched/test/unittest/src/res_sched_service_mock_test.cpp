@@ -132,6 +132,11 @@ public:
     {
         return true;
     }
+
+    int32_t IsAllowedLinkJump(bool& isAllowedLinkJump) override
+    {
+        return 0;
+    }
 };
 
 class ResSchedServiceMockTest : public testing::Test {

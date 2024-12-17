@@ -212,6 +212,9 @@ public:
      */
     void SetBlockedTime(const int64_t time);
 
+    void SetLinkJumpOptSet(const std::unordered_set<std::string> linkJumpOptSet);
+
+    bool GetLinkJumpOptConfig(const std::string& bundleName, bool& isAllowedLinkJump);
 private:
     PluginMgr() = default;
     void OnDestroy();
@@ -272,9 +275,11 @@ private:
     std::mutex pluginMutex_;
     ffrt::mutex dispatcherHandlerMutex_;
     std::mutex libPathMutex_;
+    std::mutex linkJumpOptMutex_;
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
     std::map<uint32_t, std::string> resTypeLibSyncMap_;
     std::map<uint32_t, std::string> resTypeStrMap_;
+    std::unordered_set<std::string> linkJumpOptSet_;
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::map<std::string, std::shared_ptr<ffrt::queue>> dispatchers_;

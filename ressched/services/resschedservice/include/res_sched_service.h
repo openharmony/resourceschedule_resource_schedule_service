@@ -50,6 +50,8 @@ public:
 
     void LoadAppPreloadPlugin();
 
+    int32_t IsAllowedLinkJump(bool& isAllowedLinkJump) override;
+
     int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
 
     void DumpSystemLoadInfo(std::string &result);

@@ -47,6 +47,7 @@ private:
     void UnRegisterEventListenerInner(MessageParcel& data, MessageParcel& reply);
     int32_t GetSystemloadLevelInner(MessageParcel& data, MessageParcel& reply);
     bool IsAllowedAppPreloadInner(MessageParcel& data, MessageParcel& reply);
+    int32_t IsAllowedLinkJumpInner(MessageParcel& data, MessageParcel& reply);
     nlohmann::json StringToJsonObj(const std::string& str);
     bool IsLimitRequest(int32_t uid);
     void CheckAndUpdateLimitData(int64_t nowTime);

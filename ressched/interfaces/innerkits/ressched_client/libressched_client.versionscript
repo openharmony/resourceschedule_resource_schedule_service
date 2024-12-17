@@ -25,6 +25,7 @@
     *ResSchedClient*UnRegisterEventListener*;
     *ResSchedClient*GetSystemloadLevel*;
     *ResSchedClient*IsAllowedAppPreload*;
+    *ResSchedClient*IsAllowedLinkJump*;
     *ResSchedServiceProxy*;
     *ResSchedSystemloadNotifierProxy*;
     *ResSchedSystemloadNotifierStub*;

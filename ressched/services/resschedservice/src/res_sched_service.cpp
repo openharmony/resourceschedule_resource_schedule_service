@@ -125,6 +125,25 @@ void ResSchedService::LoadAppPreloadPlugin()
     isLoadAppPreloadPlugin_ = true;
 }
 
+int32_t ResSchedService::IsAllowedLinkJump(bool& isAllowedLinkJump)
+{
+    AccessToken::AccessTokenID tokenId = IPCSkeleton::GetCallingTokenID();
+    AccessToken::ATokenTypeEnum tokenTypeFlag = AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
+    if (tokenTypeFlag != AccessToken::ATokenTypeEnum::TOKEN_HAP) {
+        RESSCHED_LOGE("Invalid calling token");
+        return RES_SCHED_ACCESS_TOKEN_FAIL;
+    }
+
+    AccessToken::HapTokenInfo callingTokenInfo;
+    AccessToken::AccessTokenKit::GetHapTokenInfo(tokenId, callingTokenInfo);
+    std::string callingBundleName = callingTokenInfo.bundleName;
+    if (!PluginMgr::GetInstance().GetLinkJumpOptConfig(callingBundleName, isAllowedLinkJump)) {
+        RESSCHED_LOGE("Invalid callingBundleName");
+        return ERR_RES_SCHED_INVALID_PARAM;
+    }
+    return ERR_OK;
+}
+
 bool ResSchedService::AllowDump()
 {
     if (ENG_MODE == 0) {
