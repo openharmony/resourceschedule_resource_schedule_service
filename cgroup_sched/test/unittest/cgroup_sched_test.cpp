@@ -154,11 +154,11 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_WindowStateObserver_002, Function | Me
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_001, Function | MediumTest | Level1)
 {
     auto &schedController = SchedController::GetInstance();
-    SUCCEED();
+    EXPECT_NE(*schedController, nullptr);
     schedController.SubscribeWindowState();
-    SUCCEED();
+    EXPECT_NE(schedController->windowModeObserver_, nullptr);
     schedController.UnsubscribeWindowState();
-    SUCCEED();
+    EXPECT_EQ(schedController->windowModeObserver_, nullptr);
 }
 
 /**
