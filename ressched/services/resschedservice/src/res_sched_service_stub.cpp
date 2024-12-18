@@ -162,6 +162,7 @@ namespace {
         ResType::RES_TYPE_DEVICE_IDLE,
         ResType::RES_TYPE_BT_SERVICE_EVENT,
         ResType::SYNC_RES_TYPE_GET_NWEB_PRELOAD_SET,
+        ResType::RES_TYPE_APP_GAME_BOOST_EVENT,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";

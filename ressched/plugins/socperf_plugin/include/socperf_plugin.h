@@ -38,12 +38,17 @@ private:
     using ReqAppTypeFunc = int32_t (*)(const std::string &bundleName);
     std::set<uint32_t> resTypes;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
+    // app's uid match app type
+    std::map<int32_t, int32_t> uidToAppTypeMap_;
     std::string perfReqAppTypeSoPath_;
     std::string perfReqAppTypeSoFunc_;
     void* handle_ = nullptr;
     ReqAppTypeFunc reqAppTypeFunc_ = nullptr;
+    // current focus app type, -1 means no focus app
+    int32_t focusAppType_ = -1;
     int32_t RES_TYPE_SCENE_BOARD_ID = 0;
     int32_t RES_TYPE_RGM_BOOTING_STATUS = 0;
+    bool socperfGameBoostSwitch_ = false;
     void InitEventId();
     void InitFunctionMap();
     void AddEventToFunctionMap();
@@ -77,6 +82,13 @@ private:
     bool HandleAppColdStartEx(const std::shared_ptr<ResData>& data);
     bool HandleSceneRotation(const std::shared_ptr<ResData>& data);
     bool HandleBmmMoniterStatus(const std::shared_ptr<ResData>& data);
+    bool HandleGameBoost(const std::shared_ptr<ResData>& data);
+    bool UpdateFocusAppType(const std::shared_ptr<ResData>& data);
+    bool HandleUninstallEvent(const std::shared_ptr<ResData>& data);
+    bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data);
+    bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data, const int32_t appType);
+    int32_t GetUidByData(const std::shared_ptr<ResData>& data);
+    std::string GetBundleNameByUid(const int32_t uid);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
