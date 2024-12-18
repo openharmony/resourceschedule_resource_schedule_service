@@ -128,6 +128,7 @@ HWTEST_F(PluginSwitchTest, IsInvalidNode001, TestSize.Level1)
 {
     xmlNode currNode;
     pluginSwitch_->IsInvalidNode(currNode);
+    EXPECT_TRUE(pluginSwitch_->IsInvalidNode(currNode));
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

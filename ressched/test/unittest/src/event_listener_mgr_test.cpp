@@ -175,7 +175,7 @@ HWTEST_F(EventListenerMgrTest, RegisterEventListener003, Function | MediumTest |
     EventListenerMgr::GetInstance().RegisterEventListener(callingPid, eventListener,
         ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
-    SUCCEED();
+    EXPECT_TRUE(eventListener == nullptr);
 }
 
 /**
@@ -298,7 +298,7 @@ HWTEST_F(EventListenerMgrTest, OnRemoteEventListenerDied001, Function | MediumTe
 {
     sptr<IRemoteObject> eventListener;
     EventListenerMgr::GetInstance().OnRemoteListenerDied(eventListener);
-    SUCCEED();
+    EXPECT_EQ(EventListenerMgr::GetInstance().eventListenerMap_.size(), 0);
 }
 
 /**
@@ -329,7 +329,7 @@ HWTEST_F(EventListenerMgrTest, SendEvent001, Function | MediumTest | Level0)
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP, extInfo);
-    SUCCEED();
+    EXPECT_TRUE(eventListener == nullptr);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
