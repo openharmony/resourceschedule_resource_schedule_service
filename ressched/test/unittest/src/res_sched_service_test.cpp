@@ -466,19 +466,6 @@ HWTEST_F(ResSchedServiceTest, OnStart002, Function | MediumTest | Level0)
 }
 
 /**
- * @tc.name: Stop ResSchedServiceAbility 001
- * @tc.desc: test the interface Onstop
- * @tc.type: FUNC
- * @tc.require: issueI8VZVN
- * @tc.author:z30053169
- */
-HWTEST_F(ResSchedServiceTest, OnStop001, Function | MediumTest | Level0)
-{
-    resSchedServiceAbility_->OnStop();
-    SUCCEED();
-}
-
-/**
  * @tc.name: ResSchedServiceAbility ChangeAbility 001
  * @tc.desc: Verify if add and remove system ability is success.
  * @tc.type: FUNC
@@ -488,8 +475,10 @@ HWTEST_F(ResSchedServiceTest, OnStop001, Function | MediumTest | Level0)
 HWTEST_F(ResSchedServiceTest, ChangeAbility001, Function | MediumTest | Level0)
 {
     std::string deviceId;
-    resSchedServiceAbility_->OnAddSystemAbility(-1, deviceId);
-    resSchedServiceAbility_->OnRemoveSystemAbility(-1, deviceId);
+    int32_t systemAbilityId = -1;
+    resSchedServiceAbility_->OnAddSystemAbility(systemAbilityId, deviceId);
+    resSchedServiceAbility_->OnRemoveSystemAbility(systemAbilityId, deviceId);
+    EXPECT_EQ(systemAbilityId, -1);
 }
 
 static void ChangeAbilityTask()

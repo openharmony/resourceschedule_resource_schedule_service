@@ -111,9 +111,15 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_003, Function | MediumTest | Level0)
  */
 HWTEST_F(OOBEMgrTest, TestOOBEManager_004, Function | MediumTest | Level0)
 {
+    int resultValue = 0;
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
+    ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
     oobeMgr.Initialize();
-    SUCCEED();
+    if (resultValue != 0) {
+        EXPECT_EQ(oobeMgr.g_oobeValue, true);
+    }else {
+        EXPECT_EQ(oobeMgr.g_oobeValue, false);
+    }
 }
 
 /**
@@ -149,9 +155,15 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_005, Function | MediumTest | Level0)
  */
 HWTEST_F(OOBEMgrTest, TestOOBEManager_006, Function | MediumTest | Level0)
 {
+    int resultValue = 0;
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
     oobeMgr.StartListen();
-    SUCCEED();
+    ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
+    if (resultValue != 0) {
+        EXPECT_EQ(oobeMgr.g_oobeValue, true);
+    }else {
+        EXPECT_EQ(oobeMgr.g_oobeValue, false);
+    }
 }
 
 /**
@@ -163,9 +175,15 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_006, Function | MediumTest | Level0)
  */
 HWTEST_F(OOBEMgrTest, TestOOBEManager_007, Function | MediumTest | Level0)
 {
+    int resultValue = 0;
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
+    ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
     bool flag = oobeMgr.GetOOBValue();
-    SUCCEED();
+    if (resultValue != 0) {
+        EXPECT_EQ(oobeMgr.g_oobeValue, true);
+    }else {
+        EXPECT_EQ(oobeMgr.g_oobeValue, false);
+    }
 }
 
 /**

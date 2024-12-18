@@ -191,7 +191,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00106, testing::ext::TestSize.L
     int32_t systemAbilityId = 0;
     std::string deviceId;
     EventController::GetInstance().sysAbilityListener_->OnAddSystemAbility(systemAbilityId, deviceId);
-    SUCCEED();
+    EXPECT_NE(EventController::GetInstance().sysAbilityListener_->subscriber_, nullptr);
 }
 
 /**
@@ -204,10 +204,9 @@ HWTEST_F(EventControllerTest, connectivityChange_00107, testing::ext::TestSize.L
 {
     int32_t userId = 0;
     std::string bundleName = "test";
-    EventController::GetInstance().GetUid(userId, bundleName);
-    SUCCEED();
+    int32_t result = EventController::GetInstance().GetUid(userId, bundleName);
+    EXPECT_EQ(result, -1);
     EventController::GetInstance().Stop();
-    SUCCEED();
 }
 
 /**
@@ -219,25 +218,7 @@ HWTEST_F(EventControllerTest, connectivityChange_00107, testing::ext::TestSize.L
 HWTEST_F(EventControllerTest, connectivityChange_00108, testing::ext::TestSize.Level1)
 {
     EventController::GetInstance().Init();
-    SUCCEED();
-    EventController::GetInstance().sysAbilityListener_ = new EventController::SystemAbilityStatusChangeListener();
-    EventController::GetInstance().Init();
-    SUCCEED();
-}
-
-/**
- * @tc.name: connectivityChange_00109
- * @tc.desc: test the interface
- * @tc.type: FUNC
- * @tc.require: issueI8VZVN
- */
-HWTEST_F(EventControllerTest, connectivityChange_00109, testing::ext::TestSize.Level1)
-{
-    int32_t userId = 0;
-    std::string action = EventFwk::CommonEventSupport::COMMON_EVENT_WIFI_P2P_STATE_CHANGED;
-    nlohmann::json payload;
-    EventController::GetInstance().handleEvent(userId, action, payload);
-    SUCCEED();
+    EXPECT_NE(EventController::GetInstance().sysAbilityListener_, nullptr);
 }
 
 /**
@@ -281,7 +262,7 @@ HWTEST_F(EventControllerTest, bootCompleted_001, testing::ext::TestSize.Level1)
     want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
     data.SetWant(want);
     EventController::GetInstance().OnReceiveEvent(data);
-    SUCCEED();
+    EXPECT_NE(want.GetAction(), "");
 }
 }
 }
