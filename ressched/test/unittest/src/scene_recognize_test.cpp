@@ -48,14 +48,15 @@ HWTEST_F(SceneRecognizeTest, AppInstallTest001, Function | MediumTest | Level0)
     nlohmann::json payload;
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_SCREEN_STATUS,
         ResType::ScreenStatus::SCREEN_ON, payload);
-    SUCCEED();
+    EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
     SceneRecognizerMgr::GetInstance().DispatchResource(-1, -1, payload);
-    SUCCEED();
+    EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
         ResType::AppInstallStatus::APP_INSTALL_END, payload);
-    SUCCEED();
+    EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
         ResType::AppInstallStatus::APP_INSTALL_END, payload);
+    EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
 }
 
 /**
@@ -75,7 +76,7 @@ HWTEST_F(SceneRecognizeTest, AppInstallTest002, Function | MediumTest | Level0)
         ResType::AppInstallStatus::APP_INSTALL_END, payload);
     continuousAppInstallRecognizer->OnDispatchResource(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
         ResType::AppInstallStatus::APP_INSTALL_START, payload);
-    SUCCEED();
+    EXPECT_NE(continuousAppInstallRecognizer, nullptr);
 }
 
 /**
@@ -147,15 +148,15 @@ HWTEST_F(SceneRecognizeTest, SlideTest001, Function | MediumTest | Level0)
     payload["clientPid"] = "2000";
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_SLIDE_RECOGNIZE,
         ResType::SlideEventStatus::SLIDE_EVENT_DETECTING, payload);
-    SUCCEED();
+    EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_SEND_FRAME_EVENT, 0, payload);
-    SUCCEED();
+    EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_CLICK_RECOGNIZE,
         ResType::ClickEventType::TOUCH_EVENT_UP, payload);
-    SUCCEED();
+    EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
     SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_CLICK_RECOGNIZE,
         ResType::ClickEventType::TOUCH_EVENT_PULL_UP, payload);
-    SUCCEED();
+    EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
 }
 
 /**
@@ -172,7 +173,7 @@ HWTEST_F(SceneRecognizeTest, SystemUpgradeSceneRecognizer_001, Function | Medium
     int64_t value = 0;
     nlohmann::json payload;
     systemUpgradeSceneRecognizer->OnDispatchResource(ResType::RES_TYPE_BOOT_COMPLETED, value, payload);
-    SUCCEED();
+    EXPECT_EQ(systemUpgradeSceneRecognizer->isSystemUpgraded_, true);
 }
 
 /**
@@ -184,12 +185,13 @@ HWTEST_F(SceneRecognizeTest, SystemUpgradeSceneRecognizer_001, Function | Medium
  */
 HWTEST_F(SceneRecognizeTest, slideRecognizer_001, Function | MediumTest | Level0)
 {
+    g_slideState = SlideRecognizeStat::LIST_FLING;
     auto slideRecognizer = std::make_shared<SlideRecognizer>();
     int64_t value = ResType::SlideEventStatus::SLIDE_EVENT_ON;
     nlohmann::json payload;
     payload["clientPid"] = "2000";
     slideRecognizer->HandleSlideEvent(value, payload);
-    SUCCEED();
+    EXPECT_EQ(g_slideState, SlideRecognizeStat::LIST_FLING);
 }
 
 /**
@@ -204,11 +206,12 @@ HWTEST_F(SceneRecognizeTest, HandleSlideDetecting_001, Function | MediumTest | L
     auto slideRecognizer = std::make_shared<SlideRecognizer>();
     nlohmann::json payload;
     slideRecognizer->HandleSlideDetecting(payload);
-    payload["clientPid"] = "2000";
+    std::string testPid = "2000";
+    payload["clientPid"] = testPid;
     slideRecognizer->HandleListFlingStart(payload);
     g_slideState = SlideRecognizeStat::LIST_FLING;
     slideRecognizer->HandleSlideDetecting(payload);
-    SUCCEED();
+    EXPECT_EQ(slideRecognizer->slidePid_, testPid);
 }
 
 /**
@@ -222,11 +225,12 @@ HWTEST_F(SceneRecognizeTest, HandleListFlingStart_001, Function | MediumTest | L
 {
     auto slideRecognizer = std::make_shared<SlideRecognizer>();
     nlohmann::json payload;
-    payload["clientPid"] = "2000";
+    std::string testPid = "2000";
+    payload["clientPid"] = testPid;
     g_slideState = SlideRecognizeStat::LIST_FLING;
     slideRecognizer->HandleListFlingStart(payload);
     slideRecognizer->HandleListFlingStart(payload);
-    SUCCEED();
+    EXPECT_EQ(g_slideState, SlideRecognizeStat::LIST_FLING);
 }
 
 /**
@@ -245,7 +249,7 @@ HWTEST_F(SceneRecognizeTest, HandleSendFrameEvent_001, Function | MediumTest | L
     slideRecognizer->HandleSendFrameEvent(payload);
     g_slideState = SlideRecognizeStat::LIST_FLING;
     slideRecognizer->HandleSendFrameEvent(payload);
-    SUCCEED();
+    EXPECT_EQ(g_slideState, SlideRecognizeStat::LIST_FLING);
 }
 
 /**
@@ -264,11 +268,12 @@ HWTEST_F(SceneRecognizeTest, HandleClickEvent_001, Function | MediumTest | Level
     slideRecognizer->HandleClickEvent(value, payload);
     g_slideState = SlideRecognizeStat::SLIDE_NORMAL;
     slideRecognizer->HandleClickEvent(value, payload);
-    payload["clientPid"] = "2000";
+    std::string testPid = "2000";
+    payload["clientPid"] = testPid;
     payload["up_speed"] = std::to_string(slideRecognizer->listFlingTimeOutTime_ + 1);
     slideRecognizer->HandleClickEvent(value, payload);
     slideRecognizer->HandleClickEvent(value, payload);
-    SUCCEED();
+    EXPECT_EQ(slideRecognizer->slidePid_, testPid);
 }
 
 /**
