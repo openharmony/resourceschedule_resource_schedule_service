@@ -1314,18 +1314,22 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
 
-    cgroupEventHandler->HandleContinuousTaskCancel(1000,
-        1234, (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
-    auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(1111);
-    EXPECT_TRUE(app != nullptr);
-    auto proc = app->GetProcessRecordNonNull(429);
-    EXPECT_FALSE(proc->continuousTaskFlag_ == (1 << (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK));
+    cgroupEventHandler->HandleContinuousTaskUpdate(1000,
+        1234, {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK}, abilityId);
+    auto proc = supervisor_->GetAppRecord(1000)->GetProcessRecord(1234);
+    EXPECT_TRUE(proc->continuousTaskFlag_ == (1 << (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK));
+
     cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
         (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
     EXPECT_TRUE(proc->continuousTaskFlag_ == 0);
 
-    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
-        (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
+    cgroupEventHandler->HandleContinuousTaskUpdate(1000, 1234,
+        {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK,
+        (int32_t)BackgroundTaskMgr::BackgroundMode::MULTI_DEVICE_CONNECTION}, abilityId);
+    EXPECT_TRUE(proc->continuousTaskFlag_ == 68);
+    
+    cgroupEventHandler->HandleContinuousTaskUpdate(1000, 1234,
+        {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK}, abilityId);
     EXPECT_TRUE(proc->continuousTaskFlag_ == 4);
 }
 
