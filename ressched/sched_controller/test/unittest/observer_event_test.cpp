@@ -497,7 +497,7 @@ HWTEST_F(ObserverEventTest, schedTelephonyObserverEvent_001, testing::ext::TestS
     int32_t callState = 0;
     std::u16string phoneNumber;
     schedTelephonyObserver_->OnCallStateUpdated(slotId, callState, phoneNumber);
-    SUCCEED();
+    EXPECT_TRUE(schedTelephonyObserver_ != nullptr);
 #endif
 }
 
@@ -526,7 +526,7 @@ HWTEST_F(ObserverEventTest, connectionSubscriberEvent_001, testing::ext::TestSiz
     connectionSubscriber_->OnDlpAbilityClosed(data1);
     SUCCEED();
     connectionSubscriber_->OnServiceDied();
-    SUCCEED();
+    EXPECT_TRUE(connectionSubscriber_ != nullptr);
 }
 
 /**
@@ -564,7 +564,7 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level
     // test the interface of OnPreferredOutputDeviceUpdated
     std::vector<sptr<AudioStandard::AudioDeviceDescriptor>> descs;
     audioObserver_->OnPreferredOutputDeviceUpdated(descs);
-    SUCCEED();
+    EXPECT_TRUE(audioObserver_ != nullptr);
 #endif
 }
 
@@ -626,11 +626,11 @@ HWTEST_F(ObserverEventTest, downLoadUploadObserver_001, testing::ext::TestSize.L
     std::shared_ptr<DownLoadUploadObserver> downLoadUploadObserver_ =
         std::make_shared<DownLoadUploadObserver>();
     downLoadUploadObserver_->OnRunningTaskCountUpdate(1);
-    SUCCEED();
+    EXPECT_TRUE(downLoadUploadObserver_->isReportedScene_);
     downLoadUploadObserver_->OnRunningTaskCountUpdate(0);
-    SUCCEED();
+    EXPECT_FALSE(downLoadUploadObserver_->isReportedScene_);
     downLoadUploadObserver_->OnRunningTaskCountUpdate(-1);
-    SUCCEED();
+    EXPECT_FALSE(downLoadUploadObserver_->isReportedScene_);
     downLoadUploadObserver_ = nullptr;
 }
 #endif
@@ -651,7 +651,7 @@ HWTEST_F(ObserverEventTest, accountObserver_001, testing::ext::TestSize.Level1)
     accountObserver->OnAccountsChanged(201);
     SUCCEED();
     accountObserver->OnAccountsChanged(-1);
-    SUCCEED();
+    EXPECT_TRUE(accountObserver != nullptr);
     accountObserver = nullptr;
 }
 
@@ -709,7 +709,7 @@ HWTEST_F(ObserverEventTest, DisableDataShareObserver_001, testing::ext::TestSize
     if (instance) {
         instance->DisableDataShareObserver();
     }
-    SUCCEED();
+    EXPECT_TRUE(instance);
 }
 
 /**
@@ -726,7 +726,11 @@ HWTEST_F(ObserverEventTest, DisableAudioObserver_001, testing::ext::TestSize.Lev
         instance->InitAudioObserver();
         instance->DisableAudioObserver();
     }
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    EXPECT_EQ(instance->audioObserver_, nullptr);
+#else
     SUCCEED();
+#endif
 }
 
 /**
@@ -743,7 +747,11 @@ HWTEST_F(ObserverEventTest, DisableDeviceMovementObserver_001, testing::ext::Tes
         instance->InitDeviceMovementObserver();
         instance->DisableDeviceMovementObserver();
     }
+#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
+    EXPECT_EQ(instance->deviceMovementObserver_, nullptr);
+#else
     SUCCEED();
+#endif
 }
 
 /**
@@ -758,7 +766,7 @@ HWTEST_F(ObserverEventTest, DisableMMiEventObserver_001, testing::ext::TestSize.
     if (instance) {
         instance->DisableMMiEventObserver();
     }
-    SUCCEED();
+    EXPECT_EQ(instance->mmiEventObserver_, nullptr);
 }
 
 /**
@@ -775,7 +783,7 @@ HWTEST_F(ObserverEventTest, DisableMMiEventObserver_002, testing::ext::TestSize.
         instance->InitMMiEventObserver();
         instance->DisableMMiEventObserver();
     }
-    SUCCEED();
+    EXPECT_EQ(instance->mmiEventObserver_, nullptr);
 }
 
 /**
@@ -790,7 +798,7 @@ HWTEST_F(ObserverEventTest, DisableConnectionSubscriber_001, testing::ext::TestS
     if (instance) {
         instance->DisableConnectionSubscriber();
     }
-    SUCCEED();
+    EXPECT_EQ(instance->connectionSubscriber_, nullptr);
 }
 
 /**
@@ -806,7 +814,7 @@ HWTEST_F(ObserverEventTest, DisableAVSessionStateChangeListener_001, testing::ex
     if (instance) {
         instance->DisableAVSessionStateChangeListener();
     }
-    SUCCEED();
+    EXPECT_EQ(instance->avSessionStateListener_, nullptr);
 }
 #endif
 
@@ -823,7 +831,7 @@ HWTEST_F(ObserverEventTest, DisableDownloadUploadObserver_001, testing::ext::Tes
     if (instance) {
         instance->DisableDownloadUploadObserver();
     }
-    SUCCEED();
+    EXPECT_EQ(instance->downLoadUploadObserver_, nullptr);
 }
 
 /**
@@ -838,7 +846,7 @@ HWTEST_F(ObserverEventTest, InitDownloadUploadObserver_001, testing::ext::TestSi
     if (instance) {
         instance->InitDownloadUploadObserver();
     }
-    SUCCEED();
+    EXPECT_NE(instance->downLoadUploadObserver_, nullptr);
 }
 #endif
 
@@ -854,7 +862,11 @@ HWTEST_F(ObserverEventTest, DisableTelephonyObserver_001, testing::ext::TestSize
     if (instance) {
         instance->DisableTelephonyObserver();
     }
+#ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
+    EXPECT_EQ(instance->telephonyObserver_, nullptr);
+#else
     SUCCEED();
+#endif
 }
 
 /**
@@ -869,7 +881,7 @@ HWTEST_F(ObserverEventTest, DisableHiSysEventObserver_001, testing::ext::TestSiz
     if (instance) {
         instance->DisableHiSysEventObserver();
     }
-    SUCCEED();
+    EXPECT_EQ(instance->hiSysEventObserver_, nullptr);
 }
 
 /**
@@ -887,7 +899,7 @@ HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.
         instance->InitDisplayModeObserver();
         instance->DisableDisplayModeObserver();
     }
-    SUCCEED();
+    EXPECT_EQ(instance->foldDisplayModeObserver_, nullptr);
 }
 
 /**
@@ -899,6 +911,7 @@ HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.
 HWTEST_F(ObserverEventTest, GetAllMmiStatusData_001, testing::ext::TestSize.Level1)
 {
     auto instance = ObserverManager::GetInstance();
+    EXPECT_NE(instance, nullptr);
     if (instance) {
         instance->GetAllMmiStatusData();
     }
@@ -920,7 +933,7 @@ HWTEST_F(ObserverEventTest, AddItemToSysAbilityListener_001, testing::ext::TestS
         instance->AddItemToSysAbilityListener(DFX_SYS_EVENT_SERVICE_ABILITY_ID, systemAbilityManager);
         instance->AddItemToSysAbilityListener(-1, systemAbilityManager);
     }
-    SUCCEED();
+    EXPECT_FALSE(instance->sysAbilityListener_);
 }
 
 /**
@@ -933,6 +946,7 @@ HWTEST_F(ObserverEventTest, OnRemoveSystemAbility_001, testing::ext::TestSize.Le
 {
     std::string deviceId = "test";
     auto instance = ObserverManager::GetInstance();
+    EXPECT_NE(instance, nullptr);
     if (instance) {
         instance->InitSysAbilityListener();
         instance->sysAbilityListener_->OnAddSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, deviceId);
@@ -969,7 +983,7 @@ HWTEST_F(ObserverEventTest, InitAccountObserver_001, testing::ext::TestSize.Leve
     observerManager->InitAccountObserver();
     observerManager->DisableAccountObserver();
     observerManager->DisableAccountObserver();
-    SUCCEED();
+    EXPECT_NE(observerManager->accountObserver_, nullptr);
 }
 
 }
