@@ -84,16 +84,17 @@ protected:
 private:
     class ResSchedExeDeathRecipient : public IRemoteObject::DeathRecipient {
     public:
-        explicit ResSchedExeDeathRecipient(ResSchedExeClient &resSchedExeClient);
+        explicit ResSchedExeDeathRecipient(ResSchedExeClient& resSchedExeClient);
 
         ~ResSchedExeDeathRecipient();
 
-        void OnRemoteDied(const wptr<IRemoteObject> &object) override;
+        void OnRemoteDied(const wptr<IRemoteObject>& object) override;
 
     private:
-        ResSchedExeClient &resSchedExeClient_;
+        ResSchedExeClient& resSchedExeClient_;
     };
 
+    sptr<IResSchedExeService> GetProxy();
     int32_t TryConnect();
     int32_t SendRequestInner(bool isSync, uint32_t resType, int64_t value,
         const nlohmann::json& context, nlohmann::json& reply);

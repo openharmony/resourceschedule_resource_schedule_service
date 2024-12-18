@@ -65,7 +65,7 @@ public:
      *
      * @param impl RemoteObject.
      */
-    explicit ResSchedExeServiceProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IResSchedExeService>(impl) {}
+    explicit ResSchedExeServiceProxy(const sptr<IRemoteObject>& impl) : IRemoteProxy<IResSchedExeService>(impl) {}
 
     /**
      * @brief Destroy the ResSchedExeServiceProxy object
@@ -73,6 +73,7 @@ public:
     virtual ~ResSchedExeServiceProxy() {}
 
 private:
+    int32_t SendRequestToRemote(const int32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option);
     int32_t MakeUpParcel(MessageParcel& data, uint32_t resType, int64_t value, const nlohmann::json& context);
     int32_t SendDebugCommand(MessageOption& option);
 
