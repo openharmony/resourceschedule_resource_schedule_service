@@ -142,12 +142,12 @@ void ResSchedExeClient::StopRemoteObject()
     resSchedExe_ = nullptr;
 }
 
-ResSchedExeClient::ResSchedExeDeathRecipient::ResSchedExeDeathRecipient(ResSchedExeClient &resSchedExeClient)
+ResSchedExeClient::ResSchedExeDeathRecipient::ResSchedExeDeathRecipient(ResSchedExeClient& resSchedExeClient)
     : resSchedExeClient_(resSchedExeClient) {}
 
 ResSchedExeClient::ResSchedExeDeathRecipient::~ResSchedExeDeathRecipient() {}
 
-void ResSchedExeClient::ResSchedExeDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
+void ResSchedExeClient::ResSchedExeDeathRecipient::OnRemoteDied(const wptr<IRemoteObject>& remote)
 {
     resSchedExeClient_.StopRemoteObject();
 }
