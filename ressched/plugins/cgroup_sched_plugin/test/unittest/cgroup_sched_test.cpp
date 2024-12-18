@@ -1323,8 +1323,9 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
         (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
     EXPECT_TRUE(proc->continuousTaskFlag_ == 0);
 
-    cgroupEventHandler->HandleContinuousTaskUpdate(1000,
-        1234, {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, (int32_t)BackgroundTaskMgr::BackgroundMode::MULTI_DEVICE_CONNECTION}, abilityId);
+    cgroupEventHandler->HandleContinuousTaskUpdate(1000, 1234,
+        {(int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK,
+        (int32_t)BackgroundTaskMgr::BackgroundMode::MULTI_DEVICE_CONNECTION}, abilityId);
     EXPECT_TRUE(proc->continuousTaskFlag_ == 68);
     
     cgroupEventHandler->HandleContinuousTaskUpdate(1000, 1234,
