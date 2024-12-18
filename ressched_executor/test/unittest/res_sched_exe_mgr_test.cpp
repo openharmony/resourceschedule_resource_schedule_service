@@ -99,8 +99,9 @@ HWTEST_F(ResSchedExeMgrTest, SendRequestAsync001, Function | MediumTest | Level0
 {
     nlohmann::json context;
     context["message"] = "test";
+    ResSchedExeMgr::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT, 0, context);
+    EXPECT_TRUE(PluginMgr::GetInstance().configReader_);
     ResSchedExeMgr::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_DEBUG, 0, context);
-    SUCCEED();
 }
 
 /**
@@ -113,8 +114,8 @@ HWTEST_F(ResSchedExeMgrTest, KillProcess001, Function | MediumTest | Level0)
     int32_t uid = 5555;
     MockProcess(uid);
     int32_t pid = 65535;
-    ResSchedExeMgr::GetInstance().KillProcess(pid);
-    SUCCEED();
+    int32_t ret = ResSchedExeMgr::GetInstance().KillProcess(pid);
+    EXPECT_TRUE(ret <= ResErrCode::RSSEXE_NO_ERR);
 }
 
 /**
@@ -128,7 +129,7 @@ HWTEST_F(ResSchedExeMgrTest, InitPluginMgr001, TestSize.Level1)
     context["config"] = "test_config";
     context["switch"] = "test_switch";
     ResSchedExeMgr::GetInstance().InitPluginMgr(context);
-    SUCCEED();
+    EXPECT_TRUE(PluginMgr::GetInstance().configReader_);
 }
 
 /**
