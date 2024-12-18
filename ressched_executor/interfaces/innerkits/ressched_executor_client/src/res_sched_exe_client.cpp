@@ -93,7 +93,7 @@ void ResSchedExeClient::SendDebugCommand(bool isSync)
 
 sptr<IResSchedExeService> ResSchedExeClient::GetProxy()
 {
-    if (TryConnect() == ERR_OK) {
+    if (TryConnect() == ResErrCode::RSSEXE_NO_ERR) {
         std::lock_guard<std::mutex> lock(mutex_);
         return resSchedExe_;
     }
