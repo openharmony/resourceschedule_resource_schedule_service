@@ -415,7 +415,7 @@ HWTEST_F(ObserverEventTest, schedTelephonyObserverEvent_001, testing::ext::TestS
     int32_t callState = 0;
     std::u16string phoneNumber;
     schedTelephonyObserver_->OnCallStateUpdated(slotId, callState, phoneNumber);
-    SUCCEED();
+    EXPECT_TRUE(schedTelephonyObserver_ != nullptr);
 #endif
 }
 
@@ -444,7 +444,7 @@ HWTEST_F(ObserverEventTest, connectionSubscriberEvent_001, testing::ext::TestSiz
     connectionSubscriber_->OnDlpAbilityClosed(data1);
     SUCCEED();
     connectionSubscriber_->OnServiceDied();
-    SUCCEED();
+    EXPECT_TRUE(connectionSubscriber_ != nullptr);
 }
 
 /**
@@ -482,7 +482,7 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level
     // test the interface of OnPreferredOutputDeviceUpdated
     std::vector<std::shared_ptr<AudioStandard::AudioDeviceDescriptor>> descs;
     audioObserver_->OnPreferredOutputDeviceUpdated(descs);
-    SUCCEED();
+    EXPECT_TRUE(audioObserver_ != nullptr);
 #endif
 }
 
@@ -568,7 +568,7 @@ HWTEST_F(ObserverEventTest, accountObserver_001, testing::ext::TestSize.Level1)
     accountObserver->OnAccountsChanged(201);
     SUCCEED();
     accountObserver->OnAccountsChanged(-1);
-    SUCCEED();
+    EXPECT_TRUE(accountObserver != nullptr);
     accountObserver = nullptr;
 }
 
@@ -714,6 +714,8 @@ HWTEST_F(ObserverEventTest, DisableConnectionSubscriber_001, testing::ext::TestS
     auto instance = ObserverManager::GetInstance();
     if (instance) {
         instance->DisableConnectionSubscriber();
+        instance->InitConnectionSubscriber();
+        instance->DisableConnectionSubscriber();
     }
     EXPECT_EQ(instance->connectionSubscriber_, nullptr);
 }
@@ -798,7 +800,23 @@ HWTEST_F(ObserverEventTest, DisableHiSysEventObserver_001, testing::ext::TestSiz
     if (instance) {
         instance->DisableHiSysEventObserver();
     }
-    EXPECT_EQ(instance->hiSysEventObserver_, nullptr);;
+    EXPECT_EQ(instance->hiSysEventObserver_, nullptr);
+}
+
+/**
+ * @tc.name: DisableDisplayModeObserver_001
+ * @tc.desc: test account observer DisableDisplayModeObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, DisableDisplayModeObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->foldDisplayModeObserver_ = nullptr;
+        instance->DisableDisplayModeObserver();
+    }
+    EXPECT_EQ(instance->foldDisplayModeObserver_, nullptr);
 }
 
 /**
@@ -816,7 +834,7 @@ HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.
         instance->InitDisplayModeObserver();
         instance->DisableDisplayModeObserver();
     }
-    EXPECT_EQ(instance->foldDisplayModeObserver_, nullptr);;
+    EXPECT_EQ(instance->foldDisplayModeObserver_, nullptr);
 }
 
 /**
@@ -828,6 +846,7 @@ HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.
 HWTEST_F(ObserverEventTest, GetAllMmiStatusData_001, testing::ext::TestSize.Level1)
 {
     auto instance = ObserverManager::GetInstance();
+    EXPECT_NE(instance, nullptr);
     if (instance) {
         instance->GetAllMmiStatusData();
     }
@@ -862,6 +881,7 @@ HWTEST_F(ObserverEventTest, OnRemoveSystemAbility_001, testing::ext::TestSize.Le
 {
     std::string deviceId = "test";
     auto instance = ObserverManager::GetInstance();
+    EXPECT_NE(instance, nullptr);
     if (instance) {
         instance->InitSysAbilityListener();
         instance->sysAbilityListener_->OnAddSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, deviceId);
