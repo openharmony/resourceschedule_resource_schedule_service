@@ -192,7 +192,9 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_010, Function 
 HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_AdjustProcess_001, Function | MediumTest | Level1)
 {
     auto application = new Application(20150011);
+    EXPECT_TRUE(application != nullptr);
     auto pr = new ProcessRecord(20150011, 9050);
+    EXPECT_TRUE(pr != nullptr);
     CgroupAdjuster::GetInstance().AdjustForkProcessGroup(*application, *pr);
     SUCCEED();
 }
