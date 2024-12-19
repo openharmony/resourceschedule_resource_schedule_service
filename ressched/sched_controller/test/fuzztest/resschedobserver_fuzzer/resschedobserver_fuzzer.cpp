@@ -69,12 +69,12 @@ namespace {
     static const int32_t DATA_LENGTH = 10;
     const int32_t INDENT = -1;
 }
-    const uint8_t* g_data = nullptr;
+    const uint8_t* DATA = nullptr;
     size_t g_size = 0;
     size_t g_pos;
 
 /*
-* describe: get data from outside untrusted data(g_data) which size is according to sizeof(T)
+* describe: get data from outside untrusted data(DATA) which size is according to sizeof(T)
 * tips: only support basic type
 */
     template<class T>
@@ -82,10 +82,10 @@ namespace {
     {
         T object {};
         size_t objectSize = sizeof(object);
-        if (g_data == nullptr || objectSize > g_size - g_pos) {
+        if (DATA == nullptr || objectSize > g_size - g_pos) {
             return object;
         }
-        errno_t ret = memcpy_s(&object, objectSize, g_data + g_pos, objectSize);
+        errno_t ret = memcpy_s(&object, objectSize, DATA + g_pos, objectSize);
         if (ret != EOK) {
             return {};
         }
@@ -94,7 +94,7 @@ namespace {
     }
 
 /*
-* get a string from g_data
+* get a string from DATA
 */
     std::u16string GetU16StringFromData(int strlen)
     {
@@ -115,7 +115,7 @@ namespace {
     }
 
 /*
-* get a string from g_data
+* get a string from DATA
 */
     std::string GetStringFromData(int strlen)
     {
@@ -147,7 +147,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -176,7 +176,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -203,7 +203,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -228,7 +228,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -254,7 +254,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -278,7 +278,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
         auto instance = ObserverManager::GetInstance();
@@ -299,7 +299,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -322,7 +322,7 @@ namespace {
             return false;
         }
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
         std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
@@ -341,7 +341,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -366,7 +366,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -398,7 +398,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -429,7 +429,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -450,7 +450,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -478,7 +478,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -510,7 +510,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -531,7 +531,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -559,7 +559,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -586,7 +586,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -595,7 +595,7 @@ namespace {
         MessageParcel fuzzData;
 
         fuzzData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
-        fuzzData.WriteBuffer(g_data + g_pos, g_size - g_pos);
+        fuzzData.WriteBuffer(DATA + g_pos, g_size - g_pos);
         fuzzData.RewindRead(0);
         MessageParcel reply;
         MessageOption option;
@@ -612,7 +612,7 @@ namespace {
         }
 
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 
@@ -620,7 +620,7 @@ namespace {
         MessageParcel fuzzData;
 
         fuzzData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
-        fuzzData.WriteBuffer(g_data + g_pos, g_size - g_pos);
+        fuzzData.WriteBuffer(DATA + g_pos, g_size - g_pos);
         fuzzData.RewindRead(0);
         auto deviceMovementObserver = std::make_unique<DeviceMovementObserver>();
         deviceMovementObserver->OnReceiveDeviceMovementEvent(fuzzData);
@@ -639,7 +639,7 @@ namespace {
             return false;
         }
         // initialize
-        g_data = data;
+        DATA = data;
         g_size = size;
         g_pos = 0;
 

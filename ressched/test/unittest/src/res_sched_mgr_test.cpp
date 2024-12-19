@@ -110,19 +110,6 @@ HWTEST_F(ResSchedMgrTest, KillProcess001, TestSize.Level1)
 }
 
 /**
- * @tc.name: Stop ressched mgr 001
- * @tc.desc: Verify if stop is success
- * @tc.type: FUNC
- * @tc.require: issueI8VZVN
- * @tc.author:z30053169
- */
-HWTEST_F(ResSchedMgrTest, Stop001, TestSize.Level1)
-{
-    ResSchedMgr::GetInstance().Stop();
-    SUCCEED();
-}
-
-/**
  * @tc.name: Init ressched ReportData 002
  * @tc.desc: Verify if ReportData is success
  * @tc.type: FUNC

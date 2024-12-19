@@ -142,9 +142,6 @@ namespace {
     constexpr int32_t MIN_LEN = 4;
     std::mutex mutexLock;
     sptr<IRemoteObject> remoteObj;
-    const uint8_t* g_data = nullptr;
-    size_t g_size = 0;
-    size_t g_pos;
 
     bool DoInit()
     {
