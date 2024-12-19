@@ -236,6 +236,7 @@ enum ShowRemoteAnimationStatus : int64_t {
 enum LoadPageType : int64_t {
     LOAD_PAGE_START = 0,
     LOAD_PAGE_COMPLETE = 1,
+    LOAD_PAGE_NO_REQUEST_FRAME = 2,
 };
 
 /**
