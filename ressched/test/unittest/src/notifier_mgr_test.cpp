@@ -346,6 +346,7 @@ HWTEST_F(NotifierMgrTest, Dump002, Function | MediumTest | Level0)
 HWTEST_F(NotifierMgrTest, Deinit001, Function | MediumTest | Level0)
 {
     NotifierMgr::GetInstance().Init();
+    EXPECT_TRUE(NotifierMgr::GetInstance().initialized_);
     NotifierMgr::GetInstance().Deinit();
 }
 
@@ -388,6 +389,7 @@ HWTEST_F(NotifierMgrTest, OnDeviceLevelChanged001, Function | MediumTest | Level
 {
     sptr<IRemoteObject> notifier = nullptr;
     NotifierMgr::GetInstance().OnDeviceLevelChanged(0, 2);
+    EXPECT_EQ(NotifierMgr::GetInstance().systemloadLevel_, 2);
 }
 
 /**

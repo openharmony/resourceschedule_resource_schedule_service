@@ -93,7 +93,7 @@ HWTEST_F(PluginMgrTest, Init002, TestSize.Level1)
 {
     PluginMgr::GetInstance().pluginSwitch_ = nullptr;
     pluginMgr_->Init();
-    SUCCEED();
+    EXPECT_TRUE(PluginMgr::GetInstance().pluginSwitch_ != nullptr);
 }
 
 /**
@@ -443,7 +443,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_002, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleLoadPage(resData);
     /* DeInit */
     SocPerfPlugin::GetInstance().Disable();
-    SUCCEED();
+    EXPECT_TRUE(SocPerfPlugin::GetInstance().handle_ == nullptr);
 }
 
 /*
@@ -467,7 +467,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_003, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleRemoteAnimation(resData);
     /* DeInit */
     SocPerfPlugin::GetInstance().Disable();
-    SUCCEED();
+    EXPECT_TRUE(SocPerfPlugin::GetInstance().handle_ == nullptr);
 }
 
 /*
@@ -485,7 +485,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_004, Function | MediumTes
     SocPerfPlugin::GetInstance().InitFeatureSwitch("test");
     /* DeInit */
     SocPerfPlugin::GetInstance().Disable();
-    SUCCEED();
+    EXPECT_TRUE(SocPerfPlugin::GetInstance().handle_ == nullptr);
 }
 
 /*
@@ -687,7 +687,7 @@ HWTEST_F(PluginMgrTest, ParseConfigReader001, TestSize.Level0)
     pluginMgr_->Init();
     auto configStrs = pluginMgr_->GetConfigReaderStr();
     pluginMgr_->ParseConfigReader(configStrs);
-    SUCCEED();
+    EXPECT_TRUE(pluginMgr_->configReader_ != nullptr);
 }
 
 /**
@@ -700,7 +700,7 @@ HWTEST_F(PluginMgrTest, ParsePluginSwitchr001, TestSize.Level0)
     pluginMgr_->Init();
     auto switchStrs = pluginMgr_->GetPluginSwitchStr();
     pluginMgr_->ParsePluginSwitch(switchStrs);
-    SUCCEED();
+    EXPECT_TRUE(pluginMgr_->configReader_ != nullptr);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

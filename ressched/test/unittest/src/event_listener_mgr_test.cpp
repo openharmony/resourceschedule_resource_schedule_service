@@ -284,6 +284,7 @@ HWTEST_F(EventListenerMgrTest, Dump002, Function | MediumTest | Level0)
 HWTEST_F(EventListenerMgrTest, Deinit001, Function | MediumTest | Level0)
 {
     EventListenerMgr::GetInstance().Init();
+    EXPECT_TRUE(EventListenerMgr::GetInstance().initialized_);
     EventListenerMgr::GetInstance().Deinit();
 }
 
