@@ -88,7 +88,7 @@ int32_t ResSchedExeServiceProxy::KillProcess(pid_t pid)
 }
 
 int32_t ResSchedExeServiceProxy::SendRequestToRemote(const int32_t code,
-    MessageParcel &data, MessageParcel &reply, MessageOption& option)
+    MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     sptr<IRemoteObject> remote = Remote();
     if (remote == nullptr) {

@@ -84,14 +84,14 @@ protected:
 private:
     class ResSchedExeDeathRecipient : public IRemoteObject::DeathRecipient {
     public:
-        explicit ResSchedExeDeathRecipient(ResSchedExeClient &resSchedExeClient);
+        explicit ResSchedExeDeathRecipient(ResSchedExeClient& resSchedExeClient);
 
         ~ResSchedExeDeathRecipient();
 
-        void OnRemoteDied(const wptr<IRemoteObject> &object) override;
+        void OnRemoteDied(const wptr<IRemoteObject>& object) override;
 
     private:
-        ResSchedExeClient &resSchedExeClient_;
+        ResSchedExeClient& resSchedExeClient_;
     };
 
     sptr<IResSchedExeService> GetProxy();

@@ -245,7 +245,7 @@ HWTEST_F(ResSchedExeServiceTest, OnStart002, Function | MediumTest | Level0)
 HWTEST_F(ResSchedExeServiceTest, OnStop001, Function | MediumTest | Level0)
 {
     resSchedExeServiceAbility_->OnStop();
-    SUCCEED();
+    EXPECT_TRUE(resSchedExeServiceAbility_->service_ == nullptr);
 }
 
 class TestResSchedExeServiceStub : public ResSchedExeServiceStub {

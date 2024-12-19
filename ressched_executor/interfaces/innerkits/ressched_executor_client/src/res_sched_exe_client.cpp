@@ -93,7 +93,7 @@ void ResSchedExeClient::SendDebugCommand(bool isSync)
 
 sptr<IResSchedExeService> ResSchedExeClient::GetProxy()
 {
-    if (TryConnect() == ERR_OK) {
+    if (TryConnect() == ResErrCode::RSSEXE_NO_ERR) {
         std::lock_guard<std::mutex> lock(mutex_);
         return resSchedExe_;
     }
@@ -142,12 +142,12 @@ void ResSchedExeClient::StopRemoteObject()
     resSchedExe_ = nullptr;
 }
 
-ResSchedExeClient::ResSchedExeDeathRecipient::ResSchedExeDeathRecipient(ResSchedExeClient &resSchedExeClient)
+ResSchedExeClient::ResSchedExeDeathRecipient::ResSchedExeDeathRecipient(ResSchedExeClient& resSchedExeClient)
     : resSchedExeClient_(resSchedExeClient) {}
 
 ResSchedExeClient::ResSchedExeDeathRecipient::~ResSchedExeDeathRecipient() {}
 
-void ResSchedExeClient::ResSchedExeDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
+void ResSchedExeClient::ResSchedExeDeathRecipient::OnRemoteDied(const wptr<IRemoteObject>& remote)
 {
     resSchedExeClient_.StopRemoteObject();
 }
