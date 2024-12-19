@@ -823,6 +823,7 @@ HWTEST_F(ResSchedServiceTest, PrintLimitLog001, Function | MediumTest | Level0)
     int32_t uid = 0;
     resSchedServiceStub_->isPrintLimitLog_.store(true);
     resSchedServiceStub_->PrintLimitLog(uid);
+    EXPECT_EQ(resSchedServiceStub_->isPrintLimitLog_.load(), false);
 }
 
 /**
@@ -842,6 +843,7 @@ HWTEST_F(ResSchedServiceTest, ReportBigData001, Function | MediumTest | Level0)
     resSchedServiceStub_->ReportBigData();
     resSchedServiceStub_->nextReportBigDataTime_ = ResCommonUtil::GetNowMillTime();
     resSchedServiceStub_->ReportBigData();
+    EXPECT_EQ(resSchedServiceStub_->isReportBigData_.load(), false);
 }
 
 /**
@@ -859,6 +861,7 @@ HWTEST_F(ResSchedServiceTest, InreaseBigDataCount001, Function | MediumTest | Le
     resSchedServiceStub_->InreaseBigDataCount();
     resSchedServiceStub_->isReportBigData_.store(true);
     resSchedServiceStub_->InreaseBigDataCount();
+    EXPECT_EQ(resSchedServiceStub_->isReportBigData_.load(), true);
 }
 
 } // namespace ResourceSchedule
