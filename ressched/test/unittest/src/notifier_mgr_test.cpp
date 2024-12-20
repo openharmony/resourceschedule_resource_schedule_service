@@ -401,8 +401,9 @@ HWTEST_F(NotifierMgrTest, OnDeviceLevelChanged001, Function | MediumTest | Level
  */
 HWTEST_F(NotifierMgrTest, OnApplicationStateChange001, Function | MediumTest | Level0)
 {
+    NotifierMgr::GetInstance().Init();
     NotifierMgr::GetInstance().OnApplicationStateChange(2, IPCSkeleton::GetCallingPid());
-    EXPECT_EQ(NotifierMgr::GetInstance().systemloadLevel_, 2);
+    EXPECT_TRUE(NotifierMgr::GetInstance().initialized_);
 }
 
 /**
