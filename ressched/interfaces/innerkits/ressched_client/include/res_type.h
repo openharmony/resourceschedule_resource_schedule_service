@@ -235,8 +235,6 @@ enum : uint32_t {
     RES_TYPE_ONLY_PERF_APP_COLD_START = 104,
     // report scene rotation, value 0 start, value 1 stop
     RES_TYPE_SCENE_ROTATION = 105,
-    // report event vsync tid, value tid, payload pid, tid, uid.
-    RES_TYPE_REPORT_VSYNC_TID = 106,
     // report cloud config update
     RES_TYPE_CLOUD_CONFIG_UPDATE = 107,
     // system ability status change
@@ -259,6 +257,8 @@ enum : uint32_t {
     RES_TYPE_GAME_INFO_NOTIFY = 116,
     // report application stopped
     RES_TYPE_APP_STOPPED = 118,
+    // report audio session enter standby
+    RES_TYPE_AUDIO_RENDERER_STANDBY = 119,
     // game boost event
     RES_TYPE_APP_GAME_BOOST_EVENT = 120,
     // last async resType
