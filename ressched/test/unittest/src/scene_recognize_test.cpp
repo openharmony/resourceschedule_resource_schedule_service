@@ -262,13 +262,14 @@ HWTEST_F(SceneRecognizeTest, HandleSendFrameEvent_001, Function | MediumTest | L
 HWTEST_F(SceneRecognizeTest, HandleClickEvent_001, Function | MediumTest | Level0)
 {
     auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    std::string testPid = "2000";
+    slideRecognizer->slidePid_ = testPid;
     int64_t value = ResType::SlideEventStatus::SLIDE_EVENT_ON;
     nlohmann::json payload;
     g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
     slideRecognizer->HandleClickEvent(value, payload);
     g_slideState = SlideRecognizeStat::SLIDE_NORMAL;
     slideRecognizer->HandleClickEvent(value, payload);
-    std::string testPid = "2000";
     payload["clientPid"] = testPid;
     payload["up_speed"] = std::to_string(slideRecognizer->listFlingTimeOutTime_ + 1);
     slideRecognizer->HandleClickEvent(value, payload);
