@@ -219,7 +219,9 @@ public:
     }
 private:
     void ReloadApplication();
+#ifdef SUPPORT_CHILD_PROCESS
     void ReloadChildProcess();
+#endif // SUPPORT_CHILD_PROCESS
 private:
     std::map<int32_t, std::shared_ptr<Application>> uidsMap_;
     int32_t systemLoadLevel_ = -1;

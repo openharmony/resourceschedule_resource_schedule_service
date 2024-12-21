@@ -77,6 +77,10 @@ ohos_shared_library("cgroup_sched") {
     defines += [ "POWER_MANAGER_ENABLE" ]
   }
 
+  if (ressched_with_child_process) {
+    defines += [ "SUPPORT_CHILD_PROCESS" ]
+  }
+
   sanitize = {
     cfi = true
     cfi_cross_dso = true

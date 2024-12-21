@@ -302,6 +302,7 @@ void Supervisor::ReloadApplication()
     }
 }
 
+#ifdef SUPPORT_CHILD_PROCESS
 void Supervisor::ReloadChildProcess()
 {
     if (appManager_ == nullptr) {
@@ -322,14 +323,17 @@ void Supervisor::ReloadChildProcess()
             process.uid, process.hostUid, process.hostPid);
     }
 }
+#endif // SUPPORT_CHILD_PROCESS
 
 void Supervisor::InitSuperVisorContent()
 {
     ConnectAppManagerService();
     /* reload application info */
     ReloadApplication();
+#ifdef SUPPORT_CHILD_PROCESS
     /* reload child process */
     ReloadChildProcess();
+#endif // SUPPORT_CHILD_PROCESS
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -11,8 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cgroup_sched_path =
-    "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin"
+cgroup_sched_path = "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin"
 
 cgroup_sched_framework = "${cgroup_sched_path}/framework"
 
@@ -39,6 +38,7 @@ ressched_services_executor =
 declare_args() {
   cgroup_ressched_power_manager_enable = true
   has_bg_task_mgr = false
+  ressched_with_child_process = true
 
   if (defined(global_parts_info) &&
       defined(global_parts_info.resourceschedule_background_task_mgr)) {
