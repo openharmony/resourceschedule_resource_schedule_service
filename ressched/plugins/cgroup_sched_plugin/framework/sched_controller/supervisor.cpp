@@ -25,23 +25,23 @@ namespace OHOS {
 namespace ResourceSchedule {
 using OHOS::AppExecFwk::AbilityType;
 
-std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfoNonNull(uintptr_t token)
+std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfoNonNull(int32_t recordId)
 {
-    auto a = std::find_if(abilities_.begin(), abilities_.end(), [ token ] (const auto& a) {
-        return a->token_ == token;
+    auto a = std::find_if(abilities_.begin(), abilities_.end(), [ recordId ] (const auto& a) {
+        return a->recordId_ == recordId;
     });
     if (a != abilities_.end()) {
         return *a;
     }
-    std::shared_ptr<AbilityInfo> abi = std::make_shared<AbilityInfo>(token);
+    std::shared_ptr<AbilityInfo> abi = std::make_shared<AbilityInfo>(recordId);
     abilities_.push_back(abi);
     return abi;
 }
 
-std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfo(uintptr_t token)
+std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfo(int32_t recordId)
 {
-    auto a = std::find_if(abilities_.begin(), abilities_.end(), [ token ] (const auto& a) {
-        return a->token_ == token;
+    auto a = std::find_if(abilities_.begin(), abilities_.end(), [ recordId ] (const auto& a) {
+        return a->recordId_ == recordId;
     });
     if (a != abilities_.end()) {
         return *a;
@@ -62,20 +62,20 @@ std::shared_ptr<WindowInfo> ProcessRecord::GetWindowInfoNonNull(uint32_t windowI
     return win;
 }
 
-void ProcessRecord::RemoveAbilityByToken(uintptr_t token)
+void ProcessRecord::RemoveAbilityByRecordId(int32_t recordId)
 {
     for (auto iter = abilities_.begin(); iter != abilities_.end(); ++iter) {
-        if ((*iter)->token_ == token) {
+        if ((*iter)->recordId_ == recordId) {
             abilities_.erase(iter);
             break;
         }
     }
 }
 
-bool ProcessRecord::HasAbility(uintptr_t token) const
+bool ProcessRecord::HasAbility(int32_t recordId) const
 {
-    return std::any_of(abilities_.begin(), abilities_.end(), [ token ] (const auto& abi) {
-        return abi->token_ == token;
+    return std::any_of(abilities_.begin(), abilities_.end(), [ recordId ] (const auto& abi) {
+        return abi->recordId_ == recordId;
     });
 }
 
@@ -149,11 +149,11 @@ std::shared_ptr<ProcessRecord> Application::GetProcessRecordNonNull(pid_t pid)
     return pr;
 }
 
-std::shared_ptr<ProcessRecord> Application::FindProcessRecordByToken(uintptr_t token)
+std::shared_ptr<ProcessRecord> Application::FindProcessRecordByRecordId(int32_t recordId)
 {
     for (auto iter = pidsMap_.begin(); iter != pidsMap_.end(); iter++) {
         auto pr = iter->second;
-        if (pr->HasAbility(token)) {
+        if (pr->HasAbility(recordId)) {
             return pr;
         }
     }
@@ -236,13 +236,13 @@ void Supervisor::RemoveApplication(int32_t uid)
     }
 }
 
-void Supervisor::SearchAbilityToken(std::shared_ptr<Application> &application,
-    std::shared_ptr<ProcessRecord> &procRecord, uintptr_t token)
+void Supervisor::SearchAbilityRecordId(std::shared_ptr<Application> &application,
+    std::shared_ptr<ProcessRecord> &procRecord, int32_t recordId)
 {
     std::shared_ptr<ProcessRecord> pr = nullptr;
     for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++) {
         auto app = iter->second;
-        pr = app->FindProcessRecordByToken(token);
+        pr = app->FindProcessRecordByRecordId(recordId);
         if (pr) {
             application = app;
             procRecord = pr;

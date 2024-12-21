@@ -83,12 +83,12 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         auto uid = abilityStateData.uid;
         auto pid = abilityStateData.pid;
         auto abilityName = abilityStateData.abilityName;
-        auto token = reinterpret_cast<uintptr_t>(abilityStateData.token.GetRefPtr());
+        auto recordId = abilityStateData.abilityRecordId;
         auto abilityType = abilityStateData.abilityType;
 
-        cgHandler->PostTask([cgHandler, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName, abilityName, recordId, abilityState, abilityType] {
             cgHandler->HandleAbilityStateChanged(uid, pid, bundleName, abilityName,
-                token, abilityState, abilityType);
+                recordId, abilityState, abilityType);
         });
     }
 
@@ -112,10 +112,12 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
     }
 
     // if current is uiExtension, goto onAbilityStateChanged and report
-    if (IsUIExtensionAbilityStateChanged(abilityStateData)) {
+    if (IsUIExtensionAbilityStateChanged(abilityStateData))
+    {
         CGS_LOGD("UIExtensionAbility Changed, extensionType: %{public}d, bundleName: %{public}s,"
-            " abilityState: %{public}d, processType: %{public}d", abilityStateData.extensionAbilityType,
-            abilityStateData.bundleName.c_str(), abilityStateData.abilityState, abilityStateData.processType);
+            " abilityRecordId: %{public}d, abilityState: %{public}d, processType: %{public}d",
+            abilityStateData.extensionAbilityType,abilityStateData.bundleName.c_str(), abilityStateData.abilityRecordId,
+            abilityStateData.abilityState, abilityStateData.processType);
         OnAbilityStateChanged(abilityStateData);
         return;
     }
@@ -126,13 +128,13 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
         auto pid = abilityStateData.pid;
         auto bundleName = abilityStateData.bundleName;
         auto abilityName = abilityStateData.abilityName;
-        auto token = reinterpret_cast<uintptr_t>(abilityStateData.token.GetRefPtr());
+        auto recordId = abilityStateData.abilityRecordId;
         auto abilityState = abilityStateData.abilityState;
         auto abilityType = abilityStateData.abilityType;
 
-        cgHandler->PostTask([cgHandler, uid, pid, bundleName, abilityName, token, abilityState, abilityType] {
+        cgHandler->PostTask([cgHandler, uid, pid, bundleName, abilityName, recordId, abilityState, abilityType] {
             cgHandler->HandleExtensionStateChanged(uid, pid, bundleName, abilityName,
-                token, abilityState, abilityType);
+                recordId, abilityState, abilityType);
         });
     }
 

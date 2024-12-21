@@ -50,10 +50,7 @@ class AbilityInfo;
 class WindowInfo {
 public:
     explicit WindowInfo(int32_t windowId) : windowId_(windowId) {}
-    ~WindowInfo()
-    {
-        ability_ = nullptr;
-    }
+    ~WindowInfo() {}
 
     uint32_t windowId_;
     uint32_t visibilityState_ = 2;
@@ -62,20 +59,19 @@ public:
     bool drawingContentState_ = false;
     int32_t windowType_ = 0;
     uint64_t displayId_ = 0;
-    std::shared_ptr<AbilityInfo> ability_ = nullptr;
     // webview app corresponding with top tab page in this window
     uid_t topWebviewRenderUid_ = 0;
 };
 
 class AbilityInfo {
 public:
-    AbilityInfo(uintptr_t token) : token_(token) {}
+    AbilityInfo(int32_t recordId) : recordId_(recordId) {}
     ~AbilityInfo() {}
 
     int32_t state_ = -1; // normal ability state
     int32_t estate_ = -1; // extension state
     int32_t type_ = -1; // ability type
-    uintptr_t token_ = 0;
+    int32_t recordId_ = -1;
     std::string name_;
 };
 
@@ -88,11 +84,11 @@ public:
         windows_.clear();
     };
 
-    std::shared_ptr<AbilityInfo> GetAbilityInfoNonNull(uintptr_t token);
-    std::shared_ptr<AbilityInfo> GetAbilityInfo(uintptr_t token);
+    std::shared_ptr<AbilityInfo> GetAbilityInfoNonNull(int32_t recordId);
+    std::shared_ptr<AbilityInfo> GetAbilityInfo(int32_t recordId);
     std::shared_ptr<WindowInfo> GetWindowInfoNonNull(uint32_t windowId);
-    void RemoveAbilityByToken(uintptr_t token);
-    bool HasAbility(uintptr_t token) const;
+    void RemoveAbilityByRecordId(int32_t recordId);
+    bool HasAbility(int32_t recordId) const;
     bool HasServiceExtension() const;
     bool IsVisible() const;
     std::set<int32_t> GetKeyTidSetByRole(int64_t role);
@@ -158,7 +154,7 @@ public:
     void RemoveProcessRecord(pid_t pid);
     std::shared_ptr<ProcessRecord> GetProcessRecord(pid_t pid);
     std::shared_ptr<ProcessRecord> GetProcessRecordNonNull(pid_t pid);
-    std::shared_ptr<ProcessRecord> FindProcessRecordByToken(uintptr_t token);
+    std::shared_ptr<ProcessRecord> FindProcessRecordByRecordId(int32_t recordId);
     std::shared_ptr<ProcessRecord> FindProcessRecordByWindowId(uint32_t windowId);
     void SetName(const std::string& name);
     void AddHostProcess(int32_t hostPid);
@@ -199,8 +195,8 @@ public:
     std::shared_ptr<Application> GetAppRecordNonNull(int32_t uid);
     std::shared_ptr<ProcessRecord> FindProcessRecord(pid_t pid);
     void RemoveApplication(int32_t uid);
-    void SearchAbilityToken(std::shared_ptr<Application> &app, std::shared_ptr<ProcessRecord> &procRecord,
-        uintptr_t token);
+    void SearchAbilityRecordId(std::shared_ptr<Application> &app, std::shared_ptr<ProcessRecord> &procRecord,
+        int32_t recordId);
     void SearchWindowId(std::shared_ptr<Application> &application, std::shared_ptr<ProcessRecord> &procRecord,
         uint32_t windowId);
     void SetSystemLoadLevelState(int32_t level);

@@ -39,9 +39,9 @@ public:
     void HandleApplicationStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
     void HandleProcessStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
     void HandleAbilityStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
-        const std::string& abilityName, uintptr_t token, int32_t abilityState, int32_t abilityType);
+        const std::string& abilityName, int32_t recordId, int32_t abilityState, int32_t abilityType);
     void HandleExtensionStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
-        const std::string& abilityName, uintptr_t token, int32_t extensionState, int32_t abilityType);
+        const std::string& abilityName, int32_t recordId, int32_t extensionState, int32_t abilityType);
     void HandleProcessCreated(const ProcessData &processData);
     void HandleProcessDied(uid_t uid, pid_t pid, const std::string& bundleName);
     void HandleTransientTaskStart(uid_t uid, pid_t pid, const std::string& packageName);
@@ -49,10 +49,10 @@ public:
     void HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId, int32_t abilityId);
     void HandleContinuousTaskUpdate(
         uid_t uid, pid_t pid, const std::vector<uint32_t>& typeIds, int32_t abilityId);
-    void HandleFocusedWindow(uint32_t windowId, uintptr_t abilityToken,
-        WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
-    void HandleUnfocusedWindow(uint32_t windowId, uintptr_t abilityToken,
-        WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid);
+    void HandleFocusedWindow(uint32_t windowId, WindowType windowType, uint64_t displayId,
+        int32_t pid, int32_t uid);
+    void HandleUnfocusedWindow(uint32_t windowId, WindowType windowType, uint64_t displayId,
+        int32_t pid, int32_t uid);
     void HandleWindowVisibilityChanged(uint32_t windowId, uint32_t visibilityState,
         WindowType windowType, int32_t pid, int32_t uid);
     void HandleDrawingContentChangeWindow(uint32_t windowId, WindowType windowType,
