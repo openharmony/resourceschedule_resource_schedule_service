@@ -950,17 +950,16 @@ namespace ResourceSchedule {
         // getdata
         int32_t uid = GetData<int32_t>();
         int32_t pid = GetData<int32_t>();
-        uintptr_t token = GetData<uintptr_t>();
         uint32_t windowId = GetData<int32_t>();
         uint64_t displayId = GetData<uint64_t>();
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
         
         cgroupEventHandler->HandleUnfocusedWindow(
-            windowId, token, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
+            windowId, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
         cgroupEventHandler->SetSupervisor(g_supervisor);
         cgroupEventHandler->HandleUnfocusedWindow(
-            windowId, token, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
+            windowId, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
 
         return true;
     }
@@ -979,7 +978,6 @@ namespace ResourceSchedule {
         // getdata
         int32_t uid = GetData<int32_t>();
         int32_t pid = GetData<int32_t>();
-        uintptr_t token = GetData<uintptr_t>();
         uint32_t windowId = GetData<int32_t>();
         uint64_t displayId = GetData<uint64_t>();
         auto cgroupEventHandler =
@@ -987,7 +985,7 @@ namespace ResourceSchedule {
         cgroupEventHandler->SetSupervisor(g_supervisor);
 
         cgroupEventHandler->HandleFocusedWindow(
-            windowId, token, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
+            windowId, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
 
         return true;
     }
@@ -1060,17 +1058,17 @@ namespace ResourceSchedule {
         pid_t pid = GetData<pid_t>();
         std::string bundleName(std::to_string(*data));
         std::string abilityName(std::to_string(*data));
-        uintptr_t token = GetData<uintptr_t>();
+        int32_t recordId = GetData<int32_t>();
         int32_t abilityState = GetData<int32_t>();
         int32_t abilityType = GetData<int32_t>();
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleAbilityStateChanged(
-            uid, pid, bundleName, abilityName, token, abilityState, abilityType);
+            uid, pid, bundleName, abilityName, recordId, abilityState, abilityType);
         cgroupEventHandler->SetSupervisor(g_supervisor);
         cgroupEventHandler->HandleAbilityStateChanged(
-            uid, pid, bundleName, abilityName, token, abilityState, abilityType);
+            uid, pid, bundleName, abilityName, recordId, abilityState, abilityType);
 
         return true;
     }
@@ -1091,17 +1089,17 @@ namespace ResourceSchedule {
         pid_t pid = GetData<pid_t>();
         std::string bundleName(std::to_string(*data));
         std::string abilityName(std::to_string(*data));
-        uintptr_t token = GetData<uintptr_t>();
+        int32_t recordId = GetData<int32_t>();
         int32_t extensionState = GetData<int32_t>();
         int32_t abilityType = GetData<int32_t>();
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->HandleExtensionStateChanged(
-            uid, pid, bundleName, abilityName, token, extensionState, abilityType);
+            uid, pid, bundleName, abilityName, recordId, extensionState, abilityType);
         cgroupEventHandler->SetSupervisor(g_supervisor);
         cgroupEventHandler->HandleExtensionStateChanged(
-            uid, pid, bundleName, abilityName, token, extensionState, abilityType);
+            uid, pid, bundleName, abilityName, recordId, extensionState, abilityType);
 
         return true;
     }

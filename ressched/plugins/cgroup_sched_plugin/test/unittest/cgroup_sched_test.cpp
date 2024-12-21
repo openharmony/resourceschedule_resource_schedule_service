@@ -1067,7 +1067,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     Rosen::WindowType windowType = Rosen::WindowType::APP_WINDOW_BASE;
     uint64_t displayId = 1;
     uint32_t windowId = 1;
-    uintptr_t token = 1111;
+    uint32_t recordId = 1111;
     int32_t appState = (int32_t)AppExecFwk::ApplicationState::APP_STATE_CREATE;
     int32_t abilityState = (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_BACKGROUND;
     int32_t abilityType = (int32_t)AppExecFwk::AbilityType::UNKNOWN;
@@ -1088,17 +1088,17 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     EXPECT_TRUE(cgroupEventHandler->supervisor_ == nullptr);
     cgroupEventHandler->HandleProcessStateChanged(uid, pid, bundleName, appState);
     cgroupEventHandler->HandleApplicationStateChanged(uid, pid, bundleName, appState);
-    cgroupEventHandler->HandleAbilityStateChanged(uid, pid, bundleName, abilityName, token, abilityState, abilityType);
+    cgroupEventHandler->HandleAbilityStateChanged(uid, pid, bundleName, abilityName, recordId, abilityState, abilityType);
     cgroupEventHandler->HandleExtensionStateChanged(uid, pid,
-        bundleName, abilityName, token, extensionState, abilityType);
+        bundleName, abilityName, recordId, extensionState, abilityType);
     cgroupEventHandler->HandleProcessCreated(processData);
     cgroupEventHandler->HandleProcessDied(uid, pid, bundleName);
     cgroupEventHandler->HandleTransientTaskStart(uid, pid, bundleName);
     cgroupEventHandler->HandleTransientTaskEnd(uid, pid, bundleName);
     cgroupEventHandler->HandleContinuousTaskUpdate(uid, pid, {typeId}, value);
     cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, typeId, value);
-    cgroupEventHandler->HandleFocusedWindow(windowId, token, windowType, displayId, pid, uid);
-    cgroupEventHandler->HandleUnfocusedWindow(windowId, token, windowType, displayId, pid, uid);
+    cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pid, uid);
+    cgroupEventHandler->HandleUnfocusedWindow(windowId, windowType, displayId, pid, uid);
     cgroupEventHandler->HandleWindowVisibilityChanged(windowId, isVisible, windowType, pid, uid);
     cgroupEventHandler->HandleReportMMIProcess(resType, value, payload);
     cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
