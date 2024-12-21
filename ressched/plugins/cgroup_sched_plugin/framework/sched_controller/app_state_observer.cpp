@@ -112,11 +112,10 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
     }
 
     // if current is uiExtension, goto onAbilityStateChanged and report
-    if (IsUIExtensionAbilityStateChanged(abilityStateData))
-    {
+    if (IsUIExtensionAbilityStateChanged(abilityStateData)) {
         CGS_LOGD("UIExtensionAbility Changed, extensionType: %{public}d, bundleName: %{public}s,"
             " abilityRecordId: %{public}d, abilityState: %{public}d, processType: %{public}d",
-            abilityStateData.extensionAbilityType,abilityStateData.bundleName.c_str(), abilityStateData.abilityRecordId,
+            abilityStateData.extensionAbilityType, abilityStateData.bundleName.c_str(), abilityStateData.abilityRecordId,
             abilityStateData.abilityState, abilityStateData.processType);
         OnAbilityStateChanged(abilityStateData);
         return;
