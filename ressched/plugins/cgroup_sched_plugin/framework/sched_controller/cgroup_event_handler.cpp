@@ -450,9 +450,6 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, WindowType windo
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
         __func__, windowId, windowType, displayId, pid, uid);
-    if (!abilityToken) {
-        CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
-    }
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
     {
@@ -491,9 +488,6 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, WindowType win
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
         __func__, windowId, windowType, displayId, pid, uid);
-    if (!abilityToken) {
-        CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
-    }
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
     {
