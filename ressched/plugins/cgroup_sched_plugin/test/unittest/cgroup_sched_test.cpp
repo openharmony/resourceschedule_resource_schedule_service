@@ -1100,8 +1100,6 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, typeId, value);
     cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pid, uid);
     cgroupEventHandler->HandleUnfocusedWindow(windowId, windowType, displayId, pid, uid);
-    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, isVisible, windowType, pid, uid);
-    cgroupEventHandler->HandleReportMMIProcess(resType, value, payload);
     cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
 
     cgroupEventHandler->supervisor_ = tmp;
