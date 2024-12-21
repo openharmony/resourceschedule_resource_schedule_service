@@ -1088,7 +1088,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     EXPECT_TRUE(cgroupEventHandler->supervisor_ == nullptr);
     cgroupEventHandler->HandleProcessStateChanged(uid, pid, bundleName, appState);
     cgroupEventHandler->HandleApplicationStateChanged(uid, pid, bundleName, appState);
-    cgroupEventHandler->HandleAbilityStateChanged(uid, pid, bundleName, abilityName, recordId, abilityState, abilityType);
+    cgroupEventHandler->HandleAbilityStateChanged(uid, pid, bundleName, abilityName, recordId,
+        abilityState, abilityType);
     cgroupEventHandler->HandleExtensionStateChanged(uid, pid,
         bundleName, abilityName, recordId, extensionState, abilityType);
     cgroupEventHandler->HandleProcessCreated(processData);
