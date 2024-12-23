@@ -884,7 +884,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_016, Function | Med
     auto proc = app->GetProcessRecordNonNull(1112);
     EXPECT_TRUE(proc != nullptr);
 
-    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
+    payload = nlohmann::json::parse("{\"uid\": 1111, \"pid\": 1112}");
     proc->curSchedGroup_ = CgroupSetting::SP_BACKGROUND;
     cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
     EXPECT_TRUE(proc->audioPlayingState_ == 2);
@@ -1067,7 +1067,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     Rosen::WindowType windowType = Rosen::WindowType::APP_WINDOW_BASE;
     uint64_t displayId = 1;
     uint32_t windowId = 1;
-    uintptr_t token = 1111;
+    uint32_t recordId = 1111;
     int32_t appState = (int32_t)AppExecFwk::ApplicationState::APP_STATE_CREATE;
     int32_t abilityState = (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_BACKGROUND;
     int32_t abilityType = (int32_t)AppExecFwk::AbilityType::UNKNOWN;
@@ -1088,19 +1088,18 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     EXPECT_TRUE(cgroupEventHandler->supervisor_ == nullptr);
     cgroupEventHandler->HandleProcessStateChanged(uid, pid, bundleName, appState);
     cgroupEventHandler->HandleApplicationStateChanged(uid, pid, bundleName, appState);
-    cgroupEventHandler->HandleAbilityStateChanged(uid, pid, bundleName, abilityName, token, abilityState, abilityType);
+    cgroupEventHandler->HandleAbilityStateChanged(uid, pid, bundleName, abilityName, recordId,
+        abilityState, abilityType);
     cgroupEventHandler->HandleExtensionStateChanged(uid, pid,
-        bundleName, abilityName, token, extensionState, abilityType);
+        bundleName, abilityName, recordId, extensionState, abilityType);
     cgroupEventHandler->HandleProcessCreated(processData);
     cgroupEventHandler->HandleProcessDied(uid, pid, bundleName);
     cgroupEventHandler->HandleTransientTaskStart(uid, pid, bundleName);
     cgroupEventHandler->HandleTransientTaskEnd(uid, pid, bundleName);
     cgroupEventHandler->HandleContinuousTaskUpdate(uid, pid, {typeId}, value);
     cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, typeId, value);
-    cgroupEventHandler->HandleFocusedWindow(windowId, token, windowType, displayId, pid, uid);
-    cgroupEventHandler->HandleUnfocusedWindow(windowId, token, windowType, displayId, pid, uid);
-    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, isVisible, windowType, pid, uid);
-    cgroupEventHandler->HandleReportMMIProcess(resType, value, payload);
+    cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pid, uid);
+    cgroupEventHandler->HandleUnfocusedWindow(windowId, windowType, displayId, pid, uid);
     cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
 
     cgroupEventHandler->supervisor_ = tmp;

@@ -221,14 +221,14 @@ void CgroupEventHandler::HandleProcessStateChanged(uid_t uid, pid_t pid,
 }
 
 void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
-    const std::string& abilityName, uintptr_t token, int32_t abilityState, int32_t abilityType)
+    const std::string& abilityName, int32_t recordId, int32_t abilityState, int32_t abilityType)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d",
-        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), abilityState, abilityType);
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d, %{public}d",
+        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), recordId, abilityState, abilityType);
     if (abilityType == (int32_t)AbilityType::EXTENSION) {
         CGS_LOGD("%{public}s : this type of event is not dealt with here", __func__);
         return;
@@ -239,7 +239,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, const s
         if (app) {
             auto procRecord = app->GetProcessRecord(pid);
             if (procRecord) {
-                procRecord->RemoveAbilityByToken(token);
+                procRecord->RemoveAbilityByRecordId(recordId);
                 CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
                     AdjustSource::ADJS_ABILITY_STATE);
             }
@@ -249,7 +249,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, const s
     auto app = supervisor_->GetAppRecordNonNull(uid);
     app->SetName(bundleName);
     auto procRecord = app->GetProcessRecordNonNull(pid);
-    auto abiInfo = procRecord->GetAbilityInfoNonNull(token);
+    auto abiInfo = procRecord->GetAbilityInfoNonNull(recordId);
     abiInfo->name_ = abilityName;
     abiInfo->state_ = abilityState;
     abiInfo->type_ = abilityType;
@@ -258,21 +258,21 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, const s
 }
 
 void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
-    const std::string& abilityName, uintptr_t token, int32_t extensionState, int32_t abilityType)
+    const std::string& abilityName, int32_t recordId, int32_t extensionState, int32_t abilityType)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d",
-        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), extensionState, abilityType);
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d, %{public}d",
+        __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), recordId, extensionState, abilityType);
     ChronoScope cs("HandleExtensionStateChanged");
     if (extensionState == (int32_t)(ExtensionState::EXTENSION_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
         if (app) {
             auto procRecord = app->GetProcessRecord(pid);
             if (procRecord) {
-                procRecord->RemoveAbilityByToken(token);
+                procRecord->RemoveAbilityByRecordId(recordId);
                 CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
                     AdjustSource::ADJS_EXTENSION_STATE);
             }
@@ -282,7 +282,7 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, const
     auto app = supervisor_->GetAppRecordNonNull(uid);
     app->SetName(bundleName);
     auto procRecord = app->GetProcessRecordNonNull(pid);
-    auto abiInfo = procRecord->GetAbilityInfoNonNull(token);
+    auto abiInfo = procRecord->GetAbilityInfoNonNull(recordId);
     abiInfo->name_ = abilityName;
     abiInfo->estate_ = extensionState;
     abiInfo->type_ = abilityType;
@@ -441,8 +441,8 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_
         AdjustSource::ADJS_CONTINUOUS_END);
 }
 
-void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilityToken,
-    WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
+void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, WindowType windowType,
+    uint64_t displayId, int32_t pid, int32_t uid)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -450,9 +450,6 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
         __func__, windowId, windowType, displayId, pid, uid);
-    if (!abilityToken) {
-        CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
-    }
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
     {
@@ -460,12 +457,10 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
         app = supervisor_->GetAppRecordNonNull(uid);
         procRecord = app->GetProcessRecordNonNull(pid);
         auto win = procRecord->GetWindowInfoNonNull(windowId);
-        auto abi = procRecord->GetAbilityInfo(abilityToken);
         procRecord->linkedWindowId_ = (int32_t)(windowId);
         win->windowType_ = (int32_t)(windowType);
         win->isFocused_ = true;
         win->displayId_ = displayId;
-        win->ability_ = abi;
 
         app->focusedProcess_ = procRecord;
         auto lastFocusApp = supervisor_->focusedApp_;
@@ -484,8 +479,8 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uintptr_t abilit
     }
 }
 
-void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abilityToken,
-    WindowType windowType, uint64_t displayId, int32_t pid, int32_t uid)
+void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, WindowType windowType,
+    uint64_t displayId, int32_t pid, int32_t uid)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -493,9 +488,6 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
         __func__, windowId, windowType, displayId, pid, uid);
-    if (!abilityToken) {
-        CGS_LOGW("%{public}s : abilityToken nullptr!", __func__);
-    }
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
     {
@@ -506,11 +498,9 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uintptr_t abil
             return;
         }
         auto win = procRecord->GetWindowInfoNonNull(windowId);
-        auto abi = procRecord->GetAbilityInfo(abilityToken);
         win->windowType_ = (int32_t)(windowType);
         win->isFocused_ = false;
         win->displayId_ = displayId;
-        win->ability_ = abi;
 
         if (app->focusedProcess_ == procRecord) {
             app->focusedProcess_ = nullptr;
