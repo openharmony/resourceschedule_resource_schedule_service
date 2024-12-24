@@ -201,8 +201,6 @@ enum : uint32_t {
     RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE = 84,
     // report location status. value 0 app status, value 1 switch status
     RES_TYPE_LOCATION_STATUS_CHANGE = 85,
-    // report silent playback
-    RES_TYPE_AUDIO_SILENT_PLAYBACK = 86,
     // report display mode event, value status, payload mode.
     RES_TYPE_DEVICE_MODE_STATUS = 88,
     // report distribute component change
