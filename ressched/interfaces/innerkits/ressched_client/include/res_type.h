@@ -301,6 +301,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START = 501,
     // report cosmic cube info
     RES_TYPE_COSMIC_CUBE_STATE_CHANGE = 502,
+    // report SceneBoard raise worker thread priority. value 0: begin, value 1: end.
+    RES_TYPE_RAISE_WORKER_THREAD_PRIORITY = 503,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType

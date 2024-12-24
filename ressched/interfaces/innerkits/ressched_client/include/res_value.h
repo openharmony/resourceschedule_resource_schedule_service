@@ -703,6 +703,14 @@ enum GameSceneId : int64_t {
     MSG_GAME_STATE_FOREGROUND = 4,
     MSG_GAME_STATE_BACKGROUND = 5,
 };
+
+/**
+* @brief raise worker Thread Priority
+*/
+enum WorkerEventState : int64_t {
+    WORKER_EVENT_BEGIN = 0,
+    WORKER_EVENT_END = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
