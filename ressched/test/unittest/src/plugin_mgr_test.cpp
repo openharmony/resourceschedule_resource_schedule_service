@@ -123,7 +123,7 @@ HWTEST_F(PluginMgrTest, Init002, TestSize.Level1)
 {
     PluginMgr::GetInstance().pluginSwitch_ = nullptr;
     pluginMgr_->Init();
-    EXPECT_TRUE(PluginMgr::GetInstance().pluginSwitch_ != nullptr);
+    EXPECT_TRUE(pluginMgr_->pluginSwitch_ != nullptr);
 }
 
 /**

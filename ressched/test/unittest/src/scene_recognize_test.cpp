@@ -209,6 +209,7 @@ HWTEST_F(SceneRecognizeTest, HandleSlideDetecting_001, Function | MediumTest | L
     slideRecognizer->HandleListFlingStart(payload);
     g_slideState = SlideRecognizeStat::LIST_FLING;
     slideRecognizer->HandleSlideDetecting(payload);
+    sleep(1);
     EXPECT_EQ(slideRecognizer->slidePid_, testPid);
 }
 
