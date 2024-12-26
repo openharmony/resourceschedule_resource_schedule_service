@@ -60,7 +60,7 @@ int32_t ResSchedExeClient::KillProcess(pid_t pid)
     RSSEXE_LOGD("kill process receive pid = %{public}d", pid);
     auto proxy = GetProxy();
     if (proxy == nullptr) {
-        RSSEXE_LOGE("fail to get resource schedule executor.");
+        RSSEXE_LOGE("fail to get resource schedule executor");
         return ResIpcErrCode::RSSEXE_CONNECT_FAIL;
     }
     return proxy->KillProcess(pid);
