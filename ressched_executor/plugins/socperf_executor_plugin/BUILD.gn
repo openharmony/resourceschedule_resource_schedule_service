@@ -27,11 +27,7 @@ ohos_shared_library("socperf_executor_plugin") {
 
   defines = []
 
-  sources = [
-    "framework/src/socperf_executor_config.cpp",
-    "framework/src/socperf_executor_plugin.cpp",
-    "framework/src/socperf_executor_wirte_node.cpp",
-  ]
+  sources = []
 
   deps = [ "${resschedexe_services}:resschedexesvc" ]
 
@@ -41,6 +37,13 @@ ohos_shared_library("socperf_executor_plugin") {
     "hilog:libhilog",
     "libxml2:libxml2",
   ]
+  if (resource_schedule_service_socperf_executor_enable) {
+    sources += [
+      "framework/src/socperf_executor_config.cpp",
+      "framework/src/socperf_executor_plugin.cpp",
+      "framework/src/socperf_executor_wirte_node.cpp",
+    ]
+  }
 
   public_external_deps = [ "json:nlohmann_json_static" ]
 

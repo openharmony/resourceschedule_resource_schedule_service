@@ -24,3 +24,7 @@ resschedexe_services =
 
 resschedexe_plugins =
     "${resourcescheduleservice_path}/ressched/services/resschedmgr"
+
+declare_args() {
+    resource_schedule_service_socperf_executor_enable = true
+}
