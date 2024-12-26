@@ -268,6 +268,16 @@ void RmsApplicationStateObserver::OnAppStopped(const AppStateData &appStateData)
         return;
     }
 
+    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgHandler) {
+        auto uid = appStateData.uid;
+        auto bundleName = appStateData.bundleName;
+
+        cgHandler->PostTask([cgHandler, uid, bundleName] {
+            cgHandler->HandleOnAppStopped(uid, bundleName);
+        });
+    }
+     
     nlohmann::json payload;
     MarshallingAppStateData(appStateData, payload);
     ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_APP_STOPPED, appStateData.state, payload);

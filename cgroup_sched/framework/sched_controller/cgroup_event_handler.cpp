@@ -196,14 +196,22 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
     ChronoScope cs("HandleApplicationStateChanged");
-    // remove terminated application
     if (state == (int32_t)(ApplicationState::APP_STATE_TERMINATED)) {
-        supervisor_->RemoveApplication(uid);
         return;
     }
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     app->SetName(bundleName);
     app->state_ = state;
+}
+
+void CgroupEventHandler::HandleOnAppStopped(uid_t uid, const std::string& bundleName)
+{
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+    CGS_LOGI("%{public}s : %{public}d, %{public}s", __func__, uid, bundleName.c_str());
+    supervisor_->RemoveApplication(uid);
 }
 
 void CgroupEventHandler::HandleProcessStateChanged(uid_t uid, pid_t pid,
@@ -578,6 +586,10 @@ void CgroupEventHandler::HandleDrawingContentChangeWindow(
     }
     procRecord->processDrawingState_ = drawingContentState;
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
+    if (!windowInfo) {
+        CGS_LOGE("%{public}s : windowInfo nullptr!", __func__);
+        return;
+    }
     windowInfo->drawingContentState_ = drawingContentState;
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
         ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
