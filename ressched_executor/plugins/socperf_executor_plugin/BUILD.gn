@@ -55,3 +55,9 @@ ohos_shared_library("socperf_executor_plugin") {
     debug = false
   }
 }
+
+group("socperf_executor_plugin_all") {
+  if (resource_schedule_service_socperf_executor_enable) {
+    deps = [ ":socperf_executor_plugin" ]
+  }
+}
