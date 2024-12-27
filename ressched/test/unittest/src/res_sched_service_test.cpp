@@ -796,6 +796,23 @@ HWTEST_F(ResSchedServiceTest, IsAllowedAppPreloadInner001, Function | MediumTest
 }
 
 /**
+ * @tc.name: ResSchedServicesStub IsAllowedLinkJumpInner 001
+ * @tc.desc: Verify resschedstub isAllowedLinkJumpInner.
+ * @tc.type: FUNC
+ * @tc.require: issueIBE0PK
+ * @tc.author:csc
+ */
+HWTEST_F(ResSchedServiceTest, IsAllowedAppPreloadInner001, Function | MediumTest | Level0)
+{
+    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
+    resSchedServiceStub_->Init();
+    MessageParcel reply;
+    MessageParcel emptyData;
+    int32_t ret = resSchedServiceStub_->IsAllowedAppPreloadInner(emptyData, reply);
+    EXPECT_NE(ret, ERR_OK);
+}
+
+/**
  * @tc.name: ResSchedServicesStub IsLimitRequest 001
  * @tc.desc: IsLimitRequestTest
  * @tc.type: FUNC
