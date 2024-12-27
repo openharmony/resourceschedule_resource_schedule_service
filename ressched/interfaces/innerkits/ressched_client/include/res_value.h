@@ -595,6 +595,14 @@ enum ContinuousInstallStatus : int64_t {
     STOP_CONTINUOUS_INSTALL = 1,
 };
 
+/**
+* @brief crown rotation status
+*/
+enum CrownRotationStatus : int64_t {
+    CROWN_ROTATION_START = 0,
+    CROWN_ROTATION_END = 2,
+};
+
 enum BackgroundPerceivableStatus : int64_t {
     PERCEIVABLE_START = 0,
     PERCEIVABLE_STOP = 1,
