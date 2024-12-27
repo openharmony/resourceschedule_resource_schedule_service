@@ -81,6 +81,7 @@ namespace {
         ResType::RES_TYPE_APP_FRAME_DROP,
         ResType::RES_TYPE_REPORT_DISTRIBUTE_TID,
         ResType::RES_TYPE_AXIS_EVENT,
+        ResType::RES_TYPE_CROWN_ROTATION_STATUS,
     };
     static const std::unordered_set<uint32_t> saRes_ = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,

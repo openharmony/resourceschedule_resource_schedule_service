@@ -87,6 +87,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_ACCOUNT_ACTIVATING    = 10043;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_KEY_DOWN        = 10044;
     const int32_t PERF_REQUEST_CMD_ID_POWER_KEY             = 10045;
+    const int32_t PERF_REQUEST_CMD_ID_CROWN_ROTATION        = 10046;
     const int32_t PERF_REQUEST_CMD_ID_LOAD_URL              = 10070;
     const int32_t PERF_REQUEST_CMD_ID_MOUSEWHEEL            = 10071;
     const int32_t PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE       = 10073;
@@ -230,6 +231,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleEventKey(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_MMI_INPUT_POWER_KEY,
         [this](const std::shared_ptr<ResData>& data) { HandlePowerEventKey(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_CROWN_ROTATION_STATUS,
+        [this](const std::shared_ptr<ResData>& data) { HandleCrownRotation(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_APP_INSTALL_UNINSTALL,
         [this](const std::shared_ptr<ResData>& data) { HandleUninstallEvent(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
@@ -277,6 +280,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_APP_GAME_BOOST_EVENT,
         RES_TYPE_APP_INSTALL_UNINSTALL,
         RES_TYPE_MMI_INPUT_POWER_KEY,
+        RES_TYPE_CROWN_ROTATION_STATUS,
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -469,6 +473,20 @@ void SocPerfPlugin::HandlePowerEventKey(const std::shared_ptr<ResData>& data)
     }
     SOC_PERF_LOGD("SocPerfPlugin:socperf->POWER_KEY: %{public}lld", (long long)data->value);
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_POWER_KEY, "powerkey");
+}
+
+void SocPerfPlugin::HandleCrownRotation(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->CROWN_ROTATION_STATUS null data");
+        return;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin:socperf->CROWN_ROTATION_STATUS: %{public}lld", (long long)data->value);
+    if (data->value == CrownRotationStatus::CROWN_ROTATION_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_CROWN_ROTATION, true, "");
+    } else if (data->value == CrownRotationStatus::CROWN_ROTATION_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_CROWN_ROTATION, false, "");
+    }
 }
 
 bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
