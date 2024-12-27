@@ -27,4 +27,12 @@ resschedexe_plugins =
 
 declare_args() {
   resource_schedule_service_socperf_executor_enable = true
+<<<<<<< HEAD
 }
+=======
+<<<<<<< HEAD
+}
+=======
+}
+>>>>>>> 3b4e86ae250a62d69d058cafefaa5f8cec1bd682
+>>>>>>> e5392a0da2e675a7dd683a073e96ef6831ac2463
