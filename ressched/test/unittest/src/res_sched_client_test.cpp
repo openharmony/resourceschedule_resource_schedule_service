@@ -395,6 +395,21 @@ HWTEST_F(ResSchedClientTest, IsAllowedAppPreload, Function | MediumTest | Level0
 }
 
 /**
+ * @tc.name: IsAllowedLinkJump
+ * @tc.desc: Is allowed link jump
+ * @tc.type: FUNC
+ * @tc.require: issueIBE0PK
+ * @tc.author: csc
+ */
+HWTEST_F(ResSchedClientTest, IsAllowedLinkJump, Function | MediumTest | Level0)
+{
+    bool isAllowedLinkJump = false;
+    int32_t ret = ResSchedClient::GetInstance().IsAllowedLinkJump(isAllowedLinkJump);
+    EXPECT_NE(ret, 0);
+}
+
+
+/**
  * @tc.name: SaInitXmlMutex
  * @tc.desc: Sa Init Xml Mutex
  * @tc.type: FUNC
