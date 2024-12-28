@@ -159,6 +159,7 @@ namespace {
         ResType::RES_TYPE_APP_GAME_BOOST_EVENT,
         ResType::RES_TYPE_DISPLAY_MULTI_SCREEN,
         ResType::RES_TYPE_INTENT_CTRL_APP,
+        ResType::RES_TYPE_GET_GAME_SCENE_INFO,
     };
     const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
     const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
