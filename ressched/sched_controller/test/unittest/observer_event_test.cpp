@@ -688,6 +688,7 @@ HWTEST_F(ObserverEventTest, DisableDeviceMovementObserver_001, testing::ext::Tes
 #endif
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 /**
  * @tc.name: DisableMMiEventObserver_001
  * @tc.desc: test account observer DisableMMiEventObserver
@@ -719,6 +720,7 @@ HWTEST_F(ObserverEventTest, DisableMMiEventObserver_002, testing::ext::TestSize.
     }
     EXPECT_EQ(instance->mmiEventObserver_, nullptr);
 }
+#endif
 
 /**
  * @tc.name: DisableConnectionSubscriber_001
@@ -856,6 +858,7 @@ HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.
     EXPECT_EQ(instance->foldDisplayModeObserver_, nullptr);
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 /**
  * @tc.name: GetAllMmiStatusData_001
  * @tc.desc: test account observer GetAllMmiStatusData
@@ -871,6 +874,7 @@ HWTEST_F(ObserverEventTest, GetAllMmiStatusData_001, testing::ext::TestSize.Leve
     }
     SUCCEED();
 }
+#endif
 
 /**
  * @tc.name: AddItemToSysAbilityListener_001
