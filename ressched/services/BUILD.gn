@@ -117,8 +117,8 @@ ohos_shared_library("resschedsvc") {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE" ]
     external_deps += [ "hisysevent:libhisyseventmanager" ]
     sources += [
-        "../sched_controller/observer/src/hisysevent_observer.cpp",
-        "../sched_controller/observer/src/mmi_observer.cpp",
+      "../sched_controller/observer/src/hisysevent_observer.cpp",
+      "../sched_controller/observer/src/mmi_observer.cpp",
     ]
   }
   if (device_movement_perception_enable) {
@@ -257,8 +257,8 @@ ohos_static_library("resschedsvc_static") {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE" ]
     external_deps += [ "hisysevent:libhisyseventmanager" ]
     sources += [
-        "../sched_controller/observer/src/hisysevent_observer.cpp",
-        "../sched_controller/observer/src/mmi_observer.cpp",
+      "../sched_controller/observer/src/hisysevent_observer.cpp",
+      "../sched_controller/observer/src/mmi_observer.cpp",
     ]
   }
   if (device_movement_perception_enable) {
