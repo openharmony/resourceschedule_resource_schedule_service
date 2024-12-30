@@ -17,8 +17,10 @@
 
 #define private public
 #include "account_observer.h"
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 #include "hisysevent_observer.h"
 #include "mmi_observer.h"
+#endif
 #include "fold_display_mode_observer.h"
 #include "device_movement_observer.h"
 #include "sched_telephony_observer.h"
@@ -44,8 +46,10 @@ public:
     static void TearDownTestCase();
     void SetUp() {}
     void TearDown() {}
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     static std::shared_ptr<HiSysEventObserver> hisysEventObserver_;
     static std::shared_ptr<MmiObserver> mmiObserver_;
+#endif
     static std::shared_ptr<ConnectionSubscriber> connectionSubscriber_;
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
     static std::shared_ptr<DeviceMovementObserver> deviceMovementObserver_;
@@ -59,8 +63,10 @@ public:
     static std::shared_ptr<FoldDisplayModeObserver> foldDisplayModeObserver_;
 };
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 std::shared_ptr<HiSysEventObserver> ObserverEventTest::hisysEventObserver_ = nullptr;
 std::shared_ptr<MmiObserver> ObserverEventTest::mmiObserver_ = nullptr;
+#endif
 std::shared_ptr<FoldDisplayModeObserver> ObserverEventTest::foldDisplayModeObserver_ = nullptr;
 std::shared_ptr<ConnectionSubscriber> ObserverEventTest::connectionSubscriber_ = nullptr;
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
@@ -75,8 +81,10 @@ std::shared_ptr<ConnectionSubscriber> ObserverEventTest::connectionSubscriber_ =
 
 void ObserverEventTest::SetUpTestCase()
 {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
     mmiObserver_ = std::make_shared<MmiObserver>();
+#endif
     connectionSubscriber_ = std::make_shared<ConnectionSubscriber>();
     foldDisplayModeObserver_ = std::make_shared<FoldDisplayModeObserver>();
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
@@ -92,8 +100,10 @@ void ObserverEventTest::SetUpTestCase()
 
 void ObserverEventTest::TearDownTestCase()
 {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     hisysEventObserver_ = nullptr;
     mmiObserver_ = nullptr;
+#endif
     connectionSubscriber_ = nullptr;
     foldDisplayModeObserver_ = nullptr;
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
@@ -107,6 +117,7 @@ void ObserverEventTest::TearDownTestCase()
 #endif
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 /**
  * @tc.name: hisysEventAvCodecEvent_001
  * @tc.desc: test multimedia encoding and decoding event processing
@@ -371,6 +382,7 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_001, testing::ext::TestSize.Level1)
     mmiObserver_->SyncBundleName(pid, uid, bundleName, status);
     EXPECT_NE(mmiObserver_, nullptr);
 }
+#endif
 
 /**
  * @tc.name: deviceMovementObserverEvent_001
@@ -486,6 +498,7 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level
 #endif
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 /**
  * @tc.name: mmiObserverEvent_002
  * @tc.desc: test multimodal input get mmi status status interface
@@ -506,6 +519,8 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_002, testing::ext::TestSize.Level1)
     }
     SUCCEED();
 }
+#endif
+
 #ifndef RESOURCE_REQUEST_REQUEST
 /**
  * @tc.name: foldDisplayModeObserver_001
@@ -572,6 +587,7 @@ HWTEST_F(ObserverEventTest, accountObserver_001, testing::ext::TestSize.Level1)
     accountObserver = nullptr;
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 /**
  * @tc.name: OnEvent_001
  * @tc.desc: test account observer
@@ -613,6 +629,7 @@ HWTEST_F(ObserverEventTest, OnEvent_001, testing::ext::TestSize.Level1)
     EXPECT_NE(hisysEventObserver_, nullptr);
     EXPECT_NE(hisysEventObserver_, nullptr);
 }
+#endif
 
 /**
  * @tc.name: DisableDataShareObserver_001
@@ -788,6 +805,7 @@ HWTEST_F(ObserverEventTest, DisableTelephonyObserver_001, testing::ext::TestSize
 #endif
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 /**
  * @tc.name: DisableHiSysEventObserver_001
  * @tc.desc: test account observer DisableHiSysEventObserver
@@ -802,6 +820,7 @@ HWTEST_F(ObserverEventTest, DisableHiSysEventObserver_001, testing::ext::TestSiz
     }
     EXPECT_EQ(instance->hiSysEventObserver_, nullptr);
 }
+#endif
 
 /**
  * @tc.name: DisableDisplayModeObserver_001

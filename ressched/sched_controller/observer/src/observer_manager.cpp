@@ -498,7 +498,6 @@ void ObserverManager::DisableMMiEventObserver()
     }
     mmiEventObserver_ = nullptr;
 }
-#endif
 
 void ObserverManager::GetAllMmiStatusData()
 {
@@ -526,6 +525,7 @@ void ObserverManager::GetAllMmiStatusData()
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_MMI_STATUS_CHANGE, 0, payload);
     }
 }
+#endif
 
 void ObserverManager::InitDisplayModeObserver()
 {

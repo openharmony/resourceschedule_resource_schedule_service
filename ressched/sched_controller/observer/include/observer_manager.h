@@ -69,6 +69,7 @@ public:
     void DisableHiSysEventObserver();
     void InitMMiEventObserver();
     void DisableMMiEventObserver();
+    void GetAllMmiStatusData();
 #endif
     void InitTelephonyObserver();
     void DisableTelephonyObserver();
@@ -80,7 +81,6 @@ public:
     void DisableDisplayModeObserver();
     void InitSysAbilityListener();
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
-    void GetAllMmiStatusData();
     void InitObserverCbMap();
     void InitConnectionSubscriber();
     void DisableConnectionSubscriber();
