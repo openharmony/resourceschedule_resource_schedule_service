@@ -35,10 +35,12 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     static const int32_t TEST_UID = 0;
     static const int32_t TEST_PID = 1000;
     static const int32_t TEST_INSTANCE_ID = 123456;
     static const int32_t JSON_FORMAT = 4;
+#endif
 }
 class ObserverEventTest : public testing::Test {
 public:

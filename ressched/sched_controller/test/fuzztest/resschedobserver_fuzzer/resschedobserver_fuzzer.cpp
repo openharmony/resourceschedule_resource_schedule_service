@@ -67,11 +67,13 @@ namespace {
     static const int32_t THREE_PARAMETERS = 3;
     static const int32_t FOUR_PARAMETERS = 4;
     static const int32_t FIVE_PARAMETERS = 5;
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     static const int32_t SIX_PARAMETERS = 6;
+    const int32_t INDENT = -1;
+#endif
     static const int32_t ENUM_MAX = 4;
     static const int32_t ENUM_MIN = 0;
     static const int32_t DATA_LENGTH = 10;
-    const int32_t INDENT = -1;
 }
     const uint8_t* DATA = nullptr;
     size_t g_size = 0;
