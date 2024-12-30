@@ -21,7 +21,9 @@
 #include "display_manager.h"
 #include "dm_common.h"
 #include "hisysevent.h"
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 #include "hisysevent_manager.h"
+#endif
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
 #include "parameters.h"
@@ -63,7 +65,9 @@ void ObserverManager::Disable()
 {
     handleObserverMap_.clear();
     removeObserverMap_.clear();
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     DisableHiSysEventObserver();
+#endif
     DisableTelephonyObserver();
     sysAbilityListener_ = nullptr;
 }
@@ -71,13 +75,15 @@ void ObserverManager::Disable()
 void ObserverManager::InitObserverCbMap()
 {
     handleObserverMap_ = {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->InitHiSysEventObserver(); }},
+        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitMMiEventObserver(); }},
+#endif
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->InitTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitAudioObserver(); }},
         { MSDP_MOVEMENT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitDeviceMovementObserver(); }},
-        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitMMiEventObserver(); }},
         { DISPLAY_MANAGER_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitDisplayModeObserver(); }},
         { ABILITY_MGR_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitConnectionSubscriber(); }},
         { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
@@ -93,14 +99,16 @@ void ObserverManager::InitObserverCbMap()
     };
 
     removeObserverMap_ = {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->DisableHiSysEventObserver(); }},
+        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableMMiEventObserver(); }},
+#endif
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->DisableTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableAudioObserver(); }},
         { MSDP_MOVEMENT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->DisableDeviceMovementObserver(); }},
-        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableMMiEventObserver(); }},
         { DISPLAY_MANAGER_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableDisplayModeObserver(); }},
         { ABILITY_MGR_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableConnectionSubscriber(); }},
         { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
@@ -214,6 +222,7 @@ void ObserverManager::GetReportFunc()
     isNeedReport_ = reportFunc();
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 void ObserverManager::InitHiSysEventObserver()
 {
     RESSCHED_LOGI("Init hisysevent observer");
@@ -273,6 +282,7 @@ void ObserverManager::DisableHiSysEventObserver()
     }
     hiSysEventObserver_ = nullptr;
 }
+#endif
 
 void ObserverManager::InitTelephonyObserver()
 {
@@ -432,6 +442,7 @@ void ObserverManager::DisableDeviceMovementObserver()
 #endif
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 void ObserverManager::InitMMiEventObserver()
 {
     std::shared_ptr<OHOS::MMI::KeyOption> keyOption = std::make_shared<OHOS::MMI::KeyOption>();
@@ -487,6 +498,7 @@ void ObserverManager::DisableMMiEventObserver()
     }
     mmiEventObserver_ = nullptr;
 }
+#endif
 
 void ObserverManager::GetAllMmiStatusData()
 {

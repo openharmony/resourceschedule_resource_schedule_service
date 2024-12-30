@@ -60,8 +60,6 @@ ohos_shared_library("resschedsvc") {
     "../sched_controller/observer/src/connection_subscriber.cpp",
     "../sched_controller/observer/src/download_upload_observer.cpp",
     "../sched_controller/observer/src/fold_display_mode_observer.cpp",
-    "../sched_controller/observer/src/hisysevent_observer.cpp",
-    "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
     "resschedmgr/resschedfwk/src/config_reader.cpp",
     "resschedmgr/resschedfwk/src/event_listener_mgr.cpp",
@@ -97,7 +95,6 @@ ohos_shared_library("resschedsvc") {
     "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
-    "hisysevent:libhisyseventmanager",
     "hitrace:hitrace_meter",
     "init:libbegetutil",
     "input:libmmi-client",
@@ -116,6 +113,14 @@ ohos_shared_library("resschedsvc") {
     "json:nlohmann_json_static",
   ]
 
+  if (resource_schedule_service_with_app_nap_enable) {
+    defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE" ]
+    external_deps += [ "hisysevent:libhisyseventmanager" ]
+    sources +=
+        [ "../sched_controller/observer/src/hisysevent_observer.cpp",
+          "../sched_controller/observer/src/mmi_observer.cpp",
+        ]
+  }
   if (device_movement_perception_enable) {
     defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
     external_deps += [ "movement:movement_client" ]
@@ -195,8 +200,6 @@ ohos_static_library("resschedsvc_static") {
     "../sched_controller/observer/src/connection_subscriber.cpp",
     "../sched_controller/observer/src/download_upload_observer.cpp",
     "../sched_controller/observer/src/fold_display_mode_observer.cpp",
-    "../sched_controller/observer/src/hisysevent_observer.cpp",
-    "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
     "resschedmgr/resschedfwk/src/config_reader.cpp",
     "resschedmgr/resschedfwk/src/event_listener_mgr.cpp",
@@ -239,7 +242,6 @@ ohos_static_library("resschedsvc_static") {
     "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
-    "hisysevent:libhisyseventmanager",
     "hitrace:hitrace_meter",
     "init:libbegetutil",
     "input:libmmi-client",
@@ -251,6 +253,14 @@ ohos_static_library("resschedsvc_static") {
     "window_manager:libwm_lite",
   ]
 
+  if (resource_schedule_service_with_app_nap_enable) {
+    defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE" ]
+    external_deps += [ "hisysevent:libhisyseventmanager" ]
+    sources +=
+        [ "../sched_controller/observer/src/hisysevent_observer.cpp",
+          "../sched_controller/observer/src/mmi_observer.cpp",
+        ]
+  }
   if (device_movement_perception_enable) {
     defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
     external_deps += [ "movement:movement_client" ]
