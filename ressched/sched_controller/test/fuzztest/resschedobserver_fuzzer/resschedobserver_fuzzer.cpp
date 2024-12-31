@@ -31,11 +31,15 @@
 #include "download_upload_observer.h"
 #endif
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 #include "hisysevent_observer.h"
+#endif
 #include "observer_manager.h"
 #include "system_ability_definition.h"
 #include "res_sched_service.h"
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 #include "mmi_observer.h"
+#endif
 #include "connection_subscriber.h"
 #include "fold_display_mode_observer.h"
 #include "av_session_state_listener.h"
@@ -63,11 +67,13 @@ namespace {
     static const int32_t THREE_PARAMETERS = 3;
     static const int32_t FOUR_PARAMETERS = 4;
     static const int32_t FIVE_PARAMETERS = 5;
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     static const int32_t SIX_PARAMETERS = 6;
+    const int32_t INDENT = -1;
+#endif
     static const int32_t ENUM_MAX = 4;
     static const int32_t ENUM_MIN = 0;
     static const int32_t DATA_LENGTH = 10;
-    const int32_t INDENT = -1;
 }
     const uint8_t* DATA = nullptr;
     size_t g_size = 0;
@@ -135,7 +141,7 @@ namespace {
         return str;
     }
 
-
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     bool HisysEventAvCodecEventFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -354,6 +360,7 @@ namespace {
         mmiObserver->SyncBundleName(pid, uid, bundleName, syncStatus);
         return true;
     }
+#endif
 
     bool ConnectionSubscriberExtensionFuzzTest(const uint8_t* data, size_t size)
     {
@@ -655,6 +662,7 @@ namespace {
 /* Fuzzer entry point */
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     OHOS::ResourceSchedule::HisysEventAvCodecEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventRunningLockEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventCameraEventFuzzTest(data, size);
@@ -662,10 +670,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::ProcessHiSysEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ObserverManagerFuzzTest(data, size);
     OHOS::ResourceSchedule::MmiObserverSyncBundleNameFuzzTest(data, size);
-    OHOS::ResourceSchedule::ConnectionSubscriberExtensionFuzzTest(data, size);
-    OHOS::ResourceSchedule::ConnectionSubscriberDlpAbilityFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventOnEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HiSysEventOnServiceDiedFuzzTest(data, size);
+#endif
+    OHOS::ResourceSchedule::ConnectionSubscriberExtensionFuzzTest(data, size);
+    OHOS::ResourceSchedule::ConnectionSubscriberDlpAbilityFuzzTest(data, size);
     OHOS::ResourceSchedule::FoldDisplayModeObserverFuzzTest(data, size);
     OHOS::ResourceSchedule::AvSessionStateListenerFuzzTest(data, size);
 

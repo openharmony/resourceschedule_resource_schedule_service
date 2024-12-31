@@ -24,7 +24,9 @@
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
 #include "audio_observer.h"
 #endif
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 #include "hisysevent_observer.h"
+#endif
 #include "connection_subscriber.h"
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
 #include "device_movement_observer.h"
@@ -32,7 +34,9 @@
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
 #include "sched_telephony_observer.h"
 #endif
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 #include "mmi_observer.h"
+#endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 #include "av_session_state_listener.h"
 #endif
@@ -60,21 +64,23 @@ public:
     virtual void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
 };
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     void InitHiSysEventObserver();
     void DisableHiSysEventObserver();
+    void InitMMiEventObserver();
+    void DisableMMiEventObserver();
+    void GetAllMmiStatusData();
+#endif
     void InitTelephonyObserver();
     void DisableTelephonyObserver();
     void InitAudioObserver();
     void DisableAudioObserver();
     void InitDeviceMovementObserver();
     void DisableDeviceMovementObserver();
-    void InitMMiEventObserver();
-    void DisableMMiEventObserver();
     void InitDisplayModeObserver();
     void DisableDisplayModeObserver();
     void InitSysAbilityListener();
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
-    void GetAllMmiStatusData();
     void InitObserverCbMap();
     void InitConnectionSubscriber();
     void DisableConnectionSubscriber();
@@ -97,7 +103,10 @@ public:
     pid_t pid_ = -1;
     std::map<int32_t, std::function<void(std::shared_ptr<ObserverManager>)>> handleObserverMap_;
     std::map<int32_t, std::function<void(std::shared_ptr<ObserverManager>)>> removeObserverMap_;
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     std::shared_ptr<HiviewDFX::HiSysEventListener> hiSysEventObserver_ = nullptr;
+    std::shared_ptr<MmiObserver> mmiEventObserver_ = nullptr;
+#endif
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     int32_t slotId_ = 0;
     sptr<SchedTelephonyObserver> telephonyObserver_ = nullptr;
@@ -109,7 +118,6 @@ public:
     sptr<DeviceMovementObserver> deviceMovementObserver_ = nullptr;
 #endif
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
-    std::shared_ptr<MmiObserver> mmiEventObserver_ = nullptr;
     std::shared_ptr<ConnectionSubscriber> connectionSubscriber_ = nullptr;
     sptr<FoldDisplayModeObserver> foldDisplayModeObserver_ = nullptr;
 #ifndef RESOURCE_REQUEST_REQUEST
