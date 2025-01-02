@@ -492,6 +492,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_018, Function | MediumTes
     EXPECT_FALSE(ret);
 }
 
+#ifdef RESSCHED_RESOURCESCHEDULE_ANCO_SOC_PERF_ENABLE
 /*
  * @tc.name: SocPerfPluginTest_API_TEST_019
  * @tc.desc: test socperfplugin api
@@ -545,6 +546,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_021, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().HandleCustEventEnd(socPerfCustEventEndDataInvalid);
     EXPECT_FALSE(ret);
 }
+#endif // RESSCHED_RESOURCESCHEDULE_ANCO_SOC_PERF_ENABLE
 
 /*
  * @tc.name: SocPerfPluginTest_API_TEST_022

@@ -42,7 +42,9 @@ ohos_unittest("SocPerfPluginTest") {
     external_deps += [ "soc_perf:socperf_client" ]
     defines += [ "RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE" ]
   }
-
+  if (ressched_with_resourceschedule_soc_perf_enable && resource_schedule_service_anco_soc_perf_enable) {
+    defines += [ "RESSCHED_RESOURCESCHEDULE_ANCO_SOC_PERF_ENABLE" ]
+  }
   sanitize = {
     cfi = true
     cfi_cross_dso = true
