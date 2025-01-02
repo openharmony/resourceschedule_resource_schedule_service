@@ -203,18 +203,20 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleWebDragResize(data); } },
         { RES_TYPE_ACCOUNT_ACTIVATING,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfAccountActivating(data); } },
-        { RES_TYPE_ANCO_CUST,
-            [this](const std::shared_ptr<ResData>& data) { HandleCustEvent(data); } },
-        { RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
-            [this](const std::shared_ptr<ResData>& data) { HandleCustEventBegin(data); } },
-        { RES_TYPE_SOCPERF_CUST_EVENT_END,
-            [this](const std::shared_ptr<ResData>& data) { HandleCustEventEnd(data); } },
     };
     AddEventToFunctionMap();
 }
 
 void SocPerfPlugin::AddEventToFunctionMap()
 {
+#ifdef RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
+    functionMap.insert(std::make_pair(RES_TYPE_ANCO_CUST,
+        [this](const std::shared_ptr<ResData>& data) { HandleCustEvent(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
+        [this](const std::shared_ptr<ResData>& data) { HandleCustEventBegin(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_SOCPERF_CUST_EVENT_END,
+        [this](const std::shared_ptr<ResData>& data) { HandleCustEventEnd(data); }));
+#endif // RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
     functionMap.insert(std::make_pair(RES_TYPE_ONLY_PERF_APP_COLD_START,
         [this](const std::shared_ptr<ResData>& data) { HandleAppColdStartEx(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_SCENE_ROTATION,
@@ -269,9 +271,11 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_DEVICE_MODE_STATUS,
         RES_TYPE_WEB_DRAG_RESIZE,
         RES_TYPE_ACCOUNT_ACTIVATING,
+#ifdef RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
         RES_TYPE_ANCO_CUST,
         RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
         RES_TYPE_SOCPERF_CUST_EVENT_END,
+#endif // RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
         RES_TYPE_ONLY_PERF_APP_COLD_START,
         RES_TYPE_SCENE_ROTATION,
         RES_TYPE_BMM_MONITER_CHANGE_EVENT,
@@ -854,6 +858,7 @@ bool SocPerfPlugin::HandleSocperfAccountActivating(const std::shared_ptr<ResData
     return true;
 }
 
+#ifdef RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
 bool SocPerfPlugin::HandleCustEvent(const std::shared_ptr<ResData> &data)
 {
     if (data == nullptr || data->value <= 0) {
@@ -883,6 +888,7 @@ bool SocPerfPlugin::HandleCustEventEnd(const std::shared_ptr<ResData> &data)
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(data->value, false, "");
     return true;
 }
+#endif // RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
 
 bool SocPerfPlugin::HandleRgmBootingStatus(const std::shared_ptr<ResData> &data)
 {
