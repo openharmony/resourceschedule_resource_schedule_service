@@ -39,6 +39,7 @@ declare_args() {
   resource_schedule_service_with_ffrt_enable = false
   resource_schedule_service_with_ext_res_enable = false
   resource_schedule_service_with_app_nap_enable = false
+  resource_schedule_service_cust_soc_perf_enable = false
 
   if (defined(global_parts_info) && !defined(global_parts_info.msdp_movement)) {
     device_movement_perception_enable = false

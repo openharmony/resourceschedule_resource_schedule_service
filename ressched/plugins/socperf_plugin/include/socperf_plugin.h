@@ -82,9 +82,11 @@ private:
     void HandleWebDragResize(const std::shared_ptr<ResData>& data);
     bool HandleSocperfSceneBoard(const std::shared_ptr<ResData>& data);
     bool HandleSocperfAccountActivating(const std::shared_ptr<ResData> &data);
+#ifdef RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
     bool HandleCustEvent(const std::shared_ptr<ResData>& data);
     bool HandleCustEventBegin(const std::shared_ptr<ResData>& data);
     bool HandleCustEventEnd(const std::shared_ptr<ResData>& data);
+#endif // RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
     bool HandleRgmBootingStatus(const std::shared_ptr<ResData>& data);
     bool HandleAppColdStartEx(const std::shared_ptr<ResData>& data);
     bool HandleSceneRotation(const std::shared_ptr<ResData>& data);
