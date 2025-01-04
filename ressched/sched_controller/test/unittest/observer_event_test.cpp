@@ -35,9 +35,9 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     static const int32_t TEST_UID = 0;
     static const int32_t TEST_PID = 1000;
-#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     static const int32_t TEST_INSTANCE_ID = 123456;
     static const int32_t JSON_FORMAT = 4;
 #endif
@@ -690,6 +690,7 @@ HWTEST_F(ObserverEventTest, DisableDeviceMovementObserver_001, testing::ext::Tes
 #endif
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 /**
  * @tc.name: DisableMMiEventObserver_001
  * @tc.desc: test account observer DisableMMiEventObserver
@@ -721,6 +722,7 @@ HWTEST_F(ObserverEventTest, DisableMMiEventObserver_002, testing::ext::TestSize.
     }
     EXPECT_EQ(instance->mmiEventObserver_, nullptr);
 }
+#endif
 
 /**
  * @tc.name: DisableConnectionSubscriber_001

@@ -668,11 +668,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::HisysEventCameraEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventWifiEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ProcessHiSysEventFuzzTest(data, size);
+    OHOS::ResourceSchedule::ObserverManagerFuzzTest(data, size);
+    OHOS::ResourceSchedule::MmiObserverSyncBundleNameFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventOnEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HiSysEventOnServiceDiedFuzzTest(data, size);
-    OHOS::ResourceSchedule::MmiObserverSyncBundleNameFuzzTest(data, size);
 #endif
-    OHOS::ResourceSchedule::ObserverManagerFuzzTest(data, size);
     OHOS::ResourceSchedule::ConnectionSubscriberExtensionFuzzTest(data, size);
     OHOS::ResourceSchedule::ConnectionSubscriberDlpAbilityFuzzTest(data, size);
     OHOS::ResourceSchedule::FoldDisplayModeObserverFuzzTest(data, size);
