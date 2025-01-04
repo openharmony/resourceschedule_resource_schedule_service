@@ -78,8 +78,8 @@ void ObserverManager::InitObserverCbMap()
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->InitHiSysEventObserver(); }},
-        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitMMiEventObserver(); }},
 #endif
+        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitMMiEventObserver(); }},
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->InitTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitAudioObserver(); }},
@@ -102,8 +102,8 @@ void ObserverManager::InitObserverCbMap()
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->DisableHiSysEventObserver(); }},
-        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableMMiEventObserver(); }},
 #endif
+        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableMMiEventObserver(); }},
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->DisableTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableAudioObserver(); }},
@@ -442,7 +442,6 @@ void ObserverManager::DisableDeviceMovementObserver()
 #endif
 }
 
-#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 void ObserverManager::InitMMiEventObserver()
 {
     std::shared_ptr<OHOS::MMI::KeyOption> keyOption = std::make_shared<OHOS::MMI::KeyOption>();
@@ -525,7 +524,6 @@ void ObserverManager::GetAllMmiStatusData()
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_MMI_STATUS_CHANGE, 0, payload);
     }
 }
-#endif
 
 void ObserverManager::InitDisplayModeObserver()
 {
