@@ -34,7 +34,9 @@
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
 #include "sched_telephony_observer.h"
 #endif
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 #include "mmi_observer.h"
+#endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 #include "av_session_state_listener.h"
 #endif
@@ -65,10 +67,10 @@ public:
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     void InitHiSysEventObserver();
     void DisableHiSysEventObserver();
+    void GetAllMmiStatusData();
 #endif
     void InitMMiEventObserver();
     void DisableMMiEventObserver();
-    void GetAllMmiStatusData();
     void InitTelephonyObserver();
     void DisableTelephonyObserver();
     void InitAudioObserver();
@@ -103,8 +105,8 @@ public:
     std::map<int32_t, std::function<void(std::shared_ptr<ObserverManager>)>> removeObserverMap_;
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     std::shared_ptr<HiviewDFX::HiSysEventListener> hiSysEventObserver_ = nullptr;
-#endif
     std::shared_ptr<MmiObserver> mmiEventObserver_ = nullptr;
+#endif
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     int32_t slotId_ = 0;
     sptr<SchedTelephonyObserver> telephonyObserver_ = nullptr;

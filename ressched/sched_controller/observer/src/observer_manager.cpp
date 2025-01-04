@@ -454,7 +454,7 @@ void ObserverManager::InitMMiEventObserver()
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_MMI_INPUT_POWER_KEY, keyEvent->GetKeyCode());
     });
     RESSCHED_LOGI("Subscribe power key event successfully.");
-
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     if (!isNeedReport_) {
         RESSCHED_LOGI("not need init mmi observer.");
         return;
@@ -477,12 +477,14 @@ void ObserverManager::InitMMiEventObserver()
     }
     // Get all events registered in multimodal input.
     GetAllMmiStatusData();
+#endif
 }
 
 void ObserverManager::DisableMMiEventObserver()
 {
     RESSCHED_LOGI("Unsubscribes power key event");
     MMI::InputManager::GetInstance()->UnsubscribeKeyEvent(powerKeySubscribeId_);
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     RESSCHED_LOGI("Disable mmi observer");
     if (!mmiEventObserver_) {
         RESSCHED_LOGD("ObserverManager has been disable mmiEventObserver");
@@ -496,8 +498,10 @@ void ObserverManager::DisableMMiEventObserver()
         RESSCHED_LOGW("ObserverManager disable mmiEventObserver failed");
     }
     mmiEventObserver_ = nullptr;
+#endif
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 void ObserverManager::GetAllMmiStatusData()
 {
     RESSCHED_LOGI("get all mmi subscribed events.");
@@ -524,6 +528,7 @@ void ObserverManager::GetAllMmiStatusData()
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_MMI_STATUS_CHANGE, 0, payload);
     }
 }
+#endif
 
 void ObserverManager::InitDisplayModeObserver()
 {

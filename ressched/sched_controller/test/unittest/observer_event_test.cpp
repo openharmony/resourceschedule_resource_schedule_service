@@ -19,8 +19,8 @@
 #include "account_observer.h"
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 #include "hisysevent_observer.h"
-#endif
 #include "mmi_observer.h"
+#endif
 #include "fold_display_mode_observer.h"
 #include "device_movement_observer.h"
 #include "sched_telephony_observer.h"
@@ -500,6 +500,7 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level
 #endif
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 /**
  * @tc.name: mmiObserverEvent_002
  * @tc.desc: test multimodal input get mmi status status interface
@@ -520,6 +521,7 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_002, testing::ext::TestSize.Level1)
     }
     SUCCEED();
 }
+#endif
 
 #ifndef RESOURCE_REQUEST_REQUEST
 /**
@@ -856,6 +858,7 @@ HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.
     EXPECT_EQ(instance->foldDisplayModeObserver_, nullptr);
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 /**
  * @tc.name: GetAllMmiStatusData_001
  * @tc.desc: test account observer GetAllMmiStatusData
@@ -871,6 +874,7 @@ HWTEST_F(ObserverEventTest, GetAllMmiStatusData_001, testing::ext::TestSize.Leve
     }
     SUCCEED();
 }
+#endif
 
 /**
  * @tc.name: AddItemToSysAbilityListener_001
