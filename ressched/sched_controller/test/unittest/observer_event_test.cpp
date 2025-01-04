@@ -35,9 +35,9 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     static const int32_t TEST_UID = 0;
     static const int32_t TEST_PID = 1000;
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     static const int32_t TEST_INSTANCE_ID = 123456;
     static const int32_t JSON_FORMAT = 4;
 #endif
@@ -50,8 +50,8 @@ public:
     void TearDown() {}
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     static std::shared_ptr<HiSysEventObserver> hisysEventObserver_;
-#endif
     static std::shared_ptr<MmiObserver> mmiObserver_;
+#endif
     static std::shared_ptr<ConnectionSubscriber> connectionSubscriber_;
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
     static std::shared_ptr<DeviceMovementObserver> deviceMovementObserver_;
@@ -67,8 +67,8 @@ public:
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 std::shared_ptr<HiSysEventObserver> ObserverEventTest::hisysEventObserver_ = nullptr;
-#endif
 std::shared_ptr<MmiObserver> ObserverEventTest::mmiObserver_ = nullptr;
+#endif
 std::shared_ptr<FoldDisplayModeObserver> ObserverEventTest::foldDisplayModeObserver_ = nullptr;
 std::shared_ptr<ConnectionSubscriber> ObserverEventTest::connectionSubscriber_ = nullptr;
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
@@ -85,8 +85,8 @@ void ObserverEventTest::SetUpTestCase()
 {
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
-#endif
     mmiObserver_ = std::make_shared<MmiObserver>();
+#endif
     connectionSubscriber_ = std::make_shared<ConnectionSubscriber>();
     foldDisplayModeObserver_ = std::make_shared<FoldDisplayModeObserver>();
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
@@ -104,8 +104,8 @@ void ObserverEventTest::TearDownTestCase()
 {
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     hisysEventObserver_ = nullptr;
-#endif
     mmiObserver_ = nullptr;
+#endif
     connectionSubscriber_ = nullptr;
     foldDisplayModeObserver_ = nullptr;
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
@@ -362,7 +362,6 @@ HWTEST_F(ObserverEventTest, processHiSysEvent_003, testing::ext::TestSize.Level1
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
     EXPECT_NE(hisysEventObserver_, nullptr);
 }
-#endif
 
 /**
  * @tc.name: mmiObserverEvent_001
@@ -385,6 +384,7 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_001, testing::ext::TestSize.Level1)
     mmiObserver_->SyncBundleName(pid, uid, bundleName, status);
     EXPECT_NE(mmiObserver_, nullptr);
 }
+#endif
 
 /**
  * @tc.name: deviceMovementObserverEvent_001

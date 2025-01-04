@@ -312,28 +312,6 @@ namespace {
         hisysEventObserver_->OnServiceDied();
         return true;
     }
-#endif
-
-    bool ObserverManagerFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        if (size <= DATA_LENGTH) {
-            return false;
-        }
-
-        // initialize
-        DATA = data;
-        g_size = size;
-        g_pos = 0;
-        auto instance = ObserverManager::GetInstance();
-        if (instance) {
-            instance->GetAllMmiStatusData();
-        }
-        return true;
-    }
 
     bool MmiObserverSyncBundleNameFuzzTest(const uint8_t* data, size_t size)
     {
@@ -357,6 +335,28 @@ namespace {
         std::string bundleName = GetStringFromData(DATA_LENGTH);
         auto mmiObserver = std::make_shared<MmiObserver>();
         mmiObserver->SyncBundleName(pid, uid, bundleName, syncStatus);
+        return true;
+    }
+#endif
+
+    bool ObserverManagerFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+
+        if (size <= DATA_LENGTH) {
+            return false;
+        }
+
+        // initialize
+        DATA = data;
+        g_size = size;
+        g_pos = 0;
+        auto instance = ObserverManager::GetInstance();
+        if (instance) {
+            instance->GetAllMmiStatusData();
+        }
         return true;
     }
 
@@ -668,9 +668,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::ProcessHiSysEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventOnEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HiSysEventOnServiceDiedFuzzTest(data, size);
+    OHOS::ResourceSchedule::MmiObserverSyncBundleNameFuzzTest(data, size);
 #endif
     OHOS::ResourceSchedule::ObserverManagerFuzzTest(data, size);
-    OHOS::ResourceSchedule::MmiObserverSyncBundleNameFuzzTest(data, size);
     OHOS::ResourceSchedule::ConnectionSubscriberExtensionFuzzTest(data, size);
     OHOS::ResourceSchedule::ConnectionSubscriberDlpAbilityFuzzTest(data, size);
     OHOS::ResourceSchedule::FoldDisplayModeObserverFuzzTest(data, size);
