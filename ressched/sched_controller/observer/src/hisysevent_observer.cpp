@@ -255,18 +255,18 @@ void HiSysEventObserver::ProcessWifiEvent(const nlohmann::json& root, const std:
         switch (connectionType) {
             case WifiState::CONNECTED:
                 ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
-                    ResType::WifiConnectionState::WIFICONNECTED, payload);
+                    ResType::WifiConnectionState::WIFI_STATE_CONNECTED, payload);
                 break;
             case WifiState::DISCONNECTED:
                 ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
-                    ResType::WifiConnectionState::WIFIDISCONNECTED, payload);
+                    ResType::WifiConnectionState::WIFI_STATE_DISCONNECTED, payload);
                 break;
             default:
                 break;
         }
     } else if (eventName == WIFI_SCAN) {
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
-            ResType::WifiConnectionState::WIFISCAN, payload);
+            ResType::WifiConnectionState::WIFI_STATE_SCAN, payload);
     } else {
         RESSCHED_LOGE("Wifi event name not support!");
         return;
