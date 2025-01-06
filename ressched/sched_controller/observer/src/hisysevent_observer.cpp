@@ -18,6 +18,7 @@
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "res_type.h"
+#include "res_value.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -26,9 +27,6 @@ namespace {
     static const std::string WIFI_SCAN = "WIFI_SCAN";
     static const std::string CAMERA_CONNECT = "CAMERA_CONNECT";
     constexpr int32_t INDENT                    = -1;
-    constexpr int32_t WIFISCAN                  = 2;
-    constexpr int32_t WIFICONNECTED             = 3;
-    constexpr int32_t WIFIDISCONNECTED          = 5;
     constexpr int32_t CAMERACONNECT             = 0;
     constexpr int32_t CAMERADISCONNECT          = 1;
     constexpr int32_t RUNNINGLOCK_DISABLE       = 0;
@@ -257,17 +255,18 @@ void HiSysEventObserver::ProcessWifiEvent(const nlohmann::json& root, const std:
         switch (connectionType) {
             case WifiState::CONNECTED:
                 ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
-                    WIFICONNECTED, payload);
+                    ResType::WifiConnectionState::WIFICONNECTED, payload);
                 break;
             case WifiState::DISCONNECTED:
                 ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
-                    WIFIDISCONNECTED, payload);
+                    ResType::WifiConnectionState::WIFIDISCONNECTED, payload);
                 break;
             default:
                 break;
         }
     } else if (eventName == WIFI_SCAN) {
-        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE, WIFISCAN, payload);
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
+            ResType::WifiConnectionState::WIFISCAN, payload);
     } else {
         RESSCHED_LOGE("Wifi event name not support!");
         return;
