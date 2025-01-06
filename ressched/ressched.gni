@@ -66,10 +66,16 @@ declare_args() {
       !defined(global_parts_info.communication_bluetooth)) {
     communication_bluetooth_perception_enable = false
   }
+  
+  rss_mmi_enable = true
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.multimodalinput_input)) {
+    rss_mmi_enable = false
+  }
 
   ressched_with_resourceschedule_multimedia_av_session_enable = true
   if (defined(global_parts_info) &&
-      !defined(global_parts_info.multimedia_av_session)) {
+      (!defined(global_parts_info.multimedia_av_session) || !defined(global_parts_info.multimodalinput_input))) {
     ressched_with_resourceschedule_multimedia_av_session_enable = false
   }
 

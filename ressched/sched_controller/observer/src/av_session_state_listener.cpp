@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 #include "av_session_state_listener.h"
 
 #include "res_sched_log.h"
@@ -54,3 +54,4 @@ void AvSessionStateListener::OnTopSessionChange(const AVSession::AVSessionDescri
 }
 } // OHOS
 } // namespace ResourceSchedule
+#endif

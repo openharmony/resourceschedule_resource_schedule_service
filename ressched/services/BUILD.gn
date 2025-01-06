@@ -97,7 +97,6 @@ ohos_shared_library("resschedsvc") {
     "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",
     "init:libbegetutil",
-    "input:libmmi-client",
     "ipc:ipc_single",
     "libxml2:libxml2",
     "os_account:os_account_innerkits",
@@ -159,6 +158,10 @@ ohos_shared_library("resschedsvc") {
   if (rss_request_enable) {
     defines += [ "RESOURCE_REQUEST_REQUEST" ]
     external_deps += [ "request:request_native" ]
+  }
+  if (rss_mmi_enable) {
+    defines += [ "MMI_ENABLE" ]
+    external_deps += [ "input:libmmi-client" ]
   }
   external_deps += [ "data_share:datashare_consumer" ]
 
@@ -244,7 +247,6 @@ ohos_static_library("resschedsvc_static") {
     "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",
     "init:libbegetutil",
-    "input:libmmi-client",
     "ipc:ipc_single",
     "jsoncpp:jsoncpp",
     "os_account:os_account_innerkits",
@@ -301,6 +303,10 @@ ohos_static_library("resschedsvc_static") {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE" ]
   }
   external_deps += [ "data_share:datashare_consumer" ]
+  if (rss_mmi_enable) {
+    defines += [ "MMI_ENABLE" ]
+    external_deps += [ "input:libmmi-client" ]
+  }
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

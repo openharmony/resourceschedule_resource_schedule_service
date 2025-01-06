@@ -40,7 +40,9 @@
 #include "movement_client.h"
 #include "movement_data_utils.h"
 #endif
+#ifdef MMI_ENABLE
 #include "input_manager.h"
+#endif
 #include "os_account_manager.h"
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 #include "avsession_manager.h"
@@ -79,7 +81,9 @@ void ObserverManager::InitObserverCbMap()
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->InitHiSysEventObserver(); }},
 #endif
+#ifdef MMI_ENABLE
         { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitMMiEventObserver(); }},
+#endif
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->InitTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitAudioObserver(); }},
@@ -103,7 +107,9 @@ void ObserverManager::InitObserverCbMap()
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->DisableHiSysEventObserver(); }},
 #endif
+#ifdef MMI_ENABLE
         { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableMMiEventObserver(); }},
+#endif
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->DisableTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableAudioObserver(); }},
@@ -442,6 +448,7 @@ void ObserverManager::DisableDeviceMovementObserver()
 #endif
 }
 
+#ifdef MMI_ENABLE
 void ObserverManager::InitMMiEventObserver()
 {
     std::shared_ptr<OHOS::MMI::KeyOption> keyOption = std::make_shared<OHOS::MMI::KeyOption>();
@@ -528,6 +535,7 @@ void ObserverManager::GetAllMmiStatusData()
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_MMI_STATUS_CHANGE, 0, payload);
     }
 }
+#endif
 #endif
 
 void ObserverManager::InitDisplayModeObserver()

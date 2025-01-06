@@ -19,7 +19,9 @@
 #include "account_observer.h"
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 #include "hisysevent_observer.h"
+#ifdef MMI_ENABLE
 #include "mmi_observer.h"
+#endif
 #endif
 #include "fold_display_mode_observer.h"
 #include "device_movement_observer.h"
@@ -50,7 +52,9 @@ public:
     void TearDown() {}
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     static std::shared_ptr<HiSysEventObserver> hisysEventObserver_;
+#ifdef MMI_ENABLE
     static std::shared_ptr<MmiObserver> mmiObserver_;
+#endif
 #endif
     static std::shared_ptr<ConnectionSubscriber> connectionSubscriber_;
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
@@ -67,7 +71,9 @@ public:
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 std::shared_ptr<HiSysEventObserver> ObserverEventTest::hisysEventObserver_ = nullptr;
+#ifdef MMI_ENABLE
 std::shared_ptr<MmiObserver> ObserverEventTest::mmiObserver_ = nullptr;
+#endif
 #endif
 std::shared_ptr<FoldDisplayModeObserver> ObserverEventTest::foldDisplayModeObserver_ = nullptr;
 std::shared_ptr<ConnectionSubscriber> ObserverEventTest::connectionSubscriber_ = nullptr;
@@ -85,7 +91,9 @@ void ObserverEventTest::SetUpTestCase()
 {
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
+#ifdef MMI_ENABLE
     mmiObserver_ = std::make_shared<MmiObserver>();
+#endif
 #endif
     connectionSubscriber_ = std::make_shared<ConnectionSubscriber>();
     foldDisplayModeObserver_ = std::make_shared<FoldDisplayModeObserver>();
@@ -104,7 +112,9 @@ void ObserverEventTest::TearDownTestCase()
 {
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     hisysEventObserver_ = nullptr;
+#ifdef MMI_ENABLE    
     mmiObserver_ = nullptr;
+#endif
 #endif
     connectionSubscriber_ = nullptr;
     foldDisplayModeObserver_ = nullptr;
@@ -363,6 +373,7 @@ HWTEST_F(ObserverEventTest, processHiSysEvent_003, testing::ext::TestSize.Level1
     EXPECT_NE(hisysEventObserver_, nullptr);
 }
 
+#ifdef MMI_ENABLE
 /**
  * @tc.name: mmiObserverEvent_001
  * @tc.desc: test multimodal input sync bundleName interface
@@ -384,6 +395,7 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_001, testing::ext::TestSize.Level1)
     mmiObserver_->SyncBundleName(pid, uid, bundleName, status);
     EXPECT_NE(mmiObserver_, nullptr);
 }
+#endif
 #endif
 
 /**
@@ -501,6 +513,7 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level
 }
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
+#ifdef MMI_ENABLE
 /**
  * @tc.name: mmiObserverEvent_002
  * @tc.desc: test multimodal input get mmi status status interface
@@ -521,6 +534,7 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_002, testing::ext::TestSize.Level1)
     }
     SUCCEED();
 }
+#endif
 #endif
 
 #ifndef RESOURCE_REQUEST_REQUEST
@@ -691,6 +705,7 @@ HWTEST_F(ObserverEventTest, DisableDeviceMovementObserver_001, testing::ext::Tes
 }
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
+#ifdef MMI_ENABLE
 /**
  * @tc.name: DisableMMiEventObserver_001
  * @tc.desc: test account observer DisableMMiEventObserver
@@ -722,6 +737,7 @@ HWTEST_F(ObserverEventTest, DisableMMiEventObserver_002, testing::ext::TestSize.
     }
     EXPECT_EQ(instance->mmiEventObserver_, nullptr);
 }
+#endif
 #endif
 
 /**
@@ -861,6 +877,7 @@ HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.
 }
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
+#ifdef MMI_ENABLE
 /**
  * @tc.name: GetAllMmiStatusData_001
  * @tc.desc: test account observer GetAllMmiStatusData
@@ -876,6 +893,7 @@ HWTEST_F(ObserverEventTest, GetAllMmiStatusData_001, testing::ext::TestSize.Leve
     }
     SUCCEED();
 }
+#endif
 #endif
 
 /**
