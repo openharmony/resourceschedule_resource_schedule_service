@@ -719,6 +719,18 @@ enum WorkerEventState : int64_t {
     WORKER_EVENT_BEGIN = 0,
     WORKER_EVENT_END = 1,
 };
+
+/**
+* @brief Wifi Connection State
+*/
+enum WifiConnectionState : int64_t {
+    WIFI_STATE_UNKNOWN = 0,
+    WIFI_STATE_IDLE = 1,
+    WIFI_STATE_SCAN = 2,
+    WIFI_STATE_CONNECTED = 3,
+    WIFI_STATE_DISCONNECTING = 4,
+    WIFI_STATE_DISCONNECTED = 5,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
