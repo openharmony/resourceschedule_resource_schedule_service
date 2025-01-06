@@ -69,7 +69,7 @@ public:
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     void InitHiSysEventObserver();
     void DisableHiSysEventObserver();
-#ifdef MMI_ENABLE  
+#ifdef MMI_ENABLE
     void GetAllMmiStatusData();
 #endif
 #endif

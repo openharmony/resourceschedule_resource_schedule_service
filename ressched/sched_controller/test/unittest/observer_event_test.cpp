@@ -112,7 +112,7 @@ void ObserverEventTest::TearDownTestCase()
 {
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     hisysEventObserver_ = nullptr;
-#ifdef MMI_ENABLE    
+#ifdef MMI_ENABLE
     mmiObserver_ = nullptr;
 #endif
 #endif

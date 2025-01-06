@@ -78,56 +78,48 @@ void ObserverManager::InitObserverCbMap()
 {
     handleObserverMap_ = {
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
-        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
-            mgr->InitHiSysEventObserver(); }},
+        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, []() { ObserverManager::GetInstance()->InitHiSysEventObserver(); }},
 #endif
 #ifdef MMI_ENABLE
-        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitMMiEventObserver(); }},
+        { MULTIMODAL_INPUT_SERVICE_ID, []() { ObserverManager::GetInstance()->InitMMiEventObserver(); }},
 #endif
-        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
-            mgr->InitTelephonyObserver(); }},
-        { AUDIO_POLICY_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitAudioObserver(); }},
-        { MSDP_MOVEMENT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitDeviceMovementObserver(); }},
-        { DISPLAY_MANAGER_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitDisplayModeObserver(); }},
-        { ABILITY_MGR_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitConnectionSubscriber(); }},
-        { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
-            mgr->InitDataShareObserver(); }},
+        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, []() { ObserverManager::GetInstance()->InitTelephonyObserver(); }},
+        { AUDIO_POLICY_SERVICE_ID, []() { ObserverManager::GetInstance()->InitAudioObserver(); }},
+        { MSDP_MOVEMENT_SERVICE_ID, []() { ObserverManager::GetInstance()->InitDeviceMovementObserver(); }},
+        { DISPLAY_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitDisplayModeObserver(); }},
+        { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->InitConnectionSubscriber(); }},
+        { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, []() { ObserverManager::GetInstance()->InitDataShareObserver(); }},
 #ifndef RESOURCE_REQUEST_REQUEST
-        { DOWNLOAD_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitDownloadUploadObserver(); }},
+        { DOWNLOAD_SERVICE_ID, []() { ObserverManager::GetInstance()->InitDownloadUploadObserver(); }},
 #endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
-        { AVSESSION_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitAVSessionStateChangeListener(); }},
+        { AVSESSION_SERVICE_ID, []() { ObserverManager::GetInstance()->InitAVSessionStateChangeListener(); }},
 #endif
-        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, [](std::shared_ptr<ObserverManager> mgr) {
-            mgr->InitAccountObserver(); }},
+        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->InitAccountObserver(); }},
     };
 
     removeObserverMap_ = {
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
-        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
-            mgr->DisableHiSysEventObserver(); }},
+        { DFX_SYS_EVENT_SERVICE_ABILITY_ID, []() { ObserverManager::GetInstance()->DisableHiSysEventObserver(); }},
 #endif
 #ifdef MMI_ENABLE
-        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableMMiEventObserver(); }},
+        { MULTIMODAL_INPUT_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableMMiEventObserver(); }},
 #endif
-        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
-            mgr->DisableTelephonyObserver(); }},
-        { AUDIO_POLICY_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableAudioObserver(); }},
-        { MSDP_MOVEMENT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) {
-            mgr->DisableDeviceMovementObserver(); }},
-        { DISPLAY_MANAGER_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableDisplayModeObserver(); }},
-        { ABILITY_MGR_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableConnectionSubscriber(); }},
-        { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
-            mgr->DisableDataShareObserver(); }},
+        { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, []() {
+            ObserverManager::GetInstance()->DisableTelephonyObserver(); }},
+        { AUDIO_POLICY_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableAudioObserver(); }},
+        { MSDP_MOVEMENT_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableDeviceMovementObserver(); }},
+        { DISPLAY_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableDisplayModeObserver(); }},
+        { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableConnectionSubscriber(); }},
+        { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, []() {
+            ObserverManager::GetInstance()->DisableDataShareObserver(); }},
 #ifndef RESOURCE_REQUEST_REQUEST
-        { DOWNLOAD_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableDownloadUploadObserver(); }},
+        { DOWNLOAD_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableDownloadUploadObserver(); }},
 #endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
-        { AVSESSION_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) {
-            mgr->DisableAVSessionStateChangeListener(); }},
+        { AVSESSION_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableAVSessionStateChangeListener(); }},
 #endif
-        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, [](std::shared_ptr<ObserverManager> mgr) {
-            mgr->DisableAccountObserver(); }},
+        { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->DisableAccountObserver(); }},
     };
 }
 
@@ -193,7 +185,7 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     if (funcIter != ObserverManager::GetInstance()->handleObserverMap_.end()) {
         auto function = funcIter->second;
             if (function) {
-                function(ObserverManager::GetInstance());
+                function();
             }
     }
 }
@@ -206,7 +198,7 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     if (funcIter != ObserverManager::GetInstance()->removeObserverMap_.end()) {
         auto function = funcIter->second;
             if (function) {
-                function(ObserverManager::GetInstance());
+                function();
             }
     }
 }
