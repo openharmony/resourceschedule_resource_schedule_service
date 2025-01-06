@@ -67,10 +67,10 @@ public:
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     void InitHiSysEventObserver();
     void DisableHiSysEventObserver();
-    void InitMMiEventObserver();
-    void DisableMMiEventObserver();
     void GetAllMmiStatusData();
 #endif
+    void InitMMiEventObserver();
+    void DisableMMiEventObserver();
     void InitTelephonyObserver();
     void DisableTelephonyObserver();
     void InitAudioObserver();

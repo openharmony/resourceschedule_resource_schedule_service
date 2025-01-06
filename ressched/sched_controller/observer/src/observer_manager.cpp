@@ -78,8 +78,8 @@ void ObserverManager::InitObserverCbMap()
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->InitHiSysEventObserver(); }},
-        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitMMiEventObserver(); }},
 #endif
+        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitMMiEventObserver(); }},
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->InitTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->InitAudioObserver(); }},
@@ -102,8 +102,8 @@ void ObserverManager::InitObserverCbMap()
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->DisableHiSysEventObserver(); }},
-        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableMMiEventObserver(); }},
 #endif
+        { MULTIMODAL_INPUT_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableMMiEventObserver(); }},
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, [](std::shared_ptr<ObserverManager> mgr) {
             mgr->DisableTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, [](std::shared_ptr<ObserverManager> mgr) { mgr->DisableAudioObserver(); }},
@@ -442,7 +442,6 @@ void ObserverManager::DisableDeviceMovementObserver()
 #endif
 }
 
-#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 void ObserverManager::InitMMiEventObserver()
 {
     std::shared_ptr<OHOS::MMI::KeyOption> keyOption = std::make_shared<OHOS::MMI::KeyOption>();
@@ -455,7 +454,7 @@ void ObserverManager::InitMMiEventObserver()
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_MMI_INPUT_POWER_KEY, keyEvent->GetKeyCode());
     });
     RESSCHED_LOGI("Subscribe power key event successfully.");
-
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     if (!isNeedReport_) {
         RESSCHED_LOGI("not need init mmi observer.");
         return;
@@ -478,12 +477,14 @@ void ObserverManager::InitMMiEventObserver()
     }
     // Get all events registered in multimodal input.
     GetAllMmiStatusData();
+#endif
 }
 
 void ObserverManager::DisableMMiEventObserver()
 {
     RESSCHED_LOGI("Unsubscribes power key event");
     MMI::InputManager::GetInstance()->UnsubscribeKeyEvent(powerKeySubscribeId_);
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     RESSCHED_LOGI("Disable mmi observer");
     if (!mmiEventObserver_) {
         RESSCHED_LOGD("ObserverManager has been disable mmiEventObserver");
@@ -497,8 +498,10 @@ void ObserverManager::DisableMMiEventObserver()
         RESSCHED_LOGW("ObserverManager disable mmiEventObserver failed");
     }
     mmiEventObserver_ = nullptr;
+#endif
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 void ObserverManager::GetAllMmiStatusData()
 {
     RESSCHED_LOGI("get all mmi subscribed events.");
