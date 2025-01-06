@@ -726,7 +726,7 @@ enum WorkerEventState : int64_t {
 enum WifiConnectionState : int64_t {
     WIFI_STATE_UNKNOWN = 0,
     WIFI_STATE_IDLE = 1,
-    WIFI_STATE_CONNECTING = 2,
+    WIFI_STATE_SCAN = 2,
     WIFI_STATE_CONNECTED = 3,
     WIFI_STATE_DISCONNECTING = 4,
     WIFI_STATE_DISCONNECTED = 5,
