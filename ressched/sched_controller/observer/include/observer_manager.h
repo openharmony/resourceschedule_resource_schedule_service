@@ -107,8 +107,8 @@ public:
 #endif
 
     pid_t pid_ = -1;
-    std::map<int32_t, std::function<void(std::shared_ptr<ObserverManager>)>> handleObserverMap_;
-    std::map<int32_t, std::function<void(std::shared_ptr<ObserverManager>)>> removeObserverMap_;
+    std::map<int32_t, std::function<void()>> handleObserverMap_;
+    std::map<int32_t, std::function<void()>> removeObserverMap_;
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     std::shared_ptr<HiviewDFX::HiSysEventListener> hiSysEventObserver_ = nullptr;
 #ifdef MMI_ENABLE
