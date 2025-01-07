@@ -40,7 +40,7 @@ ohos_unittest("FrameAwarePluginTest") {
     "${ressched_services}/resschedmgr/pluginbase/include",
   ]
 
-  sources = [ 
+  sources = [
     "frame_aware_plugin_test.cpp",
     "mock/frame_aware_plugin_mock.cpp",
   ]
