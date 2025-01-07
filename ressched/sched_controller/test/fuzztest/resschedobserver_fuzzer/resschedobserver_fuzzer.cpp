@@ -37,8 +37,10 @@
 #include "observer_manager.h"
 #include "system_ability_definition.h"
 #include "res_sched_service.h"
+#ifdef MMI_ENABLE
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 #include "mmi_observer.h"
+#endif
 #endif
 #include "connection_subscriber.h"
 #include "fold_display_mode_observer.h"
@@ -273,6 +275,7 @@ namespace {
         return true;
     }
 
+#ifdef MMI_ENABLE
     bool ObserverManagerFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -293,6 +296,7 @@ namespace {
         }
         return true;
     }
+#endif
 
     bool HisysEventOnEventFuzzTest(const uint8_t* data, size_t size)
     {
@@ -336,6 +340,7 @@ namespace {
         return true;
     }
 
+#ifdef MMI_ENABLE
     bool MmiObserverSyncBundleNameFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -360,6 +365,7 @@ namespace {
         mmiObserver->SyncBundleName(pid, uid, bundleName, syncStatus);
         return true;
     }
+#endif
 #endif
 
     bool ConnectionSubscriberExtensionFuzzTest(const uint8_t* data, size_t size)
@@ -446,6 +452,7 @@ namespace {
         return true;
     }
 
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
     bool AvSessionStateListenerFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -472,6 +479,7 @@ namespace {
         avSessionStateListener->OnTopSessionChange(descriptor);
         return true;
     }
+#endif
 
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
     bool AudioObserverStateChangeFuzzTest(const uint8_t* data, size_t size)
@@ -668,15 +676,19 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::HisysEventCameraEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventWifiEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ProcessHiSysEventFuzzTest(data, size);
+#ifdef MMI_ENABLE
     OHOS::ResourceSchedule::ObserverManagerFuzzTest(data, size);
     OHOS::ResourceSchedule::MmiObserverSyncBundleNameFuzzTest(data, size);
+#endif
     OHOS::ResourceSchedule::HisysEventOnEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HiSysEventOnServiceDiedFuzzTest(data, size);
 #endif
     OHOS::ResourceSchedule::ConnectionSubscriberExtensionFuzzTest(data, size);
     OHOS::ResourceSchedule::ConnectionSubscriberDlpAbilityFuzzTest(data, size);
     OHOS::ResourceSchedule::FoldDisplayModeObserverFuzzTest(data, size);
+#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
     OHOS::ResourceSchedule::AvSessionStateListenerFuzzTest(data, size);
+#endif
 
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
     OHOS::ResourceSchedule::AudioObserverStateChangeFuzzTest(data, size);

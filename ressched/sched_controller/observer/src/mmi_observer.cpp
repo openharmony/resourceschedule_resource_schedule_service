@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#ifdef MMI_ENABLE
 #include "mmi_observer.h"
 
 #include "nlohmann/json.hpp"
@@ -44,3 +45,4 @@ void MmiObserver::SyncBundleName(int32_t pid, int32_t uid, std::string bundleNam
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif

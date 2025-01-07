@@ -15,7 +15,7 @@
 
 #ifndef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_MMIEVENT_OBSERVER_H
 #define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_MMIEVENT_OBSERVER_H
-
+#ifdef MMI_ENABLE
 #include <string>
 
 #include "mmi_event_observer.h"
@@ -36,4 +36,5 @@ public:
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
+#endif
 #endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_MMIEVENT_OBSERVER_H
