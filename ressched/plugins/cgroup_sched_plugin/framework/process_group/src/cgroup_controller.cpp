@@ -30,6 +30,9 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
+constexpr uint64_t SCHEDULE_CGROUP_FDSAN_TAG = 0xd001702;
+constexpr uint64_t COMMON_CGROUP_FDSAN_TAG = 0;
+
 CgroupController::CgroupController(const std::string& name, const std::string& path)
 {
     name_ = name;
@@ -45,7 +48,7 @@ CgroupController::~CgroupController()
 {
     for (auto& kv : policyToTaskFd_) {
         if (kv.second != -1) {
-            close(kv.second);
+            fdsan_close_with_tag(kv.second, SCHEDULE_CGROUP_FDSAN_TAG);
             kv.second = -1;
         }
     }
@@ -153,6 +156,7 @@ bool CgroupController::AddThreadSchedPolicy(SchedPolicy policy, const std::strin
             __func__, name_.c_str(), subgroup.c_str());
         return false;
     }
+    fdsan_exchange_owner_tag(fd, COMMON_CGROUP_FDSAN_TAG, SCHEDULE_CGROUP_FDSAN_TAG);
     policyToTaskFd_[policy] = fd;
     return true;
 }
@@ -175,6 +179,7 @@ bool CgroupController::AddThreadGroupSchedPolicy(SchedPolicy policy, const std::
             __func__, name_.c_str(), subgroup.c_str());
         return false;
     }
+    fdsan_exchange_owner_tag(fd, COMMON_CGROUP_FDSAN_TAG, SCHEDULE_CGROUP_FDSAN_TAG);
     policyToProcFd_[policy] = fd;
     return true;
 }

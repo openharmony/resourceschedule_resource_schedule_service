@@ -23,6 +23,8 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+constexpr uint64_t SCHEDULE_CGROUP_FDSAN_TAG = 0xd001702;
+constexpr uint64_t COMMON_CGROUP_FDSAN_TAG = 0;
 
 SocPerfExecutorWirteNode& SocPerfExecutorWirteNode::GetInstance()
 {
@@ -37,7 +39,7 @@ SocPerfExecutorWirteNode::~SocPerfExecutorWirteNode()
     for (auto it = fdInfo_.begin(); it != fdInfo_.end(); ++it) {
         int fd = it->second;
         if (fd >= 0) {
-            close(fd);
+            fdsan_close_with_tag(fd, SCHEDULE_CGROUP_FDSAN_TAG);
         }
     }
     fdInfo_.clear();
@@ -134,6 +136,7 @@ int32_t SocPerfExecutorWirteNode::GetFdForFilePath(const std::string& filePath)
         SOC_PERF_LOGE("GetFdForFilePath fd failed %{public}s %{public}d", filePath.c_str(), fd);
         return fd;
     }
+    fdsan_exchange_owner_tag(fd, COMMON_CGROUP_FDSAN_TAG, SCHEDULE_CGROUP_FDSAN_TAG);
     fdInfo_.insert(std::pair<std::string, int32_t>(filePath, fd));
     return fdInfo_[filePath];
 }
