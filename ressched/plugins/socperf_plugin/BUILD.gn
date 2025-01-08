@@ -57,4 +57,12 @@ ohos_shared_library("socperf_plugin") {
     cfi_cross_dso = true
     debug = false
   }
+
+  asmflags = [
+    "-Wl,-z,relro,-z,now"
+  ]
+
+  cflags_cc = [
+    "-fstack-protector-strong"
+  ]
 }
