@@ -71,7 +71,9 @@ HWTEST_F(FrameAwarePluginTest, HandleAppStateChangeTest, TestSize.Level1)
     data1->value = 0;
 
     FrameAwarePlugin::GetInstance().DispatchResource(data1); // not object
+    EXPECT_EQ(data1->value, 1);
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain pid
+    EXPECT_EQ(data->value, 1);
     data->payload.clear();
     data->payload["pid"] = true;
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain uid
@@ -111,7 +113,9 @@ HWTEST_F(FrameAwarePluginTest, HandleProcessStateChangeTest, TestSize.Level1)
     data1->value = 0;
 
     FrameAwarePlugin::GetInstance().DispatchResource(data1); // not object
+    EXPECT_EQ(data1->value, 1);
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain pid
+    EXPECT_EQ(data->value, 1);
     data->payload.clear();
     data->payload["pid"] = true;
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain uid
@@ -151,7 +155,9 @@ HWTEST_F(FrameAwarePluginTest, HandleCgroupAdjusterTest, TestSize.Level1)
     data1->value = 0;
 
     FrameAwarePlugin::GetInstance().DispatchResource(data1); // not object
+    EXPECT_EQ(data1->value, 1);
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain pid
+    EXPECT_EQ(data->value, 1);
     data->payload.clear();
     data->payload["pid"] = true;
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain uid
@@ -201,7 +207,9 @@ HWTEST_F(FrameAwarePluginTest, HandleWindowsFocusTest, TestSize.Level1)
     data1->value = 0;
 
     FrameAwarePlugin::GetInstance().DispatchResource(data1); // not object
+    EXPECT_EQ(data1->value, 1);
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain pid
+    EXPECT_EQ(data->value, 1);
     data->payload.clear();
     data->payload["pid"] = true;
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain uid
@@ -235,7 +243,9 @@ HWTEST_F(FrameAwarePluginTest, HandleContinuousTest, TestSize.Level1)
     data1->value = 0;
 
     FrameAwarePlugin::GetInstance().DispatchResource(data1); // not object
+    EXPECT_EQ(data1->value, 1);
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain pid
+    EXPECT_EQ(data->value, 1);
     data->payload.clear();
     data->value = 0;
     data->payload["pid"] = true;
@@ -270,7 +280,9 @@ HWTEST_F(FrameAwarePluginTest, HandleEventSlideTest, TestSize.Level1)
     data1->value = 0;
 
     FrameAwarePlugin::GetInstance().DispatchResource(data1); // not object
+    EXPECT_EQ(data1->value, 1);
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain pid
+    EXPECT_EQ(data->value, 1);
     data->payload.clear();
     data->value = 0;
     data->payload["clientPid"] = true;
@@ -305,7 +317,9 @@ HWTEST_F(FrameAwarePluginTest, HandleReportRenderTest, TestSize.Level1)
     data1->value = 0;
 
     FrameAwarePlugin::GetInstance().DispatchResource(data1); // not object
+    EXPECT_EQ(data1->value, 1);
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain pid
+    EXPECT_EQ(data->value, 1);
     data->payload.clear();
     data->payload["pid"] = true;
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain uid
@@ -339,7 +353,9 @@ HWTEST_F(FrameAwarePluginTest, HandleNetworkLatencyRequestTest, TestSize.Level1)
     data1->value = 0;
 
     FrameAwarePlugin::GetInstance().DispatchResource(data1); // is not object
+    EXPECT_EQ(data1->value, 1);
     FrameAwarePlugin::GetInstance().DispatchResource(data); // not contain clientPid
+    EXPECT_EQ(data->value, 1);
     data->payload.clear();
     data->payload["clientPid"] = true;
     FrameAwarePlugin::GetInstance().DispatchResource(data); // clientPid is not string
