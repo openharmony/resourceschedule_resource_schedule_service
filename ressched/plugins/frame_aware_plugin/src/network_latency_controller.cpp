@@ -25,7 +25,7 @@
 #include <unistd.h>
 
 #include "plugin_mgr.h"
-#include "rme_log_domain.h"
+#include "frame_aware_log.h"
 #include "event_runner.h"
 #include "ffrt_inner.h"
 

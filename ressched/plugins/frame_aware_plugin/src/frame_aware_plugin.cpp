@@ -14,9 +14,11 @@
  */
 
 #include "frame_aware_plugin.h"
+#ifdef RESSCHED_FRAME_AWARE_SCHED_ENABLE
 #include "frame_msg_intf.h"
+#endif
 #include "res_type.h"
-#include "rme_log_domain.h"
+#include "frame_aware_log.h"
 #include "plugin_mgr.h"
 #include "config_info.h"
 #include "parameters.h"
@@ -37,6 +39,7 @@ void FrameAwarePlugin::Init()
 {
     netLatCtrl.Init();
     functionMap = {
+#ifdef RESSCHED_FRAME_AWARE_SCHED_ENABLE
         { RES_TYPE_APP_STATE_CHANGE,
             [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
         { RES_TYPE_PROCESS_STATE_CHANGE,
@@ -49,8 +52,6 @@ void FrameAwarePlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleWindowsFocus(data); } },
         { RES_TYPE_REPORT_RENDER_THREAD,
             [this](const std::shared_ptr<ResData>& data) { HandleReportRender(data); } },
-        { RES_TYPE_NETWORK_LATENCY_REQUEST,
-            [this](const std::shared_ptr<ResData>& data) { HandleNetworkLatencyRequest(data); } },
         { RES_TYPE_SLIDE_RECOGNIZE,
             [this](const std::shared_ptr<ResData>& data) { HandleEventSlide(data); } },
         { RES_TYPE_SCREEN_LOCK,
@@ -59,6 +60,9 @@ void FrameAwarePlugin::Init()
             [this](const std::shared_ptr<ResData>& data) { HandleScreenStatus(data); } },
         { RES_TYPE_USER_INTERACTION_SCENE,
             [this](const std::shared_ptr<ResData>& data) { HandleInteractionScene(data); } },
+#endif
+        { RES_TYPE_NETWORK_LATENCY_REQUEST,
+            [this](const std::shared_ptr<ResData>& data) { HandleNetworkLatencyRequest(data); } },
     };
     resTypes = {
         RES_TYPE_APP_STATE_CHANGE,
@@ -76,7 +80,9 @@ void FrameAwarePlugin::Init()
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
+#ifdef RESSCHED_FRAME_AWARE_SCHED_ENABLE
     RME::FrameMsgIntf::GetInstance().Init();
+#endif
     RME_LOGI("FrameAwarePlugin::Init ueaServer success");
 }
 
@@ -85,12 +91,15 @@ void FrameAwarePlugin::Disable()
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
     }
+#ifdef RESSCHED_FRAME_AWARE_SCHED_ENABLE
     RME::FrameMsgIntf::GetInstance().Stop();
+#endif
     functionMap.clear();
     resTypes.clear();
     RME_LOGI("FrameAwarePlugin::Disable ueaServer success");
 }
 
+#ifdef RESSCHED_FRAME_AWARE_SCHED_ENABLE
 void FrameAwarePlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
 {
     if (!data->payload.is_object()) {
@@ -206,6 +215,7 @@ void FrameAwarePlugin::HandleReportRender(const std::shared_ptr<ResData>& data)
     int uid = ConvertToInteger(data, "uid");
     RME::FrameMsgIntf::GetInstance().ReportRenderThread(pid, uid, data->value);
 }
+#endif
 
 void FrameAwarePlugin::HandleNetworkLatencyRequest(const std::shared_ptr<ResData>& data)
 {
@@ -232,6 +242,7 @@ void FrameAwarePlugin::HandleNetworkLatencyRequest(const std::shared_ptr<ResData
     netLatCtrl.HandleRequest(value, pid_identity);
 }
 
+#ifdef RESSCHED_FRAME_AWARE_SCHED_ENABLE
 void FrameAwarePlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
     if (!data->payload.is_object()) {
@@ -248,6 +259,7 @@ void FrameAwarePlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
     int uid = ConvertToInteger(data, "callingUid");
     RME::FrameMsgIntf::GetInstance().ReportSlideEvent(pid, uid, data->value);
 }
+#endif
 
 void FrameAwarePlugin::HandleScreenLock(const std::shared_ptr<ResData>& data)
 {
@@ -269,10 +281,12 @@ void FrameAwarePlugin::HandleScreenStatus(const std::shared_ptr<ResData>& data)
     }
 }
 
+#ifdef RESSCHED_FRAME_AWARE_SCHED_ENABLE
 void FrameAwarePlugin::HandleInteractionScene(const std::shared_ptr<ResData>& data)
 {
     RME::FrameMsgIntf::GetInstance().ReportInteractionScene(data->value);
 }
+#endif
 
 void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
