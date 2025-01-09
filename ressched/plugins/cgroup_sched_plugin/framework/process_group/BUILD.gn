@@ -51,4 +51,8 @@ ohos_shared_library("libprocess_group") {
 
   part_name = "resource_schedule_service"
   subsystem_name = "resourceschedule"
+
+  asmflags = [ "-Wl,-z,relro,-z,now" ]
+
+  cflags_cc = [ "-fstack-protector-strong" ]
 }
