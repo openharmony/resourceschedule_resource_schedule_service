@@ -58,11 +58,7 @@ ohos_shared_library("socperf_plugin") {
     debug = false
   }
 
-  asmflags = [
-    "-Wl,-z,relro,-z,now"
-  ]
+  asmflags = [ "-Wl,-z,relro,-z,now" ]
 
-  cflags_cc = [
-    "-fstack-protector-strong"
-  ]
+  cflags_cc = [ "-fstack-protector-strong" ]
 }
