@@ -39,6 +39,8 @@ using OHOS::AppExecFwk::AbilityState;
 using OHOS::AppExecFwk::ExtensionState;
 using OHOS::Rosen::WindowType;
 constexpr uint32_t MAX_SIZE = 4096;
+constexpr uint64_t SCHEDULE_CGROUP_FDSAN_TAG = 0xd001702;
+constexpr uint64_t COMMON_CGROUP_FDSAN_TAG = 0;
 
 CgroupAdjuster& CgroupAdjuster::GetInstance()
 {
@@ -67,6 +69,7 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
             __func__, strerror(errno));
         return;
     }
+    fdsan_exchange_owner_tag(fd, COMMON_CGROUP_FDSAN_TAG, SCHEDULE_CGROUP_FDSAN_TAG);
     char fileContent[MAX_SIZE] = {0};
     int rd = read(fd, fileContent, sizeof(fileContent));
     if (rd < 0) {
@@ -93,7 +96,7 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
             continue;
         }
     }
-    close(fd);
+    fdsan_close_with_tag(fd, SCHEDULE_CGROUP_FDSAN_TAG);
     return;
 }
 

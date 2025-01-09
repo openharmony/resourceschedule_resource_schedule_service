@@ -34,6 +34,9 @@ namespace {
     static constexpr int FMT_STR_BUFF_LEN = 256;
 }
 
+constexpr uint64_t SCHEDULE_CGROUP_FDSAN_TAG = 0xd001702;
+constexpr uint64_t COMMON_CGROUP_FDSAN_TAG = 0;
+
 std::string FormatString(const char* fmt, va_list vararg)
 {
     std::string strResult;
@@ -77,6 +80,7 @@ bool ReadFileToString(const std::string& filePath, std::string& content)
     if (fd < 0) {
         return false;
     }
+    fdsan_exchange_owner_tag(fd, COMMON_CGROUP_FDSAN_TAG, SCHEDULE_CGROUP_FDSAN_TAG);
     struct stat sb {};
     if (fstat(fd, &sb) != -1 && sb.st_size > 0) {
         content.resize(sb.st_size);
@@ -95,7 +99,7 @@ bool ReadFileToString(const std::string& filePath, std::string& content)
         p += n;
         remaining -= n;
     }
-    close(fd);
+    fdsan_close_with_tag(fd, SCHEDULE_CGROUP_FDSAN_TAG);
     return readStatus;
 }
 
@@ -161,8 +165,9 @@ bool WriteStringToFile(const std::string& content, const std::string& filePath)
         PGCGS_LOGE("%{public}s failed. fd = %{public}d", __func__, fd);
         return false;
     }
+    fdsan_exchange_owner_tag(fd, COMMON_CGROUP_FDSAN_TAG, SCHEDULE_CGROUP_FDSAN_TAG);
     bool result = WriteStringToFile(fd, content);
-    close(fd);
+    fdsan_close_with_tag(fd, SCHEDULE_CGROUP_FDSAN_TAG);
     return result;
 }
 } // namespace CgroupSetting
