@@ -13,16 +13,22 @@
  * limitations under the License.
  */
 
-#ifndef RESSCHEDEXECUTOR_FUZZER_H
-#define RESSCHEDEXECUTOR_FUZZER_H
 
-#include <cstdint>
-#include <unistd.h>
-#include <climits>
-#include <cstdio>
-#include <cstdlib>
-#include <fcntl.h>
+#ifndef RES_SCHED_JSON_UTIL_TEST
+#define RES_SCHED_JSON_UTIL_TEST
 
-#define FUZZ_PROJECT_NAME "resschedexecutor_fuzzer"
+#include "gtest/gtest.h"
 
-#endif
+namespace OHOS {
+namespace ResourceSchedule {
+class ResSchedJsonUtilTest : public testing::Test {
+public:
+    static void SetUpTestCase();
+    static void TearDownTestCase();
+    void SetUp();
+    void TearDown();
+};
+} // namespace ResourceSchedule
+} // namespace OHOS
+
+#endif // RES_SCHED_JSON_UTIL_TEST

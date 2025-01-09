@@ -19,7 +19,7 @@
 
 #include "ipc_util.h"
 #include "res_exe_type.h"
-#include "res_sched_exe_common_utils.h"
+#include "res_common_util.h"
 #include "res_sched_exe_constants.h"
 #include "res_sched_exe_log.h"
 
@@ -45,7 +45,7 @@ int32_t ResSchedExeServiceProxy::SendRequestSync(uint32_t resType, int64_t value
     RSSEXE_LOGD("SendRequestSync success.");
     int32_t ret = response.ReadInt32();
     if (ret == ResErrCode::RSSEXE_NO_ERR) {
-        ResSchedExeCommonUtils::StringToJson(response.ReadString(), reply);
+        ResCommonUtil::LoadContentToJsonObj(response.ReadString(), reply);
     }
     return ret;
 }
@@ -117,7 +117,7 @@ int32_t ResSchedExeServiceProxy::SendDebugCommand(MessageOption& option)
     WRITE_PARCEL(data, InterfaceToken, ResSchedExeServiceProxy::GetDescriptor(),
         ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     WRITE_PARCEL(data, Uint32, ResExeType::RES_TYPE_DEBUG, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
-    uint64_t curr = ResSchedExeCommonUtils::GetCurrentTimestampUs();
+    uint64_t curr = ResCommonUtil::GetNowMicroTime();
     WRITE_PARCEL(data, Uint64, curr, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceProxy);
     RSSEXE_LOGD("IPC debug: client send request, current timestamp is %{public}lld.", (long long)curr);
 
