@@ -405,7 +405,7 @@ HWTEST_F(ResSchedClientTest, IsAllowedLinkJump, Function | MediumTest | Level0)
 {
     bool isAllowedLinkJump = false;
     int32_t ret = ResSchedClient::GetInstance().IsAllowedLinkJump(isAllowedLinkJump);
-    EXPECT_NE(ret, 0);
+    EXPECT_EQ(ret, NO_ERROR);
 }
 
 
