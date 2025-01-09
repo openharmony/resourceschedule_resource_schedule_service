@@ -55,7 +55,7 @@ CgroupController::~CgroupController()
     policyToTaskFd_.clear();
     for (auto& kv : policyToProcFd_) {
         if (kv.second != -1) {
-            close(kv.second);
+            fdsan_close_with_tag(kv.second, SCHEDULE_CGROUP_FDSAN_TAG);
             kv.second = -1;
         }
     }
