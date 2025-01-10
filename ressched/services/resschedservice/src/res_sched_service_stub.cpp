@@ -462,7 +462,7 @@ int32_t ResSchedServiceStub::IsAllowedLinkJumpInner(MessageParcel& data, Message
 bool ResSchedServiceStub::IsLimitRequest(int32_t uid)
 {
     std::lock_guard<std::mutex> lock(mutex_);
-    int64_t nowTime = ResCommonUtil::GetNowMillTime();
+    int64_t nowTime = ResCommonUtil::GetNowMillTime(true);
     CheckAndUpdateLimitData(nowTime);
     if (allRequestCount_.load() >= ALL_UID_REQUEST_LIMIT_COUNT) {
         RESSCHED_LOGD("all uid request is limit, %{public}d request fail", uid);
@@ -507,7 +507,7 @@ void ResSchedServiceStub::ReportBigData()
     if (!isReportBigData_.load()) {
         return;
     }
-    if (ResCommonUtil::GetNowMillTime() < nextReportBigDataTime_) {
+    if (ResCommonUtil::GetNowMillTime(true) < nextReportBigDataTime_) {
         return;
     }
     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "SERVICE_REQUEST_LIMIT",
@@ -520,7 +520,7 @@ void ResSchedServiceStub::InreaseBigDataCount()
 {
     if (!isReportBigData_.load()) {
         isReportBigData_.store(true);
-        nextReportBigDataTime_ = ResCommonUtil::GetNowMillTime() + FOUR_HOUR_TIME;
+        nextReportBigDataTime_ = ResCommonUtil::GetNowMillTime(true) + FOUR_HOUR_TIME;
     }
     bigDataReportCount_ ++;
 }

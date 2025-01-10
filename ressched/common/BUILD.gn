@@ -31,6 +31,11 @@ ohos_shared_library("ressched_common_utils") {
     "../common/src/batch_log_printer.cpp",
     "../common/src/oobe_datashare_utils.cpp",
     "../common/src/oobe_manager.cpp",
+    "../common/src/res_sched_file_util.cpp",
+    "../common/src/res_sched_json_util.cpp",
+    "../common/src/res_sched_string_util.cpp",
+    "../common/src/res_sched_system_util.cpp",
+    "../common/src/res_sched_time_util.cpp",
   ]
 
   deps = []
@@ -39,9 +44,12 @@ ohos_shared_library("ressched_common_utils") {
     "ability_base:zuri",
     "ability_runtime:dataobs_manager",
     "c_utils:utils",
+    "config_policy:configpolicy_util",
     "data_share:datashare_consumer",
     "hilog:libhilog",
+    "init:libbegetutil",
     "ipc:ipc_core",
+    "json:nlohmann_json_static",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]

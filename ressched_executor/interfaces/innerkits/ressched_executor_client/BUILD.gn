@@ -32,10 +32,11 @@ ohos_shared_library("resschedexe_client") {
   public_configs = [ ":client_public_config" ]
 
   sources = [
-    "${resschedexe_common}/src/res_sched_exe_common_utils.cpp",
     "src/res_sched_exe_client.cpp",
     "src/res_sched_exe_service_proxy.cpp",
   ]
+
+  deps = [ "${ressched_common}:ressched_common_utils" ]
 
   external_deps = [
     "c_utils:utils",

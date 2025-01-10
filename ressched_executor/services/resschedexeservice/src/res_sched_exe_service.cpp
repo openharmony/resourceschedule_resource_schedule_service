@@ -23,7 +23,6 @@
 #include "ipc_skeleton.h"
 
 #include "plugin_mgr.h"
-#include "res_sched_exe_common_utils.h"
 #include "res_sched_exe_constants.h"
 #include "res_sched_exe_log.h"
 #include "res_sched_exe_mgr.h"

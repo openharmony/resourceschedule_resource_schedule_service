@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,24 +13,22 @@
  * limitations under the License.
  */
 
-#ifndef CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_PROCESS_GROUP_UTIL_H_
-#define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_PROCESS_GROUP_UTIL_H_
 
-#include <string>
-#include "nlohmann/json.hpp"
+#ifndef RES_SCHED_TIME_UTIL_TEST
+#define RES_SCHED_TIME_UTIL_TEST
+
+#include "gtest/gtest.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-namespace CgroupSetting {
-std::string FormatString(const char* fmt, va_list vararg);
-
-std::string StringPrintf(const char* fmt, ...);
-
-bool ReadFileToStringForVFS(const std::string& filePath, std::string& content);
-
-bool ReadFileToStringForVFSFromExecutor(int tid, std::string& content);
-} // namespace CgroupSetting
+class ResSchedTimeUtilTest : public testing::Test {
+public:
+    static void SetUpTestCase();
+    static void TearDownTestCase();
+    void SetUp();
+    void TearDown();
+};
 } // namespace ResourceSchedule
 } // namespace OHOS
 
-#endif // CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_PROCESS_GROUP_UTIL_H_
+#endif // RES_SCHED_TIME_UTIL_TEST

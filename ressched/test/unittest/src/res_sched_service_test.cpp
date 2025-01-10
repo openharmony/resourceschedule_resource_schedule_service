@@ -861,9 +861,10 @@ HWTEST_F(ResSchedServiceTest, ReportBigData001, Function | MediumTest | Level0)
     resSchedServiceStub_->Init();
     resSchedServiceStub_->isReportBigData_.store(false);
     resSchedServiceStub_->ReportBigData();
+    EXPECT_TRUE(!resSchedServiceStub_->isReportBigData_.load());
     resSchedServiceStub_->isReportBigData_.store(true);
     resSchedServiceStub_->ReportBigData();
-    resSchedServiceStub_->nextReportBigDataTime_ = ResCommonUtil::GetNowMillTime();
+    resSchedServiceStub_->nextReportBigDataTime_ = ResCommonUtil::GetNowMillTime(true);
     resSchedServiceStub_->ReportBigData();
     EXPECT_EQ(resSchedServiceStub_->isReportBigData_.load(), false);
 }
@@ -881,6 +882,7 @@ HWTEST_F(ResSchedServiceTest, InreaseBigDataCount001, Function | MediumTest | Le
     resSchedServiceStub_->Init();
     resSchedServiceStub_->isReportBigData_.store(false);
     resSchedServiceStub_->InreaseBigDataCount();
+    EXPECT_TRUE(resSchedServiceStub_->isReportBigData_.load());
     resSchedServiceStub_->isReportBigData_.store(true);
     resSchedServiceStub_->InreaseBigDataCount();
     EXPECT_EQ(resSchedServiceStub_->isReportBigData_.load(), true);
