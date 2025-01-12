@@ -33,6 +33,7 @@
 #include "res_sched_event_listener.h"               // for ResSchedEvenetListener
 #include "res_sched_event_listener_stub.h"          // for ResSchedEvenetListenerStub
 #include "res_type.h"                               // for ResType
+#include "nlohmann/json.hpp"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -161,7 +162,7 @@ private:
         void RegisterSystemloadLevelCb(const sptr<ResSchedSystemloadNotifierClient>& callbackObj);
         void UnRegisterSystemloadLevelCb(const sptr<ResSchedSystemloadNotifierClient>& callbackObj);
         bool IsSystemloadCbArrayEmpty();
-        void OnSystemloadLevel(int32_t level) override;
+        ErrCode OnSystemloadLevel(int32_t level) override;
     private:
         std::mutex listMutex_;
         std::list<sptr<ResSchedSystemloadNotifierClient>> systemloadLevelCbs_;
@@ -174,8 +175,8 @@ private:
             uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
         void UnRegisterEventListener(const sptr<ResSchedEventListener>& eventListener, uint32_t eventType,
             uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
-        void OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup,
-            const nlohmann::json& extInfo) override;
+        ErrCode OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup,
+            const std::string& extInfo) override;
         bool IsInnerEventMapEmpty(uint32_t eventType, uint32_t listenerGroup);
         std::unordered_map<uint32_t, std::list<uint32_t>> GetRegisteredTypesAndGroup();
     private:

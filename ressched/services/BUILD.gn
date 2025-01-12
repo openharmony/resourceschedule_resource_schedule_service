@@ -43,7 +43,10 @@ config("resschedsvc_private_config") {
 ohos_shared_library("resschedsvc") {
   configs = [ ":resschedsvc_private_config" ]
 
-  public_configs = [ ":resschedsvc_public_config" ]
+  public_configs = [
+    ":resschedsvc_public_config",
+    "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
+  ]
 
   defines = []
   include_dirs = [ "../common/include" ]
@@ -70,10 +73,10 @@ ohos_shared_library("resschedsvc") {
     "resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
     "resschedservice/src/res_sched_service.cpp",
     "resschedservice/src/res_sched_service_ability.cpp",
-    "resschedservice/src/res_sched_service_stub.cpp",
   ]
 
   deps = [
+    "${ressched_interfaces}/innerkits/ressched_client:res_sched_service_stub",
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
     "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
     "../common:ressched_common_utils",
@@ -185,6 +188,7 @@ ohos_static_library("resschedsvc_static") {
   public_configs = [
     ":resschedsvc_private_config",
     ":resschedsvc_public_config",
+    "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
   ]
 
   defines = []
@@ -213,10 +217,10 @@ ohos_static_library("resschedsvc_static") {
     "resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
     "resschedservice/src/res_sched_service.cpp",
     "resschedservice/src/res_sched_service_ability.cpp",
-    "resschedservice/src/res_sched_service_stub.cpp",
   ]
 
   deps = [
+    "${ressched_interfaces}/innerkits/ressched_client:res_sched_service_stub",
     "${ressched_interfaces}/innerkits/ressched_client:ressched_client",
     "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
     "../common:ressched_common_utils",

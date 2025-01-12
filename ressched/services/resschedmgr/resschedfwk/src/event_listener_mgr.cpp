@@ -195,7 +195,8 @@ void EventListenerMgr::HandleSendEvent(std::vector<sptr<IRemoteObject>>& listene
                 continue;
             }
             auto proxy = std::make_unique<ResSchedEventListenerProxy>(listener);
-            proxy->OnReceiveEvent(eventType, eventValue, listenerGroup, extInfo);
+            proxy->OnReceiveEvent(eventType, eventValue, listenerGroup,
+                extInfo.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
         }
     };
     eventSenderQueue_->submit(func);

@@ -32,9 +32,10 @@ class TestNotifierSystemloadListener : public ResSchedSystemloadNotifierStub {
 public:
     TestNotifierSystemloadListener() = default;
 
-    void OnSystemloadLevel(int32_t level)
+    ErrCode OnSystemloadLevel(int32_t level)
     {
         testSystemloadLevel = level;
+        return ERR_OK;
     }
 
     static int32_t testSystemloadLevel;
