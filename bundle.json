@@ -104,16 +104,13 @@
           "header": {
             "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client/include",
             "header_files": [
-              "ires_sched_service.h",
               "res_sa_init.h",
               "res_sched_client.h",
               "res_sched_errors.h",
-              "res_sched_service_proxy.h",
               "res_type.h",
               "res_sched_ipc_interface_code.h",
               "res_sched_kill_reason.h",
-              "res_sched_systemload_notifier_client.h",
-              "res_sched_systemload_notifier_stub.h"
+              "res_sched_systemload_notifier_client.h"
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"

@@ -26,31 +26,31 @@ public:
     ResSchedService() = default;
     ~ResSchedService() override = default;
 
-    void ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload) override;
+    ErrCode ReportData(uint32_t resType, int64_t value, const std::string& payload) override;
 
-    int32_t ReportSyncEvent(const uint32_t resType, const int64_t value, const nlohmann::json& payload,
-        nlohmann::json& reply) override;
+    ErrCode ReportSyncEvent(uint32_t resType, int64_t value, const std::string& payload,
+        std::string& reply, int32_t& resultValue) override;
 
-    int32_t KillProcess(const nlohmann::json& payload) override;
+    ErrCode KillProcess(const std::string& payload, int32_t& resultValue) override;
 
-    void RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier) override;
+    ErrCode RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier) override;
 
-    void UnRegisterSystemloadNotifier() override;
+    ErrCode UnRegisterSystemloadNotifier() override;
 
-    void RegisterEventListener(const sptr<IRemoteObject>& eventListener, uint32_t eventType,
+    ErrCode RegisterEventListener(const sptr<IRemoteObject>& eventListener, uint32_t eventType,
         uint32_t listenerGroup) override;
 
-    void UnRegisterEventListener(uint32_t eventType, uint32_t listenerGroup) override;
+    ErrCode UnRegisterEventListener(uint32_t eventType, uint32_t listenerGroup) override;
 
-    int32_t GetSystemloadLevel() override;
+    ErrCode GetSystemloadLevel(int32_t& resultValue) override;
 
     void OnDeviceLevelChanged(int32_t type, int32_t level);
 
-    bool IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode) override;
+    ErrCode IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode, bool& resultValue) override;
 
     void LoadAppPreloadPlugin();
 
-    int32_t IsAllowedLinkJump(bool& isAllowedLinkJump) override;
+    ErrCode IsAllowedLinkJump(bool isAllowedLinkJump, int32_t& resultValue) override;
 
     int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
 
@@ -67,8 +67,27 @@ private:
     void DumpExecutorDebugCommand(const std::vector<std::string>& args, std::string& result);
     bool AllowDump();
 
+    nlohmann::json StringToJsonObj(const std::string& str);
+    int32_t CheckReportDataParcel(const uint32_t& type, const int64_t& value, const std::string& payload);
+    bool IsLimitRequest(int32_t uid);
+    void CheckAndUpdateLimitData(int64_t nowTime);
+    void PrintLimitLog(int32_t uid);
+    void ReportBigData();
+    void InreaseBigDataCount();
+    int32_t RemoteRequestCheck();
+
     OnIsAllowedAppPreloadFunc appPreloadFunc_ = nullptr;
     bool isLoadAppPreloadPlugin_ = false;
+    using RequestFuncType = std::function<int32_t (MessageParcel& data, MessageParcel& reply)>;
+    std::map<uint32_t, RequestFuncType> funcMap_;
+    std::map<int32_t, int32_t> appRequestCountMap_;
+    std::atomic<int32_t> allRequestCount_ {0};
+    std::atomic<int32_t> bigDataReportCount_ {0};
+    std::atomic<int64_t> nextCheckTime_ = {0};
+    std::atomic<int64_t> nextReportBigDataTime_ = {0};
+    std::atomic<bool> isReportBigData_ = {false};
+    std::atomic<bool> isPrintLimitLog_ = {true};
+    std::mutex mutex_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
