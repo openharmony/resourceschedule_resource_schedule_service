@@ -102,4 +102,9 @@ declare_args() {
       !defined(global_parts_info.request_request)) {
     rss_request_enable = false
   }
+  ressched_frame_aware_sched_enable = false
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.resourceschedule_frame_aware_sched)) {
+    ressched_frame_aware_sched_enable = true
+  }
 }
