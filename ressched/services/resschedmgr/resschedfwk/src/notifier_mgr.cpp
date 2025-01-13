@@ -76,7 +76,7 @@ void NotifierMgr::Init()
         for (auto& vec : g_systemloadPair) {
             if (vec.first == systemload) {
                 systemloadLevel_ = vec.second;
-                RESSCHED_LOGI("load systemload from file, value:%{public}ld", systemloadLevel_);
+                RESSCHED_LOGI("load systemload from file, value:%{public}d", (int)systemloadLevel_);
             }
         }
     }
@@ -144,9 +144,9 @@ void NotifierMgr::OnDeviceLevelChanged(int32_t type, int32_t level)
     for (auto& vec : g_systemloadPair) {
         if (systemloadLevel_ == vec.second) {
             if (SaveStringToFile(SYSTEMLOAD_FILE, vec.first)) {
-                RESSCHED_LOGI("save systemload succeed,systemload is %{public}ld", vec.second);
+                RESSCHED_LOGI("save systemload succeed,systemload is %{public}d", (int)vec.second);
             } else {
-                RESSCHED_LOGI("save systemload failed,systemload is %{public}ld", vec.second);
+                RESSCHED_LOGW("save systemload failed,systemload is %{public}d", (int)vec.second);
             }
         }
     }
