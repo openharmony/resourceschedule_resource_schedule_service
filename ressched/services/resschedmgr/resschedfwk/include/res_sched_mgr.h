@@ -70,8 +70,32 @@ public:
      * @param isProcessInit is process init
      */
     void InitExecutorPlugin(bool isProcessInit = false);
+
+    /**
+     * Init foreground app.
+     *
+     */
+    void InitForegroundAppInfo();
+    
+    /**
+     * process app state change.
+     *
+     * @param pid the app's pid
+     * @param state the app's state
+     */
+    void OnApplicationStateChange(int32_t pid, int32_t state);
+
+    /**
+     * judge app is foreground.
+     *
+     * @param pid the app's pid
+     * @return true if the app is foreground
+     */
+    bool IsForegroundApp(int32_t pid);
 private:
     std::shared_ptr<KillProcess> killProcess_ = nullptr;
+    std::mutex foregroundPidsMutex_;
+    std::mutex mutex_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

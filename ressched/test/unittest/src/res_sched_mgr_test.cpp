@@ -147,5 +147,25 @@ HWTEST_F(ResSchedMgrTest, InitExecutorPlugin001, TestSize.Level1)
     ResSchedMgr::GetInstance().InitExecutorPlugin(true);
     SUCCEED();
 }
+
+/**
+ * @tc.name: IsForegroundApp001
+ * @tc.desc: test func IsForegroundApp
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedMgrTest, IsForegroundApp001, TestSize.Level1)
+{
+    PluginMgr::GetInstance().InitForegroundAppInfo();
+    PluginMgr::GetInstance().OnApplicationStateChange(5000, ApplicationState::APP_STATE_FOREGROUND);
+    EXPECT_TRUE(PluginMgr::GetInstance().IsForegroundApp(5000));
+    PluginMgr::GetInstance().OnApplicationStateChange(5000, ApplicationState::APP_STATE_BACKGROUND);
+    EXPECT_FALSE(PluginMgr::GetInstance().IsForegroundApp(5000));
+    PluginMgr::GetInstance().OnApplicationStateChange(5000, ApplicationState::APP_STATE_FOREGROUND);
+    PluginMgr::GetInstance().OnApplicationStateChange(5000, ApplicationState::APP_STATE_TERMINATED);
+    EXPECT_FALSE(PluginMgr::GetInstance().IsForegroundApp(5000));
+    PluginMgr::GetInstance().OnApplicationStateChange(5000, ApplicationState::APP_STATE_FOREGROUND);
+    PluginMgr::GetInstance().OnApplicationStateChange(5000, ApplicationState::APP_STATE_END);
+    EXPECT_FALSE(PluginMgr::GetInstance().IsForegroundApp(5000));
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
