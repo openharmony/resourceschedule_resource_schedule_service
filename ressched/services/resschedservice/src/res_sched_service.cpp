@@ -114,7 +114,7 @@ namespace {
         ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
         ResType::RES_TYPE_APP_FRAME_DROP,
         ResType::RES_TYPE_AXIS_EVENT,
-    }
+    };
     static const std::unordered_set<uint32_t> SA_RES = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
         ResType::SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
@@ -223,7 +223,7 @@ namespace {
     {
         if (THIRDPART_RES.find(type) == THIRDPART_RES.end()) {
             RESSCHED_LOGD("resType:%{public}d not hap app report", type);
-            return IsHasPermission(type);
+            return false;
         }
         if (FG_THIRDPART_RES.find(type) != FG_THIRDPART_RES.end() &&
             !ResSchedMgr::GetInstance().IsForegroundApp(IPCSkeleton::GetCallingPid())) {
@@ -240,10 +240,10 @@ namespace {
         return true;
     }
 
-    bool CheckReportValid(uint32_t type)
+    bool IsSBDResType(uint32_t type)
     {
         if (SCB_RES.find(type) == SCB_RES.end()) {
-            return IsThirdPartType(type);
+            return false;
         }
         AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
         auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
@@ -597,7 +597,7 @@ int32_t ResSchedService::CheckReportDataParcel(const uint32_t& type, const int64
         RESSCHED_LOGE("type:%{public}u is invalid", type);
         return ERR_RES_SCHED_PARCEL_ERROR;
     }
-    if (!CheckReportValid(type)) {
+    if (!IsSBDResType(type) && !IsThirdPartType(type) && !IsHasPermission(type)) {
         RESSCHED_LOGE("type:%{public}u, no permission", type);
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
