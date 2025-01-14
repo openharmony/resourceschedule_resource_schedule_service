@@ -18,6 +18,7 @@
 
 #include <sys/types.h>
 #include <string>
+#include <unordered_set>
 #include "event_handler.h"
 #include "kill_process.h"
 #include "single_instance.h"
@@ -95,7 +96,7 @@ public:
 private:
     std::shared_ptr<KillProcess> killProcess_ = nullptr;
     std::mutex foregroundPidsMutex_;
-    std::mutex mutex_;
+    std::unordered_set<int32_t> foregroundPids;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

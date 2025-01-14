@@ -18,6 +18,9 @@
 #include <cinttypes>
 #include <map>
 
+#include "app_mgr_interface.h"
+#include "if_system_ability_manager.h"
+#include "iservice_registry.h"
 #include "notifier_mgr.h"
 #include "res_exe_type.h"
 #include "res_sched_exe_client.h"
@@ -26,6 +29,7 @@
 #include "plugin_mgr.h"
 #include "hitrace_meter.h"
 #include "scene_recognizer_mgr.h"
+#include "system_ability_definition.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -152,7 +156,7 @@ namespace {
         OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
             OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
         if (!systemAbilityManager) {
-            CGS_LOGE("%{public}s : systemAbilityManager nullptr!", __func__);
+            RESSCHED_LOGE("%{public}s : systemAbilityManager nullptr!", __func__);
             return nullptr;
         }
         OHOS::sptr<OHOS::IRemoteObject> object = systemAbilityManager->GetSystemAbility(OHOS::APP_MGR_SERVICE_ID);
@@ -225,16 +229,16 @@ void ResSchedMgr::OnApplicationStateChange(int32_t pid, int32_t state)
     std::lock_guard<std::mutex> autoLock(foregroundPidsMutex_);
     
     if (state == static_cast<int32_t>(ApplicationState::APP_STATE_FOREGROUND)) {
-        if (foregroundPidsMutex_.find(pid) == foregroundPidsMutex_.end()) {
-            foregroundPidsMutex_.emplace(pid);
+        if (foregroundPids.find(pid) == foregroundPids.end()) {
+            foregroundPids.emplace(pid);
         }
     }
     if (state == static_cast<int32_t>(ApplicationState::APP_STATE_BACKGROUND)
         || state == static_cast<int32_t>(ApplicationState::APP_STATE_TERMINATED)
         || state == static_cast<int32_t>(ApplicationState::APP_STATE_END)) {
-        auto item = foregroundPidsMutex_.find(pid);
-        if (item != foregroundPidsMutex_.end()) {
-            foregroundPidsMutex_.erase(item);
+        auto item = foregroundPids.find(pid);
+        if (item != foregroundPids.end()) {
+            foregroundPids.erase(item);
         }
     }
 }
@@ -242,8 +246,8 @@ void ResSchedMgr::OnApplicationStateChange(int32_t pid, int32_t state)
 bool ResSchedMgr::IsForegroundApp(int32_t pid)
 {
     std::lock_guard<std::mutex> autoLock(foregroundPidsMutex_);
-    auto item = foregroundPidsMutex_.find(pid);
-    return item != foregroundPidsMutex_.end();
+    auto item = foregroundPids.find(pid);
+    return item != foregroundPids.end();
 }
 
 void ResSchedMgr::InitForegroundAppInfo()
@@ -261,8 +265,8 @@ void ResSchedMgr::InitForegroundAppInfo()
     }
     std::lock_guard<std::mutex> autoLock(foregroundPidsMutex_);
     for (const auto& item : fgapplist) {
-        if (foregroundPidsMutex_.find(item.pid) == foregroundPidsMutex_.end()) {
-            foregroundPidsMutex_.emplace(item.pid);
+        if (foregroundPids.find(item.pid) == foregroundPids.end()) {
+            foregroundPids.emplace(item.pid);
         }
     }
     RESSCHED_LOGI("%{public}s succeed", __func__);
