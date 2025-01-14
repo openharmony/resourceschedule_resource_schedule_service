@@ -223,7 +223,7 @@ void ResSchedMgr::InitExecutorPlugin(bool isProcessInit)
     }
 }
 
-void ResSchedMgr::OnApplicationStateChange(int32_t pid, int32_t state)
+void ResSchedMgr::OnApplicationStateChange(int32_t state, int32_t pid)
 {
     RESSCHED_LOGD("OnApplicationStateChange called, state: %{public}d, pid : %{public}d .", state, pid);
     std::lock_guard<std::mutex> autoLock(foregroundPidsMutex_);

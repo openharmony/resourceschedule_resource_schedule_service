@@ -81,10 +81,10 @@ public:
     /**
      * process app state change.
      *
-     * @param pid the app's pid
      * @param state the app's state
+     * @param pid the app's pid
      */
-    void OnApplicationStateChange(int32_t pid, int32_t state);
+    void OnApplicationStateChange(int32_t state, int32_t pid);
 
     /**
      * judge app is foreground.
@@ -96,7 +96,7 @@ public:
 private:
     std::shared_ptr<KillProcess> killProcess_ = nullptr;
     std::mutex foregroundPidsMutex_;
-    std::unordered_set<int32_t> foregroundPids;
+    std::unordered_set<int32_t> foregroundPids_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
