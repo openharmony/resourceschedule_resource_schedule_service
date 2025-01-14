@@ -97,10 +97,7 @@ namespace {
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
         ResType::RES_TYPE_KEY_EVENT,
-        ResType::RES_TYPE_PUSH_PAGE,
         ResType::RES_TYPE_SLIDE_RECOGNIZE,
-        ResType::RES_TYPE_POP_PAGE,
-        ResType::RES_TYPE_LOAD_PAGE,
         ResType::RES_TYPE_WEB_GESTURE,
         ResType::RES_TYPE_REPORT_SCENE_SCHED,
         ResType::RES_TYPE_WEB_GESTURE_MOVE,
