@@ -229,16 +229,16 @@ void ResSchedMgr::OnApplicationStateChange(int32_t state, int32_t pid)
     std::lock_guard<std::mutex> autoLock(foregroundPidsMutex_);
     
     if (state == static_cast<int32_t>(ApplicationState::APP_STATE_FOREGROUND)) {
-        if (foregroundPids.find(pid) == foregroundPids.end()) {
-            foregroundPids.emplace(pid);
+        if (foregroundPids_.find(pid) == foregroundPids_.end()) {
+            foregroundPids_.emplace(pid);
         }
     }
     if (state == static_cast<int32_t>(ApplicationState::APP_STATE_BACKGROUND)
         || state == static_cast<int32_t>(ApplicationState::APP_STATE_TERMINATED)
         || state == static_cast<int32_t>(ApplicationState::APP_STATE_END)) {
-        auto item = foregroundPids.find(pid);
-        if (item != foregroundPids.end()) {
-            foregroundPids.erase(item);
+        auto item = foregroundPids_.find(pid);
+        if (item != foregroundPids_.end()) {
+            foregroundPids_.erase(item);
         }
     }
 }
@@ -246,8 +246,8 @@ void ResSchedMgr::OnApplicationStateChange(int32_t state, int32_t pid)
 bool ResSchedMgr::IsForegroundApp(int32_t pid)
 {
     std::lock_guard<std::mutex> autoLock(foregroundPidsMutex_);
-    auto item = foregroundPids.find(pid);
-    return item != foregroundPids.end();
+    auto item = foregroundPids_.find(pid);
+    return item != foregroundPids_.end();
 }
 
 void ResSchedMgr::InitForegroundAppInfo()
@@ -265,8 +265,8 @@ void ResSchedMgr::InitForegroundAppInfo()
     }
     std::lock_guard<std::mutex> autoLock(foregroundPidsMutex_);
     for (const auto& item : fgapplist) {
-        if (foregroundPids.find(item.pid) == foregroundPids.end()) {
-            foregroundPids.emplace(item.pid);
+        if (foregroundPids_.find(item.pid) == foregroundPids_.end()) {
+            foregroundPids_.emplace(item.pid);
         }
     }
     RESSCHED_LOGI("%{public}s succeed", __func__);
