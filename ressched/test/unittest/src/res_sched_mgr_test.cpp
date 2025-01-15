@@ -158,15 +158,15 @@ HWTEST_F(ResSchedMgrTest, InitExecutorPlugin001, TestSize.Level1)
 HWTEST_F(ResSchedMgrTest, IsForegroundApp001, TestSize.Level1)
 {
     ResSchedMgr::GetInstance().InitForegroundAppInfo();
-    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, (int32_t)ApplicationState::APP_STATE_FOREGROUND);
+    ResSchedMgr::GetInstance().OnApplicationStateChange((int32_t)ApplicationState::APP_STATE_FOREGROUND, 5000);
     EXPECT_TRUE(ResSchedMgr::GetInstance().IsForegroundApp(5000));
-    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, (int32_t)ApplicationState::APP_STATE_BACKGROUND);
+    ResSchedMgr::GetInstance().OnApplicationStateChange((int32_t)ApplicationState::APP_STATE_BACKGROUND, 5000);
     EXPECT_FALSE(ResSchedMgr::GetInstance().IsForegroundApp(5000));
-    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, (int32_t)ApplicationState::APP_STATE_FOREGROUND);
-    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, (int32_t)ApplicationState::APP_STATE_TERMINATED);
+    ResSchedMgr::GetInstance().OnApplicationStateChange((int32_t)ApplicationState::APP_STATE_FOREGROUND, 5000);
+    ResSchedMgr::GetInstance().OnApplicationStateChange((int32_t)ApplicationState::APP_STATE_TERMINATED, 5000);
     EXPECT_FALSE(ResSchedMgr::GetInstance().IsForegroundApp(5000));
-    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, (int32_t)ApplicationState::APP_STATE_FOREGROUND);
-    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, (int32_t)ApplicationState::APP_STATE_END);
+    ResSchedMgr::GetInstance().OnApplicationStateChange((int32_t)ApplicationState::APP_STATE_FOREGROUND, 5000);
+    ResSchedMgr::GetInstance().OnApplicationStateChange((int32_t)ApplicationState::APP_STATE_END, 5000);
     EXPECT_FALSE(ResSchedMgr::GetInstance().IsForegroundApp(5000));
 }
 } // namespace ResourceSchedule
