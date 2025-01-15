@@ -21,7 +21,7 @@
 
 #include "ipc_util.h"
 #include "res_exe_type.h"
-#include "res_sched_exe_common_utils.h"
+#include "res_common_util.h"
 #include "res_sched_exe_constants.h"
 #include "res_sched_exe_log.h"
 
@@ -159,7 +159,7 @@ int32_t ResSchedExeServiceStub::ReportDebugInner(MessageParcel& data)
         return ResIpcErrCode::RSSEXE_DATA_ERROR;
     }
 
-    uint64_t curr = ResSchedExeCommonUtils::GetCurrentTimestampUs();
+    uint64_t curr = ResCommonUtil::GetNowMicroTime();
     uint64_t start;
     READ_PARCEL(data, Uint64, start, ResIpcErrCode::RSSEXE_DATA_ERROR, ResSchedExeServiceStub);
     RSSEXE_LOGD("IPC debug: server recieve request, current timestamp is %{public}lld.", (long long)curr);
@@ -213,7 +213,7 @@ bool ResSchedExeServiceStub::ParseParcel(MessageParcel& data,
 
     std::string payload;
     READ_PARCEL(data, String, payload, false, ResSchedExeServiceStub);
-    ResSchedExeCommonUtils::StringToJson(payload, context);
+    ResCommonUtil::LoadContentToJsonObj(payload, context);
     return true;
 }
 } // namespace ResourceSchedule

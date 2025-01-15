@@ -25,7 +25,7 @@
 
 #include "plugin_mgr.h"
 #include "res_exe_type.h"
-#include "res_sched_exe_common_utils.h"
+#include "res_common_util.h"
 #include "res_sched_exe_constants.h"
 #include "res_sched_exe_service.h"
 #include "res_sched_exe_service_ability.h"
@@ -331,7 +331,7 @@ HWTEST_F(ResSchedExeServiceTest, ReportDebugInner001, Function | MediumTest | Le
 
     MessageParcel reportData;
     reportData.WriteUint32(ResExeType::RES_TYPE_DEBUG);
-    reportData.WriteUint64(ResSchedExeCommonUtils::GetCurrentTimestampUs());
+    reportData.WriteUint64(ResCommonUtil::GetNowMicroTime());
     EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData));
 }
 
@@ -345,7 +345,7 @@ static void ReportDebugInnerTask()
 
         MessageParcel reportData;
         reportData.WriteUint32(ResExeType::RES_TYPE_DEBUG);
-        reportData.WriteUint64(ResSchedExeCommonUtils::GetCurrentTimestampUs());
+        reportData.WriteUint64(ResCommonUtil::GetNowMicroTime());
         EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData));
         usleep(SYNC_INTERNAL_TIME);
     }

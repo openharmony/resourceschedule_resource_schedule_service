@@ -495,7 +495,7 @@ void SocPerfPlugin::HandleCrownRotation(const std::shared_ptr<ResData>& data)
 
 bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
 {
-    if (socperfGameBoostSwitch_ || data == nullptr) {
+    if (!socperfGameBoostSwitch_ || data == nullptr) {
         SOC_PERF_LOGD("SocPerfPlugin: socperf->GAME_BOOST null data");
         return false;
     }

@@ -200,19 +200,6 @@ namespace {
         return true;
     }
 
-    bool SyncEventFuzzTest(FuzzedDataProvider* fdp)
-    {
-        // getdata
-        MessageParcel fuzzData;
-        std::string data = fdp->ConsumeRandomLengthString();
-        fuzzData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
-        fuzzData.WriteBuffer(data.c_str(), data.size());
-        fuzzData.RewindRead(0);
-        MessageParcel fuzzReply;
-        DelayedSingleton<ResSchedService>::GetInstance()->ReportSyncEventInner(fuzzData, fuzzReply);
-        return true;
-    }
-
     bool ResSchedClientFuzzTest(FuzzedDataProvider* fdp)
     {
         uint32_t resType = fdp->ConsumeIntegral<uint32_t>();
@@ -392,7 +379,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     FuzzedDataProvider fdp(data, size);
     OHOS::ResourceSchedule::DoSomethingInterestingWithMyAPI(&fdp);
     OHOS::ResourceSchedule::OnRemoteRequest(&fdp);
-    OHOS::ResourceSchedule::SyncEventFuzzTest(&fdp);
     OHOS::ResourceSchedule::ResSchedClientFuzzTest(&fdp);
     OHOS::ResourceSchedule::ResSchedThirdPartyFuzzTest(&fdp);
     OHOS::ResourceSchedule::OnSystemloadLevelFuzzTest(&fdp);

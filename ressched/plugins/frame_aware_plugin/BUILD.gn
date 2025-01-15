@@ -50,12 +50,16 @@ ohos_shared_library("frame_aware_plugin") {
   external_deps = [
     "c_utils:utils",
     "ffrt:libffrt",
-    "frame_aware_sched:frame_msg_intf",
-    "frame_aware_sched:rtg_interface",
     "hilog:libhilog",
     "init:libbegetutil",
     "libxml2:libxml2",
   ]
+
+  defines = []
+  if (ressched_frame_aware_sched_enable) {
+    external_deps += [ "frame_aware_sched:frame_msg_intf" ]
+    defines += [ "RESSCHED_FRAME_AWARE_SCHED_ENABLE" ]
+  }
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

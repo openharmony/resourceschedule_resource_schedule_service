@@ -13,25 +13,22 @@
  * limitations under the License.
  */
 
-#ifndef RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_IRES_SCHED_SYSTEMLOAD_NOTIFIER_H
-#define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_IRES_SCHED_SYSTEMLOAD_NOTIFIER_H
 
-#include "iremote_broker.h"
+#ifndef RES_SCHED_JSON_UTIL_TEST
+#define RES_SCHED_JSON_UTIL_TEST
+
+#include "gtest/gtest.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-class IResSchedSystemloadNotifier : public IRemoteBroker {
+class ResSchedJsonUtilTest : public testing::Test {
 public:
-    DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ResourceSchedule.IResSchedSystemloadNotifier");
-
-    /**
-     * @brief systemload level notification.
-     *
-     * @param level Indicates the systemload level.
-     */
-    virtual void OnSystemloadLevel(int32_t level) = 0;
+    static void SetUpTestCase();
+    static void TearDownTestCase();
+    void SetUp();
+    void TearDown();
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
 
-#endif // RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_IRES_SCHED_SYSTEMLOAD_NOTIFIER_H
+#endif // RES_SCHED_JSON_UTIL_TEST

@@ -30,7 +30,10 @@ ohos_shared_library("libprocess_group") {
     "./src/sched_policy.cpp",
   ]
 
-  deps = [ "${ressched_services_executor}/interfaces/innerkits/ressched_executor_client:resschedexe_client" ]
+  deps = [
+    "${ressched_services_executor}/interfaces/innerkits/ressched_executor_client:resschedexe_client",
+    "../../../../common:ressched_common_utils",
+  ]
 
   external_deps = [
     "c_utils:utils",
@@ -51,4 +54,8 @@ ohos_shared_library("libprocess_group") {
 
   part_name = "resource_schedule_service"
   subsystem_name = "resourceschedule"
+
+  asmflags = [ "-Wl,-z,relro,-z,now" ]
+
+  cflags_cc = [ "-fstack-protector-strong" ]
 }

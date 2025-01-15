@@ -53,9 +53,10 @@ class TestResSchedSystemloadListener : public ResSchedSystemloadNotifierStub {
 public:
     TestResSchedSystemloadListener() = default;
 
-    void OnSystemloadLevel(int32_t level)
+    ErrCode OnSystemloadLevel(int32_t level)
     {
         testSystemloadLevel = level;
+        return ERR_OK;
     }
 
     static int32_t testSystemloadLevel;
@@ -171,7 +172,7 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
  */
 HWTEST_F(ResSchedServiceTest, Report001, Function | MediumTest | Level0)
 {
-    nlohmann::json payload;
+    std::string payload;
     EXPECT_TRUE(resSchedService_ != nullptr);
     resSchedService_->ReportData(0, 0, payload);
 }
@@ -186,8 +187,11 @@ HWTEST_F(ResSchedServiceTest, ReportSyncEvent, Function | MediumTest | Level0)
 {
     EXPECT_NE(resSchedService_, nullptr);
     nlohmann::json payload({{"pid", 100}});
-    nlohmann::json reply;
-    int32_t ret = resSchedService_->ReportSyncEvent(ResType::SYNC_RES_TYPE_THAW_ONE_APP, 0, payload, reply);
+    std::string reply;
+    int32_t ret;
+    resSchedService_->ReportSyncEvent(ResType::SYNC_RES_TYPE_THAW_ONE_APP, 0,
+        payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace),
+        reply, ret);
     // 事件分发失败，返回err
     EXPECT_NE(ret, 0);
 }
@@ -195,7 +199,7 @@ HWTEST_F(ResSchedServiceTest, ReportSyncEvent, Function | MediumTest | Level0)
 static void ReportTask()
 {
     std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
-    nlohmann::json payload;
+    std::string payload;
     EXPECT_TRUE(resSchedService_ != nullptr);
     resSchedService_->ReportData(0, 0, payload);
 }
@@ -222,8 +226,9 @@ HWTEST_F(ResSchedServiceTest, Report002, Function | MediumTest | Level0)
  */
 HWTEST_F(ResSchedServiceTest, KillProcess001, Function | MediumTest | Level0)
 {
-    nlohmann::json payload;
-    int32_t t = resSchedService_->KillProcess(payload);
+    std::string payload;
+    int32_t t;
+    resSchedService_->KillProcess(payload, t);
     EXPECT_EQ(t, -1);
 }
 
@@ -408,7 +413,8 @@ HWTEST_F(ResSchedServiceTest, GetSystemloadLevel001, Function | MediumTest | Lev
     EXPECT_TRUE(notifier != nullptr);
     NotifierMgr::GetInstance().Init();
     resSchedService_->OnDeviceLevelChanged(0, 0);
-    int32_t res = resSchedService_->GetSystemloadLevel();
+    int32_t res;
+    resSchedService_->GetSystemloadLevel(res);
     EXPECT_TRUE(res == 0);
 }
 
@@ -428,7 +434,8 @@ HWTEST_F(ResSchedServiceTest, GetSystemloadLevel002, Function | MediumTest | Lev
     NotifierMgr::GetInstance().Init();
     resSchedService_->OnDeviceLevelChanged(0, 2);
     resSchedService_->OnDeviceLevelChanged(1, 5);
-    int32_t res = resSchedService_->GetSystemloadLevel();
+    int32_t res;
+    resSchedService_->GetSystemloadLevel(res);
     EXPECT_TRUE(res == 2);
 }
 
@@ -506,160 +513,59 @@ class TestResSchedServiceStub : public ResSchedServiceStub {
 public:
     TestResSchedServiceStub() : ResSchedServiceStub() {}
 
-    void ReportData(uint32_t restype, int64_t value, const nlohmann::json& payload) override
+    ErrCode ReportData(uint32_t restype, int64_t value, const std::string& payload) override
     {
+        return ERR_OK;
     }
 
-    int32_t ReportSyncEvent(const uint32_t resType, const int64_t value, const nlohmann::json& payload,
-        nlohmann::json& reply) override
+    ErrCode ReportSyncEvent(uint32_t resType, int64_t value, const std::string& payload,
+        std::string& reply, int32_t& resultValue) override
     {
-        return 0;
+        return ERR_OK;
     }
 
-    int32_t KillProcess(const nlohmann::json& payload) override
+    ErrCode KillProcess(const std::string& payload, int32_t& resultValue) override
     {
-        return 0;
+        return ERR_OK;
     }
 
-    void RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier) override
+    ErrCode RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier) override
     {
+        return ERR_OK;
     }
 
-    void UnRegisterSystemloadNotifier() override
+    ErrCode UnRegisterSystemloadNotifier() override
     {
+        return ERR_OK;
     }
 
-    void RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType,
-        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON) override
+    ErrCode RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType,
+        uint32_t listenerGroup) override
     {
+        return ERR_OK;
     }
 
-    void UnRegisterEventListener(uint32_t eventType,
-        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON) override
+    ErrCode UnRegisterEventListener(uint32_t eventType,
+        uint32_t listenerGroup) override
     {
+        return ERR_OK;
     }
 
-    int32_t GetSystemloadLevel() override
+    ErrCode GetSystemloadLevel(int32_t& resultValue) override
     {
-        return 0;
+        return ERR_OK;
     }
 
-    bool IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode) override
+    ErrCode IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode, bool& resultValue) override
     {
-        return true;
+        return ERR_OK;
     }
 
-    int32_t IsAllowedLinkJump(bool& isAllowedLinkJump) override
+    ErrCode IsAllowedLinkJump(bool isAllowedLinkJump, int32_t& resultValue) override
     {
-        return 0;
+        return ERR_OK;
     }
 };
-
-/**
- * @tc.name: ResSchedServicesStub ReportDataInner 001
- * @tc.desc: Verify if resschedstub reportdatainner is success.
- * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
- */
-HWTEST_F(ResSchedServiceTest, ReportDataInner001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    MessageParcel reply;
-    MessageParcel emptyData;
-    EXPECT_TRUE(resSchedServiceStub_->ReportDataInner(emptyData, reply));
-
-    MessageParcel reportData;
-    reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
-    reportData.WriteUint32(1);
-    reportData.WriteInt64(1);
-    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    SUCCEED();
-}
-
-/**
- * @tc.name: ReportSyncEventInner
- * @tc.desc: test func ReportSyncEventInner.
- * @tc.type: FUNC
- * @tc.require: I9QN9E
- */
-HWTEST_F(ResSchedServiceTest, ReportSyncEventInner, Function | MediumTest | Level0)
-{
-    auto serviceStub = make_shared<TestResSchedServiceStub>();
-    EXPECT_NE(serviceStub, nullptr);
-    serviceStub->Init();
-    MessageParcel data;
-    data.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
-    data.WriteUint32(ResType::SYNC_RES_TYPE_THAW_ONE_APP);
-    data.WriteInt64(0);
-    data.WriteString(R"({"pid": 100})");
-    MessageParcel reply;
-    EXPECT_NE(serviceStub->ReportSyncEventInner(data, reply), 0);
-}
-
-static void ReportDataInnerTask()
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    MessageParcel reply;
-    MessageParcel emptyData;
-    EXPECT_TRUE(resSchedServiceStub_->ReportDataInner(emptyData, reply));
-
-    MessageParcel reportData;
-    reportData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
-    reportData.WriteUint32(1);
-    reportData.WriteInt64(1);
-    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    SUCCEED();
-}
-
-/**
- * @tc.name: ResSchedServicesStub ReportDataInner 002
- * @tc.desc: Test resschedstub reportdatainner in multithreading.
- * @tc.type: FUNC
- * @tc.require: issueI7G8VT
- * @tc.author: nizihao
- */
-HWTEST_F(ResSchedServiceTest, ReportDataInner002, Function | MediumTest | Level0)
-{
-    SET_THREAD_NUM(10);
-    GTEST_RUN_TASK(ReportDataInnerTask);
-}
-
-/**
- * @tc.name: ResSchedServicesStub StringToJson 001
- * @tc.desc: Verify if resschedstub StringToJson is success.
- * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
- */
-HWTEST_F(ResSchedServiceTest, StringToJson001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    nlohmann::json res = resSchedServiceStub_->StringToJsonObj("");
-    EXPECT_TRUE(!res.dump().empty());
-}
-
-static void StringToJsonTask()
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    nlohmann::json res = resSchedServiceStub_->StringToJsonObj("");
-    EXPECT_TRUE(!res.dump().empty());
-}
-
-/**
- * @tc.name: ResSchedServicesStub StringToJson 002
- * @tc.desc: Test resschedstub StringToJson in multithreading.
- * @tc.type: FUNC
- * @tc.require: issueI7G8VT
- * @tc.author: nizihao
- */
-HWTEST_F(ResSchedServiceTest, StringToJson002, Function | MediumTest | Level0)
-{
-    SET_THREAD_NUM(10);
-    GTEST_RUN_TASK(StringToJsonTask);
-}
 
 /**
  * @tc.name: ResSchedServicesStub RemoteRequest 001
@@ -674,24 +580,24 @@ HWTEST_F(ResSchedServiceTest, RemoteRequest001, Function | MediumTest | Level0)
     MessageOption option;
     MessageParcel reply;
     int32_t res = resSchedServiceStub_->OnRemoteRequest(
-        static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA), reply, reply, option);
+        static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_REPORT_DATA), reply, reply, option);
     EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(
-        static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_SYNC_EVENT), reply, reply, option);
+        static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_REPORT_SYNC_EVENT), reply, reply, option);
     EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(
-        static_cast<uint32_t>(ResourceScheduleInterfaceCode::KILL_PROCESS), reply, reply, option);
+        static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_KILL_PROCESS), reply, reply, option);
     EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(0, reply, reply, option);
     EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(
-        static_cast<uint32_t>(ResourceScheduleInterfaceCode::REGISTER_SYSTEMLOAD_NOTIFIER), reply, reply, option);
+        static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_REGISTER_SYSTEMLOAD_NOTIFIER), reply, reply, option);
     EXPECT_TRUE(!res);
     res = resSchedServiceStub_->OnRemoteRequest(
-        static_cast<uint32_t>(ResourceScheduleInterfaceCode::UNREGISTER_SYSTEMLOAD_NOTIFIER), reply, reply, option);
+        static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_UN_REGISTER_SYSTEMLOAD_NOTIFIER), reply, reply, option);
     EXPECT_TRUE(!res);
     res = resSchedServiceStub_->OnRemoteRequest(
-        static_cast<uint32_t>(ResourceScheduleInterfaceCode::GET_SYSTEMLOAD_LEVEL), reply, reply, option);
+        static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_GET_SYSTEMLOAD_LEVEL), reply, reply, option);
     EXPECT_TRUE(res);
 }
 
@@ -701,21 +607,21 @@ static void RemoteRequestTask()
     MessageOption option;
     MessageParcel reply;
     int32_t res = resSchedServiceStub_->OnRemoteRequest(
-        static_cast<uint32_t>(ResourceScheduleInterfaceCode::REPORT_DATA), reply, reply, option);
+        static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_REPORT_DATA), reply, reply, option);
     EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(
-        static_cast<uint32_t>(ResourceScheduleInterfaceCode::KILL_PROCESS), reply, reply, option);
+        static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_KILL_PROCESS), reply, reply, option);
     EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(0, reply, reply, option);
     EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(
-        static_cast<uint32_t>(ResourceScheduleInterfaceCode::REGISTER_SYSTEMLOAD_NOTIFIER), reply, reply, option);
+        static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_REGISTER_SYSTEMLOAD_NOTIFIER), reply, reply, option);
     EXPECT_TRUE(!res);
     res = resSchedServiceStub_->OnRemoteRequest(
-        static_cast<uint32_t>(ResourceScheduleInterfaceCode::UNREGISTER_SYSTEMLOAD_NOTIFIER), reply, reply, option);
+        static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_UN_REGISTER_SYSTEMLOAD_NOTIFIER), reply, reply, option);
     EXPECT_TRUE(!res);
     res = resSchedServiceStub_->OnRemoteRequest(
-        static_cast<uint32_t>(ResourceScheduleInterfaceCode::GET_SYSTEMLOAD_LEVEL), reply, reply, option);
+        static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_GET_SYSTEMLOAD_LEVEL), reply, reply, option);
     EXPECT_TRUE(res);
 }
 
@@ -731,160 +637,5 @@ HWTEST_F(ResSchedServiceTest, RemoteRequest002, Function | MediumTest | Level0)
     SET_THREAD_NUM(10);
     GTEST_RUN_TASK(RemoteRequestTask);
 }
-
-/**
- * @tc.name: ResSchedServicesStub RegisterSystemloadNotifier 001
- * @tc.desc: Verify if resschedstub RegisterSystemloadNotifier is success.
- * @tc.type: FUNC
- * @tc.require: issueI97M6C
- * @tc.author:shanhaiyang
- */
-HWTEST_F(ResSchedServiceTest, StubRegisterSystemloadNotifier001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    MessageParcel reply;
-    MessageParcel emptyData;
-    EXPECT_TRUE(resSchedServiceStub_ != nullptr);
-    resSchedServiceStub_->RegisterSystemloadNotifierInner(emptyData, reply);
-}
-
-/**
- * @tc.name: ResSchedServicesStub UnRegisterSystemloadNotifier 001
- * @tc.desc: Verify if resschedstub UnRegisterSystemloadNotifier is success.
- * @tc.type: FUNC
- * @tc.require: issueI97M6C
- * @tc.author:shanhaiyang
- */
-HWTEST_F(ResSchedServiceTest, StubUnRegisterSystemloadNotifier001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    MessageParcel reply;
-    MessageParcel emptyData;
-    EXPECT_TRUE(resSchedServiceStub_ != nullptr);
-    resSchedServiceStub_->UnRegisterSystemloadNotifierInner(emptyData, reply);
-}
-
-/**
- * @tc.name: ResSchedServicesStub GetSystemloadLevel 001
- * @tc.desc: Verify if resschedstub GetSystemloadLevel is success.
- * @tc.type: FUNC
- * @tc.require: issueI97M6C
- * @tc.author:shanhaiyang
- */
-HWTEST_F(ResSchedServiceTest, StubGetSystemloadLevel001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    MessageParcel reply;
-    MessageParcel emptyData;
-    EXPECT_TRUE(resSchedServiceStub_->GetSystemloadLevelInner(emptyData, reply));
-}
-
-/**
- * @tc.name: ResSchedServicesStub IsAllowedAppPreloadInner 001
- * @tc.desc: Verify resschedstub allowedAppPreloadInner.
- * @tc.type: FUNC
- * @tc.require: issueI9C9JN
- * @tc.author:xiaoshun
- */
-HWTEST_F(ResSchedServiceTest, IsAllowedAppPreloadInner001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    MessageParcel reply;
-    MessageParcel emptyData;
-    EXPECT_TRUE(!resSchedServiceStub_->IsAllowedAppPreloadInner(emptyData, reply));
-}
-
-/**
- * @tc.name: ResSchedServicesStub IsAllowedLinkJumpInner 001
- * @tc.desc: Verify resschedstub isAllowedLinkJumpInner.
- * @tc.type: FUNC
- * @tc.require: issueIBE0PK
- * @tc.author:csc
- */
-HWTEST_F(ResSchedServiceTest, IsAllowedLinkJumpInner001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    MessageParcel reply;
-    MessageParcel emptyData;
-    int32_t ret = resSchedServiceStub_->IsAllowedLinkJumpInner(emptyData, reply);
-    EXPECT_NE(ret, ERR_OK);
-}
-
-/**
- * @tc.name: ResSchedServicesStub IsLimitRequest 001
- * @tc.desc: IsLimitRequestTest
- * @tc.type: FUNC
- * @tc.require: issueI9U0YF
- * @tc.author:fengyang
- */
-HWTEST_F(ResSchedServiceTest, IsLimitRequest001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    int32_t uid = 0;
-    EXPECT_EQ(resSchedServiceStub_->IsLimitRequest(uid), false);
-    resSchedServiceStub_->appRequestCountMap_[uid] = 300;
-    EXPECT_EQ(resSchedServiceStub_->IsLimitRequest(uid), true);
-    resSchedServiceStub_->allRequestCount_.store(800);
-    EXPECT_EQ(resSchedServiceStub_->IsLimitRequest(uid), true);
-}
-
-/**
- * @tc.name: ResSchedServicesStub PrintLimitLog 001
- * @tc.desc: PrintLimitLog
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author:fengyang
- */
-HWTEST_F(ResSchedServiceTest, PrintLimitLog001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    int32_t uid = 0;
-    resSchedServiceStub_->isPrintLimitLog_.store(true);
-    resSchedServiceStub_->PrintLimitLog(uid);
-    EXPECT_EQ(resSchedServiceStub_->isPrintLimitLog_.load(), false);
-}
-
-/**
- * @tc.name: ResSchedServicesStub ReportBigData 001
- * @tc.desc: ReportBigData
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author:fengyang
- */
-HWTEST_F(ResSchedServiceTest, ReportBigData001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    resSchedServiceStub_->isReportBigData_.store(false);
-    resSchedServiceStub_->ReportBigData();
-    resSchedServiceStub_->isReportBigData_.store(true);
-    resSchedServiceStub_->ReportBigData();
-    resSchedServiceStub_->nextReportBigDataTime_ = ResCommonUtil::GetNowMillTime();
-    resSchedServiceStub_->ReportBigData();
-    EXPECT_EQ(resSchedServiceStub_->isReportBigData_.load(), false);
-}
-
-/**
- * @tc.name: ResSchedServicesStub InreaseBigDataCount 001
- * @tc.desc: InreaseBigDataCount
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author:fengyang
- */
-HWTEST_F(ResSchedServiceTest, InreaseBigDataCount001, Function | MediumTest | Level0)
-{
-    auto resSchedServiceStub_ = make_shared<TestResSchedServiceStub>();
-    resSchedServiceStub_->Init();
-    resSchedServiceStub_->isReportBigData_.store(false);
-    resSchedServiceStub_->InreaseBigDataCount();
-    resSchedServiceStub_->isReportBigData_.store(true);
-    resSchedServiceStub_->InreaseBigDataCount();
-    EXPECT_EQ(resSchedServiceStub_->isReportBigData_.load(), true);
-}
-
 } // namespace ResourceSchedule
 } // namespace OHOS

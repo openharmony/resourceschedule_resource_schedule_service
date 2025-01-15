@@ -20,7 +20,7 @@
 #include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
 #include "app_mgr_constants.h"
-#include "parameters.h"
+#include "file_ex.h"
 #include "res_sched_log.h"
 #include "res_sched_common_death_recipient.h"
 #include "res_sched_systemload_notifier_proxy.h"
@@ -46,7 +46,7 @@ static std::vector<std::pair<std::string, ResType::SystemloadLevel>> g_systemloa
     { "ESCAPE", ResType::SystemloadLevel::ESCAPE }
 };
 
-static const std::string SYSTEMLOAD_PARAMETER = "resourceschedule.systemload.level";
+static const std::string SYSTEMLOAD_FILE = "/data/service/el1/public/ressched/systemload";
 
 NotifierMgr& NotifierMgr::GetInstance()
 {
@@ -71,12 +71,12 @@ void NotifierMgr::Init()
             NotifierMgr::GetInstance().OnRemoteNotifierDied(notifier);
         }));
     notifierHandler_ = std::make_shared<ffrt::queue>("DeviceNotifyQueue");
-    std::string systemloadParamDef;
-    std::string systemloadParam = OHOS::system::GetParameter(SYSTEMLOAD_PARAMETER, systemloadParamDef);
-    if (!systemloadParam.empty()) {
+    std::string systemload;
+    if (LoadStringFromFile(SYSTEMLOAD_FILE, systemload)) {
         for (auto& vec : g_systemloadPair) {
-            if (vec.first == systemloadParam) {
+            if (vec.first == systemload) {
                 systemloadLevel_ = vec.second;
+                RESSCHED_LOGI("load systemload from file, value:%{public}d", (int)systemloadLevel_);
             }
         }
     }
@@ -143,7 +143,11 @@ void NotifierMgr::OnDeviceLevelChanged(int32_t type, int32_t level)
     systemloadLevel_ = static_cast<ResType::SystemloadLevel>(level);
     for (auto& vec : g_systemloadPair) {
         if (systemloadLevel_ == vec.second) {
-            OHOS::system::SetParameter(SYSTEMLOAD_PARAMETER, vec.first);
+            if (SaveStringToFile(SYSTEMLOAD_FILE, vec.first)) {
+                RESSCHED_LOGI("save systemload succeed,systemload is %{public}d", (int)vec.second);
+            } else {
+                RESSCHED_LOGW("save systemload failed,systemload is %{public}d", (int)vec.second);
+            }
         }
     }
 

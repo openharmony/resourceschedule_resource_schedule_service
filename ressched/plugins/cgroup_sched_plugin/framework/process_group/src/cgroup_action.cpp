@@ -26,6 +26,7 @@
 #include "nlohmann/json.hpp"           // for Value
 #include "process_group_log.h"    // for PGCGS_LOGI, PGCGS_LOGE
 #include "process_group_util.h"   // for ReadFileToString
+#include "res_common_util.h"
 #include "res_sched_exe_client.h" // for ResSchedExeClient
 #include "sched_policy.h"         // for SchedPolicy, SP_UPPER_LIMIT, SP_DEF...
 
@@ -245,15 +246,8 @@ bool CgroupAction::ParseConfigFileToJsonObj(nlohmann::json& jsonObjRoot)
             continue;
         }
         std::string realConfigFile(tmpPath);
-        std::string jsonString;
-        if (!ReadFileToString(realConfigFile, jsonString)) {
-            continue;
-        }
-        if (jsonString.empty()) {
-            continue;
-        }
-        nlohmann::json jsonTemp = nlohmann::json::parse(jsonString, nullptr, false);
-        if (jsonTemp.is_discarded()) {
+        nlohmann::json jsonTemp;
+        if (!ResCommonUtil::LoadFileToJsonObj(realConfigFile, jsonTemp)) {
             continue;
         }
         if (jsonTemp.contains(JSON_KEY_CGROUPS)) {
