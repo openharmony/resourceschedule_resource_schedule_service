@@ -386,20 +386,27 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
 {
     if (data->value == WindowFocusStatus::WINDOW_FOCUS) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, "");
-        UpdateFocusAppType(data);
-        SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH:%{public}d", focusAppType_);
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, true, "");
+        UpdateFocusAppType(data, true);
+    } else if (data->value == WindowFocusStatus::WINDOW_UNFOCUS) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, false, "");
+        UpdateFocusAppType(data, false);
     }
+    IsFoucsAppsAllGame();
 }
 
-bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data)
+bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, bool focusStatus)
 {
     int32_t uid = GetUidByData(data);
     if (uid == INVALID_VALUE) {
         return false;
     }
+    if (!focusStatus) {
+        focusAppUids_.erase(uid);
+        return true;
+    }
+    focusAppUids_.insert(uid);
     if (uidToAppTypeMap_.count(uid) > 0) {
-        focusAppType_ = uidToAppTypeMap_[uid];
         return true;
     }
     if (reqAppTypeFunc_ == nullptr) {
@@ -407,10 +414,28 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data)
         return false;
     }
     std::string bundleName = GetBundleNameByUid(uid);
-    focusAppType_ = reqAppTypeFunc_(bundleName);
-    if (focusAppType_ != INVALID_VALUE && focusAppType_ != INVALID_APP_TYPE) {
-        uidToAppTypeMap_[uid] = focusAppType_;
+    int32_t focusAppType = reqAppTypeFunc_(bundleName);
+    if (focusAppType != INVALID_VALUE && focusAppType != INVALID_APP_TYPE) {
+        uidToAppTypeMap_[uid] = focusAppType;
     }
+    return true;
+}
+
+bool SocPerfPlugin::IsFoucsAppsAllGame()
+{
+    if (focusAppUids_.empty() || uidToAppTypeMap_.empty()) {
+        SOC_PERF_LOGD("SocPerfPlugin: IsFoucsAppsAllGame focusAppUids_ or uidToAppTypeMap_ is empty");
+        return false;
+    }
+    std::set<int32_t>::iterator it;
+    bool isAllGame = true;
+    for (it == focusAppUids_.begin(); it != focusAppUids_.end(); ++it) {
+        if (uidToAppTypeMap_[*it] != APP_TYPE_GAME) {
+            isAllGame = false;
+            break;
+        }
+    }
+    isFocusAppsGameType_ = isAllGame;
     return true;
 }
 
@@ -439,7 +464,7 @@ std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid)
 
 void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 {
-    if (socperfGameBoostSwitch_ && focusAppType_ == APP_TYPE_GAME) {
+    if (socperfGameBoostSwitch_ && isFocusAppsGameType_) {
         SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK game can not get click");
         return;
     }
@@ -456,7 +481,7 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleEventKey(const std::shared_ptr<ResData>& data)
 {
-    if (socperfGameBoostSwitch_ && focusAppType_ == APP_TYPE_GAME) {
+    if (socperfGameBoostSwitch_ && isFocusAppsGameType_) {
         SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_KEY game can not get key_event");
         return;
     }
@@ -561,7 +586,7 @@ void SocPerfPlugin::HandlePopPage(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
-    if (socperfGameBoostSwitch_ && focusAppType_ == APP_TYPE_GAME) {
+    if (socperfGameBoostSwitch_ && isFocusAppsGameType_) {
         SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_SLIDE game can not get slide");
         return;
     }
