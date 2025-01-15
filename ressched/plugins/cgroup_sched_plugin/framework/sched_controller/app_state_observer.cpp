@@ -317,7 +317,7 @@ void RmsApplicationStateObserver::OnProcessStateChanged(const ProcessData &proce
     MarshallingProcessData(processData, payload);
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_PROCESS_STATE_CHANGE, static_cast<int32_t>(processData.state), payload);
-    ReportProcessStateInProcess(processData.state, processData.pid);
+    ReportProcessStateInProcess((int32_t)processData.state, (int32_t)processData.pid);
 }
 
 void RmsApplicationStateObserver::OnAppStopped(const AppStateData &appStateData)
