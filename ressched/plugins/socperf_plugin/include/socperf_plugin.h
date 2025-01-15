@@ -39,11 +39,12 @@ public:
 private:
     using ReqAppTypeFunc = int32_t (*)(const std::string &bundleName);
     std::set<uint32_t> resTypes;
+    std::set<int32_t> focusAppUids_;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
     std::map<int32_t, int32_t> uidToAppTypeMap_;
     std::string perfReqAppTypeSoPath_;
     std::string perfReqAppTypeSoFunc_;
-    int32_t focusAppType_;
+    bool isFocusAppsGameType_ = false;
     int64_t screenStatus_;
     std::string deviceMode_;
     ffrt::mutex screenMutex_;
@@ -94,10 +95,11 @@ private:
     bool HandlePowerModeChanged(const std::shared_ptr<ResData>& data);
     bool HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& data);
     bool HandleGameBoost(const std::shared_ptr<ResData>& data);
-    bool UpdateFocusAppType(const std::shared_ptr<ResData>& data);
+    bool UpdateFocusAppType(const std::shared_ptr<ResData>& data, bool focusStatus);
     bool HandleUninstallEvent(const std::shared_ptr<ResData>& data);
     bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data);
     bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data, const int32_t appType);
+    bool IsFocusAppsAllGame();
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
     void HandleScreenOff();
