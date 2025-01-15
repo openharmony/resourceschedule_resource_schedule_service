@@ -145,7 +145,7 @@ HWTEST_F(ResSchedMgrTest, InitExecutorPlugin001, TestSize.Level1)
     PluginMgr::GetInstance().Init();
     ResSchedMgr::GetInstance().InitExecutorPlugin();
     ResSchedMgr::GetInstance().InitExecutorPlugin(true);
-    SUCCEED();
+    EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
