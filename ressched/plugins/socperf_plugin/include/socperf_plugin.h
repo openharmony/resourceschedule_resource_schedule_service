@@ -61,8 +61,10 @@ private:
     void HandleWindowFocus(const std::shared_ptr<ResData>& data);
     void HandleEventClick(const std::shared_ptr<ResData>& data);
     void HandleEventKey(const std::shared_ptr<ResData>& data);
+#ifdef RESSCHED_RESOURCESCHEDULE_CROWN_POWER_KEY_ENABLE
     void HandlePowerEventKey(const std::shared_ptr<ResData>& data);
     void HandleCrownRotation(const std::shared_ptr<ResData>& data);
+#endif // RESSCHED_RESOURCESCHEDULE_CROWN_POWER_KEY_ENABLE
     void HandleLoadPage(const std::shared_ptr<ResData>& data);
     void HandlePopPage(const std::shared_ptr<ResData>& data);
     void HandleEventSlide(const std::shared_ptr<ResData>& data);
