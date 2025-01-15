@@ -147,7 +147,7 @@ HWTEST_F(ResSchedMgrTest, InitExecutorPlugin001, TestSize.Level1)
     PluginMgr::GetInstance().Init();
     ResSchedMgr::GetInstance().InitExecutorPlugin();
     ResSchedMgr::GetInstance().InitExecutorPlugin(true);
-    EXPECT_NE(PluginMgr::GetInstance().configReader_, nullptr);
+    EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
 }
 
 /**

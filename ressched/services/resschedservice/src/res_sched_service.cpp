@@ -93,6 +93,7 @@ namespace {
         ResType::RES_TYPE_REPORT_DISTRIBUTE_TID,
         ResType::RES_TYPE_AXIS_EVENT,
         ResType::RES_TYPE_CROWN_ROTATION_STATUS,
+        ResType::RES_TYPE_RED_ENVELOPE,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
