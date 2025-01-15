@@ -14,11 +14,13 @@
  */
 
 #include "res_sched_mgr_test.h"
+#include "application_state_observer_stub.h"
 
 using namespace std;
 using namespace testing::ext;
 
 namespace OHOS {
+using namespace AppExecFwk;
 namespace ResourceSchedule {
 namespace {
     const string LIB_NAME = "libunittest_plugin.z.so";
@@ -156,15 +158,15 @@ HWTEST_F(ResSchedMgrTest, InitExecutorPlugin001, TestSize.Level1)
 HWTEST_F(ResSchedMgrTest, IsForegroundApp001, TestSize.Level1)
 {
     ResSchedMgr::GetInstance().InitForegroundAppInfo();
-    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, ApplicationState::APP_STATE_FOREGROUND);
+    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, (int32_t)ApplicationState::APP_STATE_FOREGROUND);
     EXPECT_TRUE(ResSchedMgr::GetInstance().IsForegroundApp(5000));
-    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, ApplicationState::APP_STATE_BACKGROUND);
+    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, (int32_t)ApplicationState::APP_STATE_BACKGROUND);
     EXPECT_FALSE(ResSchedMgr::GetInstance().IsForegroundApp(5000));
-    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, ApplicationState::APP_STATE_FOREGROUND);
-    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, ApplicationState::APP_STATE_TERMINATED);
+    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, (int32_t)ApplicationState::APP_STATE_FOREGROUND);
+    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, (int32_t)ApplicationState::APP_STATE_TERMINATED);
     EXPECT_FALSE(ResSchedMgr::GetInstance().IsForegroundApp(5000));
-    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, ApplicationState::APP_STATE_FOREGROUND);
-    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, ApplicationState::APP_STATE_END);
+    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, (int32_t)ApplicationState::APP_STATE_FOREGROUND);
+    ResSchedMgr::GetInstance().OnApplicationStateChange(5000, (int32_t)ApplicationState::APP_STATE_END);
     EXPECT_FALSE(ResSchedMgr::GetInstance().IsForegroundApp(5000));
 }
 } // namespace ResourceSchedule
