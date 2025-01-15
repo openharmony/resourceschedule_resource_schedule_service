@@ -281,6 +281,8 @@ enum : uint32_t {
     RES_TYPE_INTENT_CTRL_APP = 126,
     // crown rotation value 0:start, value 2:end
     RES_TYPE_CROWN_ROTATION_STATUS = 129,
+    // report red envelope scene
+    RES_TYPE_RED_ENVELOPE = 130 ,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
