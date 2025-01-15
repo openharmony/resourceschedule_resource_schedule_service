@@ -282,5 +282,10 @@ extern "C" void ReportAppStateInProcess(int32_t state, int32_t pid)
     NotifierMgr::GetInstance().OnApplicationStateChange(state, pid);
     ResSchedMgr::GetInstance().OnApplicationStateChange(state, pid);
 }
+
+extern "C" void ReportProcessStateInProcess(int32_t state, int32_t pid)
+{
+    ResSchedMgr::GetInstance().OnApplicationStateChange(state, pid);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

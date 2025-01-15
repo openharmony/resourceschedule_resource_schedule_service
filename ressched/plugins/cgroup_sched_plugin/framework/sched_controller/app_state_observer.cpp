@@ -48,6 +48,8 @@ std::unordered_map<int32_t, int32_t> RmsApplicationStateObserver::extensionState
         static_cast<int32_t>(AppExecFwk::AbilityState::ABILITY_STATE_BACKGROUND)},
 };
 
+extern "C" void ReportProcessStateInProcess(int32_t state, int32_t pid);
+
 void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateData &appStateData)
 {
     if (!ValidateAppStateData(appStateData)) {
@@ -315,6 +317,7 @@ void RmsApplicationStateObserver::OnProcessStateChanged(const ProcessData &proce
     MarshallingProcessData(processData, payload);
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_PROCESS_STATE_CHANGE, static_cast<int32_t>(processData.state), payload);
+    ReportProcessStateInProcess(processData.state, processData.pid);
 }
 
 void RmsApplicationStateObserver::OnAppStopped(const AppStateData &appStateData)

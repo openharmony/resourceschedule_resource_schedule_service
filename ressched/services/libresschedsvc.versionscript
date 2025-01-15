@@ -26,6 +26,7 @@
     *Observer*;
     *Listener*;
     *ReportAppStateInProcess*;
+    *ReportProcessStateInProcess*;
     SetListFlingTimeoutTime;
     SetListFlingEndTime;
     SetListFlingSpeedLimit;
