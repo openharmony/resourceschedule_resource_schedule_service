@@ -99,7 +99,6 @@ namespace {
         ResType::RES_TYPE_KEY_EVENT,
         ResType::RES_TYPE_SLIDE_RECOGNIZE,
         ResType::RES_TYPE_WEB_GESTURE,
-        ResType::RES_TYPE_REPORT_SCENE_SCHED,
         ResType::RES_TYPE_WEB_GESTURE_MOVE,
         ResType::RES_TYPE_WEB_SLIDE_NORMAL,
         ResType::RES_TYPE_LOAD_URL,
