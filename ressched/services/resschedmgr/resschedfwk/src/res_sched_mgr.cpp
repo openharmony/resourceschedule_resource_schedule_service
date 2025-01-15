@@ -257,7 +257,7 @@ void ResSchedMgr::InitForegroundAppInfo()
         RESSCHED_LOGE("%{public}s app manager nullptr!", __func__);
         return;
     }
-    std::vector<AppExecFwk::AppStateData> fgapplist; 
+    std::vector<AppExecFwk::AppStateData> fgapplist;
     int32_t err = appManager->GetForegroundApplications(fgapplist);
     if (err != ERR_OK) {
         RESSCHED_LOGE("%{public}s GetForegroundApplications failed. err:%{public}d", __func__, err);
