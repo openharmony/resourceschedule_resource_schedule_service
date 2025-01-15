@@ -386,14 +386,13 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
 {
     if (data->value == WindowFocusStatus::WINDOW_FOCUS) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH focus");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, true, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, "");
         UpdateFocusAppType(data, true);
     } else if (data->value == WindowFocusStatus::WINDOW_UNFOCUS) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH unfocus");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, false, "");
         UpdateFocusAppType(data, false);
     }
-    IsFocusAppsAllGame();
+    
 }
 
 bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, bool focusStatus)
@@ -404,10 +403,12 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
     }
     if (!focusStatus) {
         focusAppUids_.erase(uid);
+        IsFocusAppsAllGame();
         return true;
     }
     focusAppUids_.insert(uid);
     if (uidToAppTypeMap_.count(uid) > 0) {
+        isFocusAppsGameType_ = isFocusAppsGameType_ && (uidToAppTypeMap_[uid] == APP_TYPE_GAME);
         return true;
     }
     if (reqAppTypeFunc_ == nullptr) {
@@ -418,6 +419,7 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
     int32_t focusAppType = reqAppTypeFunc_(bundleName);
     if (focusAppType != INVALID_VALUE && focusAppType != INVALID_APP_TYPE) {
         uidToAppTypeMap_[uid] = focusAppType;
+        isFocusAppsGameType_ = isFocusAppsGameType_ && (focusAppType == APP_TYPE_GAME);
     }
     return true;
 }
