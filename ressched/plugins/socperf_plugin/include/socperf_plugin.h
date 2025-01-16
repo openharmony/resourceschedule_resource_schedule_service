@@ -103,7 +103,6 @@ private:
     bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data);
     bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data, const int32_t appType);
     bool IsFocusAppsAllGame();
-    bool IsFocusAppsAllGame();
     bool IsFocusAppsExistGame();
     bool UpdatesFocusAppsType(int32_t appType);
     bool HandleDeadProcess(const std::shared_ptr<ResData>& data);
