@@ -283,6 +283,10 @@ enum : uint32_t {
     RES_TYPE_CROWN_ROTATION_STATUS = 129,
     // report red envelope scene
     RES_TYPE_RED_ENVELOPE = 130,
+    // report Huawei Share scene
+    RES_TYPE_HUAWEI_SHARE = 131,
+    // report HiCar scene
+    RES_TYPE_HICAR = 132,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
