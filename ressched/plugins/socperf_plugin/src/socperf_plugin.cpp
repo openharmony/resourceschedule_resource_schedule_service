@@ -452,25 +452,6 @@ bool SocPerfPlugin::IsFocusAppsAllGame()
     return isAllGame;
 }
 
-bool SocPerfPlugin::IsFocusAppsExistGame()
-{
-    if (focusAppUids_.empty() || uidToAppTypeMap_.empty()) {
-        SOC_PERF_LOGD("SocPerfPlugin: IsFocusAppsExistGame data is empty, %{public}lu, %{public}lu",
-            focusAppUids_.size(), uidToAppTypeMap_.size());
-        return false;
-    }
-    std::set<int32_t>::iterator it;
-    bool isExistGame = false;
-    for (it == focusAppUids_.begin(); it != focusAppUids_.end(); ++it) {
-        if (uidToAppTypeMap_[*it] == APP_TYPE_GAME) {
-            isExistGame = true;
-            break;
-        }
-    }
-    SOC_PERF_LOGI("SocPerfPlugin: IsFocusAppsExistGame is %{public}d", isExistGame);
-    return isExistGame;
-}
-
 bool SocPerfPlugin::UpdatesFocusAppsType(int32_t appType)
 {
     if (focusAppUids_.size() == 1) {
@@ -560,7 +541,7 @@ void SocPerfPlugin::HandleCrownRotation(const std::shared_ptr<ResData>& data)
 
 bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
 {
-    if (!socperfGameBoostSwitch_ || data == nullptr || !IsFocusAppsExistGame()) {
+    if (!socperfGameBoostSwitch_ || data == nullptr) {
         SOC_PERF_LOGD("SocPerfPlugin: socperf->GAME_BOOST null data");
         return false;
     }
