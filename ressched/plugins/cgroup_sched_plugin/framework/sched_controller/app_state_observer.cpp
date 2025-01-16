@@ -225,7 +225,8 @@ void RmsApplicationStateObserver::OnProcessDied(const ProcessData &processData)
     MarshallingProcessData(processData, payload);
     ResSchedUtils::GetInstance().ReportDataInProcess(
         ResType::RES_TYPE_PROCESS_STATE_CHANGE, ResType::ProcessStatus::PROCESS_DIED, payload);
-    ReportProcessStateInProcess((int32_t)processData.state, (int32_t)processData.pid);
+    ReportProcessStateInProcess((int32_t)ResType::ProcessStatus::PROCESS_DIED,
+        (int32_t)processData.pid);
 }
 
 void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &appStateData)
