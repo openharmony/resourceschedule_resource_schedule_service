@@ -407,7 +407,7 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
     }
     focusAppUids_.insert(uid);
     if (uidToAppTypeMap_.count(uid) > 0) {
-        isFocusAppsGameType_ = isFocusAppsGameType_ && (uidToAppTypeMap_[uid] == APP_TYPE_GAME);
+        isFocusAppsGameType_ = UpdatesFocusAppsType(uidToAppTypeMap_[uid]);
         return true;
     }
     if (reqAppTypeFunc_ == nullptr) {
@@ -418,8 +418,8 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
     int32_t focusAppType = reqAppTypeFunc_(bundleName);
     if (focusAppType != INVALID_VALUE && focusAppType != INVALID_APP_TYPE) {
         uidToAppTypeMap_[uid] = focusAppType;
-        isFocusAppsGameType_ = isFocusAppsGameType_ && (focusAppType == APP_TYPE_GAME);
     }
+    isFocusAppsGameType_ = UpdatesFocusAppsType(focusAppType);
     return true;
 }
 
@@ -440,6 +440,13 @@ bool SocPerfPlugin::IsFocusAppsAllGame()
     isFocusAppsGameType_ = isAllGame;
     SOC_PERF_LOGI("SocPerfPlugin: IsFoucsAppsAllGame is %{public}d", isFocusAppsGameType_);
     return true;
+}
+
+bool SocPerfPlugin::UpdatesFocusAppsType(int32_t appType) {
+    if (focusAppUids_.size() == 1) {
+        return appType == APP_TYPE_GAME;
+    }
+    return isFocusAppsGameType_ && (appType == APP_TYPE_GAME);
 }
 
 std::string SocPerfPlugin::GetBundleNameByUid(const int32_t uid)
