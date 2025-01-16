@@ -41,7 +41,10 @@ private:
     std::set<uint32_t> resTypes;
     std::set<int32_t> focusAppUids_;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
+    // app's uid match app type
     std::map<int32_t, int32_t> uidToAppTypeMap_;
+    // app's pid match app type
+    std::map<int32_t, int32_t> pidToAppTypeMap_;
     std::string perfReqAppTypeSoPath_;
     std::string perfReqAppTypeSoFunc_;
     bool isFocusAppsGameType_ = false;
@@ -100,7 +103,12 @@ private:
     bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data);
     bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data, const int32_t appType);
     bool IsFocusAppsAllGame();
+    bool IsFocusAppsAllGame();
+    bool IsFocusAppsExistGame();
     bool UpdatesFocusAppsType(int32_t appType);
+    bool HandleDeadProcess(const std::shared_ptr<ResData>& data);
+    bool IsGameEvent(const std::shared_ptr<ResData>& data);
+    int32_t GetPidByData(const std::shared_ptr<ResData>& data, const std::string& key);
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
     void HandleScreenOff();
