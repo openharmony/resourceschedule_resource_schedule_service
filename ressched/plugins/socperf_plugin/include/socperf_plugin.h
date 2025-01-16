@@ -100,6 +100,7 @@ private:
     bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data);
     bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data, const int32_t appType);
     bool IsFocusAppsAllGame();
+    bool UpdatesFocusAppsType(int32_t appType);
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
     void HandleScreenOff();
