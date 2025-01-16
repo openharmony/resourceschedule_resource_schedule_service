@@ -918,11 +918,11 @@ bool SocPerfPlugin::HandleDeadProcess(const std::shared_ptr<ResData>& data)
 int32_t SocPerfPlugin::GetPidByData(const std::shared_ptr<ResData>& data, const std::string& key)
 {
     if (data->payload == nullptr || !data->payload.contains(key) ||
-        !data->payload.at(key).is_number_integer()) {
-        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleDeadProces invalid data");
+        !data->payload.at(key).is_string()) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleDeadProcess invalid data");
         return INVALID_VALUE;
     }
-    return data->payload[key].get<std::int32_t>();
+    return atoi(data->payload[key].get<std::string>().c_str());
 }
 
 bool SocPerfPlugin::HandleSocperfAccountActivating(const std::shared_ptr<ResData> &data)
