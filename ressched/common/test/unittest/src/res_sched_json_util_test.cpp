@@ -196,5 +196,20 @@ HWTEST_F(ResSchedJsonUtilTest, LoadContentToJsonObj_001, Function | MediumTest |
     EXPECT_TRUE(ResCommonUtil::LoadContentToJsonObj("{ \"testKey1\": \"test1\", \"testKey2\": \"test2\" }",
         testJson));
 }
+
+/**
+ * @tc.name: ResSchedJsonUtilTest DumpJsonToString_001
+ * @tc.desc: test DumpJsonToString
+ * @tc.type: FUNC
+ * @tc.require: issueIB8Y0E
+ */
+HWTEST_F(ResSchedJsonUtilTest, DumpJsonToString_001, Function | MediumTest | Level0)
+{
+    nlohmann::json testJson;
+    EXPECT_TRUE(ResCommonUtil::LoadContentToJsonObj("{ \"testKey1\": \"test1\", \"testKey2\": \"test2\" }", testJson));
+    std::string jsonStr;
+    ResCommonUtil::DumpJsonToString(testJson, jsonStr);
+    EXPECT_EQ(jsonStr, "{ \"testKey1\": \"test1\", \"testKey2\": \"test2\" }");
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

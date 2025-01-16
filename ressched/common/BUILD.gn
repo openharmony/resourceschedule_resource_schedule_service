@@ -31,6 +31,7 @@ ohos_shared_library("ressched_common_utils") {
     "../common/src/batch_log_printer.cpp",
     "../common/src/oobe_datashare_utils.cpp",
     "../common/src/oobe_manager.cpp",
+    "../common/src/res_json_type.cpp",
     "../common/src/res_sched_file_util.cpp",
     "../common/src/res_sched_json_util.cpp",
     "../common/src/res_sched_string_util.cpp",

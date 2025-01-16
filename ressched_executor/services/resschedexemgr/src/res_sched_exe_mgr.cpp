@@ -137,6 +137,7 @@ void ResSchedExeMgr::InitPluginMgr(const nlohmann::json& payload)
         }
     }
     PluginMgr::GetInstance().ParsePluginSwitch(switchStrs, true);
+    RSSEXE_LOGD("plugin manager init succeed");
 }
 
 std::string ResSchedExeMgr::BuildTraceStr(const std::string& func, uint32_t resType, int64_t value)

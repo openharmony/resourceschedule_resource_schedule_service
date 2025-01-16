@@ -217,6 +217,7 @@ void ResSchedMgr::InitExecutorPlugin(bool isProcessInit)
     nlohmann::json context;
     payload["config"] = configStrs;
     payload["switch"] = switchStrs;
+    RESSCHED_LOGI("ResSchedMgr start InitExecutorPlugin");
     ResSchedExeClient::GetInstance().SendRequestSync(ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT, 0, payload, context);
 
     if (isProcessInit) {
