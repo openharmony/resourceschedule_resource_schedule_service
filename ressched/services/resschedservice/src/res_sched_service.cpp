@@ -52,7 +52,7 @@ namespace {
     constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 650;
     constexpr int32_t LIMIT_REQUEST_TIME = 1000;
     constexpr int64_t FOUR_HOUR_TIME = 4 * 60 * 60 * 1000;
-    static const std::unordered_set<uint32_t> scbRes = {
+    static const std::unordered_set<uint32_t> SCB_RES = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
@@ -66,7 +66,7 @@ namespace {
         ResType::RES_TYPE_GESTURE_ANIMATION,
         ResType::RES_TYPE_RAISE_WORKER_THREAD_PRIORITY,
     };
-    static const std::unordered_set<uint32_t> thirdPartRes_ = {
+    static const std::unordered_set<uint32_t> THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
         ResType::RES_TYPE_KEY_EVENT,
         ResType::RES_TYPE_PUSH_PAGE,
@@ -95,7 +95,18 @@ namespace {
         ResType::RES_TYPE_CROWN_ROTATION_STATUS,
         ResType::RES_TYPE_RED_ENVELOPE,
     };
-    static const std::unordered_set<uint32_t> saRes_ = {
+    static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
+        ResType::RES_TYPE_CLICK_RECOGNIZE,
+        ResType::RES_TYPE_KEY_EVENT,
+        ResType::RES_TYPE_SLIDE_RECOGNIZE,
+        ResType::RES_TYPE_LOAD_URL,
+        ResType::RES_TYPE_MOUSEWHEEL,
+        ResType::RES_TYPE_LONG_FRAME,
+        ResType::RES_TYPE_WEB_DRAG_RESIZE,
+        ResType::RES_TYPE_APP_FRAME_DROP,
+        ResType::RES_TYPE_AXIS_EVENT,
+    };
+    static const std::unordered_set<uint32_t> SA_RES = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
         ResType::SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
         ResType::SYNC_RES_TYPE_GET_THERMAL_DATA,
@@ -174,9 +185,9 @@ namespace {
         ResType::RES_TYPE_GET_GAME_SCENE_INFO,
     };
 
-    bool IsHasPermission(const uint32_t type, const std::unordered_set<uint32_t>& saRes)
+    bool IsHasPermission(const uint32_t type)
     {
-        if (saRes.find(type) == saRes.end()) {
+        if (SA_RES.find(type) == SA_RES.end()) {
             RESSCHED_LOGE("resType:%{public}d not sa report", type);
             return false;
         }
@@ -199,10 +210,15 @@ namespace {
         return type >= ResType::RES_TYPE_FIRST && type < ResType::RES_TYPE_LAST;
     }
 
-    bool IsThirdPartType(const uint32_t type, const std::unordered_set<uint32_t>& thirdPartRes)
+    bool IsThirdPartType(const uint32_t type)
     {
-        if (thirdPartRes.find(type) == thirdPartRes.end()) {
+        if (THIRDPART_RES.find(type) == THIRDPART_RES.end()) {
             RESSCHED_LOGD("resType:%{public}d not hap app report", type);
+            return false;
+        }
+        if (FG_THIRDPART_RES.find(type) != FG_THIRDPART_RES.end() &&
+            !ResSchedMgr::GetInstance().IsForegroundApp(IPCSkeleton::GetCallingPid())) {
+            RESSCHED_LOGE("not foreground app");
             return false;
         }
         AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
@@ -217,7 +233,7 @@ namespace {
 
     bool IsSBDResType(uint32_t type)
     {
-        if (scbRes.find(type) == scbRes.end()) {
+        if (SCB_RES.find(type) == SCB_RES.end()) {
             return false;
         }
         AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
@@ -572,7 +588,7 @@ int32_t ResSchedService::CheckReportDataParcel(const uint32_t& type, const int64
         RESSCHED_LOGE("type:%{public}u is invalid", type);
         return ERR_RES_SCHED_PARCEL_ERROR;
     }
-    if (!IsSBDResType(type) && !IsThirdPartType(type, thirdPartRes_) && !IsHasPermission(type, saRes_)) {
+    if (!IsSBDResType(type) && !IsThirdPartType(type) && !IsHasPermission(type)) {
         RESSCHED_LOGE("type:%{public}u, no permission", type);
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }

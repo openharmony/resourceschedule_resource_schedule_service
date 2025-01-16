@@ -14,11 +14,13 @@
  */
 
 #include "res_sched_mgr_test.h"
+#include "application_state_observer_stub.h"
 
 using namespace std;
 using namespace testing::ext;
 
 namespace OHOS {
+using namespace AppExecFwk;
 namespace ResourceSchedule {
 namespace {
     const string LIB_NAME = "libunittest_plugin.z.so";
@@ -146,6 +148,26 @@ HWTEST_F(ResSchedMgrTest, InitExecutorPlugin001, TestSize.Level1)
     ResSchedMgr::GetInstance().InitExecutorPlugin();
     ResSchedMgr::GetInstance().InitExecutorPlugin(true);
     EXPECT_TRUE(ResSchedMgr::GetInstance().killProcess_ != nullptr);
+}
+
+/**
+ * @tc.name: IsForegroundApp001
+ * @tc.desc: test func IsForegroundApp
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedMgrTest, IsForegroundApp001, TestSize.Level1)
+{
+    ResSchedMgr::GetInstance().InitForegroundAppInfo();
+    ResSchedMgr::GetInstance().OnApplicationStateChange((int32_t)ApplicationState::APP_STATE_FOREGROUND, 5000);
+    EXPECT_TRUE(ResSchedMgr::GetInstance().IsForegroundApp(5000));
+    ResSchedMgr::GetInstance().OnApplicationStateChange((int32_t)ApplicationState::APP_STATE_BACKGROUND, 5000);
+    EXPECT_FALSE(ResSchedMgr::GetInstance().IsForegroundApp(5000));
+    ResSchedMgr::GetInstance().OnApplicationStateChange((int32_t)ApplicationState::APP_STATE_FOREGROUND, 5000);
+    ResSchedMgr::GetInstance().OnApplicationStateChange((int32_t)ApplicationState::APP_STATE_TERMINATED, 5000);
+    EXPECT_FALSE(ResSchedMgr::GetInstance().IsForegroundApp(5000));
+    ResSchedMgr::GetInstance().OnApplicationStateChange((int32_t)ApplicationState::APP_STATE_FOREGROUND, 5000);
+    ResSchedMgr::GetInstance().OnApplicationStateChange((int32_t)ApplicationState::APP_STATE_END, 5000);
+    EXPECT_FALSE(ResSchedMgr::GetInstance().IsForegroundApp(5000));
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

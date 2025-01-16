@@ -84,6 +84,8 @@ void ResSchedServiceAbility::OnAddSystemAbility(int32_t systemAbilityId, const s
 {
     if (systemAbilityId == RES_SCHED_EXE_ABILITY_ID) {
         ResSchedMgr::GetInstance().InitExecutorPlugin();
+    } else if (systemAbilityId == APP_MGR_SERVICE_ID) {
+        ResSchedMgr::GetInstance().InitForegroundAppInfo();
     }
     nlohmann::json payload;
     payload["saId"] = systemAbilityId;
