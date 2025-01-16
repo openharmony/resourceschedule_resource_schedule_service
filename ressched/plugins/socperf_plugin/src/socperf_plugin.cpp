@@ -442,7 +442,8 @@ bool SocPerfPlugin::IsFocusAppsAllGame()
     return true;
 }
 
-bool SocPerfPlugin::UpdatesFocusAppsType(int32_t appType) {
+bool SocPerfPlugin::UpdatesFocusAppsType(int32_t appType)
+{
     if (focusAppUids_.size() == 1) {
         return appType == APP_TYPE_GAME;
     }
