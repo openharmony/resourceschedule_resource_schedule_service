@@ -283,6 +283,8 @@ enum : uint32_t {
     RES_TYPE_CROWN_ROTATION_STATUS = 129,
     // report red envelope scene
     RES_TYPE_RED_ENVELOPE = 130,
+    // Receving abc load event completed
+    RES_TYPE_RECV_ABC_LOAD_COMPLETED = 131,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
