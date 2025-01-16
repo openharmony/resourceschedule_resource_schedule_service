@@ -101,11 +101,8 @@ namespace {
         ResType::RES_TYPE_SLIDE_RECOGNIZE,
         ResType::RES_TYPE_LOAD_URL,
         ResType::RES_TYPE_MOUSEWHEEL,
-        ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
         ResType::RES_TYPE_LONG_FRAME,
         ResType::RES_TYPE_WEB_DRAG_RESIZE,
-        ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE,
-        ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
         ResType::RES_TYPE_APP_FRAME_DROP,
         ResType::RES_TYPE_AXIS_EVENT,
     };
