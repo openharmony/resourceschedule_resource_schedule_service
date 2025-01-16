@@ -392,7 +392,6 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
         SOC_PERF_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH unfocus");
         UpdateFocusAppType(data, false);
     }
-    
 }
 
 bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, bool focusStatus)
@@ -427,7 +426,7 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
 bool SocPerfPlugin::IsFocusAppsAllGame()
 {
     if (focusAppUids_.empty() || uidToAppTypeMap_.empty()) {
-        SOC_PERF_LOGD("SocPerfPlugin: IsFoucsAppsAllGame focusAppUids_ or uidToAppTypeMap_ is empty");
+        SOC_PERF_LOGD("SocPerfPlugin: IsFoucsAppsAllGame data is empty");
         return false;
     }
     std::set<int32_t>::iterator it;
