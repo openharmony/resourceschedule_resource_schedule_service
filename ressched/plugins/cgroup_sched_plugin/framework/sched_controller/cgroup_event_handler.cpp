@@ -464,11 +464,6 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, WindowType windo
 
         app->focusedProcess_ = procRecord;
         auto lastFocusApp = supervisor_->focusedApp_;
-        if (lastFocusApp && lastFocusApp != app) {
-            lastFocusApp->focusedProcess_ = nullptr;
-            CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(lastFocusApp.get()),
-                AdjustSource::ADJS_FOCUSED_WINDOW);
-        }
         supervisor_->focusedApp_ = app;
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FOCUSED_WINDOW);
         ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), ResType::RES_TYPE_WINDOW_FOCUS,

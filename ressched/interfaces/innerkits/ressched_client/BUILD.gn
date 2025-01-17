@@ -50,6 +50,7 @@ ohos_source_set("res_sched_service_stub") {
   public_configs = []
   deps = [ ":res_sched_service_interface" ]
   part_name = "resource_schedule_service"
+  subsystem_name = "resourceschedule"
   external_deps = [
     "c_utils:utils",
     "ipc:ipc_core",
