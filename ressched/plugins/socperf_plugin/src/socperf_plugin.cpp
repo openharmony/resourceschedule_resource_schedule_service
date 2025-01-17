@@ -435,7 +435,6 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
     return true;
 }
 
-
 bool SocPerfPlugin::IsFocusAppsAllGame()
 {
     if (focusAppUids_.empty() || uidToAppTypeMap_.empty()) {
