@@ -239,6 +239,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleCrownRotation(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_APP_INSTALL_UNINSTALL,
         [this](const std::shared_ptr<ResData>& data) { HandleUninstallEvent(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_PROCESS_STATE_CHANGE,
+        [this](const std::shared_ptr<ResData>& data) { HandleProcessStateChange(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
@@ -287,6 +289,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_APP_INSTALL_UNINSTALL,
         RES_TYPE_MMI_INPUT_POWER_KEY,
         RES_TYPE_CROWN_ROTATION_STATUS,
+        RES_TYPE_PROCESS_STATE_CHANGE,
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -750,9 +753,6 @@ void SocPerfPlugin::HandleMousewheel(const std::shared_ptr<ResData>& data)
 
 bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
 {
-    if (data != nullptr && data->value == ResType::ProcessStatus::PROCESS_DIED) {
-        HandleDeadProcess(data);
-    }
     if (data->value != ResType::ProcessStatus::PROCESS_CREATED) {
         return false;
     }
@@ -901,6 +901,14 @@ bool SocPerfPlugin::HandleSocperfSceneBoard(const std::shared_ptr<ResData> &data
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, true, "");
     } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, false, "");
+    }
+    return true;
+}
+
+bool SocPerfPlugin::HandleProcessStateChange(const std::shared_ptr<ResData> &data)
+{
+    if (data != nullptr && data->value == ResType::ProcessStatus::PROCESS_DIED) {
+        HandleDeadProcess(data);
     }
     return true;
 }
