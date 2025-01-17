@@ -106,6 +106,7 @@ private:
     bool UpdatesFocusAppsType(int32_t appType);
     bool HandleDeadProcess(const std::shared_ptr<ResData>& data);
     bool IsGameEvent(const std::shared_ptr<ResData>& data);
+    bool HandleProcessStateChange(const std::shared_ptr<ResData> &data);
     int32_t GetPidByData(const std::shared_ptr<ResData>& data, const std::string& key);
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
