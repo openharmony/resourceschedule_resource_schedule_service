@@ -25,6 +25,7 @@
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
 
+#include "res_common_util.h"
 #include "res_exe_type.h"
 #include "res_sched_exe_constants.h"
 #include "res_sched_exe_log.h"
@@ -63,7 +64,9 @@ int32_t ResSchedExeClient::KillProcess(pid_t pid)
         RSSEXE_LOGE("fail to get resource schedule executor");
         return ResIpcErrCode::RSSEXE_CONNECT_FAIL;
     }
-    return proxy->KillProcess(pid);
+    int32_t funcResult = ResIpcErrCode::RSSEXE_GET_SERVICE_FAIL;
+    proxy->KillProcess(static_cast<uint32_t>(pid), funcResult);
+    return funcResult;
 }
 
 int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64_t value,
@@ -76,11 +79,17 @@ int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64
         return ResIpcErrCode::RSSEXE_CONNECT_FAIL;
     }
 
+    std::string strContext;
+    ResCommonUtil::DumpJsonToString(context, strContext);
     RSSEXE_LOGD("send request.");
     if (isSync) {
-        return proxy->SendRequestSync(resType, value, context, reply);
+        std::string strReply;
+        int32_t funcResult;
+        proxy->SendRequestSync(resType, value, strContext, strReply, funcResult);
+        ResCommonUtil::LoadContentToJsonObj(strReply, reply);
+        return funcResult;
     } else {
-        proxy->SendRequestAsync(resType, value, context);
+        proxy->SendRequestAsync(resType, value, strContext);
         return ResErrCode::RSSEXE_NO_ERR;
     }
 }
