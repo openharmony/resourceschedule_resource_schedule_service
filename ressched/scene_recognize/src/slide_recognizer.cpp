@@ -199,9 +199,9 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
     // receive up event, silde normal end
     if (value == ResType::ClickEventType::TOUCH_EVENT_UP ||
         value == ResType::ClickEventType::TOUCH_EVENT_PULL_UP) {
-        if (g_slideState != SlideEventStatus::SLIDE_NORMAL_DETECTING) {
+        if (g_slideState != SlideRecognizeStat::SLIDE_NORMAL_DETECTING) {
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
-            ResType::SlideEventStatus::SLIDE_NORMAL_END, payload);
+                ResType::SlideEventStatus::SLIDE_NORMAL_END, payload);
         }
         float upSpeed = 0.0;
         if (!payload.contains("clientPid") || !payload["clientPid"].is_string()) {
@@ -225,20 +225,21 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
                 ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
                 ResType::SlideEventStatus::SLIDE_EVENT_ON, FillRealPidAndUid(payload));
-            g_slideState = SlideEventStatus::LIST_FLING;
+            g_slideState = SlideRecognizeStat::LIST_FLING;
         }
     }
 }
 
-nlohmann::json& SlideRecognizer::FillRealPidAndUid(const nlohmann::json& payload)
+nlohmann::json SlideRecognizer::FillRealPidAndUid(const nlohmann::json& payload)
 {
+    nlohmann::json payloadM = payload;
     if (!slidePid_.empty()) {
-        payload["clientPid"] = slidePid_;
+        payloadM["clientPid"] = slidePid_;
     }
     if (!slideUid_.empty()) {
-        payload["clientUid"] = slideUid_;
+        payloadM["clientUid"] = slideUid_;
     }
-    return payload;
+    return payloadM;
 }
 
 void SlideRecognizer::SetListFlingTimeoutTime(int64_t value)
