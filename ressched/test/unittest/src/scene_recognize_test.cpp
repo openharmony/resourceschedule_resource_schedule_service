@@ -239,17 +239,17 @@ HWTEST_F(SceneRecognizeTest, HandleClickEvent_001, Function | MediumTest | Level
 }
 
 /**
- * @tc.name: SceneRecognizer FillRealPid_001
- * @tc.desc: test the interface FillRealPid
+ * @tc.name: SceneRecognizer FillRealPidAndUid_001
+ * @tc.desc: test the interface FillRealPidAndUid
  * @tc.type: FUNC
  * @tc.require: issuesIAJZVI
  * @tc.author: fengyang
  */
-HWTEST_F(SceneRecognizeTest, FillRealPid_001, Function | MediumTest | Level0)
+HWTEST_F(SceneRecognizeTest, FillRealPidAndUid_001, Function | MediumTest | Level0)
 {
     auto slideRecognizer = std::make_shared<SlideRecognizer>();
     nlohmann::json payload;
-    auto result = slideRecognizer->FillRealPid(payload);
+    auto result = slideRecognizer->FillRealPidAndUid(payload);
     EXPECT_EQ(payload, result);
 }
 
