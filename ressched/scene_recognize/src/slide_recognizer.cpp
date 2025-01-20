@@ -188,7 +188,7 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
 {
     std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
     //not in slide stat or slide detecting stat
-    if (g_slideState != SlideRecognizeStat::SLIDE_NORMAL && 
+    if (g_slideState != SlideRecognizeStat::SLIDE_NORMAL &&
         g_slideState != SlideRecognizeStat::SLIDE_NORMAL_DETECTING) {
         return;
     }
