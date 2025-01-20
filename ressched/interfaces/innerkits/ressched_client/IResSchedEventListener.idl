@@ -14,6 +14,6 @@
  */
 
 interface OHOS.ResourceSchedule.IResSchedEventListener {
- void OnReceiveEvent([in] unsigned int eventType, [in] unsigned int eventValue,
+    [oneway] void OnReceiveEvent([in] unsigned int eventType, [in] unsigned int eventValue,
         [in] unsigned int listenerGroup, [in] String extInfo);
 }
