@@ -14,7 +14,7 @@
  */
 sequenceable OHOS.IRemoteObject;
 interface OHOS.ResourceSchedule.IResSchedService {
-    void ReportData([in] unsigned int resType, [in] long value, [in] String payload);
+    [oneway] void ReportData([in] unsigned int resType, [in] long value, [in] String payload);
     void ReportSyncEvent([in] unsigned int resType, [in] long value, [in] String payload,
         [out] String replyValue, [out] int resultValue);
     void KillProcess([in] String payload, [out] int resultValue);
