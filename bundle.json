@@ -51,7 +51,6 @@
         "hisysevent",
         "hitrace",
         "init",
-        "idl_tool",
         "ipc",
         "movement",
         "napi",
@@ -132,8 +131,10 @@
           "header": {
             "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client/include",
             "header_files": [
+              "ires_sched_exe_service.h",
               "res_sched_exe_client.h",
               "res_sched_exe_constants.h",
+              "res_sched_exe_service_proxy.h",
               "res_exe_type.h"
             ]
           },

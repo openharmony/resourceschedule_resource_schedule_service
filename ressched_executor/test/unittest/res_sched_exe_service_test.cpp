@@ -28,6 +28,7 @@
 #include "res_common_util.h"
 #include "res_sched_exe_constants.h"
 #include "res_sched_exe_service.h"
+#include "res_sched_exe_service_ability.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -49,6 +50,7 @@ public:
     void TearDown();
 protected:
     std::shared_ptr<ResSchedExeService> resSchedExeService_ = nullptr;
+    std::shared_ptr<ResSchedExeServiceAbility> resSchedExeServiceAbility_ = nullptr;
 };
 
 void ResSchedExeServiceTest::SetUpTestCase(void)
@@ -81,6 +83,7 @@ void ResSchedExeServiceTest::SetUp()
      * @tc.setup: initialize the member variable resSchedExeServiceAbility_
      */
     resSchedExeService_ = make_shared<ResSchedExeService>();
+    resSchedExeServiceAbility_ = make_shared<ResSchedExeServiceAbility>();
 }
 
 void ResSchedExeServiceTest::TearDown()
@@ -89,6 +92,7 @@ void ResSchedExeServiceTest::TearDown()
      * @tc.teardown: clear resSchedExeServiceAbility_
      */
     resSchedExeService_ = nullptr;
+    resSchedExeServiceAbility_ = nullptr;
 }
 
 /**
@@ -140,13 +144,8 @@ HWTEST_F(ResSchedExeServiceTest, SendRequestSync001, Function | MediumTest | Lev
 {
     nlohmann::json payload;
     nlohmann::json reply;
-    std::string strPayload;
-    ResCommonUtil::DumpJsonToString(payload, strPayload);
-    std::string strReply;
-    int32_t result = -1;
-
     EXPECT_TRUE(resSchedExeService_ != nullptr);
-    resSchedExeService_->SendRequestSync(0, 0, strPayload, strReply, result);
+    resSchedExeService_->SendRequestSync(0, 0, payload, reply);
 }
 
 static void SendRequestSyncTask()
@@ -154,14 +153,9 @@ static void SendRequestSyncTask()
     std::shared_ptr<ResSchedExeService> resSchedExeService_ = make_shared<ResSchedExeService>();
     nlohmann::json payload;
     nlohmann::json reply;
-    std::string strPayload;
-    ResCommonUtil::DumpJsonToString(payload, strPayload);
-    std::string strReply;
-    int32_t result = -1;
-
     EXPECT_TRUE(resSchedExeService_ != nullptr);
     for (int i = 0; i < SYNC_THREAD_NUM; i++) {
-        resSchedExeService_->SendRequestSync(0, 0, strPayload, strReply, result);
+        resSchedExeService_->SendRequestSync(0, 0, payload, reply);
         usleep(SYNC_INTERNAL_TIME);
     }
 }
@@ -211,12 +205,23 @@ HWTEST_F(ResSchedExeServiceTest, SendRequestAsync002, Function | MediumTest | Le
     GTEST_RUN_TASK(SendRequestAsyncTask);
 }
 
+/**
+ * @tc.name: Start ResSchedExeServiceAbility OnStart001
+ * @tc.desc: Verify if ResSchedExeServiceAbility OnStart is success.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, OnStart001, Function | MediumTest | Level0)
+{
+    resSchedExeServiceAbility_->OnStart();
+    EXPECT_TRUE(resSchedExeServiceAbility_->service_ != nullptr);
+}
+
 static void OnStartTask()
 {
-    std::shared_ptr<ResSchedExeService> resSchedExeService_ = make_shared<ResSchedExeService>();
+    std::shared_ptr<ResSchedExeServiceAbility> resSchedExeServiceAbility_ = make_shared<ResSchedExeServiceAbility>();
     for (int i = 0; i < SYNC_THREAD_NUM; i++) {
-        resSchedExeService_->OnStart();
-        EXPECT_TRUE(resSchedExeService_ != nullptr);
+        resSchedExeServiceAbility_->OnStart();
+        EXPECT_TRUE(resSchedExeServiceAbility_->service_ != nullptr);
         usleep(SYNC_INTERNAL_TIME);
     }
 }
@@ -232,26 +237,130 @@ HWTEST_F(ResSchedExeServiceTest, OnStart002, Function | MediumTest | Level0)
     GTEST_RUN_TASK(OnStartTask);
 }
 
+/**
+ * @tc.name: Stop ResSchedExeServiceAbility OnStop001
+ * @tc.desc: test the interface Onstop
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, OnStop001, Function | MediumTest | Level0)
+{
+    resSchedExeServiceAbility_->OnStop();
+    EXPECT_TRUE(resSchedExeServiceAbility_->service_ == nullptr);
+}
+
 class TestResSchedExeServiceStub : public ResSchedExeServiceStub {
 public:
     TestResSchedExeServiceStub() : ResSchedExeServiceStub() {}
 
-    ErrCode SendRequestAsync(uint32_t resType, int64_t value, const std::string& context) override
+    void SendRequestAsync(uint32_t restype, int64_t value, const nlohmann::json& context) override
     {
-        return ERR_OK;
     }
 
-    ErrCode SendRequestSync(uint32_t resType, int64_t value,
-        const std::string& context, std::string& response, int32_t& funcResult) override
+    int32_t SendRequestSync(uint32_t restype, int64_t value,
+        const nlohmann::json& context, nlohmann::json& reply) override
     {
-        return ERR_OK;
+        return 0;
     }
 
-    ErrCode KillProcess(uint32_t pid, int32_t& funcResult) override
+    int32_t KillProcess(pid_t pid) override
     {
-        return ERR_OK;
+        return 0;
     }
 };
+
+/**
+ * @tc.name: ResSchedExeServicesStub ReportRequestInner001
+ * @tc.desc: Verify if resschedexestub ReportRequestInner is success.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, ReportRequestInner001, Function | MediumTest | Level0)
+{
+    auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
+    resSchedExeServiceStub_->Init();
+    MessageParcel reply;
+    MessageParcel emptyData;
+    EXPECT_TRUE(resSchedExeServiceStub_->ReportRequestInner(emptyData, reply));
+
+    MessageParcel reportData;
+    reportData.WriteUint32(1);
+    reportData.WriteInt64(1);
+    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
+    EXPECT_TRUE(!resSchedExeServiceStub_->ReportRequestInner(reportData, reply));
+}
+
+static void ReportRequestInnerTask()
+{
+    auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
+    resSchedExeServiceStub_->Init();
+    MessageParcel reply;
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
+        MessageParcel emptyData;
+        EXPECT_TRUE(resSchedExeServiceStub_->ReportRequestInner(emptyData, reply));
+
+        MessageParcel reportData;
+        reportData.WriteUint32(1);
+        reportData.WriteInt64(1);
+        reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
+        EXPECT_TRUE(!resSchedExeServiceStub_->ReportRequestInner(reportData, reply));
+        usleep(SYNC_INTERNAL_TIME);
+    }
+}
+
+/**
+ * @tc.name: ResSchedExeServicesStub ReportRequestInner002
+ * @tc.desc: Test resschedexestub ReportRequestInner in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, ReportRequestInner002, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(ReportRequestInnerTask);
+}
+
+/**
+ * @tc.name: ResSchedExeServicesStub ReportDebugInner001
+ * @tc.desc: Verify if resschedexestub ReportDebugInner is success.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, ReportDebugInner001, Function | MediumTest | Level0)
+{
+    auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
+    resSchedExeServiceStub_->Init();
+    MessageParcel emptyData;
+    EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(emptyData));
+
+    MessageParcel reportData;
+    reportData.WriteUint32(ResExeType::RES_TYPE_DEBUG);
+    reportData.WriteUint64(ResCommonUtil::GetNowMicroTime());
+    EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData));
+}
+
+static void ReportDebugInnerTask()
+{
+    auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
+    resSchedExeServiceStub_->Init();
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
+        MessageParcel emptyData;
+        EXPECT_TRUE(resSchedExeServiceStub_->ReportDebugInner(emptyData));
+
+        MessageParcel reportData;
+        reportData.WriteUint32(ResExeType::RES_TYPE_DEBUG);
+        reportData.WriteUint64(ResCommonUtil::GetNowMicroTime());
+        EXPECT_TRUE(!resSchedExeServiceStub_->ReportDebugInner(reportData));
+        usleep(SYNC_INTERNAL_TIME);
+    }
+}
+
+/**
+ * @tc.name: ResSchedExeServicesStub ReportDebugInner002
+ * @tc.desc: Test resschedexestub ReportDebugInner in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, ReportDebugInner002, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(ReportDebugInnerTask);
+}
 
 /**
  * @tc.name: ResSchedExeServicesStub RemoteRequest001
@@ -296,6 +405,59 @@ HWTEST_F(ResSchedExeServiceTest, RemoteRequest002, Function | MediumTest | Level
 {
     SET_THREAD_NUM(10);
     GTEST_RUN_TASK(RemoteRequestTask);
+}
+
+/**
+ * @tc.name: ResSchedExeServicesStub ParseParcel001
+ * @tc.desc: Verify if resschedexestub ParseParcel is success.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, ParseParcel001, Function | MediumTest | Level0)
+{
+    auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
+    resSchedExeServiceStub_->Init();
+    uint32_t resType = 0;
+    int64_t value = 0;
+    nlohmann::json context;
+    MessageParcel emptyData;
+    EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
+
+    MessageParcel reportData;
+    reportData.WriteUint32(1);
+    reportData.WriteInt64(1);
+    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
+    EXPECT_TRUE(resSchedExeServiceStub_->ParseParcel(reportData, resType, value, context));
+}
+
+static void ParseParcelTask()
+{
+    auto resSchedExeServiceStub_ = make_shared<TestResSchedExeServiceStub>();
+    resSchedExeServiceStub_->Init();
+    uint32_t resType = 0;
+    int64_t value = 0;
+    nlohmann::json context;
+    for (int i = 0; i < SYNC_THREAD_NUM; i++) {
+        MessageParcel emptyData;
+        EXPECT_FALSE(resSchedExeServiceStub_->ParseParcel(emptyData, resType, value, context));
+
+        MessageParcel reportData;
+        reportData.WriteUint32(1);
+        reportData.WriteInt64(1);
+        reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
+        EXPECT_TRUE(resSchedExeServiceStub_->ParseParcel(reportData, resType, value, context));
+        usleep(SYNC_INTERNAL_TIME);
+    }
+}
+
+/**
+ * @tc.name: ResSchedExeServicesStub ParseParcel002
+ * @tc.desc: Test resschedexestub ParseParcel in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, ParseParcel002, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(ParseParcelTask);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
