@@ -13,25 +13,24 @@
  * limitations under the License.
  */
 
-#ifndef RESSCHED_EXECUTOR_SERVICES_RESSCHEDEXESERVICE_INCLUDE_RES_SCHED_EXE_SERVICE_H
-#define RESSCHED_EXECUTOR_SERVICES_RESSCHEDEXESERVICE_INCLUDE_RES_SCHED_EXE_SERVICE_H
+#ifndef RESSCHED_EXECUTOR_INTERFACES_INNERKITS_RESSCHED_EXECUTOR_CLIENT_INCLUDE_RES_SCHED_EXE_SERVICE_PROXY_H
+#define RESSCHED_EXECUTOR_INTERFACES_INNERKITS_RESSCHED_EXECUTOR_CLIENT_INCLUDE_RES_SCHED_EXE_SERVICE_PROXY_H
 
-#include "res_sched_exe_service_stub.h"
+#include <cstdint>
+
+#include "iremote_proxy.h"
+#include "message_parcel.h"
+#include "message_option.h"
+#include "nocopyable.h"
+
+#include "ires_sched_exe_service.h"
+
+namespace OHOS { class IRemoteObject; }
 
 namespace OHOS {
 namespace ResourceSchedule {
-class ResSchedExeService : public ResSchedExeServiceStub {
+class ResSchedExeServiceProxy : public IRemoteProxy<IResSchedExeService> {
 public:
-    /**
-     * @brief Construct a new ResSchedExeService object.
-     */
-    ResSchedExeService() = default;
-
-    /**
-     * @brief Destroy the ResSchedExeService object.
-     */
-    ~ResSchedExeService() override = default;
-
     /**
      * @brief Send request sync to the ressched_executor through inter-process communication.
      *
@@ -60,21 +59,28 @@ public:
      */
     int32_t KillProcess(pid_t pid) override;
 
+public:
     /**
-     * @brief Support dump option.
+     * @brief Construct a new ResSchedExeServiceProxy object.
      *
-     * @param fd Save dump result to the file.
-     * @param args Dump option arguments.
+     * @param impl RemoteObject.
      */
-    int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
+    explicit ResSchedExeServiceProxy(const sptr<IRemoteObject>& impl) : IRemoteProxy<IResSchedExeService>(impl) {}
+
+    /**
+     * @brief Destroy the ResSchedExeServiceProxy object
+     */
+    virtual ~ResSchedExeServiceProxy() {}
 
 private:
-    bool AllowDump();
-    void DumpAllInfo(std::string &result);
-    void DumpUsage(std::string &result);
-    DISALLOW_COPY_AND_MOVE(ResSchedExeService);
+    int32_t SendRequestToRemote(const int32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option);
+    int32_t MakeUpParcel(MessageParcel& data, uint32_t resType, int64_t value, const nlohmann::json& context);
+    int32_t SendDebugCommand(MessageOption& option);
+
+    static inline BrokerDelegator<ResSchedExeServiceProxy> delegator_;
+    DISALLOW_COPY_AND_MOVE(ResSchedExeServiceProxy);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
 
-#endif // RESSCHED_EXECUTOR_SERVICES_RESSCHEDEXESERVICE_INCLUDE_RES_SCHED_EXE_SERVICE_H
+#endif // RESSCHED_EXECUTOR_INTERFACES_INNERKITS_RESSCHED_EXECUTOR_CLIENT_INCLUDE_RES_SCHED_EXE_SERVICE_PROXY_H

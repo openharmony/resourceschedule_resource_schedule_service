@@ -24,7 +24,6 @@
 #include "iremote_object.h"
 #include "nocopyable.h"
 #include "refbase.h"
-#include "nlohmann/json.hpp"
 
 #include "ires_sched_exe_service.h"
 

@@ -21,11 +21,8 @@
 
 #include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
-#include "system_ability_definition.h"
 
 #include "plugin_mgr.h"
-#include "res_common_util.h"
-#include "res_exe_type.h"
 #include "res_sched_exe_constants.h"
 #include "res_sched_exe_log.h"
 #include "res_sched_exe_mgr.h"
@@ -37,133 +34,22 @@ namespace {
     constexpr int32_t DUMP_PARAM_INDEX = 1;
     const int32_t ENG_MODE = OHOS::system::GetIntParameter("const.debuggable", 0);
     const std::string DUMP_PERMISSION = "ohos.permission.DUMP";
-    constexpr int32_t PAYLOAD_MAX_SIZE = 4096;
-    constexpr int32_t KILL_PROCESS_FAILED = -1;
-    constexpr int32_t RSS_UID = 1096;
-    const std::string RES_TYPE_EXT = "extType";
-
-    bool IsTypeVaild(uint32_t type)
-    {
-        return type >= ResExeType::RES_TYPE_FIRST && type < ResExeType::RES_TYPE_LAST;
-    }
-
-    bool IsCallingClientRss()
-    {
-        int32_t clientUid = IPCSkeleton::GetCallingUid();
-        RSSEXE_LOGD("calling client uid is %{public}d, allowed uid is %{public}d", clientUid, RSS_UID);
-        return RSS_UID == clientUid;
-    }
-
-    bool GetExtResType(uint32_t& resType, const nlohmann::json& context)
-    {
-        if (resType != ResExeType::RES_TYPE_COMMON_SYNC && resType != ResExeType::RES_TYPE_COMMON_ASYNC) {
-            return true;
-        }
-        int type = 0;
-        if (!context.contains(RES_TYPE_EXT) || !context[RES_TYPE_EXT].is_string()
-            || !StrToInt(context[RES_TYPE_EXT], type)) {
-            RSSEXE_LOGE("use extend resType, but not send resTypeExt with payload");
-            return false;
-        }
-        resType = (uint32_t)type;
-        RSSEXE_LOGD("use extend resType = %{public}d.", resType);
-        return true;
-    }
 }
 
-const bool REGISTER_RESULT =
-    SystemAbility::MakeAndRegisterAbility(DelayedSingleton<ResSchedExeService>::GetInstance().get());
-
-ResSchedExeService::ResSchedExeService() : SystemAbility(RES_SCHED_EXE_ABILITY_ID, true)
+int32_t ResSchedExeService::SendRequestSync(uint32_t resType, int64_t value,
+    const nlohmann::json& context, nlohmann::json& reply)
 {
+    return ResSchedExeMgr::GetInstance().SendRequestSync(resType, value, context, reply);
 }
 
-ResSchedExeService::~ResSchedExeService()
+void ResSchedExeService::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& context)
 {
+    ResSchedExeMgr::GetInstance().SendRequestAsync(resType, value, context);
 }
 
-void ResSchedExeService::OnStart()
+int32_t ResSchedExeService::KillProcess(pid_t pid)
 {
-    ResSchedExeMgr::GetInstance().Init();
-    if (!Publish(DelayedSingleton<ResSchedExeService>::GetInstance().get())) {
-        RSSEXE_LOGE("ResSchedExeService::Register service failed.");
-        return;
-    }
-    RSSEXE_LOGI("ResSchedExeService::OnStart.");
-}
-
-void ResSchedExeService::OnStop()
-{
-    ResSchedExeMgr::GetInstance().Stop();
-    RSSEXE_LOGI("ResSchedExeService::OnStop!");
-}
-
-ErrCode ResSchedExeService::SendRequestSync(uint32_t resType, int64_t value,
-    const std::string& context, std::string& response, int32_t& funcResult)
-{
-    if (!IsCallingClientRss()) {
-        RSSEXE_LOGE("calling process has no permission!");
-        return ERR_INVALID_OPERATION;
-    }
-    if (!IsTypeVaild(resType)) {
-        RSSEXE_LOGE("The resType is invalid. Dos");
-        return ERR_INVALID_VALUE;
-    }
-    nlohmann::json jsonContext;
-    nlohmann::json jsonResponse;
-    ResCommonUtil::LoadContentToJsonObj(context, jsonContext);
-    if (jsonContext.size() > PAYLOAD_MAX_SIZE) {
-        RSSEXE_LOGE("The payload is too long. DoS.");
-        return ERR_INVALID_VALUE;
-    }
-    if (!GetExtResType(resType, context)) {
-        RSSEXE_LOGE("Get ResType Error DoS.");
-        return ERR_INVALID_VALUE;
-    }
-
-    funcResult = ResSchedExeMgr::GetInstance().SendRequestSync(resType, value, jsonContext, jsonResponse);
-    ResCommonUtil::DumpJsonToString(jsonResponse, response);
-    return ERR_OK;
-}
-
-ErrCode ResSchedExeService::SendRequestAsync(uint32_t resType, int64_t value, const std::string& context)
-{
-    if (!IsCallingClientRss()) {
-        RSSEXE_LOGE("calling process has no permission!");
-        return ERR_INVALID_OPERATION;
-    }
-    if (!IsTypeVaild(resType)) {
-        RSSEXE_LOGE("The resType is invalid. Dos");
-        return ERR_INVALID_VALUE;
-    }
-    nlohmann::json jsonContext;
-    ResCommonUtil::LoadContentToJsonObj(context, jsonContext);
-    if (jsonContext.size() > PAYLOAD_MAX_SIZE) {
-        RSSEXE_LOGE("The payload is too long. DoS.");
-        return ERR_INVALID_VALUE;
-    }
-    if (!GetExtResType(resType, context)) {
-        RSSEXE_LOGE("Get ResType Error DoS.");
-        return ERR_INVALID_VALUE;
-    }
-
-    ResSchedExeMgr::GetInstance().SendRequestAsync(resType, value, jsonContext);
-    return ERR_OK;
-}
-
-ErrCode ResSchedExeService::KillProcess(uint32_t pid, int32_t& funcResult)
-{
-    if (!IsCallingClientRss()) {
-        RSSEXE_LOGE("Calling process has no permission!");
-        return ERR_INVALID_OPERATION;
-    }
-    if (pid <= 0) {
-        RSSEXE_LOGE("Pid should be more than 0.");
-        return ERR_INVALID_VALUE;
-    }
-
-    funcResult = ResSchedExeMgr::GetInstance().KillProcess(static_cast<pid_t>(pid));
-    return ERR_OK;
+    return ResSchedExeMgr::GetInstance().KillProcess(pid);
 }
 
 bool ResSchedExeService::AllowDump()

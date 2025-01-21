@@ -11,16 +11,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//build/config/components/idl_tool/idl.gni")
 import("//build/ohos.gni")
 import("../../../../ressched/ressched.gni")
 import("../../../ressched_executor.gni")
-
-idl_gen_interface("ressched_executor_client_interface") {
-  src_idl = rebase_path("IResSchedExeService.idl")
-  log_domainid = "0xD001740"
-  log_tag = "ResSchedExe"
-}
 
 config("client_private_config") {
   include_dirs = [
@@ -30,26 +23,20 @@ config("client_private_config") {
 }
 
 config("client_public_config") {
-  include_dirs = [
-    "include",
-    "${target_gen_dir}",
-  ]
+  include_dirs = [ "include" ]
 }
 
 ohos_shared_library("resschedexe_client") {
-  output_values = get_target_outputs(":ressched_executor_client_interface")
-
   configs = [ ":client_private_config" ]
 
   public_configs = [ ":client_public_config" ]
 
-  sources = [ "src/res_sched_exe_client.cpp" ]
-  sources += filter_include(output_values, [ "*_proxy.cpp" ])
-
-  deps = [
-    ":ressched_executor_client_interface",
-    "${ressched_common}:ressched_common_utils",
+  sources = [
+    "src/res_sched_exe_client.cpp",
+    "src/res_sched_exe_service_proxy.cpp",
   ]
+
+  deps = [ "${ressched_common}:ressched_common_utils" ]
 
   external_deps = [
     "c_utils:utils",
@@ -72,27 +59,4 @@ ohos_shared_library("resschedexe_client") {
     cfi_cross_dso = true
     debug = false
   }
-}
-
-ohos_source_set("res_sched_exe_service_stub") {
-  sanitize = {
-    cfi = true
-    cfi_cross_dso = true
-    debug = false
-  }
-
-  branch_protector_ret = "pac_ret"
-
-  public_configs = [ ":client_public_config" ]
-  output_values = get_target_outputs(":ressched_executor_client_interface")
-  sources = filter_include(output_values, [ "*_stub.cpp" ])
-  deps = [ ":ressched_executor_client_interface" ]
-  external_deps = [
-    "c_utils:utils",
-    "hilog:libhilog",
-    "ipc:ipc_single",
-    "samgr:samgr_proxy",
-  ]
-  subsystem_name = "resourceschedule"
-  part_name = "resource_schedule_service"
 }
