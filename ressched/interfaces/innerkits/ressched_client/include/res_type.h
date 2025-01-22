@@ -289,6 +289,8 @@ enum : uint32_t {
     RES_TYPE_HICAR = 132,
     // Receving abc load event completed
     RES_TYPE_RECV_ABC_LOAD_COMPLETED = 133,
+    // restype use by BackgroundManager API to set or reset background process priority
+    RES_TYPE_SET_BACKGROUND_PROCESS_PRIORITY = 134,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

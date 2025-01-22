@@ -298,7 +298,7 @@ void CgroupEventHandler::HandleProcessCreated(const ProcessData &processData)
     }
     auto processType = static_cast<int32_t>(processData.processType);
     auto extensionType = static_cast<int32_t>(processData.extensionType);
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d",
+    CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d",
         __func__, processData.uid, processData.pid, processData.hostPid, processType, processData.bundleName.c_str(),
         extensionType);
     ChronoScope cs("HandleProcessCreated");

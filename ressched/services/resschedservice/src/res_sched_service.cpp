@@ -95,6 +95,7 @@ namespace {
         ResType::RES_TYPE_CROWN_ROTATION_STATUS,
         ResType::RES_TYPE_RED_ENVELOPE,
         ResType::RES_TYPE_RECV_ABC_LOAD_COMPLETED,
+        ResType::RES_TYPE_SET_BACKGROUND_PROCESS_PRIORITY,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
