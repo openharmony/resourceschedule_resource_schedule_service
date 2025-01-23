@@ -185,7 +185,8 @@ bool ReadLinesFromFile(const std::string& filePath, std::vector<std::string>& li
 {
     std::string line;
     char tmpPath[PATH_MAX + 1] = {0};
-    if (!realpath(filePath.c_str(), tmpPath)) {
+    int32_t len = strlen(filePath);
+    if (len == 0 || len > PATH_MAX || !realpath(filePath.c_str(), tmpPath)) {
         RESSCHED_LOGE("%{public}s: file path invalid", __func__);
         return false;
     }
