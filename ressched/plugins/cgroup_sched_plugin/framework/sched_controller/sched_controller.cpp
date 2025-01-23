@@ -417,6 +417,7 @@ void SchedController::SubscribeWindowState()
         }
     }
     SubscribeWindowModeChange();
+    SubscribePipChange();
     CGS_LOGI("%{public}s success.", __func__);
 }
 
@@ -456,6 +457,35 @@ void SchedController::UnsubscribeWindowState()
         windowDrawingContentObserver_ = nullptr;
     }
     UnsubscribeWindowModeChange();
+    UnSubscribePipChange();
+}
+
+void SchedController::SubscribePipChange()
+{
+    if (!pipStateObserver_) {
+        pipStateObserver_ = new (std::nothrow)PiPStateObserver();
+        if (!pipStateObserver_) {
+            CGS_LOGI("new PiPStateObserver fail");
+            return;
+        }
+        if (OHOS::Rosen::WindowManagerLite::GetInstance().
+            RegisterPiPStateChangedListener(pipStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
+                CGS_LOGE("RegisterPiPStateChangedListener fail");
+                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                HiviewDFX::HiSysEvent::EventType::FAULT,
+                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                "ERR_MSG", "Register a listener of window pip content change failed.");
+        }
+    }
+}
+
+void SchedController::UnSubscribePipChange()
+{
+    if (pipStateObserver_) {
+        OHOS::Rosen::WindowManagerLite::GetInstance().UnRegisterPiPStateChangedListener(pipStateObserver_);
+        pipStateObserver_ = nullptr;
+    }
+    CGS_LOGI("UnsubscribePipchange success");
 }
 
 void SchedController::UnsubscribeWindowModeChange()
