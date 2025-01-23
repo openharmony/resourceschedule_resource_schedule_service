@@ -185,6 +185,7 @@ namespace {
         ResType::RES_TYPE_DISPLAY_MULTI_SCREEN,
         ResType::RES_TYPE_INTENT_CTRL_APP,
         ResType::RES_TYPE_GET_GAME_SCENE_INFO,
+        ResType::RES_TYPE_FRAME_RATE_REPORT_FROM_RS,
     };
 
     bool IsHasPermission(const uint32_t type)

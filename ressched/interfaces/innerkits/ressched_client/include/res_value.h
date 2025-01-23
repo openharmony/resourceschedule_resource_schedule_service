@@ -38,6 +38,7 @@ enum EventType : uint32_t {
     EVENT_MUTEX_STATUS_BEFORE_START = 4,
     EVENT_APP_STATE_BACKGROUND_FOREGROUND = 5,
     EVENT_RED_ENVELOPE = 6,
+    EVENT_FRAME_RATE_STATISTICS = 7,
     EVENT_END,
 };
 
@@ -47,6 +48,9 @@ enum EventValue : uint32_t {
     EVENT_VALUE_DRAW_FRAME_REPORT_STOP,
     EVENT_VALUE_DDR_BOUND_REPORT_START,
     EVENT_VALUE_DDR_BOUND_REPORT_STOP,
+    EVENT_VALUE_FRAME_RATE_STATISTICS_START,
+    EVENT_VALUE_FRAME_RATE_STATISTICS_END,
+    EVENT_VALUE_FRAME_RATE_STATISTICS_BREAK,
     EVENT_VALUE_END,
 };
 
@@ -736,6 +740,13 @@ enum WifiConnectionState : int64_t {
     WIFI_STATE_CONNECTED = 3,
     WIFI_STATE_DISCONNECTING = 4,
     WIFI_STATE_DISCONNECTED = 5,
+};
+
+/**
+* @brief Frame Report from Rs
+*/
+enum FrameRateReportState : int64_t {
+    FRAME_RATE_COMMON_REPORT = 0,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
