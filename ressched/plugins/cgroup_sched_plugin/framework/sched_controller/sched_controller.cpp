@@ -472,9 +472,9 @@ void SchedController::SubscribePipChange()
             RegisterPiPStateChangedListener(pipStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
                 CGS_LOGE("RegisterPiPStateChangedListener fail");
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
-                HiviewDFX::HiSysEvent::EventType::FAULT,
-                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                "ERR_MSG", "Register a listener of window pip content change failed.");
+                    HiviewDFX::HiSysEvent::EventType::FAULT,
+                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                    "ERR_MSG", "Register a listener of window pip content change failed.");
         }
     }
 }
