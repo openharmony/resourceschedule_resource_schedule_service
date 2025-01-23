@@ -189,7 +189,8 @@ bool ReadLinesFromFile(const std::string& filePath, std::vector<std::string>& li
         RESSCHED_LOGE("%{public}s: file path invalid", __func__);
         return false;
     }
-    std::ifstream fin(filePath, std::ifstream::in);
+    std::string realConfigPath(tmpPath);
+    std::ifstream fin(realConfigPath, std::ifstream::in);
     // judge whether open failed.
     if (!fin) {
         RESSCHED_LOGE("%{public}s: open file failed.", __func__);
@@ -240,7 +241,7 @@ bool CopyFile(const std::string& src, const std::string& des)
     }
     errno = 0;
     // create target directory.
-    if (mkdir(des.c_str(), SIRWXU) != 0 && errno != EEXIST) {
+    if (mkdir(des.c_str(), S_IRWXU) != 0 && errno != EEXIST) {
         RESSCHED_LOGE("%{public}s: create target path failed!", __func__);
         return false;
     }
