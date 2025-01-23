@@ -71,7 +71,13 @@ bool LoadOneCfgFileToJsonObj(const std::string& relativeFilePath, nlohmann::json
 
 bool LoadFileToJsonObj(const std::string& absolutePath, nlohmann::json& jsonObj)
 {
-    std::ifstream fileStream(absolutePath);
+    char tmpPath[PATH_MAX + 1] = {0};
+    if (!realpath(absolutePath.c_str(), tmpPath)) {
+        RESSCHED_LOGE("%{public}s: file path invalid", __func__);
+        return false;
+    }
+    std::string realConfigFile(tmpPath);
+    std::ifstream fileStream(realConfigFile);
     // judge open success.
     if (!fileStream.is_open()) {
         RESSCHED_LOGE("%{public}s:open file fail.", __func__);

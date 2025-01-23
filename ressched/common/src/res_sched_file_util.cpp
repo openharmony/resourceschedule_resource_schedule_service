@@ -105,12 +105,6 @@ bool IsDir(const std::string& filePath)
 
 bool CreateDir(const std::string& dir, const mode_t& mode)
 {
-    std::string parentDir = OHOS::ExtractFilePath(dir);
-    // judge path is exist.
-    if (!PathOrFileExists(parentDir)) {
-        RESSCHED_LOGE("%{public}s: father dir do not exist", __func__);
-        return false;
-    }
     // create directory
     if (!OHOS::ForceCreateDirectory(dir)) {
         RESSCHED_LOGE("%{public}s: Failed to create dir", __func__);
@@ -190,6 +184,11 @@ bool SaveStringToFile(const std::string& filePath, const std::string& content, b
 bool ReadLinesFromFile(const std::string& filePath, std::vector<std::string>& lines)
 {
     std::string line;
+    char tmpPath[PATH_MAX + 1] = {0};
+    if (!realpath(filePath.c_str(), tmpPath)) {
+        RESSCHED_LOGE("%{public}s: file path invalid", __func__);
+        return false;
+    }
     std::ifstream fin(filePath, std::ifstream::in);
     // judge whether open failed.
     if (!fin) {
@@ -239,8 +238,9 @@ bool CopyFile(const std::string& src, const std::string& des)
             return false;
         }
     }
+    errno = 0;
     // create target directory.
-    if (!CreateDir(des, S_IRWXU)) {
+    if (mkdir(des.c_str(), SIRWXU) != 0 && errno != EEXIST) {
         RESSCHED_LOGE("%{public}s: create target path failed!", __func__);
         return false;
     }
