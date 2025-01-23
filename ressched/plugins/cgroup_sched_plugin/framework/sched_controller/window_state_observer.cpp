@@ -187,6 +187,14 @@ void WindowModeObserver::OnWindowModeUpdate(const WindowModeType mode)
     lastWindowMode_ = nowWindowMode;
 }
 
+void PiPStateObserver::OnPiPStateChanged(const std::string& bundleName, const bool isForeground)
+{
+    CGS_LOGI("Receive OnPiPStateChange %{public}s %{public}d", bundleName.c_str(), isForeground);
+    nlohmann::json payload;
+    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TRPE_PIP_STATUS,
+        static_cast<int64_t>(isForeground), payload);
+}
+
 uint8_t WindowModeObserver::MarshallingWindowModeType(const WindowModeType mode)
 {
     uint8_t nowWindowMode = RSSWindowMode::WINDOW_MODE_OTHER;
