@@ -482,7 +482,7 @@ void SchedController::SubscribePipChange()
 void SchedController::UnSubscribePipChange()
 {
     if (pipStateObserver_) {
-        OHOS::Rosen::WindowManagerLite::GetInstance().UnRegisterPiPStateChangedListener(pipStateObserver_);
+        OHOS::Rosen::WindowManagerLite::GetInstance().UnregisterPiPStateChangedListener(pipStateObserver_);
         pipStateObserver_ = nullptr;
     }
     CGS_LOGI("UnsubscribePipchange success");
