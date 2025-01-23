@@ -72,7 +72,8 @@ bool LoadOneCfgFileToJsonObj(const std::string& relativeFilePath, nlohmann::json
 bool LoadFileToJsonObj(const std::string& absolutePath, nlohmann::json& jsonObj)
 {
     char tmpPath[PATH_MAX + 1] = {0};
-    if (!realpath(absolutePath.c_str(), tmpPath)) {
+    int32_t len = strlen(absolutePath);
+    if (len == 0 || len > PATH_MAX || !realpath(absolutePath.c_str(), tmpPath)) {
         RESSCHED_LOGE("%{public}s: file path invalid", __func__);
         return false;
     }
