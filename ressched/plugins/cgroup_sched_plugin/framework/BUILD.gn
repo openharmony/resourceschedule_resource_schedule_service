@@ -62,7 +62,7 @@ ohos_shared_library("cgroup_sched") {
     "samgr:samgr_proxy",
     "window_manager:libwm",
     "window_manager:libwmutil_base",
-    "window_manager:linwn_lite",
+    "window_manager:libwm_lite",
   ]
 
   defines = []
