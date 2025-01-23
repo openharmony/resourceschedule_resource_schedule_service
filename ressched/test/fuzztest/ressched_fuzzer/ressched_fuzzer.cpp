@@ -275,6 +275,12 @@ namespace {
         }
         auto lastTask = SceneRecognizerMgr::GetInstance().ffrtQueue_->submit_h([]() {});
         SceneRecognizerMgr::GetInstance().ffrtQueue_->wait(lastTask);
+        if (slideRecognizer->listFlingEndTask_) {
+            ffrt::wait({slideRecognizer->listFlingEndTask_});
+        }
+        if (slideRecognizer->listFlingTimeOutTask_) {
+            ffrt::wait({slideRecognizer->listFlingTimeOutTask_});
+        }
         return true;
     }
 
