@@ -105,7 +105,7 @@ bool StrToUInt32(const std::string& value, uint32_t& result)
     char* pEnd = nullptr;
     errno = 0;
     // check whether convert success
-    int64_t res = std::strtoul(value.c_str(), &pEnd, 10);
+    uint32_t res = (uint32_t)std::strtoul(value.c_str(), &pEnd, 10);
     if (errno == ERANGE || pEnd == value.c_str() || *pEnd != '\0' ||
         (result > UINT_MAX)) {
         RESSCHED_LOGE("%{public}s:convert err or overflow.", __func__);

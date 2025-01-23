@@ -289,5 +289,10 @@ extern "C" void ReportProcessStateInProcess(int32_t state, int32_t pid)
 {
     ResSchedMgr::GetInstance().OnApplicationStateChange(state, pid);
 }
+
+extern "C" void KillProcessInProcess(const nlohmann::json& payload)
+{
+    ResSchedMgr::GetInstance().KillProcessByClient(payload);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
