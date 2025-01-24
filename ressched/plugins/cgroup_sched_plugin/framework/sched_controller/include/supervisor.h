@@ -106,7 +106,6 @@ public:
     SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
-    SchedPolicy policyBeforUnlimitedSuppress_ = SP_UPPER_LIMIT;
     bool runningTransientTask_ = false;
     bool isActive_ {false};
     bool inSelfRenderCgroup_ = false;
@@ -140,6 +139,7 @@ public:
     std::map<int32_t, int32_t> keyThreadRoleMap_ {}; // items in keyThreadMap_ is (tid, role)
 
     std::unordered_map<int32_t, SchedPolicy> specialSchedThread_;
+    std::unordered_map<uint32_t, SchedPolicy> policyBeforUnlimitedSuppress_;
 private:
     uid_t uid_;
     pid_t pid_;
