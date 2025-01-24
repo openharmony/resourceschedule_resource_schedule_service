@@ -1488,16 +1488,22 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_034, Function | Med
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
-    uid_t uid = 1000;
-    pid_t pid = 1234;
     Rosen::WindowType windowType = Rosen::WindowType::APP_WINDOW_BASE;
     uint64_t displayId = 1;
     uint32_t windowId = 1;
     nlohmann::json payload;
 
-    cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pid, uid);
-    auto app = supervisor_->GetAppRecordNonNull(uid);
-    EXPECT_TRUE(app->focusedProcess_ != nullptr);
+    uid_t uidMain = 1000;
+    pid_t pidMain = 1234;
+    cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pidMain, uidMain);
+    auto appMain = supervisor_->GetAppRecordNonNull(uidMain);
+    EXPECT_TRUE(appMain->focusedProcess_ != nullptr);
+
+    uid_t uidSec = 1001;
+    pid_t pidSec = 1235;
+    cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pidSec, uidSec);
+    auto appSec = supervisor_->GetAppRecordNonNull(uidSec);
+    EXPECT_TRUE(appSec->focusedProcess_ != nullptr);
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
