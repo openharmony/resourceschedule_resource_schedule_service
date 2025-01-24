@@ -884,7 +884,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_016, Function | Med
     auto proc = app->GetProcessRecordNonNull(1112);
     EXPECT_TRUE(proc != nullptr);
 
-    payload = nlohmann::json::parse("{\"uid\": 1111, \"pid\": 1112}");
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
     proc->curSchedGroup_ = CgroupSetting::SP_BACKGROUND;
     cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
     EXPECT_TRUE(proc->audioPlayingState_ == 2);
@@ -1474,6 +1474,30 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_033, Function | Med
     EXPECT_TRUE(proc->videoState_);
     cgroupEventHandler->HandleReportWebviewVideoState(ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE, 1, payload);
     EXPECT_FALSE(proc->videoState_);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_034
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_034, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
+    uid_t uid = 1000;
+    pid_t pid = 1234;
+    Rosen::WindowType windowType = Rosen::WindowType::APP_WINDOW_BASE;
+    uint64_t displayId = 1;
+    uint32_t windowId = 1;
+    nlohmann::json payload;
+
+    cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pid, uid);
+    auto app = supervisor_->GetAppRecordNonNull(uid);
+    EXPECT_TRUE(app->focusedProcess_ != nullptr);
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
