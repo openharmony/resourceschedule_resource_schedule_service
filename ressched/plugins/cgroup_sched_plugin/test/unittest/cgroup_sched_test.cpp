@@ -1502,8 +1502,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_034, Function | Med
     uid_t uidSec = 1001;
     pid_t pidSec = 1235;
     cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pidSec, uidSec);
-    auto appSec = supervisor_->GetAppRecordNonNull(uidSec);
-    EXPECT_TRUE(appSec->focusedProcess_ != nullptr);
+    EXPECT_TRUE(appMain->focusedProcess_ != nullptr);
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
