@@ -293,6 +293,8 @@ enum : uint32_t {
     RES_TYPE_SET_BACKGROUND_PROCESS_PRIORITY = 134,
     // report pip start 1 is enter 0 is exit
     RES_TRPE_PIP_STATUS = 135,
+    // frame report from render service
+    RES_TYPE_FRAME_RATE_REPORT_FROM_RS = 136,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
