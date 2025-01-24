@@ -61,6 +61,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     static const int32_t TWO_PARAMETERS = 2;
+    static const int32_t TIME_SECOND = 1000000;
 
     static const std::unordered_set<uint32_t> THIRDPARTY_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -258,8 +259,8 @@ namespace {
         int64_t value = fdp->ConsumeIntegral<int64_t>();
         nlohmann::json payload;
         auto slideRecognizer = std::make_shared<SlideRecognizer>();
-        slideRecognizer->SetListFlingTimeoutTime(0);
-        slideRecognizer->SetListFlingEndTime(0);
+        slideRecognizer->SetListFlingTimeoutTime(TIME_SECOND);
+        slideRecognizer->SetListFlingEndTime(TIME_SECOND);
         slideRecognizer->OnDispatchResource(resType, value, payload);
         slideRecognizer->HandleSlideDetecting(payload);
         slideRecognizer->HandleSlideEvent(value, payload);
@@ -275,12 +276,6 @@ namespace {
         }
         auto lastTask = SceneRecognizerMgr::GetInstance().ffrtQueue_->submit_h([]() {});
         SceneRecognizerMgr::GetInstance().ffrtQueue_->wait(lastTask);
-        if (slideRecognizer->listFlingEndTask_) {
-            ffrt::wait({slideRecognizer->listFlingEndTask_});
-        }
-        if (slideRecognizer->listFlingTimeOutTask_) {
-            ffrt::wait({slideRecognizer->listFlingTimeOutTask_});
-        }
         return true;
     }
 
