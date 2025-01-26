@@ -23,9 +23,39 @@
 #include "plugin.h"
 #include "single_instance.h"
 #include "socperf_client.h"
+#include <string>
+#include <sstream>
 
 namespace OHOS {
 namespace ResourceSchedule {
+class AppKeyMessage {
+private:
+    int32_t appType;
+    std::string bundleName;
+
+public:
+    AppKeyMessage(int32_t appType = 0, const std::string& bundleName = "") :
+        appType(appType), bundleName(bundleName) {}
+
+    int32_t GetAppType() const
+    {
+        return appType;
+    }
+
+    void setAppType(int32_t newAppType) {
+        appType = newAppType;
+    }
+
+    std::string GetBundleName() const
+    {
+        return bundleName;
+    }
+
+    void setBundleName(const std:: string& newBundleName)
+    {
+        bundleName = newBundleName;
+    }
+}
 class SocPerfPlugin : public Plugin {
     DECLARE_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -40,9 +70,11 @@ private:
     using ReqAppTypeFunc = int32_t (*)(const std::string &bundleName);
     std::set<uint32_t> resTypes;
     std::set<int32_t> focusAppUids_;
+    // app names set which use camera
+    std::set<std::string> appNameUseCamera_;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
-    // app's uid match app type
-    std::map<int32_t, int32_t> uidToAppTypeMap_;
+    // app's uid match app
+    std::map<int32_t, AppKeyMessage> uidToAppMsgMap_;
     // app's pid match app type
     std::map<int32_t, int32_t> pidToAppTypeMap_;
     std::string perfReqAppTypeSoPath_;
@@ -100,13 +132,18 @@ private:
     bool HandleGameBoost(const std::shared_ptr<ResData>& data);
     bool UpdateFocusAppType(const std::shared_ptr<ResData>& data, bool focusStatus);
     bool HandleUninstallEvent(const std::shared_ptr<ResData>& data);
-    bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data);
-    bool UpdateUidToAppTypeMap(const std::shared_ptr<ResData>& data, const int32_t appType);
+    bool UpdateUidToAppMsgMap(const std::shared_ptr<ResData>& data);
+    bool UpdateUidToAppMsgMap(const std::shared_ptr<ResData>& data, const int32_t appType,
+        const std::string& bundleName);
     bool IsFocusAppsAllGame();
     bool UpdatesFocusAppsType(int32_t appType);
     bool HandleDeadProcess(const std::shared_ptr<ResData>& data);
     bool IsGameEvent(const std::shared_ptr<ResData>& data);
     bool HandleProcessStateChange(const std::shared_ptr<ResData> &data);
+    bool HandleCameraStateChange(const std::shared_ptr<ResData> &data);
+    bool InitBundleNameBoostList();
+    bool HandleSubValue(const std::string& subValue);
+    bool IsAllowBoostScene();
     int32_t GetPidByData(const std::shared_ptr<ResData>& data, const std::string& key);
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
