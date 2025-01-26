@@ -192,7 +192,7 @@ bool SocPerfPlugin::HandleSubValue(const std::string& subValue)
     }
     std::stringstream sstream(subValue);
     std::string bundleName;
-    while(std::getline(sstream, bundleName, ',')) {
+    while (std::getline(sstream, bundleName, ',')) {
         appNameUseCamera_.insert(bundleName);
     }
     return true;

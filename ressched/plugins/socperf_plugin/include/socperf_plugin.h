@@ -34,15 +34,16 @@ private:
     std::string bundleName;
 
 public:
-    AppKeyMessage(int32_t appType = 0, const std::string& bundleName = "") :
-        appType(appType), bundleName(bundleName) {}
+    AppKeyMessage(int32_t appType = 0,
+        const std::string& bundleName = "") : appType(appType), bundleName(bundleName) {}
 
     int32_t GetAppType() const
     {
         return appType;
     }
 
-    void setAppType(int32_t newAppType) {
+    void setAppType(int32_t newAppType)
+    {
         appType = newAppType;
     }
 
@@ -51,11 +52,12 @@ public:
         return bundleName;
     }
 
-    void setBundleName(const std:: string& newBundleName)
+    void setBundleName(const std::string& newBundleName)
     {
         bundleName = newBundleName;
     }
-}
+};
+
 class SocPerfPlugin : public Plugin {
     DECLARE_SINGLE_INSTANCE(SocPerfPlugin)
 
