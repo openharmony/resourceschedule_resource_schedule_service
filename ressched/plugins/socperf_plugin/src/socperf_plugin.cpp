@@ -943,7 +943,7 @@ bool SocPerfPlugin::HandleCameraStateChange(const std::shared_ptr<ResData>& data
     SOC_PERF_LOGI("SocPerfPlugin: socperf->CAMERA_STATE_CHANGE: %{public}lld", (long long)data->value);
     if (data->value == CameraState::CAMERA_CONNECT) {
         if (IsAllowBoostScene()) {
-            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_USE_CAMERA, "");
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_APP_USE_CAMERA, true, "");
         }
     } else if (data->value == CameraState::CAMERA_DISCONNECT) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_APP_USE_CAMERA, false, "");
