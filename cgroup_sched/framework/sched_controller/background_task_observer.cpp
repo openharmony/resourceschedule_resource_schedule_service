@@ -94,6 +94,22 @@ void BackgroundTaskObserver::OnTransientTaskErr(const std::shared_ptr<TransientT
         ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TRANSIENT_TASK_ERR, payload);
 }
 
+void BackgroundTaskObserver::OnAppTransientTaskStart(const std::shared_ptr<TransientTaskAppInfo>& info)
+{
+    nlohmann::json payload;
+    MarshallingTransientTaskAppInfo(info, payload);
+    ResSchedUtils::GetInstance().ReportDataInProcess(
+        ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::APP_TRANSIENT_TASK_START, payload);
+}
+
+void BackgroundTaskObserver::OnAppTransientTaskEnd(const std::shared_ptr<TransientTaskAppInfo>& info)
+{
+    nlohmann::json payload;
+    MarshallingTransientTaskAppInfo(info, payload);
+    ResSchedUtils::GetInstance().ReportDataInProcess(
+        ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::APP_TRANSIENT_TASK_END, payload);
+}
+
 void BackgroundTaskObserver::MarshallingContinuousTaskCallbackInfo(
     const std::shared_ptr<ContinuousTaskCallbackInfo>& continuousTaskCallbackInfo, nlohmann::json& payload)
 {
