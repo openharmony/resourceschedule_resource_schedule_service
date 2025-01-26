@@ -26,14 +26,6 @@ std::string FormatString(const char* fmt, va_list vararg);
 
 std::string StringPrintf(const char* fmt, ...);
 
-bool GetRealPath(const std::string& path, std::string& realPath);
-
-bool ReadFileToString(const std::string& filePath, std::string& content);
-
-bool WriteStringToFile(int fd, const std::string& content);
-
-bool WriteStringToFile(const std::string& content, const std::string& filePath);
-
 bool ReadFileToStringForVFS(const std::string& filePath, std::string& content);
 
 bool ReadFileToStringForVFSFromExecutor(int tid, std::string& content);

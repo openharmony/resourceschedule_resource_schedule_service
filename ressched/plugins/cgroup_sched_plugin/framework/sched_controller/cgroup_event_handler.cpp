@@ -298,7 +298,7 @@ void CgroupEventHandler::HandleProcessCreated(const ProcessData &processData)
     }
     auto processType = static_cast<int32_t>(processData.processType);
     auto extensionType = static_cast<int32_t>(processData.extensionType);
-    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d",
+    CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d",
         __func__, processData.uid, processData.pid, processData.hostPid, processType, processData.bundleName.c_str(),
         extensionType);
     ChronoScope cs("HandleProcessCreated");
@@ -464,11 +464,6 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, WindowType windo
 
         app->focusedProcess_ = procRecord;
         auto lastFocusApp = supervisor_->focusedApp_;
-        if (lastFocusApp && lastFocusApp != app) {
-            lastFocusApp->focusedProcess_ = nullptr;
-            CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(lastFocusApp.get()),
-                AdjustSource::ADJS_FOCUSED_WINDOW);
-        }
         supervisor_->focusedApp_ = app;
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FOCUSED_WINDOW);
         ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), ResType::RES_TYPE_WINDOW_FOCUS,

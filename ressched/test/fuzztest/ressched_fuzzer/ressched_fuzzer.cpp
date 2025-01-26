@@ -61,6 +61,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     static const int32_t TWO_PARAMETERS = 2;
+    static const int32_t TIME_SECOND = 1000000;
 
     static const std::unordered_set<uint32_t> THIRDPARTY_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -200,19 +201,6 @@ namespace {
         return true;
     }
 
-    bool SyncEventFuzzTest(FuzzedDataProvider* fdp)
-    {
-        // getdata
-        MessageParcel fuzzData;
-        std::string data = fdp->ConsumeRandomLengthString();
-        fuzzData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
-        fuzzData.WriteBuffer(data.c_str(), data.size());
-        fuzzData.RewindRead(0);
-        MessageParcel fuzzReply;
-        DelayedSingleton<ResSchedService>::GetInstance()->ReportSyncEventInner(fuzzData, fuzzReply);
-        return true;
-    }
-
     bool ResSchedClientFuzzTest(FuzzedDataProvider* fdp)
     {
         uint32_t resType = fdp->ConsumeIntegral<uint32_t>();
@@ -271,8 +259,8 @@ namespace {
         int64_t value = fdp->ConsumeIntegral<int64_t>();
         nlohmann::json payload;
         auto slideRecognizer = std::make_shared<SlideRecognizer>();
-        slideRecognizer->SetListFlingTimeoutTime(0);
-        slideRecognizer->SetListFlingEndTime(0);
+        slideRecognizer->SetListFlingTimeoutTime(TIME_SECOND);
+        slideRecognizer->SetListFlingEndTime(TIME_SECOND);
         slideRecognizer->OnDispatchResource(resType, value, payload);
         slideRecognizer->HandleSlideDetecting(payload);
         slideRecognizer->HandleSlideEvent(value, payload);
@@ -392,7 +380,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     FuzzedDataProvider fdp(data, size);
     OHOS::ResourceSchedule::DoSomethingInterestingWithMyAPI(&fdp);
     OHOS::ResourceSchedule::OnRemoteRequest(&fdp);
-    OHOS::ResourceSchedule::SyncEventFuzzTest(&fdp);
     OHOS::ResourceSchedule::ResSchedClientFuzzTest(&fdp);
     OHOS::ResourceSchedule::ResSchedThirdPartyFuzzTest(&fdp);
     OHOS::ResourceSchedule::OnSystemloadLevelFuzzTest(&fdp);

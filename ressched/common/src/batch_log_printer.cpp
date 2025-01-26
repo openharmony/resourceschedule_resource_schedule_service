@@ -31,7 +31,7 @@ IMPLEMENT_SINGLE_INSTANCE(BatchLogPrinter);
 BatchLogPrinter::BatchLogPrinter()
 {
     logQueue_ = std::make_shared<ffrt::queue>(QUEUE_NAME, ffrt::queue_attr().qos(ffrt::qos_default));
-    lastPrintTimestamp_ = ResCommonUtil::GetNowMillTime();
+    lastPrintTimestamp_ = ResCommonUtil::GetNowMillTime(true);
 }
 
 void BatchLogPrinter::SubmitLog(const std::string& log)
@@ -49,7 +49,7 @@ void BatchLogPrinter::RecordLog(const std::string& log, const int64_t& timestamp
 {
     std::string recordLog = ResCommonUtil::ConvertTimestampToStr(timestamp) + ":" + log;
     allLogs_.push_back(recordLog);
-    auto currentTImestamp = ResCommonUtil::GetNowMillTime();
+    auto currentTImestamp = ResCommonUtil::GetNowMillTime(true);
     if (allLogs_.size() >= PRINT_SIZE || currentTImestamp - lastPrintTimestamp_ >= PRINT_DUATION) {
         std::vector<std::string> batchLogs = std::vector<std::string>();
         GetBatch(batchLogs);

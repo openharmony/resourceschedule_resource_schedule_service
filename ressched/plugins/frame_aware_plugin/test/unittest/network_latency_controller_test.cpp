@@ -67,18 +67,6 @@ protected:
 };
 
 /**
- * @tc.name: controllerInit001
- * @tc.desc: test controller init
- * @tc.type: FUNC
- * @tc.require: issueI8VZVN
- */
-HWTEST_F(NetworkLatencyControllerTest, controllerInit001, testing::ext::TestSize.Level1)
-{
-    ctrl.Init();
-    SUCCEED();
-}
-
-/**
  * @tc.name: singleUser_001
  * @tc.desc: test latency switching with a single user
  * @tc.type: FUNC
@@ -87,7 +75,7 @@ HWTEST_F(NetworkLatencyControllerTest, controllerInit001, testing::ext::TestSize
 HWTEST_F(NetworkLatencyControllerTest, singleUser_001, testing::ext::TestSize.Level1)
 {
     const std::string identity("test.application.1");
-
+    ctrl.Init();
     // enable low latency
     ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_LOW, identity);
     EXPECT_EQ(counter->onCount, 1);

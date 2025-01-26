@@ -214,44 +214,6 @@ HWTEST_F(SceneRecognizeTest, HandleSlideDetecting_001, Function | MediumTest | L
 }
 
 /**
- * @tc.name: SceneRecognizer HandleListFlingStart_001
- * @tc.desc: test the interface HandleListFlingStart
- * @tc.type: FUNC
- * @tc.require: issuesIAJZVI
- * @tc.author: fengyang
- */
-HWTEST_F(SceneRecognizeTest, HandleListFlingStart_001, Function | MediumTest | Level0)
-{
-    auto slideRecognizer = std::make_shared<SlideRecognizer>();
-    nlohmann::json payload;
-    std::string testPid = "2000";
-    payload["clientPid"] = testPid;
-    g_slideState = SlideRecognizeStat::LIST_FLING;
-    slideRecognizer->HandleListFlingStart(payload);
-    slideRecognizer->HandleListFlingStart(payload);
-    EXPECT_EQ(g_slideState, SlideRecognizeStat::LIST_FLING);
-}
-
-/**
- * @tc.name: SceneRecognizer HandleSendFrameEvent_001
- * @tc.desc: test the interface HandleSendFrameEvent
- * @tc.type: FUNC
- * @tc.require: issuesIAJZVI
- * @tc.author: fengyang
- */
-HWTEST_F(SceneRecognizeTest, HandleSendFrameEvent_001, Function | MediumTest | Level0)
-{
-    auto slideRecognizer = std::make_shared<SlideRecognizer>();
-    nlohmann::json payload;
-    payload["clientPid"] = "2000";
-    g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
-    slideRecognizer->HandleSendFrameEvent(payload);
-    g_slideState = SlideRecognizeStat::LIST_FLING;
-    slideRecognizer->HandleSendFrameEvent(payload);
-    EXPECT_EQ(g_slideState, SlideRecognizeStat::LIST_FLING);
-}
-
-/**
  * @tc.name: SceneRecognizer HandleClickEvent_001
  * @tc.desc: test the interface HandleClickEvent
  * @tc.type: FUNC

@@ -50,6 +50,24 @@ ResSchedClient::~ResSchedClient()
     registeredInnerEvents.clear();
 }
 
+nlohmann::json StringToJsonObj(const std::string& str)
+{
+    nlohmann::json jsonObj = nlohmann::json::object();
+    if (str.empty()) {
+        return jsonObj;
+    }
+    nlohmann::json jsonTmp = nlohmann::json::parse(str, nullptr, false);
+    if (jsonTmp.is_discarded()) {
+        RESSCHED_LOGE("%{public}s: parse fail, str=%{public}s.", __func__, str.c_str());
+        return jsonObj;
+    }
+    if (!jsonTmp.is_object()) {
+        RESSCHED_LOGE("%{public}s: str=%{public}s is not jsonObj.", __func__, str.c_str());
+        return jsonObj;
+    }
+    return jsonTmp;
+}
+
 void ResSchedClient::ReportData(uint32_t resType, int64_t value,
                                 const std::unordered_map<std::string, std::string>& mapPayload)
 {
@@ -67,7 +85,7 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
         RESSCHED_LOGD("ResSchedClient::ReportData fail to get resource schedule service.");
         return;
     }
-    rss_->ReportData(resType, value, payload);
+    rss_->ReportData(resType, value, payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
 }
 
 int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t value, const nlohmann::json& payload,
@@ -80,13 +98,17 @@ int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t va
         RESSCHED_LOGD("%{public}s: fail to get rss.", __func__);
         return RES_SCHED_CONNECT_FAIL;
     }
+    std::string payloadValue = payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
     if (resType == ResType::SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START) {
-        ffrt::future<std::pair<int32_t, nlohmann::json>> fut = ffrt::async([resType, value, payload, proxy] {
+        ffrt::future<std::pair<int32_t, nlohmann::json>> fut = ffrt::async([resType, value, payloadValue, proxy] {
             nlohmann::json ffrtReply;
+            std::string replyValue;
             if (proxy == nullptr) {
                 return std::pair<int32_t, nlohmann::json>(RES_SCHED_CONNECT_FAIL, ffrtReply);
             }
-            int32_t ret = proxy->ReportSyncEvent(resType, value, payload, ffrtReply);
+            int32_t ret;
+            proxy->ReportSyncEvent(resType, value, payloadValue, replyValue, ret);
+            ffrtReply = StringToJsonObj(replyValue);
             return std::pair<int32_t, nlohmann::json>(ret, ffrtReply);
         });
 
@@ -99,7 +121,11 @@ int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t va
         RESSCHED_LOGW("%{public}s: sync time out", __func__);
         return RES_SCHED_REQUEST_FAIL;
     } else {
-        return proxy->ReportSyncEvent(resType, value, payload, reply);
+        int32_t ret;
+        std::string replyValue;
+        proxy->ReportSyncEvent(resType, value, payloadValue, replyValue, ret);
+        reply = StringToJsonObj(replyValue);
+        return ret;
     }
 }
 
@@ -115,7 +141,9 @@ int32_t ResSchedClient::KillProcess(const std::unordered_map<std::string, std::s
         RESSCHED_LOGD("ResSchedClient::KillProcess fail to get resource schedule service.");
         return RES_SCHED_KILL_PROCESS_FAIL;
     }
-    return proxy->KillProcess(payload);
+    int32_t ret;
+    proxy->KillProcess(payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace), ret);
+    return ret;
 }
 
 void ResSchedClient::RegisterSystemloadNotifier(const sptr<ResSchedSystemloadNotifierClient>& callbackObj)
@@ -193,7 +221,9 @@ int32_t ResSchedClient::GetSystemloadLevel()
         RESSCHED_LOGE("ResSchedClient::GetSystemloadLevel fail to get resource schedule service.");
         return RES_SCHED_CONNECT_FAIL;
     }
-    return rss_->GetSystemloadLevel();
+    int32_t ret;
+    rss_->GetSystemloadLevel(ret);
+    return ret;
 }
 
 bool ResSchedClient::IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode)
@@ -209,7 +239,9 @@ bool ResSchedClient::IsAllowedAppPreload(const std::string& bundleName, int32_t 
     }
 
     RESSCHED_LOGD("App preload bundleName %{public}s, preloadMode %{public}d", bundleName.c_str(), preloadMode);
-    return rss_->IsAllowedAppPreload(bundleName, preloadMode);
+    bool ret;
+    rss_->IsAllowedAppPreload(bundleName, preloadMode, ret);
+    return ret;
 }
 
 int32_t ResSchedClient::IsAllowedLinkJump(bool& isAllowedLinkJump)
@@ -224,7 +256,9 @@ int32_t ResSchedClient::IsAllowedLinkJump(bool& isAllowedLinkJump)
         RESSCHED_LOGE("ResSchedClient::IsAllowedLinkJump fail to get resource schedule service.");
         return RES_SCHED_CONNECT_FAIL;
     }
-    return rss_->IsAllowedLinkJump(isAllowedLinkJump);
+    int32_t ret;
+    rss_->IsAllowedLinkJump(isAllowedLinkJump, ret);
+    return ret;
 }
 
 sptr<IResSchedService> ResSchedClient::GetProxy()
@@ -442,7 +476,7 @@ bool ResSchedClient::SystemloadLevelListener::IsSystemloadCbArrayEmpty()
     return systemloadLevelCbs_.empty();
 }
 
-void ResSchedClient::SystemloadLevelListener::OnSystemloadLevel(int32_t level)
+ErrCode ResSchedClient::SystemloadLevelListener::OnSystemloadLevel(int32_t level)
 {
     std::list<sptr<ResSchedSystemloadNotifierClient>> notifyList;
     {
@@ -457,6 +491,7 @@ void ResSchedClient::SystemloadLevelListener::OnSystemloadLevel(int32_t level)
             notifier->OnSystemloadLevel(level);
         }
     }
+    return ERR_OK;
 }
 
 ResSchedClient::InnerEventListener::~InnerEventListener()
@@ -522,11 +557,12 @@ void ResSchedClient::InnerEventListener::UnRegisterEventListener(const sptr<ResS
         static_cast<int32_t>(item->second.size()), eventType);
 }
 
-void ResSchedClient::InnerEventListener::OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup,
-    const nlohmann::json& extInfo)
+ErrCode ResSchedClient::InnerEventListener::OnReceiveEvent(uint32_t eventType, uint32_t eventValue,
+    uint32_t listenerGroup, const std::string& extInfo)
 {
+    nlohmann::json extInfoJson = StringToJsonObj(extInfo);
     std::unordered_map<std::string, std::string> extInfoMap;
-    for (auto it = extInfo.begin(); it != extInfo.end(); ++it) {
+    for (auto it = extInfoJson.begin(); it != extInfoJson.end(); ++it) {
         extInfoMap[it.key()] = it.value().get<std::string>();
     }
     std::list<sptr<ResSchedEventListener>> listenerList;
@@ -534,7 +570,7 @@ void ResSchedClient::InnerEventListener::OnReceiveEvent(uint32_t eventType, uint
         std::lock_guard<std::mutex> lock(eventMutex_);
         auto item = eventListeners_.find(eventType);
         if (item == eventListeners_.end()) {
-            return;
+            return RES_SCHED_DATA_ERROR;
         }
         auto listenerItem = item->second.find(listenerGroup);
         for (auto& iter : listenerItem->second) {
@@ -547,6 +583,7 @@ void ResSchedClient::InnerEventListener::OnReceiveEvent(uint32_t eventType, uint
             listener->OnReceiveEvent(eventType, eventValue, extInfoMap);
         }
     }
+    return ERR_OK;
 }
 
 bool ResSchedClient::InnerEventListener::IsInnerEventMapEmpty(uint32_t eventType, uint32_t listenerGroup)

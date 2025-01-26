@@ -33,11 +33,13 @@ class TestEventListener : public ResSchedEventListenerStub {
 public:
     TestEventListener() = default;
 
-    void OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup, const nlohmann::json& extInfo)
+    ErrCode OnReceiveEvent(uint32_t eventType, uint32_t eventValue, uint32_t listenerGroup,
+        const std::string& extInfo)
     {
         eventType_ = eventType;
         eventValue_ = eventValue;
         listenerGroup_ = listenerGroup;
+        return ERR_OK;
     }
 
     static uint32_t eventType_;

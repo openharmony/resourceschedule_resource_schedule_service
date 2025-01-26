@@ -18,6 +18,7 @@
 
 #include <sys/types.h>
 #include <string>
+#include <unordered_set>
 #include "event_handler.h"
 #include "kill_process.h"
 #include "single_instance.h"
@@ -70,8 +71,32 @@ public:
      * @param isProcessInit is process init
      */
     void InitExecutorPlugin(bool isProcessInit = false);
+
+    /**
+     * Init foreground app.
+     *
+     */
+    void InitForegroundAppInfo();
+    
+    /**
+     * process app state change.
+     *
+     * @param state the app's state
+     * @param pid the app's pid
+     */
+    void OnApplicationStateChange(int32_t state, int32_t pid);
+
+    /**
+     * judge app is foreground.
+     *
+     * @param pid the app's pid
+     * @return true if the app is foreground
+     */
+    bool IsForegroundApp(int32_t pid);
 private:
     std::shared_ptr<KillProcess> killProcess_ = nullptr;
+    std::mutex foregroundPidsMutex_;
+    std::unordered_set<int32_t> foregroundPids_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

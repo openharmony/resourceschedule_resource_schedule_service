@@ -20,7 +20,8 @@
       "resource_schedule_service_with_ext_res_enable",
       "resource_schedule_service_socperf_executor_enable",
       "resource_schedule_service_with_app_nap_enable",
-      "resource_schedule_service_cust_soc_perf_enable"
+      "resource_schedule_service_cust_soc_perf_enable",
+      "resource_schedule_service_crown_power_key_enable"
     ],
     "adapted_system_type": [
       "standard"
@@ -81,7 +82,9 @@
         "fwk_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
           "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client:resschedexe_client",
-          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi:systemload",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi/systemload:systemload",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi/background_process_manager:backgroundprocessmanager_napi",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/c/background_process_manager:background_process_manager",
           "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
         ],
         "service_group" : [
@@ -104,16 +107,13 @@
           "header": {
             "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client/include",
             "header_files": [
-              "ires_sched_service.h",
               "res_sa_init.h",
               "res_sched_client.h",
               "res_sched_errors.h",
-              "res_sched_service_proxy.h",
               "res_type.h",
               "res_sched_ipc_interface_code.h",
               "res_sched_kill_reason.h",
-              "res_sched_systemload_notifier_client.h",
-              "res_sched_systemload_notifier_stub.h"
+              "res_sched_systemload_notifier_client.h"
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"
@@ -187,9 +187,9 @@
         }
       ],
       "test": [
+        "//foundation/resourceschedule/resource_schedule_service/ressched/common/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched_executor/test/unittest:unittest",
-        "//foundation/resourceschedule/resource_schedule_service/ressched_executor/test/fuzztest:fuzztest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/cgroup_sched_plugin/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/sched_controller/test/unittest:unittest",
         "//foundation/resourceschedule/resource_schedule_service/ressched/plugins/frame_aware_plugin/test/unittest:unittest",
