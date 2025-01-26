@@ -26,6 +26,7 @@
 #include "cgroup_action.h"       // for CgroupAction
 #include "process_group_log.h"   // for PGCGS_LOGE
 #include "process_group_util.h"  // for StringPrintf, GetRealPath, ReadFileT...
+#include "res_common_util.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -147,7 +148,7 @@ bool CgroupController::AddThreadSchedPolicy(SchedPolicy policy, const std::strin
         filePath = StringPrintf("%s/%s/tasks", path_.c_str(), subgroup.c_str());
     }
     std::string realPath;
-    if (!GetRealPath(filePath, realPath)) {
+    if (!ResCommonUtil::GetRealPath(filePath, realPath)) {
         return false;
     }
     int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
@@ -170,7 +171,7 @@ bool CgroupController::AddThreadGroupSchedPolicy(SchedPolicy policy, const std::
         filePath = StringPrintf("%s/%s/cgroup.procs", path_.c_str(), subgroup.c_str());
     }
     std::string realPath;
-    if (!GetRealPath(filePath, realPath)) {
+    if (!ResCommonUtil::GetRealPath(filePath, realPath)) {
         return false;
     }
     int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));

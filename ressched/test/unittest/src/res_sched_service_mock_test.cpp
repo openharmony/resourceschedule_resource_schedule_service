@@ -90,52 +90,57 @@ class TestMockResSchedServiceStub : public ResSchedServiceStub {
 public:
     TestMockResSchedServiceStub() : ResSchedServiceStub() {}
 
-    void ReportData(uint32_t restype, int64_t value, const nlohmann::json& payload) override
+    ErrCode ReportData(uint32_t restype, int64_t value, const std::string& payload) override
     {
+        return ERR_OK;
     }
 
-    int32_t ReportSyncEvent(const uint32_t resType, const int64_t value, const nlohmann::json& payload,
-        nlohmann::json& reply) override
+    ErrCode ReportSyncEvent(uint32_t resType, int64_t value, const std::string& payload,
+        std::string& reply, int32_t& resultValue) override
     {
-        return 0;
+        return ERR_OK;
     }
 
-    int32_t KillProcess(const nlohmann::json& payload) override
+    ErrCode KillProcess(const std::string& payload, int32_t& resultValue) override
     {
-        return 0;
+        return ERR_OK;
     }
 
-    void RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier) override
+    ErrCode RegisterSystemloadNotifier(const sptr<IRemoteObject>& notifier) override
     {
+        return ERR_OK;
     }
 
-    void UnRegisterSystemloadNotifier() override
+    ErrCode UnRegisterSystemloadNotifier() override
     {
+        return ERR_OK;
     }
 
-    void RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType,
-        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON) override
+    ErrCode RegisterEventListener(const sptr<IRemoteObject>& listener, uint32_t eventType,
+        uint32_t listenerGroup) override
     {
+        return ERR_OK;
     }
 
-    void UnRegisterEventListener(uint32_t eventType,
-        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON) override
+    ErrCode UnRegisterEventListener(uint32_t eventType,
+        uint32_t listenerGroup) override
     {
+        return ERR_OK;
     }
 
-    int32_t GetSystemloadLevel() override
+    ErrCode GetSystemloadLevel(int32_t& resultValue) override
     {
-        return 0;
+        return ERR_OK;
     }
 
-    bool IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode) override
+    ErrCode IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode, bool& resultValue) override
     {
-        return true;
+        return ERR_OK;
     }
 
-    int32_t IsAllowedLinkJump(bool& isAllowedLinkJump) override
+    ErrCode IsAllowedLinkJump(bool isAllowedLinkJump, int32_t& resultValue) override
     {
-        return 0;
+        return ERR_OK;
     }
 };
 
@@ -155,9 +160,10 @@ class TestMockResSchedSystemloadListener : public ResSchedSystemloadNotifierStub
 public:
     TestMockResSchedSystemloadListener() = default;
 
-    void OnSystemloadLevel(int32_t level)
+    ErrCode OnSystemloadLevel(int32_t level)
     {
         testSystemloadLevel = level;
+        return ERR_OK;
     }
 
     static int32_t testSystemloadLevel;
@@ -373,149 +379,6 @@ HWTEST_F(ResSchedServiceMockTest, OnStart001, Function | MediumTest | Level0)
     std::string action = "test";
     resSchedServiceAbility_->OnDeviceLevelChanged(0, 2, action);
     g_mockAddAbilityListener = true;
-}
-
-/**
- * @tc.name: ResSchedServicesStub ReportDataInner 001
- * @tc.desc: Verify if resschedstub reportdatainner is success.
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author: fengyang
- */
-HWTEST_F(ResSchedServiceMockTest, ReportDataInner001, Function | MediumTest | Level0)
-{
-    Security::AccessToken::g_mockReportTokenKit = 0;
-    Security::AccessToken::g_mockTokenFlag = TypeATokenTypeEnum::TOKEN_NATIVE;
-    Security::AccessToken::g_mockHapTokenInfo = true;
-    resSchedServiceStub_->Init();
-    MessageParcel reply;
-    MessageParcel emptyData;
-    EXPECT_NE(resSchedServiceStub_->ReportDataInner(emptyData, reply), ERR_OK);
-    MessageParcel reportData;
-    reportData.WriteInterfaceToken(resSchedServiceStub_->GetDescriptor());
-    reportData.WriteUint32(1);
-    reportData.WriteInt64(1);
-    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_EQ(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
-    MessageParcel reportData2;
-    reportData2.WriteInterfaceToken(resSchedServiceStub_->GetDescriptor());
-    reportData2.WriteUint32(-1);
-    reportData2.WriteInt64(1);
-    reportData2.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_NE(resSchedServiceStub_->ReportDataInner(reportData2, reply), ERR_OK);
-}
-
-/**
- * @tc.name: ResSchedServicesStub ReportDataInner002
- * @tc.desc: ReportDataInner002 IsSBDResType
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author: fengyang
- */
-HWTEST_F(ResSchedServiceMockTest, ReportDataInner002, Function | MediumTest | Level0)
-{
-    Security::AccessToken::g_mockTokenFlag = TypeATokenTypeEnum::TOKEN_HAP;
-    Security::AccessToken::g_mockHapTokenInfo = true;
-    MessageParcel reportData;
-    MessageParcel reply;
-    reportData.WriteInterfaceToken(resSchedServiceStub_->GetDescriptor());
-    reportData.WriteUint32(38);
-    reportData.WriteInt64(1);
-    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_EQ(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
-    Security::AccessToken::g_mockHapTokenInfo = false;
-    EXPECT_NE(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
-    Security::AccessToken::g_mockTokenFlag = TypeATokenTypeEnum::TOKEN_INVALID;
-    EXPECT_NE(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
-}
-
-/**
- * @tc.name: ResSchedServicesStub ReportDataInner 003
- * @tc.desc: ReportDataInner003 IsThirdPartType
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author: fengyang
- */
-HWTEST_F(ResSchedServiceMockTest, ReportDataInner003, Function | MediumTest | Level0)
-{
-    Security::AccessToken::g_mockReportTokenKit = 0;
-    Security::AccessToken::g_mockTokenFlag = TypeATokenTypeEnum::TOKEN_HAP;
-    MessageParcel reportData;
-    MessageParcel reply;
-    reportData.WriteInterfaceToken(resSchedServiceStub_->GetDescriptor());
-    reportData.WriteUint32(9);
-    reportData.WriteInt64(1);
-    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_EQ(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
-    Security::AccessToken::g_mockTokenFlag = TypeATokenTypeEnum::TOKEN_INVALID;
-    EXPECT_NE(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
-}
-
-/**
- * @tc.name: ResSchedServicesStub ReportDataInner004
- * @tc.desc: ReportDataInner IsHasPermission
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author: fengyang
- */
-HWTEST_F(ResSchedServiceMockTest, ReportDataInner004, Function | MediumTest | Level0)
-{
-    Security::AccessToken::g_mockReportTokenKit = 0;
-    Security::AccessToken::g_mockTokenFlag = TypeATokenTypeEnum::TOKEN_NATIVE;
-    MessageParcel reportData;
-    MessageParcel reply;
-    reportData.WriteInterfaceToken(resSchedServiceStub_->GetDescriptor());
-    reportData.WriteUint32(0);
-    reportData.WriteInt64(1);
-    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_EQ(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
-    Security::AccessToken::g_mockDumpTokenKit = 1;
-    EXPECT_NE(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
-    Security::AccessToken::g_mockTokenFlag = TypeATokenTypeEnum::TOKEN_INVALID;
-    EXPECT_NE(resSchedServiceStub_->ReportDataInner(reportData, reply), ERR_OK);
-}
-
-/**
- * @tc.name: ResSchedServicesStub ReportSyncEventInner001
- * @tc.desc: ReportSyncEventInner
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author: fengyang
- */
-HWTEST_F(ResSchedServiceMockTest, ReportSyncEventInner001, Function | MediumTest | Level0)
-{
-    Security::AccessToken::g_mockReportTokenKit = 0;
-    Security::AccessToken::g_mockTokenFlag = TypeATokenTypeEnum::TOKEN_NATIVE;
-    MessageParcel reportData;
-    MessageParcel reply;
-    reportData.WriteInterfaceToken(resSchedServiceStub_->GetDescriptor());
-    reportData.WriteUint32(0);
-    reportData.WriteInt64(1);
-    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_EQ(resSchedServiceStub_->ReportSyncEventInner(reportData, reply), ERR_OK);
-}
-
-/**
- * @tc.name: ResSchedServicesStub KillProcessInner001
- * @tc.desc: KillProcessInner
- * @tc.type: FUNC
- * @tc.require: issuesIAGHOC
- * @tc.author: fengyang
- */
-HWTEST_F(ResSchedServiceMockTest, KillProcessInner001, Function | MediumTest | Level0)
-{
-    Security::AccessToken::g_mockReportTokenKit = 0;
-    Security::AccessToken::g_mockTokenFlag = TypeATokenTypeEnum::TOKEN_NATIVE;
-    g_mockUid = 1111;
-    MessageParcel reportData;
-    MessageParcel reply;
-    reportData.WriteInterfaceToken(resSchedServiceStub_->GetDescriptor());
-    reportData.WriteString("{ { \" uid \" : \" 1 \" } }");
-    EXPECT_EQ(resSchedServiceStub_->KillProcessInner(reportData, reply), ERR_OK);
-    Security::AccessToken::g_mockTokenFlag = TypeATokenTypeEnum::TOKEN_INVALID;
-    EXPECT_NE(resSchedServiceStub_->KillProcessInner(reportData, reply), ERR_OK);
-    g_mockUid = 0;
-    EXPECT_NE(resSchedServiceStub_->KillProcessInner(reportData, reply), ERR_OK);
 }
 
 } // namespace ResourceSchedule

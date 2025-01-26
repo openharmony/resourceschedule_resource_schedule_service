@@ -1,4 +1,4 @@
-# Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -72,7 +72,10 @@ ohos_unittest("event_controller_test") {
   }
   if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
     defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
-    external_deps += [ "audio_framework:audio_client" ]
+    external_deps += [
+      "audio_framework:audio_client",
+      "audio_framework:audio_foundation",
+    ]
   }
   if (ressched_with_telephony_state_registry_enable) {
     defines += [ "RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE" ]

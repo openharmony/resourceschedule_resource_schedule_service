@@ -18,6 +18,9 @@
 #include <cinttypes>
 #include <map>
 
+#include "app_mgr_interface.h"
+#include "if_system_ability_manager.h"
+#include "iservice_registry.h"
 #include "notifier_mgr.h"
 #include "res_exe_type.h"
 #include "res_sched_exe_client.h"
@@ -26,6 +29,7 @@
 #include "plugin_mgr.h"
 #include "hitrace_meter.h"
 #include "scene_recognizer_mgr.h"
+#include "system_ability_definition.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -146,7 +150,20 @@ namespace {
         { ResType::RES_TYPE_CROWN_ROTATION_STATUS, "RES_TYPE_CROWN_ROTATION_STATUS" },
         { ResType::RES_TYPE_RAISE_WORKER_THREAD_PRIORITY, "RES_TYPE_RAISE_WORKER_THREAD_PRIORITY" },
         { ResType::RES_TYPE_GET_GAME_SCENE_INFO, "RES_TYPE_GET_GAME_SCENE_INFO"},
+        { ResType::RES_TYPE_RED_ENVELOPE, "RES_TYPE_RED_ENVELOPE"},
+        { ResType::RES_TYPE_RECV_ABC_LOAD_COMPLETED, "RES_TYPE_RECV_ABC_LOAD_COMPLETED"},
     };
+    OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
+    {
+        OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
+            OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+        if (!systemAbilityManager) {
+            RESSCHED_LOGE("%{public}s : systemAbilityManager nullptr!", __func__);
+            return nullptr;
+        }
+        OHOS::sptr<OHOS::IRemoteObject> object = systemAbilityManager->GetSystemAbility(OHOS::APP_MGR_SERVICE_ID);
+        return OHOS::iface_cast<OHOS::AppExecFwk::IAppMgr>(object);
+    }
 }
 
 IMPLEMENT_SINGLE_INSTANCE(ResSchedMgr);
@@ -208,6 +225,55 @@ void ResSchedMgr::InitExecutorPlugin(bool isProcessInit)
     }
 }
 
+void ResSchedMgr::OnApplicationStateChange(int32_t state, int32_t pid)
+{
+    RESSCHED_LOGD("OnApplicationStateChange called, state: %{public}d, pid : %{public}d .", state, pid);
+    std::lock_guard<std::mutex> autoLock(foregroundPidsMutex_);
+    
+    if (state == static_cast<int32_t>(ApplicationState::APP_STATE_FOREGROUND)) {
+        if (foregroundPids_.find(pid) == foregroundPids_.end()) {
+            foregroundPids_.emplace(pid);
+        }
+    }
+    if (state == static_cast<int32_t>(ApplicationState::APP_STATE_BACKGROUND)
+        || state == static_cast<int32_t>(ApplicationState::APP_STATE_TERMINATED)
+        || state == static_cast<int32_t>(ApplicationState::APP_STATE_END)) {
+        auto item = foregroundPids_.find(pid);
+        if (item != foregroundPids_.end()) {
+            foregroundPids_.erase(item);
+        }
+    }
+}
+
+bool ResSchedMgr::IsForegroundApp(int32_t pid)
+{
+    std::lock_guard<std::mutex> autoLock(foregroundPidsMutex_);
+    auto item = foregroundPids_.find(pid);
+    return item != foregroundPids_.end();
+}
+
+void ResSchedMgr::InitForegroundAppInfo()
+{
+    sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
+    if (!appManager) {
+        RESSCHED_LOGE("%{public}s app manager nullptr!", __func__);
+        return;
+    }
+    std::vector<AppExecFwk::AppStateData> fgapplist;
+    int32_t err = appManager->GetForegroundApplications(fgapplist);
+    if (err != ERR_OK) {
+        RESSCHED_LOGE("%{public}s GetForegroundApplications failed. err:%{public}d", __func__, err);
+        return;
+    }
+    std::lock_guard<std::mutex> autoLock(foregroundPidsMutex_);
+    for (const auto& item : fgapplist) {
+        if (foregroundPids_.find(item.pid) == foregroundPids_.end()) {
+            foregroundPids_.emplace(item.pid);
+        }
+    }
+    RESSCHED_LOGI("%{public}s succeed", __func__);
+}
+
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
@@ -216,6 +282,17 @@ extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohm
 extern "C" void ReportAppStateInProcess(int32_t state, int32_t pid)
 {
     NotifierMgr::GetInstance().OnApplicationStateChange(state, pid);
+    ResSchedMgr::GetInstance().OnApplicationStateChange(state, pid);
+}
+
+extern "C" void ReportProcessStateInProcess(int32_t state, int32_t pid)
+{
+    ResSchedMgr::GetInstance().OnApplicationStateChange(state, pid);
+}
+
+extern "C" int32_t KillProcessInProcess(const nlohmann::json& payload)
+{
+    return ResSchedMgr::GetInstance().KillProcessByClient(payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

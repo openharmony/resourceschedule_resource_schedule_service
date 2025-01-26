@@ -11,37 +11,84 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//build/config/components/idl_tool/idl.gni")
 import("//build/ohos.gni")
 import("//build/test.gni")
 import("../../../ressched.gni")
+
+idl_gen_interface("res_sched_event_listener_interface") {
+  src_idl = rebase_path("IResSchedEventListener.idl")
+}
+
+idl_gen_interface("res_sched_service_interface") {
+  src_idl = rebase_path("IResSchedService.idl")
+}
+
+idl_gen_interface("res_sched_systemload_notifier_interface") {
+  src_idl = rebase_path("IResSchedSystemloadNotifier.idl")
+}
 
 config("client_private_config") {
   include_dirs = [ "${ressched_common}/include" ]
 }
 
 config("client_public_config") {
-  include_dirs = [ "include" ]
+  include_dirs = [
+    "include",
+    "${target_gen_dir}",
+  ]
+}
+
+ohos_source_set("res_sched_service_stub") {
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  output_values = get_target_outputs(":res_sched_service_interface")
+  sources = filter_include(output_values, [ "*_stub.cpp" ])
+  public_configs = []
+  deps = [ ":res_sched_service_interface" ]
+  part_name = "resource_schedule_service"
+  subsystem_name = "resourceschedule"
+  external_deps = [
+    "c_utils:utils",
+    "ipc:ipc_core",
+  ]
 }
 
 ohos_shared_library("ressched_client") {
   configs = [ ":client_private_config" ]
 
   public_configs = [ ":client_public_config" ]
+  deps = [
+    ":res_sched_event_listener_interface",
+    ":res_sched_service_interface",
+    ":res_sched_systemload_notifier_interface",
+  ]
 
   sources = [
     "src/res_sched_client.cpp",
     "src/res_sched_common_death_recipient.cpp",
-    "src/res_sched_event_listener_proxy.cpp",
-    "src/res_sched_event_listener_stub.cpp",
-    "src/res_sched_service_proxy.cpp",
-    "src/res_sched_systemload_notifier_proxy.cpp",
-    "src/res_sched_systemload_notifier_stub.cpp",
   ]
+
+  output_values = get_target_outputs(":res_sched_service_interface")
+  sources += filter_include(output_values, [ "*.cpp" ])
+
+  event_listener_output_values =
+      get_target_outputs(":res_sched_event_listener_interface")
+  sources += filter_include(event_listener_output_values, [ "*.cpp" ])
+
+  systemload_notifier_output_values =
+      get_target_outputs(":res_sched_systemload_notifier_interface")
+  sources += filter_include(systemload_notifier_output_values, [ "*.cpp" ])
 
   external_deps = [
     "c_utils:utils",
     "ffrt:libffrt",
     "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "ipc:ipc_core",
     "ipc:ipc_single",
     "samgr:samgr_proxy",
   ]

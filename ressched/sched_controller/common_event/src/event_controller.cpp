@@ -337,7 +337,7 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         RESSCHED_LOGI("report camera status completed");
         payload[CAMERA_TYPE] = want.GetIntParam(IS_SYSTEM_CAMERA, 0);
         ReportDataInProcess(ResType::RES_TYPE_REPORT_CAMERA_STATE,
-        static_cast<int64_t>(want.GetIntParam(CAMERA_STATE, 1)), payload);
+            static_cast<int64_t>(want.GetIntParam(CAMERA_STATE, 1)), payload);
         return;
     }
 }
