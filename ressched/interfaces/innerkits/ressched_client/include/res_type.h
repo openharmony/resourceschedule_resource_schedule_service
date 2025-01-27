@@ -365,6 +365,8 @@ enum TransientTaskStatus : int64_t {
     TRANSIENT_TASK_START = 0,
     TRANSIENT_TASK_END = 1,
     TRANSIENT_TASK_ERR = 2,
+    APP_TRANSIENT_TASK_START = 3,
+    APP_TRANSIENT_TASK_END = 4,
 };
 
 /**
