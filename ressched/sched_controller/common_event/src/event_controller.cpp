@@ -37,10 +37,14 @@ namespace OHOS {
 namespace ResourceSchedule {
 IMPLEMENT_SINGLE_INSTANCE(EventController);
 
+const std::string COMMON_EVENT_CAMERA_STATUS = "usual.event.CAMERA_STATUS";
 const std::string DATA_SHARE_READY = "usual.event.DATA_SHARE_READY";
 const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
 const std::string DEVICE_MODE_TYPE_KEY = "deviceModeType";
 const std::string SCENE_BOARD_NAME = "com.ohos.sceneboard";
+const std::string CAMERA_STATE = "cameraState";
+const std::string CAMERA_TYPE = "cameraType";
+const std::string IS_SYSTEM_CAMERA = "isSystemCamera";
 void EventController::Init()
 {
     if (sysAbilityListener_ != nullptr) {
@@ -190,6 +194,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_CONNECTED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_DISCONNECTED);
     matchingSkills.AddEvent(DATA_SHARE_READY);
+    matchingSkills.AddEvent(COMMON_EVENT_CAMERA_STATUS);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
     SubscribeCommonEvent(subscriber_);
@@ -258,10 +263,10 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         return;
     }
     
-    handleEvent(data.GetCode(), action, payload);
+    handleEvent(data.GetCode(), action, payload, want);
 }
 
-void EventController::handleEvent(int32_t userId, const std::string &action, nlohmann::json &payload)
+void EventController::handleEvent(int32_t userId, const std::string &action, nlohmann::json &payload, Want &want)
 {
     if (action == CommonEventSupport::COMMON_EVENT_TIMEZONE_CHANGED) {
         ReportDataInProcess(ResType::RES_TYPE_TIMEZONE_CHANGED, ResType::RES_TYPE_TIMEZONE_CHANGED, payload);
@@ -303,10 +308,10 @@ void EventController::handleEvent(int32_t userId, const std::string &action, nlo
         ReportDataInProcess(ResType::RES_TYPE_POWER_MODE_CHANGED, static_cast<int64_t>(userId), payload);
         return;
     }
-    handleOtherEvent(userId, action, payload);
+    handleOtherEvent(userId, action, payload, want);
 }
 
-void EventController::handleOtherEvent(int32_t userId, const std::string &action, nlohmann::json &payload)
+void EventController::handleOtherEvent(int32_t userId, const std::string &action, nlohmann::json &payload, Want &want)
 {
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED) {
         RESSCHED_LOGI("report boot completed");
@@ -326,6 +331,13 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         payload[DEVICE_MODE_PAYMODE_NAME] = "powerDisConnected";
         ReportDataInProcess(ResType::RES_TYPE_DEVICE_MODE_STATUS,
             ResType::DeviceModeStatus::MODE_ENTER, payload);
+        return;
+    }
+    if (action == COMMON_EVENT_CAMERA_STATUS) {
+        RESSCHED_LOGI("report camera status completed");
+        payload[CAMERA_TYPE] = want.GetIntParam(IS_SYSTEM_CAMERA, 0);
+        ReportDataInProcess(ResType::RES_TYPE_REPORT_CAMERA_STATE,
+            static_cast<int64_t>(want.GetIntParam(CAMERA_STATE, 1)), payload);
         return;
     }
 }

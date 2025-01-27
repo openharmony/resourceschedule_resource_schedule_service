@@ -197,7 +197,7 @@ namespace {
         eventController->OnReceiveEvent(commonEventData);
         eventController->HandleConnectivityChange(want, code, payload);
         eventController->HandlePkgAddRemove(want, payload);
-        eventController->handleEvent(code, eventData, payload);
+        eventController->handleEvent(code, eventData, payload, want);
         return true;
     }
 
