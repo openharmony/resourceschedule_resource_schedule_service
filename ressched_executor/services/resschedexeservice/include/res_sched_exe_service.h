@@ -16,33 +16,33 @@
 #ifndef RESSCHED_EXECUTOR_SERVICES_RESSCHEDEXESERVICE_INCLUDE_RES_SCHED_EXE_SERVICE_H
 #define RESSCHED_EXECUTOR_SERVICES_RESSCHEDEXESERVICE_INCLUDE_RES_SCHED_EXE_SERVICE_H
 
+#include "singleton.h"
+#include "system_ability.h"
+
+#include "res_json_type.h"
 #include "res_sched_exe_service_stub.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-class ResSchedExeService : public ResSchedExeServiceStub {
+class ResSchedExeService : public ResSchedExeServiceStub, public SystemAbility,
+    public std::enable_shared_from_this<ResSchedExeService> {
+DECLARE_SYSTEM_ABILITY(ResSchedExeService);
+DECLARE_DELAYED_SINGLETON(ResSchedExeService);
+DISALLOW_COPY_AND_MOVE(ResSchedExeService);
+
 public:
-    /**
-     * @brief Construct a new ResSchedExeService object.
-     */
-    ResSchedExeService() = default;
-
-    /**
-     * @brief Destroy the ResSchedExeService object.
-     */
-    ~ResSchedExeService() override = default;
-
     /**
      * @brief Send request sync to the ressched_executor through inter-process communication.
      *
      * @param resType Indicates the resource type, all of the type have listed in res_exe_type.h.
      * @param value Indicates the value of the resource type, defined by the developers.
      * @param context Indicates the context info of the resource type event.
-     * @param reply Indicates the context info of the ipc reply.
-     * @return function result
+     * @param response Indicates the context info of the ipc reply.
+     * @param funcResult function result
+     * @return ErrCode
      */
-    int32_t SendRequestSync(uint32_t resType, int64_t value,
-        const nlohmann::json& context, nlohmann::json& reply) override;
+    ErrCode SendRequestSync(uint32_t resType, int64_t value,
+        const ResJsonType& context, ResJsonType& response, int32_t& funcResult) override;
 
     /**
      * @brief Send request async to the ressched_executor through inter-process communication.
@@ -50,15 +50,18 @@ public:
      * @param resType Indicates the resource type, all of the type have listed in res_exe_type.h.
      * @param value Indicates the value of the resource type, defined by the developers.
      * @param context Indicates the context info of the resource type event.
+     * @return ErrCode
      */
-    void SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& context) override;
+    ErrCode SendRequestAsync(uint32_t resType, int64_t value, const ResJsonType& context) override;
 
     /**
      * @brief Send kill process request async to the ressched_executor.
      *
      * @param pid the pid whiche will be killed.
+     * @param funcResult function result
+     * @return ErrCode
      */
-    int32_t KillProcess(pid_t pid) override;
+    ErrCode KillProcess(uint32_t pid, int32_t& funcResult) override;
 
     /**
      * @brief Support dump option.
@@ -68,11 +71,17 @@ public:
      */
     int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
 
+public:
+    ResSchedExeService(int32_t systemAbilityId, bool runOnCreate);
+
+protected:
+    void OnStart() override;
+    void OnStop() override;
+
 private:
     bool AllowDump();
     void DumpAllInfo(std::string &result);
     void DumpUsage(std::string &result);
-    DISALLOW_COPY_AND_MOVE(ResSchedExeService);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

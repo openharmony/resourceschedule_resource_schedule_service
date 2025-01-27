@@ -148,6 +148,15 @@ bool LoadContentToJsonObj(const std::string& content, nlohmann::json& jsonObj)
     }
     return true;
 }
+
+void DumpJsonToString(const nlohmann::json& jsonObj, std::string& content)
+{
+    if (!jsonObj.is_object()) {
+        RESSCHED_LOGE("%{public}s:the input json is not an object.", __func__);
+        return;
+    }
+    content = jsonObj.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
+}
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

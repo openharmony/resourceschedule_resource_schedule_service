@@ -107,6 +107,15 @@ bool LoadOneCfgFileToJsonObj(const std::string& relativeFilePath, nlohmann::json
  *
  */
 bool LoadContentToJsonObj(const std::string& content, nlohmann::json& jsonObj);
+
+/**
+ * @brief Dump json to string.
+ *
+ * @param jsonObj the json object
+ * @param content the string format content
+ *
+ */
+void DumpJsonToString(const nlohmann::json& jsonObj, std::string& content);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

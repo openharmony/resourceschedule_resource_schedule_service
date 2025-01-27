@@ -45,14 +45,13 @@ ohos_shared_library("resschedexesvc") {
     "${resschedexe_plugins}/resschedfwk/src/plugin_switch.cpp",
     "resschedexemgr/src/res_sched_exe_mgr.cpp",
     "resschedexeservice/src/res_sched_exe_service.cpp",
-    "resschedexeservice/src/res_sched_exe_service_ability.cpp",
-    "resschedexeservice/src/res_sched_exe_service_stub.cpp",
   ]
 
   deps = [
     "${resourcescheduleservice_path}/ressched/plugins/cgroup_sched_plugin/framework/process_group:libprocess_group",
+    "${ressched_common}:ressched_common_utils",
+    "${resschedexe_interfaces}/innerkits/ressched_executor_client:res_sched_exe_service_stub",
     "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
-    "../../ressched/common:ressched_common_utils",
   ]
 
   external_deps = [
@@ -113,12 +112,11 @@ ohos_static_library("resschedexesvc_static") {
     "${resschedexe_plugins}/resschedfwk/src/plugin_switch.cpp",
     "resschedexemgr/src/res_sched_exe_mgr.cpp",
     "resschedexeservice/src/res_sched_exe_service.cpp",
-    "resschedexeservice/src/res_sched_exe_service_ability.cpp",
-    "resschedexeservice/src/res_sched_exe_service_stub.cpp",
   ]
 
   deps = [
     "${resourcescheduleservice_path}/ressched/plugins/cgroup_sched_plugin/framework/process_group:libprocess_group",
+    "${resschedexe_interfaces}/innerkits/ressched_executor_client:res_sched_exe_service_stub",
     "${resschedexe_interfaces}/innerkits/ressched_executor_client:resschedexe_client",
   ]
 
