@@ -487,7 +487,7 @@ bool SocPerfPlugin::IsFocusAppsAllGame()
     std::set<int32_t>::iterator it;
     bool isAllGame = true;
     for (it == focusAppUids_.begin(); it != focusAppUids_.end(); ++it) {
-        if (uidToAppMsgMap_.find(*it) != uidToAppMsgMap_.end() &&
+        if (uidToAppMsgMap_.find(*it) == uidToAppMsgMap_.end() ||
             uidToAppMsgMap_[*it].GetAppType() != APP_TYPE_GAME) {
             isAllGame = false;
             break;
