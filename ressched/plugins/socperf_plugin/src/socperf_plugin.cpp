@@ -487,7 +487,8 @@ bool SocPerfPlugin::IsFocusAppsAllGame()
     std::set<int32_t>::iterator it;
     bool isAllGame = true;
     for (it == focusAppUids_.begin(); it != focusAppUids_.end(); ++it) {
-        if (uidToAppMsgMap_[*it].GetAppType() != APP_TYPE_GAME) {
+        if (uidToAppMsgMap_.find(*it) != uidToAppMsgMap_.end() &&
+            uidToAppMsgMap_[*it].GetAppType() != APP_TYPE_GAME) {
             isAllGame = false;
             break;
         }
@@ -959,7 +960,8 @@ bool SocPerfPlugin::IsAllowBoostScene()
     }
 
     for (const int32_t& uid : focusAppUids_) {
-        if (appNameUseCamera_.find(uidToAppMsgMap_[uid].GetBundleName()) != appNameUseCamera_.end()) {
+        if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end() &&
+            appNameUseCamera_.find(uidToAppMsgMap_[uid].GetBundleName()) != appNameUseCamera_.end()) {
             ret = true;
             break;
         }
