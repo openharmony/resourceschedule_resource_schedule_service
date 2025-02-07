@@ -38,6 +38,7 @@ ohos_shared_library("background_process_manager") {
     "c_utils:utils",
     "hilog:libhilog",
     "ipc:ipc_core",
+    "samgr:samgr_proxy"
   ]
 
   deps = [ "${ressched_interfaces}/innerkits/ressched_client:ressched_client" ]
