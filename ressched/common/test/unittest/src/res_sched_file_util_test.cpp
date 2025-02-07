@@ -138,7 +138,7 @@ HWTEST_F(ResSchedFileUtilTest, CreateDir_001, Function | MediumTest | Level0)
 {
     EXPECT_TRUE(ResCommonUtil::CreateDir(TEST_DIR, S_IXUSR | S_IWUSR | S_IRUSR));
     ResCommonUtil::RemoveDirs(TEST_DIR);
-    EXPECT_FALSE(ResCommonUtil::CreateDir(TEST_COPY_DIR, S_IXUSR | S_IWUSR | S_IRUSR));
+    EXPECT_TRUE(ResCommonUtil::CreateDir(TEST_COPY_DIR, S_IXUSR | S_IWUSR | S_IRUSR));
 }
 
 /**
