@@ -485,9 +485,15 @@ bool SocPerfPlugin::IsFocusAppsAllGame()
         return false;
     }
     bool isAllGame = true;
+<<<<<<< HEAD
     for (const int32_t& uid : focusAppUids_) {
         if (uidToAppMsgMap_.find(uid) == uidToAppMsgMap_.end() ||
             uidToAppMsgMap_[uid].GetAppType() != APP_TYPE_GAME) {
+=======
+    for (it == focusAppUids_.begin(); it != focusAppUids_.end(); ++it) {
+        if (uidToAppMsgMap_.find(*it) == uidToAppMsgMap_.end() ||
+            uidToAppMsgMap_[*it].GetAppType() != APP_TYPE_GAME) {
+>>>>>>> de8136bc3403db1c59ed9c4b5ae6a1d5a271dd32
             isAllGame = false;
             break;
         }
