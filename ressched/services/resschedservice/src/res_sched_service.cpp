@@ -304,14 +304,16 @@ ErrCode ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t v
     int32_t checkResult = RemoteRequestCheck();
     if (checkResult != ERR_OK) {
         RESSCHED_LOGE("check remote request fail.");
-        return checkResult;
+        resultValue = checkResult;
+        return ERR_OK;
     }
 
     int32_t ret = CheckReportDataParcel(resType, value, payload);
     if (ret != ERR_OK) {
         RESSCHED_LOGE("%{public}s: check report data parcel fail ret=%{public}d, type=%{public}u.",
             __func__, ret, resType);
-        return ret;
+        resultValue = ret;
+        return ERR_OK;
     }
     nlohmann::json payloadJsonValue;
     nlohmann::json replyValue;
@@ -335,12 +337,14 @@ ErrCode ResSchedService::KillProcess(const std::string& payload, int32_t& result
     if ((uid != MEMMGR_UID && uid != SAMGR_UID && uid != HIVIEW_UID && uid != GRAPHIC_UID)
         || tokenTypeFlag != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
         RESSCHED_LOGE("no permission, kill process fail");
-        return RES_SCHED_KILL_PROCESS_FAIL;
+        resultValue = RES_SCHED_KILL_PROCESS_FAIL;
+        return ERR_OK;
     }
 
     if (payload.size() > PAYLOAD_MAX_SIZE) {
         RESSCHED_LOGE("The payload is too long. DoS.");
-        return RES_SCHED_KILL_PROCESS_FAIL;
+        resultValue = RES_SCHED_KILL_PROCESS_FAIL;
+        return ERR_OK;
     }
 
     resultValue = ResSchedMgr::GetInstance().KillProcessByClient(StringToJsonObj(payload));
@@ -396,14 +400,15 @@ ErrCode ResSchedService::IsAllowedAppPreload(const std::string& bundleName, int3
     AccessToken::ATokenTypeEnum tokenTypeFlag = AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
     if (uid != FOUNDATION_UID || tokenTypeFlag != AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
         RESSCHED_LOGE("Invalid calling token");
-        return RES_SCHED_DATA_ERROR;
+        resultValue = false;
+        return ERR_OK;
     }
 
     LoadAppPreloadPlugin();
     if (!appPreloadFunc_) {
         RESSCHED_LOGE("%{public}s, no allow AppPreload !", __func__, errno);
         resultValue = false;
-        return RES_SCHED_DATA_ERROR;
+        return ERR_OK;
     }
     resultValue = appPreloadFunc_(bundleName, preloadMode);
     return ERR_OK;
@@ -435,7 +440,7 @@ ErrCode ResSchedService::IsAllowedLinkJump(bool isAllowedLinkJump, int32_t& resu
     if (tokenTypeFlag != AccessToken::ATokenTypeEnum::TOKEN_HAP) {
         RESSCHED_LOGE("Invalid calling token");
         resultValue = RES_SCHED_ACCESS_TOKEN_FAIL;
-        return RES_SCHED_ACCESS_TOKEN_FAIL;
+        return ERR_OK;
     }
 
     AccessToken::HapTokenInfo callingTokenInfo;
@@ -444,7 +449,7 @@ ErrCode ResSchedService::IsAllowedLinkJump(bool isAllowedLinkJump, int32_t& resu
     if (!PluginMgr::GetInstance().GetLinkJumpOptConfig(callingBundleName, isAllowedLinkJump)) {
         RESSCHED_LOGE("Invalid callingBundleName");
         resultValue = ERR_RES_SCHED_INVALID_PARAM;
-        return ERR_RES_SCHED_INVALID_PARAM;
+        return ERR_OK;
     }
     resultValue = ERR_OK;
     return ERR_OK;

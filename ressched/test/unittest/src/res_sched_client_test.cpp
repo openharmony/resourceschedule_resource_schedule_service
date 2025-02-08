@@ -270,7 +270,7 @@ HWTEST_F(ResSchedClientTest, RegisterEventListener001, Function | MediumTest | L
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     ResSchedClient::GetInstance().RegisterEventListener(eventListener,
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
-    nlohmann::json extInfo;
+    std::string extInfo;
     ResSchedClient::GetInstance().innerEventListener_->OnReceiveEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START,
         ResType::EventListenerGroup::LISTENER_GROUP_COMMON, extInfo);
@@ -299,7 +299,7 @@ HWTEST_F(ResSchedClientTest, UnRegisterEventListener001, Function | MediumTest |
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
     ResSchedClient::GetInstance().UnRegisterEventListener(eventListener,
         ResType::EventType::EVENT_DRAW_FRAME_REPORT);
-    nlohmann::json extInfo;
+    std::string extInfo;
     ResSchedClient::GetInstance().innerEventListener_->OnReceiveEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START,
         ResType::EventListenerGroup::LISTENER_GROUP_COMMON, extInfo);
@@ -405,7 +405,7 @@ HWTEST_F(ResSchedClientTest, IsAllowedLinkJump, Function | MediumTest | Level0)
 {
     bool isAllowedLinkJump = false;
     int32_t ret = ResSchedClient::GetInstance().IsAllowedLinkJump(isAllowedLinkJump);
-    EXPECT_EQ(ret, NO_ERROR);
+    EXPECT_NE(ret, 0);
 }
 
 
