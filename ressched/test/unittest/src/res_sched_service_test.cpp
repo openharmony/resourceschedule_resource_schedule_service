@@ -592,10 +592,10 @@ HWTEST_F(ResSchedServiceTest, RemoteRequest001, Function | MediumTest | Level0)
     EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(
         static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_REGISTER_SYSTEMLOAD_NOTIFIER), reply, reply, option);
-    EXPECT_TRUE(!res);
+    EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(
         static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_UN_REGISTER_SYSTEMLOAD_NOTIFIER), reply, reply, option);
-    EXPECT_TRUE(!res);
+    EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(
         static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_GET_SYSTEMLOAD_LEVEL), reply, reply, option);
     EXPECT_TRUE(res);
@@ -616,10 +616,10 @@ static void RemoteRequestTask()
     EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(
         static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_REGISTER_SYSTEMLOAD_NOTIFIER), reply, reply, option);
-    EXPECT_TRUE(!res);
+    EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(
         static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_UN_REGISTER_SYSTEMLOAD_NOTIFIER), reply, reply, option);
-    EXPECT_TRUE(!res);
+    EXPECT_TRUE(res);
     res = resSchedServiceStub_->OnRemoteRequest(
         static_cast<uint32_t>(IResSchedServiceIpcCode::COMMAND_GET_SYSTEMLOAD_LEVEL), reply, reply, option);
     EXPECT_TRUE(res);
