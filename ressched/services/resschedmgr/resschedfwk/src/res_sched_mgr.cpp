@@ -233,6 +233,7 @@ void ResSchedMgr::OnApplicationStateChange(int32_t state, int32_t pid)
     
     if (state == static_cast<int32_t>(ApplicationState::APP_STATE_FOREGROUND)) {
         if (foregroundPids_.find(pid) == foregroundPids_.end()) {
+            RESSCHED_LOGE("%{public}s pid add %{public}d", __func__, pid);
             foregroundPids_.emplace(pid);
         }
     }
@@ -241,6 +242,7 @@ void ResSchedMgr::OnApplicationStateChange(int32_t state, int32_t pid)
         || state == static_cast<int32_t>(ApplicationState::APP_STATE_END)) {
         auto item = foregroundPids_.find(pid);
         if (item != foregroundPids_.end()) {
+            RESSCHED_LOGE("%{public}s pid remove %{public}d", __func__, pid);
             foregroundPids_.erase(item);
         }
     }
@@ -250,6 +252,7 @@ bool ResSchedMgr::IsForegroundApp(int32_t pid)
 {
     std::lock_guard<std::mutex> autoLock(foregroundPidsMutex_);
     auto item = foregroundPids_.find(pid);
+    RESSCHED_LOGE("%{public}s pid %{public}d, result %{public}d", __func__, pid, item != foregroundPids_.end());
     return item != foregroundPids_.end();
 }
 
