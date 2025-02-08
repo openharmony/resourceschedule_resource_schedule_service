@@ -927,6 +927,7 @@ HWTEST_F(ObserverEventTest, OnRemoveSystemAbility_001, testing::ext::TestSize.Le
     EXPECT_NE(instance, nullptr);
     if (instance) {
         instance->InitSysAbilityListener();
+        sleep(3);
         instance->sysAbilityListener_->OnAddSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, deviceId);
         instance->sysAbilityListener_->OnRemoveSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, deviceId);
 
