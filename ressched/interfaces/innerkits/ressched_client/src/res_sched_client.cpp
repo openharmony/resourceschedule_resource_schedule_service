@@ -130,11 +130,11 @@ int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t va
 }
 
 int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t value,
-    const std::unordered_map<std::string, std::string>& payload, std::unordered_map<std::string, std:string>& reply)
+    const std::unordered_map<std::string, std::string>& payload, std::unordered_map<std::string, std::string>& reply)
 {
     nlohmann::json tmpPayload;
     nlohmann::json tmpReply;
-    for (const auto& it = payload.begin(); it != payload.end(); ++it) {
+    for (auto it = payload.begin(); it != payload.end(); ++it) {
         tmpPayload[it->first] = it->second;
     }
     auto res = ReportSyncEvent(resType, value, tmpPayload, tmpReply);
@@ -648,7 +648,7 @@ extern "C" void KillProcess(const std::unordered_map<std::string, std::string>& 
 }
 
 extern "C" void ReportSyncEvent(const uint32_t resType, const int64_t value,
-    const std::unordered_map<std::string, std::string>& payload, std::unordered_map<std::string, std:string>& reply)
+    const std::unordered_map<std::string, std::string>& payload, std::unordered_map<std::string, std::string>& reply)
 {
     ResSchedClient::GetInstance().ReportSyncEvent(resType, value, payload, reply);
 }
