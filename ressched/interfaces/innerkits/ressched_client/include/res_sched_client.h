@@ -88,7 +88,8 @@ public:
      * @param reply Indicates the return value of service processing.
      */
     int32_t ReportSyncEvent(const uint32_t resType, const int64_t value,
-        const std::unordered_map<std::string, std::string>& payload, std::unordered_map<std::string, std::string>& reply);
+        const std::unordered_map<std::string, std::string>& payload,
+        std::unordered_map<std::string, std::string>& reply);
 
     /**
      * @brief Kill process with pid.
