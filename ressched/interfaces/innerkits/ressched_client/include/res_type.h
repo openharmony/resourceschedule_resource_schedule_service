@@ -317,6 +317,8 @@ enum : uint32_t {
     RES_TYPE_COSMIC_CUBE_STATE_CHANGE = 502,
     // report SceneBoard raise worker thread priority. value 0: begin, value 1: end.
     RES_TYPE_RAISE_WORKER_THREAD_PRIORITY = 503,
+    // report to check app is in app inner schedule list
+    RES_TYPE_CHECK_APP_IS_IN_SCHEDULE_LIST,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
