@@ -129,6 +129,21 @@ int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t va
     }
 }
 
+int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t value,
+    const std::unordered_map<std::string, std::string>& payload, std::unordered_map<std::string, std::string>& reply)
+{
+    nlohmann::json tmpPayload;
+    nlohmann::json tmpReply;
+    for (auto it = payload.begin(); it != payload.end(); ++it) {
+        tmpPayload[it->first] = it->second;
+    }
+    auto res = ReportSyncEvent(resType, value, tmpPayload, tmpReply);
+    for (const auto& pair : tmpReply.items()) {
+        reply[pair.key()] = pair.value().dump();
+    }
+    return res;
+}
+
 int32_t ResSchedClient::KillProcess(const std::unordered_map<std::string, std::string>& mapPayload)
 {
     RESSCHED_LOGD("ResSchedClient::KillProcess receive mission.");
@@ -630,6 +645,12 @@ extern "C" void ReportData(uint32_t resType, int64_t value,
 extern "C" void KillProcess(const std::unordered_map<std::string, std::string>& mapPayload)
 {
     ResSchedClient::GetInstance().KillProcess(mapPayload);
+}
+
+extern "C" void ReportSyncEvent(const uint32_t resType, const int64_t value,
+    const std::unordered_map<std::string, std::string>& payload, std::unordered_map<std::string, std::string>& reply)
+{
+    ResSchedClient::GetInstance().ReportSyncEvent(resType, value, payload, reply);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

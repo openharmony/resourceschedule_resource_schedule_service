@@ -96,6 +96,7 @@ namespace {
         ResType::RES_TYPE_RED_ENVELOPE,
         ResType::RES_TYPE_RECV_ABC_LOAD_COMPLETED,
         ResType::RES_TYPE_SET_BACKGROUND_PROCESS_PRIORITY,
+        ResType::RES_TYPE_CHECK_APP_IS_IN_SCHEDULE_LIST,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
