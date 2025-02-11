@@ -132,6 +132,10 @@ void SlideRecognizer::StartDetecting(const nlohmann::json& payload)
         return;
     }
     slidePid_ = payload["clientPid"];
+    if (!payload.contains("clientUid") || !payload["clientUid"].is_string()) {
+        RESSCHED_LOGE("payload with no clientUid");
+        return;
+    }
     slideUid_ = payload["clientUid"];
 }
 
