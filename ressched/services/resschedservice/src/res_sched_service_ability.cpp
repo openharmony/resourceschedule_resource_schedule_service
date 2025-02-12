@@ -26,6 +26,8 @@
 #include "event_listener_mgr.h"
 #include "system_ability_definition.h"
 
+#define GAME_SERVICE_SERVICE_ID 66058
+
 namespace OHOS {
 namespace ResourceSchedule {
 const bool REGISTER_RESULT =
@@ -157,6 +159,13 @@ void ResSchedServiceAbility::SystemAbilityListenerInit()
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of power manager service failed.");
         RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", POWER_MANAGER_SERVICE_ID);
+    }
+    if (!AddSystemAbilityListener(GAME_SERVICE_SERVICE_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of power manager service failed.");
+        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", GAME_SERVICE_SERVICE_ID);
     }
     RESSCHED_LOGI("Init SystemAbilityListener finish");
 }
