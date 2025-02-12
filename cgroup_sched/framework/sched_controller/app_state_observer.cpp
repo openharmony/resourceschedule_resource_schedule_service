@@ -121,6 +121,8 @@ void RmsApplicationStateObserver::MarshallingProcessData(const ProcessData &proc
     payload["processName"] = processData.processName;
     payload["exitReason"] = std::to_string(processData.exitReason);
     payload["hostPid"] = std::to_string(processData.hostPid);
+    payload["callerPid"] = std::to_string(processData.callerPid);
+    payload["callerUid"] = std::to_string(processData.callerUid);
 }
 
 void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processData)
