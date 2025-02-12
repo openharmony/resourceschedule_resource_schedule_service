@@ -113,6 +113,7 @@ public:
     bool processDrawingState_ = false;
     bool screenCaptureState_ = false;
     bool videoState_ = false;
+    bool isLoadState_ = false;
 
     int32_t processType_ = ProcRecordType::NORMAL;
     uint32_t continuousTaskFlag_ = 0;

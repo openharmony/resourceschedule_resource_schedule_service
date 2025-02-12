@@ -295,6 +295,8 @@ enum : uint32_t {
     RES_TRPE_PIP_STATUS = 135,
     // frame report from render service
     RES_TYPE_FRAME_RATE_REPORT_FROM_RS = 136,
+    // report short term load scene 0 is start 1 is end
+    RES_TYPE_SHORT_TERM_LOAD = 137,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

@@ -440,6 +440,14 @@ enum ScreenCaptureStatus : int64_t {
 };
 
 /**
+* @brief short term load status
+*/
+enum ShortTermLoadStatus : int64_t {
+    START_LOAD = 0,
+    FINISH_LOAD = 1,
+};
+
+/**
 * @brief Key Perf Scene status
 */
 enum KeyPerfStatus : int64_t {
