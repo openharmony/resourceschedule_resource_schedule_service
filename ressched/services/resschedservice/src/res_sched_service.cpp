@@ -407,7 +407,7 @@ ErrCode ResSchedService::IsAllowedAppPreload(const std::string& bundleName, int3
 
     LoadAppPreloadPlugin();
     if (!appPreloadFunc_) {
-        RESSCHED_LOGE("%{public}s, no allow AppPreload !", __func__, errno);
+        RESSCHED_LOGE("%{public}s, no allow AppPreload !", __func__);
         resultValue = false;
         return ERR_OK;
     }
