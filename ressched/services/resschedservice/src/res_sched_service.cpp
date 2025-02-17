@@ -97,6 +97,7 @@ namespace {
         ResType::RES_TYPE_RECV_ABC_LOAD_COMPLETED,
         ResType::RES_TYPE_SET_BACKGROUND_PROCESS_PRIORITY,
         ResType::RES_TYPE_CHECK_APP_IS_IN_SCHEDULE_LIST,
+        ResType::RES_TYPE_SHORT_TERM_LOAD,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -187,6 +188,7 @@ namespace {
         ResType::RES_TYPE_INTENT_CTRL_APP,
         ResType::RES_TYPE_GET_GAME_SCENE_INFO,
         ResType::RES_TYPE_FRAME_RATE_REPORT_FROM_RS,
+        ResType::RES_TYPE_SHORT_TERM_LOAD,
     };
 
     bool IsHasPermission(const uint32_t type)
