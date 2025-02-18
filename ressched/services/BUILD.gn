@@ -166,6 +166,10 @@ ohos_shared_library("resschedsvc") {
     defines += [ "MMI_ENABLE" ]
     external_deps += [ "input:libmmi-client" ]
   }
+  if (ressched_with_resourceschedule_soc_perf_enable &&
+      resource_schedule_service_file_copy_soc_perf_enable) {
+    defines += [ "RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE" ]
+  }
   external_deps += [ "data_share:datashare_consumer" ]
 
   version_script = "libresschedsvc.versionscript"
@@ -305,6 +309,10 @@ ohos_static_library("resschedsvc_static") {
   }
   if (resource_schedule_service_with_ffrt_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE" ]
+  }
+  if (ressched_with_resourceschedule_soc_perf_enable &&
+      resource_schedule_service_file_copy_soc_perf_enable) {
+    defines += [ "RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE" ]
   }
   external_deps += [ "data_share:datashare_consumer" ]
   if (rss_mmi_enable) {

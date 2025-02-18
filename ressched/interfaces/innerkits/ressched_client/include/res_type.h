@@ -299,6 +299,8 @@ enum : uint32_t {
     RES_TYPE_SHORT_TERM_LOAD = 137,
     // report dynamically set suspend exempt info
     RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT = 138,
+    // report file copy status
+    RES_TYPE_FILE_COPY_STATUS = 139,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -328,6 +330,13 @@ enum : uint32_t {
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
 };
+
+enum CopyStatus : uint64_t {
+    COPY_STOP = 0,
+    COPY_START = 1,
+    COPY_STATUS_MAX,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
