@@ -330,13 +330,6 @@ enum : uint32_t {
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
 };
-
-enum CopyStatus : uint64_t {
-    COPY_STOP = 0,
-    COPY_START = 1,
-    COPY_STATUS_MAX,
-};
-
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
