@@ -153,6 +153,9 @@ private:
     void HandleScreenOn();
     void HandleScreenOff();
     std::string GetBundleNameByUid(const int32_t uid);
+#ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
+    bool HandleFileCopyStatus(const std::shared_ptr<ResData>& data);
+#endif
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
