@@ -15,7 +15,6 @@
     "syscap": [
       "SystemCapability.Resourceschedule.BackgroundProcessManager",
       "SystemCapability.ResourceSchedule.SystemLoad"
-      
     ],
     "features": [
       "resource_schedule_service_with_ffrt_enable",
