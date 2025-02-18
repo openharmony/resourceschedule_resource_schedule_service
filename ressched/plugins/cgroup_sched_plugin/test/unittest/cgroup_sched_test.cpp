@@ -1504,6 +1504,28 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_034, Function | Med
     cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pidSec, uidSec);
     EXPECT_TRUE(appMain->focusedProcess_ != nullptr);
 }
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_035
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB0CYC
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_035, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    uint32_t resType = 0;
+    int64_t value = 0;
+    nlohmann::json payload;
+    payload["uid"] = "1000";
+    payload["pid"] = "1000";
+    auto processRecord = supervisor_->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
+    cgroupEventHandler->HandleReportBluetoothConnectState(resType, value, payload);
+    EXPECT_TRUE(processRecord->bluetoothState_ == 0);
+}
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
