@@ -297,6 +297,8 @@ enum : uint32_t {
     RES_TYPE_FRAME_RATE_REPORT_FROM_RS = 136,
     // report short term load scene 0 is start 1 is end
     RES_TYPE_SHORT_TERM_LOAD = 137,
+    // report dynamically set suspend exempt info
+    RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT = 138,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

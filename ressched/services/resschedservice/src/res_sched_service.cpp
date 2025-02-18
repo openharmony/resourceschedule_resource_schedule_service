@@ -189,6 +189,7 @@ namespace {
         ResType::RES_TYPE_GET_GAME_SCENE_INFO,
         ResType::RES_TYPE_FRAME_RATE_REPORT_FROM_RS,
         ResType::RES_TYPE_SHORT_TERM_LOAD,
+        ResType::RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT,
     };
 
     bool IsHasPermission(const uint32_t type)
