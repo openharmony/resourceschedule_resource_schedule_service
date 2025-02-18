@@ -13,6 +13,7 @@
     "name": "resource_schedule_service",
     "subsystem": "resourceschedule",
     "syscap": [
+      "SystemCapability.Resourceschedule.BackgroundProcessManager",
       "SystemCapability.ResourceSchedule.SystemLoad"
     ],
     "features": [
