@@ -758,6 +758,15 @@ enum WifiConnectionState : int64_t {
 enum FrameRateReportState : int64_t {
     FRAME_RATE_COMMON_REPORT = 0,
 };
+
+/**
+* @brief File copy status
+*/
+enum CopyStatus : uint64_t {
+    COPY_STOP = 0,
+    COPY_START = 1,
+    COPY_STATUS_MAX,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
