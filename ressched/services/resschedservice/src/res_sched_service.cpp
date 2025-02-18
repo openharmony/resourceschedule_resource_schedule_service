@@ -190,6 +190,9 @@ namespace {
         ResType::RES_TYPE_FRAME_RATE_REPORT_FROM_RS,
         ResType::RES_TYPE_SHORT_TERM_LOAD,
         ResType::RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT,
+#ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
+        ResType::RES_TYPE_FILE_COPY_STATUS,
+#endif
     };
 
     bool IsHasPermission(const uint32_t type)

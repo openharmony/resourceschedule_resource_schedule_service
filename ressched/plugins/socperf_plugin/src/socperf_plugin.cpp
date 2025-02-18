@@ -102,6 +102,9 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN     = 10083;
     const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST            = 10085;
     const int32_t PERF_REQUEST_CMD_ID_APP_USE_CAMERA        = 10086;
+#ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
+    const int32_t PERF_REQUEST_CMD_ID_FILE_COPY             = 10087;
+#endif
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -239,6 +242,10 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleWebDragResize(data); } },
         { RES_TYPE_ACCOUNT_ACTIVATING,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfAccountActivating(data); } },
+#ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
+        { RES_TYPE_FILE_COPY_STATUS,
+            [this](const std::shared_ptr<ResData>& data) { HandleFileCopyStatus(data); } },
+#endif
     };
     AddEventToFunctionMap();
 }
@@ -329,6 +336,9 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_CROWN_ROTATION_STATUS,
         RES_TYPE_PROCESS_STATE_CHANGE,
         RES_TYPE_REPORT_CAMERA_STATE,
+#ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
+        RES_TYPE_FILE_COPY_STATUS,
+#endif
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -1111,6 +1121,25 @@ bool SocPerfPlugin::HandleBmmMoniterStatus(const std::shared_ptr<ResData> &data)
     }
     return false;
 }
+
+#ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
+bool SocPerfPlugin::HandleFileCopyStatus(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->COPY_STATUS: %{public}lld", (long long)data->value);
+    if (data->value == CopyStatus::COPY_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FILE_COPY, true, "");
+        return true;
+    }
+    if (data->value == CopyStatus::COPY_STOP) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_FILE_COPY, false, "");
+        return true;
+    }
+    return false;
+}
+#endif
 
 extern "C" bool OnPluginInit(std::string& libName)
 {
