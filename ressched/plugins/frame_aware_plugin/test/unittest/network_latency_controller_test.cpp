@@ -75,7 +75,6 @@ protected:
 HWTEST_F(NetworkLatencyControllerTest, singleUser_001, testing::ext::TestSize.Level1)
 {
     const std::string identity("test.application.1");
-    ctrl.Init();
     // enable low latency
     ctrl.HandleRequest(NetworkLatencyController::NETWORK_LATENCY_REQUEST_LOW, identity);
     EXPECT_EQ(counter->onCount, 1);
@@ -89,6 +88,7 @@ HWTEST_F(NetworkLatencyControllerTest, singleUser_001, testing::ext::TestSize.Le
     //default
     ctrl.HandleRequest(-1, identity);
     SUCCEED();
+    ctrl.Init();
 }
 
 /**
