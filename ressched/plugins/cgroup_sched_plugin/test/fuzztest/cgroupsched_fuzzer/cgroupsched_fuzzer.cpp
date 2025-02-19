@@ -306,72 +306,6 @@ namespace ResourceSchedule {
         return true;
     }
 
-    bool HandleAbilityAddedFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-        g_pos = 0;
-
-        // getdata
-        std::string deviceId(std::to_string(*data));
-        auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
-
-        int32_t saId = APP_MGR_SERVICE_ID;
-        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
-
-        saId = WINDOW_MANAGER_SERVICE_ID;
-        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
-
-        saId = APP_MGR_SERVICE_ID;
-        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
-
-        saId = DEFAULT;
-        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
-
-        return true;
-    }
-
-    bool HandleAbilityRemovedFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-        g_pos = 0;
-
-        // getdata
-        std::string deviceId(std::to_string(*data));
-        auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
-
-        int32_t saId = APP_MGR_SERVICE_ID;
-        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
-        cgroupEventHandler->HandleAbilityRemoved(saId, deviceId);
-
-        saId = WINDOW_MANAGER_SERVICE_ID;
-        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
-        cgroupEventHandler->HandleAbilityRemoved(saId, deviceId);
-
-        saId = APP_MGR_SERVICE_ID;
-        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
-        cgroupEventHandler->HandleAbilityRemoved(saId, deviceId);
-
-        saId = DEFAULT;
-        cgroupEventHandler->HandleAbilityAdded(saId, deviceId);
-        cgroupEventHandler->HandleAbilityRemoved(saId, deviceId);
-
-        return true;
-    }
-
     bool HandleProcessDiedFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -1750,8 +1684,6 @@ namespace ResourceSchedule {
     void CgroupEventHandlerFuzzExecute(const uint8_t* data, size_t size)
     {
         OHOS::ResourceSchedule::ProcessEventFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleAbilityAddedFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleAbilityRemovedFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleProcessDiedFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleTransientTaskStartFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleTransientTaskEndFuzzTest(data, size);
