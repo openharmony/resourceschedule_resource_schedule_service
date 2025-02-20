@@ -72,6 +72,9 @@ void AppStartupSceneRec::RecordIsContinuousStartup(int32_t abilityState, std::st
     auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
     int64_t curTime = tarDuration.count();
     std::lock_guard<ffrt::mutex> lock(mutex_);
+    if (ffrtQueue_ == nullptr) {
+        return;
+    }
     if (exitContinuousStartupTask != nullptr) {
         ffrtQueue_->cancel(exitContinuousStartupTask);
         exitContinuousStartupTask = nullptr;
