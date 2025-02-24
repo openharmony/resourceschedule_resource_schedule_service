@@ -301,6 +301,8 @@ enum : uint32_t {
     RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT = 138,
     // report file copy status
     RES_TYPE_FILE_COPY_STATUS = 139,
+    // report page transition
+    RES_TYPE_PAGE_TRANSITION = 140,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
