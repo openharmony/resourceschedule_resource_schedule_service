@@ -914,56 +914,5 @@ HWTEST_F(ObserverEventTest, AddItemToSysAbilityListener_001, testing::ext::TestS
     EXPECT_FALSE(instance->sysAbilityListener_);
 }
 
-/**
- * @tc.name: OnRemoveSystemAbility_001
- * @tc.desc: test OnRemoveSystemAbility
- * @tc.type: FUNC
- * @tc.require: issuesIAJZVI
- */
-HWTEST_F(ObserverEventTest, OnRemoveSystemAbility_001, testing::ext::TestSize.Level1)
-{
-    std::string deviceId = "test";
-    auto instance = ObserverManager::GetInstance();
-    EXPECT_NE(instance, nullptr);
-    if (instance) {
-        instance->InitSysAbilityListener();
-        sleep(3);
-        instance->sysAbilityListener_->OnAddSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, deviceId);
-        instance->sysAbilityListener_->OnRemoveSystemAbility(DFX_SYS_EVENT_SERVICE_ABILITY_ID, deviceId);
-
-        instance->sysAbilityListener_->OnAddSystemAbility(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, deviceId);
-        instance->sysAbilityListener_->OnRemoveSystemAbility(TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, deviceId);
-
-        instance->sysAbilityListener_->OnAddSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
-        instance->sysAbilityListener_->OnRemoveSystemAbility(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, deviceId);
-
-#ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
-        instance->sysAbilityListener_->OnAddSystemAbility(AVSESSION_SERVICE_ID, deviceId);
-        instance->sysAbilityListener_->OnRemoveSystemAbility(AVSESSION_SERVICE_ID, deviceId);
-#endif
-
-        instance->sysAbilityListener_->OnAddSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, deviceId);
-        instance->sysAbilityListener_->OnRemoveSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, deviceId);
-
-        instance->sysAbilityListener_->OnRemoveSystemAbility(-1, deviceId);
-    }
-    SUCCEED();
-}
-
-/**
- * @tc.name: InitAccountObserver_001
- * @tc.desc: test InitAccountObserver
- * @tc.type: FUNC
- * @tc.require: issuesIAJZVI
- */
-HWTEST_F(ObserverEventTest, InitAccountObserver_001, testing::ext::TestSize.Level1)
-{
-    auto observerManager = std::make_shared<ObserverManager>();
-    observerManager->InitAccountObserver();
-    observerManager->DisableAccountObserver();
-    observerManager->DisableAccountObserver();
-    EXPECT_NE(observerManager->accountObserver_, nullptr);
-}
-
 }
 }

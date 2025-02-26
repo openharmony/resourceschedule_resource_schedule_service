@@ -157,6 +157,7 @@ namespace {
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
         { ResType::RES_TYPE_FILE_COPY_STATUS, "RES_TYPE_FILE_COPY_STATUS" },
 #endif
+        { ResType::RES_TYPE_PAGE_TRANSITION, "RES_TYPE_PAGE_TRANSITION" },
     };
     OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
     {
