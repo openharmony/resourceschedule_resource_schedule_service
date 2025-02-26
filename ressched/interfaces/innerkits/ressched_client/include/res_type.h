@@ -297,8 +297,6 @@ enum : uint32_t {
     RES_TYPE_FRAME_RATE_REPORT_FROM_RS = 136,
     // report short term load scene 0 is start 1 is end
     RES_TYPE_SHORT_TERM_LOAD = 137,
-    // report dynamically set suspend exempt info
-    RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT = 138,
     // report file copy status
     RES_TYPE_FILE_COPY_STATUS = 139,
     // report page transition
@@ -327,6 +325,8 @@ enum : uint32_t {
     RES_TYPE_RAISE_WORKER_THREAD_PRIORITY = 503,
     // report to check app is in app inner schedule list
     RES_TYPE_CHECK_APP_IS_IN_SCHEDULE_LIST,
+    // report dynamically set suspend exempt info
+    RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT = 505,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
