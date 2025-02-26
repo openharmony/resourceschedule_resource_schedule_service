@@ -591,10 +591,13 @@ void SchedController::DumpProcessEventState(std::string& result)
                 .append(", wifiState: ").append(ToString(process->wifiState_))
                 .append(", screenCaptureState: ").append(ToString(process->screenCaptureState_))
                 .append(", videoState: ").append(ToString(process->videoState_))
-                .append(", audioPlayingState: ").append(ToString(process->audioPlayingState_))
                 .append(", isActive: ").append(ToString(process->isActive_))
-                .append(", linkedWindowId: ").append(ToString(process->linkedWindowId_))
-                .append("\n");
+                .append(", linkedWindowId: ").append(ToString(process->linkedWindowId_));
+            for (const auto& audioItem : process->audioPlayingState_) {
+                result.append(", audioPlayingState[").append(ToString(audioItem.first)).append("]: ")
+                    .append(ToString(audioItem.second));
+            }
+            result.append("\n");
         }
     }
 }

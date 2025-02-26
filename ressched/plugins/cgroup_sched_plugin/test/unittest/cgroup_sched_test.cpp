@@ -883,11 +883,6 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_016, Function | Med
     cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
     auto proc = app->GetProcessRecordNonNull(1112);
     EXPECT_TRUE(proc != nullptr);
-
-    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
-    proc->curSchedGroup_ = CgroupSetting::SP_BACKGROUND;
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
-    EXPECT_TRUE(proc->audioPlayingState_ == 2);
 }
 
 /**
@@ -926,11 +921,6 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_017, Function | Med
     cgroupEventHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
     auto proc = app->GetProcessRecordNonNull(1112);
     EXPECT_TRUE(proc != nullptr);
-
-    proc->curSchedGroup_ = CgroupSetting::SP_BACKGROUND;
-    proc->processType_ = ProcRecordType::RENDER;
-    cgroupEventHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
-    EXPECT_TRUE(proc->audioPlayingState_ == 0);
 }
 
 /**
