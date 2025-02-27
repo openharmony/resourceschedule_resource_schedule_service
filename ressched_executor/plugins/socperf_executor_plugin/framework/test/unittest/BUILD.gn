@@ -1,0 +1,65 @@
+# Copyright (c) 2025 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+import("../../../../../../ressched/ressched.gni")
+import("../../../../../ressched_executor.gni")
+
+group("unittest") {
+  testonly = true
+  deps = [ ":socperf_executor_plugin_test" ]
+}
+
+module_output_path = "resource_schedule_service/ressched_executor"
+
+ohos_unittest("socperf_executor_plugin_test") {
+  module_out_path = module_output_path
+
+  include_dirs = []
+
+  sources = [
+    "socperf_executor_config_test.cpp",
+    "socperf_executor_plugin_test.cpp",
+    "socperf_executor_write_node_test.cpp",
+  ]
+
+  deps = [ "${resschedexe_socperf_executor_plugin}:socperf_executor_plugin" ]
+
+  defines = []
+  external_deps = [
+    "access_token:libaccesstoken_sdk",
+    "access_token:libnativetoken",
+    "access_token:libtoken_setproc",
+    "cJSON:cjson",
+    "c_utils:utils",
+    "ffrt:libffrt",
+    "hilog:libhilog",
+    "ipc:ipc_single",
+    "selinux_adapter:librestorecon",
+  ]
+
+  public_external_deps = [ "json:nlohmann_json_static" ]
+
+  cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+
+  branch_protector_ret = "pac_ret"
+}

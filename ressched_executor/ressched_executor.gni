@@ -22,6 +22,9 @@ resschedexe_interfaces =
 resschedexe_services =
     "${resourcescheduleservice_path}/ressched_executor/services"
 
+resschedexe_socperf_executor_plugin =
+    "${resourcescheduleservice_path}/ressched_executor/plugins/socperf_executor_plugin"
+
 resschedexe_plugins =
     "${resourcescheduleservice_path}/ressched/services/resschedmgr"
 
