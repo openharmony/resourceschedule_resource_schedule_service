@@ -31,7 +31,7 @@ ohos_unittest("SocPerfPluginTest") {
 
   deps = [ "${ressched_plugins}/socperf_plugin:socperf_plugin" ]
 
-  defines = []
+  defines = [ "RESSCHED_RESOURCESCHEDULE_SOC_PERF_PLUGIN_TEST" ]
   external_deps = [
     "c_utils:utils",
     "ffrt:libffrt",
