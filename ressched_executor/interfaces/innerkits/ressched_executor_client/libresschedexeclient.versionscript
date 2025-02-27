@@ -17,8 +17,9 @@
     *ResSchedExeClient*GetInstance*;
     *ResSchedExeClient*SendRequestSync*;
     *ResSchedExeClient*SendRequestAsync*;
+    *ResSchedExeClient*KillProcess*;
     *ResSchedExeClient*StopRemoteObject*;
     *ResSchedExeClient*SendDebugCommand*;
-    *ResSchedExeServiceProxy*;
-    *ResSchedExeCommonUtils*;
+  local:
+    *;
 };
