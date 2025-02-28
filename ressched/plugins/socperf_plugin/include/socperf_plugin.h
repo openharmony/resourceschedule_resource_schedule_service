@@ -26,6 +26,9 @@
 #include <string>
 #include <sstream>
 
+#ifdef RESSCHED_RESOURCESCHEDULE_SOC_PERF_PLUGIN_TEST
+#define private public
+#endif
 namespace OHOS {
 namespace ResourceSchedule {
 class AppKeyMessage {
