@@ -256,7 +256,7 @@ HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_010, Function 
 
     ExPECT_CALL(grandson, xmlGetProp(_, _)).WillRepeatedly(Return("1"));
     ExPECT_CALL(SocPerfConfig::GetInstance(), LoadFreqResourceContent(_, _, _, _)).WillOnce(Return(false));
-    ret = SocPerfConfig::GetInstance()..TraversalFreqResource(&grandson, configFile);
+    ret = SocPerfConfig::GetInstance().TraversalFreqResource(&grandson, configFile);
     EXPECT_FALSE(ret);
 }
 
@@ -267,7 +267,233 @@ HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_010, Function 
 */
 HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_011, Function | MediumTest | Level0)
 {
+    xmlNode xmlNode;
+    const char* propName = "testProp";
+    char propValue[] = "123";
+    xmlNode.properties = propValue;
+    int32_t ret = SocPerfConfig::GetInstance().GetXmlIntProp(&xmlNode, propName);
+    EXPECT_EQ(ret, 123);
 
+    char propValue1[] = "abc";
+    xmlNode.properties = propValue1;
+    int32_t ret = SocPerfConfig::GetInstance().GetXmlIntProp(&xmlNode, propName);
+    EXPECT_EQ(ret, -1);
+
+    xmlNode.properties = nullptr;
+    int32_t ret = SocPerfConfig::GetInstance().GetXmlIntProp(&xmlNode, propName);
+    EXPECT_EQ(ret, -1);
+}
+
+/**
+* @tc.name: SocperfExecutorConfigTest_API_012
+* @tc.desc: test socperf_executor_config api
+* @tc.type: FUNC
+*/
+HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_012, Function | MediumTest | Level0)
+{
+    int32_t resId = 100;
+    int32_t expected = RES_ID_NUMS_PER_TYPE;
+    int32_t actual = SocPerfConfig::GetInstance().GetResIdNumsPerType(resId);
+    EXPECT_EQ(expected, actual);
+
+    SocPerfConfig::GetInstance().resourceNodeInfo_[resId] = std::make_shared<ResourceNode>();
+    SocPerfConfig::GetInstance().resourceNodeInfo_[resId]->persistMode = REPORT_TO_PERFSO;
+    expected = RES_ID_NUMS_PER_TYPE_EXT;
+    actual = SocPerfConfig::GetInstance().GetResIdNumsPerType(resId);
+    EXPECT_EQ(expected, actual);
+}
+
+/**
+* @tc.name: SocperfExecutorConfigTest_API_013
+* @tc.desc: test socperf_executor_config api
+* @tc.type: FUNC
+*/
+HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_013, Function | MediumTest | Level0)
+{
+    bool ret = SocPerfConfig::GetInstance().CheckResourceTag(
+        "invalid", "name", "pair", "mode", "persistMode", "configFile");
+    EXPECT_FALSE(ret);
+
+    ret = SocPerfConfig::GetInstance().CheckResourceTag(
+        "1", nullptr, "pair", "mode", "persistMode", "configFile");
+    EXPECT_FALSE(ret);
+
+    ret = SocPerfConfig::GetInstance().CheckResourceTag(
+        "1", "name", "invalid", "mode", "persistMode", "configFile");
+    EXPECT_FALSE(ret);
+
+    ret = SocPerfConfig::GetInstance().CheckResourceTag(
+        "1", "name", "pair", "invalid", "persistMode", "configFile");
+    EXPECT_FALSE(ret);
+
+    ret = SocPerfConfig::GetInstance().CheckResourceTag(
+        "1", "name", "pair",  "mode", "persistMode", "configFile");
+    EXPECT_TRUE(ret);
+}
+
+/**
+* @tc.name: SocperfExecutorConfigTest_API_013
+* @tc.desc: test socperf_executor_config api
+* @tc.type: FUNC
+*/
+HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_013, Function | MediumTest | Level0)
+{
+    const char* persistMode = "1";
+    std::string configFile = "test_config_file";
+    EXPECT_TRUE(SocPerfConfig::GetInstance().CheckResourcePersistMode(persistMode, configFile));
+
+    persistMode = "invalid_mode";
+    EXPECT_FALSE(SocPerfConfig::GetInstance().CheckResourcePersistMode(persistMode, configFile));
+
+    persistMode = nullptr;
+    EXPECT_FALSE(SocPerfConfig::GetInstance().CheckResourcePersistMode(persistMode, configFile));
+}
+
+/**
+* @tc.name: SocperfExecutorConfigTest_API_014
+* @tc.desc: test socperf_executor_config api
+* @tc.type: FUNC
+*/
+HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_014, Function | MediumTest | Level0)
+{
+    const char* def1 = nullptr;
+    const char* def2 = "123";
+    const char* path1 = nullptr;
+    const char* path2 = "test_path";
+    std::string configFile = "test_config_file";
+    bool ret = SocPerfConfig::GetInstance().CheckResourceTag(1, def1, path2, configFile);
+    EXPECT_FALSE(ret);
+
+    ret = SocPerfConfig::GetInstance().CheckResourceTag(1, def2, path1, configFile);
+    EXPECT_FALSE(ret);
+
+    ret = SocPerfConfig::GetInstance().CheckResourceTag(1, def2, path2, configFile);
+    EXPECT_TRUE(ret);
+}
+
+/**
+* @tc.name: SocperfExecutorConfigTest_API_015
+* @tc.desc: test socperf_executor_config api
+* @tc.type: FUNC
+*/
+HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_015, Function | MediumTest | Level0)
+{
+    auto resNode = std::make_shared<ResNode>(1, "test", 1, 1, 1);
+    const char* node = "123 456 789";
+    EXPECT_TRUE(SocPerfConfig::GetInstance().LoadResourceAvailable(resNode, node));
+    EXPECT_EQ(resNode->available.size(), 3);
+
+    const char* node1 = "123 abc 789";
+    EXPECT_TRUE(SocPerfConfig::GetInstance().LoadResourceAvailable(resNode, node1));
+
+    const char* node2 = "";
+    EXPECT_TRUE(SocPerfConfig::GetInstance().LoadResourceAvailable(resNode, node2));
+}
+
+/**
+* @tc.name: SocperfExecutorConfigTest_API_016
+* @tc.desc: test socperf_executor_config api
+* @tc.type: FUNC
+*/
+HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_016, Function | MediumTest | Level0)
+{
+    SocPerfConfig::GetInstance().resourceNodeInfo_[1] = std::make_shared<ResourceNode>();
+    SocPerfConfig::GetInstance().resourceNodeInfo_[1]->pair = 2;
+    EXPECT_FALSE(SocPerfConfig::GetInstance().CheckPairResIdValid());
+
+    SocPerfConfig::GetInstance().resourceNodeInfo_[2] = std::make_shared<ResourceNode>();
+    EXPECT_TRUE(SocPerfConfig::GetInstance().CheckPairResIdValid());
+}
+
+/**
+* @tc.name: SocperfExecutorConfigTest_API_017
+* @tc.desc: test socperf_executor_config api
+* @tc.type: FUNC
+*/
+HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_017, Function | MediumTest | Level0)
+{
+    SocPerfConfig::GetInstance().resourceNodeInfo_[1] = std::make_shared<ResourceNode>();
+    SocPerfConfig::GetInstance().resourceNodeInfo_[1]->isGov = true;
+    EXPECT_TRUE(SocPerfConfig::GetInstance().CheckPairResIdValid());
+}
+
+/**
+* @tc.name: SocperfExecutorConfigTest_API_018
+* @tc.desc: test socperf_executor_config api
+* @tc.type: FUNC
+*/
+HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_018, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResourceNode> node = std::make_shared<ResourceNode>();
+    node->def = 1;
+    node->available.insert(2);
+    SocPerfConfig::GetInstance().resourceNodeInfo_.insert(std::make_pair(1, node));
+    EXPECT_FALSE(SocPerfConfig::GetInstance().CheckDefValid());
+
+    std::shared_ptr<ResourceNode> node1 = std::make_shared<ResourceNode>();
+    node1->def = 1;
+    node1->available.insert(1);
+    SocPerfConfig::GetInstance().resourceNodeInfo_.insert(std::make_pair(1, node1));
+    EXPECT_TRUE(SocPerfConfig::GetInstance().CheckDefValid());
+
+    std::shared_ptr<ResourceNode> node2 = std::make_shared<ResourceNode>();
+    node2->def = 1;
+    SocPerfConfig::GetInstance().resourceNodeInfo_.insert(std::make_pair(1, node2));
+    EXPECT_TRUE(SocPerfConfig::GetInstance().CheckDefValid());
+}
+
+/**
+* @tc.name: SocperfExecutorConfigTest_API_019
+* @tc.desc: test socperf_executor_config api
+* @tc.type: FUNC
+*/
+HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_019, Function | MediumTest | Level0)
+{
+    EXPECT_TRUE(SocPerfConfig::GetInstance().CheckGovResourceTag("1", "testName", "1", "testConfigFile"));
+    EXPECT_FALSE(SocPerfConfig::GetInstance().CheckGovResourceTag("invalid", "testName", "1", "testConfigFile"));
+    EXPECT_FALSE(SocPerfConfig::GetInstance().CheckGovResourceTag("1", nullptr, "1", "testConfigFile"));
+    EXPECT_FALSE(SocPerfConfig::GetInstance().CheckGovResourceTag("1", "testName", "invalid", "testConfigFile"));
+}
+
+/**
+* @tc.name: SocperfExecutorConfigTest_API_019
+* @tc.desc: test socperf_executor_config api
+* @tc.type: FUNC
+*/
+HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_019, Function | MediumTest | Level0)
+{
+    auto govResNode = std::make_shared<GovResNode>(1, "test", 1);
+    govResNode->paths.push_back("path1");
+    govResNode->paths.push_back("path2");
+    const char* level = "1";
+    const char* node = "path1|path2";
+    bool ret = SocPerfConfig::GetInstance().LoadGovResourceAvailable(govResNode, level, node);
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(govResNode->levelToStr.size(), 1);
+    EXPECT_EQ(govResNode->levelToStr[1][0], "path1");
+    EXPECT_EQ(govResNode->levelToStr[1][1], "path2");
+
+    node = "path1";
+    ret = SocPerfConfig::GetInstance().LoadGovResourceAvailable(govResNode, level, node);
+    EXPECT_FALSE(ret);
+    EXPECT_EQ(govResNode->levelToStr.size(), 0);
+}
+
+/**
+* @tc.name: SocperfExecutorConfigTest_API_020
+* @tc.desc: test socperf_executor_config api
+* @tc.type: FUNC
+*/
+HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_020, Function | MediumTest | Level0)
+{
+    SocPerfConfig::GetInstance().resourceNodeInfo_.clear();
+    SocPerfConfig::GetInstance().PrintCachedInfo();
+    EXPECT_TRUE(SocPerfConfig::GetInstance().resourceNodeInfo_.empty());
+
+    SocPerfConfig::GetInstance().resourceNodeInfo_.clear();
+    SocPerfConfig::GetInstance().resourceNodeInfo_[1] = std::make_shared<ResourceNode>();
+    SocPerfConfig::GetInstance().PrintCachedInfo();
+    EXPECT_FALSE(SocPerfConfig::GetInstance().resourceNodeInfo_.empty());
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
