@@ -784,7 +784,8 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_032, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().UpdateFocusAppType(validData3, true);
     EXPECT_FALSE(ret);
 
-    SocPerfPlugin::GetInstance().reqAppTypeFunc_ = [](const std::string& bundleName) { return -1; };
+    SocPerfPlugin::GetInstance().reqAppTypeFunc_ =
+        [](const std::string& bundleName) { return -1; };
     ret = SocPerfPlugin::GetInstance().UpdateFocusAppType(validData3, true);
     EXPECT_TRUE(ret);
 }
@@ -837,7 +838,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_034, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().UpdatesFocusAppsType(3);
     EXPECT_FALSE(ret);
 
-    SocPerfPlugin::GetInstance().focusAppUids_insert(10011);
+    SocPerfPlugin::GetInstance().focusAppUids_.insert(10011);
     SocPerfPlugin::GetInstance().isFocusAppsGameType_ = false;
     ret = SocPerfPlugin::GetInstance().UpdatesFocusAppsType(2);
     EXPECT_FALSE(ret);
@@ -1098,16 +1099,16 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_043, Function | MediumTes
     nlohmann::json payload1;
     payload1["pid"] = "2025";
     std::shared_ptr<ResData> validData1 = std::make_shared<ResData>(-1, -1, payload1);
-    ret = SocPerfPlugin::GetInstance().GetPidByData(invalidData1, "notPid") == -1;
+    ret = SocPerfPlugin::GetInstance().GetPidByData(validData1, "notPid") == -1;
     EXPECT_TRUE(ret);
 
-    ret = SocPerfPlugin::GetInstance().GetPidByData(invalidData1, "pid") == 2025;
+    ret = SocPerfPlugin::GetInstance().GetPidByData(validData1, "pid") == 2025;
     EXPECT_TRUE(ret);
 
     nlohmann::json payload2;
-    payload1["pid"] = 2025;
-    std::shared_ptr<ResData> validData1 = std::make_shared<ResData>(-1, -1, payload2);
-    ret = SocPerfPlugin::GetInstance().GetPidByData(invalidData1, "notPid") == -1;
+    payload2["pid"] = 2025;
+    std::shared_ptr<ResData> validData2 = std::make_shared<ResData>(-1, -1, payload2);
+    ret = SocPerfPlugin::GetInstance().GetPidByData(validData2, "notPid") == -1;
     EXPECT_TRUE(ret);
 }
 
@@ -1147,7 +1148,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_044, Function | MediumTes
     EXPECT_FALSE(ret);
 
     SocPerfPlugin::GetInstance().reqAppTypeFunc_ = [](const std::string& bundleName) { return -1; };
-    ret = SocPerfPlugin::GetInstance().UpdateUidToAppMsgMap(validData2, true);
+    ret = SocPerfPlugin::GetInstance().UpdateUidToAppMsgMap(validData2);
     EXPECT_TRUE(ret);
     SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
 }
