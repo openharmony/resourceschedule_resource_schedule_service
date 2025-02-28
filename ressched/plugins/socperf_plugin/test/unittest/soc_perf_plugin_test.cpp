@@ -942,7 +942,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_037, Function | MediumTes
     std::shared_ptr<ResData> invalidData1 = std::make_shared<ResData>(-1, -1, nullptr);
     ret = SocPerfPlugin::GetInstance().HandleUninstallEvent(invalidData1);
     EXPECT_FALSE(ret);
-    
+
     std::shared_ptr<ResData> invalidData2 = std::make_shared<ResData>(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
         ResType::AppInstallStatus::APP_UNINSTALL, nullptr);
     ret = SocPerfPlugin::GetInstance().HandleUninstallEvent(invalidData2);

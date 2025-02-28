@@ -91,15 +91,5 @@ HWTEST_F(SocperfExecutorWirteNodeTest, SocperfExecutorWirteNodeTest_API_002, Fun
     node.InitThreadWraps();
     EXPECT_TRUE(config.resourceNodeInfo_.empty());
 }
-
-/**
-* @tc.name: SocperfExecutorWirteNodeTest_API_003
-* @tc.desc: test socperf_executor_config api
-* @tc.type: FUNC
-*/
-HWTEST_F(SocperfExecutorWirteNodeTest, SocperfExecutorWirteNodeTest_API_003, Function | MediumTest | Level0)
-{
-    
-}
 } // namespace ResourceSchedule
 } // namespace OHOS
