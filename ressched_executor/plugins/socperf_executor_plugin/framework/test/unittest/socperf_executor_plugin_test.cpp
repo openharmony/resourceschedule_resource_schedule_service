@@ -157,5 +157,7 @@ HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_006, Function 
     plugin.SocPerfWirteNode(data);
     EXPECT_NE(data, nullptr);
 }
+
+
 } // namespace ResourceSchedule
 } // namespace OHOS
