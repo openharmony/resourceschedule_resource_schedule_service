@@ -1107,8 +1107,9 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_043, Function | MediumTes
 
     nlohmann::json payload2;
     payload2["pid"] = 2025;
-    std::shared_ptr<ResData> validData2 = std::make_shared<ResData>(-1, -1, payload2);
-    ret = SocPerfPlugin::GetInstance().GetPidByData(validData2, "notPid") == -1;
+    std::shared_ptr<ResData> validData2 =
+        std::make_shared<ResData>(-1, -1, payload2);
+    ret = SocPerfPlugin::GetInstance().GetPidByData(validData2, "pid") == -1;
     EXPECT_TRUE(ret);
 }
 
