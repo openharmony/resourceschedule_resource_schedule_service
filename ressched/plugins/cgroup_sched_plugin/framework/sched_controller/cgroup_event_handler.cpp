@@ -782,7 +782,7 @@ void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t
         return;
     }
 
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "clientPid", payload)) {
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
         return;
     }
     if (uid <= 0 || pid <= 0) {
@@ -791,14 +791,14 @@ void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t
         return;
     }
 
-    std::shared_ptr<ProcessRecord> procRecord = supervisor_->FindProcessRecord(pid);
-    if (!procRecord) {
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
         CGS_LOGW("%{public}s : proc record is not exist, uid: %{public}d, pid: %{public}d",
             __func__, uid, pid);
         return;
     }
 
-    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(procRecord->GetUid());
     procRecord->audioPlayingState_[sessionId] = static_cast<int32_t>(value);
     CGS_LOGI("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_[sessionId]);
