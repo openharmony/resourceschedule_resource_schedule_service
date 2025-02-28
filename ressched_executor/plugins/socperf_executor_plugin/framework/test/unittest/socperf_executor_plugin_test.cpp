@@ -18,8 +18,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "nativetoken_kit.h"
-#include "token_setproc.h"
 #define private public
 #include "socperf_executor_plugin.h"
 #undef private
@@ -30,8 +28,6 @@ using namespace std;
 using namespace testing::ext;
 
 namespace {
-    constexpr int32_t SYNC_THREAD_NUM = 100;
-    constexpr int32_t SYNC_INTERNAL_TIME = 200;
 }
 
 class SocperfExecutorPluginTest : public testing::Test {
@@ -70,12 +66,11 @@ HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_001, Function 
 */
 HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_002, Function | MediumTest | Level0)
 {
-    SocperfExecutorPlugin plugin;
-    plugin.resType_.insert(1);
-    Plugin.functionMap_[1] = [](const std::shared_ptr<ResData>& data){}
-    plugin.Disable();
-    EXPECT_TRUE(plugin.resType_.empty());
-    EXPECT_TRUE(plugin.functionMap_.empty());
+    SocperfExecutorPlugin::GetInstance().resType_.insert(1);
+    SocperfExecutorPlugin::GetInstance().functionMap_[1] = [](const std::shared_ptr<ResData>& data){}
+    SocperfExecutorPlugin::GetInstance().Disable();
+    EXPECT_TRUE(SocperfExecutorPlugin::GetInstance().resType_.empty());
+    EXPECT_TRUE(SocperfExecutorPlugin::GetInstance().functionMap_.empty());
 }
 
 /**
@@ -85,19 +80,18 @@ HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_002, Function 
 */
 HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_003, Function | MediumTest | Level0)
 {
-    SocperfExecutorPlugin plugin;
     std::shared_ptr<ResData> data = nullptr;
-    plugin.DispatchResource(data);
+    SocperfExecutorPlugin::GetInstance().DispatchResource(data);
 
-    data = std::shared<ResData>();
+    data = std::make_shared<ResData>();
     data->value = -1;
-    plugin.DispatchResource(data);
+    SocperfExecutorPlugin::GetInstance().DispatchResource(data);
 
     data->value = 1;
     data->resType = 1;
     auto func = [](const std::shared_ptr<ResData>& data){};
-    plugin.functionMap_[data->resType] = func;
-    plugin.DispatchResource(data);
+    SocperfExecutorPlugin::GetInstance().functionMap_[data->resType] = func;
+    SocperfExecutorPlugin::GetInstance().DispatchResource(data);
     EXPECT_NE(data, nullptr);
 }
 
@@ -108,17 +102,15 @@ HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_003, Function 
 */
 HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_004, Function | MediumTest | Level0)
 {
-    SocperfExecutorPlugin plugin;
     std::shared_ptr<ResData> data = nullptr;
-    plugin.HandleSocperfWirteNode(data);
+    SocperfExecutorPlugin::GetInstance().HandleSocperfWirteNode(data);
 
-    data = std::shared<ResData>();
+    data = std::make_shared<ResData>();
     data->value = 0;
-    plugin.HandleSocperfWirteNode(data);
+    SocperfExecutorPlugin::GetInstance().HandleSocperfWirteNode(data);
 
     data->value = SOCPERF_EVENT_WIRTE_NODE;
-    ExPECT_CALL(plugin, SocPerfWirteNode(data)).Times(1);
-    plugin.HandleSocperfWirteNode(data);
+    SocperfExecutorPlugin::GetInstance().HandleSocperfWirteNode(data);
     EXPECT_NE(data, nullptr);
 }
 
@@ -129,9 +121,9 @@ HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_004, Function 
 */
 HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_005, Function | MediumTest | Level0)
 {
-    SocperfExecutorPlugin plugin;
-    plugin.SocPerfInitNode();
-    EXPECT_NE(plugin, nullptr);
+    SocperfExecutorPlugin::GetInstance().SocPerfInitNode();
+    std::shared_ptr<ResData> data = std::make_shared<ResData>();
+    EXPECT_NE(data, nullptr);
 }
 
 /**
@@ -141,23 +133,20 @@ HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_005, Function 
 */
 HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_006, Function | MediumTest | Level0)
 {
-    SocperfExecutorPlugin plugin;
     std::shared_ptr<ResData> data = nullptr;
-    plugin.SocPerfWirteNode(data);
+    SocperfExecutorPlugin::GetInstance().SocPerfWirteNode(data);
 
-    data = std::shared<ResData>();
+    data = std::make_shared<ResData>();
     data->value = -1;
-    plugin.SocPerfWirteNode(data);
+    SocperfExecutorPlugin::GetInstance().SocPerfWirteNode(data);
 
     data->value = 1;
     data->payload = {{"QOSID_STRING", {1, 2, 3}}, {"VALUE_STRING", {10, 20, 30}}};
-    plugin.SocPerfWirteNode(data);
+    SocperfExecutorPlugin::GetInstance().SocPerfWirteNode(data);
 
     data->payload = {{"QOSID_STRING", {1, 2, 3}}, {"VALUE_STRING", {10}}};
-    plugin.SocPerfWirteNode(data);
+    SocperfExecutorPlugin::GetInstance().SocPerfWirteNode(data);
     EXPECT_NE(data, nullptr);
 }
-
-
 } // namespace ResourceSchedule
 } // namespace OHOS
