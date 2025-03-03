@@ -759,6 +759,10 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
     if (value == ResType::AudioStatus::RENDERER_RELEASED) {
         procRecord->audioPlayingState_.erase(sessionId);
     } else {
+        auto it = procRecord->audioPlayingState_.find(sessionId);
+        if (it != procRecord->audioPlayingState_.end() && it->second == static_cast<int32_t>(value)) {
+            return;
+        }
         procRecord->audioPlayingState_[sessionId] = static_cast<int32_t>(value);
     }
 
