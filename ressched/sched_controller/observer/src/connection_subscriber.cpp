@@ -36,7 +36,7 @@ void ConnectionSubscriber::MarshallingConnectionData(
 
 void ConnectionSubscriber::OnExtensionConnected(const AbilityRuntime::ConnectionData& data)
 {
-    RESSCHED_LOGI("Ressched ConnectionSubscriber OnExtensionConnected");
+    RESSCHED_LOGD("Ressched ConnectionSubscriber OnExtensionConnected");
     nlohmann::json payload;
     MarshallingConnectionData(data, payload);
     ResSchedMgr::GetInstance().ReportData(
@@ -45,7 +45,7 @@ void ConnectionSubscriber::OnExtensionConnected(const AbilityRuntime::Connection
 
 void ConnectionSubscriber::OnExtensionDisconnected(const AbilityRuntime::ConnectionData& data)
 {
-    RESSCHED_LOGI("Ressched ConnectionSubscriber OnExtensionDisconnected");
+    RESSCHED_LOGD("Ressched ConnectionSubscriber OnExtensionDisconnected");
     nlohmann::json payload;
     MarshallingConnectionData(data, payload);
     ResSchedMgr::GetInstance().ReportData(
@@ -66,7 +66,7 @@ void ConnectionSubscriber::MarshallingDlpStateData(const AbilityRuntime::DlpStat
 
 void ConnectionSubscriber::OnDlpAbilityOpened(const AbilityRuntime::DlpStateData& data)
 {
-    RESSCHED_LOGI("Ressched ConnectionSubscriber OnDlpAbilityOpened");
+    RESSCHED_LOGD("Ressched ConnectionSubscriber OnDlpAbilityOpened");
     nlohmann::json payload;
     MarshallingDlpStateData(data, payload);
     ResSchedMgr::GetInstance().ReportData(
@@ -75,7 +75,7 @@ void ConnectionSubscriber::OnDlpAbilityOpened(const AbilityRuntime::DlpStateData
 
 void ConnectionSubscriber::OnDlpAbilityClosed(const AbilityRuntime::DlpStateData& data)
 {
-    RESSCHED_LOGI("Ressched ConnectionSubscriber OnDlpAbilityClosed");
+    RESSCHED_LOGD("Ressched ConnectionSubscriber OnDlpAbilityClosed");
     nlohmann::json payload;
     MarshallingDlpStateData(data, payload);
     ResSchedMgr::GetInstance().ReportData(
