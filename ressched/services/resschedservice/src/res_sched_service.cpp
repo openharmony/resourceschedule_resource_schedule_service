@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -140,6 +140,7 @@ namespace {
         ResType::RES_TYPE_AUDIO_RING_MODE_CHANGE,
         ResType::RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
         ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::RES_TYPE_PRELOAD_APPLICATION,
         ResType::RES_TYPE_DEVICE_STILL_STATE_CHANGE,
         ResType::RES_TYPE_RESIZE_WINDOW,
         ResType::RES_TYPE_MOVE_WINDOW,

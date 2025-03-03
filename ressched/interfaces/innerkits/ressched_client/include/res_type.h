@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -315,6 +315,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
     // get nweb preload process set
     SYNC_RES_TYPE_GET_NWEB_PRELOAD_SET,
+    // report preload application
+    RES_TYPE_PRELOAD_APPLICATION,
     // report to request mutex status
     SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // report to check mutex before start
