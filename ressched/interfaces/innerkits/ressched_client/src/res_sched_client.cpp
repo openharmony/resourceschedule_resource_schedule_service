@@ -62,7 +62,7 @@ nlohmann::json StringToJsonObj(const std::string& str)
         return jsonObj;
     }
     if (!jsonTmp.is_object()) {
-        RESSCHED_LOGE("%{public}s: str=%{public}s is not jsonObj.", __func__, str.c_str());
+        RESSCHED_LOGD("%{public}s: str=%{public}s is not jsonObj.", __func__, str.c_str());
         return jsonObj;
     }
     return jsonTmp;

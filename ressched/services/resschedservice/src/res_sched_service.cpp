@@ -205,7 +205,7 @@ namespace {
         AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
         auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
         if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
-            RESSCHED_LOGE("not native sa");
+            RESSCHED_LOGD("not native sa");
             return false;
         }
         int32_t hasPermission = AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, NEEDED_PERMISSION);
@@ -229,7 +229,7 @@ namespace {
         }
         if (FG_THIRDPART_RES.find(type) != FG_THIRDPART_RES.end() &&
             !ResSchedMgr::GetInstance().IsForegroundApp(IPCSkeleton::GetCallingPid())) {
-            RESSCHED_LOGE("not foreground app");
+            RESSCHED_LOGD("not foreground app");
             return false;
         }
         AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
@@ -274,7 +274,7 @@ nlohmann::json ResSchedService::StringToJsonObj(const std::string& str)
         return jsonObj;
     }
     if (!jsonTmp.is_object()) {
-        RESSCHED_LOGE("%{public}s: str=%{public}s is not jsonObj.", __func__, str.c_str());
+        RESSCHED_LOGD("%{public}s: str=%{public}s is not jsonObj.", __func__, str.c_str());
         return jsonObj;
     }
     return jsonTmp;
@@ -284,7 +284,7 @@ ErrCode ResSchedService::ReportData(uint32_t resType, int64_t value, const std::
 {
     int32_t checkResult = RemoteRequestCheck();
     if (checkResult != ERR_OK) {
-        RESSCHED_LOGE("check remote request fail.");
+        RESSCHED_LOGD("check remote request fail.");
         return checkResult;
     }
 
@@ -311,7 +311,7 @@ ErrCode ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t v
 {
     int32_t checkResult = RemoteRequestCheck();
     if (checkResult != ERR_OK) {
-        RESSCHED_LOGE("check remote request fail.");
+        RESSCHED_LOGD("check remote request fail.");
         resultValue = checkResult;
         return ERR_OK;
     }
@@ -605,7 +605,7 @@ int32_t ResSchedService::CheckReportDataParcel(const uint32_t& type, const int64
         return ERR_RES_SCHED_PARCEL_ERROR;
     }
     if (!IsSBDResType(type) && !IsThirdPartType(type) && !IsHasPermission(type)) {
-        RESSCHED_LOGE("type:%{public}u, no permission", type);
+        RESSCHED_LOGD("type:%{public}u, no permission", type);
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
 

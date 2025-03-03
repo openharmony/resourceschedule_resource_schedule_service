@@ -42,7 +42,7 @@ void AudioObserver::OnRendererStateChange(
     const std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos)
 {
     for (const auto &audioRendererChangeInfo : audioRendererChangeInfos) {
-        RESSCHED_LOGI("enter AudioRenderStateObserver::OnRendererStateChange, state: %{public}d",
+        RESSCHED_LOGD("enter AudioRenderStateObserver::OnRendererStateChange, state: %{public}d",
             audioRendererChangeInfo->rendererState);
         nlohmann::json payload;
         MarshallingAudioRendererChangeInfo(audioRendererChangeInfo, payload);
