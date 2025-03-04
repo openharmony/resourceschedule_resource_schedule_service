@@ -43,7 +43,6 @@ public:
     void TearDown();
 };
 
-
 void SocPerfExecutorWirteNodeTest::SetUpTestCase(void) {}
 
 void SocPerfExecutorWirteNodeTest::TearDownTestCase() {}
@@ -51,8 +50,6 @@ void SocPerfExecutorWirteNodeTest::TearDownTestCase() {}
 void SocPerfExecutorWirteNodeTest::SetUp() {}
 
 void SocPerfExecutorWirteNodeTest::TearDown() {}
-
-
 
 /**
 * @tc.name: SocPerfExecutorWirteNodeTest_API_001

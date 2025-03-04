@@ -38,7 +38,6 @@ public:
     void TearDown();
 };
 
-
 void SocPerfExecutorConfigTest::SetUpTestCase(void) {}
 
 void SocPerfExecutorConfigTest::TearDownTestCase() {}
