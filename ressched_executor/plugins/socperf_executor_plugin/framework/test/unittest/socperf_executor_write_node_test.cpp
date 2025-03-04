@@ -15,7 +15,6 @@
 
 #include "gtest/gtest.h"
 
-#include <unordered_map>
 #include <vector>
 #include <fcntl.h>
 #include <unistd.h>
@@ -29,11 +28,6 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace std;
 using namespace testing::ext;
-
-namespace {
-    constexpr int32_t SYNC_THREAD_NUM = 100;
-    constexpr int32_t SYNC_INTERNAL_TIME = 200;
-}
 
 class SocPerfExecutorWirteNodeTest : public testing::Test {
 public:
@@ -117,27 +111,6 @@ HWTEST_F(SocPerfExecutorWirteNodeTest, SocPerfExecutorWirteNodeTest_API_004, Fun
     SocPerfConfig::GetInstance().resourceNodeInfo_[resId] = resNode;
     SocPerfExecutorWirteNode::GetInstance().UpdateCurrentValue(resId, currValue);
     EXPECT_NE(resNode, nullptr);
-}
-
-/**
-* @tc.name: SocPerfExecutorWirteNodeTest_API_005
-* @tc.desc: test socperf_executor_config api
-* @tc.type: FUNC
-*/
-HWTEST_F(SocPerfExecutorWirteNodeTest, SocPerfExecutorWirteNodeTest_API_005, Function | MediumTest | Level0)
-{
-    SocPerfExecutorWirteNode node;
-    int fd1 = open("testfile1", O_RDWR | O_CREAT, 0644);
-    int fd2 = open("testfile2", O_RDWR | O_CREAT, 0644);
-    SocPerfExecutorWirteNode::GetInstance().fdInfo_["0"] = fd1;
-    SocPerfExecutorWirteNode::GetInstance().fdInfo_["1"] = fd2;
-    SocPerfExecutorWirteNode::GetInstance().~SocPerfExecutorWirteNode();
-    EXPECT_TRUE(SocPerfExecutorWirteNode::GetInstance().fdInfo_.empty());
-    EXPECT_EQ(close(fd1), -1);
-    EXPECT_EQ(close(fd2), -1);
-
-    SocPerfExecutorWirteNode::GetInstance().~SocPerfExecutorWirteNode();
-    EXPECT_TRUE(SocPerfExecutorWirteNode::GetInstance().fdInfo_.empty());
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

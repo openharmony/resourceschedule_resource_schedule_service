@@ -15,9 +15,6 @@
 
 #include "gtest/gtest.h"
 
-#include <unordered_map>
-#include <vector>
-
 #define private public
 #include "socperf_executor_config.h"
 #undef private
@@ -26,9 +23,6 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace std;
 using namespace testing::ext;
-
-namespace {
-}
 
 class SocPerfExecutorConfigTest : public testing::Test {
 public:
@@ -101,7 +95,7 @@ HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_004, Function 
     EXPECT_EQ(config.GetRealConfigPath(invalidConfigFile), "");
 
     std::string validConfigFile = SOCPERF_RESOURCE_CONFIG_XML;
-    EXPECT_NE(config.GetRealConfigPath(invalidConfigFile), "");
+    EXPECT_NE(config.GetRealConfigPath(validConfigFile), "");
 }
 
 /**

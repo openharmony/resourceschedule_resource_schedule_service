@@ -14,10 +14,6 @@
 import("//build/test.gni")
 import("../../../../../ressched_executor.gni")
 
-config("module_private_config") {
-  visibility = [ ":*" ]
-}
-
 module_output_path = "resource_schedule_service/ressched_executor"
 
 ohos_unittest("socperf_executor_plugin_test") {
@@ -31,22 +27,13 @@ ohos_unittest("socperf_executor_plugin_test") {
     "socperf_executor_wirte_node_test.cpp",
   ]
 
-  configs = [ ":module_private_config" ]
   deps = [
     "${resschedexe_services}:resschedexesvc_static",
     "${resschedexe_socperf_executor_plugin}:socperf_executor_plugin",
   ]
 
   defines = []
-  external_deps = [
-    "cJSON:cjson",
-    "c_utils:utils",
-    "config_policy:configpolicy_util",
-    "ffrt:libffrt",
-    "hilog:libhilog",
-    "ipc:ipc_single",
-    "libxml2:libxml2",
-  ]
+  external_deps = []
 
   cflags = [
     "-Dprivate=public",

@@ -15,9 +15,6 @@
 
 #include "gtest/gtest.h"
 
-#include <unordered_map>
-#include <vector>
-
 #define private public
 #include "socperf_executor_plugin.h"
 #include "socperf_executor_wirte_node.h"
@@ -27,9 +24,6 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace std;
 using namespace testing::ext;
-
-namespace {
-}
 
 class SocPerfExecutorPluginTest : public testing::Test {
 public:
