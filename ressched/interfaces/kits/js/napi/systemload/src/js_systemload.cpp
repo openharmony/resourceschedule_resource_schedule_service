@@ -90,12 +90,14 @@ void Systemload::OnSystemloadLevel(napi_env env, napi_value callbackObj, int32_t
     NAPI_CALL_RETURN_VOID(env,
         napi_create_reference(env, iter->first->GetNapiValue(), 1, &cbInfo->callback));
 
-    NAPI_CALL_RETURN_VOID(env, napi_create_async_work(env, nullptr, resourceName,
-        [] (napi_env env, void* data) {},
-        CompleteCb,
-        static_cast<void *>(cbInfo.get()),
-        &cbInfo->asyncWork));
-    NAPI_CALL_RETURN_VOID(env, napi_queue_async_work(env, cbInfo->asyncWork));
+    SystemloadLevelCbInfo* ctx = cbInfo.get();
+    auto task = [env, ctx]() {
+        Systemload::CompleteCb(env, ctx);
+    };
+    if (napi_status::napi_ok != napi_send_event(env, task, napi_eprio_high)) {
+        RESSCHED_LOGE("failed to napi_send_event");
+        return;
+    }
     cbInfo.release();
     napi_value result = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_get_null(env, &result));
@@ -228,10 +230,9 @@ void Systemload::Complete(napi_env env, napi_status status, void* data)
     RESSCHED_LOGI("GetSystemloadLevel,  main event thread complete end.");
 }
 
-void Systemload::CompleteCb(napi_env env, napi_status status, void* data)
+void Systemload::CompleteCb(napi_env env, SystemloadLevelCbInfo* info)
 {
     RESSCHED_LOGI("CompleteCb, main event thread complete callback.");
-    auto* info = static_cast<SystemloadLevelCbInfo*>(data);
     if (info == nullptr) {
         RESSCHED_LOGW("Complete cb info is nullptr.");
         return;
@@ -246,9 +247,6 @@ void Systemload::CompleteCb(napi_env env, napi_status status, void* data)
     napi_create_uint32(env, static_cast<uint32_t>(cbInfo->result), &result);
     // call js callback
     NAPI_CALL_RETURN_VOID(env, napi_call_function(env, undefined, callback, 1, &result, &callResult));
-    // delete resources
-    NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, cbInfo->asyncWork));
-    cbInfo->asyncWork = nullptr;
     if (cbInfo->callback != nullptr) {
         NAPI_CALL_RETURN_VOID(env, napi_delete_reference(env, cbInfo->callback));
         cbInfo->callback = nullptr;

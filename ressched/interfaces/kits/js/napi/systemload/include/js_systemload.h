@@ -74,7 +74,7 @@ private:
 
     static void Execute(napi_env env, void *data);
     static void Complete(napi_env env, napi_status status, void *data);
-    static void CompleteCb(napi_env env, napi_status status, void* data);
+    static void CompleteCb(napi_env env, SystemloadLevelCbInfo* info);
 
     std::mutex jsCallbackMapLock_;
     std::map<std::string, std::list<CallBackPair> > jsCallBackMap_;
