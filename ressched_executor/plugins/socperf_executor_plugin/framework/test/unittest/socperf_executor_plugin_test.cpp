@@ -20,6 +20,7 @@
 
 #define private public
 #include "socperf_executor_plugin.h"
+#include "socperf_executor_wirte_node.h"
 #undef private
 
 namespace OHOS {
@@ -30,7 +31,7 @@ using namespace testing::ext;
 namespace {
 }
 
-class SocperfExecutorPluginTest : public testing::Test {
+class SocPerfExecutorPluginTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
     static void TearDownTestCase(void);
@@ -39,113 +40,113 @@ public:
 };
 
 
-void SocperfExecutorPluginTest::SetUpTestCase(void) {}
+void SocPerfExecutorPluginTest::SetUpTestCase(void) {}
 
-void SocperfExecutorPluginTest::TearDownTestCase() {}
+void SocPerfExecutorPluginTest::TearDownTestCase() {}
 
-void SocperfExecutorPluginTest::SetUp() {}
+void SocPerfExecutorPluginTest::SetUp() {}
 
-void SocperfExecutorPluginTest::TearDown() {}
+void SocPerfExecutorPluginTest::TearDown() {}
 
 /**
-* @tc.name: SocperfExecutorPluginTest_API_001
+* @tc.name: SocPerfExecutorPluginTest_API_001
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_001, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorPluginTest, SocPerfExecutorPluginTest_API_001, Function | MediumTest | Level0)
 {
-    SocperfExecutorPlugin::GetInstance().Init();
-    EXPECT_EQ(SocperfExecutorPlugin::GetInstance().resType_.size(), 1);
-    EXPECT_EQ(SocperfExecutorPlugin::GetInstance().functionMap_.size(), 1);
+    SocPerfExecutorPlugin::GetInstance().Init();
+    EXPECT_EQ(SocPerfExecutorPlugin::GetInstance().resType_.size(), 1);
+    EXPECT_EQ(SocPerfExecutorPlugin::GetInstance().functionMap_.size(), 1);
 }
 
 /**
-* @tc.name: SocperfExecutorPluginTest_API_002
+* @tc.name: SocPerfExecutorPluginTest_API_002
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_002, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorPluginTest, SocPerfExecutorPluginTest_API_002, Function | MediumTest | Level0)
 {
-    SocperfExecutorPlugin::GetInstance().resType_.insert(1);
-    SocperfExecutorPlugin::GetInstance().functionMap_[1] = [](const std::shared_ptr<ResData>& data){}
-    SocperfExecutorPlugin::GetInstance().Disable();
-    EXPECT_TRUE(SocperfExecutorPlugin::GetInstance().resType_.empty());
-    EXPECT_TRUE(SocperfExecutorPlugin::GetInstance().functionMap_.empty());
+    SocPerfExecutorPlugin::GetInstance().resType_.insert(1);
+    SocPerfExecutorPlugin::GetInstance().functionMap_[1] = [](const std::shared_ptr<ResData>& data){};
+    SocPerfExecutorPlugin::GetInstance().Disable();
+    EXPECT_TRUE(SocPerfExecutorPlugin::GetInstance().resType_.empty());
+    EXPECT_TRUE(SocPerfExecutorPlugin::GetInstance().functionMap_.empty());
 }
 
 /**
-* @tc.name: SocperfExecutorPluginTest_API_003
+* @tc.name: SocPerfExecutorPluginTest_API_003
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_003, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorPluginTest, SocPerfExecutorPluginTest_API_003, Function | MediumTest | Level0)
 {
     std::shared_ptr<ResData> data = nullptr;
-    SocperfExecutorPlugin::GetInstance().DispatchResource(data);
+    SocPerfExecutorPlugin::GetInstance().DispatchResource(data);
 
     data = std::make_shared<ResData>();
     data->value = -1;
-    SocperfExecutorPlugin::GetInstance().DispatchResource(data);
+    SocPerfExecutorPlugin::GetInstance().DispatchResource(data);
 
     data->value = 1;
     data->resType = 1;
     auto func = [](const std::shared_ptr<ResData>& data){};
-    SocperfExecutorPlugin::GetInstance().functionMap_[data->resType] = func;
-    SocperfExecutorPlugin::GetInstance().DispatchResource(data);
+    SocPerfExecutorPlugin::GetInstance().functionMap_[data->resType] = func;
+    SocPerfExecutorPlugin::GetInstance().DispatchResource(data);
     EXPECT_NE(data, nullptr);
 }
 
 /**
-* @tc.name: SocperfExecutorPluginTest_API_004
+* @tc.name: SocPerfExecutorPluginTest_API_004
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_004, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorPluginTest, SocPerfExecutorPluginTest_API_004, Function | MediumTest | Level0)
 {
     std::shared_ptr<ResData> data = nullptr;
-    SocperfExecutorPlugin::GetInstance().HandleSocperfWirteNode(data);
+    SocPerfExecutorPlugin::GetInstance().HandleSocperfWirteNode(data);
 
     data = std::make_shared<ResData>();
     data->value = 0;
-    SocperfExecutorPlugin::GetInstance().HandleSocperfWirteNode(data);
+    SocPerfExecutorPlugin::GetInstance().HandleSocperfWirteNode(data);
 
     data->value = SOCPERF_EVENT_WIRTE_NODE;
-    SocperfExecutorPlugin::GetInstance().HandleSocperfWirteNode(data);
+    SocPerfExecutorPlugin::GetInstance().HandleSocperfWirteNode(data);
     EXPECT_NE(data, nullptr);
 }
 
 /**
-* @tc.name: SocperfExecutorPluginTest_API_005
+* @tc.name: SocPerfExecutorPluginTest_API_005
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_005, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorPluginTest, SocPerfExecutorPluginTest_API_005, Function | MediumTest | Level0)
 {
-    SocperfExecutorPlugin::GetInstance().SocPerfInitNode();
+    SocPerfExecutorPlugin::GetInstance().SocPerfInitNode();
     std::shared_ptr<ResData> data = std::make_shared<ResData>();
     EXPECT_NE(data, nullptr);
 }
 
 /**
-* @tc.name: SocperfExecutorPluginTest_API_006
+* @tc.name: SocPerfExecutorPluginTest_API_006
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorPluginTest, SocperfExecutorPluginTest_API_006, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorPluginTest, SocPerfExecutorPluginTest_API_006, Function | MediumTest | Level0)
 {
     std::shared_ptr<ResData> data = nullptr;
-    SocperfExecutorPlugin::GetInstance().SocPerfWirteNode(data);
+    SocPerfExecutorPlugin::GetInstance().SocPerfWirteNode(data);
 
     data = std::make_shared<ResData>();
     data->value = -1;
-    SocperfExecutorPlugin::GetInstance().SocPerfWirteNode(data);
+    SocPerfExecutorPlugin::GetInstance().SocPerfWirteNode(data);
 
     data->value = 1;
     data->payload = {{"QOSID_STRING", {1, 2, 3}}, {"VALUE_STRING", {10, 20, 30}}};
-    SocperfExecutorPlugin::GetInstance().SocPerfWirteNode(data);
+    SocPerfExecutorPlugin::GetInstance().SocPerfWirteNode(data);
 
     data->payload = {{"QOSID_STRING", {1, 2, 3}}, {"VALUE_STRING", {10}}};
-    SocperfExecutorPlugin::GetInstance().SocPerfWirteNode(data);
+    SocPerfExecutorPlugin::GetInstance().SocPerfWirteNode(data);
     EXPECT_NE(data, nullptr);
 }
 } // namespace ResourceSchedule

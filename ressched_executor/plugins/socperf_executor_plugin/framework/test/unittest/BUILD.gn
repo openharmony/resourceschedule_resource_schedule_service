@@ -15,7 +15,7 @@ import("//build/test.gni")
 import("../../../../../ressched_executor.gni")
 
 config("module_private_config") {
-    visibility = [ ":*" ]
+  visibility = [ ":*" ]
 }
 
 module_output_path = "resource_schedule_service/ressched_executor"
@@ -41,11 +41,11 @@ ohos_unittest("socperf_executor_plugin_test") {
   external_deps = [
     "cJSON:cjson",
     "c_utils:utils",
-    "config_policy:configpolicy_util"
+    "config_policy:configpolicy_util",
     "ffrt:libffrt",
     "hilog:libhilog",
     "ipc:ipc_single",
-    "libxml12:libxml12",
+    "libxml2:libxml2",
   ]
 
   cflags = [

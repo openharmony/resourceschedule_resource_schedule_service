@@ -17,11 +17,12 @@
 
 #include <unordered_map>
 #include <vector>
+#include <fcntl.h>
+#include <unistd.h>
 
-#include "nativetoken_kit.h"
-#include "token_setproc.h"
 #define private public
-#include "socperf_executor_write_node.h"
+#include "socperf_executor_wirte_node.h"
+#include "socperf_executor_config.h"
 #undef private
 
 namespace OHOS {
@@ -34,7 +35,7 @@ namespace {
     constexpr int32_t SYNC_INTERNAL_TIME = 200;
 }
 
-class SocperfExecutorWirteNodeTest : public testing::Test {
+class SocPerfExecutorWirteNodeTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
     static void TearDownTestCase(void);
@@ -43,49 +44,49 @@ public:
 };
 
 
-void SocperfExecutorWirteNodeTest::SetUpTestCase(void) {}
+void SocPerfExecutorWirteNodeTest::SetUpTestCase(void) {}
 
-void SocperfExecutorWirteNodeTest::TearDownTestCase() {}
+void SocPerfExecutorWirteNodeTest::TearDownTestCase() {}
 
-void SocperfExecutorWirteNodeTest::SetUp() {}
+void SocPerfExecutorWirteNodeTest::SetUp() {}
 
-void SocperfExecutorWirteNodeTest::TearDown() {}
+void SocPerfExecutorWirteNodeTest::TearDown() {}
 
 
 
 /**
-* @tc.name: SocperfExecutorWirteNodeTest_API_001
+* @tc.name: SocPerfExecutorWirteNodeTest_API_001
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorWirteNodeTest, SocperfExecutorWirteNodeTest_API_001, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorWirteNodeTest, SocPerfExecutorWirteNodeTest_API_001, Function | MediumTest | Level0)
 {
-    SocPerfExecutorWirteNode.GetInstance().InitThreadWraps();
-    EXPECT_TRUE(!SocPerfConfig.GetInstance().resourceNodeInfo_.empty());
+    SocPerfExecutorWirteNode::GetInstance().InitThreadWraps();
+    EXPECT_TRUE(!SocPerfConfig::GetInstance().resourceNodeInfo_.empty());
 }
 
 /**
-* @tc.name: SocperfExecutorWirteNodeTest_API_002
+* @tc.name: SocPerfExecutorWirteNodeTest_API_002
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorWirteNodeTest, SocperfExecutorWirteNodeTest_API_002, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorWirteNodeTest, SocPerfExecutorWirteNodeTest_API_002, Function | MediumTest | Level0)
 {
     SocPerfConfig::GetInstance().resourceNodeInfo_[1] = std::make_shared<ResNode>(1, "node1", 0, 1, 0);
     SocPerfConfig::GetInstance().resourceNodeInfo_[2] = std::make_shared<ResNode>(2, "node2", 0, 1, 0);
     SocPerfConfig::GetInstance().resourceNodeInfo_[3] = std::make_shared<ResNode>(3, "node3", 0, 1, 0);
     std::vector<int32_t> resIdVec = {1, 2, 3};
-    std::vector<int64_t> valueVec = {100, 200, 300};
-    SocPerfExecutorWirteNode.GetInstance().WriteNodeThreadWraps(resIdVec, valueVec);
+    std::vector<int64_t> valueVec = {-1, 200, 300};
+    SocPerfExecutorWirteNode::GetInstance().WriteNodeThreadWraps(resIdVec, valueVec);
     EXPECT_TRUE(!valueVec.empty());
 }
 
 /**
-* @tc.name: SocperfExecutorWirteNodeTest_API_003
+* @tc.name: SocPerfExecutorWirteNodeTest_API_003
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorWirteNodeTest, SocperfExecutorWirteNodeTest_API_003, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorWirteNodeTest, SocPerfExecutorWirteNodeTest_API_003, Function | MediumTest | Level0)
 {
     int32_t resId = 1;
     int64_t currValue = NODE_DEFAULT_VALUE;
@@ -96,11 +97,11 @@ HWTEST_F(SocperfExecutorWirteNodeTest, SocperfExecutorWirteNodeTest_API_003, Fun
 }
 
 /**
-* @tc.name: SocperfExecutorWirteNodeTest_API_004
+* @tc.name: SocPerfExecutorWirteNodeTest_API_004
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorWirteNodeTest, SocperfExecutorWirteNodeTest_API_004, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorWirteNodeTest, SocPerfExecutorWirteNodeTest_API_004, Function | MediumTest | Level0)
 {
     int32_t resId = 1;
     int64_t currValue = 10;
@@ -109,30 +110,30 @@ HWTEST_F(SocperfExecutorWirteNodeTest, SocperfExecutorWirteNodeTest_API_004, Fun
     govResNode->levelToStr[currValue] = {"level1", "level2"};
     govResNode->paths = {"path1", "path2"};
     govResNode->def = 1;
-    SocPerfConfig.GetInstance().resourceNodeInfo_[resId] = govResNode;
+    SocPerfConfig::GetInstance().resourceNodeInfo_[resId] = govResNode;
     SocPerfExecutorWirteNode::GetInstance().UpdateCurrentValue(resId, currValue);
 
     resId = 2;
     currValue = 20;
     std::shared_ptr<ResNode> resNode = std::make_shared<ResNode>(2, "node2", 0, 1, 0);
     resNode->path = "path";
-    SocPerfConfig.GetInstance().resourceNodeInfo_[resId] = resNode;
+    SocPerfConfig::GetInstance().resourceNodeInfo_[resId] = resNode;
     SocPerfExecutorWirteNode::GetInstance().UpdateCurrentValue(resId, currValue);
     EXPECT_NE(resNode, nullptr);
 }
 
 /**
-* @tc.name: SocperfExecutorWirteNodeTest_API_005
+* @tc.name: SocPerfExecutorWirteNodeTest_API_005
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorWirteNodeTest, SocperfExecutorWirteNodeTest_API_005, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorWirteNodeTest, SocPerfExecutorWirteNodeTest_API_005, Function | MediumTest | Level0)
 {
     SocPerfExecutorWirteNode node;
     int fd1 = open("testfile1", O_RDWR | O_CREAT, 0644);
     int fd2 = open("testfile2", O_RDWR | O_CREAT, 0644);
-    SocPerfExecutorWirteNode::GetInstance().fdInfo_[0] = fd1;
-    SocPerfExecutorWirteNode::GetInstance().fdInfo_[1] = fd2;
+    SocPerfExecutorWirteNode::GetInstance().fdInfo_["0"] = fd1;
+    SocPerfExecutorWirteNode::GetInstance().fdInfo_["1"] = fd2;
     SocPerfExecutorWirteNode::GetInstance().~SocPerfExecutorWirteNode();
     EXPECT_TRUE(SocPerfExecutorWirteNode::GetInstance().fdInfo_.empty());
     EXPECT_EQ(close(fd1), -1);

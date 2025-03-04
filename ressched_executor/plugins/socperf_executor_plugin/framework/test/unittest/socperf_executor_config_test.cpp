@@ -30,7 +30,7 @@ using namespace testing::ext;
 namespace {
 }
 
-class SocperfExecutorConfigTest : public testing::Test {
+class SocPerfExecutorConfigTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
     static void TearDownTestCase(void);
@@ -39,31 +39,31 @@ public:
 };
 
 
-void SocperfExecutorConfigTest::SetUpTestCase(void) {}
+void SocPerfExecutorConfigTest::SetUpTestCase(void) {}
 
-void SocperfExecutorConfigTest::TearDownTestCase() {}
+void SocPerfExecutorConfigTest::TearDownTestCase() {}
 
-void SocperfExecutorConfigTest::SetUp() {}
+void SocPerfExecutorConfigTest::SetUp() {}
 
-void SocperfExecutorConfigTest::TearDown() {}
+void SocPerfExecutorConfigTest::TearDown() {}
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_001
+* @tc.name: SocPerfExecutorConfigTest_API_001
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_001, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_001, Function | MediumTest | Level0)
 {
-    bool ret = config.Init();
+    bool ret = SocPerfConfig::GetInstance().Init();
     EXPECT_TRUE(ret);
 }
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_002
+* @tc.name: SocPerfExecutorConfigTest_API_002
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_002, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_002, Function | MediumTest | Level0)
 {
     SocPerfConfig::GetInstance().resourceNodeInfo_[1] = std::make_shared<ResourceNode>(1, "node1", 0, 1, 0);
     bool ret = SocPerfConfig::GetInstance().IsGovResId(1);
@@ -75,11 +75,11 @@ HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_002, Function 
 }
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_003
+* @tc.name: SocPerfExecutorConfigTest_API_003
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_003, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_003, Function | MediumTest | Level0)
 {
     SocPerfConfig& config = SocPerfConfig::GetInstance();
     int32_t resId = 100;
@@ -91,11 +91,11 @@ HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_003, Function 
 }
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_004
+* @tc.name: SocPerfExecutorConfigTest_API_004
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_004, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_004, Function | MediumTest | Level0)
 {
     std::string invalidConfigFile = "invalid_config_file";
     SocPerfConfig& config = SocPerfConfig::GetInstance();
@@ -106,11 +106,11 @@ HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_004, Function 
 }
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_005
+* @tc.name: SocPerfExecutorConfigTest_API_005
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_005, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_005, Function | MediumTest | Level0)
 {
     std::string configFile = SOCPERF_RESOURCE_CONFIG_XML;
     auto ret = SocPerfConfig::GetInstance().GetAllRealConfigPath(configFile);
@@ -118,11 +118,11 @@ HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_005, Function 
 }
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_006
+* @tc.name: SocPerfExecutorConfigTest_API_006
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_006, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_006, Function | MediumTest | Level0)
 {
     int32_t resId = 100;
     int32_t expected = RES_ID_NUMS_PER_TYPE;
@@ -137,13 +137,13 @@ HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_006, Function 
 }
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_007
+* @tc.name: SocPerfExecutorConfigTest_API_007
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_007, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_007, Function | MediumTest | Level0)
 {
-    const::string configFile = "/sys_prod/etc/soc_perf/socperf_resource_config.xml";
+    std::string configFile = "/sys_prod/etc/soc_perf/socperf_resource_config.xml";
     bool ret = SocPerfConfig::GetInstance().CheckResourceTag(
         "invalid", "name", "pair", "mode", "persistMode", configFile);
     EXPECT_FALSE(ret);
@@ -165,28 +165,28 @@ HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_007, Function 
     EXPECT_FALSE(ret);
 
     ret = SocPerfConfig::GetInstance().CheckResourceTag(
-        "1001", "name", "pair",  "123", "0", configFile);
+        "1001", "name", "1002",  "123", "0", configFile);
     EXPECT_TRUE(ret);
 }
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_008
+* @tc.name: SocPerfExecutorConfigTest_API_008
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_008, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_008, Function | MediumTest | Level0)
 {
-    const::string configFile = "/sys_prod/etc/soc_perf/socperf_resource_config.xml";
+    std::string configFile = "/sys_prod/etc/soc_perf/socperf_resource_config.xml";
     EXPECT_FALSE(SocPerfConfig::GetInstance().CheckResourcePersistMode("3", configFile));
     EXPECT_TRUE(SocPerfConfig::GetInstance().CheckResourcePersistMode(nullptr, configFile));
 }
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_009
+* @tc.name: SocPerfExecutorConfigTest_API_009
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_009, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_009, Function | MediumTest | Level0)
 {
     const char* def1 = nullptr;
     const char* def2 = "123";
@@ -204,11 +204,11 @@ HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_009, Function 
 }
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_010
+* @tc.name: SocPerfExecutorConfigTest_API_010
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_010, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_010, Function | MediumTest | Level0)
 {
     auto resNode = std::make_shared<ResNode>(1, "test", 1, 1, 1);
     const char* node = "123 456 789";
@@ -216,18 +216,18 @@ HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_010, Function 
     EXPECT_EQ(resNode->available.size(), 3);
 
     const char* node1 = "123 abc 789";
-    EXPECT_TRUE(SocPerfConfig::GetInstance().LoadResourceAvailable(resNode, node1));
+    EXPECT_FALSE(SocPerfConfig::GetInstance().LoadResourceAvailable(resNode, node1));
 
     const char* node2 = "";
     EXPECT_TRUE(SocPerfConfig::GetInstance().LoadResourceAvailable(resNode, node2));
 }
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_011
+* @tc.name: SocPerfExecutorConfigTest_API_011
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_011, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_011, Function | MediumTest | Level0)
 {
     SocPerfConfig::GetInstance().resourceNodeInfo_[1] = std::make_shared<ResNode>(1, "node1", 0, 2, 0);
     SocPerfConfig::GetInstance().resourceNodeInfo_[2] = std::make_shared<ResNode>(2, "node2", 0, 1, 0);
@@ -237,16 +237,16 @@ HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_011, Function 
     EXPECT_FALSE(SocPerfConfig::GetInstance().CheckPairResIdValid());
 
     SocPerfConfig::GetInstance().resourceNodeInfo_[2] = std::make_shared<ResNode>(2, "node2", 0, 1, 0);
-    SocPerfConfig::GetInstance().resourceNodeInfo_[3] = std::make_shared<ResourceNode>(1, "gov_node", 0, true, false);
+    SocPerfConfig::GetInstance().resourceNodeInfo_[3] = std::make_shared<ResourceNode>(3, "gov_node", 0, true, false);
     EXPECT_TRUE(SocPerfConfig::GetInstance().CheckPairResIdValid());
 }
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_012
+* @tc.name: SocPerfExecutorConfigTest_API_012
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_012, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_012, Function | MediumTest | Level0)
 {
     EXPECT_TRUE(SocPerfConfig::GetInstance().CheckGovResourceTag("1001", "testName", "1", "testConfigFile"));
     EXPECT_FALSE(SocPerfConfig::GetInstance().CheckGovResourceTag("invalid", "testName", "1", "testConfigFile"));
@@ -255,11 +255,11 @@ HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_012, Function 
 }
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_013
+* @tc.name: SocPerfExecutorConfigTest_API_013
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_013, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_013, Function | MediumTest | Level0)
 {
     auto govResNode = std::make_shared<GovResNode>(1, "test", 1);
     govResNode->paths.push_back("path1");
@@ -279,11 +279,11 @@ HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_013, Function 
 }
 
 /**
-* @tc.name: SocperfExecutorConfigTest_API_014
+* @tc.name: SocPerfExecutorConfigTest_API_014
 * @tc.desc: test socperf_executor_config api
 * @tc.type: FUNC
 */
-HWTEST_F(SocperfExecutorConfigTest, SocperfExecutorConfigTest_API_014, Function | MediumTest | Level0)
+HWTEST_F(SocPerfExecutorConfigTest, SocPerfExecutorConfigTest_API_014, Function | MediumTest | Level0)
 {
     SocPerfConfig::GetInstance().resourceNodeInfo_.clear();
     SocPerfConfig::GetInstance().PrintCachedInfo();
