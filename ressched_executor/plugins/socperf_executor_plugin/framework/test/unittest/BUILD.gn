@@ -24,16 +24,15 @@ ohos_unittest("socperf_executor_plugin_test") {
   sources = [
     "socperf_executor_config_test.cpp",
     "socperf_executor_plugin_test.cpp",
-    "socperf_executor_wirte_node_test.cpp",
   ]
 
   deps = [
     "${resschedexe_services}:resschedexesvc_static",
-    "${resschedexe_socperf_executor_plugin}:socperf_executor_plugin",
+    "${resschedexe_socperf_executor_plugin}:socperf_executor_plugin_static",
   ]
 
   defines = []
-  external_deps = []
+  external_deps = [ "hilog:libhilog" ]
 
   cflags = [
     "-Dprivate=public",
