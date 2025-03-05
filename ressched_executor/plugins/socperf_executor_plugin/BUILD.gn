@@ -60,6 +60,44 @@ ohos_shared_library("socperf_executor_plugin") {
   cflags_cc = [ "-fstack-protector-strong" ]
 }
 
+ohos_static_library("socperf_executor_plugin_static") {
+  public_configs = [ ":socperf_executor_plugin_config" ]
+
+  defines = []
+
+  sources = [
+    "framework/src/socperf_executor_config.cpp",
+    "framework/src/socperf_executor_plugin.cpp",
+    "framework/src/socperf_executor_wirte_node.cpp",
+  ]
+
+  deps = [ "${resschedexe_services}:resschedexesvc" ]
+
+  external_deps = [
+    "config_policy:configpolicy_util",
+    "ffrt:libffrt",
+    "hilog:libhilog",
+    "libxml2:libxml2",
+  ]
+
+  public_external_deps = [ "json:nlohmann_json_static" ]
+
+  subsystem_name = "resourceschedule"
+  part_name = "resource_schedule_service"
+
+  branch_protector_ret = "pac_ret"
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+
+  asmflags = [ "-Wl,-z,relro,-z,now" ]
+
+  cflags_cc = [ "-fstack-protector-strong" ]
+}
+
 group("socperf_executor_plugin_all") {
   if (resource_schedule_service_socperf_executor_enable) {
     deps = [ ":socperf_executor_plugin" ]

@@ -20,7 +20,9 @@
 #include <gtest/gtest.h>
 #include <gtest/hwext/gtest-multithread.h>
 #include "res_type.h"
+#define private public
 #include "socperf_plugin.h"
+#undef private
 
 using namespace testing::ext;
 using namespace testing::mt;
@@ -702,6 +704,454 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_028, Function | MediumTes
 
     ret = SocPerfPlugin::GetInstance().HandleScreenStatusAnalysis(nullptr);
     EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_029
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_029, Function | MediumTest | Level0)
+{
+    bool ret = SocPerfPlugin::GetInstance().HandleSubValue("");
+    EXPECT_FALSE(ret);
+    ret = SocPerfPlugin::GetInstance().HandleSubValue("tencent,alipay");
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_031
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_031, Function | MediumTest | Level0)
+{
+    nlohmann::json payload1;
+    payload1["uid"] = "100111";
+    std::shared_ptr<ResData> normalData1 = std::make_shared<ResData>(111, 0, payload1);
+    int32_t appType = -1;
+    bool ret = SocPerfPlugin::GetInstance().UpdateUidToAppMsgMap(normalData1, appType, "qq");
+    EXPECT_FALSE(ret);
+
+    appType = 0;
+    ret = SocPerfPlugin::GetInstance().UpdateUidToAppMsgMap(normalData1, appType, "qq");
+    EXPECT_FALSE(ret);
+
+    appType = 3;
+    ret = SocPerfPlugin::GetInstance().UpdateUidToAppMsgMap(normalData1, appType, "qq");
+    EXPECT_TRUE(ret);
+
+    nlohmann::json payload2;
+    payload2["uid"] = "-1";
+    std::shared_ptr<ResData> normalData2 = std::make_shared<ResData>(111, 0, payload2);
+    ret = SocPerfPlugin::GetInstance().UpdateUidToAppMsgMap(normalData2, appType, "qq");
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_032
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_032, Function | MediumTest | Level0)
+{
+    nlohmann::json payload1;
+    payload1["uid"] = "-1";
+    std::shared_ptr<ResData> invalidData1 = std::make_shared<ResData>(111, 0, payload1);
+    bool ret = SocPerfPlugin::GetInstance().UpdateFocusAppType(invalidData1, true);
+    EXPECT_FALSE(ret);
+
+    nlohmann::json payload2;
+    payload2["uid"] = "10011";
+    std::shared_ptr<ResData> validData2 = std::make_shared<ResData>(111, 0, payload2);
+    ret = SocPerfPlugin::GetInstance().UpdateFocusAppType(validData2, false);
+    EXPECT_TRUE(ret);
+
+    payload2["pid"] = "2025";
+    AppKeyMessage appMsg(3, "qq");
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_[10011] = appMsg;
+    ret = SocPerfPlugin::GetInstance().UpdateFocusAppType(validData2, true);
+    EXPECT_TRUE(ret);
+
+    nlohmann::json payload3;
+    payload3["uid"] = "10012";
+    payload3["pid"] = "2025";
+    std::shared_ptr<ResData> validData3 = std::make_shared<ResData>(111, 0, payload3);
+    SocPerfPlugin::GetInstance().reqAppTypeFunc_ = nullptr;
+    ret = SocPerfPlugin::GetInstance().UpdateFocusAppType(validData3, true);
+    EXPECT_FALSE(ret);
+
+    SocPerfPlugin::GetInstance().reqAppTypeFunc_ =
+        [](const std::string& bundleName) { return -1; };
+    ret = SocPerfPlugin::GetInstance().UpdateFocusAppType(validData3, true);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_033
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_033, Function | MediumTest | Level0)
+{
+    SocPerfPlugin::GetInstance().focusAppUids_.clear();
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
+    bool ret = SocPerfPlugin::GetInstance().IsFocusAppsAllGame();
+    EXPECT_FALSE(ret);
+
+    AppKeyMessage appMsg1(2, "qq");
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_[10010] = appMsg1;
+    AppKeyMessage appMsg2(3, "alipy");
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_[10011] = appMsg2;
+    AppKeyMessage appMsg3(2, "game");
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_[10012] = appMsg3;
+    SocPerfPlugin::GetInstance().focusAppUids_ = {10010, 10011};
+    ret = SocPerfPlugin::GetInstance().IsFocusAppsAllGame();
+    EXPECT_FALSE(ret);
+
+    SocPerfPlugin::GetInstance().focusAppUids_.insert(10012);
+    SocPerfPlugin::GetInstance().focusAppUids_.erase(10011);
+    ret = SocPerfPlugin::GetInstance().IsFocusAppsAllGame();
+    EXPECT_TRUE(ret);
+    SocPerfPlugin::GetInstance().focusAppUids_.clear();
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_034
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_034, Function | MediumTest | Level0)
+{
+    SocPerfPlugin::GetInstance().focusAppUids_.clear();
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
+    SocPerfPlugin::GetInstance().focusAppUids_ = {10010};
+    bool ret = SocPerfPlugin::GetInstance().UpdatesFocusAppsType(2);
+    EXPECT_TRUE(ret);
+
+    ret = SocPerfPlugin::GetInstance().UpdatesFocusAppsType(3);
+    EXPECT_FALSE(ret);
+
+    SocPerfPlugin::GetInstance().focusAppUids_.insert(10011);
+    SocPerfPlugin::GetInstance().isFocusAppsGameType_ = false;
+    ret = SocPerfPlugin::GetInstance().UpdatesFocusAppsType(2);
+    EXPECT_FALSE(ret);
+
+    ret = SocPerfPlugin::GetInstance().UpdatesFocusAppsType(3);
+    EXPECT_FALSE(ret);
+
+    SocPerfPlugin::GetInstance().isFocusAppsGameType_ = true;
+    ret = SocPerfPlugin::GetInstance().UpdatesFocusAppsType(2);
+    EXPECT_TRUE(ret);
+
+    ret = SocPerfPlugin::GetInstance().UpdatesFocusAppsType(3);
+    EXPECT_FALSE(ret);
+
+    SocPerfPlugin::GetInstance().focusAppUids_.clear();
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_035
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_035, Function | MediumTest | Level0)
+{
+    SocPerfPlugin::GetInstance().socperfGameBoostSwitch_ = false;
+    bool ret = SocPerfPlugin::GetInstance().HandleGameBoost(nullptr);
+    EXPECT_FALSE(ret);
+
+    SocPerfPlugin::GetInstance().socperfGameBoostSwitch_ = true;
+    ret = SocPerfPlugin::GetInstance().HandleGameBoost(nullptr);
+    EXPECT_FALSE(ret);
+
+    std::shared_ptr<ResData> validData1 = std::make_shared<ResData>(ResType::RES_TYPE_APP_GAME_BOOST_EVENT,
+        ResType::GameBoostState::BOOST_START, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleGameBoost(validData1);
+    EXPECT_TRUE(ret);
+
+    std::shared_ptr<ResData> validData2 = std::make_shared<ResData>(ResType::RES_TYPE_APP_GAME_BOOST_EVENT,
+        ResType::GameBoostState::BOOST_END, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleGameBoost(validData2);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_036
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_036, Function | MediumTest | Level0)
+{
+    SocPerfPlugin::GetInstance().pidToAppTypeMap_.clear();
+    nlohmann::json payload1;
+    payload1["clientPid"] = "-1";
+    std::shared_ptr<ResData> invalidData1 = std::make_shared<ResData>(-1, -1, payload1);
+    bool ret = SocPerfPlugin::GetInstance().IsGameEvent(invalidData1);
+    EXPECT_FALSE(ret);
+
+    payload1["clientPid"] = "2025";
+    SocPerfPlugin::GetInstance().pidToAppTypeMap_[2025] = 3;
+    std::shared_ptr<ResData> invalidData2 = std::make_shared<ResData>(-1, -1, payload1);
+    ret = SocPerfPlugin::GetInstance().IsGameEvent(invalidData2);
+    EXPECT_FALSE(ret);
+
+    SocPerfPlugin::GetInstance().pidToAppTypeMap_[2025] = 2;
+    std::shared_ptr<ResData> validData = std::make_shared<ResData>(-1, -1, payload1);
+    ret = SocPerfPlugin::GetInstance().IsGameEvent(validData);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_037
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_037, Function | MediumTest | Level0)
+{
+    bool ret = SocPerfPlugin::GetInstance().HandleUninstallEvent(nullptr);
+    EXPECT_FALSE(ret);
+
+    std::shared_ptr<ResData> invalidData1 = std::make_shared<ResData>(-1, -1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleUninstallEvent(invalidData1);
+    EXPECT_FALSE(ret);
+
+    std::shared_ptr<ResData> invalidData2 = std::make_shared<ResData>(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+        ResType::AppInstallStatus::APP_UNINSTALL, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleUninstallEvent(invalidData2);
+    EXPECT_FALSE(ret);
+
+    nlohmann::json payload1;
+    std::shared_ptr<ResData> invalidData3 = std::make_shared<ResData>(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+        ResType::AppInstallStatus::APP_UNINSTALL, payload1);
+    ret = SocPerfPlugin::GetInstance().HandleUninstallEvent(invalidData3);
+    EXPECT_FALSE(ret);
+
+    payload1["uid"] = "str";
+    ret = SocPerfPlugin::GetInstance().HandleUninstallEvent(invalidData3);
+    EXPECT_FALSE(ret);
+
+    nlohmann::json payload2;
+    payload2["uid"] = -1;
+    std::shared_ptr<ResData> invalidData4 = std::make_shared<ResData>(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+        ResType::AppInstallStatus::APP_UNINSTALL, payload2);
+    ret = SocPerfPlugin::GetInstance().HandleUninstallEvent(invalidData4);
+    EXPECT_FALSE(ret);
+
+    nlohmann::json payload3;
+    payload3["uid"] = 10010;
+    std::shared_ptr<ResData> invalidData5 = std::make_shared<ResData>(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+        ResType::AppInstallStatus::APP_UNINSTALL, payload3);
+    ret = SocPerfPlugin::GetInstance().HandleUninstallEvent(invalidData5);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_038
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_038, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResData> invalidData1 = std::make_shared<ResData>(-1, -1, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().GetUidByData(invalidData1) == -1;
+    EXPECT_TRUE(ret);
+
+    nlohmann::json payload1;
+    std::shared_ptr<ResData> invalidData2 = std::make_shared<ResData>(-1, -1, payload1);
+    ret = SocPerfPlugin::GetInstance().GetUidByData(invalidData2) == -1;
+    EXPECT_TRUE(ret);
+
+    payload1["uid"] = 10010;
+    std::shared_ptr<ResData> invalidData3 = std::make_shared<ResData>(-1, -1, payload1);
+    ret = SocPerfPlugin::GetInstance().GetUidByData(invalidData3) == -1;
+    EXPECT_TRUE(ret);
+
+    nlohmann::json payload2;
+    payload2["uid"] = "10010";
+    std::shared_ptr<ResData> invalidData4 = std::make_shared<ResData>(-1, -1, payload2);
+    ret = SocPerfPlugin::GetInstance().GetUidByData(invalidData4) == 10010;
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_039
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_039, Function | MediumTest | Level0)
+{
+    SocPerfPlugin::GetInstance().appNameUseCamera_.clear();
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
+    SocPerfPlugin::GetInstance().focusAppUids_.clear();
+    bool ret = SocPerfPlugin::GetInstance().HandleCameraStateChange(nullptr);
+    EXPECT_FALSE(ret);
+
+    SocPerfPlugin::GetInstance().appNameUseCamera_.insert("qqlive");
+    std::shared_ptr<ResData> validData1 = std::make_shared<ResData>(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+        ResType::CameraState::CAMERA_DISCONNECT, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleCameraStateChange(validData1);
+    EXPECT_TRUE(ret);
+
+    std::shared_ptr<ResData> validData2 = std::make_shared<ResData>(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+        ResType::CameraState::CAMERA_CONNECT, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleCameraStateChange(validData2);
+    EXPECT_TRUE(ret);
+
+    SocPerfPlugin::GetInstance().focusAppUids_ = {10010, 10011};
+    AppKeyMessage appMsg(2, "qqlive");
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_[10010] = appMsg;
+    std::shared_ptr<ResData> validData3 = std::make_shared<ResData>(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+        ResType::CameraState::CAMERA_CONNECT, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleCameraStateChange(validData3);
+    EXPECT_TRUE(ret);
+    SocPerfPlugin::GetInstance().appNameUseCamera_.clear();
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
+    SocPerfPlugin::GetInstance().focusAppUids_.clear();
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_040
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_040, Function | MediumTest | Level0)
+{
+    SocPerfPlugin::GetInstance().appNameUseCamera_.clear();
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
+    SocPerfPlugin::GetInstance().focusAppUids_.clear();
+    bool ret = SocPerfPlugin::GetInstance().IsAllowBoostScene();
+    EXPECT_FALSE(ret);
+
+    SocPerfPlugin::GetInstance().appNameUseCamera_.insert("qqlive");
+    SocPerfPlugin::GetInstance().focusAppUids_ = {10010, 10011};
+    AppKeyMessage appMsg(2, "qqlive");
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_[10010] = appMsg;
+    ret = SocPerfPlugin::GetInstance().IsAllowBoostScene();
+    EXPECT_TRUE(ret);
+    SocPerfPlugin::GetInstance().appNameUseCamera_.clear();
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
+    SocPerfPlugin::GetInstance().focusAppUids_.clear();
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_041
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_041, Function | MediumTest | Level0)
+{
+    bool ret = SocPerfPlugin::GetInstance().HandleProcessStateChange(nullptr);
+    EXPECT_TRUE(ret);
+
+    std::shared_ptr<ResData> validData1 = std::make_shared<ResData>(ResType::RES_TYPE_PROCESS_STATE_CHANGE,
+        ResType::ProcessStatus::PROCESS_DIED, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleProcessStateChange(validData1);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_042
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_042, Function | MediumTest | Level0)
+{
+    nlohmann::json payload1;
+    payload1["pid"] = "-1";
+    std::shared_ptr<ResData> validData1 = std::make_shared<ResData>(-1, -1, payload1);
+    bool ret = SocPerfPlugin::GetInstance().HandleProcessStateChange(validData1);
+    EXPECT_TRUE(ret);
+
+    payload1["pid"] = "2025";
+    std::shared_ptr<ResData> validData2 = std::make_shared<ResData>(-1, -1, payload1);
+    ret = SocPerfPlugin::GetInstance().HandleProcessStateChange(validData2);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_043
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_043, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResData> invalidData1 = std::make_shared<ResData>(-1, -1, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().GetPidByData(invalidData1, "notKey") == -1;
+    EXPECT_TRUE(ret);
+
+    nlohmann::json payload1;
+    payload1["pid"] = "2025";
+    std::shared_ptr<ResData> validData1 = std::make_shared<ResData>(-1, -1, payload1);
+    ret = SocPerfPlugin::GetInstance().GetPidByData(validData1, "notPid") == -1;
+    EXPECT_TRUE(ret);
+
+    ret = SocPerfPlugin::GetInstance().GetPidByData(validData1, "pid") == 2025;
+    EXPECT_TRUE(ret);
+
+    nlohmann::json payload2;
+    payload2["pid"] = 2025;
+    std::shared_ptr<ResData> validData2 =
+        std::make_shared<ResData>(-1, -1, payload2);
+    ret = SocPerfPlugin::GetInstance().GetPidByData(validData2, "pid") == -1;
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_044
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_044, Function | MediumTest | Level0)
+{
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
+    nlohmann::json payload1;
+    payload1["uid"] = "-1";
+    std::shared_ptr<ResData> invalidData1 = std::make_shared<ResData>(-1, -1, payload1);
+    bool ret = SocPerfPlugin::GetInstance().UpdateUidToAppMsgMap(invalidData1);
+    EXPECT_FALSE(ret);
+
+    nlohmann::json payload2;
+    payload2["uid"] = "10010";
+    std::shared_ptr<ResData> validData1 = std::make_shared<ResData>(-1, -1, payload2);
+    AppKeyMessage appMsg(2, "qq");
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_[10010] = appMsg;
+    ret = SocPerfPlugin::GetInstance().UpdateUidToAppMsgMap(validData1);
+    EXPECT_TRUE(ret);
+
+    nlohmann::json payload3;
+    payload3["uid"] = "10011";
+    std::shared_ptr<ResData> invalidData2 = std::make_shared<ResData>(-1, -1, payload3);
+    ret = SocPerfPlugin::GetInstance().UpdateUidToAppMsgMap(invalidData2);
+    EXPECT_FALSE(ret);
+
+    payload3["bundleName"] = "wechat";
+    std::shared_ptr<ResData> validData2 = std::make_shared<ResData>(-1, -1, payload3);
+    SocPerfPlugin::GetInstance().reqAppTypeFunc_ = nullptr;
+    ret = SocPerfPlugin::GetInstance().UpdateUidToAppMsgMap(validData2);
+    EXPECT_FALSE(ret);
+
+    SocPerfPlugin::GetInstance().reqAppTypeFunc_ = [](const std::string& bundleName) { return -1; };
+    ret = SocPerfPlugin::GetInstance().UpdateUidToAppMsgMap(validData2);
+    EXPECT_TRUE(ret);
+    SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
 }
 } // namespace SOCPERF
 } // namespace OHOS
