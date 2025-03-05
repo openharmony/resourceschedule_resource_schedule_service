@@ -301,6 +301,8 @@ enum : uint32_t {
     RES_TYPE_FILE_COPY_STATUS = 139,
     // report page transition
     RES_TYPE_PAGE_TRANSITION = 140,
+    // report audio scene
+    RES_TYPE_AUDIO_SCENE_CHANGE = 141,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

@@ -354,6 +354,13 @@ void ObserverManager::InitAudioObserver()
         RESSCHED_LOGW("ObserverManager init audioVolumeKeyObserver failed");
     }
 
+    res = AudioStandard::AudioSystemManager::GetInstance()->SetAudioSceneChangeCallback(audioObserver_);
+    if (res == OPERATION_SUCCESS) {
+        RESSCHED_LOGD("ObserverManager init audioSceneKeyObserver successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager init audioSceneKeyObserver failed");
+    }
+
     AudioStandard::AudioRendererInfo rendererInfo = {};
     rendererInfo.streamUsage = AudioStandard::StreamUsage::STREAM_USAGE_MUSIC;
     res = AudioStandard::AudioRoutingManager::GetInstance()
@@ -394,6 +401,13 @@ void ObserverManager::DisableAudioObserver()
         RESSCHED_LOGD("ObserverManager disable audioVolumeKeyObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager disable audioVolumeKeyObserver failed");
+    }
+
+    res = AudioStandard::AudioSystemManager::GetInstance()->UnsetAudioSceneChangeCallback();
+    if (res == OPERATION_SUCCESS) {
+        RESSCHED_LOGD("ObserverManager disable audioSceneKeyObserver successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager disable audioSceneKeyObserver failed");
     }
     audioObserver_ = nullptr;
 #endif

@@ -73,6 +73,14 @@ void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
         volumeEvent.volume, payload);
 }
 
+void AudioObserver::OnAudioSceneChange(const AudioStandard::AudioScene audioScene)
+{
+    RESSCHED_LOGI("enter audioSceneKeyObserver::OnAudioSceneChange, audioScene: %{public}d", audioScene);
+    nlohmann::json payload;
+    payload["audioScene"] = std::to_string(audioScene);
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_SCENE_CHANGE, audioScene, payload);
+}
+
 void AudioObserver::OnPreferredOutputDeviceUpdated(
     const std::vector<std::shared_ptr<AudioStandard::AudioDeviceDescriptor>> &descs)
 {
