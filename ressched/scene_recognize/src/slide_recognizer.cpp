@@ -221,11 +221,7 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
         }
         std::string trace_str("TOUCH EVENT UPSPEED: ");
         trace_str.append(std::to_string(upSpeed));
-<<<<<<< HEAD
         StartTrace(HITRACE_TAG_APP, trace_str, -1);
-=======
-        StartTrace(HITRACE_TAG_APP, trace_srt, -1);
->>>>>>> 0d0e02322325eae44319111f81f9a7567354b46c
         FinishTrace(HITRACE_TAG_APP);
         if (payload.contains(AXIS_EVENT_TYPE) && payload[AXIS_EVENT_TYPE].is_string() &&
             payload[AXIS_EVENT_TYPE] == AXIS_EVENT_TYPE) {
