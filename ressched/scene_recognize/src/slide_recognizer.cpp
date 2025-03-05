@@ -18,6 +18,7 @@
 
 #include "event_listener_mgr.h"
 #include "ffrt_inner.h"
+#include "hitrace_meter.h"
 #include "plugin_mgr.h"
 #include "res_common_util.h"
 #include "res_sched_log.h"
@@ -218,6 +219,10 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
         if (!ResCommonUtil::StrToFloat(payload[UP_SPEED_KEY], upSpeed)) {
             return;
         }
+        std::string trace_str("TOUCH EVENT UPSPEED: ");
+        trace_str.append(std::to_string(upSpeed));
+        StartTrace(HITRACE_TAG_APP, trace_str, -1);
+        FinishTrace(HITRACE_TAG_APP);
         if (payload.contains(AXIS_EVENT_TYPE) && payload[AXIS_EVENT_TYPE].is_string() &&
             payload[AXIS_EVENT_TYPE] == AXIS_EVENT_TYPE) {
             upSpeed = upSpeed * AXIS_EVENT_FACTOR;
