@@ -29,7 +29,7 @@ ohos_unittest("SocPerfPluginTest") {
 
   configs = [ ":module_private_config" ]
 
-  deps = [ "${ressched_plugins}/socperf_plugin:socperf_plugin" ]
+  deps = [ "${ressched_plugins}/socperf_plugin:socperf_plugin_static" ]
 
   defines = []
   external_deps = [
