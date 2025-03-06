@@ -97,7 +97,7 @@ ohos_unittest("resschedfwk_test") {
   ]
 
   deps = [
-    "${ressched_plugins}/socperf_plugin:socperf_plugin",
+    "${ressched_plugins}/socperf_plugin:socperf_plugin_static",
     "${ressched_services}:resschedsvc_static",
   ]
 

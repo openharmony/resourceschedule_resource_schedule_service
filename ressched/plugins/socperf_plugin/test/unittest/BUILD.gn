@@ -29,12 +29,13 @@ ohos_unittest("SocPerfPluginTest") {
 
   configs = [ ":module_private_config" ]
 
-  deps = [ "${ressched_plugins}/socperf_plugin:socperf_plugin" ]
+  deps = [ "${ressched_plugins}/socperf_plugin:socperf_plugin_static" ]
 
   defines = []
   external_deps = [
     "c_utils:utils",
     "ffrt:libffrt",
+    "hilog:libhilog",
     "ipc:ipc_single",
     "json:nlohmann_json_static",
   ]
