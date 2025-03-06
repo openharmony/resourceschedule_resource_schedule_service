@@ -75,7 +75,7 @@ void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
 
 void AudioObserver::OnAudioSceneChange(const AudioStandard::AudioScene audioScene)
 {
-    RESSCHED_LOGI("enter audioSceneKeyObserver::OnAudioSceneChange, audioScene: %{public}d", audioScene);
+    RESSCHED_LOGD("enter audioSceneKeyObserver::OnAudioSceneChange, audioScene: %{public}d", audioScene);
     nlohmann::json payload;
     payload["audioScene"] = std::to_string(audioScene);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_SCENE_CHANGE, audioScene, payload);
