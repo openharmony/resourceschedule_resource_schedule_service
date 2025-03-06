@@ -29,12 +29,14 @@ class AudioObserver :
     public AudioStandard::AudioRendererStateChangeCallback,
     public AudioStandard::AudioRingerModeCallback,
     public AudioStandard::VolumeKeyEventCallback,
+    public AudioStandard::AudioManagerAudioSceneChangedCallback,
     public AudioStandard::AudioPreferredOutputDeviceChangeCallback {
 public:
     void OnRendererStateChange(
         const std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos) override;
     void OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode) override;
     void OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent) override;
+    void OnAudioSceneChange(const AudioStandard::AudioScene audioScene) override;
     void OnPreferredOutputDeviceUpdated(
         const std::vector<std::shared_ptr<AudioStandard::AudioDeviceDescriptor>> &descs)  override;
 private:

@@ -505,6 +505,11 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level
     audioObserver_->OnVolumeKeyEvent(volumeEvent);
     SUCCEED();
 
+    //test the interface of OnAudioSceneChange
+    AudioStandard::AudioScene audioScene = AudioStandard::AudioScene::AUDIO_SCENE_DEFAULT;
+    audioObserver_->OnAudioSceneChange(audioScene);
+    SUCCEED();
+
     // test the interface of OnPreferredOutputDeviceUpdated
     std::vector<std::shared_ptr<AudioStandard::AudioDeviceDescriptor>> descs;
     audioObserver_->OnPreferredOutputDeviceUpdated(descs);
