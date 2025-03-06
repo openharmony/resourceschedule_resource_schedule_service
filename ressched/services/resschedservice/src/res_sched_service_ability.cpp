@@ -177,7 +177,7 @@ void ResSchedServiceAbility::SystemAbilityListenerInitExt()
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of power manager service failed.");
+                        "ERR_MSG", "Register a listener of wifi manager service failed.");
         RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", WIFI_DEVICE_SYS_ABILITY_ID);
     }
 }
