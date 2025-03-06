@@ -35,6 +35,7 @@ ohos_unittest("SocPerfPluginTest") {
   external_deps = [
     "c_utils:utils",
     "ffrt:libffrt",
+    "hilog:libhilog",
     "ipc:ipc_single",
     "json:nlohmann_json_static",
   ]
