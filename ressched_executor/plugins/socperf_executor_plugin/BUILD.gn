@@ -58,6 +58,8 @@ ohos_shared_library("socperf_executor_plugin") {
   asmflags = [ "-Wl,-z,relro,-z,now" ]
 
   cflags_cc = [ "-fstack-protector-strong" ]
+
+  version_script = "libsocperf_executor_plugin.versionscript"
 }
 
 ohos_static_library("socperf_executor_plugin_static") {

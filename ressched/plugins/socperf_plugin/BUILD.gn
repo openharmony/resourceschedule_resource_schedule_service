@@ -69,4 +69,55 @@ ohos_shared_library("socperf_plugin") {
   asmflags = [ "-Wl,-z,relro,-z,now" ]
 
   cflags_cc = [ "-fstack-protector-strong" ]
+
+  version_script = "libsocperf_plugin.versionscript"
+}
+
+ohos_static_library("socperf_plugin_static") {
+  public_configs = [ ":socperf_plugin_config" ]
+
+  sources = [ "src/socperf_plugin.cpp" ]
+
+  deps = [ "${ressched_services}:resschedsvc" ]
+
+  external_deps = [
+    "ability_runtime:app_manager",
+    "bundle_framework:appexecfwk_core",
+    "c_utils:utils",
+    "ffrt:libffrt",
+    "hilog:libhilog",
+    "ipc:ipc_single",
+    "libxml2:libxml2",
+    "samgr:samgr_proxy",
+  ]
+  defines = []
+  if (ressched_with_resourceschedule_soc_perf_enable) {
+    external_deps += [ "soc_perf:socperf_client" ]
+    defines += [ "RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE" ]
+  }
+  if (ressched_with_resourceschedule_soc_perf_enable &&
+      resource_schedule_service_cust_soc_perf_enable) {
+    defines += [ "RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE" ]
+  }
+  if (ressched_with_resourceschedule_soc_perf_enable &&
+      resource_schedule_service_crown_power_key_enable) {
+    defines += [ "RESSCHED_RESOURCESCHEDULE_CROWN_POWER_KEY_ENABLE" ]
+  }
+  if (ressched_with_resourceschedule_soc_perf_enable &&
+      resource_schedule_service_file_copy_soc_perf_enable) {
+    defines += [ "RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE" ]
+  }
+  subsystem_name = "resourceschedule"
+  part_name = "resource_schedule_service"
+  branch_protector_ret = "pac_ret"
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+
+  asmflags = [ "-Wl,-z,relro,-z,now" ]
+
+  cflags_cc = [ "-fstack-protector-strong" ]
 }
