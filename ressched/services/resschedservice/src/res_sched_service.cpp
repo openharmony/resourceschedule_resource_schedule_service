@@ -31,6 +31,7 @@
 #include "event_listener_mgr.h"
 #include "hisysevent.h"
 #include "res_common_util.h"
+#include "res_sa_init.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -304,6 +305,7 @@ ErrCode ResSchedService::ReportData(uint32_t resType, int64_t value, const std::
     reportDataPayload["callingUid"] = std::to_string(callingUid);
     reportDataPayload["clientPid"] = std::to_string(clientPid);
     ResSchedMgr::GetInstance().ReportData(resType, value, reportDataPayload);
+    ResSchedIpcThread::GetInstance().SetQos(clientPid);
     return ERR_OK;
 }
 
@@ -334,6 +336,7 @@ ErrCode ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t v
     resultValue = PluginMgr::GetInstance().DeliverResource(
         std::make_shared<ResData>(resType, value, payloadJsonValue, replyValue));
     reply = replyValue.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
+    ResSchedIpcThread::GetInstance().SetQos(clientPid);
     return ERR_OK;
 }
 
