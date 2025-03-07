@@ -106,7 +106,7 @@ public:
      */
      void SetInitFlag(bool flag)
      {
-         isInit_ = falg;
+         isInit_ = flag;
      }
 };
 } // namespace ResourceSchedule
