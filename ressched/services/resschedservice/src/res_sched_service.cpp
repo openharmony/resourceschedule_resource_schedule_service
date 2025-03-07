@@ -336,6 +336,7 @@ ErrCode ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t v
     resultValue = PluginMgr::GetInstance().DeliverResource(
         std::make_shared<ResData>(resType, value, payloadJsonValue, replyValue));
     reply = replyValue.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
+    ResSchedIpcThread::GetInstance().SetQos(clientPid);
     return ERR_OK;
 }
 

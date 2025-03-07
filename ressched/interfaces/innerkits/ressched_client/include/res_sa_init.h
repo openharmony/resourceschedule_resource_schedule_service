@@ -44,6 +44,7 @@ private:
     uint32_t selfPid_ = getpid();
     std::unordered_set<uint32_t> ipcThreadTids_;
     std::mutex ipcThreadSetQosMutex_;
+    std::atomic<bool> isInit_ = {false};
     const uint32_t MAX_IPC_THREAD_NUM = 32;
     const uint32_t RSS_IPC_QOS_LEVEL = 7;
     const std::string RSS_BUNDLE_NAME = "resource_schedule_service";
@@ -67,6 +68,10 @@ public:
      */
     void SetQos(uint32_t pid)
     {
+        if (!isInit_.load()) {
+            return;
+        }
+
         if (pid == selfPid_) {
             return;
         }
@@ -78,7 +83,8 @@ public:
             return;
         }
         if (ipcThreadTids_.size() > MAX_IPC_THREAD_NUM) {
-            ipcThreadTids_。clear();
+            RESSCHED_LOGI("ResSchedIpcThread SetQos Thread size EXCEEDS LIMIT.");
+            ipcThreadTids_.clear();
         }
         ipcThreadTids_.insert(tid);
         lock.unlock();
@@ -88,10 +94,20 @@ public:
         mapPayload["pid"] = std::to_string(selfPid_);
         mapPayload[strTid] = std::to_string(RSS_IPC_QOS_LEVEL);
         mapPayload["bundleName"] = RSS_BUNDLE_NAME;
-
+        RESSCHED_LOGI("ResSchedIpcThread SetQos Thread tid=%{public}u.", tid);
         OHOS::ResourceSchedule::ResSchedClient::GetInstance().ReportData(
             OHOS::ResourceSchedule::ResType::RES_TYPE_THREAD_QOS_CHANGE, 0, mapPayload);
     }
+
+    /**
+     * @brief SetInitFlag.
+     *
+     * @param flag init finish flag.
+     */
+     void SetInitFlag(bool flag)
+     {
+         isInit_ = falg;
+     }
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
