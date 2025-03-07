@@ -33,6 +33,7 @@
 #include "res_sched_log.h"
 #include "hitrace_meter.h"
 #include "batch_log_printer.h"
+#include "res_sa_init.h"
 
 using namespace std;
 
