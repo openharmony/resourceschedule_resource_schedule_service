@@ -33,7 +33,6 @@
 #include "res_sched_log.h"
 #include "hitrace_meter.h"
 #include "batch_log_printer.h"
-#include "res_sa_init.h"
 
 using namespace std;
 
@@ -172,7 +171,6 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
     }
 #endif
     isInit = true;
-    ResSchedIpcThread::GetInstance().SetInitFlag(true);
     RESSCHED_LOGI("PluginMgr load plugin success!");
 }
 
