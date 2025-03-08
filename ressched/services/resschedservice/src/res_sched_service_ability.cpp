@@ -167,7 +167,19 @@ void ResSchedServiceAbility::SystemAbilityListenerInit()
                         "ERR_MSG", "Register a listener of power manager service failed.");
         RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", GAME_SERVICE_SERVICE_ID);
     }
+    SystemAbilityListenerInitExt();
     RESSCHED_LOGI("Init SystemAbilityListener finish");
+}
+
+void ResSchedServiceAbility::SystemAbilityListenerInitExt()
+{
+    if (!AddSystemAbilityListener(WIFI_DEVICE_SYS_ABILITY_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of wifi manager service failed.");
+        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", WIFI_DEVICE_SYS_ABILITY_ID);
+    }
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

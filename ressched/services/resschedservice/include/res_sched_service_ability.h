@@ -44,6 +44,8 @@ private:
 
     void SystemAbilityListenerInit();
 
+    void SystemAbilityListenerInitExt();
+
     sptr<ResSchedService> service_;
 
     DISALLOW_COPY_AND_MOVE(ResSchedServiceAbility);
