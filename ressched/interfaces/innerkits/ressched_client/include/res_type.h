@@ -303,6 +303,8 @@ enum : uint32_t {
     RES_TYPE_PAGE_TRANSITION = 140,
     // report audio scene
     RES_TYPE_AUDIO_SCENE_CHANGE = 141,
+    // report voice recognize wake scene
+    RES_TYPE_VOICE_RECOGNIZE_WAKE = 142,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
