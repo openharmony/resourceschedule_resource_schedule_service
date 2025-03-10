@@ -100,6 +100,7 @@ namespace {
         ResType::RES_TYPE_CHECK_APP_IS_IN_SCHEDULE_LIST,
         ResType::RES_TYPE_SHORT_TERM_LOAD,
         ResType::RES_TYPE_PAGE_TRANSITION,
+        ResType::RES_TYPE_VOICE_RECOGNIZE_WAKE,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
