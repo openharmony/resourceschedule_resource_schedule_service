@@ -68,6 +68,7 @@ ohos_shared_library("ressched_client") {
   ]
 
   sources = [
+    "src/res_sa_init.cpp",
     "src/res_sched_client.cpp",
     "src/res_sched_common_death_recipient.cpp",
   ]
