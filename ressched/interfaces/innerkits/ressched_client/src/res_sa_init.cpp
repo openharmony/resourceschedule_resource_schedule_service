@@ -66,7 +66,7 @@ void ResSchedIpcThread::SetQos(uint32_t pid)
         OHOS::ResourceSchedule::ResType::RES_TYPE_THREAD_QOS_CHANGE, 0, mapPayload);
 }
 
-void SetInitFlag(bool flag)
+void ResSchedIpcThread::SetInitFlag(bool flag)
 {
     selfPid_ = getpid();
     isInit_ = flag;

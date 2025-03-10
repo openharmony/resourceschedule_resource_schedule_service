@@ -63,7 +63,7 @@ public:
      *
      * @param flag init finish flag.
      */
-     void SetInitFlag(bool flag);
+    void SetInitFlag(bool flag);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
