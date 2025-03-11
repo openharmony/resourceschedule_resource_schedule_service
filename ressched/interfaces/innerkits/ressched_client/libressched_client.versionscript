@@ -35,6 +35,10 @@
     ReportData;
     KillProcess;
     ReportSyncEvent;
+    *ResSchedSaInit*GetInstance*;
+    *ResSchedIpcThread*GetInstance*;
+    *ResSchedIpcThread*SetQos*;
+    *ResSchedIpcThread*SetInitFlag*;
   local:
     *;
 };

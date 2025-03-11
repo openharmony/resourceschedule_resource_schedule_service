@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,9 +17,7 @@
 #define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SA_INIT_H
 
 #include <mutex>
-
-#include "res_sched_log.h"
-#include "res_sched_client.h"
+#include <unordered_set>
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -32,16 +30,12 @@ public:
      *
      * @return Returns ResSchedSaInit&.
      */
-    static ResSchedSaInit& GetInstance()
-    {
-        static ResSchedSaInit instance;
-        return instance;
-    }
+    static ResSchedSaInit& GetInstance();
 };
 
 class ResSchedIpcThread {
 private:
-    uint32_t selfPid_ = getpid();
+    uint32_t selfPid_;
     std::unordered_set<uint32_t> ipcThreadTids_;
     std::mutex ipcThreadSetQosMutex_;
     std::atomic<bool> isInit_ = {false};
@@ -55,59 +49,21 @@ public:
      *
      * @return Returns ResSchedIpcThread&.
      */
-    static ResSchedIpcThread& GetInstance()
-    {
-        static ResSchedIpcThread instance;
-        return instance;
-    }
+    static ResSchedIpcThread& GetInstance();
 
     /**
      * @brief SetQos.
      *
      * @param pid client pid.
      */
-    void SetQos(uint32_t pid)
-    {
-        if (!isInit_.load()) {
-            return;
-        }
-
-        if (pid == selfPid_) {
-            return;
-        }
-
-        uint32_t tid = gettid();
-        std::unique_lock<std::mutex> lock(ipcThreadSetQosMutex_);
-        if (ipcThreadTids_.find(tid) != ipcThreadTids_.end()) {
-            lock.unlock();
-            return;
-        }
-        if (ipcThreadTids_.size() > MAX_IPC_THREAD_NUM) {
-            RESSCHED_LOGI("ResSchedIpcThread SetQos Thread size EXCEEDS LIMIT.");
-            ipcThreadTids_.clear();
-        }
-        ipcThreadTids_.insert(tid);
-        lock.unlock();
-
-        std::string strTid = std::to_string(tid);
-        std::unordered_map<std::string, std::string> mapPayload;
-        mapPayload["pid"] = std::to_string(selfPid_);
-        mapPayload[strTid] = std::to_string(RSS_IPC_QOS_LEVEL);
-        mapPayload["bundleName"] = RSS_BUNDLE_NAME;
-        RESSCHED_LOGI("ResSchedIpcThread SetQos Thread tid=%{public}u.", tid);
-        OHOS::ResourceSchedule::ResSchedClient::GetInstance().ReportData(
-            OHOS::ResourceSchedule::ResType::RES_TYPE_THREAD_QOS_CHANGE, 0, mapPayload);
-    }
+    void SetQos(uint32_t pid);
 
     /**
      * @brief SetInitFlag.
      *
      * @param flag init finish flag.
      */
-     void SetInitFlag(bool flag)
-     {
-         isInit_ = flag;
-     }
+    void SetInitFlag(bool flag);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
