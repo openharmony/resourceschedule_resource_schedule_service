@@ -560,7 +560,8 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
     }
 }
 
-bool SocPerfPlugin::HandleMoveEventBoost(const std::shared_ptr<ResData>& data, bool isSet) {
+bool SocPerfPlugin::HandleMoveEventBoost(const std::shared_ptr<ResData>& data, bool isSet)
+{
     if (data->payload == nullptr || !data->payload.contains(CALLING_UID_NAME) ||
         !data->payload[CALLING_UID_NAME].is_string()) {
         SOC_PERF_LOGE("SocPerfPlugin: socperf->MOVE_EVENT param invalid");

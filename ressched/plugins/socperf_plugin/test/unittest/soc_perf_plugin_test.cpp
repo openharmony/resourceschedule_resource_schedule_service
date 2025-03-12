@@ -1154,6 +1154,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_044, Function | MediumTes
     EXPECT_TRUE(ret);
     SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
 }
+
 /*
  * @tc.name: SocPerfPluginTest_API_TEST_045
  * @tc.desc: test socperfplugin api
