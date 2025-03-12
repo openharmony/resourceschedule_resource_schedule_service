@@ -105,6 +105,7 @@ namespace {
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
     const int32_t PERF_REQUEST_CMD_ID_FILE_COPY             = 10087;
 #endif
+    const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE_NORMAL    = 10092;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -548,7 +549,7 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
     if (data->value == ClickEventType::TOUCH_EVENT_DOWN_MMI) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
     } else if (data->value == ClickEventType::TOUCH_EVENT_UP) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_UP, "");
     } else if (data->value == ClickEventType::CLICK_EVENT) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
     }
@@ -678,23 +679,14 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
         return;
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
-    static int counter = 0;
-    static uint64_t lastTime = 0;
-    if (data->value == SlideEventStatus::SLIDE_EVENT_ON || data->value == SlideEventStatus::SLIDE_NORMAL_BEGIN) {
-        auto now = std::chrono::system_clock::now();
-        uint64_t curMs = static_cast<uint64_t>(
-            std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
-        if (curMs - lastTime > TIME_INTERVAL) {
-            counter = 0;
-        }
-        lastTime = curMs;
-        counter++;
+    if (data->value == SlideEventStatus::SLIDE_EVENT_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, true, "");
-    } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF || data->value == SlideEventStatus::SLIDE_NORMAL_END) {
-        counter--;
-        if (counter == 0) {
-            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, false, "");
-        }
+    } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, false, "");
+    } else if (data->value == SlideEventStatus::SLIDE_NORMAL_BEGIN) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE_NORMAL, true, "");
+    } else if (data->value == SlideEventStatus::SLIDE_NORMAL_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE_NORMAL, false, "");
     }
 }
 
