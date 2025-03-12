@@ -567,7 +567,7 @@ bool SocPerfPlugin::HandleMoveEventBoost(const std::shared_ptr<ResData>& data, b
         return false;
     }
     bool ret = false;
-    int32_t uid = atoi(data->payload[CALLING_UID_NAME].get<std::string>().c_str);
+    int32_t uid = atoi(data->payload[CALLING_UID_NAME].get<std::string>().c_str());
     if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end() &&
         appNameMoveEvent_.find(uidToAppMsgMap_[uid].GetBundleName()) != appNameMoveEvent_.end()) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_MOVE_EVENT_BOOST, isSet, "");
