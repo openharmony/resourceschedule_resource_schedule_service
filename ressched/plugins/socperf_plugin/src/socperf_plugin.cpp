@@ -39,6 +39,7 @@ namespace {
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST = "socperf_game_boost";
     const std::string CONFIG_NAME_SOCPERF_BUNDLE_NAME_BOOST_LIST = "socperfBundleNameBoostList";
     const std::string SUB_ITEM_KEY_NAME_APP_USE_CAMERA_BOOST = "app_use_camera_boost";
+    const std::string SUB_ITEM_KEY_NAME_APP_MOVE_EVENT_BOOST = "app_move_event_boost";
     const std::string CNOFIG_NAME_SOCPERF_CRUCIAL_FUNC = "socperfCrucialFunc";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_PATH = "socperf_req_apptype_path";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_FUNC = "socperf_req_apptype_func";
@@ -46,6 +47,7 @@ namespace {
     const std::string PID_NAME = "pid";
     const std::string CLIENT_PID_NAME = "clientPid";
     const std::string UID_NAME = "uid";
+    const std::string CALLING_UID_NAME = "callingUid";
     const std::string SOCPERF_TYPE_ID = "socperf_type_id";
     const std::string SOCPERF_TYPE_RGM = "socperf_type_rgm";
     const std::string EXTENSION_TYPE_KEY = "extensionType";
@@ -105,6 +107,7 @@ namespace {
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
     const int32_t PERF_REQUEST_CMD_ID_FILE_COPY             = 10087;
 #endif
+    const int32_t PERF_REQUEST_CMD_ID_MOVE_EVENT_BOOST      = 10091;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -181,14 +184,16 @@ bool SocPerfPlugin::InitBundleNameBoostList()
     for (const Item& item : itemLists.itemList) {
         for (SubItem sub : item.subItemList) {
             if (sub.name == SUB_ITEM_KEY_NAME_APP_USE_CAMERA_BOOST) {
-                ret = HandleSubValue(sub.value.c_str());
+                ret = HandleSubValue(sub.value.c_str(), appNameUseCamera_);
+            } else if (sub.name == SUB_ITEM_KEY_NAME_APP_MOVE_EVENT_BOOST) {
+                ret = HandleSubValue(sub.value.c_str(), appNameMoveEvent_);
             }
         }
     }
     return ret;
 }
 
-bool SocPerfPlugin::HandleSubValue(const std::string& subValue)
+bool SocPerfPlugin::HandleSubValue(const std::string& subValue, std::set<std::string>& nameSet)
 {
     if (subValue.empty()) {
         return false;
@@ -196,7 +201,7 @@ bool SocPerfPlugin::HandleSubValue(const std::string& subValue)
     std::stringstream sstream(subValue);
     std::string bundleName;
     while (std::getline(sstream, bundleName, ',')) {
-        appNameUseCamera_.insert(bundleName);
+        nameSet.insert(bundleName);
     }
     return true;
 }
@@ -549,9 +554,26 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
     } else if (data->value == ClickEventType::TOUCH_EVENT_UP) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
+        HandleMoveEventBoost(data, false);
     } else if (data->value == ClickEventType::CLICK_EVENT) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
     }
+}
+
+bool SocPerfPlugin::HandleMoveEventBoost(const std::shared_ptr<ResData>& data, bool isSet) {
+    if (data->payload == nullptr || !data->payload.contains(CALLING_UID_NAME) ||
+        !data->payload[CALLING_UID_NAME].is_string()) {
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->MOVE_EVENT param invalid");
+        return false;
+    }
+    bool ret = false;
+    int32_t uid = atoi(data->payload[CALLING_UID_NAME].get<std::string>().c_str);
+    if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end() &&
+        appNameMoveEvent_.find(uidToAppMsgMap_[uid].GetBundleName()) != appNameMoveEvent_.end()) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_MOVE_EVENT_BOOST, isSet, "");
+        ret = true;
+    }
+    return ret;
 }
 
 void SocPerfPlugin::HandleEventKey(const std::shared_ptr<ResData>& data)
@@ -695,6 +717,8 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
         if (counter == 0) {
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, false, "");
         }
+    } else if (data->value == SlideEventStatus::MOVE_EVENT_ON) {
+        HandleMoveEventBoost(data, true);
     }
 }
 
