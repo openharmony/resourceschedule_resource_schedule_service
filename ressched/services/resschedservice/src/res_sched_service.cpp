@@ -679,7 +679,7 @@ bool ResSchedService::IsLimitRequest(int32_t uid)
 
 void ResSchedService::CheckAndUpdateLimitData(int64_t nowTime)
 {
-    if (nowTime - nextCheckTime_.load() > LIMIT_REQUEST_TIME) {
+    if (nowTime - nextCheckTime_.load() >= 0) {
         nextCheckTime_.store(nowTime + LIMIT_REQUEST_TIME);
         appRequestCountMap_.clear();
         allRequestCount_.store(0);
