@@ -91,6 +91,98 @@ HWTEST_F(ResSchedExeMgrTest, SendRequestSync001, Function | MediumTest | Level0)
 }
 
 /**
+ * @tc.name: SendRequestSync002
+ * @tc.desc: send res request stable test
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeMgrTest, SendRequestSync002, Function | MediumTest | Level0)
+{
+    nlohmann::json context;
+    context["message"] = "test";
+    nlohmann::json reply;
+    int32_t ret = ResSchedExeMgr::GetInstance().SendRequestSync(
+        ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT, 0, context, reply);
+    EXPECT_EQ(ret, ResErrCode::RSSEXE_NO_ERR);
+}
+
+/**
+ * @tc.name: SendRequestSync003
+ * @tc.desc: send res request stable test
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeMgrTest, SendRequestSync003, Function | MediumTest | Level0)
+{
+    nlohmann::json context;
+    context["message"] = "test";
+    nlohmann::json reply;
+    int32_t ret = ResSchedExeMgr::GetInstance().SendRequestSync(
+        ResExeType::RES_TYPE_CGROUP_SYNC_EVENT, 0, context, reply);
+    EXPECT_EQ(ret, ResErrCode::RSSEXE_NO_ERR);
+}
+
+/**
+ * @tc.name: SendRequestSync004
+ * @tc.desc: send res request stable test
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeMgrTest, SendRequestSync004, Function | MediumTest | Level0)
+{
+    nlohmann::json context;
+    context["message"] = "test";
+    nlohmann::json reply;
+    int32_t ret = ResSchedExeMgr::GetInstance().SendRequestSync(
+        ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT, 0, context, reply);
+    EXPECT_EQ(ret, ResErrCode::RSSEXE_NO_ERR);
+}
+
+/**
+ * @tc.name: SendRequestSync005
+ * @tc.desc: send res request stable test
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeMgrTest, SendRequestSync005, Function | MediumTest | Level0)
+{
+    nlohmann::json context;
+    context["message"] = "test";
+    nlohmann::json reply;
+    int32_t ret = ResSchedExeMgr::GetInstance().SendRequestSync(
+        ResExeType::RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT, 0, context, reply);
+    EXPECT_EQ(ret, ResErrCode::RSSEXE_NO_ERR);
+}
+
+/**
+ * @tc.name: SendRequestSync006
+ * @tc.desc: send res request stable test
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeMgrTest, SendRequestSync006, Function | MediumTest | Level0)
+{
+    nlohmann::json context;
+    context["tid"] = 1;
+    context["policy"] = 1;
+    nlohmann::json reply;
+    int32_t ret = ResSchedExeMgr::GetInstance().SendRequestSync(
+        ResExeType::RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT, 0, context, reply);
+    EXPECT_EQ(ret, ResErrCode::RSSEXE_NO_ERR);
+}
+
+/**
+ * @tc.name: SendRequestSync007
+ * @tc.desc: send res request stable test
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeMgrTest, SendRequestSync007, Function | MediumTest | Level0)
+{
+    nlohmann::json context;
+    context["tid"] = 1;
+    context["policy"] = 1;
+    nlohmann::json reply;
+    int32_t ret = ResSchedExeMgr::GetInstance().SendRequestSync(
+        ResExeType::RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT, 0, context, reply);
+    EXPECT_EQ(ret, ResErrCode::RSSEXE_NO_ERR);
+}
+
+/**
  * @tc.name: SendRequestAsync001
  * @tc.desc: report data stable test
  * @tc.type: FUNC
