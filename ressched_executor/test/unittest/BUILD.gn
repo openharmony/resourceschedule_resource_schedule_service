@@ -20,7 +20,8 @@ group("unittest") {
   deps = [ ":resschedexefwk_test" ]
 }
 
-module_output_path = "resource_schedule_service/ressched_executor"
+module_output_path =
+    "resource_schedule_service/resource_schedule_service/ressched_executor"
 
 ohos_unittest("resschedexefwk_test") {
   module_out_path = module_output_path
@@ -29,9 +30,11 @@ ohos_unittest("resschedexefwk_test") {
     "${ressched_common}/include",
     "${resschedexe_common}/include",
     "${resschedexe_interfaces}/innerkits/ressched_executor_client/include",
+    "mock/include",
   ]
 
   sources = [
+    "mock/src/mock_ipc_skeleton.cpp",
     "res_sched_exe_client_test.cpp",
     "res_sched_exe_mgr_test.cpp",
     "res_sched_exe_service_test.cpp",
