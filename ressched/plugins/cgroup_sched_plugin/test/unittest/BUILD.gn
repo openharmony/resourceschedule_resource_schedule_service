@@ -15,7 +15,7 @@ import("//build/test.gni")
 import("../../cgroup_sched.gni")
 
 process_group_module_output_path =
-    "resource_schedule_service/process_group_test"
+    "resource_schedule_service/resource_schedule_service/process_group_test"
 
 config("process_group_module_private_config") {
   visibility = [ ":*" ]
