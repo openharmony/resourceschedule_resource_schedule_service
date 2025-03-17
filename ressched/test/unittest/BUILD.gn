@@ -22,7 +22,8 @@ group("unittest") {
   ]
 }
 
-module_output_path = "resource_schedule_service/resource_schedule_service/ressched"
+module_output_path =
+    "resource_schedule_service/resource_schedule_service/ressched"
 
 ohos_unittest("resschedservice_test") {
   module_out_path = module_output_path
