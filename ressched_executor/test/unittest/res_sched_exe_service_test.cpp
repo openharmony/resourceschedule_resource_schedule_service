@@ -19,7 +19,7 @@
 #include <vector>
 
 #include "accesstoken_kit.h"
-#include "ipc_skeleton.h"
+#include "mock_ipc_skeleton.h"
 #include "nativetoken_kit.h"
 #include "token_setproc.h"
 
@@ -40,6 +40,8 @@ using namespace Security::AccessToken;
 namespace {
     constexpr int32_t SYNC_THREAD_NUM = 100;
     constexpr int32_t SYNC_INTERNAL_TIME = 10000;
+    constexpr int32_t RSS_UID = 1906;
+    const std::string RES_TYPE_EXT = "extType";
 }
 
 class ResSchedExeServiceTest : public testing::Test {
@@ -173,6 +175,139 @@ HWTEST_F(ResSchedExeServiceTest, SendRequestSync002, Function | MediumTest | Lev
 }
 
 /**
+ * @tc.name: Ressched_executor service SendRequestSync003
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestSync003, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext["test"] = "test";
+    context.jsonContext = testJsonContext;
+    ResJsonType response;
+    int32_t funcResult = -1;
+    IPCSkeleton::SetCallingUid(RSS_UID); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestSync(
+        -1, 0, context, response, funcResult);
+    EXPECT_TRUE(code == ERR_INVALID_VALUE);
+}
+
+/**
+ * @tc.name: Ressched_executor service SendRequestSync004
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestSync004, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext["test"] = "test";
+    context.jsonContext = testJsonContext;
+    ResJsonType response;
+    int32_t funcResult = -1;
+    IPCSkeleton::SetCallingUid(100); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestSync(
+        -1, 0, context, response, funcResult);
+    EXPECT_TRUE(code == ERR_INVALID_OPERATION);
+}
+
+/**
+ * @tc.name: Ressched_executor service SendRequestSync005
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestSync005, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext["test"] = "test";
+    context.jsonContext = testJsonContext;
+    ResJsonType response;
+    int32_t funcResult = -1;
+    IPCSkeleton::SetCallingUid(RSS_UID); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestSync(
+        20000, 1, context, response, funcResult);
+    EXPECT_TRUE(code == ERR_INVALID_VALUE);
+}
+
+/**
+ * @tc.name: Ressched_executor service SendRequestSync006
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestSync006, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext["test"] = "test";
+    context.jsonContext = testJsonContext;
+    ResJsonType response;
+    int32_t funcResult = -1;
+    IPCSkeleton::SetCallingUid(RSS_UID); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestSync(
+        ResExeType::RES_TYPE_COMMON_SYNC, 1, context, response, funcResult);
+    EXPECT_TRUE(code == ERR_INVALID_VALUE);
+}
+
+/**
+ * @tc.name: Ressched_executor service SendRequestSync007
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestSync007, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext["test"] = "test";
+    context.jsonContext = testJsonContext;
+    ResJsonType response;
+    int32_t funcResult = -1;
+    IPCSkeleton::SetCallingUid(RSS_UID); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestSync(
+        ResExeType::RES_TYPE_COMMON_ASYNC, 1, context, response, funcResult);
+    EXPECT_TRUE(code == ERR_INVALID_VALUE);
+}
+
+/**
+ * @tc.name: Ressched_executor service SendRequestSync008
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestSync008, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext[RES_TYPE_EXT] = RES_TYPE_EXT;
+    context.jsonContext = testJsonContext;
+    ResJsonType response;
+    int32_t funcResult = 100;
+    IPCSkeleton::SetCallingUid(RSS_UID); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestSync(
+        100, 0, context, response, funcResult);
+    EXPECT_TRUE(code == ERR_OK);
+}
+
+/**
+ * @tc.name: Ressched_executor service SendRequestSync009
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestSync009, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext[RES_TYPE_EXT] = 100;
+    context.jsonContext = testJsonContext;
+    ResJsonType response;
+    int32_t funcResult = 100;
+    IPCSkeleton::SetCallingUid(RSS_UID); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestSync(
+        100, 0, context, response, funcResult);
+    EXPECT_TRUE(code == ERR_OK);
+}
+
+/**
  * @tc.name: Ressched_executor service SendRequestAsync001
  * @tc.desc: Verify if Ressched_executor service SendRequestAsync is success.
  * @tc.type: FUNC
@@ -182,6 +317,120 @@ HWTEST_F(ResSchedExeServiceTest, SendRequestAsync001, Function | MediumTest | Le
     ResJsonType payload;
     EXPECT_TRUE(resSchedExeService_ != nullptr);
     resSchedExeService_->SendRequestAsync(0, 0, payload);
+}
+
+/**
+ * @tc.name: Ressched_executor service SendRequestAsync003
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestAsync003, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext["test"] = "test";
+    context.jsonContext = testJsonContext;
+    IPCSkeleton::SetCallingUid(RSS_UID); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestAsync(0, 0, context);
+    EXPECT_TRUE(code == ERR_INVALID_VALUE);
+}
+
+/**
+ * @tc.name: Ressched_executor service SendRequestAsync004
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestAsync004, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext["test"] = "test";
+    context.jsonContext = testJsonContext;
+    IPCSkeleton::SetCallingUid(100); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestAsync(0, 0, context);
+    EXPECT_TRUE(code == ERR_INVALID_OPERATION);
+}
+
+/**
+ * @tc.name: Ressched_executor service SendRequestAsync005
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestAsync005, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext["test"] = "test";
+    context.jsonContext = testJsonContext;
+    IPCSkeleton::SetCallingUid(RSS_UID); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestAsync(20000, 1, context);
+    EXPECT_TRUE(code == ERR_INVALID_VALUE);
+}
+
+/**
+ * @tc.name: Ressched_executor service SendRequestAsync006
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestAsync006, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext["test"] = "test";
+    context.jsonContext = testJsonContext;
+    IPCSkeleton::SetCallingUid(RSS_UID); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestAsync(
+        ResExeType::RES_TYPE_COMMON_SYNC, 1, context);
+    EXPECT_TRUE(code == ERR_INVALID_VALUE);
+}
+
+/**
+ * @tc.name: Ressched_executor service SendRequestAsync007
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestAsync007, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext["test"] = "test";
+    context.jsonContext = testJsonContext;
+    IPCSkeleton::SetCallingUid(RSS_UID); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestAsync(
+        ResExeType::RES_TYPE_COMMON_ASYNC, 1, context);
+    EXPECT_TRUE(code == ERR_INVALID_VALUE);
+}
+
+/**
+ * @tc.name: Ressched_executor service SendRequestAsync008
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestAsync008, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext[RES_TYPE_EXT] = RES_TYPE_EXT;
+    context.jsonContext = testJsonContext;
+    IPCSkeleton::SetCallingUid(RSS_UID); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestAsync(100, 0, context);
+    EXPECT_TRUE(code == ERR_OK);
+}
+
+/**
+ * @tc.name: Ressched_executor service SendRequestAsync009
+ * @tc.desc: Test Ressched_executor service SendRequestSync in multithreading.
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeServiceTest, SendRequestAsync009, Function | MediumTest | Level0)
+{
+    ResJsonType context;
+    nlohmann::json testJsonContext;
+    testJsonContext[RES_TYPE_EXT] = 100;
+    context.jsonContext = testJsonContext;
+    IPCSkeleton::SetCallingUid(RSS_UID); //mock for IPCSkeleton::GetCallingUid
+    ErrCode code = resSchedExeService_->SendRequestAsync(100, 0, context);
+    EXPECT_TRUE(code == ERR_OK);
 }
 
 static void SendRequestAsyncTask()

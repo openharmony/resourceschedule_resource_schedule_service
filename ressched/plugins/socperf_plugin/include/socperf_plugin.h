@@ -74,6 +74,8 @@ private:
     std::set<int32_t> focusAppUids_;
     // app names set which use camera
     std::set<std::string> appNameUseCamera_;
+    // app names set which add move boost
+    std::set<std::string> appNameMoveEvent_;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
     // app's uid match app
     std::map<int32_t, AppKeyMessage> uidToAppMsgMap_;
@@ -146,8 +148,9 @@ private:
     bool HandleProcessStateChange(const std::shared_ptr<ResData> &data);
     bool HandleCameraStateChange(const std::shared_ptr<ResData> &data);
     bool InitBundleNameBoostList();
-    bool HandleSubValue(const std::string& subValue);
+    bool HandleSubValue(const std::string& subValue, std::set<std::string>& nameSet);
     bool IsAllowBoostScene();
+    bool HandleMoveEventBoost(const std::shared_ptr<ResData>& data, bool isSet);
     int32_t GetPidByData(const std::shared_ptr<ResData>& data, const std::string& key);
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
