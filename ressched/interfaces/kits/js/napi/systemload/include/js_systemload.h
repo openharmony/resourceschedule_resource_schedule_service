@@ -31,6 +31,12 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+enum {
+    E_PARAM_ERROR = 401,
+};
+const inline std::map<int32_t, std::string> systemloadParamErrMsgMap = {
+    {E_PARAM_ERROR, "Error 401: Parameter error. The input param is error"},
+};
 class Systemload {
     DECLARE_SINGLE_INSTANCE_BASE(Systemload);
 public:
@@ -70,11 +76,13 @@ private:
     napi_value RegisterSystemloadCallback(napi_env env, napi_callback_info info);
     napi_value UnRegisterSystemloadCallback(napi_env env, napi_callback_info info);
     napi_value GetSystemloadLevel(napi_env env, napi_callback_info info);
-    bool CheckCallbackParam(napi_env env, napi_callback_info info, std::string &cbType, napi_value *jsCallback);
+    bool CheckCallbackParam(napi_env env, napi_callback_info info, std::string &cbType,
+        napi_value *jsCallback, int32_t status);
 
     static void Execute(napi_env env, void *data);
     static void Complete(napi_env env, napi_status status, void *data);
     static void CompleteCb(napi_env env, SystemloadLevelCbInfo* info);
+    static void HandleErrCode(const napi_env& env, int32_t errCode);
 
     std::mutex jsCallbackMapLock_;
     std::map<std::string, std::list<CallBackPair> > jsCallBackMap_;

@@ -27,7 +27,8 @@ namespace ResourceSchedule {
 static constexpr size_t ARG_COUNT_ONE = 1;
 static constexpr size_t ARG_COUNT_TWO = 2;
 static const std::string SYSTEMLOAD_LEVEL = "systemLoadChange";
-
+static const int32_t ON = 1;
+static const int32_t OFF = 0;
 
 Systemload& Systemload::GetInstance()
 {
@@ -54,6 +55,19 @@ napi_value Systemload::SystemloadOff(napi_env env, napi_callback_info info)
 napi_value Systemload::GetLevel(napi_env env, napi_callback_info info)
 {
     return GetInstance().GetSystemloadLevel(env, info);
+}
+
+void Systemload::HandleErrCode(const napi_env& env, int32_t errCode)
+{
+    if (errCode == ERR_OK) {
+        return;
+    }
+    auto iter = systemloadParamErrMsgMap.find(errCode);
+    std::string errMessage = "";
+    if (iter != systemloadParamErrMsgMap.end()) {
+        errMessage.append(iter->second);
+    }
+    napi_throw_error(env, std::to_string(errCode).c_str(), errMessage.c_str());
 }
 
 void Systemload::OnSystemloadLevel(napi_env env, napi_value callbackObj, int32_t level)
@@ -110,8 +124,9 @@ napi_value Systemload::RegisterSystemloadCallback(napi_env env, napi_callback_in
     std::string cbType;
     napi_value jsCallback = nullptr;
 
-    if (!CheckCallbackParam(env, info, cbType, &jsCallback)) {
+    if (!CheckCallbackParam(env, info, cbType, &jsCallback, ON)) {
         RESSCHED_LOGE("Register Systemload Callback parameter error.");
+        HandleErrCode(env, E_PARAM_ERROR);
         return CreateJsUndefined(env);
     }
 
@@ -153,25 +168,33 @@ napi_value Systemload::UnRegisterSystemloadCallback(napi_env env, napi_callback_
     std::string cbType;
     napi_value jsCallback = nullptr;
 
-    if (!CheckCallbackParam(env, info, cbType, &jsCallback)) {
+    if (!CheckCallbackParam(env, info, cbType, &jsCallback, OFF)) {
         RESSCHED_LOGE("UnRegister Systemload Callback parameter error.");
+        HandleErrCode(env, E_PARAM_ERROR);
         return CreateJsUndefined(env);
     }
 
     std::lock_guard<std::mutex> autoLock(jsCallbackMapLock_);
     if (jsCallBackMap_.find(cbType) == jsCallBackMap_.end()) {
         RESSCHED_LOGE("unRegister cbType has not registered");
+        HandleErrCode(env, E_PARAM_ERROR);
         return CreateJsUndefined(env);
     }
     auto& callbackList = jsCallBackMap_[cbType];
+    bool isEqual = false;
     for (auto iter = callbackList.begin(); iter != callbackList.end(); iter++) {
-        bool isEqual = false;
+        isEqual = false;
         napi_strict_equals(env, jsCallback, iter->first->GetNapiValue(), &isEqual);
         if (isEqual) {
             ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(iter->second);
             callbackList.erase(iter);
             break;
         }
+    }
+    if (!isEqual) {
+        RESSCHED_LOGE("UnRegister Systemload Callback error.");
+        HandleErrCode(env, E_PARAM_ERROR);
+        return CreateJsUndefined(env);
     }
     return CreateJsUndefined(env);
 }
@@ -255,7 +278,8 @@ void Systemload::CompleteCb(napi_env env, SystemloadLevelCbInfo* info)
 }
 
 bool Systemload::CheckCallbackParam(napi_env env, napi_callback_info info,
-                                    std::string &cbType, napi_value *jsCallback)
+                                    std::string &cbType, napi_value *jsCallback,
+                                    int32_t status)
 {
     if (jsCallback == nullptr) {
         RESSCHED_LOGE("Input callback is nullptr.");
@@ -264,7 +288,7 @@ bool Systemload::CheckCallbackParam(napi_env env, napi_callback_info info,
     size_t argc = ARG_COUNT_TWO;
     napi_value argv[ARG_COUNT_TWO] = { 0 };
     NAPI_CALL_BASE(env, napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr), false);
-    if (argc != ARG_COUNT_TWO) {
+    if (status == ON && argc != ARG_COUNT_TWO) {
         RESSCHED_LOGE("Parameter error. The type of \"number of parameters\" must be 2");
         return false;
     }
@@ -272,7 +296,10 @@ bool Systemload::CheckCallbackParam(napi_env env, napi_callback_info info,
         RESSCHED_LOGE("Parameter error. The type of \"type\" must be string");
         return false;
     }
-
+    if (cbType != SYSTEMLOAD_LEVEL) {
+        RESSCHED_LOGE("Parameter error. The type of \"type\" must be systemLoadChange");
+        return false;
+    }
     *jsCallback = argv[ARG_COUNT_ONE];
     if (*jsCallback == nullptr) {
         RESSCHED_LOGE("listenerObj is nullptr");
@@ -280,7 +307,7 @@ bool Systemload::CheckCallbackParam(napi_env env, napi_callback_info info,
     }
     bool isCallable = false;
     napi_is_callable(env, *jsCallback, &isCallable);
-    if (!isCallable) {
+    if (status == ON && !isCallable) {
         RESSCHED_LOGE("Parameter error. The type of \"callback\" must be Callback");
         return false;
     }
