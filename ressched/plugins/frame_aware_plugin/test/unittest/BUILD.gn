@@ -14,7 +14,8 @@
 import("//build/test.gni")
 import("../../../../ressched.gni")
 
-module_output_path = "resource_schedule_service/ressched"
+module_output_path =
+    "resource_schedule_service/resource_schedule_service/ressched"
 
 ohos_unittest("NetworkLatencyControllerTest") {
   module_out_path = module_output_path
