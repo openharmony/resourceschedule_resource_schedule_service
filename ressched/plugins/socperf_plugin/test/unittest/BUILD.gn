@@ -14,7 +14,7 @@
 import("//build/test.gni")
 import("../../../../ressched.gni")
 
-module_output_path = "resource_schedule_service/ressched"
+module_output_path = "resource_schedule_service/resource_schedule_service"
 
 config("module_private_config") {
   visibility = [ ":*" ]
