@@ -45,6 +45,9 @@ ohos_shared_library("device_standby_plugin") {
   ]
 
   defines = []
+  if (schedule_ext_param_update_feature_product == "watch") {
+      defines += [ "FEATURE_PRODUCT_WATCH" ]
+  }
   if (rss_device_standby_enable) {
     external_deps += [
       "device_standby:standby_innerkits",
