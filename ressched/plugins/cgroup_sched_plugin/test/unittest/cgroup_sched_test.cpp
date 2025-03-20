@@ -322,7 +322,6 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_AppStartupSceneRec_001, Function | Med
     std::string bundleName = "test101";
     std::string uid = "101";
     AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
     bool isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
     EXPECT_EQ(isReportContinuousStartup, false);
     uid = "102";

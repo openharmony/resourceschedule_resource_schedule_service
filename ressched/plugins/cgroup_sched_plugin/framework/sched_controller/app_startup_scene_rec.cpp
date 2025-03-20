@@ -57,7 +57,7 @@ bool AppStartupSceneRec::IsAppStartUp(int32_t abilityState)
     return abilityState == APP_START_UP;
 }
 
-void AppStartupSceneRec::RecordIsContinuousStartup(std::string uid, std::string bundleName)
+void AppStartupSceneRec::RecordIsContinuousStartup(const std::string& uid, const std::string& bundleName)
 {
     auto tarEndTimePoint = std::chrono::steady_clock::now();
     auto tarDuration = std::chrono::duration_cast<std::chrono::microseconds>(tarEndTimePoint.time_since_epoch());
