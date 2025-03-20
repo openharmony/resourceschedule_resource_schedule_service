@@ -30,11 +30,11 @@ public:
     static AppStartupSceneRec &GetInstance();
     void Init();
     void Deinit();
-    void RecordIsContinuousStartup(int32_t abilityState, std::string uid, std::string bundleName);
+    void RecordIsContinuousStartup(const std::string& uid, const std::string& bundleName);
+    bool IsAppStartUp(int32_t abilityState);
 private:
     AppStartupSceneRec();
     ~AppStartupSceneRec();
-    bool IsAppStartUp(int32_t abilityState);
     void CleanRecordSceneData();
     void UpdateAppStartupNum(std::string uid, int64_t curTime, std::string bundleName);
     bool IsContinuousStartup();
@@ -43,7 +43,6 @@ private:
     std::atomic_bool isReportContinuousStartup_ = false;
     std::vector<std::string> startPkgs_;
     std::unordered_set<std::string> startUidSet_;
-    std::unordered_set<std::string> startIgnorePkgs_;
     std::shared_ptr<ffrt::queue> ffrtQueue_ = nullptr;
     ffrt::task_handle exitContinuousStartupTask;
     ffrt::mutex mutex_;
