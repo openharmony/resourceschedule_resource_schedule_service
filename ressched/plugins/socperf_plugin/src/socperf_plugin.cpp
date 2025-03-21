@@ -59,6 +59,8 @@ namespace {
     const std::string POWER_MODE_KEY = "power";
     const std::string POWER_MODE = "powerMode";
     const std::string PRELOAD_MODE = "isPreload";
+    const std::string WEAK_ACTION_STRING = "weakInterAction";
+    const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -122,6 +124,7 @@ void SocPerfPlugin::Init()
     }
     InitPerfCrucialSo();
     InitBundleNameBoostList();
+    InitWeakInterAction();
     SOC_PERF_LOGI("SocPerfPlugin::Init success");
 }
 
@@ -142,6 +145,26 @@ void SocPerfPlugin::InitPerfCrucialSo()
     if (!perfReqAppTypeSoPath_.empty() && !perfReqAppTypeSoFunc_.empty()) {
         InitPerfCrucialFunc(perfReqAppTypeSoPath_.c_str(), perfReqAppTypeSoFunc_.c_str());
     }
+}
+
+void SocPerfPlugin::InitWeakInterAction()
+{
+    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, WEAK_ACTION_STRING);
+    for (const Item& item : itemLists.itemList) {
+        for (SubItem sub : item.subItemList) {
+            if (sub.name == BUNDLE_NAME) {
+                AddKeyAppName(sub.value);
+            }
+        }
+    }
+}
+
+void SocPerfPlugin::AddKeyAppName(const std::string& subValue)
+{
+    if (subValue.empty()) {
+        return;
+    }
+    keyAppName_.insert(subValue);
 }
 
 void SocPerfPlugin::InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc)
@@ -455,6 +478,23 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
     }
 }
 
+void SocPerfPlugin::UpdateWeakActionStatus()
+{
+    bool status = true;
+    for (const int32_t& appUid : focusAppUids_) {
+        if (uidToAppMsgMap_.find(appUid) != uidToAppMsgMap_.end()) {
+            if (keyAppName_.find(uidToAppMsgMap_[appUid].GetBundleName()) != keyAppName_.end()) {
+                status = false;
+                break;
+            }
+        }
+    }
+    if (status != weakActionStatus_) {
+        weakActionStatus_ = status;
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(WEAK_ACTION_MODE, weakActionStatus_);
+    }
+}
+
 bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, bool focusStatus)
 {
     int32_t uid = GetUidByData(data);
@@ -464,10 +504,12 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
     SOC_PERF_LOGI("SocPerfPlugin: socperf->UpdateFocusAppType, %{public}d", uid);
     if (!focusStatus) {
         focusAppUids_.erase(uid);
+        UpdateWeakActionStatus();
         isFocusAppsGameType_ = IsFocusAppsAllGame();
         return true;
     }
     focusAppUids_.insert(uid);
+    UpdateWeakActionStatus();
     int32_t pid = GetPidByData(data, PID_NAME);
     if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end()) {
         if (pid != INVALID_VALUE) {
