@@ -151,6 +151,7 @@ private:
     bool HandleSubValue(const std::string& subValue, std::set<std::string>& nameSet);
     bool IsAllowBoostScene();
     bool HandleMoveEventBoost(const std::shared_ptr<ResData>& data, bool isSet);
+    bool HandleSceenModeBoost(const std::string& deviceModeType);
     int32_t GetPidByData(const std::shared_ptr<ResData>& data, const std::string& key);
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
