@@ -72,6 +72,7 @@ private:
     using ReqAppTypeFunc = int32_t (*)(const std::string &bundleName);
     std::set<uint32_t> resTypes;
     std::set<int32_t> focusAppUids_;
+    bool weakActionStatus_ = true;
     std::set<std::string> keyAppName_;
     // app names set which use camera
     std::set<std::string> appNameUseCamera_;
@@ -100,6 +101,7 @@ private:
     void InitPerfCrucialSo();
     void InitWeakInterAction();
     void AddKeyAppName(const std::string& subValue);
+    void UpdateWeakActionStatus();
     void InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc);
     void HandleWindowFocus(const std::shared_ptr<ResData>& data);
     void HandleEventClick(const std::shared_ptr<ResData>& data);
