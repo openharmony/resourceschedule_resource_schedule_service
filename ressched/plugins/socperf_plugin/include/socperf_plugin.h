@@ -98,6 +98,8 @@ private:
     void AddEventToFunctionMap();
     void InitResTypes();
     void InitPerfCrucialSo();
+    void InitWeakInterAction();
+    void AddKeyAppName(const std::string& subValue);
     void InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc);
     void HandleWindowFocus(const std::shared_ptr<ResData>& data);
     void HandleEventClick(const std::shared_ptr<ResData>& data);

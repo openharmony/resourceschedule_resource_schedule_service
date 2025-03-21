@@ -147,7 +147,7 @@ void SocPerfPlugin::InitPerfCrucialSo()
     }
 }
 
-void SocPerfPlugin::InitPerfCrucialSo()
+void SocPerfPlugin::InitWeakInterAction()
 {
     PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, WEAK_ACTION_STRING);
     for (const Item& item : itemLists.itemList) {
