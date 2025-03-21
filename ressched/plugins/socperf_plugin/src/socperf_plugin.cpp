@@ -53,6 +53,7 @@ namespace {
     const std::string EXTENSION_TYPE_KEY = "extensionType";
     const std::string DEVICE_MODE_TYPE_KEY = "deviceModeType";
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
+    const std::string DISPLAY_MODE_KEY = "display";
     const std::string DISPLAY_MODE_FULL = "displayFull";
     const std::string DISPLAY_MODE_MAIN = "displayMain";
     const std::string DISPLAY_MODE_SUB = "displaySub";
@@ -959,14 +960,22 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
         SOC_PERF_LOGW("SocPerfPlugin: device mode status payload is error");
         return;
     }
-    std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
     deviceMode_ = data->payload[DEVICE_MODE_PAYMODE_NAME];
     bool status = (data->value == DeviceModeStatus::MODE_ENTER);
     const std::string deviceModeType = data->payload[DEVICE_MODE_TYPE_KEY];
     const std::string deviceModeStr = deviceModeType + ":" + deviceMode_;
     OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(deviceModeStr, status);
     SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s  status%{public}d", deviceModeStr.c_str(), status);
-    
+    HandleSceenModeBoost(deviceModeType);
+}
+
+bool SocPerfPlugin::HandleSceenModeBoost(const std::string& deviceModeType)
+{
+    if (deviceModeType != DISPLAY_MODE_KEY) {
+        return false;
+    }
+
+    std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
     if (deviceMode_ == DISPLAY_MODE_FULL && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
@@ -974,6 +983,7 @@ void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>&
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
     }
+    return true;
 }
 
 bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
