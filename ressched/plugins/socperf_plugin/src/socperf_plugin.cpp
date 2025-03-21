@@ -145,6 +145,7 @@ void SocPerfPlugin::InitPerfCrucialSo()
     if (!perfReqAppTypeSoPath_.empty() && !perfReqAppTypeSoFunc_.empty()) {
         InitPerfCrucialFunc(perfReqAppTypeSoPath_.c_str(), perfReqAppTypeSoFunc_.c_str());
     }
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CNOFIG_NAME_SOCPERF_CRUCIAL_FUNC);
 }
 
 void SocPerfPlugin::InitWeakInterAction()
@@ -157,6 +158,7 @@ void SocPerfPlugin::InitWeakInterAction()
             }
         }
     }
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, WEAK_ACTION_STRING);
 }
 
 void SocPerfPlugin::AddKeyAppName(const std::string& subValue)
@@ -198,6 +200,7 @@ void SocPerfPlugin::InitEventId()
             }
         }
     }
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_EVENT_ID);
 }
 
 bool SocPerfPlugin::InitBundleNameBoostList()
@@ -214,6 +217,7 @@ bool SocPerfPlugin::InitBundleNameBoostList()
             }
         }
     }
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_BUNDLE_NAME_BOOST_LIST);
     return ret;
 }
 
