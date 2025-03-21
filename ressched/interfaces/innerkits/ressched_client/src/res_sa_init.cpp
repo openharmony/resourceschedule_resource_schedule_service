@@ -33,7 +33,7 @@ ResSchedIpcThread& ResSchedIpcThread::GetInstance()
     return instance;
 }
 
-void ResSchedIpcThread::SetQos(uint32_t pid)
+void ResSchedIpcThread::SetQos(int32_t pid)
 {
     if (!isInit_.load()) {
         return;
@@ -43,7 +43,7 @@ void ResSchedIpcThread::SetQos(uint32_t pid)
         return;
     }
 
-    uint32_t tid = gettid();
+    int32_t tid = gettid();
     std::unique_lock<std::mutex> lock(ipcThreadSetQosMutex_);
     if (ipcThreadTids_.find(tid) != ipcThreadTids_.end()) {
         lock.unlock();
