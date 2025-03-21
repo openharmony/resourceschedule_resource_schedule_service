@@ -23,7 +23,8 @@
       "resource_schedule_service_with_app_nap_enable",
       "resource_schedule_service_cust_soc_perf_enable",
       "resource_schedule_service_crown_power_key_enable",
-      "resource_schedule_service_file_copy_soc_perf_enable"
+      "resource_schedule_service_file_copy_soc_perf_enable",
+      "resource_schedule_service_subscribe_click_recognize_enable"
     ],
     "adapted_system_type": [
       "standard"
