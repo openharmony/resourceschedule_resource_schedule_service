@@ -72,6 +72,7 @@ private:
     using ReqAppTypeFunc = int32_t (*)(const std::string &bundleName);
     std::set<uint32_t> resTypes;
     std::set<int32_t> focusAppUids_;
+    std::set<std::string> keyAppName_;
     // app names set which use camera
     std::set<std::string> appNameUseCamera_;
     // app names set which add move boost
