@@ -478,6 +478,23 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
     }
 }
 
+void SocPerfPlugin::UpdateWeakActionStatus()
+{
+    bool status = true;
+    for (const int32_t& appUid : focusAppUids_) {
+        if (uidToAppMsgMap_.find(appUid) != uidToAppMsgMap_.end()) {
+            if (keyAppName_.find(uidToAppMsgMap_[appUid].GetBundleName()) != keyAppName_.end()) {
+                status = false;
+                break;
+            }
+        }
+    }
+    if (status != weakActionStatus_) {
+        weakActionStatus_ = status;
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(WEAK_ACTION_MODE, weakActionStatus_);
+    }
+}
+
 bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, bool focusStatus)
 {
     int32_t uid = GetUidByData(data);
@@ -487,20 +504,14 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
     SOC_PERF_LOGI("SocPerfPlugin: socperf->UpdateFocusAppType, %{public}d", uid);
     if (!focusStatus) {
         focusAppUids_.erase(uid);
-        if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end()) {
-            if (keyAppName_.find(uidToAppMsgMap_[uid].GetBundleName()) != keyAppName_.end()) {
-                OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(WEAK_ACTION_MODE, true);
-            }
-        }
+        UpdateWeakActionStatus();
         isFocusAppsGameType_ = IsFocusAppsAllGame();
         return true;
     }
     focusAppUids_.insert(uid);
+    UpdateWeakActionStatus();
     int32_t pid = GetPidByData(data, PID_NAME);
     if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end()) {
-        if (keyAppName_.find(uidToAppMsgMap_[uid].GetBundleName()) != keyAppName_.end()) {
-            OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(WEAK_ACTION_MODE, false);
-        }
         if (pid != INVALID_VALUE) {
             pidToAppTypeMap_[pid] = uidToAppMsgMap_[uid].GetAppType();
         }
