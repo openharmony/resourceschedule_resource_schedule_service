@@ -49,7 +49,7 @@ public:
      * @param pluginName The plugin name.
      * @param configName The config name.
      */
-    PluginConfig RemoveConfig(const std::string& pluginName, const std::string& configName);
+    void RemoveConfig(const std::string& pluginName, const std::string& configName);
 
     void Dump(std::string &result);
 
