@@ -170,6 +170,8 @@ public:
 
     PluginConfig GetConfig(const std::string& pluginName, const std::string& configName);
 
+    void RemoveConfig(const std::string& pluginName, const std::string& configName);
+
     void SetResTypeStrMap(const std::map<uint32_t, std::string>& resTypeStr);
 
     std::shared_ptr<PluginLib> GetPluginLib(const std::string& libPath);
