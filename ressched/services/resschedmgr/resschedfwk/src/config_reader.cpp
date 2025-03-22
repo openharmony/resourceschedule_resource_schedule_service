@@ -203,7 +203,7 @@ PluginConfig ConfigReader::GetConfig(const std::string& pluginName, const std::s
     return configMap[configName];
 }
 
-PluginConfig ConfigReader::RemoveConfig(const std::string& pluginName, const std::string& configName)
+void ConfigReader::RemoveConfig(const std::string& pluginName, const std::string& configName)
 {
     lock_guard<mutex> autoLock(configMutex_);
     PluginConfig config;
