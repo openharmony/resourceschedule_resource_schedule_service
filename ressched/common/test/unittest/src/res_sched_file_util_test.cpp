@@ -55,7 +55,7 @@ HWTEST_F(ResSchedFileUtilTest, WriteFileReclaim_001, Function | MediumTest | Lev
     if (ResCommonUtil::PathOrFileExists(path)) {
         EXPECT_TRUE(open(path.c_str(), O_WRONLY) >= 0);
     } else {
-        EXPECT_FLASE(open(path.c_str(), O_WRONLY) >= 0);
+        EXPECT_FALSE(open(path.c_str(), O_WRONLY) >= 0);
     }
 }
 
