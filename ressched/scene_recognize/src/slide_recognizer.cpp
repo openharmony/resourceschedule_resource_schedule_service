@@ -133,11 +133,11 @@ void SlideRecognizer::StartDetecting(const nlohmann::json& payload)
         return;
     }
     slidePid_ = payload["clientPid"];
-    if (!payload.contains("clientUid") || !payload["clientUid"].is_string()) {
-        RESSCHED_LOGE("payload with no clientUid");
+    if (!payload.contains("callingUid") || !payload["callingUid"].is_string()) {
+        RESSCHED_LOGE("payload with no callingUid");
         return;
     }
-    slideUid_ = payload["clientUid"];
+    slideUid_ = payload["callingUid"];
 }
 
 void SlideRecognizer::HandleListFlingStart(const nlohmann::json& payload)
@@ -246,7 +246,7 @@ nlohmann::json SlideRecognizer::FillRealPidAndUid(const nlohmann::json& payload)
         payloadM["clientPid"] = slidePid_;
     }
     if (!slideUid_.empty()) {
-        payloadM["clientUid"] = slideUid_;
+        payloadM["callingUid"] = slideUid_;
     }
     return payloadM;
 }
