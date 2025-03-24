@@ -55,6 +55,7 @@ ohos_source_set("res_sched_service_stub") {
     "c_utils:utils",
     "ipc:ipc_core",
   ]
+  branch_protector_ret = "pac_ret"
 }
 
 ohos_shared_library("ressched_client") {
