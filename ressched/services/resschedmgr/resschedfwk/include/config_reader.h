@@ -43,6 +43,14 @@ public:
      */
     PluginConfig GetConfig(const std::string& pluginName, const std::string& configName);
 
+    /**
+     * After the Xml is used, the configuration object is discarded
+     *
+     * @param pluginName The plugin name.
+     * @param configName The config name.
+     */
+    void RemoveConfig(const std::string& pluginName, const std::string& configName);
+
     void Dump(std::string &result);
 
     void DumpItem(const Item& item, std::string &result);

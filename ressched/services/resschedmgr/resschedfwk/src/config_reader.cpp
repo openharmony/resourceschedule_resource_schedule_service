@@ -203,6 +203,28 @@ PluginConfig ConfigReader::GetConfig(const std::string& pluginName, const std::s
     return configMap[configName];
 }
 
+void ConfigReader::RemoveConfig(const std::string& pluginName, const std::string& configName)
+{
+    lock_guard<mutex> autoLock(configMutex_);
+    PluginConfig config;
+    auto itMap = allPluginConfigs_.find(pluginName);
+    if (itMap == allPluginConfigs_.end()) {
+        RESSCHED_LOGE("%{public}s, no pluginName:%{public}s config!", __func__, pluginName.c_str());
+        return;
+    }
+    PluginConfigMap configMap = allPluginConfigs_[pluginName];
+    auto itConfig = configMap.find(configName);
+    if (itConfig == configMap.end()) {
+        RESSCHED_LOGE("%{public}s, pluginName:%{public}s config:%{public}s null!", __func__,
+            pluginName.c_str(), configName.c_str());
+        return;
+    }
+    configMap.erase(configName);
+    if (configMap.size() == 0) {
+        allPluginConfigs_.erase(pluginName);
+    }
+}
+
 void ConfigReader::Dump(std::string &result)
 {
     result.append("================Resource Schedule Plugin Config ================\n");
