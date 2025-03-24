@@ -74,6 +74,14 @@ private:
     void CheckProcTaskForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply);
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
 
+    class HicollieUtil {
+        public:
+            HicollieUtil(const std::string& name);
+            ~HicollieUtil();
+        private:
+            int id_;
+    };
+
     bool isInit = false;
 };
 } // namespace ResourceSchedule

@@ -20,9 +20,15 @@
 #include <fstream>
 #include <map>
 #include <sstream>
+#include <unistd.h>
 
 #include "cgroup_action.h"
 #include "hitrace_meter.h"
+
+#ifdef HICOLLIE_ENABLE
+#include "xcollie/xcollie.h"
+#include "xcollie/xcollie_define.h"
+#endif
 
 #include "plugin_mgr.h"
 #include "res_exe_type.h"
@@ -37,6 +43,9 @@ namespace {
     const int32_t MAX_CONFIG_SIZE = 1024 * 1024;
     const std::string STR_CONFIG_READER = "config";
     const std::string STR_PLUGIN_SWITCH = "switch";
+#ifdef HICOLLIE_ENABLE
+    const unsigned int XCOLLIE_TIMEOUT_SECONDS = 10;
+#endif
 
     const std::map<uint32_t, std::string> resTypeToStr = {
         { ResExeType::RES_TYPE_COMMON_SYNC, "RES_TYPE_COMMON_SYNC" },
@@ -65,6 +74,9 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     const nlohmann::json& payload, nlohmann::json& reply)
 {
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
+    std::string funcName = std::string(__func__).append("_").append(std::to_string(resType))
+        .append("_").append(std::to_string(value));
+    HicollieUtil hicollie(funcName);
     std::string traceStr = BuildTraceStr(__func__, resType, value);
     HitraceScoped hitrace(HITRACE_TAG_OHOS, traceStr);
     switch (resType) {
@@ -91,6 +103,9 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
 void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
+    std::string funcName = std::string(__func__).append("_").append(std::to_string(resType))
+        .append("_").append(std::to_string(value));
+    HicollieUtil hicollie(funcName);
     if (resType == ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT) {
         InitPluginMgr(payload);
         return;
@@ -102,6 +117,8 @@ void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlo
 
 int32_t ResSchedExeMgr::KillProcess(pid_t pid)
 {
+    std::string funcName = std::string(__func__).append("_").append(std::to_string(pid));
+    HicollieUtil hicollie(funcName);
     int32_t killRes = kill(pid, SIGNAL_KILL);
     return killRes;
 }
@@ -238,5 +255,25 @@ void ResSchedExeMgr::CheckProcTaskForCgroup(uint32_t resType, const nlohmann::js
     reply["res"] = PathToRealPath(pathName, realPath);
     return;
 }
+
+ResSchedExeMgr::HicollieUtil::HicollieUtil(const std::string& name)
+{
+#ifdef HICOLLIE_ENABLE
+    std::string collieName = std::string("ResourceSchedulerExecutor::").append(name);
+    unsigned int flag = HiviewDFX::XCOLLIE_FLAG_LOG | HiviewDFX::XCOLLIE_FLAG_RECOVERY;
+    auto timerCallback = [collieName](void *) {
+        RSSEXE_LOGE("OnRemoteRequest timeout func: %{public}s", collieName.c_str());
+    };
+    id_ = HiviewDFX::XCollie::GetInstance().SetTimer(collieName, XCOLLIE_TIMEOUT_SECONDS, timerCallback, nullptr, flag);
+#endif
+}
+
+ResSchedExeMgr::HicollieUtil::~HicollieUtil()
+{
+#ifdef HICOLLIE_ENABLE
+    HiviewDFX::XCollie::GetInstance().CancelTimer(id_);
+#endif
+}
+
 } // namespace ResourceSchedule
 } // namespace OHOS
