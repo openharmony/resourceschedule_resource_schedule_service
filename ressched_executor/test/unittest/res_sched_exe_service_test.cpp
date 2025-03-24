@@ -40,7 +40,7 @@ using namespace Security::AccessToken;
 namespace {
     constexpr int32_t SYNC_THREAD_NUM = 100;
     constexpr int32_t SYNC_INTERNAL_TIME = 10000;
-    constexpr int32_t RSS_UID = 1906;
+    constexpr int32_t RSS_UID = 1096;
     const std::string RES_TYPE_EXT = "extType";
 }
 
