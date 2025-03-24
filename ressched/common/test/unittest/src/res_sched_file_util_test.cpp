@@ -57,7 +57,6 @@ HWTEST_F(ResSchedFileUtilTest, WriteFileReclaim_001, Function | MediumTest | Lev
     } else {
         EXPECT_FLASE(open(path.c_str(), O_WRONLY) >= 0);
     }
-    
 }
 
 /**
