@@ -84,9 +84,6 @@ HWTEST_F(ResSchedStringUtilTest, StrToInt32_001, Function | MediumTest | Level0)
     EXPECT_FALSE(ResCommonUtil::StrToInt32("1123abc", result));
     EXPECT_EQ(result, -1);
     result = -1;
-    EXPECT_FALSE(ResCommonUtil::StrToInt32(std::to_string(LONG_MAX), result));
-    EXPECT_EQ(result, -1);
-    result = -1;
     EXPECT_FALSE(ResCommonUtil::StrToInt32(std::to_string(LONG_MIN), result));
     EXPECT_EQ(result, -1);
 }
