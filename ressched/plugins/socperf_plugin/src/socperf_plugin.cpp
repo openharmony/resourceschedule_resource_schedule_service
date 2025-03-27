@@ -112,6 +112,9 @@ namespace {
 #endif
     const int32_t PERF_REQUEST_CMD_ID_MOVE_EVENT_BOOST      = 10091;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_DRAG            = 10092;
+    const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL1     = 123456;
+    const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL2     = 123457;
+    const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL3     = 123458;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -673,10 +676,17 @@ bool SocPerfPlugin::HandleGameBoost(const std::shared_ptr<ResData>& data)
         return false;
     }
     SOC_PERF_LOGD("SocPerfPlugin:socperf->GAME_BOOST: %{public}lld", (long long)data->value);
-    if (data->value == GameBoostState::BOOST_START) {
+    if (data->value == GameBoostState::GAME_BOOST_LEVEL0) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST, true, "");
-    } else if (data->value == GameBoostState::BOOST_END) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST, false, "");
+    } else if (data->value == GameBoostState::GAME_BOOST_LEVEL1) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST, true, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL1, true, "");
+    } else if (data->value == GameBoostState::GAME_BOOST_LEVEL2) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST, true, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL2, true, "");
+    } else if (data->value == GameBoostState::GAME_BOOST_LEVEL3) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST, true, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL3, true, "");
     }
     return true;
 }

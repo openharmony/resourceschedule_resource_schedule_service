@@ -708,8 +708,11 @@ enum HeavyLoadMutexSceneBoardcastScene : int64_t {
  * @brief game boost state
  */
 enum GameBoostState : int64_t {
-    BOOST_START = 0,
-    BOOST_END = 1,
+    GAME_BOOST_LEVEL0 = 0,
+    GAME_BOOST_LEVEL1 = 1,
+    GAME_BOOST_LEVEL2 = 2,
+    GAME_BOOST_LEVEL3 = 3,
+    GAME_BOOST_END = 4,
 };
 
 /**
