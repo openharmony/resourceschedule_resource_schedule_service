@@ -62,6 +62,7 @@ namespace {
     const std::string PRELOAD_MODE = "isPreload";
     const std::string WEAK_ACTION_STRING = "weakInterAction";
     const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
+    const std::string KEY_APP_TYPE = "key_app_type";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -156,6 +157,8 @@ void SocPerfPlugin::InitWeakInterAction()
         for (SubItem sub : item.subItemList) {
             if (sub.name == BUNDLE_NAME) {
                 AddKeyAppName(sub.value);
+            } else if (sub.name == KEY_APP_TYPE) {
+                AddKeyAppType(sub.value);
             }
         }
     }
@@ -168,6 +171,14 @@ void SocPerfPlugin::AddKeyAppName(const std::string& subValue)
         return;
     }
     keyAppName_.insert(subValue);
+}
+
+void SocPerfPlugin::AddKeyAppType(const std::string& subValue)
+{
+    if (subValue.empty()) {
+        return;
+    }
+    keyAppType_.insert(atoi(subValue.c_str()));
 }
 
 void SocPerfPlugin::InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc)
@@ -489,6 +500,9 @@ void SocPerfPlugin::UpdateWeakActionStatus()
     for (const int32_t& appUid : focusAppUids_) {
         if (uidToAppMsgMap_.find(appUid) != uidToAppMsgMap_.end()) {
             if (keyAppName_.find(uidToAppMsgMap_[appUid].GetBundleName()) != keyAppName_.end()) {
+                status = false;
+                break;
+            } else if (keyAppType_.find(uidToAppMsgMap_[appUid].GetAppType()) != keyAppType_.end()) {
                 status = false;
                 break;
             }
