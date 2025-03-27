@@ -74,6 +74,7 @@ private:
     std::set<int32_t> focusAppUids_;
     bool weakActionStatus_ = true;
     std::set<std::string> keyAppName_;
+    std::set<int32_t> keyAppType_;
     // app names set which use camera
     std::set<std::string> appNameUseCamera_;
     // app names set which add move boost
@@ -101,6 +102,7 @@ private:
     void InitPerfCrucialSo();
     void InitWeakInterAction();
     void AddKeyAppName(const std::string& subValue);
+    void AddKeyAppType(const std::string& subValue);
     void UpdateWeakActionStatus();
     void InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc);
     void HandleWindowFocus(const std::shared_ptr<ResData>& data);
