@@ -875,13 +875,23 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_035, Function | MediumTes
     EXPECT_FALSE(ret);
 
     std::shared_ptr<ResData> validData1 = std::make_shared<ResData>(ResType::RES_TYPE_APP_GAME_BOOST_EVENT,
-        ResType::GameBoostState::BOOST_START, nullptr);
+        ResType::GameBoostState::GAME_BOOST_LEVEL0, nullptr);
     ret = SocPerfPlugin::GetInstance().HandleGameBoost(validData1);
     EXPECT_TRUE(ret);
 
     std::shared_ptr<ResData> validData2 = std::make_shared<ResData>(ResType::RES_TYPE_APP_GAME_BOOST_EVENT,
-        ResType::GameBoostState::BOOST_END, nullptr);
+        ResType::GameBoostState::GAME_BOOST_LEVEL1, nullptr);
     ret = SocPerfPlugin::GetInstance().HandleGameBoost(validData2);
+    EXPECT_TRUE(ret);
+
+    std::shared_ptr<ResData> validData3 = std::make_shared<ResData>(ResType::RES_TYPE_APP_GAME_BOOST_EVENT,
+        ResType::GameBoostState::GAME_BOOST_LEVEL2, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleGameBoost(validData3);
+    EXPECT_TRUE(ret);
+
+    std::shared_ptr<ResData> validData4 = std::make_shared<ResData>(ResType::RES_TYPE_APP_GAME_BOOST_EVENT,
+        ResType::GameBoostState::GAME_BOOST_LEVEL3, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleGameBoost(validData4);
     EXPECT_TRUE(ret);
 }
 
