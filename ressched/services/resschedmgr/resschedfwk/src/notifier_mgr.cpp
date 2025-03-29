@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,7 +29,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 using OHOS::AppExecFwk::ApplicationState;
 
-static const std::string SYSTEMLOAD_CHANGE = "systemLoadChange";
+static const char* SYSTEMLOAD_CHANGE = "systemLoadChange";
 
 static std::map<ResType::DeviceStatus, std::string> g_DeviceStatusType = {
     { ResType::DeviceStatus::SYSTEMLOAD_LEVEL, SYSTEMLOAD_CHANGE }
@@ -46,7 +46,7 @@ static std::vector<std::pair<std::string, ResType::SystemloadLevel>> g_systemloa
     { "ESCAPE", ResType::SystemloadLevel::ESCAPE }
 };
 
-static const std::string SYSTEMLOAD_FILE = "/data/service/el1/public/ressched/systemload";
+static const char* SYSTEMLOAD_FILE = "/data/service/el1/public/ressched/systemload";
 
 NotifierMgr& NotifierMgr::GetInstance()
 {

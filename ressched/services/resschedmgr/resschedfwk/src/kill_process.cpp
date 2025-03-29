@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,9 +28,9 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace std;
 namespace {
-    constexpr int32_t MAX_INDEX = 22;
-    constexpr int32_t START_TIME_INDEX = 19;
-    const std::string UNKNOWN_PROCESS = "unknown_process";
+    static constexpr int32_t MAX_INDEX = 22;
+    static constexpr int32_t START_TIME_INDEX = 19;
+    static const char* UNKNOWN_PROCESS = "unknown_process";
 }
 
 int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload)
