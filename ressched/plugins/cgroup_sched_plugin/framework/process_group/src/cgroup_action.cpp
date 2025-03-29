@@ -68,7 +68,7 @@ CgroupAction::CgroupAction()
 void CgroupAction::AddSchedPolicyDeclaration(const SchedPolicy policy,
     const std::string& fullName, const std::string& abbrName)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (!allowToAdd_) {
         PGCGS_LOGI("%{public}s not allowed: %{public}u, %{public}s, %{public}s",
             __func__, policy, fullName.c_str(), abbrName.c_str());
@@ -97,7 +97,7 @@ void CgroupAction::AddSchedPolicyDeclaration(const SchedPolicy policy,
 
 std::vector<SchedPolicy> CgroupAction::GetSchedPolicyList()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     std::vector<SchedPolicy> policyList;
     std::transform(fullNames_.begin(), fullNames_.end(), std::back_inserter(policyList),
         [] (const auto& kv) { return kv.first; });
@@ -106,13 +106,13 @@ std::vector<SchedPolicy> CgroupAction::GetSchedPolicyList()
 
 bool CgroupAction::IsSchedPolicyValid(SchedPolicy policy)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     return fullNames_.find(policy) != fullNames_.end();
 }
 
 const char* CgroupAction::GetSchedPolicyFullName(SchedPolicy policy)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (fullNames_.find(policy) != fullNames_.end()) {
         return fullNames_[policy].c_str();
     }
@@ -121,7 +121,7 @@ const char* CgroupAction::GetSchedPolicyFullName(SchedPolicy policy)
 
 const char* CgroupAction::GetSchedPolicyAbbrName(SchedPolicy policy)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (abbrNames_.find(policy) != abbrNames_.end()) {
         return abbrNames_[policy].c_str();
     }
@@ -181,7 +181,7 @@ bool CgroupAction::LoadConfigFile()
 bool CgroupAction::IsEnabled()
 {
     {
-        std::lock_guard<std::mutex> lock(mutex_);
+        std::lock_guard<ffrt::mutex> lock(mutex_);
         allowToAdd_ = false;
     }
     static bool enable = LoadConfigFile();
