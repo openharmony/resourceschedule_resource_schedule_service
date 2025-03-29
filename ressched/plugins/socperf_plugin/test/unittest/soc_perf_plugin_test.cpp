@@ -895,7 +895,6 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_035, Function | MediumTes
     EXPECT_TRUE(ret);
 }
 
-
 /*
  * @tc.name: SocPerfPluginTest_API_TEST_036
  * @tc.desc: test socperfplugin api
