@@ -17,11 +17,11 @@
 #define CGROUP_SCHED_FRAMEWORK_PROCESS_GROUP_INCLUDE_CGROUP_ACTION_H_
 
 #include <functional>         // for less
-#include <mutex>              // for mutex
 #include <iosfwd>             // for string
 #include <map>                // for map
 #include <string>             // for basic_string
 #include <vector>             // for vector
+#include "ffrt.h"
 #include "sched_policy.h"     // for SchedPolicy
 #include "nlohmann/json.hpp"
 
@@ -52,7 +52,7 @@ private:
     CgroupAction(CgroupAction&&) = delete;
     CgroupAction& operator=(CgroupAction&&) = delete;
 
-    std::mutex mutex_; // for sched policy maps
+    ffrt::mutex mutex_; // for sched policy maps
     bool allowToAdd_ = true;
     std::map<SchedPolicy, std::string> fullNames_;
     std::map<SchedPolicy, std::string> abbrNames_;
