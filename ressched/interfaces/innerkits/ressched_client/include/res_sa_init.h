@@ -54,9 +54,9 @@ public:
     /**
      * @brief SetQos.
      *
-     * @param pid client pid.
+     * @param clientPid client pid.
      */
-    void SetQos(int32_t pid);
+    void SetQos(int32_t clientPid);
 
     /**
      * @brief SetInitFlag.
