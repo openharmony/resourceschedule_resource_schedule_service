@@ -552,6 +552,8 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
     // touch down event
     if (data->value == ClickEventType::TOUCH_EVENT_DOWN_MMI) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
+    } else if (data->value == ClickEventType::TOUCH_EVENT_DOWN) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
     } else if (data->value == ClickEventType::TOUCH_EVENT_UP) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
         HandleMoveEventBoost(data, false);
