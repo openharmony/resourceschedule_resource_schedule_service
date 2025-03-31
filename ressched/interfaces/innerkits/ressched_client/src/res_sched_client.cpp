@@ -393,7 +393,6 @@ void ResSchedClient::RecoverEventListener()
                 registeredInnerEvents.emplace(type, std::unordered_set<uint32_t>());
             }
             registeredInnerEvents[type].insert(group);
-            
         }
     }
 }
