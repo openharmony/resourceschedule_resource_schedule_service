@@ -42,7 +42,7 @@ private:
     void MarshallingAudioRendererChangeInfo(
         const std::unique_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo,
         nlohmann::json &payload);
-    bool IsRenderStateChange(const std::shared_ptr<AudioStandard::AudioRendererChangeInfo>& info);
+    bool IsRenderStateChange(const std::unique_ptr<AudioStandard::AudioRendererChangeInfo>& info);
     std::unordered_map<int32_t, AudioStandard::RendererState> renderState_;
     int32_t lastVolume = -1;
 };
