@@ -36,7 +36,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace AppExecFwk;
 namespace {
-    const std::map<uint32_t, std::string> resTypeToStr = {
+    static const std::map<uint32_t, std::string> resTypeToStr = {
         { ResType::SYNC_RES_TYPE_THAW_ONE_APP, "SYNC_RES_TYPE_THAW_ONE_APP"},
         { ResType::SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE, "SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE"},
         { ResType::SYNC_RES_TYPE_GET_THERMAL_DATA, "SYNC_RES_TYPE_GET_THERMAL_DATA"},

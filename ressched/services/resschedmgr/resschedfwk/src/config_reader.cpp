@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,11 +21,11 @@ using namespace std;
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-constexpr auto XML_TAG_RES_SCHED = "ressched";
-constexpr auto XML_TAG_PLUGIN = "plugin";
-constexpr auto XML_TAG_CONFIG = "config";
-constexpr auto XML_TAG_ITEM = "item";
-constexpr auto XML_ATTR_NAME = "name";
+static const char* XML_TAG_RES_SCHED = "ressched";
+static const char* XML_TAG_PLUGIN = "plugin";
+static const char* XML_TAG_CONFIG = "config";
+static const char* XML_TAG_ITEM = "item";
+static const char* XML_ATTR_NAME = "name";
 }
 
 bool ConfigReader::IsInvalidNode(const xmlNode& currNode)
