@@ -36,7 +36,7 @@ void AudioObserver::MarshallingAudioRendererChangeInfo(
     payload["rendererInfo.streamUsage"] = static_cast<int32_t>(audioRendererChangeInfo->rendererInfo.streamUsage);
 }
 
-bool AudioObserver::IsRenderStateChange(const std::shared_ptr<AudioStandard::AudioRendererChangeInfo>& info)
+bool AudioObserver::IsRenderStateChange(const std::unique_ptr<AudioStandard::AudioRendererChangeInfo>& info)
 {
     auto item = renderState_.find(info->sessionId);
     if (item != renderState_.end()) {
