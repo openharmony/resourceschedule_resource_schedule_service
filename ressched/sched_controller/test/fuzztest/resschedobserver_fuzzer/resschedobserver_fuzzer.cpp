@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -157,7 +157,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         nlohmann::json sysEvent;
         sysEvent["UID"] = GetData<int32_t>();
@@ -186,7 +185,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         nlohmann::json sysEvent;
         sysEvent["UID"] = GetData<int32_t>();
@@ -213,7 +211,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         nlohmann::json sysEvent;
         sysEvent["UID"] = GetData<int32_t>();
@@ -238,7 +235,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         nlohmann::json sysEvent;
         sysEvent["UID"] = GetData<int32_t>();
@@ -264,7 +260,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         nlohmann::json sysEvent;
         sysEvent["domain_"] = GetStringFromData(DATA_LENGTH);
@@ -289,7 +284,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
         auto instance = ObserverManager::GetInstance();
         if (instance) {
             instance->GetAllMmiStatusData();
@@ -311,7 +305,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         nlohmann::json sysEvent;
         sysEvent["UID"] = GetData<int32_t>();
@@ -334,7 +327,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
         std::shared_ptr<HiSysEventObserver> hisysEventObserver_ = std::make_shared<HiSysEventObserver>();
         hisysEventObserver_->OnServiceDied();
         return true;
@@ -354,7 +346,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         int32_t pid = GetData<int32_t>();
         int32_t uid = GetData<int32_t>();
@@ -381,7 +372,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         AbilityRuntime::ConnectionData connectionData;
         connectionData.extensionPid = GetData<int32_t>();
@@ -413,7 +403,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         AbilityRuntime::DlpStateData targetConnectionData;
         targetConnectionData.targetPid = GetData<int32_t>();
@@ -444,7 +433,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         FoldDisplayMode diplayMode = static_cast<FoldDisplayMode>(GetData<uint32_t>() % (ENUM_MAX - ENUM_MIN + 1));
         auto foldDisplayModeObserver = std::make_unique<FoldDisplayModeObserver>();
@@ -466,7 +454,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         AVSession::AVSessionDescriptor descriptor;
         descriptor.sessionId_ = GetStringFromData(DATA_LENGTH);
@@ -495,7 +482,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         nlohmann::json payload;
         std::shared_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo =
@@ -527,7 +513,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         AudioStandard::AudioRingerMode ringerMode = AudioStandard::AudioRingerMode(GetData<int32_t>());
         auto audioObserver = std::make_unique<AudioObserver>();
@@ -548,7 +533,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         AudioStandard::VolumeEvent volumeEvent;
         volumeEvent.volumeType = AudioStandard::AudioVolumeType(GetData<int32_t>());
@@ -576,7 +560,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t slotId = GetData<int32_t>();
@@ -603,7 +586,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t code = GetData<uint32_t>();
@@ -629,7 +611,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         MessageParcel fuzzData;
@@ -656,7 +637,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         int count = GetData<int>();
         auto downLoadUploadObserver = std::make_shared<DownLoadUploadObserver>();
@@ -664,12 +644,18 @@ namespace {
         return true;
     }
 #endif
+    bool SetGPos()
+    {
+        g_pos = 0;
+        return true;
+    }
 } // namespace ResourceSchedule
 } // namespace OHOS
 
 /* Fuzzer entry point */
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
+    OHOS::ResourceSchedule::SetGPos();
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     OHOS::ResourceSchedule::HisysEventAvCodecEventFuzzTest(data, size);
     OHOS::ResourceSchedule::HisysEventRunningLockEventFuzzTest(data, size);
