@@ -17,6 +17,7 @@
 #define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_AUDIO_OBSERVER_H
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
 #include <string>
+#include <unordered_map>
 
 #include "nlohmann/json.hpp"
 #include "audio_stream_manager.h"
@@ -41,6 +42,9 @@ private:
     void MarshallingAudioRendererChangeInfo(
         const std::unique_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo,
         nlohmann::json &payload);
+    bool IsRenderStateChange(const std::shared_ptr<AudioStandard::AudioRendererChangeInfo>& info);
+    std::unordered_map<int32_t, AudioStandard::RendererState> renderState_;
+    int32_t lastVolume = -1;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
