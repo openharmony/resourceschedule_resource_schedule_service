@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -101,7 +101,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         int32_t systemAbilityId = GetData<int32_t>();
         std::string deviceId = GetStringFromData(DATA_LENGTH);
@@ -129,7 +128,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         int32_t userId = GetData<int32_t>();
         std::string bundleName = GetStringFromData(DATA_LENGTH);
@@ -146,7 +144,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         AAFwk::Want want;
         EventFwk::CommonEventData commonEventData;
@@ -177,7 +174,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         int32_t code = GetData<int32_t>();
         int32_t value = GetData<int32_t>();
@@ -214,7 +210,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         int32_t code = GetData<int32_t>();
         int32_t value = GetData<int32_t>();
@@ -248,7 +243,6 @@ namespace {
         // initialize
         DATA = data;
         g_size = size;
-        g_pos = 0;
 
         int32_t code = GetData<int32_t>();
         int32_t value = GetData<int32_t>();
@@ -277,12 +271,18 @@ namespace {
             EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED, want, payload);
         return true;
     }
+    bool SetGPos()
+    {
+        g_pos = 0;
+        return true;
+    }
 } // namespace ResourceSchedule
 } // namespace OHOS
 
 /* Fuzzer entry point */
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
+    OHOS::ResourceSchedule::SetGPos();
     OHOS::ResourceSchedule::ResSchedCommonEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ResSchedCommonEventGetUidFuzzTest(data, size);
     OHOS::ResourceSchedule::ResSchedCommonReceiveEventFuzzTest(data, size);
