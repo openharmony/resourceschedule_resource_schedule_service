@@ -33,15 +33,22 @@ void WriteFileReclaim(int32_t pid)
 {
     std::string path = "/proc/" + std::to_string(pid) + "/reclaim";
     std::string contentStr = "1";
-    int fd = open(path.c_str(), O_WRONLY);
+    FILE* file = fopen(path.c_str(), "r+");
     // judge whether open failed
-    if (fd < 0) {
+    if (file == nullptr) {
         RESSCHED_LOGE("%{public}s: open failed.", __func__);
         return;
     }
     // write content to fd
-    write(fd, contentStr.c_str(), contentStr.length());
-    close(fd);
+    size_t count = sizeof(contentStr.c_str());
+    size_t ret = fwrite(contentStr.c_str(), 1, count, file);
+    if (ret < count) {
+        RESSCHED_LOGE("%{public}s: write failed for %{public}s", __func__, path.c_str());
+    }
+    int closeResult = fclose(file);
+    if (closeResult < 0) {
+        RESSCHED_LOGE("%{public}s: file close failed: %{public}s", __func__, path.c_str());
+    }
 }
 
 bool GetRealPath(const std::string& filePath, std::string& realPath)
