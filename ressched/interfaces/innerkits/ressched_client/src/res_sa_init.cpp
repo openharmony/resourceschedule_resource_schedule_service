@@ -15,6 +15,7 @@
 
 #include "res_sa_init.h"
 
+#include "ffrt.h"
 #include "res_sched_client.h"
 #include "res_sched_log.h"
 
@@ -33,17 +34,18 @@ ResSchedIpcThread& ResSchedIpcThread::GetInstance()
     return instance;
 }
 
-void ResSchedIpcThread::SetQos(int32_t pid)
+void ResSchedIpcThread::SetQos(int32_t clientPid)
 {
     if (!isInit_.load()) {
         return;
     }
 
-    if (pid == selfPid_) {
+    if (clientPid == selfPid_) {
         return;
     }
 
     int32_t tid = gettid();
+    int32_t pid = selfPid_;
     std::unique_lock<std::mutex> lock(ipcThreadSetQosMutex_);
     if (ipcThreadTids_.find(tid) != ipcThreadTids_.end()) {
         lock.unlock();
@@ -56,14 +58,17 @@ void ResSchedIpcThread::SetQos(int32_t pid)
     ipcThreadTids_.insert(tid);
     lock.unlock();
 
-    std::string strTid = std::to_string(tid);
-    std::unordered_map<std::string, std::string> mapPayload;
-    mapPayload["pid"] = std::to_string(selfPid_);
-    mapPayload[strTid] = std::to_string(RSS_IPC_QOS_LEVEL);
-    mapPayload["bundleName"] = RSS_BUNDLE_NAME;
-    RESSCHED_LOGI("ResSchedIpcThread SetQos Thread tid=%{public}u.", tid);
-    OHOS::ResourceSchedule::ResSchedClient::GetInstance().ReportData(
-        OHOS::ResourceSchedule::ResType::RES_TYPE_THREAD_QOS_CHANGE, 0, mapPayload);
+    // Throw out an ffrt task to prevent deadlocks
+    ffrt::submit([this, tid, pid]() {
+        std::string strTid = std::to_string(tid);
+        std::unordered_map<std::string, std::string> mapPayload;
+        mapPayload["pid"] = std::to_string(pid);
+        mapPayload[strTid] = std::to_string(RSS_IPC_QOS_LEVEL);
+        mapPayload["bundleName"] = RSS_BUNDLE_NAME;
+        RESSCHED_LOGI("ResSchedIpcThread SetQos Thread tid=%{public}u.", tid);
+        OHOS::ResourceSchedule::ResSchedClient::GetInstance().ReportData(
+            OHOS::ResourceSchedule::ResType::RES_TYPE_THREAD_QOS_CHANGE, 0, mapPayload);
+    });
 }
 
 void ResSchedIpcThread::SetInitFlag(bool flag)
