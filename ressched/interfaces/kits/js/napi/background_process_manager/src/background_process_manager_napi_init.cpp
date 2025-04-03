@@ -14,6 +14,10 @@
  */
 
 #include "background_process_manager_napi_init.h"
+
+#include <map>
+#include <string>
+
 #include "background_process_manager.h"
 #include "res_sched_log.h"
 
@@ -22,6 +26,10 @@ namespace {
     constexpr int RESET_PROCESS_PRIORITY_PARAM_NUM = 1;
     constexpr int PID_INDEX = 0;
     constexpr int PRIORITY_INDEX = 1;
+    std::map<int, std::string> errCodeMsg = {
+        { ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM, "parameter is invalid" },
+        { ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS, "remote error" }
+    }
 }
 
 namespace OHOS {
@@ -29,6 +37,16 @@ namespace ResourceSchedule {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+static void HandleErrorCode(napi_env env, int errorCode)
+{
+    if (errCodeMsg.find(errorCode) == errCodeMsg.end()) {
+        return;
+    }
+    std::string msg;
+    msg.append(errCodeMsg[errorCode]);
+    napi_throw_error(env, std::to_string(errorCode), msg.c_str());
+}
 
 napi_value SetProcessPriority(napi_env env, napi_callback_info info)
 {
@@ -39,6 +57,7 @@ napi_value SetProcessPriority(napi_env env, napi_callback_info info)
     if (argc != SET_PROCESS_PRIORITY_PARAM_NUM) {
         RESSCHED_LOGE("param num error");
         napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM, &ret);
+        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM);
         return ret;
     }
 
@@ -51,6 +70,7 @@ napi_value SetProcessPriority(napi_env env, napi_callback_info info)
     if (pidType != napi_number || priorityType != napi_number) {
         RESSCHED_LOGE("param type error");
         napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM, &ret);
+        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM);
         return ret;
     }
 
@@ -63,7 +83,8 @@ napi_value SetProcessPriority(napi_env env, napi_callback_info info)
     BackgroundProcessManager_ProcessPriority processPriority =
         static_cast<BackgroundProcessManager_ProcessPriority>(priority);
 
-    OH_BackgroundProcessManager_SetProcessPriority(pid, processPriority);
+    int retCode = OH_BackgroundProcessManager_SetProcessPriority(pid, processPriority);
+    HandleErrorCode(env, retCode);
     napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS, &ret);
     return ret;
 }
@@ -77,6 +98,7 @@ napi_value ResetProcessPriority(napi_env env, napi_callback_info info)
     if (argc != RESET_PROCESS_PRIORITY_PARAM_NUM) {
         RESSCHED_LOGE("param num error");
         napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM, &ret);
+        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM);
         return ret;
     }
 
@@ -86,6 +108,7 @@ napi_value ResetProcessPriority(napi_env env, napi_callback_info info)
     if (pidType != napi_number) {
         RESSCHED_LOGE("param type error");
         napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM, &ret);
+        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM);
         return ret;
     }
 
@@ -93,7 +116,8 @@ napi_value ResetProcessPriority(napi_env env, napi_callback_info info)
 
     napi_get_value_int32(env, argv[PID_INDEX], &pid);
 
-    OH_BackgroundProcessManager_ResetProcessPriority(pid);
+    int retCode = OH_BackgroundProcessManager_ResetProcessPriority(pid);
+    HandleErrorCode(env, retCode);
     napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS, &ret);
     return ret;
 }
