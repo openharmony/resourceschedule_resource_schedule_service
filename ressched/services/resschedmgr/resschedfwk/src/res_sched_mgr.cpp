@@ -160,6 +160,7 @@ namespace {
         { ResType::RES_TYPE_FILE_COPY_STATUS, "RES_TYPE_FILE_COPY_STATUS" },
 #endif
         { ResType::RES_TYPE_PAGE_TRANSITION, "RES_TYPE_PAGE_TRANSITION" },
+        { ResType::RES_TYPE_PARAM_UPADTE_EVENT, "RES_TYPE_PARAM_UPADTE_EVENT" },
     };
     OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
     {
