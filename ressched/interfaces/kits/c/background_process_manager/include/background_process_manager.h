@@ -19,7 +19,7 @@
  *
  * @brief BackgroundProcessManager provides APIs.
  *
- * @since 15
+ * @since 17
  */
 
 /**
@@ -32,7 +32,7 @@
  * @library libbackground_process_manager.z.so
  * @kit BackgroundTasksKit
  * @syscap SystemCapability.Resourceschedule.BackgroundProcessManager
- * @since 15
+ * @since 17
  */
 
 #ifndef RESOURCESCHEDULE_BACKGROUND_PROCESS_MANAGER_H
@@ -45,7 +45,7 @@ extern "C" {
 /**
  * @brief Describes the level of BackgroundProcessManager priority.
  *
- * @since 15
+ * @since 17
  */
 typedef enum BackgroundProcessManager_ProcessPriority {
     /**
@@ -62,7 +62,7 @@ typedef enum BackgroundProcessManager_ProcessPriority {
 /**
  * @brief Enum for BackgroundProcessManager error code.
  *
- * @since 15
+ * @since 17
  */
 typedef enum BackgroundProcessManager_ErrorCode {
     /**
@@ -75,12 +75,6 @@ typedef enum BackgroundProcessManager_ErrorCode {
      * 1. priority is out of range.
      */
     ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM = 401,
-
-    /**
-     * @error remote error. Possible causes:
-     * 1. remote is not work.
-     */
-    ERR_BACKGROUND_PROCESS_MANAGER_REMOTE_ERROR = 31800001,
 } BackgroundProcessManager_ErrorCode;
 
 /**
@@ -91,8 +85,7 @@ typedef enum BackgroundProcessManager_ErrorCode {
           Specific priority can be referenced {@link BackgroundProcessManager_ProcessPriority}.
  * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS} 0 - Success.
  *         {@link ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM} 401 - Parameter error.
- *         {@link ERR_BACKGROUND_PROCESS_MANAGER_REMOTE_ERROR} 31800001 - Remote error.
- * @since 15
+ * @since 17
  */
 int OH_BackgroundProcessManager_SetProcessPriority(int pid, BackgroundProcessManager_ProcessPriority priority);
 
@@ -101,8 +94,7 @@ int OH_BackgroundProcessManager_SetProcessPriority(int pid, BackgroundProcessMan
  *
  * @param pid Indicates the pid of the process to be reset.
  * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS} 0 - Success.
- *         {@link ERR_BACKGROUND_PROCESS_MANAGER_REMOTE_ERROR} 31800001 - Remote error.
- * @since 15
+ * @since 17
  */
 int OH_BackgroundProcessManager_ResetProcessPriority(int pid);
 #ifdef __cplusplus
