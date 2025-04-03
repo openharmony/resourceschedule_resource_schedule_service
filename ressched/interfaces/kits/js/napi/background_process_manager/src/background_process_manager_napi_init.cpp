@@ -29,7 +29,7 @@ namespace {
     std::map<int, std::string> errCodeMsg = {
         { ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM, "parameter is invalid" },
         { ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS, "remote error" }
-    }
+    };
 }
 
 namespace OHOS {
@@ -45,7 +45,7 @@ static void HandleErrorCode(napi_env env, int errorCode)
     }
     std::string msg;
     msg.append(errCodeMsg[errorCode]);
-    napi_throw_error(env, std::to_string(errorCode), msg.c_str());
+    napi_throw_error(env, std::to_string(errorCode).c_str(), msg.c_str());
 }
 
 napi_value SetProcessPriority(napi_env env, napi_callback_info info)
