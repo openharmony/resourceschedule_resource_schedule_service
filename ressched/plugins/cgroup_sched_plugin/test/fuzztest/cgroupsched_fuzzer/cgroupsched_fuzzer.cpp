@@ -106,7 +106,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t uid = GetData<int32_t>();
@@ -129,7 +128,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t uid = GetData<int32_t>();
@@ -152,7 +150,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t typeId = GetData<int32_t>();
@@ -183,7 +180,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t typeId = DATA_TRANSFER;
@@ -211,7 +207,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t typeId = DATA_TRANSFER;
@@ -239,7 +234,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t typeId = DATA_TRANSFER;
@@ -267,7 +261,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         wptr<IRemoteObject> iRemoteObject = nullptr;
@@ -286,7 +279,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t typeId = GetData<int32_t>();
@@ -315,7 +307,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -341,7 +332,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -366,7 +356,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -391,7 +380,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -417,7 +405,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -443,7 +430,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t resType = GetData<uint32_t>();
@@ -468,7 +454,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t resType = GetData<uint32_t>();
@@ -493,7 +478,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t resType = GetData<uint32_t>();
@@ -522,7 +506,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t resType = GetData<uint32_t>();
@@ -553,7 +536,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t resType = GetData<uint32_t>();
@@ -578,7 +560,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t resType = GetData<uint32_t>();
@@ -603,7 +584,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -632,7 +612,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -661,7 +640,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -690,7 +668,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -719,7 +696,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -747,7 +723,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t uid = GetData<int32_t>();
@@ -771,7 +746,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t uid = GetData<int32_t>();
@@ -799,7 +773,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t pid = GetData<int32_t>();
@@ -826,7 +799,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t uid = GetData<int32_t>();
@@ -854,7 +826,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t uid = GetData<int32_t>();
@@ -879,7 +850,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t uid = GetData<int32_t>();
@@ -907,7 +877,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t uid = GetData<int32_t>();
@@ -933,7 +902,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -959,7 +927,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -985,7 +952,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -1016,7 +982,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -1048,7 +1013,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         ProcessData processData;
@@ -1077,7 +1041,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t resType = GetData<uint32_t>();
@@ -1102,7 +1065,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t resType = GetData<uint32_t>();
@@ -1125,7 +1087,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t resType = GetData<uint32_t>();
@@ -1149,7 +1110,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t resType = GetData<uint32_t>();
@@ -1172,7 +1132,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t resType = GetData<uint32_t>();
@@ -1193,7 +1152,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -1215,7 +1173,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -1237,7 +1194,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -1257,7 +1213,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -1279,7 +1234,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uid_t uid = GetData<uid_t>();
@@ -1301,7 +1255,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t uid = GetData<int32_t>();
@@ -1327,7 +1280,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t uid = GetData<int32_t>();
@@ -1353,7 +1305,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t uid = GetData<int32_t>();
@@ -1381,7 +1332,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t uid = GetData<int32_t>();
@@ -1409,7 +1359,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int32_t uid = GetData<int32_t>();
@@ -1437,7 +1386,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t resType = GetData<uint32_t>();
@@ -1459,7 +1407,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t resType = GetData<uint32_t>();
@@ -1480,7 +1427,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         std::string result(std::to_string(*data));
@@ -1500,7 +1446,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         std::string result(std::to_string(*data));
@@ -1520,7 +1465,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         std::string result(std::to_string(*data));
@@ -1540,7 +1484,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         uint32_t winId = GetData<uint32_t>();
@@ -1568,7 +1511,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         std::vector<sptr<WindowDrawingContentInfo>> changeInfo;
@@ -1589,7 +1531,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         auto windowModeObserver = std::make_shared<WindowModeObserver>();
@@ -1606,7 +1547,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         int tid = GetData<int>();
@@ -1625,7 +1565,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         std::string subGroup(std::to_string(*data));
@@ -1643,7 +1582,6 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         std::string subGroup(std::to_string(*data));
@@ -1661,12 +1599,17 @@ namespace ResourceSchedule {
         // initialize
         G_DATA = data;
         g_size = size;
-        g_pos = 0;
 
         // getdata
         std::string subGroup(std::to_string(*data));
         auto cgroupController = std::make_shared<CgroupSetting::CgroupController>("cpuset", "/dev/cpuset");
         cgroupController->AddThreadGroupSchedPolicy(CgroupSetting::SP_BACKGROUND, subGroup);
+        return true;
+    }
+
+    bool SetPos()
+    {
+        g_pos = 0;
         return true;
     }
 
@@ -1766,6 +1709,7 @@ namespace ResourceSchedule {
 /* Fuzzer entry point */
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
+    OHOS::ResourceSchedule::SetPos();
     /* Run your code on data */
     // background_task_observer.cpp
     OHOS::ResourceSchedule::BackgroundTaskObserverFuzzExecute(data, size);
