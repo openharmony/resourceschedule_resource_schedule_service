@@ -27,8 +27,8 @@ namespace {
     constexpr int PID_INDEX = 0;
     constexpr int PRIORITY_INDEX = 1;
     std::map<int, std::string> errCodeMsg = {
-        { ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM, "parameter is invalid" },
-        { ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS, "remote error" }
+        { ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM,
+            "Parameter error. Possible causes: priority is out of range." }
     };
 }
 
