@@ -40,6 +40,11 @@ extern "C" {
  */
 int OH_BackgroundProcessManager_SetProcessPriority(int pid, BackgroundProcessManager_ProcessPriority priority)
 {
+    if (pid < 0) {
+        RESSCHED_LOGE("the process to be SetProcessPriority is invalid.");
+        return ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM;
+    }
+
     if (priority != PROCESS_BACKGROUND && priority != PROCESS_INACTIVE) {
         RESSCHED_LOGE("priority is invalid.");
         return ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM;
@@ -61,6 +66,10 @@ int OH_BackgroundProcessManager_SetProcessPriority(int pid, BackgroundProcessMan
  */
 int OH_BackgroundProcessManager_ResetProcessPriority(int pid)
 {
+    if (pid < 0) {
+        RESSCHED_LOGE("the process to be SetProcessPriority is invalid.");
+        return ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM;
+    }
     RESSCHED_LOGI("Reset process priority, pid:%{public}d", pid);
     nlohmann::json payload;
     payload["PID"] = std::to_string(pid);
