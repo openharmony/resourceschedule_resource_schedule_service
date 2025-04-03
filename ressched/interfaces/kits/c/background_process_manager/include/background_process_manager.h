@@ -75,6 +75,12 @@ typedef enum BackgroundProcessManager_ErrorCode {
      * 1. priority is out of range.
      */
     ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM = 401,
+
+    /**
+     * @error remote error. Possible causes:
+     * 1. remote is not work.
+     */
+    ERR_BACKGROUND_PROCESS_MANAGER_REMOTE_ERROR = 31800001,
 } BackgroundProcessManager_ErrorCode;
 
 /**
