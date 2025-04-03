@@ -39,12 +39,16 @@ IMPLEMENT_SINGLE_INSTANCE(EventController);
 
 static const char* COMMON_EVENT_CAMERA_STATUS = "usual.event.CAMERA_STATUS";
 static const char* DATA_SHARE_READY = "usual.event.DATA_SHARE_READY";
+static const char* CONFIG_UPDATE_ACTION = "usual.event.DUA_SA_CFG_UPDATED";
 static const char* DEVICE_MODE_PAYMODE_NAME = "deviceMode";
 static const char* DEVICE_MODE_TYPE_KEY = "deviceModeType";
 static const char* SCENE_BOARD_NAME = "com.ohos.sceneboard";
 static const char* CAMERA_STATE = "cameraState";
 static const char* CAMERA_TYPE = "cameraType";
 static const char* IS_SYSTEM_CAMERA = "isSystemCamera";
+static const char* EVENT_INFO_TYPE = "type";
+static const char* EVENT_INFO_SUBTYPE = "subtype";
+static const char* CONFIG_TYPE = "RSSCONFIG";
 void EventController::Init()
 {
     if (sysAbilityListener_ != nullptr) {
@@ -195,6 +199,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_DISCONNECTED);
     matchingSkills.AddEvent(DATA_SHARE_READY);
     matchingSkills.AddEvent(COMMON_EVENT_CAMERA_STATUS);
+    matchingSkills.AddEvent(CONFIG_UPDATE_ACTION);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
     SubscribeCommonEvent(subscriber_);
@@ -338,6 +343,13 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         payload[CAMERA_TYPE] = want.GetIntParam(IS_SYSTEM_CAMERA, 0);
         ReportDataInProcess(ResType::RES_TYPE_REPORT_CAMERA_STATE,
             static_cast<int64_t>(want.GetIntParam(CAMERA_STATE, 1)), payload);
+        return;
+    }
+    if (action == CONFIG_UPDATE_ACTION) {
+        RESSCHED_LOGI("report param update event");
+        payload["type"] = want.GetStringParam(EVENT_INFO_TYPE);
+        payload["subtype"] = want.GetStringParam(EVENT_INFO_SUBTYPE);
+        ReportDataInProcess(ResType::RES_TYPE_PARAM_UPADTE_EVENT, static_cast<int64_t>(userId), payload);
         return;
     }
 }
