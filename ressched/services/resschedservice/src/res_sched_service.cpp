@@ -198,6 +198,7 @@ namespace {
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
         ResType::RES_TYPE_FILE_COPY_STATUS,
 #endif
+        ResType::RES_TYPE_PARAM_UPADTE_EVENT,
     };
 
     bool IsHasPermission(const uint32_t type)

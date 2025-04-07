@@ -307,6 +307,8 @@ enum : uint32_t {
     RES_TYPE_VOICE_RECOGNIZE_WAKE = 142,
     // report modem high power abnormal
     RES_TYPE_MODEM_PA_HIGH_POWER_ABNORMAL = 143,
+    // report param update event
+    RES_TYPE_PARAM_UPADTE_EVENT = 144,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
