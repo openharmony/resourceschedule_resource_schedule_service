@@ -36,16 +36,10 @@ extern "C" {
  *         Specific priority can be referenced {@link BackgroundProcessManager_ProcessPriority}.
  * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS} 0 - Success.
  *         {@link ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM} 401 - Parameter error.
- *         {@link ERR_BACKGROUND_PROCESS_MANAGER_REMOTE_ERROR} 31800001 - Remote error.
- * @since 15
+ * @since 17
  */
 int OH_BackgroundProcessManager_SetProcessPriority(int pid, BackgroundProcessManager_ProcessPriority priority)
 {
-    if (pid < 0) {
-        RESSCHED_LOGE("the process to be SetProcessPriority is invalid.");
-        return ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM;
-    }
-
     if (priority != PROCESS_BACKGROUND && priority != PROCESS_INACTIVE) {
         RESSCHED_LOGE("priority is invalid.");
         return ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM;
@@ -63,15 +57,10 @@ int OH_BackgroundProcessManager_SetProcessPriority(int pid, BackgroundProcessMan
  *
  * @param pid Indicates the pid of the process to be reset.
  * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS} 0 - Success.
- *         {@link ERR_BACKGROUND_PROCESS_MANAGER_REMOTE_ERROR} 31800001 - Remote error.
- * @since 15
+ * @since 17
  */
 int OH_BackgroundProcessManager_ResetProcessPriority(int pid)
 {
-    if (pid < 0) {
-        RESSCHED_LOGE("the process to be SetProcessPriority is invalid.");
-        return ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM;
-    }
     RESSCHED_LOGI("Reset process priority, pid:%{public}d", pid);
     nlohmann::json payload;
     payload["PID"] = std::to_string(pid);
