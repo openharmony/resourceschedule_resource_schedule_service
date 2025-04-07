@@ -160,7 +160,7 @@ bool RmsApplicationStateObserver::IsUIExtensionAbilityStateChanged(const Ability
         CGS_LOGD("%{public}s : Validate UIExtensionAbility state data failed!", __func__);
         return false;
     }
-    if (extensionStateToAbilityState_.find(abilityStateData.abilityState) != extensionStateToAbilityState_.end()) {
+    if (extensionStateToAbilityState_.find(abilityStateData.abilityState) == extensionStateToAbilityState_.end()) {
         CGS_LOGD("%{public}s : Validate UIExtensionAbility data out of bound!", __func__);
         return false;
     }
