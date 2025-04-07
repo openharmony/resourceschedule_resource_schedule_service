@@ -36,6 +36,15 @@ void AudioObserver::MarshallingAudioRendererChangeInfo(
     payload["rendererInfo.streamUsage"] = static_cast<int32_t>(audioRendererChangeInfo->rendererInfo.streamUsage);
 }
 
+bool AudioObserver::IsRenderStateChange(const std::unique_ptr<AudioStandard::AudioRendererChangeInfo>& info)
+{
+    auto item = renderState_.find(info->sessionId);
+    if (item != renderState_.end()) {
+        return item->second != info->rendererState;
+    }
+    return true;
+}
+
 void AudioObserver::OnRendererStateChange(
     const std::vector<std::unique_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos)
 {
@@ -44,9 +53,14 @@ void AudioObserver::OnRendererStateChange(
             audioRendererChangeInfo->rendererState);
         nlohmann::json payload;
         MarshallingAudioRendererChangeInfo(audioRendererChangeInfo, payload);
-
-        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
-            audioRendererChangeInfo->rendererState, payload);
+        if (IsRenderStateChange(audioRendererChangeInfo)) {
+            ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
+                audioRendererChangeInfo->rendererState, payload);
+        }
+    }
+    renderState_.clear();
+    for (const auto &audioRendererChangeInfo : audioRendererChangeInfos) {
+        renderState_[audioRendererChangeInfo->sessionId] = audioRendererChangeInfo->rendererState;
     }
 }
 
@@ -64,9 +78,13 @@ void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
 {
     RESSCHED_LOGD("enter AudioVolumeKeyObserver::OnVolumeKeyEvent, streamType: %{public}d, volumeLevel: %{public}d",
         volumeEvent.volumeType, volumeEvent.volume);
+    if (lastVolume == volumeEvent.volume) {
+        return;
+    }
     nlohmann::json payload;
     payload["volumeType"] = std::to_string(volumeEvent.volumeType);
     payload["volumeLevel"] = std::to_string(volumeEvent.volume);
+    lastVolume = volumeEvent.volume;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
         volumeEvent.volume, payload);
 }
