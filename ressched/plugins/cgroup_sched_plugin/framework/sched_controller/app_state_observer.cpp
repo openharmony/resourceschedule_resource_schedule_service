@@ -76,9 +76,13 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
 
     // if is uiExtension state changed, need to change extensionState to abilityState and write payload.
     if (IsUIExtensionAbilityStateChanged(abilityStateData)) {
-        abilityState = extensionStateToAbilityState_[abilityState];
-        payload["extensionAbilityType"] = std::to_string(abilityStateData.extensionAbilityType);
-        payload["processType"] = std::to_string(abilityStateData.processType);
+        if (extensionStateToAbilityState_.find(abilityState) != extensionStateToAbilityState_.end()) {
+            abilityState = extensionStateToAbilityState_.at(abilityState);
+            payload["extensionAbilityType"] = std::to_string(abilityStateData.extensionAbilityType);
+            payload["processType"] = std::to_string(abilityStateData.processType);
+        } else {
+            CGS_LOGE("%{public}s : abilityState trans to extensionState failed", __func__);
+        }
     }
 
     if (cgHandler) {
@@ -156,8 +160,7 @@ bool RmsApplicationStateObserver::IsUIExtensionAbilityStateChanged(const Ability
         CGS_LOGD("%{public}s : Validate UIExtensionAbility state data failed!", __func__);
         return false;
     }
-
-    if (abilityStateData.abilityState >= static_cast<int32_t>(extensionStateToAbilityState_.size())) {
+    if (extensionStateToAbilityState_.find(abilityStateData.abilityState) == extensionStateToAbilityState_.end()) {
         CGS_LOGD("%{public}s : Validate UIExtensionAbility data out of bound!", __func__);
         return false;
     }
