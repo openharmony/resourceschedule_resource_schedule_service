@@ -560,8 +560,10 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
 bool SocPerfPlugin::IsFocusAppsAllGame()
 {
     if (focusAppUids_.empty() || uidToAppMsgMap_.empty()) {
-        SOC_PERF_LOGD("SocPerfPlugin: IsFoucsAppsAllGame data is empty, %{public}u, %{public}u",
-            focusAppUids_.size(), uidToAppMsgMap_.size());
+        unsigned long focusSize = static_cast<unsigned long>(focusAppUids_.size());
+        unsigned long mapSize = static_cast<unsigned long>(uidToAppMsgMap_.size());
+        SOC_PERF_LOGD("SocPerfPlugin: IsFoucsAppsAllGame data is empty, %{public}lu, %{public}lu",
+            focusSize, mapSize);
         return false;
     }
     bool isAllGame = true;
