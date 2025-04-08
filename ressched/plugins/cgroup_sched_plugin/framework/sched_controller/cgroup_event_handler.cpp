@@ -767,7 +767,7 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
     }
 
     CGS_LOGI("%{public}s :Appname:%{public}s, uid:%{public}d, pid:%{public}d, sessionId:%{public}d, "\
-        "state:%{public}lld", __func__, app->GetName().c_str(), uid, pid, sessionId, value);
+        "state:%{public}ld", __func__, app->GetName().c_str(), uid, pid, sessionId, value);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
