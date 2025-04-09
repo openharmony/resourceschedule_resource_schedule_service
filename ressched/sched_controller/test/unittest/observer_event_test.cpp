@@ -42,10 +42,10 @@ namespace {
     static const int32_t TEST_PID = 1000;
     static const int32_t TEST_INSTANCE_ID = 123456;
     static const int32_t JSON_FORMAT = 4;
-#endif
 #ifdef MMI_ENABLE
     static const int32_t MMI_TEST_UID = 0;
     static const int32_t MMI_TEST_PID = 1000;
+#endif
 #endif
 }
 class ObserverEventTest : public testing::Test {
