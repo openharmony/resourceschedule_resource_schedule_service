@@ -61,7 +61,12 @@ void SystemloadListener::OnSystemloadLevel(int32_t level)
     callBackContext->level = level;
     callBackContext->onSystemloadLevelCb = systemloadLevelCb_;
     napi_acquire_threadsafe_function(threadSafeFunction_);
-    napi_call_threadsafe_function(threadSafeFunction_, callBackContext, napi_tsfn_blocking);
+    napi_status status = napi_call_threadsafe_function(threadSafeFunction_, callBackContext, napi_tsfn_blocking);
+    if (status != napi_ok) {
+        RESSCHED_LOGE("napi_call failed %{public}d", status);
+        delete callBackContext;
+        napi_release_threadsafe_function(threadSafeFunction_, napi_threadsafe_function_release_mode::napi_tsfn_release);
+    }
 }
 } // ResourceSchedule
 } // OHOS
