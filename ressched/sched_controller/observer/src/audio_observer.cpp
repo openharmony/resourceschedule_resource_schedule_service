@@ -80,13 +80,15 @@ void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
 {
     RESSCHED_LOGI("enter AudioVolumeKeyObserver::OnVolumeKeyEvent, streamType: %{public}d, volumeLevel: %{public}d",
         volumeEvent.volumeType, volumeEvent.volume);
-    if (lastVolume == volumeEvent.volume) {
+    auto item = volumeState_.find(volumeEvent.volumeType);
+    if (item != volumeState_.end() && item->second == volumeEvent.volume) {
+        RESSCHED_LOGI("volume not change");
         return;
     }
     nlohmann::json payload;
     payload["volumeType"] = std::to_string(volumeEvent.volumeType);
     payload["volumeLevel"] = std::to_string(volumeEvent.volume);
-    lastVolume = volumeEvent.volume;
+    volumeState_[volumeEvent.volumeType] = volumeEvent.volume;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
         volumeEvent.volume, payload);
 }
