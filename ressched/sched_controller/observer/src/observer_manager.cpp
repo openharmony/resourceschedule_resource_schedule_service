@@ -89,7 +89,7 @@ void ObserverManager::InitObserverCbMap()
         { DISPLAY_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitDisplayModeObserver(); }},
         { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->InitConnectionSubscriber(); }},
         { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, []() { ObserverManager::GetInstance()->InitDataShareObserver(); }},
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
         { DOWNLOAD_SERVICE_ID, []() { ObserverManager::GetInstance()->InitDownloadUploadObserver(); }},
 #endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
@@ -113,7 +113,7 @@ void ObserverManager::InitObserverCbMap()
         { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableConnectionSubscriber(); }},
         { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, []() {
             ObserverManager::GetInstance()->DisableDataShareObserver(); }},
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
         { DOWNLOAD_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableDownloadUploadObserver(); }},
 #endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
@@ -153,7 +153,7 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(DISPLAY_MANAGER_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(ABILITY_MGR_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, systemAbilityManager);
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
     AddItemToSysAbilityListener(DOWNLOAD_SERVICE_ID, systemAbilityManager);
 #endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
@@ -663,7 +663,7 @@ void ObserverManager::DisableAVSessionStateChangeListener()
     avSessionStateListener_ = nullptr;
 }
 #endif
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
 void ObserverManager::InitDownloadUploadObserver()
 {
     if (downLoadUploadObserver_ == nullptr) {

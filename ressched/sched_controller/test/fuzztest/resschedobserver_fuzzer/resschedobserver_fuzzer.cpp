@@ -27,7 +27,7 @@
 #ifdef RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE
 #include "bluetooth_def.h"
 #endif
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
 #include "download_upload_observer.h"
 #endif
 
@@ -624,7 +624,7 @@ namespace {
     }
 #endif // DEVICE_MOVEMENT_PERCEPTION_ENABLE
 
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
     bool DownLoadUploadObserverFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -689,7 +689,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::OnRemoteRequestFuzzTest(data, size);
     OHOS::ResourceSchedule::OnReceiveDeviceMovementEventFuzzTest(data, size);
 #endif
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
     OHOS::ResourceSchedule::DownLoadUploadObserverFuzzTest(data, size);
 #endif
     return 0;

@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
 #include "download_upload_observer.h"
 #include "nlohmann/json.hpp"
 #include "res_sched_log.h"

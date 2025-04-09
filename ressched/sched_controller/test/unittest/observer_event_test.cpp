@@ -43,6 +43,10 @@ namespace {
     static const int32_t TEST_INSTANCE_ID = 123456;
     static const int32_t JSON_FORMAT = 4;
 #endif
+#ifdef MMI_ENABLE
+    static const int32_t MMI_TEST_UID = 0;
+    static const int32_t MMI_TEST_PID = 1000;
+#endif
 }
 class ObserverEventTest : public testing::Test {
 public:
@@ -382,8 +386,8 @@ HWTEST_F(ObserverEventTest, processHiSysEvent_003, testing::ext::TestSize.Level1
  */
 HWTEST_F(ObserverEventTest, mmiObserverEvent_001, testing::ext::TestSize.Level1)
 {
-    int32_t pid = TEST_PID;
-    int32_t uid = TEST_UID;
+    int32_t pid = MMI_TEST_PID;
+    int32_t uid = MMI_TEST_UID;
     std::string bundleName;
     int32_t status = 0;
     // the scene of bundleName is null
@@ -542,7 +546,7 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_002, testing::ext::TestSize.Level1)
 #endif
 #endif
 
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
 /**
  * @tc.name: foldDisplayModeObserver_001
  * @tc.desc: test fold display mode status interface
@@ -779,7 +783,7 @@ HWTEST_F(ObserverEventTest, DisableAVSessionStateChangeListener_001, testing::ex
 }
 #endif
 
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
 /**
  * @tc.name: DisableDownloadUploadObserver_001
  * @tc.desc: test account observer DisableDownloadUploadObserver
