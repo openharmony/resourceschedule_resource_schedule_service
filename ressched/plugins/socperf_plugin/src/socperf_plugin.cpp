@@ -111,6 +111,7 @@ namespace {
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
     const int32_t PERF_REQUEST_CMD_ID_FILE_COPY             = 10087;
 #endif
+    const int32_t PERF_REQUEST_CMD_ID_SCREEN_SWITCHED       = 10090;
     const int32_t PERF_REQUEST_CMD_ID_MOVE_EVENT_BOOST      = 10091;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_DRAG            = 10092;
     const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL1     = 10093;
@@ -1014,6 +1015,10 @@ bool SocPerfPlugin::HandleSceenModeBoost(const std::string& deviceModeType)
     } else if (deviceMode_ == DISPLAY_MODE_MAIN && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
+    }
+
+    if (deviceMode_ == DISPLAY_MODE_FULL) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_SWITCHED, true, "");
     }
     return true;
 }
