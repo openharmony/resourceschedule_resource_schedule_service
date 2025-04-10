@@ -85,6 +85,10 @@ ohos_unittest("event_controller_test") {
       "state_registry:tel_state_registry_api",
     ]
   }
+  if (rss_mmi_enable) {
+    defines += [ "MMI_ENABLE" ]
+    external_deps += [ "input:libmmi-client" ]
+  }
 
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

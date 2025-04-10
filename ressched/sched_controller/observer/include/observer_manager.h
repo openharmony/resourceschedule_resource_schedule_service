@@ -43,7 +43,7 @@
 #include "av_session_state_listener.h"
 #endif
 #include "fold_display_mode_observer.h"
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
 #include "download_upload_observer.h"
 #endif
 
@@ -95,7 +95,7 @@ public:
     void DisableDataShareObserver();
     void InitAccountObserver();
     void DisableAccountObserver();
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
     void InitDownloadUploadObserver();
     void DisableDownloadUploadObserver();
 #endif
@@ -128,7 +128,7 @@ public:
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
     std::shared_ptr<ConnectionSubscriber> connectionSubscriber_ = nullptr;
     sptr<FoldDisplayModeObserver> foldDisplayModeObserver_ = nullptr;
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
     std::shared_ptr<DownLoadUploadObserver> downLoadUploadObserver_ = nullptr;
 #endif
     std::shared_ptr<AccountObserver> accountObserver_ = nullptr;
