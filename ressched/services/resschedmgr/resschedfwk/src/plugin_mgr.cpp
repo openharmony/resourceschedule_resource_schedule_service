@@ -269,6 +269,13 @@ void PluginMgr::LoadPlugin()
 
 shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
 {
+    if (info.libPath.empty() || info.libPath.find('\0') != std::string::npos) {
+        RESSCHED_LOGE("%{public}s, libPath error!", __func__);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+            "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
+            "ERR_MSG", info.libPath + "is error path!");
+        return nullptr;
+    }
     auto pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
     if (!pluginHandle) {
         RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
