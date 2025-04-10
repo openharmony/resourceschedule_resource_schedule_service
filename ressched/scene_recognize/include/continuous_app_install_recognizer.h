@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,9 +24,9 @@ namespace ResourceSchedule {
 class ContinuousAppInstallRecognizer : public SceneRecognizerBase,
     public std::enable_shared_from_this<ContinuousAppInstallRecognizer> {
 public:
-    ContinuousAppInstallRecognizer() = default;
+    ContinuousAppInstallRecognizer();
     ~ContinuousAppInstallRecognizer();
-    void OnDispatchResource(uint32_t, int64_t value, const nlohmann::json& payload) override;
+    void OnDispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload) override;
 private:
     ffrt::task_handle exitAppInstall_ = nullptr;
     std::atomic<bool> isInContinuousInstall_ = {false};

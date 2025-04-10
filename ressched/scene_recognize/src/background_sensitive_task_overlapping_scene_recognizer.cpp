@@ -46,6 +46,11 @@ BackgroundSensitiveTaskOverlappingSceneRecognizer::~BackgroundSensitiveTaskOverl
 BackgroundSensitiveTaskOverlappingSceneRecognizer::BackgroundSensitiveTaskOverlappingSceneRecognizer()
 {
     perceivableTasks_ = {};
+    AddAcceptResTypes({
+        ResType::RES_TYPE_APP_STATE_CHANGE,
+        ResType::RES_TYPE_CONTINUOUS_TASK,
+        ResType::RES_TYPE_REPORT_SCENE_BOARD,
+    });
 }
  
 void BackgroundSensitiveTaskOverlappingSceneRecognizer::OnDispatchResource(uint32_t resType, int64_t value,

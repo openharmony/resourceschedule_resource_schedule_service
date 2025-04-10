@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -53,6 +53,9 @@ void SceneRecognizerMgr::DispatchResource(uint32_t resType, int64_t value, const
     }
     for (auto recognizerItem : sceneRecognizers_) {
         auto recognizer = recognizerItem.second;
+        if (!recognizer->Accept(resType)) {
+            continue;
+        }
         ffrtQueue_->submit([resType, value, payload, recognizer]() {
             recognizer->OnDispatchResource(resType, value, payload);
         });
@@ -83,11 +86,6 @@ void SceneRecognizerMgr::SetListFlingSpeedLimit(float value)
     std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
         SetListFlingSpeedLimit(value);
 }
-void SceneRecognizerMgr::SetSlideNormalDetectingTime(int64_t value)
-{
-    std::static_pointer_cast<SlideRecognizer>(sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER])->
-        SetSlideNormalDetectingTime(value);
-}
 
 extern "C" {
     void SetListFlingTimeoutTime(int64_t value)
@@ -101,10 +99,6 @@ extern "C" {
     void SetListFlingSpeedLimit(float value)
     {
         SceneRecognizerMgr::GetInstance().SetListFlingSpeedLimit(value);
-    }
-    void SetSlideNormalDetectingTime(int64_t value)
-    {
-        SceneRecognizerMgr::GetInstance().SetSlideNormalDetectingTime(value);
     }
 }
 } // namespace ResourceSchedule

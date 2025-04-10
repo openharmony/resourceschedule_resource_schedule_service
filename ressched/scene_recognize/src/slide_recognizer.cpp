@@ -49,6 +49,16 @@ namespace {
     };
 }
 
+SlideRecognizer::SlideRecognizer()
+{
+    AddAcceptResTypes({
+        ResType::RES_TYPE_SLIDE_RECOGNIZE,
+        ResType::RES_TYPE_SEND_FRAME_EVENT,
+        ResType::RES_TYPE_CLICK_RECOGNIZE,
+        ResType::RES_TYPE_AXIS_EVENT,
+    });
+}
+
 SlideRecognizer::~SlideRecognizer()
 {
     RESSCHED_LOGI("~UpdatingSceneRecognizer");
@@ -168,8 +178,7 @@ void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload)
 {
     std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
     if (g_slideState == SlideRecognizeStat::SLIDE_NORMAL_DETECTING) {
-        int64_t nowTime = ResCommonUtil::GetNowMillTime(true);
-        if (nowTime - slideDetectingTime_ < slideNormalDecectingTime_) {
+        if (isInTouching_) {
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
                 ResType::SlideEventStatus::SLIDE_NORMAL_BEGIN, payload);
             g_slideState = SlideRecognizeStat::SLIDE_NORMAL;
@@ -192,13 +201,16 @@ void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload)
 void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payload)
 {
     std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
+    if (value == ResType::ClickEventType::TOUCH_EVENT_DOWN) {
+        g_slideState = SlideRecognizeStat::IDLE;
+        isInTouching_ = true;
+    } else if (value == ResType::ClickEventType::TOUCH_EVENT_UP ||
+        value == ResType::ClickEventType::TOUCH_EVENT_PULL_UP) {
+        isInTouching_ = false;
+    }
     //not in slide stat or slide detecting stat
     if (g_slideState != SlideRecognizeStat::SLIDE_NORMAL &&
         g_slideState != SlideRecognizeStat::SLIDE_NORMAL_DETECTING) {
-        return;
-    }
-    if (value == ResType::ClickEventType::TOUCH_EVENT_DOWN) {
-        g_slideState = SlideRecognizeStat::IDLE;
         return;
     }
     // receive up event, silde normal end
@@ -264,11 +276,6 @@ void SlideRecognizer::SetListFlingEndTime(int64_t value)
 void SlideRecognizer::SetListFlingSpeedLimit(float value)
 {
     listFlingSpeedLimit_ = value;
-}
-
-void SlideRecognizer::SetSlideNormalDetectingTime(int64_t value)
-{
-    slideNormalDecectingTime_ = value;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

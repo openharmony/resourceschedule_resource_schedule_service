@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define RESSCHED_SCENE_RECOGNIZE_SCNEE_RECOGNIZER_BASE_H
 
 #include <string>
+#include <unordered_set>
  
 #include "nlohmann/json.hpp"
 
@@ -26,7 +27,11 @@ namespace ResourceSchedule {
 class SceneRecognizerBase {
 public:
     virtual ~SceneRecognizerBase() = default;
-    virtual void OnDispatchResource(uint32_t, int64_t value, const nlohmann::json& payload) = 0;
+    virtual void OnDispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload) = 0;
+    void AddAcceptResTypes(const std::unordered_set<uint32_t>& types);
+    bool Accept(uint32_t resType);
+private:
+    std::unordered_set<uint32_t> acceptRes_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

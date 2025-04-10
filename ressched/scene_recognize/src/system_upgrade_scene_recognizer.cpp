@@ -47,6 +47,9 @@ SystemUpgradeSceneRecognizer::~SystemUpgradeSceneRecognizer()
 SystemUpgradeSceneRecognizer::SystemUpgradeSceneRecognizer()
 {
     Init();
+    AddAcceptResTypes({
+        ResType::RES_TYPE_BOOT_COMPLETED,
+    });
 }
 
 void SystemUpgradeSceneRecognizer::Init()
