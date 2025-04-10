@@ -199,6 +199,7 @@ namespace {
         ResType::RES_TYPE_FILE_COPY_STATUS,
 #endif
         ResType::RES_TYPE_PARAM_UPADTE_EVENT,
+        ResType::RES_TYPE_CAMERA_PRELAUNCH,
     };
 
     bool IsHasPermission(const uint32_t type)
