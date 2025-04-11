@@ -277,44 +277,15 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
             "ERR_MSG", info.libPath + "is error path!");
         return nullptr;
     }
-    auto pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
-    if (!pluginHandle) {
-        RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
+    void* pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
+    string errorMsg = "";
+    if (!CheckValidPlugin(info, pluginHandle, errorMsg)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "PluginMgr dlopen " + info.libPath + " failed!");
-        return nullptr;
-    }
-
-    auto onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(pluginHandle, "OnPluginInit"));
-    if (!onPluginInitFunc) {
-        RESSCHED_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
-        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "PluginMgr don't found dlsym " + info.libPath + "!");
+            "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
+            "ERR_MSG", errorMsg);
         dlclose(pluginHandle);
         return nullptr;
     }
-
-    auto onPluginDisableFunc = reinterpret_cast<OnPluginDisableFunc>(dlsym(pluginHandle, "OnPluginDisable"));
-    if (!onPluginDisableFunc) {
-        RESSCHED_LOGE("%{public}s, dlsym OnPluginDisable failed!", __func__);
-        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "PluginMgr don't found dlsym " + info.libPath + "!");
-        dlclose(pluginHandle);
-        return nullptr;
-    }
-
-    if (!onPluginInitFunc(const_cast<std::string&>(info.libPath))) {
-        RESSCHED_LOGE("%{public}s, %{private}s init failed!", __func__, info.libPath.c_str());
-        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "Plugin " + info.libPath + " init failed!");
-        dlclose(pluginHandle);
-        return nullptr;
-    }
-
     // OnDispatchResource is not necessary for plugin
     auto onDispatchResourceFunc = reinterpret_cast<OnDispatchResourceFunc>(dlsym(pluginHandle,
         "OnDispatchResource"));
@@ -333,8 +304,37 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     libInfo.onDeliverResourceFunc_ = onDeliverResourceFunc;
     libInfo.onDumpFunc_ = onDumpFunc;
     libInfo.onPluginDisableFunc_ = onPluginDisableFunc;
-
     return make_shared<PluginLib>(libInfo);
+}
+
+bool PluginMgr::CheckValidPlugin(const PluginInfo& info, void* pluginHandle, string& errorMsg) {
+    if (!pluginHandle) {
+        RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
+        errorMsg = "PluginMgr dlopen " + info.libPath + " failed!";
+        return false;
+    }
+
+    auto onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(pluginHandle, "OnPluginInit"));
+    if (!onPluginInitFunc) {
+        RESSCHED_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
+        errorMsg = "PluginMgr dlsym OnPluginInit " + info.libPath + "failed!";
+        return false;
+    }
+
+    auto onPluginDisableFunc = reinterpret_cast<OnPluginDisableFunc>(dlsym(pluginHandle, "OnPluginDisable"));
+    if (!onPluginDisableFunc) {
+        RESSCHED_LOGE("%{public}s, dlsym OnPluginDisable failed!", __func__);
+        errorMsg = "PluginMgr don't found dlsym " + info.libPath + "!";
+        return false;
+    }
+
+    if (!onPluginInitFunc(const_cast<std::string&>(info.libPath))) {
+        RESSCHED_LOGE("%{public}s, %{private}s init failed!", __func__, info.libPath.c_str());
+        errorMsg = "Plugin " + info.libPath + " init failed!";
+        return false;
+    }
+    return true;
+
 }
 
 PluginConfig PluginMgr::GetConfig(const std::string& pluginName, const std::string& configName)
