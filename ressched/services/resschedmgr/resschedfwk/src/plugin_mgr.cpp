@@ -278,6 +278,13 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
         return nullptr;
     }
     void* pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
+    if (!pluginHandle) {
+        RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+            "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
+            "ERR_MSG", "PluginMgr dlopen " + info.libPath + " failed!");
+        return nullptr;
+    }
     std::string errorMsg = "";
     OnPluginInitFunc onPluginInitFunc;
     OnPluginDisableFunc onPluginDisableFunc;
@@ -309,14 +316,9 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     return make_shared<PluginLib>(libInfo);
 }
 
-bool PluginMgr::CheckValidPlugin(const PluginInfo& info, void* pluginHandle, std::string& errorMsg
-    OnPluginInitFunc& onPluginInitFunc, OnPluginDisableFunc& onPluginDisableFunc) {
-    if (!pluginHandle) {
-        RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
-        errorMsg = "PluginMgr dlopen " + info.libPath + " failed!";
-        return false;
-    }
-
+bool PluginMgr::CheckValidPlugin(const PluginInfo& info, void* pluginHandle, std::string& errorMsg,
+    OnPluginInitFunc& onPluginInitFunc, OnPluginDisableFunc& onPluginDisableFunc)
+{
     onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(pluginHandle, "OnPluginInit"));
     if (!onPluginInitFunc) {
         RESSCHED_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
