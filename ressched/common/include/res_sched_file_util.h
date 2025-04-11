@@ -160,6 +160,14 @@ bool CopyFile(const std::string& src, const std::string& des);
  * @return 'true' if the config is exist.
  */
 bool GetRealConfigPath(const std::string& configPath, std::string& realConfigPath);
+
+/**
+ * @brief check path is valid
+ *
+ * @param path The path that needs to be checked
+ * @return 'true' if the path is valid.
+ */
+bool IsValidPath(const std::string& path);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

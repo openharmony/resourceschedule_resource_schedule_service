@@ -275,6 +275,10 @@ bool GetRealConfigPath(const std::string& configPath, std::string& realConfigPat
     realConfigPath = std::string(absolutePath);
     return true;
 }
+bool IsValidPath(const std::string& path)
+{
+    return !(path.empty() || path.find('\0') != std::string::npos);
+}
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

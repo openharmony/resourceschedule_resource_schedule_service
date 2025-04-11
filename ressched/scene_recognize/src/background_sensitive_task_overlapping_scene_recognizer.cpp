@@ -153,6 +153,9 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::ExitScene()
 void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleTaskStart(pid_t pid,
     const std::vector<uint32_t> &filteredTypeIds)
 {
+    if (filteredTypeIds.size() > BackgroundTaskMgr::BackgroundMode::Type::END) {
+        return;
+    }
     perceivableTasks_[pid] = filteredTypeIds;
     if (CheckEnterScene()) {
         RESSCHED_LOGI("perceivable task start enter scene");
