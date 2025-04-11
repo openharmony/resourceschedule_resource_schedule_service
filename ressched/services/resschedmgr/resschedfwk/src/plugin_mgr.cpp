@@ -339,7 +339,6 @@ bool PluginMgr::CheckValidPlugin(const PluginInfo& info, void* pluginHandle, std
         return false;
     }
     return true;
-
 }
 
 PluginConfig PluginMgr::GetConfig(const std::string& pluginName, const std::string& configName)
