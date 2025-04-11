@@ -34,6 +34,7 @@
 #include "res_sched_log.h"
 #include "hitrace_meter.h"
 #include "batch_log_printer.h"
+#include "res_sched_file_util.h"
 
 using namespace std;
 
@@ -269,7 +270,7 @@ void PluginMgr::LoadPlugin()
 
 shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
 {
-    if (info.libPath.empty() || info.libPath.find('\0') != std::string::npos) {
+    if (!ResCommonUtil::IsValidPath(info.libPath)) {
         RESSCHED_LOGE("%{public}s, libPath error!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
             "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
