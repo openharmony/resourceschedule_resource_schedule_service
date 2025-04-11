@@ -243,7 +243,8 @@ private:
     std::vector<std::string> GetAllRealConfigPath(const std::string& configName);
     std::string BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,
         const std::string& funcName, std::list<std::string>& pluginList);
-    bool CheckValidPlugin(const PluginInfo& info, void* pluginHandle, string& errorMsg);
+    bool CheckValidPlugin(const PluginInfo& info, void* pluginHandle, std::string& errorMsg
+        OnPluginInitFunc& onPluginInitFunc, OnPluginDisableFunc& onPluginDisableFunc);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     int32_t GetExtTypeByResPayload(const std::shared_ptr<ResData>& resData);
 #endif

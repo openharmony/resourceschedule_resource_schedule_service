@@ -277,7 +277,7 @@ bool GetRealConfigPath(const std::string& configPath, std::string& realConfigPat
 }
 bool IsValidPath(const std::string& path)
 {
-    return !(path.empty() || path.find('\0') != std::string::npos));
+    return !(path.empty() || path.find('\0') != std::string::npos);
 }
 }
 } // namespace ResourceSchedule

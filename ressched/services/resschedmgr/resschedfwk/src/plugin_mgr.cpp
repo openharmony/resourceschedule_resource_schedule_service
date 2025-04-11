@@ -278,8 +278,10 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
         return nullptr;
     }
     void* pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
-    string errorMsg = "";
-    if (!CheckValidPlugin(info, pluginHandle, errorMsg)) {
+    std::string errorMsg = "";
+    OnPluginInitFunc onPluginInitFunc;
+    OnPluginDisableFunc onPluginDisableFunc;
+    if (!CheckValidPlugin(info, pluginHandle, errorMsg, onPluginInitFunc, onPluginDisableFunc)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
             "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
             "ERR_MSG", errorMsg);
@@ -307,21 +309,22 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     return make_shared<PluginLib>(libInfo);
 }
 
-bool PluginMgr::CheckValidPlugin(const PluginInfo& info, void* pluginHandle, string& errorMsg) {
+bool PluginMgr::CheckValidPlugin(const PluginInfo& info, void* pluginHandle, std::string& errorMsg
+    OnPluginInitFunc& onPluginInitFunc, OnPluginDisableFunc& onPluginDisableFunc) {
     if (!pluginHandle) {
         RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
         errorMsg = "PluginMgr dlopen " + info.libPath + " failed!";
         return false;
     }
 
-    auto onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(pluginHandle, "OnPluginInit"));
+    onPluginInitFunc = reinterpret_cast<OnPluginInitFunc>(dlsym(pluginHandle, "OnPluginInit"));
     if (!onPluginInitFunc) {
         RESSCHED_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
         errorMsg = "PluginMgr dlsym OnPluginInit " + info.libPath + "failed!";
         return false;
     }
 
-    auto onPluginDisableFunc = reinterpret_cast<OnPluginDisableFunc>(dlsym(pluginHandle, "OnPluginDisable"));
+    onPluginDisableFunc = reinterpret_cast<OnPluginDisableFunc>(dlsym(pluginHandle, "OnPluginDisable"));
     if (!onPluginDisableFunc) {
         RESSCHED_LOGE("%{public}s, dlsym OnPluginDisable failed!", __func__);
         errorMsg = "PluginMgr don't found dlsym " + info.libPath + "!";
