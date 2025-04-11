@@ -278,7 +278,6 @@ bool GetRealConfigPath(const std::string& configPath, std::string& realConfigPat
 bool IsValidPath(const std::string& path)
 {
     if (path.empty() || path.find('\0') != std::string::npos) {
-        RESSCHED_LOGE("%{public}s, Path error!", __func__);
         return false;
     }
     return true;
