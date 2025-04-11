@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,11 +40,10 @@ class SceneRecognizerMgr {
 public:
     SceneRecognizerMgr();
     ~SceneRecognizerMgr();
-    void DispatchResource(uint32_t, int64_t value, const nlohmann::json& payload);
+    void DispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void SetListFlingTimeoutTime(int64_t value);
     void SetListFlingEndTime(int64_t value);
     void SetListFlingSpeedLimit(float value);
-    void SetSlideNormalDetectingTime(int64_t value);
     void SubmitTask(const std::function<void()>& task);
 private:
     std::unordered_map<uint32_t, std::shared_ptr<SceneRecognizerBase>> sceneRecognizers_;

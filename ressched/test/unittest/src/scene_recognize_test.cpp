@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -297,21 +297,5 @@ HWTEST_F(SceneRecognizeTest, SetListFlingSpeedLimit_001, Function | MediumTest |
     slideRecognizer->SetListFlingSpeedLimit(value);
     EXPECT_EQ(slideRecognizer->listFlingSpeedLimit_, value);
 }
-
-/**
- * @tc.name: SceneRecognizer SetSlideNormalDetectingTime_001
- * @tc.desc: test the interface SetSlideNormalDetectingTime
- * @tc.type: FUNC
- * @tc.require: issuesIAJZVI
- * @tc.author: fengyang
- */
-HWTEST_F(SceneRecognizeTest, SetSlideNormalDetectingTime_001, Function | MediumTest | Level0)
-{
-    auto slideRecognizer = std::make_shared<SlideRecognizer>();
-    int64_t value = 100;
-    slideRecognizer->SetSlideNormalDetectingTime(value);
-    EXPECT_EQ(slideRecognizer->slideNormalDecectingTime_, value);
-}
-
 } // namespace ResourceSchedule
 } // namespace OHOS
