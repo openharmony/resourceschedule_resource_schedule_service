@@ -167,6 +167,7 @@ private:
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
     bool HandleFileCopyStatus(const std::shared_ptr<ResData>& data);
 #endif
+    void HandleWebSildeScroll(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

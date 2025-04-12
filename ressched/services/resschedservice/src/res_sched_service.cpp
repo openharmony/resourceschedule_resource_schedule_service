@@ -101,6 +101,7 @@ namespace {
         ResType::RES_TYPE_SHORT_TERM_LOAD,
         ResType::RES_TYPE_PAGE_TRANSITION,
         ResType::RES_TYPE_VOICE_RECOGNIZE_WAKE,
+        ResType::RES_TYPE_WEB_SLIDE_SCROLL,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -112,6 +113,7 @@ namespace {
         ResType::RES_TYPE_WEB_DRAG_RESIZE,
         ResType::RES_TYPE_APP_FRAME_DROP,
         ResType::RES_TYPE_AXIS_EVENT,
+        ResType::RES_TYPE_WEB_SLIDE_SCROLL,
     };
     static const std::unordered_set<uint32_t> SA_RES = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,

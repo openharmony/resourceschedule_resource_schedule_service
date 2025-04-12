@@ -117,6 +117,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL1     = 10093;
     const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL2     = 10094;
     const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL3     = 10095;
+    const int32_t PERF_REQUEST_CMD_ID_WEB_SLIDE_SCROLL      = 10097;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -295,6 +296,8 @@ void SocPerfPlugin::InitFunctionMap()
         { RES_TYPE_FILE_COPY_STATUS,
             [this](const std::shared_ptr<ResData>& data) { HandleFileCopyStatus(data); } },
 #endif
+        { RES_TYPE_WEB_SLIDE_SCROLL,
+            [this](const std::shared_ptr<ResData>& data) { HandleWebSildeScroll(data); } },
     };
     AddEventToFunctionMap();
 }
@@ -388,6 +391,7 @@ void SocPerfPlugin::InitResTypes()
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
         RES_TYPE_FILE_COPY_STATUS,
 #endif
+        RES_TYPE_WEB_SLIDE_SCROLL,
     };
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -1246,6 +1250,20 @@ bool SocPerfPlugin::HandleFileCopyStatus(const std::shared_ptr<ResData> &data)
     return false;
 }
 #endif
+
+void SocPerfPlugin::HandleWebSildeScroll(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->WEB_SLIDE_SCROLL: %{public}lld", (long long)data->value);
+    if (data->value == WebDragResizeStatus::WEB_DRAG_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_SLIDE_SCROLL, true, "");
+    }
+    if (data->value == WebDragResizeStatus::WEB_DRAG_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_SLIDE_SCROLL, false, "");
+    }
+}
 
 extern "C" bool OnPluginInit(std::string& libName)
 {
