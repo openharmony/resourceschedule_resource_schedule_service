@@ -279,6 +279,8 @@ enum : uint32_t {
     RES_TYPE_DISPLAY_MULTI_SCREEN = 125,
     // intent start app
     RES_TYPE_INTENT_CTRL_APP = 126,
+    // report web slide scroll
+    RES_TYPE_WEB_SLIDE_SCROLL = 127,
     // crown rotation value 0:start, value 2:end
     RES_TYPE_CROWN_ROTATION_STATUS = 129,
     // report red envelope scene

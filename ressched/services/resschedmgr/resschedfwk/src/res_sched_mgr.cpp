@@ -161,6 +161,7 @@ namespace {
 #endif
         { ResType::RES_TYPE_PAGE_TRANSITION, "RES_TYPE_PAGE_TRANSITION" },
         { ResType::RES_TYPE_PARAM_UPADTE_EVENT, "RES_TYPE_PARAM_UPADTE_EVENT" },
+        { ResType::RES_TYPE_WEB_SLIDE_SCROLL, "RES_TYPE_WEB_SLIDE_SCROLL" },
     };
     OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
     {
