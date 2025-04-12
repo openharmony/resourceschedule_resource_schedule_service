@@ -771,6 +771,23 @@ enum CopyStatus : uint64_t {
     COPY_START = 1,
     COPY_STATUS_MAX,
 };
+
+/**
+* @brief High Frequence Load Scene State
+*/
+enum HighFrequenceLoadSceneState : uint64_t {
+    HFLS_SCENE_IN = 0,
+    HFLS_SCENE_OUT = 1,
+};
+
+/**
+* @brief High Frequence Load Scene State
+*/
+enum CameraUsingStatus : uint64_t {
+    CAMERA_STATUS_AVAILABLE = 2,
+    CAMERA_STATUS_UNAVAILABLE = 3,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
