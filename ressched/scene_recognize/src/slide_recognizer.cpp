@@ -153,13 +153,9 @@ void SlideRecognizer::StartDetecting(const nlohmann::json& payload)
 void SlideRecognizer::HandleListFlingStart(const nlohmann::json& payload)
 {
     std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
-    if (g_slideState == SlideRecognizeStat::LIST_FLING) {
-        return;
-    }
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
-    g_slideState = SlideRecognizeStat::LIST_FLING;
     if (listFlingEndTask_) {
         ffrt::skip(listFlingEndTask_);
     }
