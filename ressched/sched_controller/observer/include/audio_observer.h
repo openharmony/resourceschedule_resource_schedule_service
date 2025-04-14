@@ -44,7 +44,7 @@ private:
         nlohmann::json &payload);
     bool IsRenderStateChange(const std::unique_ptr<AudioStandard::AudioRendererChangeInfo>& info);
     std::unordered_map<int32_t, AudioStandard::RendererState> renderState_;
-    int32_t lastVolume = -1;
+    std::unordered_map<int32_t, int32_t> volumeState_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
