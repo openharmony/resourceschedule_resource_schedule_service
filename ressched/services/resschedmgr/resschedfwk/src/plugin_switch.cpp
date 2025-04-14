@@ -15,7 +15,7 @@
 
 #include "plugin_switch.h"
 
-#include "res_sched_log.h" 
+#include "res_sched_log.h"
 
 using namespace std;
 
