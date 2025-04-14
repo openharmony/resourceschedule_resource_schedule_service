@@ -781,7 +781,7 @@ enum HighFrequenceLoadSceneState : uint64_t {
 };
 
 /**
-* @brief High Frequence Load Scene State
+* @brief Camera Status Change
 */
 enum CameraUsingStatus : uint64_t {
     CAMERA_STATUS_AVAILABLE = 2,
