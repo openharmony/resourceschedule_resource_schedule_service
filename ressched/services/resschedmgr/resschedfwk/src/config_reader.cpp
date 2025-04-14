@@ -212,7 +212,7 @@ void ConfigReader::RemoveConfig(const std::string& pluginName, const std::string
         RESSCHED_LOGE("%{public}s, no pluginName:%{public}s config!", __func__, pluginName.c_str());
         return;
     }
-    PluginConfigMap configMap = allPluginConfigs_[pluginName];
+    PluginConfigMap& configMap = allPluginConfigs_[pluginName];
     auto itConfig = configMap.find(configName);
     if (itConfig == configMap.end()) {
         RESSCHED_LOGE("%{public}s, pluginName:%{public}s config:%{public}s null!", __func__,
