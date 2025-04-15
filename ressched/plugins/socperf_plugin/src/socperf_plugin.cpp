@@ -1112,6 +1112,7 @@ bool SocPerfPlugin::HandleGameStateChange(const std::shared_ptr<ResData>& data)
 bool SocPerfPlugin::UpdateCustGameState(const std::shared_ptr<ResData>& data)
 {
     int32_t uid = data->payload[UID_NAME].get<std::int32_t>();
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->UpdateCustGameState: %{public}d", uid);
     if (data->value == GameState::GAME_GEE_FOCUS_STATE) {
         focusCustGameUids_.insert(uid);
         custGameState_ = true;
@@ -1201,7 +1202,7 @@ bool SocPerfPlugin::HandleCustEvent(const std::shared_ptr<ResData> &data)
     if (data == nullptr || data->value <= 0) {
         return false;
     }
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleCustEvent: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->Anco: %{public}lld", (long long)data->value);
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(data->value, "");
     return true;
 }
