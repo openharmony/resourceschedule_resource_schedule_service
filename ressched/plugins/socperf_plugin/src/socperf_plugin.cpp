@@ -312,6 +312,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleCustEventBegin(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_SOCPERF_CUST_EVENT_END,
         [this](const std::shared_ptr<ResData>& data) { HandleCustEventEnd(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_SOCPERF_CUST_ACTION,
+        [this](const std::shared_ptr<ResData>& data) { HandleCustAction(data); }));
 #endif // RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
     functionMap.insert(std::make_pair(RES_TYPE_ONLY_PERF_APP_COLD_START,
         [this](const std::shared_ptr<ResData>& data) { HandleAppColdStartEx(data); }));
@@ -379,6 +381,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_ANCO_CUST,
         RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
         RES_TYPE_SOCPERF_CUST_EVENT_END,
+        RES_TYPE_SOCPERF_CUST_ACTION,
 #endif // RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
         RES_TYPE_ONLY_PERF_APP_COLD_START,
         RES_TYPE_SCENE_ROTATION,
@@ -397,6 +400,11 @@ void SocPerfPlugin::InitResTypes()
 #endif
         RES_TYPE_WEB_SLIDE_SCROLL,
     };
+    InitOtherResTypes();
+}
+
+void SocPerfPlugin::InitOtherResTypes()
+{
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
     }
@@ -1190,10 +1198,10 @@ bool SocPerfPlugin::HandleSocperfAccountActivating(const std::shared_ptr<ResData
 #ifdef RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
 bool SocPerfPlugin::HandleCustEvent(const std::shared_ptr<ResData> &data)
 {
-    if (data == nullptr || data->value <= 0 || custGameState_) {
+    if (data == nullptr || data->value <= 0) {
         return false;
     }
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->Anco: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleCustEvent: %{public}lld", (long long)data->value);
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(data->value, "");
     return true;
 }
@@ -1215,6 +1223,17 @@ bool SocPerfPlugin::HandleCustEventEnd(const std::shared_ptr<ResData> &data)
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->SOCPERF_CUST_EVENT_END: %{public}lld", (long long)data->value);
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(data->value, false, "");
+    return true;
+}
+
+bool SocPerfPlugin::HandleCustAction(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr || data->value <= 0 || custGameState_) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleCustAction error, %{public}d", custGameState_);
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleCustAction: %{public}lld", (long long)data->value);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(data->value, "");
     return true;
 }
 #endif // RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE

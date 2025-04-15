@@ -101,6 +101,7 @@ private:
     void InitFunctionMap();
     void AddEventToFunctionMap();
     void InitResTypes();
+    void InitOtherResTypes();
     void InitPerfCrucialSo();
     void InitWeakInterAction();
     void AddKeyAppName(const std::string& subValue);
@@ -163,6 +164,7 @@ private:
     bool HandleSceenModeBoost(const std::string& deviceModeType);
     bool HandleGameStateChange(const std::shared_ptr<ResData>& data);
     bool UpdateCustGameState(const std::shared_ptr<ResData>& data);
+    bool HandleCustAction(const std::shared_ptr<ResData> &data);
     int32_t GetPidByData(const std::shared_ptr<ResData>& data, const std::string& key);
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
