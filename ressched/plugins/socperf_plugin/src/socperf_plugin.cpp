@@ -1104,7 +1104,7 @@ bool SocPerfPlugin::HandleGameStateChange(const std::shared_ptr<ResData>& data)
     }
     if (data->payload[GAME_ENV] == GameEnvType::GAME_CUST) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleGameStateChange: %{public}lld", (long long)data->value);
-        custGameState_ = updateCustGameState(data);
+        custGameState_ = UpdateCustGameState(data);
     }
     return true;
 }
