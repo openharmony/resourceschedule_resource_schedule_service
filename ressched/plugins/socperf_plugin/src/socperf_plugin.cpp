@@ -1101,13 +1101,14 @@ bool SocPerfPlugin::HandleGameStateChange(const std::shared_ptr<ResData>& data)
     return true;
 }
 
-bool SocPerfPlugin::updateCustGameState(const std::shared_ptr<ResData>& data)
+bool SocPerfPlugin::UpdateCustGameState(const std::shared_ptr<ResData>& data)
 {
+    int32_t uid = data->payload[UID_NAME].get<std::int32_t>();
     if (data->value == GameState::GAME_GEE_FOCUS_STATE) {
-        focusCustGameUids_.insert(data->payload[UID_NAME]);
+        focusCustGameUids_.insert(uid);
         custGameState_ = true;
     } else if (data->value == GameState::GAME_LOST_FOCUS_STATE) {
-        focusCustGameUids_.erase(data->payload[UID_NAME]);
+        focusCustGameUids_.erase(uid);
         if (focusCustGameUids_.size() == 0) {
             custGameState_ = false;
         }
