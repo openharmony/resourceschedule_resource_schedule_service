@@ -38,6 +38,7 @@ namespace ResourceSchedule {
 IMPLEMENT_SINGLE_INSTANCE(EventController);
 
 static const char* COMMON_EVENT_CAMERA_STATUS = "usual.event.CAMERA_STATUS";
+static const char* COMMON_EVENT_GAME_STATUS = "usual.event.gameservice.GAME_STATUS_CHANGE_UNI";
 static const char* DATA_SHARE_READY = "usual.event.DATA_SHARE_READY";
 static const char* CONFIG_UPDATE_ACTION = "usual.event.DUA_SA_CFG_UPDATED";
 static const char* DEVICE_MODE_PAYMODE_NAME = "deviceMode";
@@ -49,6 +50,9 @@ static const char* IS_SYSTEM_CAMERA = "isSystemCamera";
 static const char* EVENT_INFO_TYPE = "type";
 static const char* EVENT_INFO_SUBTYPE = "subtype";
 static const char* CONFIG_TYPE = "RSSCONFIG";
+static const char* GAME_UID = "uid";
+static const char* GAME_STATUS = "type";
+static const char* GAME_ENV = "env";
 void EventController::Init()
 {
     if (sysAbilityListener_ != nullptr) {
@@ -200,6 +204,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(DATA_SHARE_READY);
     matchingSkills.AddEvent(COMMON_EVENT_CAMERA_STATUS);
     matchingSkills.AddEvent(CONFIG_UPDATE_ACTION);
+    matchingSkills.AddEvent(COMMON_EVENT_GAME_STATUS);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
     SubscribeCommonEvent(subscriber_);
@@ -350,6 +355,14 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         payload["type"] = want.GetStringParam(EVENT_INFO_TYPE);
         payload["subtype"] = want.GetStringParam(EVENT_INFO_SUBTYPE);
         ReportDataInProcess(ResType::RES_TYPE_PARAM_UPADTE_EVENT, static_cast<int64_t>(userId), payload);
+        return;
+    }
+    if (action == COMMON_EVENT_GAME_STATUS) {
+        RESSCHED_LOGI("report game status event");
+        payload[GAME_UID] = want.GetIntParam(GAME_UID, -1);
+        payload[GAME_ENV] = want.GetIntParam(GAME_ENV, -1);
+        ReportDataInProcess(ResType::RES_TYPE_REPORT_GAME_STATE_CHANGE,
+            static_cast<int64_t>(want.GetIntParam(GAME_STATUS, -1)), payload);
         return;
     }
 }

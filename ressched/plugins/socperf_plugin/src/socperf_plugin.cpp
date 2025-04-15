@@ -63,6 +63,7 @@ namespace {
     const std::string WEAK_ACTION_STRING = "weakInterAction";
     const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
     const std::string KEY_APP_TYPE = "key_app_type";
+    const std::string GAME_ENV = "env";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -338,6 +339,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleProcessStateChange(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_REPORT_CAMERA_STATE,
         [this](const std::shared_ptr<ResData>& data) { HandleCameraStateChange(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_REPORT_GAME_STATE_CHANGE,
+        [this](const std::shared_ptr<ResData>& data) { HandleGameStateChange(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
@@ -388,6 +391,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_CROWN_ROTATION_STATUS,
         RES_TYPE_PROCESS_STATE_CHANGE,
         RES_TYPE_REPORT_CAMERA_STATE,
+        RES_TYPE_REPORT_GAME_STATE_CHANGE,
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
         RES_TYPE_FILE_COPY_STATUS,
 #endif
@@ -620,6 +624,10 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
         SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK game can not get click");
         return;
     }
+    if (custGameState_) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK cust game can not get click");
+        return;
+    }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK: %{public}lld", (long long)data->value);
     // touch down event
     if (data->value == ClickEventType::TOUCH_EVENT_DOWN_MMI) {
@@ -779,6 +787,10 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
     if (socperfGameBoostSwitch_ && (isFocusAppsGameType_ || IsGameEvent(data))) {
         SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_SLIDE game can not get slide");
+        return;
+    }
+    if (custGameState_) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_SLIDE cust game can not get slide");
         return;
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
@@ -1071,6 +1083,38 @@ bool SocPerfPlugin::HandleCameraStateChange(const std::shared_ptr<ResData>& data
     return true;
 }
 
+bool SocPerfPlugin::HandleGameStateChange(const std::shared_ptr<ResData>& data)
+{
+    bool ret = false;
+    if (data == nullptr || data->payload == nullptr) {
+        return ret;
+    }
+    if (!data->payload.contains(UID_NAME) || !data->payload.at(UID_NAME).is_number_integer() ||
+        !data->payload.contains(GAME_ENV) || !data->payload.at(GAME_ENV).is_number_integer()) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleGameStateChange invalid data");
+        return ret;
+    }
+    if (data->payload[GAME_ENV] == GameEnvType::GAME_CUST) {
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleGameStateChange: %{public}lld", (long long)data->value);
+        custGameState_ = updateCustGameState(data);
+    }
+    return true;
+}
+
+bool SocPerfPlugin::updateCustGameState(const std::shared_ptr<ResData>& data)
+{
+    if (data->value == GameState::GAME_GEE_FOCUS_STATE) {
+        focusCustGameUids_.insert(data->payload[UID_NAME]);
+        custGameState_ = true;
+    } else if (data->value == GameState::GAME_LOST_FOCUS_STATE) {
+        focusCustGameUids_.erase(data->payload[UID_NAME]);
+        if (focusCustGameUids_.size() == 0) {
+            custGameState_ = false;
+        }
+    }
+    return custGameState_;
+}
+
 bool SocPerfPlugin::IsAllowBoostScene()
 {
     bool ret = false;
@@ -1145,7 +1189,7 @@ bool SocPerfPlugin::HandleSocperfAccountActivating(const std::shared_ptr<ResData
 #ifdef RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
 bool SocPerfPlugin::HandleCustEvent(const std::shared_ptr<ResData> &data)
 {
-    if (data == nullptr || data->value <= 0) {
+    if (data == nullptr || data->value <= 0 || custGameState_) {
         return false;
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->Anco: %{public}lld", (long long)data->value);
