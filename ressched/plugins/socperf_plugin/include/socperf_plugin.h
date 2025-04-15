@@ -74,6 +74,7 @@ private:
     std::set<int32_t> focusAppUids_;
     bool weakActionStatus_ = true;
     std::set<std::string> keyAppName_;
+    std::set<int32_t> focusCustGameUids_;
     std::set<int32_t> keyAppType_;
     // app names set which use camera
     std::set<std::string> appNameUseCamera_;
@@ -95,6 +96,7 @@ private:
     int32_t RES_TYPE_SCENE_BOARD_ID = 0;
     int32_t RES_TYPE_RGM_BOOTING_STATUS = 0;
     bool socperfGameBoostSwitch_ = false;
+    bool custGameState_ = false;
     void InitEventId();
     void InitFunctionMap();
     void AddEventToFunctionMap();
@@ -159,6 +161,7 @@ private:
     bool IsAllowBoostScene();
     bool HandleMoveEventBoost(const std::shared_ptr<ResData>& data, bool isSet);
     bool HandleSceenModeBoost(const std::string& deviceModeType);
+    bool updateCustGameState(const std::shared_ptr<ResData>& data);
     int32_t GetPidByData(const std::shared_ptr<ResData>& data, const std::string& key);
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();

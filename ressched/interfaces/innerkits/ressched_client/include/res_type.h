@@ -317,6 +317,8 @@ enum : uint32_t {
     RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_CHANGE = 146,
     // camera status changed
     RES_TYPE_CAMERA_STATUS_CHANGE = 147,
+    // report game state change
+    RES_TYPE_REPORT_GAME_STATE_CHANGE = 148,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
