@@ -63,6 +63,7 @@ namespace {
     const std::string WEAK_ACTION_STRING = "weakInterAction";
     const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
     const std::string KEY_APP_TYPE = "key_app_type";
+    const std::string GAME_ENV = "env";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -311,6 +312,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleCustEventBegin(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_SOCPERF_CUST_EVENT_END,
         [this](const std::shared_ptr<ResData>& data) { HandleCustEventEnd(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_SOCPERF_CUST_ACTION,
+        [this](const std::shared_ptr<ResData>& data) { HandleCustAction(data); }));
 #endif // RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
     functionMap.insert(std::make_pair(RES_TYPE_ONLY_PERF_APP_COLD_START,
         [this](const std::shared_ptr<ResData>& data) { HandleAppColdStartEx(data); }));
@@ -338,6 +341,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleProcessStateChange(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_REPORT_CAMERA_STATE,
         [this](const std::shared_ptr<ResData>& data) { HandleCameraStateChange(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_REPORT_GAME_STATE_CHANGE,
+        [this](const std::shared_ptr<ResData>& data) { HandleGameStateChange(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
@@ -376,6 +381,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_ANCO_CUST,
         RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
         RES_TYPE_SOCPERF_CUST_EVENT_END,
+        RES_TYPE_SOCPERF_CUST_ACTION,
 #endif // RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
         RES_TYPE_ONLY_PERF_APP_COLD_START,
         RES_TYPE_SCENE_ROTATION,
@@ -388,11 +394,17 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_CROWN_ROTATION_STATUS,
         RES_TYPE_PROCESS_STATE_CHANGE,
         RES_TYPE_REPORT_CAMERA_STATE,
+        RES_TYPE_REPORT_GAME_STATE_CHANGE,
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
         RES_TYPE_FILE_COPY_STATUS,
 #endif
         RES_TYPE_WEB_SLIDE_SCROLL,
     };
+    InitOtherResTypes();
+}
+
+void SocPerfPlugin::InitOtherResTypes()
+{
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
     }
@@ -620,6 +632,10 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
         SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK game can not get click");
         return;
     }
+    if (custGameState_) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK cust game can not get click");
+        return;
+    }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_CLICK: %{public}lld", (long long)data->value);
     // touch down event
     if (data->value == ClickEventType::TOUCH_EVENT_DOWN_MMI) {
@@ -779,6 +795,10 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
 {
     if (socperfGameBoostSwitch_ && (isFocusAppsGameType_ || IsGameEvent(data))) {
         SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_SLIDE game can not get slide");
+        return;
+    }
+    if (custGameState_) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->EVENT_SLIDE cust game can not get slide");
         return;
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->SLIDE_NORMAL: %{public}lld", (long long)data->value);
@@ -1071,6 +1091,40 @@ bool SocPerfPlugin::HandleCameraStateChange(const std::shared_ptr<ResData>& data
     return true;
 }
 
+bool SocPerfPlugin::HandleGameStateChange(const std::shared_ptr<ResData>& data)
+{
+    bool ret = false;
+    if (data == nullptr || data->payload == nullptr) {
+        return ret;
+    }
+    if (!data->payload.contains(UID_NAME) || !data->payload.at(UID_NAME).is_number_integer() ||
+        !data->payload.contains(GAME_ENV) || !data->payload.at(GAME_ENV).is_number_integer()) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleGameStateChange invalid data");
+        return ret;
+    }
+    if (data->payload[GAME_ENV] == GameEnvType::GAME_CUST) {
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleGameStateChange: %{public}lld", (long long)data->value);
+        custGameState_ = UpdateCustGameState(data);
+    }
+    return true;
+}
+
+bool SocPerfPlugin::UpdateCustGameState(const std::shared_ptr<ResData>& data)
+{
+    int32_t uid = data->payload[UID_NAME].get<std::int32_t>();
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->UpdateCustGameState: %{public}d", uid);
+    if (data->value == GameState::GAME_GEE_FOCUS_STATE) {
+        focusCustGameUids_.insert(uid);
+        custGameState_ = true;
+    } else if (data->value == GameState::GAME_LOST_FOCUS_STATE) {
+        focusCustGameUids_.erase(uid);
+        if (focusCustGameUids_.size() == 0) {
+            custGameState_ = false;
+        }
+    }
+    return custGameState_;
+}
+
 bool SocPerfPlugin::IsAllowBoostScene()
 {
     bool ret = false;
@@ -1170,6 +1224,17 @@ bool SocPerfPlugin::HandleCustEventEnd(const std::shared_ptr<ResData> &data)
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->SOCPERF_CUST_EVENT_END: %{public}lld", (long long)data->value);
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(data->value, false, "");
+    return true;
+}
+
+bool SocPerfPlugin::HandleCustAction(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr || data->value <= 0 || custGameState_) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleCustAction error, %{public}d", custGameState_);
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleCustAction: %{public}lld", (long long)data->value);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(data->value, "");
     return true;
 }
 #endif // RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
