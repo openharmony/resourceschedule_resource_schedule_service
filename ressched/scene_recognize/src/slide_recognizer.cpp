@@ -115,17 +115,6 @@ void SlideRecognizer::HandleSlideOFFEvent()
 
 void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
 {
-    if (g_slideState == SlideRecognizeStat::LIST_FLING) {
-        if (listFlingEndTask_) {
-        ffrt::skip(listFlingEndTask_);
-        }
-        if (listFlingTimeOutTask_) {
-            ffrt::skip(listFlingTimeOutTask_);
-        }
-        listFlingEndTask_ = nullptr;
-        listFlingTimeOutTask_ = nullptr;
-        g_reportListFlingLockedEnd(FillRealPidAndUid(payload));
-    }
     SceneRecognizerMgr::GetInstance().SubmitTask([this, payload]() {
         StartDetecting(payload);
     });
@@ -153,13 +142,9 @@ void SlideRecognizer::StartDetecting(const nlohmann::json& payload)
 void SlideRecognizer::HandleListFlingStart(const nlohmann::json& payload)
 {
     std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
-    if (g_slideState == SlideRecognizeStat::LIST_FLING) {
-        return;
-    }
     nlohmann::json extInfo;
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
-    g_slideState = SlideRecognizeStat::LIST_FLING;
     if (listFlingEndTask_) {
         ffrt::skip(listFlingEndTask_);
     }
@@ -198,10 +183,27 @@ void SlideRecognizer::HandleSendFrameEvent(const nlohmann::json& payload)
     }
 }
 
+void SlideRecognizer::ListFlingEnd(const nlohmann::json& payload)
+{
+    if (g_slideState != SlideRecognizeStat::LIST_FLING) {
+        return;
+    }
+    if (listFlingEndTask_) {
+    ffrt::skip(listFlingEndTask_);
+    }
+    if (listFlingTimeOutTask_) {
+        ffrt::skip(listFlingTimeOutTask_);
+    }
+    listFlingEndTask_ = nullptr;
+    listFlingTimeOutTask_ = nullptr;
+    g_reportListFlingLockedEnd(FillRealPidAndUid(payload));
+}
+
 void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payload)
 {
     std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
     if (value == ResType::ClickEventType::TOUCH_EVENT_DOWN) {
+        ListFlingEnd(payload);
         g_slideState = SlideRecognizeStat::IDLE;
         isInTouching_ = true;
     } else if (value == ResType::ClickEventType::TOUCH_EVENT_UP ||
