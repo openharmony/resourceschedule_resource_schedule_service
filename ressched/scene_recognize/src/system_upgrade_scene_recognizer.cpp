@@ -22,6 +22,7 @@
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "res_type.h"
+#include "res_sched_event_reporter.h"
 
 
 namespace OHOS {
@@ -61,6 +62,7 @@ void SystemUpgradeSceneRecognizer::Init()
     if (isSystemUpgraded_) {
         OHOS::SaveStringToFile(OLD_SYSTEM_FINGERPRINT_PATH, curSystemFingerprint, true);
     }
+    ResschedEventReporter::GetInstance().ReportFileSizeEvent(OLD_SYSTEM_FINGERPRINT_PATH);
 }
 
 std::string SystemUpgradeSceneRecognizer::GetCurSystemFingerprint()
