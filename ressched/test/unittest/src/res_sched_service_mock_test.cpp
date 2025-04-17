@@ -388,7 +388,7 @@ HWTEST_F(ResSchedServiceMockTest, OnStart001, Function | MediumTest | Level0)
  * @tc.require: issueI5WWV3
  * @tc.author:lice
  */
-HWTEST_F(ResSchedServiceTest, OnStart002, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceMockTest, OnStart002, Function | MediumTest | Level0)
 {
     resSchedServiceAbility_->OnStart();
     EXPECT_TRUE(resSchedServiceAbility_->service_ != nullptr);
@@ -408,7 +408,7 @@ static void OnStartTask()
  * @tc.require: issueI7G8VT
  * @tc.author: nizihao
  */
-HWTEST_F(ResSchedServiceTest, OnStart003, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceMockTest, OnStart003, Function | MediumTest | Level0)
 {
     SET_THREAD_NUM(10);
     GTEST_RUN_TASK(OnStartTask);
