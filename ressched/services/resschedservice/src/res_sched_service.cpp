@@ -203,6 +203,7 @@ namespace {
 #endif
         ResType::RES_TYPE_PARAM_UPADTE_EVENT,
         ResType::RES_TYPE_CAMERA_PRELAUNCH,
+        ResType::RES_TYPE_DEVICE_MODE_STATUS,
     };
 
     bool IsHasPermission(const uint32_t type)
