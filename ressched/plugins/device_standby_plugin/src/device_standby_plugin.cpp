@@ -69,11 +69,11 @@ void DeviceStandbyPlugin::Disable()
 void DeviceStandbyPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
     if (!data) {
-        STANDBYSERVICE_LOGI("DeviceStandbyPlugin::DispatchResource data is null");
+        STANDBYSERVICE_LOGW("DeviceStandbyPlugin::DispatchResource data is null");
         return;
     }
 
-    STANDBYSERVICE_LOGI(
+    STANDBYSERVICE_LOGD(
         "DeviceStandbyPlugin::DispatchResource type=%{public}u value=%{public}lld",
         data->resType, (long long)(data->value));
 
