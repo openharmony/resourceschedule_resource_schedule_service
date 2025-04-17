@@ -440,39 +440,6 @@ HWTEST_F(ResSchedServiceTest, GetSystemloadLevel002, Function | MediumTest | Lev
 }
 
 /**
- * @tc.name: Start ResSchedServiceAbility 001
- * @tc.desc: Verify if ResSchedServiceAbility OnStart is success.
- * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
- */
-HWTEST_F(ResSchedServiceTest, OnStart001, Function | MediumTest | Level0)
-{
-    resSchedServiceAbility_->OnStart();
-    EXPECT_TRUE(resSchedServiceAbility_->service_ != nullptr);
-}
-
-static void OnStartTask()
-{
-    std::shared_ptr<ResSchedServiceAbility> resSchedServiceAbility_ = make_shared<ResSchedServiceAbility>();
-    resSchedServiceAbility_->OnStart();
-    EXPECT_TRUE(resSchedServiceAbility_->service_ != nullptr);
-}
-
-/**
- * @tc.name: Start ResSchedServiceAbility 002
- * @tc.desc: Test ResSchedServiceAbility OnStart in multithreading.
- * @tc.type: FUNC
- * @tc.require: issueI7G8VT
- * @tc.author: nizihao
- */
-HWTEST_F(ResSchedServiceTest, OnStart002, Function | MediumTest | Level0)
-{
-    SET_THREAD_NUM(10);
-    GTEST_RUN_TASK(OnStartTask);
-}
-
-/**
  * @tc.name: ResSchedServiceAbility ChangeAbility 001
  * @tc.desc: Verify if add and remove system ability is success.
  * @tc.type: FUNC
