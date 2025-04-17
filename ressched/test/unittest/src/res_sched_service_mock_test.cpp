@@ -381,5 +381,38 @@ HWTEST_F(ResSchedServiceMockTest, OnStart001, Function | MediumTest | Level0)
     g_mockAddAbilityListener = true;
 }
 
+/**
+ * @tc.name: Start ResSchedServiceAbility 002
+ * @tc.desc: Verify if ResSchedServiceAbility OnStart is success.
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
+ */
+HWTEST_F(ResSchedServiceMockTest, OnStart002, Function | MediumTest | Level0)
+{
+    resSchedServiceAbility_->OnStart();
+    EXPECT_TRUE(resSchedServiceAbility_->service_ != nullptr);
+}
+
+static void OnStartTask()
+{
+    std::shared_ptr<ResSchedServiceAbility> resSchedServiceAbility_ = make_shared<ResSchedServiceAbility>();
+    resSchedServiceAbility_->OnStart();
+    EXPECT_TRUE(resSchedServiceAbility_->service_ != nullptr);
+}
+
+/**
+ * @tc.name: Start ResSchedServiceAbility 003
+ * @tc.desc: Test ResSchedServiceAbility OnStart in multithreading.
+ * @tc.type: FUNC
+ * @tc.require: issueI7G8VT
+ * @tc.author: nizihao
+ */
+HWTEST_F(ResSchedServiceMockTest, OnStart003, Function | MediumTest | Level0)
+{
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(OnStartTask);
+}
+
 } // namespace ResourceSchedule
 } // namespace OHOS
