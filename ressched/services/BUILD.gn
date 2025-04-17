@@ -43,6 +43,13 @@ config("resschedsvc_private_config") {
 ohos_shared_library("resschedsvc") {
   configs = [ ":resschedsvc_private_config" ]
 
+  cflags_cc = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-fstack-protector-strong",
+    "-Os",
+  ]
+
   public_configs = [
     ":resschedsvc_public_config",
     "${ressched_interfaces}/innerkits/ressched_client:client_public_config",

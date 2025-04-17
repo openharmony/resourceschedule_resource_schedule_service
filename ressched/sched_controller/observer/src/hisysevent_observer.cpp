@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,16 +23,16 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    static const std::string WIFI_CONNECTION = "WIFI_CONNECTION";
-    static const std::string WIFI_SCAN = "WIFI_SCAN";
-    static const std::string CAMERA_CONNECT = "CAMERA_CONNECT";
-    constexpr int32_t INDENT                    = -1;
-    constexpr int32_t CAMERACONNECT             = 0;
-    constexpr int32_t CAMERADISCONNECT          = 1;
-    constexpr int32_t RUNNINGLOCK_DISABLE       = 0;
-    constexpr int32_t RUNNINGLOCK_ENABLE        = 1;
-    constexpr int32_t RUNNINGLOCK_PROXIED       = 2;
-    constexpr int32_t MAX_LENGTH                = 1024;
+    static const char* WIFI_CONNECTION = "WIFI_CONNECTION";
+    static const char* WIFI_SCAN = "WIFI_SCAN";
+    static const char* CAMERA_CONNECT = "CAMERA_CONNECT";
+    static constexpr int32_t INDENT                    = -1;
+    static constexpr int32_t CAMERACONNECT             = 0;
+    static constexpr int32_t CAMERADISCONNECT          = 1;
+    static constexpr int32_t RUNNINGLOCK_DISABLE       = 0;
+    static constexpr int32_t RUNNINGLOCK_ENABLE        = 1;
+    static constexpr int32_t RUNNINGLOCK_PROXIED       = 2;
+    static constexpr int32_t MAX_LENGTH                = 1024;
 }
 
 HiSysEventObserver::HiSysEventObserver() : HiviewDFX::HiSysEventListener()

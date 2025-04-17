@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,8 +28,8 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     static const int32_t INVALID_VALUE = -1;
-    static const std::string PID_KEY = "pid";
-    static const std::string TYPE_IDS_KEY = "typeIds";
+    static const char* PID_KEY = "pid";
+    static const char* TYPE_IDS_KEY = "typeIds";
     static const std::set<uint32_t> PERCEIVABLE_MODES = {
         BackgroundTaskMgr::BackgroundMode::Type::LOCATION,
         BackgroundTaskMgr::BackgroundMode::Type::VOIP,
