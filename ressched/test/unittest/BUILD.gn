@@ -18,8 +18,8 @@ group("unittest") {
   testonly = true
   deps = [
     ":resschedfwk_test",
-    ":resschedservice_test",
     ":resschedservice_mock_test",
+    ":resschedservice_test",
   ]
 }
 
