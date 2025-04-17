@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,8 +31,8 @@ namespace ResourceSchedule {
 namespace {
     static const uint32_t AXIS_EVENT_PAD = 0;
     static const uint32_t AXIS_EVENT_FACTOR = 10;
-    static const std::string AXIS_EVENT_TYPE = "axis_event_type";
-    static const std::string UP_SPEED_KEY = "up_speed";
+    static const char* AXIS_EVENT_TYPE = "axis_event_type";
+    static const char* UP_SPEED_KEY = "up_speed";
     static uint32_t g_slideState = SlideRecognizeStat::IDLE;
     static ffrt::recursive_mutex stateMutex;
     static auto g_reportListFlingLockedEnd = [](const nlohmann::json payload) {

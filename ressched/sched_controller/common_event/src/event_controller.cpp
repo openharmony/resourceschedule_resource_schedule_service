@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,14 +37,14 @@ namespace OHOS {
 namespace ResourceSchedule {
 IMPLEMENT_SINGLE_INSTANCE(EventController);
 
-const std::string COMMON_EVENT_CAMERA_STATUS = "usual.event.CAMERA_STATUS";
-const std::string DATA_SHARE_READY = "usual.event.DATA_SHARE_READY";
-const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
-const std::string DEVICE_MODE_TYPE_KEY = "deviceModeType";
-const std::string SCENE_BOARD_NAME = "com.ohos.sceneboard";
-const std::string CAMERA_STATE = "cameraState";
-const std::string CAMERA_TYPE = "cameraType";
-const std::string IS_SYSTEM_CAMERA = "isSystemCamera";
+static const char* COMMON_EVENT_CAMERA_STATUS = "usual.event.CAMERA_STATUS";
+static const char* DATA_SHARE_READY = "usual.event.DATA_SHARE_READY";
+static const char* DEVICE_MODE_PAYMODE_NAME = "deviceMode";
+static const char* DEVICE_MODE_TYPE_KEY = "deviceModeType";
+static const char* SCENE_BOARD_NAME = "com.ohos.sceneboard";
+static const char* CAMERA_STATE = "cameraState";
+static const char* CAMERA_TYPE = "cameraType";
+static const char* IS_SYSTEM_CAMERA = "isSystemCamera";
 void EventController::Init()
 {
     if (sysAbilityListener_ != nullptr) {

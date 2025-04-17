@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,12 +22,12 @@ using namespace std;
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-constexpr auto XML_TAG_PLUGIN_LIST = "pluginlist";
-constexpr auto XML_TAG_PLUGIN = "plugin";
-constexpr auto XML_ATTR_LIB_PATH = "libpath";
-constexpr auto XML_ATTR_LIB_PATH_EXE = "libpathexe";
-constexpr auto XML_ATTR_SWITCH = "switch";
-constexpr auto SWITCH_ON = "1";
+static const char* XML_TAG_PLUGIN_LIST = "pluginlist";
+static const char* XML_TAG_PLUGIN = "plugin";
+static const char* XML_ATTR_LIB_PATH = "libpath";
+static const char* XML_ATTR_LIB_PATH_EXE = "libpathexe";
+static const char* XML_ATTR_SWITCH = "switch";
+static const char* SWITCH_ON = "1";
 }
 
 bool PluginSwitch::IsInvalidNode(const xmlNode& currNode)

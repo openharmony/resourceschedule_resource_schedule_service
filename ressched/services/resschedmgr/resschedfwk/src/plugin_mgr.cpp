@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +23,7 @@
 #include <string_ex.h>
 #include <fstream>
 #include "config_policy_utils.h"
+#include "file_ex.h"
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt_inner.h"
 #else
@@ -42,20 +43,20 @@ using namespace AppExecFwk;
 using namespace HiviewDFX;
 
 namespace {
-    const int32_t DISPATCH_WARNING_TIME = 10; // ms
-    const int32_t PLUGIN_SWITCH_FILE_IDX = 0;
-    const int32_t CONFIG_FILE_IDX = 1;
-    const int32_t SIMPLIFY_LIB_INDEX = 3;
-    const int32_t SIMPLIFY_LIB_LENGTH = 5;
-    const int32_t MAX_FILE_LENGTH = 32 * 1024 * 1024;
-    const int32_t PLUGIN_REQUEST_ERROR = -1;
-    const std::string RUNNER_NAME = "rssDispatcher";
-    const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
-    const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
-    const char* EXT_CONFIG_LIB = "libsuspend_manager_service.z.so";
+    static const int32_t DISPATCH_WARNING_TIME = 10; // ms
+    static const int32_t PLUGIN_SWITCH_FILE_IDX = 0;
+    static const int32_t CONFIG_FILE_IDX = 1;
+    static const int32_t SIMPLIFY_LIB_INDEX = 3;
+    static const int32_t SIMPLIFY_LIB_LENGTH = 5;
+    static const int32_t MAX_FILE_LENGTH = 32 * 1024 * 1024;
+    static const int32_t PLUGIN_REQUEST_ERROR = -1;
+    static const char* RUNNER_NAME = "rssDispatcher";
+    static const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
+    static const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
+    static const char* EXT_CONFIG_LIB = "libsuspend_manager_service.z.so";
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
-    const int32_t DEFAULT_VALUE = -1;
-    const char* EXT_RES_KEY = "extType";
+    static const int32_t DEFAULT_VALUE = -1;
+    static const char* EXT_RES_KEY = "extType";
 #endif
 }
 
@@ -203,19 +204,9 @@ void PluginMgr::GetConfigContent(int32_t configIdx, const std::string& configPat
         if (configFilePath.empty()) {
             continue;
         }
-        ifs.open(configFilePath, std::ios::in | std::ios::binary);
-        ifs.seekg(0, std::ios::end);
-        int32_t len = ifs.tellg();
-        if (len > MAX_FILE_LENGTH) {
-            RESSCHED_LOGE("file is too large");
-            ifs.close();
-            continue;
-        }
-        ifs.seekg(0, std::ios::beg);
-        std::stringstream contentData;
-        contentData << ifs.rdbuf();
-        contents.emplace_back(contentData.str());
-        ifs.close();
+        std::string content;
+        LoadStringFromFile(configFilePath, content);
+        contents.emplace_back(content);
     }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -56,7 +56,7 @@ const static int32_t TUPLE_UID = 1;
 const static int32_t TUPLE_NAME = 2;
 const static bool DEVICE_MOVEMENT_OBSERVER_ENABLE =
     system::GetBoolParameter("persist.sys.ressched_device_movement_observer_switch", true);
-const std::string RES_SCHED_CG_EXT_SO = "libcgroup_sched_ext.z.so";
+const static char* RES_SCHED_CG_EXT_SO = "libcgroup_sched_ext.z.so";
 
 void ObserverManager::Init()
 {
@@ -205,7 +205,7 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
 
 void ObserverManager::GetReportFunc()
 {
-    auto handle = dlopen(RES_SCHED_CG_EXT_SO.c_str(), RTLD_NOW);
+    auto handle = dlopen(RES_SCHED_CG_EXT_SO, RTLD_NOW);
     if (!handle) {
         RESSCHED_LOGE("GetReportFunc dlopen failed");
         return;

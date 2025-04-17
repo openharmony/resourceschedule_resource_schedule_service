@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,9 +27,9 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    static const std::string OLD_SYSTEM_FINGERPRINT_PATH = "/data/service/el1/public/ressched/device_version";
-    static const std::string SEPARATOR = "|";
-    const std::vector<std::string> FINGERPRINTS = {
+    static const char* OLD_SYSTEM_FINGERPRINT_PATH = "/data/service/el1/public/ressched/device_version";
+    static const char* SEPARATOR = "|";
+    static const std::vector<std::string> FINGERPRINTS = {
         "const.product.software.version",
         "const.product.build.type",
         "const.product.brand",

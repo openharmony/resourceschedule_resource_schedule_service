@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,12 +26,12 @@ namespace ResourceSchedule {
 using OHOS::Rosen::FoldDisplayMode;
 
 namespace {
-    const std::string DISPLAY_MODE_FULL = "displayFull";
-    const std::string DISPLAY_MODE_SUB = "displaySub";
-    const std::string DISPLAY_MODE_MAIN = "displayMain";
-    const std::string DEVICE_MODE_STR = "deviceMode";
-    const std::string DEVICE_MODE_TYPE_KEY = "deviceModeType";
-    const std::string DISPLAY_MODE_KEY = "display";
+    static const char* DISPLAY_MODE_FULL = "displayFull";
+    static const char* DISPLAY_MODE_SUB = "displaySub";
+    static const char* DISPLAY_MODE_MAIN = "displayMain";
+    static const char* DEVICE_MODE_STR = "deviceMode";
+    static const char* DEVICE_MODE_TYPE_KEY = "deviceModeType";
+    static const char* DISPLAY_MODE_KEY = "display";
 }
 
 void FoldDisplayModeObserver::OnDisplayModeChanged(FoldDisplayMode diplayMode)

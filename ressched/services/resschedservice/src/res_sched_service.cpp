@@ -38,21 +38,21 @@ namespace ResourceSchedule {
 using namespace OHOS::Security;
 namespace {
     #define PAYLOAD_MAX_SIZE 4096
-    constexpr int32_t DUMP_OPTION = 0;
-    constexpr int32_t DUMP_PARAM_INDEX = 1;
-    const int32_t ENG_MODE = OHOS::system::GetIntParameter("const.debuggable", 0);
-    const std::string APP_PRELOAD_PLIGIN_NAME = "libapp_preload_plugin.z.so";
-    const std::string NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
-    const std::string SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
-    constexpr int32_t MEMMGR_UID = 1111;
-    constexpr int32_t SAMGR_UID = 5555;
-    constexpr int32_t FOUNDATION_UID = 5523;
-    constexpr int32_t GRAPHIC_UID = 1003;
-    constexpr int32_t HIVIEW_UID = 1201;
-    constexpr int32_t SINGLE_UID_REQUEST_LIMIT_COUNT = 250;
-    constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 650;
-    constexpr int32_t LIMIT_REQUEST_TIME = 1000;
-    constexpr int64_t FOUR_HOUR_TIME = 4 * 60 * 60 * 1000;
+    static constexpr int32_t DUMP_OPTION = 0;
+    static constexpr int32_t DUMP_PARAM_INDEX = 1;
+    static const int32_t ENG_MODE = OHOS::system::GetIntParameter("const.debuggable", 0);
+    static const char* APP_PRELOAD_PLIGIN_NAME = "libapp_preload_plugin.z.so";
+    static const char* NEEDED_PERMISSION = "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT";
+    static const char* SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
+    static constexpr int32_t MEMMGR_UID = 1111;
+    static constexpr int32_t SAMGR_UID = 5555;
+    static constexpr int32_t FOUNDATION_UID = 5523;
+    static constexpr int32_t GRAPHIC_UID = 1003;
+    static constexpr int32_t HIVIEW_UID = 1201;
+    static constexpr int32_t SINGLE_UID_REQUEST_LIMIT_COUNT = 250;
+    static constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 650;
+    static constexpr int32_t LIMIT_REQUEST_TIME = 1000;
+    static constexpr int64_t FOUR_HOUR_TIME = 4 * 60 * 60 * 1000;
     static const std::unordered_set<uint32_t> SCB_RES = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
