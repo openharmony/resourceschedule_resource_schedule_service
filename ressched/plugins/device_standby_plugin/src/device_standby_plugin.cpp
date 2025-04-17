@@ -69,7 +69,7 @@ void DeviceStandbyPlugin::Disable()
 void DeviceStandbyPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 {
     if (!data) {
-        STANDBYSERVICE_LOGW("DeviceStandbyPlugin::DispatchResource data is null");
+        STANDBYSERVICE_LOGI("DeviceStandbyPlugin::DispatchResource data is null");
         return;
     }
 
