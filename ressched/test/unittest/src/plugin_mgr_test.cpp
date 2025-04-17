@@ -213,6 +213,58 @@ HWTEST_F(PluginMgrTest, GetConfig003, TestSize.Level1)
 }
 
 /**
+ * @tc.name: Plugin mgr test RemoveConfig 001
+ * @tc.desc: Verify if can get config with wrong env.
+ * @tc.type: FUNC
+ * @tc.require: issueI5WWV3
+ * @tc.author:lice
+ */
+HWTEST_F(PluginMgrTest, RemoveConfig001, TestSize.Level1)
+{
+    pluginMgr_->RemoveConfig("", "");
+    PluginConfig config = pluginMgr_->GetConfig("", "");
+    EXPECT_TRUE(config.itemList.empty());
+}
+
+/**
+ * @tc.name: Plugin mgr test RemoveConfig 002
+ * @tc.desc: Verify if can get config with wrong env.
+ * @tc.type: FUNC
+ * @tc.require: issuesIA7P80
+ * @tc.author:lice
+ */
+HWTEST_F(PluginMgrTest, RemoveConfig002, TestSize.Level1)
+{
+    pluginMgr_->Init();
+    std::string subItemValue = GetSubItemValue("demo2", "sample");
+    bool ret = !subItemValue.empty() && subItemValue == "test_sys_prod";
+    EXPECT_TRUE(ret);
+    pluginMgr_->RemoveConfig("demo2", "sample");
+    subItemValue = GetSubItemValue("demo2", "sample");
+    ret = subItemValue.empty();
+    EXPECT_TRUE(ret);
+}
+
+/**
+ * @tc.name: Plugin mgr test RemoveConfig 003
+ * @tc.desc: Verify if can get config with wrong env.
+ * @tc.type: FUNC
+ * @tc.require: issuesIA7P80
+ * @tc.author:lice
+ */
+ HWTEST_F(PluginMgrTest, RemoveConfig003, TestSize.Level1)
+ {
+     pluginMgr_->Init();
+     std::string subItemValue = GetSubItemValue("demo3", "sample");
+     bool ret = !subItemValue.empty() && subItemValue == "test_sys_prod";
+     EXPECT_TRUE(ret);
+     pluginMgr_->RemoveConfig("demo3", "sample");
+     subItemValue = GetSubItemValue("demo3", "sample");
+     ret = subItemValue.empty();
+     EXPECT_TRUE(ret);
+ }
+
+/**
  * @tc.name: Plugin mgr test SubscribeResource 002
  * @tc.desc: Verify if can SubscribeResource
  * @tc.type: FUNC

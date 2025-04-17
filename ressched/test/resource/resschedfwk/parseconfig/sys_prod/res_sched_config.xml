@@ -37,5 +37,11 @@
                 <my>me</my>
             </item>
         </config>
+        <config name="remove">
+            <item key="value">
+                <tag>test_sys_prod</tag>
+                <my>me</my>
+            </item>
+        </config>
     </plugin>
 </ressched>

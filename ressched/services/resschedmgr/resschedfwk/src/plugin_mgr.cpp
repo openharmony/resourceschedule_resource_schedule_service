@@ -338,6 +338,15 @@ PluginConfig PluginMgr::GetConfig(const std::string& pluginName, const std::stri
     return configReader_->GetConfig(pluginName, configName);
 }
 
+void PluginMgr::RemoveConfig(const std::string& pluginName, const std::string& configName)
+{
+    PluginConfig config;
+    if (!configReader_) {
+        return;
+    }
+    configReader_->RemoveConfig(pluginName, configName);
+}
+
 void PluginMgr::Stop()
 {
     OnDestroy();
