@@ -807,6 +807,14 @@ enum GameEnvType : uint64_t {
     GAME_CUST = 1,
 };
 
+/**
+* @brief Recent Build Status
+*/
+enum RecentBuildStatus : int64_t {
+    RECENT_BUILD_START = 0,
+    RECENT_BUILD_STOP = 1,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS

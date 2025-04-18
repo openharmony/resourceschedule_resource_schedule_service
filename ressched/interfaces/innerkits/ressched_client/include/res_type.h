@@ -321,6 +321,8 @@ enum : uint32_t {
     RES_TYPE_REPORT_GAME_STATE_CHANGE = 148,
     // cust action
     RES_TYPE_SOCPERF_CUST_ACTION = 149,
+    // recent bulid resType
+    RES_TYPE_RECENT_BUILD = 150,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
