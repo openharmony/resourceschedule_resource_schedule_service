@@ -73,7 +73,7 @@ void DeviceStandbyPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
         return;
     }
 
-    STANDBYSERVICE_LOGI(
+    STANDBYSERVICE_LOGD(
         "DeviceStandbyPlugin::DispatchResource type=%{public}u value=%{public}lld",
         data->resType, (long long)(data->value));
 
