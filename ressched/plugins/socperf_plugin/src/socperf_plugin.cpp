@@ -119,6 +119,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL2     = 10094;
     const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL3     = 10095;
     const int32_t PERF_REQUEST_CMD_ID_WEB_SLIDE_SCROLL      = 10097;
+    const int32_t PERF_REQUEST_CMD_ID_RECENT_BUILD          = 10200;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -351,6 +352,13 @@ void SocPerfPlugin::AddEventToFunctionMap()
         functionMap.insert(std::make_pair(RES_TYPE_RGM_BOOTING_STATUS,
             [this](const std::shared_ptr<ResData>& data) { HandleRgmBootingStatus(data); }));
     }
+    AddOtherEventToFunctionMap();
+}
+
+void SocPerfPlugin::AddOtherEventToFunctionMap()
+{
+    functionMap.insert(std::make_pair(RES_TYPE_RECENT_BUILD,
+        [this](const std::shared_ptr<ResData>& data) { HandleRecentBuild(data); }));
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
@@ -405,6 +413,7 @@ void SocPerfPlugin::InitResTypes()
 
 void SocPerfPlugin::InitOtherResTypes()
 {
+    resTypes.insert(RES_TYPE_RECENT_BUILD);
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
     }
@@ -1328,6 +1337,20 @@ void SocPerfPlugin::HandleWebSildeScroll(const std::shared_ptr<ResData>& data)
     if (data->value == WebDragResizeStatus::WEB_DRAG_END) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_SLIDE_SCROLL, false, "");
     }
+}
+
+bool SocPerfPlugin::HandleRecentBuild(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleRecentBuild: %{public}lld", (long long)data->value);
+    if (data->value == RecentBuildStatus::RECENT_BUILD_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_RECENT_BUILD, true, "");
+    } else if (data->value == RecentBuildStatus::RECENT_BUILD_STOP) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_RECENT_BUILD, false, "");
+    }
+    return true;
 }
 
 extern "C" bool OnPluginInit(std::string& libName)

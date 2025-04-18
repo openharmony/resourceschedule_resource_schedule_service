@@ -66,6 +66,7 @@ namespace {
         ResType::RES_TYPE_COSMIC_CUBE_STATE_CHANGE,
         ResType::RES_TYPE_GESTURE_ANIMATION,
         ResType::RES_TYPE_RAISE_WORKER_THREAD_PRIORITY,
+        ResType::RES_TYPE_RECENT_BUILD,
     };
     static const std::unordered_set<uint32_t> THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
