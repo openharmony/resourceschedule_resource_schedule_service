@@ -408,7 +408,6 @@ HWTEST_F(ResSchedClientTest, IsAllowedLinkJump, Function | MediumTest | Level0)
     EXPECT_NE(ret, 0);
 }
 
-
 /**
  * @tc.name: SaInitXmlMutex
  * @tc.desc: Sa Init Xml Mutex
@@ -419,6 +418,20 @@ HWTEST_F(ResSchedClientTest, IsAllowedLinkJump, Function | MediumTest | Level0)
 HWTEST_F(ResSchedClientTest, SaInitXmlMutex, Function | MediumTest | Level0)
 {
     std::lock_guard<std::mutex> xmlLock(ResourceSchedule::ResSchedSaInit::GetInstance().saInitXmlMutex_);
+    EXPECT_TRUE(nullptr != ResSchedClient::GetInstance().rss_);
+}
+
+/**
+ * @tc.name: SetQos
+ * @tc.desc: Set self ipc thread Qos
+ * @tc.type: FUNC
+ * @tc.require: I78O6Y
+ * @tc.author: lujunchao
+ */
+HWTEST_F(ResSchedClientTest, SetQos, Function | MediumTest | Level0)
+{
+    ResourceSchedule::ResSchedIpcThread::GetInstance().SetInitFlag(true);
+    ResourceSchedule::ResSchedIpcThread::GetInstance().SetQos(0);
     EXPECT_TRUE(nullptr != ResSchedClient::GetInstance().rss_);
 }
 
