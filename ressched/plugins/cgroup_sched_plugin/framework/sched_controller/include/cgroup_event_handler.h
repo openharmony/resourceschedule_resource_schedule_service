@@ -74,6 +74,7 @@ public:
     void HandleReportScreenCaptureEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void PostTask(const std::function<void()> task);
     void PostTask(const std::function<void()> task, const std::string &taskName, const int32_t delayTime);
+    void PostTaskAndWait(const std::function<void()> task);
     void RemoveTask(const std::string &taskName);
     void ReportAbilityStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void UpdateMmiStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);

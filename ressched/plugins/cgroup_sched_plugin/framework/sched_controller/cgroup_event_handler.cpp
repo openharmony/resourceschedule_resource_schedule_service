@@ -1294,6 +1294,16 @@ void CgroupEventHandler::PostTask(const std::function<void()> task, const std::s
     }, ffrt::task_attr().delay(delayTime * ffrtSwitch_));
 }
 
+void CgroupEventHandler::PostTaskAndWait(const std::function<void()> task)
+{
+    if (!cgroupEventQueue_) {
+        CGS_LOGE("%{public}s : cgroupEventQueue_ nullptr", __func__);
+        return;
+    }
+    ffrt::task_handle handle = cgroupEventQueue_->submit_h(task);
+    cgroupEventQueue_->wait(handle);
+}
+
 void CgroupEventHandler::RemoveTask(const std::string &taskName)
 {
     std::lock_guard<ffrt::mutex> autoLock(delayTaskMapMutex_);

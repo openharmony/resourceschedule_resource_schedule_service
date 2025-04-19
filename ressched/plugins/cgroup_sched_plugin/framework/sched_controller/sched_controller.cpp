@@ -92,6 +92,7 @@ void SchedController::Init()
 void SchedController::Disable()
 {
     if (cgHandler_) {
+        cgHandler_->PostTaskAndWait([]() {});
         cgHandler_ = nullptr;
     }
     if (supervisor_) {
