@@ -103,6 +103,7 @@ namespace {
         ResType::RES_TYPE_PAGE_TRANSITION,
         ResType::RES_TYPE_VOICE_RECOGNIZE_WAKE,
         ResType::RES_TYPE_WEB_SLIDE_SCROLL,
+        ResType::RES_TYPE_KEY_PERF_SCENE,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
