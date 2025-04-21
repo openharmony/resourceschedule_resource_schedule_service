@@ -37,7 +37,6 @@ ohos_shared_library("socperf_executor_plugin") {
 
   external_deps = [
     "config_policy:configpolicy_util",
-    "ffrt:libffrt",
     "hilog:libhilog",
     "libxml2:libxml2",
   ]

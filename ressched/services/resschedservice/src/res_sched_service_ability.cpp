@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 
+#include "res_sched_service_ability.h"
+
 #include "res_common_util.h"
 #include "ffrt_inner.h"
 #include "hisysevent.h"
 #include "notifier_mgr.h"
-#include "res_sched_service_ability.h"
 #include "observer_manager_intf.h"
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
