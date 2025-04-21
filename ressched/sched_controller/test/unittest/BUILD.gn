@@ -50,7 +50,7 @@ ohos_unittest("event_controller_test") {
 
   defines = []
 
-  if (resource_schedule_service_with_app_nap_enable) {
+  if (resource_schedule_service_hisysevent_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE" ]
     external_deps += [ "hisysevent:libhisyseventmanager" ]
   }

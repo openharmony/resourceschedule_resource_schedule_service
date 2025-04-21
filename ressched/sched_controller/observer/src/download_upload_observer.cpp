@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef RESOURCE_REQUEST_REQUEST
+#ifdef RESOURCE_REQUEST_REQUEST
 #include "download_upload_observer.h"
 #include "nlohmann/json.hpp"
 #include "res_sched_log.h"
@@ -23,18 +23,45 @@ namespace ResourceSchedule {
 void DownLoadUploadObserver::OnRunningTaskCountUpdate(int count)
 {
     RESSCHED_LOGI("download upload on running task count %{public}d", count);
-    const nlohmann::json payload = nlohmann::json::object();
-    if (count > 0 && !isReportScene) {
-        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
-            ResType::KeyUploadOrDownloadStatus::ENTER_UPLOAD_DOWNLOAD_SCENE, payload);
-        isReportScene = true;
+    if (IsReportEnterScene(count)) {
+        HandleEnterScene();
         return;
     }
-    if (count == 0 && isReportScene) {
-        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
-            ResType::KeyUploadOrDownloadStatus::EXIT_UPLOAD_DOWNLOAD_SCENE, payload);
-        isReportScene = false;
+    if (IsReportExitScene(count)) {
+        HandleExitScene();
     }
+}
+
+bool DownLoadUploadObserver::IsReportEnterScene(int count)
+{
+    if (count > 0 && !isReportScene_) {
+        return true;
+    }
+    return false;
+}
+
+bool DownLoadUploadObserver::IsReportExitScene(int count)
+{
+    if (count == 0 && isReportScene_) {
+        return true;
+    }
+    return false;
+}
+
+void DownLoadUploadObserver::HandleEnterScene()
+{
+    const nlohmann::json payload = nlohmann::json::object();
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
+        ResType::KeyUploadOrDownloadStatus::ENTER_UPLOAD_DOWNLOAD_SCENE, payload);
+    isReportScene_ = true;
+}
+
+void DownLoadUploadObserver::HandleExitScene()
+{
+    const nlohmann::json payload = nlohmann::json::object();
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
+        ResType::KeyUploadOrDownloadStatus::EXIT_UPLOAD_DOWNLOAD_SCENE, payload);
+    isReportScene_ = false;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

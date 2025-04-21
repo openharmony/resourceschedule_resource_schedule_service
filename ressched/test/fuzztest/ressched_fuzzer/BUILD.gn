@@ -44,6 +44,7 @@ ohos_fuzztest("ResSchedFuzzTest") {
   ]
 
   external_deps = [
+    "ability_base:zuri",
     "ability_runtime:ability_manager",
     "access_token:libaccesstoken_sdk",
     "access_token:libtoken_setproc",

@@ -734,14 +734,6 @@ enum GameSceneId : int64_t {
 };
 
 /**
-* @brief raise worker Thread Priority
-*/
-enum WorkerEventState : int64_t {
-    WORKER_EVENT_BEGIN = 0,
-    WORKER_EVENT_END = 1,
-};
-
-/**
 * @brief Wifi Connection State
 */
 enum WifiConnectionState : int64_t {
@@ -751,6 +743,14 @@ enum WifiConnectionState : int64_t {
     WIFI_STATE_CONNECTED = 3,
     WIFI_STATE_DISCONNECTING = 4,
     WIFI_STATE_DISCONNECTED = 5,
+};
+
+/**
+* @brief raise worker Thread Priority
+*/
+enum WorkerEventState : int64_t {
+    WORKER_EVENT_BEGIN = 0,
+    WORKER_EVENT_END = 1,
 };
 
 /**
