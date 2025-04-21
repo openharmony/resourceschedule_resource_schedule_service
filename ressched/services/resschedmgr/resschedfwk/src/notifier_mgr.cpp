@@ -24,6 +24,7 @@
 #include "res_sched_log.h"
 #include "res_sched_common_death_recipient.h"
 #include "res_sched_systemload_notifier_proxy.h"
+#include "res_sched_event_reporter.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -81,6 +82,7 @@ void NotifierMgr::Init()
         }
     }
     initialized_ = true;
+    ResschedEventReporter::GetInstance().ReportFileSizeEvent(SYSTEMLOAD_FILE);
 }
 
 void NotifierMgr::Deinit()

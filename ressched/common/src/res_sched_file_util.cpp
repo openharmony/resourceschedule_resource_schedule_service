@@ -20,6 +20,7 @@
 #include <dirent.h>
 #include <fstream>
 #include <filesystem>
+#include <sys/statfs.h>
 
 #include "config_policy_utils.h"
 #include "directory_ex.h"
@@ -275,10 +276,49 @@ bool GetRealConfigPath(const std::string& configPath, std::string& realConfigPat
     realConfigPath = std::string(absolutePath);
     return true;
 }
+
 bool IsValidPath(const std::string& path)
 {
     return !(path.empty() || path.find('\0') != std::string::npos);
 }
+
+uint64_t GetFileSize(const std::string& path)
+{
+    struct stat st;
+    return stat(path.c_str(), &st) ? 0 : static_cast<uint64_t>(st.st_size);
 }
+
+std::string GetPartitionName(const std::string& path)
+{
+    std::string partition;
+    std::size_t first = path.find_first_of("/");
+    if (first == std::string::npos) {
+        partition = "/" + path;
+        return partition;
+    }
+    std::size_t second = path.find_first_of("/", first + 1);
+    if (second == std::string::npos) {
+        if (path.at(0) != '/') {
+            partition = "/" + path.substr(0, first);
+        } else {
+            partition = path;
+        }
+        return partition;
+    }
+    partition = path.substr(0, second - first);
+    return partition;
+}
+
+double GetDeviceVailidSize(const std::string& path)
+{
+    std::string partitionName = GetPartitionName(path);
+    struct statfs stat;
+    if (statfs(partitionName.c_str(), &stat) != 0) {
+        return 0;
+    }
+    constexpr double units = 1024.0;
+    return (static_cast<double>(stat.f_bfree) / units) * (static_cast<double>(stat.f_bsize) / units);
+}
+} // namespace ResCommonUtil
 } // namespace ResourceSchedule
 } // namespace OHOS

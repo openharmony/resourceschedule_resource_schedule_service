@@ -168,6 +168,22 @@ bool GetRealConfigPath(const std::string& configPath, std::string& realConfigPat
  * @return 'true' if the path is valid.
  */
 bool IsValidPath(const std::string& path);
+
+/**
+ * @brief get file size
+ *
+ * @param path The file path
+ * @return the size of the file.
+ */
+uint64_t GetFileSize(const std::string& path);
+
+/**
+ * @brief get device valid size
+ *
+ * @param path The partition of path
+ * @return the remain size of partition.
+ */
+double GetDeviceVailidSize(const std::string& path);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

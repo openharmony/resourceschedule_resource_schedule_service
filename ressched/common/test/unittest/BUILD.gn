@@ -17,6 +17,7 @@ import("../../../ressched.gni")
 group("unittest") {
   testonly = true
   deps = [
+    ":resschedeventreporter_test",
     ":resschedfileutil_test",
     ":resschedjsonutil_test",
     ":resschedstringutil_test",
@@ -27,6 +28,31 @@ group("unittest") {
 
 module_output_path =
     "resource_schedule_service/resource_schedule_service/ressched/common"
+
+ohos_unittest("resschedeventreporter_test") {
+  module_out_path = module_output_path
+  cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
+  include_dirs = [
+    "./include",
+    "${ressched_common}/include",
+  ]
+
+  sources = [ "src/res_sched_event_reporter_test.cpp" ]
+
+  deps = [ "${ressched_common}:ressched_common_utils" ]
+
+  external_deps = []
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  branch_protector_ret = "pac_ret"
+}
 
 ohos_unittest("resschedfileutil_test") {
   module_out_path = module_output_path
