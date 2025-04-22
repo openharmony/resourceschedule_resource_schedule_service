@@ -33,7 +33,7 @@
 #include "res_data.h"
 #include "single_instance.h"
 #include "config_info.h"
-#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt.h"
 #endif
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE

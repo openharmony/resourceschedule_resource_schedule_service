@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+
 #include "res_sched_service_ability.h"
 
 #include "res_common_util.h"
