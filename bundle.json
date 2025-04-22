@@ -20,8 +20,8 @@
       "resource_schedule_service_with_ffrt_enable",
       "resource_schedule_service_with_ext_res_enable",
       "resource_schedule_service_socperf_executor_enable",
-      "resource_schedule_service_with_app_nap_enable",
       "resource_schedule_service_cust_soc_perf_enable",
+      "resource_schedule_service_hisysevent_enable",
       "resource_schedule_service_crown_power_key_enable",
       "resource_schedule_service_file_copy_soc_perf_enable"
     ],

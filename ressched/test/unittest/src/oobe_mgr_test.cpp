@@ -204,5 +204,7 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_008, Function | MediumTest | Level0)
     std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
     EXPECT_EQ(0, oobeMgr.dataShareFunctions_.size());
 }
+#undef private
+#undef protected
 } // namespace ResourceSchedule
 } // namespace OHOS
