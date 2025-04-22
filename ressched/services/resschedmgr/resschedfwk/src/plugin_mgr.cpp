@@ -150,7 +150,11 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
         RESSCHED_LOGI("PluginMgr load switch config file index:%{public}d success!", index);
     }
     LoadPlugin();
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
+#else
+    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
+#endif
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     dispatchers_.clear();
     for (const auto& [libPath, libInfo] : pluginLibMap_) {
@@ -460,7 +464,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     DispatchResourceToPluginAsync(pluginList, resData);
 #else
-    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
+    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) {
         dispatcher_->PostTask(
             [pluginList, resData, this] {
@@ -756,7 +760,7 @@ void PluginMgr::DispatchResourceToPluginSync(const std::list<std::string>& plugi
                 RepairPlugin(endTime, pluginLib, libInfo);
             };
 #ifndef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-            std::lock_guard<ffrt::mutex> autoLock2(dispatcherHandlerMutex_);
+            std::lock_guard<std::mutex> autoLock2(dispatcherHandlerMutex_);
             if (dispatcher_) {
                 dispatcher_->PostTask(task);
             }
@@ -867,10 +871,11 @@ void PluginMgr::OnDestroy()
     configReader_ = nullptr;
     pluginSwitch_ = nullptr;
     ClearResource();
-    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
     dispatchers_.clear();
 #else
+    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) {
         dispatcher_->RemoveAllEvents();
         dispatcher_ = nullptr;

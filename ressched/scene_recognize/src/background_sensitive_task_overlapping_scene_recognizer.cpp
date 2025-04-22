@@ -162,7 +162,7 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleTaskUpdate(pid_t p
         if (perceivableTasks_.find(pid) != perceivableTasks_.end()) {
             perceivableTasks_.erase(pid);
         }
-        if (!CheckEnterScene()) {
+        if (!CheckEnterScene() && isInBackgroundPerceivableScene_) {
             RESSCHED_LOGI("after task update all perceivable task stop exit scene");
             ExitScene();
         }
@@ -180,7 +180,7 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleTaskStop(pid_t pid
 {
     if (perceivableTasks_.find(pid) != perceivableTasks_.end()) {
         perceivableTasks_.erase(pid);
-        if (!CheckEnterScene()) {
+        if (!CheckEnterScene() && isInBackgroundPerceivableScene_) {
             RESSCHED_LOGI("after task stop all perceivable task stop exit scene");
             ExitScene();
         }
