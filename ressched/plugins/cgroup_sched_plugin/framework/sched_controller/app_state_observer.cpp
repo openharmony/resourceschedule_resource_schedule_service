@@ -69,6 +69,12 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
         CGS_LOGE("%{public}s : validate ability state data failed!", __func__);
         return;
     }
+
+    if (abilityStateData.isInnerNotify) {
+        CGS_LOGI("%{public}s : Redundancy report dont need care!", __func__);
+        return;
+    }
+
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
     std::string bundleName = abilityStateData.bundleName;
     int32_t abilityState = abilityStateData.abilityState;
