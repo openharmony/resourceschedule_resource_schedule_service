@@ -340,7 +340,14 @@ void ObserverManager::InitAudioObserver()
                         "ERR_MSG", "Register a audio observer failed!");
     }
 
-    res = AudioStandard::AudioSystemManager::GetInstance()->SetRingerModeCallback(pid_, audioObserver_);
+    res = -1;
+    auto audioSystemMgr = AudioStandard::AudioSystemManager::GetInstance();
+    if (audioSystemMgr) {
+        auto groupMgr = audioSystemMgr->GetGroupManager(AudioStandard::DEFAULT_VOLUME_GROUP_ID);
+        if (groupMgr) {
+            res = groupMgr->SetRingerModeCallback(pid_, audioObserver_);
+        }
+    }
     if (res == OPERATION_SUCCESS) {
         RESSCHED_LOGD("ObserverManager init audioRingModeObserver successfully");
     } else {
