@@ -48,8 +48,8 @@ private:
     void HandleCgroupAdjuster(const std::shared_ptr<ResData>& data);
     void HandleWindowsFocus(const std::shared_ptr<ResData>& data);
     void HandleReportRender(const std::shared_ptr<ResData>& data);
-    void HandleNetworkLatencyRequest(const std::shared_ptr<ResData>& data);
     void HandleEventSlide(const std::shared_ptr<ResData>& data);
+    void HandleNetworkLatencyRequest(const std::shared_ptr<ResData>& data);
     void HandleScreenLock(const std::shared_ptr<ResData>& data);
     void HandleScreenStatus(const std::shared_ptr<ResData>& data);
     void HandleInteractionScene(const std::shared_ptr<ResData>& data);
