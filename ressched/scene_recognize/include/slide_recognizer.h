@@ -60,6 +60,7 @@ private:
     bool isInTouching_ = false;
     std::string slidePid_ = "";
     std::string slideUid_ = "";
+    std::string scrTid_ = "";
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
