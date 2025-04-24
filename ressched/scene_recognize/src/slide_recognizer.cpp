@@ -137,6 +137,9 @@ void SlideRecognizer::StartDetecting(const nlohmann::json& payload)
         return;
     }
     slideUid_ = payload["callingUid"];
+    if (payload.contains("scrTid") && payload["scrTid"].is_string()) {
+        scrTid_ = payload["scrTid"];
+    }
 }
 
 void SlideRecognizer::HandleListFlingStart(const nlohmann::json& payload)
@@ -262,6 +265,7 @@ nlohmann::json SlideRecognizer::FillRealPidAndUid(const nlohmann::json& payload)
     if (!slideUid_.empty()) {
         payloadM["callingUid"] = slideUid_;
     }
+    payloadM["scrTid"] = scrTid_;
     return payloadM;
 }
 
