@@ -31,9 +31,6 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
-constexpr uint64_t SCHEDULE_CGROUP_FDSAN_TAG = 0xd001702;
-constexpr uint64_t COMMON_CGROUP_FDSAN_TAG = 0;
-
 CgroupController::CgroupController(const std::string& name, const std::string& path)
 {
     name_ = name;
@@ -49,14 +46,14 @@ CgroupController::~CgroupController()
 {
     for (auto& kv : policyToTaskFd_) {
         if (kv.second != -1) {
-            fdsan_close_with_tag(kv.second, SCHEDULE_CGROUP_FDSAN_TAG);
+            close(kv.second);
             kv.second = -1;
         }
     }
     policyToTaskFd_.clear();
     for (auto& kv : policyToProcFd_) {
         if (kv.second != -1) {
-            fdsan_close_with_tag(kv.second, SCHEDULE_CGROUP_FDSAN_TAG);
+            close(kv.second);
             kv.second = -1;
         }
     }
@@ -153,11 +150,10 @@ bool CgroupController::AddThreadSchedPolicy(SchedPolicy policy, const std::strin
     }
     int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
-        PGCGS_LOGE("%{public}s open tasks file failed, name is %{public}s, subgroup is %{public}s",
-            __func__, name_.c_str(), subgroup.c_str());
+        PGCGS_LOGE("%{public}s open file failed; file = %{public}s, fd = %{public}d ",
+            __func__, realPath.c_str(), fd);
         return false;
     }
-    fdsan_exchange_owner_tag(fd, COMMON_CGROUP_FDSAN_TAG, SCHEDULE_CGROUP_FDSAN_TAG);
     policyToTaskFd_[policy] = fd;
     return true;
 }
@@ -176,11 +172,10 @@ bool CgroupController::AddThreadGroupSchedPolicy(SchedPolicy policy, const std::
     }
     int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
-        PGCGS_LOGE("%{public}s open cgroup.procs file failed, name is %{public}s, subgroup is %{public}s",
-            __func__, name_.c_str(), subgroup.c_str());
+        PGCGS_LOGE("%{public}s open file failed; file = %{public}s'; fd = %{public}d",
+            __func__, realPath.c_str(), fd);
         return false;
     }
-    fdsan_exchange_owner_tag(fd, COMMON_CGROUP_FDSAN_TAG, SCHEDULE_CGROUP_FDSAN_TAG);
     policyToProcFd_[policy] = fd;
     return true;
 }

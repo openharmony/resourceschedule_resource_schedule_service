@@ -652,35 +652,6 @@ namespace ResourceSchedule {
         return true;
     }
 
-    bool HandleMmiInputStateFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-        g_pos = 0;
-
-        // getdata
-        uid_t uid = GetData<uid_t>();
-        pid_t pid = GetData<pid_t>();
-        uint32_t resType = GetData<uint32_t>();
-        int64_t value = GetData<int64_t>();
-        nlohmann::json payload;
-        payload["uid"] = std::to_string(uid);
-        payload["pid"] = std::to_string(pid);
-        auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
-
-        cgroupEventHandler->HandleMmiInputState(resType, value, payload);
-        cgroupEventHandler->SetSupervisor(g_supervisor);
-        cgroupEventHandler->HandleMmiInputState(resType, value, payload);
-
-        return true;
-    }
-
     bool HandleReportScreenCaptureEventFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -1696,7 +1667,6 @@ namespace ResourceSchedule {
         OHOS::ResourceSchedule::HandleReportWebviewAudioStateFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportRunningLockEventFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportHisysEventFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleMmiInputStateFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportBluetoothConnectStateFuzzTest(data, size);
         OHOS::ResourceSchedule::CheckVisibilityForRenderProcessFuzzTest(data, size);
         OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
@@ -1714,6 +1684,7 @@ namespace ResourceSchedule {
         OHOS::ResourceSchedule::HandleProcessCreatedFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleWebviewScreenCaptureFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportWebviewVideoStateFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportScreenCaptureEventFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportCosmicCubeStateFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleOnAppStoppedFuzzTest(data, size);
     }

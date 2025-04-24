@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -92,7 +92,6 @@ void SchedController::Init()
 void SchedController::Disable()
 {
     if (cgHandler_) {
-        cgHandler_->PostTaskAndWait([]() {});
         cgHandler_ = nullptr;
     }
     if (supervisor_) {
@@ -180,12 +179,9 @@ void SchedController::DispatchOtherResource(uint32_t resType, int64_t value, con
     handler->PostTask([handler, resType, value, payload] {
         switch (resType) {
             case ResType::RES_TYPE_REPORT_CAMERA_STATE:
-            case ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE: {
-                handler->HandleReportHisysEvent(resType, value, payload);
-                break;
-            }
+            case ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE:
             case ResType::RES_TYPE_MMI_INPUT_STATE: {
-                handler->HandleMmiInputState(resType, value, payload);
+                handler->HandleReportHisysEvent(resType, value, payload);
                 break;
             }
             case ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE: {
@@ -240,15 +236,6 @@ inline void SchedController::InitSupervisor()
     supervisor_ = std::make_shared<Supervisor>();
 }
 
-inline void SchedController::InitAppStartupSceneRec()
-{
-    AppStartupSceneRec::GetInstance().Init();
-}
-
-inline void SchedController::DeinitAppStartupSceneRec()
-{
-    AppStartupSceneRec::GetInstance().Deinit();
-}
 void SchedController::InitDispatchResFuncMap()
 {
     dispatchResFuncMap_ = {
@@ -298,6 +285,16 @@ void SchedController::InitDispatchResFuncMap()
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleOnAppStopped(resType, value, payload); } },
     };
+}
+
+inline void SchedController::InitAppStartupSceneRec()
+{
+    AppStartupSceneRec::GetInstance().Init();
+}
+
+inline void SchedController::DeinitAppStartupSceneRec()
+{
+    AppStartupSceneRec::GetInstance().Deinit();
 }
 
 bool SchedController::SubscribeAppState()
@@ -384,11 +381,13 @@ void SchedController::SubscribeWindowState()
     if (!windowStateObserver_) {
         windowStateObserver_ = new (std::nothrow)WindowStateObserver();
         if (windowStateObserver_) {
-            if (OHOS::Rosen::WindowManager::GetInstance().
-            RegisterFocusChangedListener(windowStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
+            OHOS::Rosen::WMError ret =
+                OHOS::Rosen::WindowManager::GetInstance().RegisterFocusChangedListener(windowStateObserver_);
+            if (ret != OHOS::Rosen::WMError::WM_OK) {
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                                 HiviewDFX::HiSysEvent::EventType::FAULT,
-                                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                                "COMPONENT_NAME", "MAIN",
+                                "ERR_TYPE", "register failure",
                                 "ERR_MSG", "Register a listener of window focus change failed.");
             }
         }
@@ -396,11 +395,13 @@ void SchedController::SubscribeWindowState()
     if (!windowVisibilityObserver_) {
         windowVisibilityObserver_ = new (std::nothrow)WindowVisibilityObserver();
         if (windowVisibilityObserver_) {
-            if (OHOS::Rosen::WindowManager::GetInstance().
-            RegisterVisibilityChangedListener(windowVisibilityObserver_) != OHOS::Rosen::WMError::WM_OK) {
+            OHOS::Rosen::WMError ret = OHOS::Rosen::WindowManager::GetInstance().
+                RegisterVisibilityChangedListener(windowVisibilityObserver_);
+            if (ret != OHOS::Rosen::WMError::WM_OK) {
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                                 HiviewDFX::HiSysEvent::EventType::FAULT,
-                                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                                "COMPONENT_NAME", "MAIN",
+                                "ERR_TYPE", "register failure",
                                 "ERR_MSG", "Register a listener of window visibility change failed.");
             }
         }
@@ -421,7 +422,6 @@ void SchedController::SubscribeWindowState()
     SubscribePipChange();
     CGS_LOGI("%{public}s success.", __func__);
 }
-
 void SchedController::SubscribeWindowModeChange()
 {
     if (!windowModeObserver_) {
@@ -429,7 +429,6 @@ void SchedController::SubscribeWindowModeChange()
         if (windowModeObserver_) {
             if (OHOS::Rosen::WindowManager::GetInstance().
                 RegisterWindowModeChangedListener(windowModeObserver_) != OHOS::Rosen::WMError::WM_OK) {
-                    CGS_LOGE("RegisterWindowModeChangedListener fail");
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS,
                                     "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                                     "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
@@ -664,6 +663,5 @@ extern "C" void OnDump(const std::vector<std::string>& args, std::string& result
 {
     SchedController::GetInstance().Dump(args, result);
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS

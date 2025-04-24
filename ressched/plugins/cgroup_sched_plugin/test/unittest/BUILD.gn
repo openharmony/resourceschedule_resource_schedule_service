@@ -96,24 +96,6 @@ ohos_unittest("ResschedUtilsTest") {
   ]
 }
 
-ohos_executable("process_proup_test") {
-  module_install_dir = "bin/process_group"
-  include_dirs = []
-
-  sources = [ "./cgroup_setting_test.cpp" ]
-
-  cflags = []
-  if (target_cpu == "arm") {
-    cflags += [ "-DBINDER_IPC_32BIT" ]
-  }
-
-  deps = [ "../../framework/process_group:libprocess_group" ]
-
-  install_enable = true
-  part_name = "resource_schedule_service"
-  subsystem_name = "resourceschedule"
-}
-
 group("unittest") {
   testonly = true
   deps = [

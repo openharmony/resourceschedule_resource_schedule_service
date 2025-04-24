@@ -82,9 +82,13 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
 
     // if is uiExtension state changed, need to change extensionState to abilityState and write payload.
     if (IsUIExtensionAbilityStateChanged(abilityStateData)) {
-        abilityState = extensionStateToAbilityState_[abilityState];
-        payload["extensionAbilityType"] = std::to_string(abilityStateData.extensionAbilityType);
-        payload["processType"] = std::to_string(abilityStateData.processType);
+        if (extensionStateToAbilityState_.find(abilityState) != extensionStateToAbilityState_.end()) {
+            abilityState = extensionStateToAbilityState_.at(abilityState);
+            payload["extensionAbilityType"] = std::to_string(abilityStateData.extensionAbilityType);
+            payload["processType"] = std::to_string(abilityStateData.processType);
+        } else {
+            CGS_LOGE("%{public}s : abilityState trans to extensionState failed", __func__);
+        }
     }
 
     if (cgHandler) {
@@ -125,9 +129,8 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
     // if current is uiExtension, goto onAbilityStateChanged and report
     if (IsUIExtensionAbilityStateChanged(abilityStateData)) {
         CGS_LOGD("UIExtensionAbility Changed, extensionType: %{public}d, bundleName: %{public}s,"
-            " abilityRecordId: %{public}d, abilityState: %{public}d, processType: %{public}d",
-            abilityStateData.extensionAbilityType, abilityStateData.bundleName.c_str(),
-            abilityStateData.abilityRecordId, abilityStateData.abilityState, abilityStateData.processType);
+            " abilityState: %{public}d, processType: %{public}d", abilityStateData.extensionAbilityType,
+            abilityStateData.bundleName.c_str(), abilityStateData.abilityState, abilityStateData.processType);
         OnAbilityStateChanged(abilityStateData);
         return;
     }
@@ -163,7 +166,7 @@ bool RmsApplicationStateObserver::IsUIExtensionAbilityStateChanged(const Ability
         return false;
     }
 
-    if (abilityStateData.abilityState >= static_cast<int32_t>(extensionStateToAbilityState_.size())) {
+    if (extensionStateToAbilityState_.find(abilityStateData.abilityState) == extensionStateToAbilityState_.end()) {
         CGS_LOGD("%{public}s : Validate UIExtensionAbility data out of bound!", __func__);
         return false;
     }
@@ -191,6 +194,7 @@ void RmsApplicationStateObserver::MarshallingProcessData(const ProcessData &proc
     payload["isKeepAlive"] = std::to_string(processData.isKeepAlive);
     payload["isTestMode"] = std::to_string(processData.isTestMode);
     payload["processName"] = processData.processName;
+    payload["exitReason"] = std::to_string(processData.exitReason);
     payload["hostPid"] = std::to_string(processData.hostPid);
     payload["callerPid"] = std::to_string(processData.callerPid);
     payload["callerUid"] = std::to_string(processData.callerUid);

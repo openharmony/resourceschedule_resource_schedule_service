@@ -302,7 +302,6 @@ void Supervisor::ReloadApplication()
     }
 }
 
-#ifdef SUPPORT_CHILD_PROCESS
 void Supervisor::ReloadChildProcess()
 {
     if (appManager_ == nullptr) {
@@ -316,24 +315,20 @@ void Supervisor::ReloadChildProcess()
         auto procRecord = app->GetProcessRecordNonNull(process.pid);
         procRecord->processType_ = ProcRecordType::CHILD;
         procRecord->hostPid_ = process.hostPid;
-        procRecord->isReload_ = true;
         CGS_LOGI("reload child process bundleName:%{public}s processName:%{public}s pid:%{public}d \
             uid:%{public}d hostUid:%{public}d hostPid:%{public}d",
             process.bundleName.c_str(), process.processName.c_str(), process.pid,
             process.uid, process.hostUid, process.hostPid);
     }
 }
-#endif // SUPPORT_CHILD_PROCESS
 
 void Supervisor::InitSuperVisorContent()
 {
     ConnectAppManagerService();
     /* reload application info */
     ReloadApplication();
-#ifdef SUPPORT_CHILD_PROCESS
     /* reload child process */
     ReloadChildProcess();
-#endif // SUPPORT_CHILD_PROCESS
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
