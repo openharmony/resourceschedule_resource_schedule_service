@@ -113,8 +113,8 @@ void FrameAwarePlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data
         return;
     }
 
-    int uid = ConvertToInteger(data, "uid");
     int pid = ConvertToInteger(data, "pid");
+    int uid = ConvertToInteger(data, "uid");
     std::string bundleName = data->payload["bundleName"].get<std::string>().c_str();
     RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
     RME::FrameMsgIntf::GetInstance().ReportAppInfo(pid, uid, bundleName, state);
