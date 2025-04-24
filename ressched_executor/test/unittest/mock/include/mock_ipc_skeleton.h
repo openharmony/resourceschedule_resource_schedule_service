@@ -42,7 +42,7 @@ public:
 
     static bool IsLocalCalling();
 
-    static IPCSkeleton &GetINstance();
+    static IPCSkeleton &GetInstance();
 
     static sptr<IRemoteObject> GetContextObject();
 
