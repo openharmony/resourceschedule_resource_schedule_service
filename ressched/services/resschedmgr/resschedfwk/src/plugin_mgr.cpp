@@ -277,7 +277,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     if (!pluginHandle) {
         RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
+                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "PluginMgr dlopen " + info.libPath + " failed!");
         return nullptr;
     }
@@ -286,8 +286,8 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     if (!onPluginInitFunc) {
         RESSCHED_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "PluginMgr don't found dlsym " + info.libPath + "!");
+                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "PluginMgr dlsym 'OnPluginInit' in " + info.libPath + "failed!");
         dlclose(pluginHandle);
         return nullptr;
     }
@@ -296,8 +296,8 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     if (!onPluginDisableFunc) {
         RESSCHED_LOGE("%{public}s, dlsym OnPluginDisable failed!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "PluginMgr don't found dlsym " + info.libPath + "!");
+                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "PluginMgr dlsym 'OnPluginDisable' in " + info.libPath + "failed!");
         dlclose(pluginHandle);
         return nullptr;
     }
@@ -305,7 +305,7 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     if (!onPluginInitFunc(const_cast<std::string&>(info.libPath))) {
         RESSCHED_LOGE("%{public}s, %{private}s init failed!", __func__, info.libPath.c_str());
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
+                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "plugin failure",
                         "ERR_MSG", "Plugin " + info.libPath + " init failed!");
         dlclose(pluginHandle);
         return nullptr;
