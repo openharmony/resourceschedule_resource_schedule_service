@@ -35,9 +35,6 @@ namespace {
     static constexpr int FMT_STR_BUFF_LEN = 256;
 }
 
-constexpr uint64_t SCHEDULE_CGROUP_FDSAN_TAG = 0xd001702;
-constexpr uint64_t COMMON_CGROUP_FDSAN_TAG = 0;
-
 std::string FormatString(const char* fmt, va_list vararg)
 {
     std::string strResult;

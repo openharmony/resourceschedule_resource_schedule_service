@@ -52,8 +52,8 @@ public:
     bool SubscribeBackgroundTask();
     void UnsubscribeBackgroundTask();
     void SubscribeWindowState();
-    void UnsubscribeWindowState();
     void SubscribeWindowModeChange();
+    void UnsubscribeWindowState();
     void UnsubscribeWindowModeChange();
     void SubscribePipChange();
     void UnSubscribePipChange();
@@ -94,10 +94,10 @@ private:
     sptr<WindowStateObserver> windowStateObserver_;
     sptr<WindowVisibilityObserver> windowVisibilityObserver_;
     sptr<WindowDrawingContentObserver> windowDrawingContentObserver_;
-    sptr<WindowModeObserver> windowModeObserver_;
     sptr<PiPStateObserver> pipStateObserver_;
     std::unordered_map<uint32_t, std::function<void(std::shared_ptr<CgroupEventHandler>,
         uint32_t, int64_t, const nlohmann::json&)>> dispatchResFuncMap_;
+    sptr<WindowModeObserver> windowModeObserver_;
 
     void InitResTypes();
     inline void InitCgroupHandler();

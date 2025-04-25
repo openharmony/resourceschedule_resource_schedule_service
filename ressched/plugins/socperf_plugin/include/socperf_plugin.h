@@ -72,10 +72,11 @@ private:
     using ReqAppTypeFunc = int32_t (*)(const std::string &bundleName);
     std::set<uint32_t> resTypes;
     std::set<int32_t> focusAppUids_;
+    bool weakActionStatus_ = true;
+    std::set<std::string> keyAppName_;
+    std::set<int32_t> keyAppType_;
     // app names set which use camera
     std::set<std::string> appNameUseCamera_;
-    // app names set which add move boost
-    std::set<std::string> appNameMoveEvent_;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap;
     // app's uid match app
     std::map<int32_t, AppKeyMessage> uidToAppMsgMap_;
@@ -95,8 +96,14 @@ private:
     void InitEventId();
     void InitFunctionMap();
     void AddEventToFunctionMap();
+    void AddOtherEventToFunctionMap();
     void InitResTypes();
+    void InitOtherResTypes();
     void InitPerfCrucialSo();
+    void InitWeakInterAction();
+    void AddKeyAppName(const std::string& subValue);
+    void AddKeyAppType(const std::string& subValue);
+    void UpdateWeakActionStatus();
     void InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc);
     void HandleWindowFocus(const std::shared_ptr<ResData>& data);
     void HandleEventClick(const std::shared_ptr<ResData>& data);
@@ -120,9 +127,8 @@ private:
     void HandleLoadUrl(const std::shared_ptr<ResData>& data);
     void HandleMousewheel(const std::shared_ptr<ResData>& data);
     bool HandleAppStateChange(const std::shared_ptr<ResData>& data);
-    void HandleDeviceModeStatusChange(const std::shared_ptr<ResData>& data);
-    void HandleWebDragResize(const std::shared_ptr<ResData>& data);
     bool HandleSocperfSceneBoard(const std::shared_ptr<ResData>& data);
+    void HandleDeviceModeStatusChange(const std::shared_ptr<ResData>& data);
     bool HandleSocperfAccountActivating(const std::shared_ptr<ResData> &data);
 #ifdef RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
     bool HandleCustEvent(const std::shared_ptr<ResData>& data);
@@ -148,14 +154,15 @@ private:
     bool HandleProcessStateChange(const std::shared_ptr<ResData> &data);
     bool HandleCameraStateChange(const std::shared_ptr<ResData> &data);
     bool InitBundleNameBoostList();
-    bool HandleSubValue(const std::string& subValue, std::set<std::string>& nameSet);
+    bool HandleSubValue(const std::string& subValue);
     bool IsAllowBoostScene();
-    bool HandleMoveEventBoost(const std::shared_ptr<ResData>& data, bool isSet);
+    bool HandleRecentBuild(const std::shared_ptr<ResData>& data);
     int32_t GetPidByData(const std::shared_ptr<ResData>& data, const std::string& key);
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
     void HandleScreenOff();
     std::string GetBundleNameByUid(const int32_t uid);
+    void HandleWebDragResize(const std::shared_ptr<ResData>& data);
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
     bool HandleFileCopyStatus(const std::shared_ptr<ResData>& data);
 #endif

@@ -39,7 +39,6 @@ namespace {
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST = "socperf_game_boost";
     const std::string CONFIG_NAME_SOCPERF_BUNDLE_NAME_BOOST_LIST = "socperfBundleNameBoostList";
     const std::string SUB_ITEM_KEY_NAME_APP_USE_CAMERA_BOOST = "app_use_camera_boost";
-    const std::string SUB_ITEM_KEY_NAME_APP_MOVE_EVENT_BOOST = "app_move_event_boost";
     const std::string CNOFIG_NAME_SOCPERF_CRUCIAL_FUNC = "socperfCrucialFunc";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_PATH = "socperf_req_apptype_path";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_FUNC = "socperf_req_apptype_func";
@@ -47,7 +46,6 @@ namespace {
     const std::string PID_NAME = "pid";
     const std::string CLIENT_PID_NAME = "clientPid";
     const std::string UID_NAME = "uid";
-    const std::string CALLING_UID_NAME = "callingUid";
     const std::string SOCPERF_TYPE_ID = "socperf_type_id";
     const std::string SOCPERF_TYPE_RGM = "socperf_type_rgm";
     const std::string EXTENSION_TYPE_KEY = "extensionType";
@@ -59,6 +57,9 @@ namespace {
     const std::string POWER_MODE_KEY = "power";
     const std::string POWER_MODE = "powerMode";
     const std::string PRELOAD_MODE = "isPreload";
+    const std::string WEAK_ACTION_STRING = "weakInterAction";
+    const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
+    const std::string KEY_APP_TYPE = "key_app_type";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -107,7 +108,7 @@ namespace {
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
     const int32_t PERF_REQUEST_CMD_ID_FILE_COPY             = 10087;
 #endif
-    const int32_t PERF_REQUEST_CMD_ID_MOVE_EVENT_BOOST      = 10091;
+    const int32_t PERF_REQUEST_CMD_ID_RECENT_BUILD          = 10200;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -121,6 +122,7 @@ void SocPerfPlugin::Init()
     }
     InitPerfCrucialSo();
     InitBundleNameBoostList();
+    InitWeakInterAction();
     SOC_PERF_LOGI("SocPerfPlugin::Init success");
 }
 
@@ -142,6 +144,37 @@ void SocPerfPlugin::InitPerfCrucialSo()
         InitPerfCrucialFunc(perfReqAppTypeSoPath_.c_str(), perfReqAppTypeSoFunc_.c_str());
     }
     PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CNOFIG_NAME_SOCPERF_CRUCIAL_FUNC);
+}
+
+void SocPerfPlugin::InitWeakInterAction()
+{
+    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, WEAK_ACTION_STRING);
+    for (const Item& item : itemLists.itemList) {
+        for (SubItem sub : item.subItemList) {
+            if (sub.name == BUNDLE_NAME) {
+                AddKeyAppName(sub.value);
+            } else if (sub.name == KEY_APP_TYPE) {
+                AddKeyAppType(sub.value);
+            }
+        }
+    }
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, WEAK_ACTION_STRING);
+}
+
+void SocPerfPlugin::AddKeyAppName(const std::string& subValue)
+{
+    if (subValue.empty()) {
+        return;
+    }
+    keyAppName_.insert(subValue);
+}
+
+void SocPerfPlugin::AddKeyAppType(const std::string& subValue)
+{
+    if (subValue.empty()) {
+        return;
+    }
+    keyAppType_.insert(atoi(subValue.c_str()));
 }
 
 void SocPerfPlugin::InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc)
@@ -186,9 +219,7 @@ bool SocPerfPlugin::InitBundleNameBoostList()
     for (const Item& item : itemLists.itemList) {
         for (SubItem sub : item.subItemList) {
             if (sub.name == SUB_ITEM_KEY_NAME_APP_USE_CAMERA_BOOST) {
-                ret = HandleSubValue(sub.value.c_str(), appNameUseCamera_);
-            } else if (sub.name == SUB_ITEM_KEY_NAME_APP_MOVE_EVENT_BOOST) {
-                ret = HandleSubValue(sub.value.c_str(), appNameMoveEvent_);
+                ret = HandleSubValue(sub.value.c_str());
             }
         }
     }
@@ -196,7 +227,7 @@ bool SocPerfPlugin::InitBundleNameBoostList()
     return ret;
 }
 
-bool SocPerfPlugin::HandleSubValue(const std::string& subValue, std::set<std::string>& nameSet)
+bool SocPerfPlugin::HandleSubValue(const std::string& subValue)
 {
     if (subValue.empty()) {
         return false;
@@ -204,7 +235,7 @@ bool SocPerfPlugin::HandleSubValue(const std::string& subValue, std::set<std::st
     std::stringstream sstream(subValue);
     std::string bundleName;
     while (std::getline(sstream, bundleName, ',')) {
-        nameSet.insert(bundleName);
+        appNameUseCamera_.insert(bundleName);
     }
     return true;
 }
@@ -246,10 +277,10 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
         { RES_TYPE_DEVICE_MODE_STATUS,
             [this](const std::shared_ptr<ResData>& data) { HandleDeviceModeStatusChange(data); } },
-        { RES_TYPE_WEB_DRAG_RESIZE,
-            [this](const std::shared_ptr<ResData>& data) { HandleWebDragResize(data); } },
         { RES_TYPE_ACCOUNT_ACTIVATING,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfAccountActivating(data); } },
+        { RES_TYPE_WEB_DRAG_RESIZE,
+            [this](const std::shared_ptr<ResData>& data) { HandleWebDragResize(data); } },
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
         { RES_TYPE_FILE_COPY_STATUS,
             [this](const std::shared_ptr<ResData>& data) { HandleFileCopyStatus(data); } },
@@ -302,6 +333,13 @@ void SocPerfPlugin::AddEventToFunctionMap()
         functionMap.insert(std::make_pair(RES_TYPE_RGM_BOOTING_STATUS,
             [this](const std::shared_ptr<ResData>& data) { HandleRgmBootingStatus(data); }));
     }
+    AddOtherEventToFunctionMap();
+}
+
+void SocPerfPlugin::AddOtherEventToFunctionMap()
+{
+    functionMap.insert(std::make_pair(RES_TYPE_RECENT_BUILD,
+        [this](const std::shared_ptr<ResData>& data) { HandleRecentBuild(data); }));
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
@@ -326,7 +364,6 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_MOUSEWHEEL,
         RES_TYPE_APP_STATE_CHANGE,
         RES_TYPE_DEVICE_MODE_STATUS,
-        RES_TYPE_WEB_DRAG_RESIZE,
         RES_TYPE_ACCOUNT_ACTIVATING,
 #ifdef RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
         RES_TYPE_ANCO_CUST,
@@ -342,12 +379,19 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_APP_INSTALL_UNINSTALL,
         RES_TYPE_MMI_INPUT_POWER_KEY,
         RES_TYPE_CROWN_ROTATION_STATUS,
+        RES_TYPE_WEB_DRAG_RESIZE,
         RES_TYPE_PROCESS_STATE_CHANGE,
         RES_TYPE_REPORT_CAMERA_STATE,
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
         RES_TYPE_FILE_COPY_STATUS,
 #endif
     };
+    InitOtherResTypes();
+}
+
+void SocPerfPlugin::InitOtherResTypes()
+{
+    resTypes.insert(RES_TYPE_RECENT_BUILD);
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
     }
@@ -457,6 +501,26 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
     }
 }
 
+void SocPerfPlugin::UpdateWeakActionStatus()
+{
+    bool status = true;
+    for (const int32_t& appUid : focusAppUids_) {
+        if (uidToAppMsgMap_.find(appUid) != uidToAppMsgMap_.end()) {
+            if (keyAppName_.find(uidToAppMsgMap_[appUid].GetBundleName()) != keyAppName_.end()) {
+                status = false;
+                break;
+            } else if (keyAppType_.find(uidToAppMsgMap_[appUid].GetAppType()) != keyAppType_.end()) {
+                status = false;
+                break;
+            }
+        }
+    }
+    if (status != weakActionStatus_) {
+        weakActionStatus_ = status;
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(WEAK_ACTION_MODE, weakActionStatus_);
+    }
+}
+
 bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, bool focusStatus)
 {
     int32_t uid = GetUidByData(data);
@@ -466,10 +530,12 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
     SOC_PERF_LOGI("SocPerfPlugin: socperf->UpdateFocusAppType, %{public}d", uid);
     if (!focusStatus) {
         focusAppUids_.erase(uid);
+        UpdateWeakActionStatus();
         isFocusAppsGameType_ = IsFocusAppsAllGame();
         return true;
     }
     focusAppUids_.insert(uid);
+    UpdateWeakActionStatus();
     int32_t pid = GetPidByData(data, PID_NAME);
     if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end()) {
         if (pid != INVALID_VALUE) {
@@ -561,27 +627,9 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
     } else if (data->value == ClickEventType::TOUCH_EVENT_UP) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN, "");
-        HandleMoveEventBoost(data, false);
     } else if (data->value == ClickEventType::CLICK_EVENT) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_EVENT_CLICK, "");
     }
-}
-
-bool SocPerfPlugin::HandleMoveEventBoost(const std::shared_ptr<ResData>& data, bool isSet)
-{
-    if (data->payload == nullptr || !data->payload.contains(CALLING_UID_NAME) ||
-        !data->payload[CALLING_UID_NAME].is_string()) {
-        SOC_PERF_LOGE("SocPerfPlugin: socperf->MOVE_EVENT param invalid");
-        return false;
-    }
-    bool ret = false;
-    int32_t uid = atoi(data->payload[CALLING_UID_NAME].get<std::string>().c_str());
-    if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end() &&
-        appNameMoveEvent_.find(uidToAppMsgMap_[uid].GetBundleName()) != appNameMoveEvent_.end()) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_MOVE_EVENT_BOOST, isSet, "");
-        ret = true;
-    }
-    return ret;
 }
 
 void SocPerfPlugin::HandleEventKey(const std::shared_ptr<ResData>& data)
@@ -725,8 +773,6 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
         if (counter == 0) {
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_SLIDE, false, "");
         }
-    } else if (data->value == SlideEventStatus::MOVE_EVENT_ON) {
-        HandleMoveEventBoost(data, true);
     }
 }
 
@@ -857,6 +903,20 @@ bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
     return false;
 }
 
+bool SocPerfPlugin::HandleSocperfSceneBoard(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->ANIMATION: %{public}lld", (long long)data->value);
+    if (data->value == ShowRemoteAnimationStatus::ANIMATION_BEGIN) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, true, "");
+    } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, false, "");
+    }
+    return true;
+}
+
 bool SocPerfPlugin::UpdateUidToAppMsgMap(const std::shared_ptr<ResData>& data)
 {
     int32_t uid = GetUidByData(data);
@@ -911,7 +971,7 @@ bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& d
     if (screenStatus_ == SCREEN_ON) {
         HandleScreenOn();
     } else if (screenStatus_ == SCREEN_OFF) {
-        //post screen off task with 5000 milliseconds delay, to avoid frequent screen status change.
+        // post screen off task with 5000 milliseconds delay, to avoid frequent screen status change.
         std::function<void()> screenOffFunc = [this]() {
             HandleScreenOff();
         };
@@ -964,19 +1024,6 @@ bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
     return true;
 }
 
-void SocPerfPlugin::HandleWebDragResize(const std::shared_ptr<ResData>& data)
-{
-    if (data == nullptr) {
-        return;
-    }
-    SOC_PERF_LOGI("SocPerfPlugin: socperf->WEB_DRAG_RESIZE: %{public}lld", (long long)data->value);
-    if (data->value == WebDragResizeStatus::WEB_DRAG_START) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE, "");
-    } else if (data->value == WebDragResizeStatus::WEB_DRAG_END) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE, false, "");
-    }
-}
-
 bool SocPerfPlugin::HandleCameraStateChange(const std::shared_ptr<ResData>& data)
 {
     if (data == nullptr) {
@@ -1008,20 +1055,6 @@ bool SocPerfPlugin::IsAllowBoostScene()
         }
     }
     return ret;
-}
-
-bool SocPerfPlugin::HandleSocperfSceneBoard(const std::shared_ptr<ResData> &data)
-{
-    if (data == nullptr) {
-        return false;
-    }
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->ANIMATION: %{public}lld", (long long)data->value);
-    if (data->value == ShowRemoteAnimationStatus::ANIMATION_BEGIN) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, true, "");
-    } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, false, "");
-    }
-    return true;
 }
 
 bool SocPerfPlugin::HandleProcessStateChange(const std::shared_ptr<ResData> &data)
@@ -1154,6 +1187,19 @@ bool SocPerfPlugin::HandleBmmMoniterStatus(const std::shared_ptr<ResData> &data)
     return false;
 }
 
+void SocPerfPlugin::HandleWebDragResize(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->WEB_DRAG_RESIZE: %{public}lld", (long long)data->value);
+    if (data->value == WebDragResizeStatus::WEB_DRAG_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE, "");
+    } else if (data->value == WebDragResizeStatus::WEB_DRAG_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE, false, "");
+    }
+}
+
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
 bool SocPerfPlugin::HandleFileCopyStatus(const std::shared_ptr<ResData> &data)
 {
@@ -1172,6 +1218,19 @@ bool SocPerfPlugin::HandleFileCopyStatus(const std::shared_ptr<ResData> &data)
     return false;
 }
 #endif
+bool SocPerfPlugin::HandleRecentBuild(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleRecentBuild: %{public}lld", (long long)data->value);
+    if (data->value == RecentBuildStatus::RECENT_BUILD_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_RECENT_BUILD, true, "");
+    } else if (data->value == RecentBuildStatus::RECENT_BUILD_STOP) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_RECENT_BUILD, false, "");
+    }
+    return true;
+}
 
 extern "C" bool OnPluginInit(std::string& libName)
 {

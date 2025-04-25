@@ -305,6 +305,8 @@ enum : uint32_t {
     RES_TYPE_AUDIO_SCENE_CHANGE = 141,
     // report voice recognize wake scene
     RES_TYPE_VOICE_RECOGNIZE_WAKE = 142,
+    // recent build resType
+    RES_TYPE_RECENT_BUILD = 150,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

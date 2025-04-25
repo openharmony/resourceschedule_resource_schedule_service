@@ -714,10 +714,9 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_028, Function | MediumTes
  */
 HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_029, Function | MediumTest | Level0)
 {
-    std::set<std::string> nameSet = {"baidu"};
-    bool ret = SocPerfPlugin::GetInstance().HandleSubValue("", nameSet);
+    bool ret = SocPerfPlugin::GetInstance().HandleSubValue("");
     EXPECT_FALSE(ret);
-    ret = SocPerfPlugin::GetInstance().HandleSubValue("tencent,alipay", nameSet);
+    ret = SocPerfPlugin::GetInstance().HandleSubValue("tencent,alipay");
     EXPECT_TRUE(ret);
 }
 
@@ -1153,48 +1152,6 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_044, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().UpdateUidToAppMsgMap(validData2);
     EXPECT_TRUE(ret);
     SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
-}
-
-/*
- * @tc.name: SocPerfPluginTest_API_TEST_045
- * @tc.desc: test socperfplugin api
- * @tc.type FUNC
- * @tc.require: issueI78T3V
- */
-HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_045, Function | MediumTest | Level0)
-{
-    std::shared_ptr<ResData> invalidData1 = std::make_shared<ResData>(-1, -1, nullptr);
-    bool ret = SocPerfPlugin::GetInstance().HandleMoveEventBoost(invalidData1, true);
-    EXPECT_FALSE(ret);
-
-    nlohmann::json payload1;
-    payload1["uid"] = "19000";
-    std::shared_ptr<ResData> invalidData2 = std::make_shared<ResData>(-1, -1, payload1);
-    ret = SocPerfPlugin::GetInstance().HandleMoveEventBoost(invalidData2, true);
-    EXPECT_FALSE(ret);
-
-    nlohmann::json payload2;
-    payload2["callingUid"] = 19000;
-    std::shared_ptr<ResData> invalidData3 = std::make_shared<ResData>(-1, -1, payload2);
-    ret = SocPerfPlugin::GetInstance().HandleMoveEventBoost(invalidData3, true);
-    EXPECT_FALSE(ret);
-
-    nlohmann::json payload3;
-    payload3["callingUid"] = "19000";
-    std::shared_ptr<ResData> validData1 = std::make_shared<ResData>(-1, -1, payload3);
-    SocPerfPlugin::GetInstance().appNameMoveEvent_.insert("www");
-    SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
-    ret = SocPerfPlugin::GetInstance().HandleMoveEventBoost(validData1, true);
-    EXPECT_FALSE(ret);
-
-    AppKeyMessage appMsg(2, "dadaw");
-    SocPerfPlugin::GetInstance().uidToAppMsgMap_[19000] = appMsg;
-    ret = SocPerfPlugin::GetInstance().HandleMoveEventBoost(validData1, true);
-    EXPECT_FALSE(ret);
-
-    SocPerfPlugin::GetInstance().appNameMoveEvent_.insert("dadaw");
-    ret = SocPerfPlugin::GetInstance().HandleMoveEventBoost(validData1, false);
-    EXPECT_TRUE(ret);
 }
 } // namespace SOCPERF
 } // namespace OHOS
