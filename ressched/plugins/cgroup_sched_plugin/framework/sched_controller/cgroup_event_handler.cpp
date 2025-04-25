@@ -18,7 +18,6 @@
 #include "ability_info.h"
 #include "app_mgr_constants.h"
 #include "cgroup_adjuster.h"
-#include "cgroup_sched_common.h"
 #include "cgroup_sched_log.h"
 #include "hisysevent.h"
 #include "ressched_utils.h"

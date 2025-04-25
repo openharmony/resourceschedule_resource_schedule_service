@@ -18,7 +18,6 @@
 #include <iostream>
 #include <memory>
 #include "app_startup_scene_rec.h"
-#include "cgroup_sched_common.h"
 #include "res_type.h"
 #include "cgroup_event_handler.h"
 #include "sched_controller.h"

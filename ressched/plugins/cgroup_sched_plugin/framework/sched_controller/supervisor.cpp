@@ -15,7 +15,6 @@
 
 #include "supervisor.h"
 #include "ability_info.h"
-#include "cgroup_sched_common.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
