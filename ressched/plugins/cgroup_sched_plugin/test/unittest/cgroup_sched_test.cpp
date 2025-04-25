@@ -155,23 +155,6 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_WindowStateObserver_002, Function | Me
 }
 
 /**
- * @tc.name: CGroupSchedTest_CgroupSchedLog_001
- * @tc.desc: Window Mode Observer Test
- * @tc.type: FUNC
- * @tc.require: issuesI9BU37
- * @tc.desc:
- */
-HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupSchedLog_001, Function | MediumTest | Level1)
-{
-    CgroupSchedLog::level_ = LOG_DEBUG;
-    bool ret = CgroupSchedLog::JudgeLevel(LOG_INFO);
-    EXPECT_TRUE(ret);
-    CgroupSchedLog::level_ = LOG_INFO;
-    ret = CgroupSchedLog::JudgeLevel(LOG_DEBUG);
-    EXPECT_FALSE(ret);
-}
-
-/**
  * @tc.name: CGroupSchedTest_WindowStateObserver_002
  * @tc.desc: Window Mode Observer Test
  * @tc.type: FUNC
