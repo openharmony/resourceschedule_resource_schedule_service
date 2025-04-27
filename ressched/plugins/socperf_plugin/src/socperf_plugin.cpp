@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,6 +33,7 @@ using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libsocperf_plugin.z.so";
     const std::string PLUGIN_NAME = "SOCPERF";
+    const std::string ITEM_KEY_CAPACITY = "capacity";
     const std::string CONFIG_NAME_SOCPERF_FEATURE_SWITCH = "socperfFeatureSwitch";
     const std::string CONFIG_NAME_SOCPERF_EVENT_ID = "socperfEventId";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND = "socperf_on_demand";
@@ -43,6 +44,7 @@ namespace {
     const std::string CNOFIG_NAME_SOCPERF_CRUCIAL_FUNC = "socperfCrucialFunc";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_PATH = "socperf_req_apptype_path";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_FUNC = "socperf_req_apptype_func";
+    const std::string CONFIG_NAME_SOCPERF_BATTERY_CAPACITY_LIMIT_FREQ = "socperfBatteryCapacityLimitFreq";
     const std::string BUNDLE_NAME = "bundleName";
     const std::string PID_NAME = "pid";
     const std::string CLIENT_PID_NAME = "clientPid";
@@ -62,6 +64,8 @@ namespace {
     const std::string PRELOAD_MODE = "isPreload";
     const std::string WEAK_ACTION_STRING = "weakInterAction";
     const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
+    const std::string RES_ID = "resId";
+    const std::string COMMON_EVENT_CHARGE_STATE = "chargeState";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -126,6 +130,7 @@ void SocPerfPlugin::Init()
     InitPerfCrucialSo();
     InitBundleNameBoostList();
     InitWeakInterAction();
+    InitBatteryCapacityLimitFreq();
     SOC_PERF_LOGI("SocPerfPlugin::Init success");
 }
 
@@ -235,6 +240,38 @@ bool SocPerfPlugin::HandleSubValue(const std::string& subValue, std::set<std::st
     return true;
 }
 
+bool SocPerfPlugin::InitBatteryCapacityLimitFreq()
+{
+    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME,
+        CONFIG_NAME_SOCPERF_BATTERY_CAPACITY_LIMIT_FREQ);
+    bool ret = false;
+    for (Item& item : itemLists.itemList) {
+        std::string itemCapacity = item.itemProperties[ITEM_KEY_CAPACITY];
+        for (SubItem sub : item.subItemList) {
+            ret = HandleBatterySubValue(atoi(itemCapacity.c_str()),
+                atoi(sub.properties[RES_ID].c_str()), atoi(sub.value.c_str()));
+        }
+    }
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_BATTERY_CAPACITY_LIMIT_FREQ);
+    return ret;
+}
+
+bool SocPerfPlugin::HandleBatterySubValue(const int32_t capacity,
+    const int32_t tag, const int64_t config)
+{
+    struct Frequencies frequencies;
+    if (socperfBatteryConfig_.find(capacity) != socperfBatteryConfig_.end()) {
+        frequencies = socperfBatteryConfig_[capacity];
+    }
+    if (capacity > maxBatteryLimitCapacity_) {
+        maxBatteryLimitCapacity_ = capacity;
+    }
+    frequencies.tags.push_back(tag);
+    frequencies.configs.push_back(config);
+    socperfBatteryConfig_[capacity] = frequencies;
+    return true;
+}
+
 void SocPerfPlugin::InitFunctionMap()
 {
     functionMap = {
@@ -320,6 +357,8 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleProcessStateChange(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_REPORT_CAMERA_STATE,
         [this](const std::shared_ptr<ResData>& data) { HandleCameraStateChange(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_REPORT_BATTERY_STATUS_CHANGE,
+        [this](const std::shared_ptr<ResData>& data) { HandleBatteryStatusChange(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
@@ -370,6 +409,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_CROWN_ROTATION_STATUS,
         RES_TYPE_PROCESS_STATE_CHANGE,
         RES_TYPE_REPORT_CAMERA_STATE,
+        RES_TYPE_REPORT_BATTERY_STATUS_CHANGE,
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
         RES_TYPE_FILE_COPY_STATUS,
 #endif
@@ -1213,6 +1253,89 @@ bool SocPerfPlugin::HandleFileCopyStatus(const std::shared_ptr<ResData> &data)
     return false;
 }
 #endif
+
+bool SocPerfPlugin::HandleBatteryStatusChange(const std::shared_ptr<ResData>& data)
+{
+    bool ret = false;
+    if (data == nullptr || socperfBatteryConfig_.empty()) {
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryStatusChange invalid data");
+       return ret;
+    }
+    if (!data->payload.contains(COMMON_EVENT_CHARGE_STATE) ||
+        !data->payload.at(COMMON_EVENT_CHARGE_STATE).is_number_integer()) {
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryStatusChange invalid data payload");
+        return ret;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleBatteryStatusChange: %{public}lld", (long long)data->value);
+    int32_t chargeState = data->payload[COMMON_EVENT_CHARGE_STATE];
+    if (chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_ENABLE) ||
+        chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_FULL)) {
+        ret = HandleFreqLimit(data, true);
+    } else {
+        ret = HandleFreqLimit(data, false);
+    }
+    return ret;
+}
+
+bool SocPerfPlugin::HandleFreqLimit(const std::shared_ptr<ResData>& data, bool isChargeState)
+{
+    if (data->value > maxBatteryLimitCapacity_ || isChargeState) {
+        HandleRecoverBatteryLimit();
+    } else {
+        HandleBatteryLimit(data->value);
+    }
+    return true;
+}
+
+int32_t SocPerfPlugin::GetLimitCapacity(int32_t capacity)
+{
+    int32_t tempCap = maxBatteryLimitCapacity_;
+    for (const auto& pair : socperfBatteryConfig_) {
+        if (pair.first >= capacity && pair.first <= tempCap) {
+            tempCap = pair.first;
+        }
+    }
+    return tempCap;
+}
+
+std::vector<int64_t> SocPerfPlugin::GetConfigs(int32_t size)
+{
+    std::vector<int64_t> configs(size, std::numeric_limits<int32_t>::max());
+    return configs;
+}
+
+bool SocPerfPlugin::HandleRecoverBatteryLimit()
+{
+    if (lastBatteryLimitCap_ == -1) {
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleRecoverLimit no need to recover limit");
+        return false;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleRecoverLimit recover limit on %{public}d", lastBatteryLimitCap_);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(false, "Low_battery_limit");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(OHOS::SOCPERF::ActionType::ACTION_TYPE_BATTERY,
+        socperfBatteryConfig_[lastBatteryLimitCap_].tags,
+        GetConfigs(socperfBatteryConfig_[lastBatteryLimitCap_].configs.size()),
+        "Low_battery_limit");
+    lastBatteryLimitCap_ = -1;
+    return true;
+}
+
+bool SocPerfPlugin::HandleBatteryLimit(int32_t capacity)
+{
+    int32_t limitCapacity = GetLimitCapacity(capacity);
+    if (lastBatteryLimitCap_ == limitCapacity) {
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryLimit already trigger: %{public}d", limitCapacity);
+        return false;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleBatteryLimit limit on %{public}d", limitCapacity);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(true, "Low_battery_limit");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(OHOS::SOCPERF::ActionType::ACTION_TYPE_BATTERY,
+        socperfBatteryConfig_[limitCapacity].tags,
+        socperfBatteryConfig_[limitCapacity].configs,
+        "Low_battery_limit");
+    lastBatteryLimitCap_ = limitCapacity;
+    return true;
+}
 
 extern "C" bool OnPluginInit(std::string& libName)
 {
