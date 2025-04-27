@@ -62,7 +62,6 @@ private:
     void ReportDataInProcess(const uint32_t &resType, const int64_t &value, const nlohmann::json& payload);
     bool HandlePkgCommonEvent(const std::string &action, EventFwk::Want &want, nlohmann::json &payload);
     void handleOtherEvent(int32_t userId, const std::string &action, nlohmann::json &payload, EventFwk::Want &want);
-    void handleLeftEvent(int32_t userId, const std::string &action, nlohmann::json &payload, EventFwk::Want &want);
     void handleEvent(int32_t userId, const std::string &action, nlohmann::json &payload, EventFwk::Want &want);
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
 };
