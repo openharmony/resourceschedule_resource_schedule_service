@@ -351,6 +351,10 @@ enum : uint32_t {
     RES_TYPE_CHECK_APP_IS_IN_SCHEDULE_LIST,
     // report dynamically set suspend exempt info
     RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT = 505,
+    // get suspend state by uid
+    SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_UID = 506,
+    // get suspend state by pid
+    SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_PID = 507,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
