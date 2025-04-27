@@ -1259,7 +1259,7 @@ bool SocPerfPlugin::HandleBatteryStatusChange(const std::shared_ptr<ResData>& da
     bool ret = false;
     if (data == nullptr || socperfBatteryConfig_.empty()) {
         SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryStatusChange invalid data");
-       return ret;
+        return ret;
     }
     if (!data->payload.contains(COMMON_EVENT_CHARGE_STATE) ||
         !data->payload.at(COMMON_EVENT_CHARGE_STATE).is_number_integer()) {
