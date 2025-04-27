@@ -18,7 +18,6 @@
 #include <iostream>
 #include <memory>
 #include "app_startup_scene_rec.h"
-#include "cgroup_sched_common.h"
 #include "res_type.h"
 #include "cgroup_event_handler.h"
 #include "sched_controller.h"
@@ -153,23 +152,6 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_WindowStateObserver_002, Function | Me
     nowWindowMode = windowModeObserver_->MarshallingWindowModeType(Rosen::WindowModeType::WINDOW_MODE_OTHER);
     EXPECT_EQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_OTHER);
     windowModeObserver_ = nullptr;
-}
-
-/**
- * @tc.name: CGroupSchedTest_CgroupSchedLog_001
- * @tc.desc: Window Mode Observer Test
- * @tc.type: FUNC
- * @tc.require: issuesI9BU37
- * @tc.desc:
- */
-HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupSchedLog_001, Function | MediumTest | Level1)
-{
-    CgroupSchedLog::level_ = LOG_DEBUG;
-    bool ret = CgroupSchedLog::JudgeLevel(LOG_INFO);
-    EXPECT_TRUE(ret);
-    CgroupSchedLog::level_ = LOG_INFO;
-    ret = CgroupSchedLog::JudgeLevel(LOG_DEBUG);
-    EXPECT_FALSE(ret);
 }
 
 /**

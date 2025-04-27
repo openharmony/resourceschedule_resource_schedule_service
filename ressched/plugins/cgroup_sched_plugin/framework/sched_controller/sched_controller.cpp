@@ -28,7 +28,6 @@
 #include "bundle_mgr_interface.h"
 #include "cgroup_adjuster.h"
 #include "cgroup_event_handler.h"
-#include "cgroup_sched_common.h"
 #include "cgroup_sched_log.h"
 #include "hisysevent.h"
 #include "plugin_mgr.h"

@@ -21,7 +21,6 @@
 #include <string>
 #include "app_mgr_constants.h"
 #include "cgroup_event_handler.h"
-#include "cgroup_sched_common.h"
 #include "cgroup_sched_log.h"
 #include "hitrace_meter.h"
 #include "sched_controller.h"
