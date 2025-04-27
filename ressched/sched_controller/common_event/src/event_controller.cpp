@@ -45,6 +45,9 @@ const std::string SCENE_BOARD_NAME = "com.ohos.sceneboard";
 const std::string CAMERA_STATE = "cameraState";
 const std::string CAMERA_TYPE = "cameraType";
 const std::string IS_SYSTEM_CAMERA = "isSystemCamera";
+static const char* COMMON_EVENT_CAPACITY = "soc";
+static const char* COMMON_EVENT_CHARGE_STATE = "chargeState";
+
 void EventController::Init()
 {
     if (sysAbilityListener_ != nullptr) {
@@ -193,6 +196,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_CONNECTED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_DISCONNECTED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BATTERY_CHANGED);
     matchingSkills.AddEvent(DATA_SHARE_READY);
     matchingSkills.AddEvent(COMMON_EVENT_CAMERA_STATUS);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
@@ -339,6 +343,12 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         ReportDataInProcess(ResType::RES_TYPE_REPORT_CAMERA_STATE,
             static_cast<int64_t>(want.GetIntParam(CAMERA_STATE, 1)), payload);
         return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_BATTERY_CHANGED) {
+        RESSCHED_LOGI("report battery status change event");
+        payload[COMMON_EVENT_CHARGE_STATE] = want.GetIntParam(COMMON_EVENT_CHARGE_STATE, -1);
+        ReportDataInProcess(ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE,
+            static_cast<int64_t>(want.GetIntParam(COMMON_EVENT_CAPACITY, -1)), payload);
     }
 }
 
