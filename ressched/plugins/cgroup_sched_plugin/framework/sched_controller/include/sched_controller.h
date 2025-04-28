@@ -32,7 +32,6 @@ class RmsApplicationStateObserver;
 class BackgroundTaskObserver;
 #endif
 class WindowStateObserver;
-class PiPStateObserver;
 class WindowVisibilityObserver;
 class WindowUpdateStateObserver;
 class WindowDrawingContentObserver;
@@ -55,8 +54,6 @@ public:
     void UnsubscribeWindowState();
     void SubscribeWindowModeChange();
     void UnsubscribeWindowModeChange();
-    void SubscribePipChange();
-    void UnSubscribePipChange();
     void UnregisterStateObservers();
     int GetProcessGroup(pid_t pid);
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
@@ -95,7 +92,6 @@ private:
     sptr<WindowVisibilityObserver> windowVisibilityObserver_;
     sptr<WindowDrawingContentObserver> windowDrawingContentObserver_;
     sptr<WindowModeObserver> windowModeObserver_;
-    sptr<PiPStateObserver> pipStateObserver_;
     std::unordered_map<uint32_t, std::function<void(std::shared_ptr<CgroupEventHandler>,
         uint32_t, int64_t, const nlohmann::json&)>> dispatchResFuncMap_;
 

@@ -46,6 +46,7 @@
 #ifdef RESOURCE_REQUEST_REQUEST
 #include "download_upload_observer.h"
 #endif
+#include "window_state_observer.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -95,6 +96,8 @@ public:
     void DisableDataShareObserver();
     void InitAccountObserver();
     void DisableAccountObserver();
+    void InitWindowStateObserver();
+    void DisableWindowStateObserver();
 #ifdef RESOURCE_REQUEST_REQUEST
     void InitDownloadUploadObserver();
     void DisableDownloadUploadObserver();
@@ -132,6 +135,7 @@ public:
     std::shared_ptr<DownLoadUploadObserver> downLoadUploadObserver_ = nullptr;
 #endif
     std::shared_ptr<AccountObserver> accountObserver_ = nullptr;
+    sptr<PiPStateObserver> pipStateObserver_ = nullptr;
     bool isNeedReport_ = true;
     int32_t powerKeySubscribeId_ = -1;
 };

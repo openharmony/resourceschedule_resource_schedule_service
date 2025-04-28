@@ -71,6 +71,7 @@ ohos_shared_library("resschedsvc") {
     "../sched_controller/observer/src/connection_subscriber.cpp",
     "../sched_controller/observer/src/download_upload_observer.cpp",
     "../sched_controller/observer/src/fold_display_mode_observer.cpp",
+    "../sched_controller/observer/src/window_state_observer.cpp",
     "../sched_controller/observer/src/observer_manager.cpp",
     "resschedmgr/resschedfwk/src/config_reader.cpp",
     "resschedmgr/resschedfwk/src/event_listener_mgr.cpp",
