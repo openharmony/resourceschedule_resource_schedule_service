@@ -25,9 +25,8 @@ void PiPStateObserver::OnPiPStateChanged(const std::string& bundleName, const bo
 {
     RESSCHED_LOGI("Receive OnPiPStateChange %{public}s %{public}d", bundleName.c_str(), isForeground);
     nlohmann::json payload;
-    ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TRPE_PIP_STATUS,
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TRPE_PIP_STATUS,
         static_cast<int64_t>(isForeground), payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif
