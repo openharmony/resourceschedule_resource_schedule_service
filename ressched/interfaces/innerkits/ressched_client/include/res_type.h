@@ -323,6 +323,8 @@ enum : uint32_t {
     RES_TYPE_SOCPERF_CUST_ACTION = 149,
     // recent bulid resType
     RES_TYPE_RECENT_BUILD = 150,
+    // overlay event
+    RES_TYPE_OVERLAY_EVENT = 151,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

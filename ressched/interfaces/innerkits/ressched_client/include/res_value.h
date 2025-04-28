@@ -816,6 +816,13 @@ enum RecentBuildStatus : int64_t {
     RECENT_BUILD_STOP = 1,
 };
 
+/**
+* @brief Overlay Status
+*/
+enum OverlayStatus : int64_t {
+    OVERLAY_ADD = 0,
+    OVERLAY_REMOVE = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
