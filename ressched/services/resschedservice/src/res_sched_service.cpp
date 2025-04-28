@@ -116,6 +116,7 @@ namespace {
         ResType::RES_TYPE_APP_FRAME_DROP,
         ResType::RES_TYPE_AXIS_EVENT,
         ResType::RES_TYPE_WEB_SLIDE_SCROLL,
+        ResType::RES_TYPE_OVERLAY_EVENT,
     };
     static const std::unordered_set<uint32_t> SA_RES = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
