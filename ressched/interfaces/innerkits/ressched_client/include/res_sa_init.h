@@ -35,8 +35,8 @@ public:
 
 class ResSchedIpcThread {
 private:
-    uint32_t selfPid_;
-    std::unordered_set<uint32_t> ipcThreadTids_;
+    int32_t selfPid_;
+    std::unordered_set<int32_t> ipcThreadTids_;
     std::mutex ipcThreadSetQosMutex_;
     std::atomic<bool> isInit_ = {false};
     const uint32_t MAX_IPC_THREAD_NUM = 32;
@@ -54,9 +54,9 @@ public:
     /**
      * @brief SetQos.
      *
-     * @param pid client pid.
+     * @param clientPid client pid.
      */
-    void SetQos(uint32_t pid);
+    void SetQos(int32_t clientPid);
 
     /**
      * @brief SetInitFlag.
