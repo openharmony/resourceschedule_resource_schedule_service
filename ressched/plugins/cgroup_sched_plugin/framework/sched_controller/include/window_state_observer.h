@@ -19,7 +19,6 @@
 #include <sys/types.h>
 #include "iremote_object.h"
 #include "window_manager.h"
-#include "window_manager_lite.h"
 #include "wm_common.h"
 #include "nlohmann/json.hpp"
 #include <cstdint>
@@ -46,7 +45,6 @@ namespace RSSWindowMode {
 using OHOS::Rosen::IFocusChangedListener;
 using OHOS::Rosen::IVisibilityChangedListener;
 using OHOS::Rosen::IDrawingContentChangedListener;
-using OHOS::Rosen::IPiPStateChangedListener;
 using OHOS::Rosen::IWindowModeChangedListener;
 using OHOS::Rosen::WindowType;
 using OHOS::Rosen::FocusChangeInfo;
@@ -81,11 +79,6 @@ public:
 private:
     uint8_t MarshallingWindowModeType(const WindowModeType mode);
     uint8_t lastWindowMode_ = RSSWindowMode::WINDOW_MODE_OTHER;
-};
-
-class PiPStateObserver : public OHOS::Rosen::IPiPStateChangedListener {
-    public:
-        virtual void OnPiPStateChanged(const std::string& bundleName, const bool isForeground) override;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

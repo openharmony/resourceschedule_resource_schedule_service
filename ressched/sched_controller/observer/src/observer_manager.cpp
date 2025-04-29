@@ -96,6 +96,7 @@ void ObserverManager::InitObserverCbMap()
         { AVSESSION_SERVICE_ID, []() { ObserverManager::GetInstance()->InitAVSessionStateChangeListener(); }},
 #endif
         { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->InitAccountObserver(); }},
+        { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitWindowStateObserver(); }},
     };
 
     removeObserverMap_ = {
@@ -120,6 +121,7 @@ void ObserverManager::InitObserverCbMap()
         { AVSESSION_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableAVSessionStateChangeListener(); }},
 #endif
         { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->DisableAccountObserver(); }},
+        { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableWindowStateObserver(); }},
     };
 }
 
@@ -160,6 +162,7 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(AVSESSION_SERVICE_ID, systemAbilityManager);
 #endif
     AddItemToSysAbilityListener(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, systemAbilityManager);
+    AddItemToSysAbilityListener(WINDOW_MANAGER_SERVICE_ID, systemAbilityManager);
 }
 
 inline void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId,
@@ -712,6 +715,38 @@ void ObserverManager::InitAccountObserver()
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a account observer failed!");
     }
+}
+
+void ObserverManager::InitWindowStateObserver()
+{
+    if (!pipStateObserver_) {
+        pipStateObserver_ = new (std::nothrow)PiPStateObserver();
+        if (!pipStateObserver_) {
+            RESSCHED_LOGI("new PiPStateObserver fail");
+            return;
+        }
+        if (OHOS::Rosen::WindowManagerLite::GetInstance().
+            RegisterPiPStateChangedListener(pipStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
+                RESSCHED_LOGE("RegisterPiPStateChangedListener fail");
+                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                    HiviewDFX::HiSysEvent::EventType::FAULT,
+                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                    "ERR_MSG", "Register a listener of window pip content change failed.");
+        } else {
+            RESSCHED_LOGI("RegisterPiPStateChangedListener success");
+        }
+    } else {
+        RESSCHED_LOGI("PiPStateObserver not null");
+    }
+}
+
+void ObserverManager::DisableWindowStateObserver()
+{
+    if (pipStateObserver_) {
+        OHOS::Rosen::WindowManagerLite::GetInstance().UnregisterPiPStateChangedListener(pipStateObserver_);
+        pipStateObserver_ = nullptr;
+    }
+    RESSCHED_LOGI("UnsubscribePipchange success");
 }
 
 void ObserverManager::DisableAccountObserver()
