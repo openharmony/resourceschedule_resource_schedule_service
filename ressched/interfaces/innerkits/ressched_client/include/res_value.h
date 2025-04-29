@@ -777,6 +777,25 @@ enum RecentBuildStatus : int64_t {
     RECENT_BUILD_STOP = 1,
 };
 
+/**
+* @brief Game State Change
+*/
+enum GameState : uint64_t {
+    GAME_FOREGROUND_STATE = 1,
+    GAME_BACKGROUND_STATE = 2,
+    GAME_EXIT_STATE = 3,
+    GAME_GEE_FOCUS_STATE = 4,
+    GAME_LOST_FOCUS_STATE = 5,
+};
+
+/**
+* @brief Game Env Type
+*/
+enum GameEnvType : uint64_t {
+    GAME_NORMAL = 0,
+    GAME_CUST = 1,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
