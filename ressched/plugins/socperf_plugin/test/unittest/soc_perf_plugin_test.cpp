@@ -1206,5 +1206,24 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_045, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().HandleMoveEventBoost(validData1, false);
     EXPECT_TRUE(ret);
 }
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_046
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_046, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& dragStartData = std::make_shared<ResData>(ResType::RES_TYPE_WEB_SLIDE_SCROLL,
+        ResType::WebDragResizeStatus::WEB_DRAG_START, nullptr);
+    SocPerfPlugin::GetInstance().HandleWebSildeScroll(dragStartData);
+    const std::shared_ptr<ResData>& dragEndData = std::make_shared<ResData>(ResType::RES_TYPE_WEB_SLIDE_SCROLL,
+        ResType::WebDragResizeStatus::WEB_DRAG_END, nullptr);
+    SocPerfPlugin::GetInstance().HandleWebSildeScroll(dragEndData);
+    const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
+    SocPerfPlugin::GetInstance().HandleWebSildeScroll(invalidData);
+    EXPECT_NE(dragStartData, nullptr);
+}
 } // namespace SOCPERF
 } // namespace OHOS
