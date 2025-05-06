@@ -115,6 +115,7 @@ void SlideRecognizer::HandleSlideOFFEvent()
 
 void SlideRecognizer::HandleSlideDetecting(const nlohmann::json& payload)
 {
+    isInTouching_ = true;
     SceneRecognizerMgr::GetInstance().SubmitTask([this, payload]() {
         StartDetecting(payload);
     });
