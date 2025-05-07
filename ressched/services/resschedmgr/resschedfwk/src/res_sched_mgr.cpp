@@ -310,41 +310,32 @@ std::unordered_set<uint32_t>& ResSchedMgr::GetAllowFgAppReportResExt()
     return allowFgAppReportResExt_;
 }
 
-template <typename T>
-inline void ClearAndAddAll(T& to, const T& from)
-{
-    if (!from.empty()) {
-        to.clear();
-        to.insert(from.begin(), from.end());
-    }
-}
-
 void ResSchedMgr::SetAllowSCBReportResExt(const std::unordered_set<uint32_t>& allowSCBReportResExt)
 {
-    ClearAndAddAll(allowSCBReportResExt_, allowSCBReportResExt);
+    allowSCBReportResExt_ = allowSCBReportResExt;
 }
 
 
 void ResSchedMgr::SetAllowAllSAReportResExt(const std::unordered_set<uint32_t>& allowAllSAReportResExt)
 {
-    ClearAndAddAll(allowAllSAReportResExt_, allowAllSAReportResExt);
+    allowAllSAReportResExt_ = allowAllSAReportResExt;
 }
 
 
 void ResSchedMgr::SetAllowSomeSAReportResExt(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>&
     allowSomeSAReportResExt)
 {
-    ClearAndAddAll(allowSomeSAReportResExt_, allowSomeSAReportResExt);
+    allowSomeSAReportResExt_ = allowSomeSAReportResExt;
 }
 
 void ResSchedMgr::SetAllowAllAppReportResExt(const std::unordered_set<uint32_t>& allowAllAppReportResExt)
 {
-    ClearAndAddAll(allowAllAppReportResExt_, allowAllAppReportResExt);
+    allowAllAppReportResExt_ = allowAllAppReportResExt;
 }
 
 void ResSchedMgr::SetAllowFgAppReportResExt(const std::unordered_set<uint32_t>& allowFgAppReportResExt)
 {
-    ClearAndAddAll(allowFgAppReportResExt_, allowFgAppReportResExt);
+    allowFgAppReportResExt_ = allowFgAppReportResExt;
 }
 
 extern "C" void SetAllowSCBReportResExt(const std::unordered_set<uint32_t>& allowSCBReportResExt)
