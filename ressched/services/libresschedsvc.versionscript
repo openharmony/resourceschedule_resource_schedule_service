@@ -35,6 +35,11 @@
     SetListFlingSpeedLimit;
     SetSlideNormalDetectingTime;
     SetBlockedTime;
+    SetAllowSCBReportResExt;
+    SetAllowAllSAReportResExt;
+    SetAllowSomeSAReportResExt;
+    SetAllowAllAppReportResExt;
+    SetAllowFgAppReportResExt;
   local:
     *;
 };

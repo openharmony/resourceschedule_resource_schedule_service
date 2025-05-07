@@ -56,6 +56,7 @@ void ResSchedServiceAbility::OnStart()
                         "ERR_TYPE", "others",
                         "ERR_MSG", "New ResSchedService object failed!");
     }
+    service_->InitAllowIpcReportRes();
     if (!Publish(service_)) {
         RESSCHED_LOGE("ResSchedServiceAbility:: Register service failed.");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,

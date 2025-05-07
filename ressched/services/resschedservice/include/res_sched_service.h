@@ -18,6 +18,9 @@
 
 #include "plugin_mgr.h"
 #include "res_sched_service_stub.h"
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+#include "res_type.h"
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -58,6 +61,8 @@ public:
 
     void DumpAllPluginConfig(std::string &result);
 
+    void InitAllowIpcReportRes();
+
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedService);
 
@@ -68,14 +73,24 @@ private:
     bool AllowDump();
 
     nlohmann::json StringToJsonObj(const std::string& str);
-    int32_t CheckReportDataParcel(const uint32_t& type, const int64_t& value, const std::string& payload);
+    int32_t CheckReportDataParcel(const uint32_t& type, const int64_t& value, const std::string& payload, int32_t uid);
     bool IsLimitRequest(int32_t uid);
     void CheckAndUpdateLimitData(int64_t nowTime);
     void PrintLimitLog(int32_t uid);
     void ReportBigData();
     void InreaseBigDataCount();
     int32_t RemoteRequestCheck();
-
+    bool IsHasPermission(const uint32_t type, int32_t uid);
+    bool IsSBDResType(uint32_t type);
+    bool IsThirdPartType(uint32_t type);
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+    int32_t GetExtTypeByResPayload(const std::string& payload);
+#endif
+    void AddSCBRes(const std::unordered_set<uint32_t>& allowSCBReportRes);
+    void AddAllSARes(const std::unordered_set<uint32_t>& allowAllSAReportRes);
+    void AddSomeSARes(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>& allowSomeSAReportRes);
+    void AddAllAppRes(const std::unordered_set<uint32_t>& allowAllAppReportRes);
+    void AddFgAppRes(const std::unordered_set<uint32_t>& allowFgAppReportRes);
     OnIsAllowedAppPreloadFunc appPreloadFunc_ = nullptr;
     bool isLoadAppPreloadPlugin_ = false;
     using RequestFuncType = std::function<int32_t (MessageParcel& data, MessageParcel& reply)>;
@@ -88,6 +103,11 @@ private:
     std::atomic<bool> isReportBigData_ = {false};
     std::atomic<bool> isPrintLimitLog_ = {true};
     std::mutex mutex_;
+    std::unordered_set<uint32_t> allowSCBReportRes_;
+    std::unordered_set<uint32_t> allowAllSAReportRes_;
+    std::unordered_map<uint32_t, std::unordered_set<int32_t>> allowSomeSAReportRes_;
+    std::unordered_set<uint32_t> allowAllAppReportRes_;
+    std::unordered_set<uint32_t> allowFgAppReportRes_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
