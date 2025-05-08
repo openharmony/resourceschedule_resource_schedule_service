@@ -57,6 +57,9 @@ namespace {
     const std::string DISPLAY_MODE_FULL = "displayFull";
     const std::string DISPLAY_MODE_MAIN = "displayMain";
     const std::string DISPLAY_MODE_SUB = "displaySub";
+    const std::string SCREEN_MODE_KEY = "screenStatus";
+    const std::string SCREEN_MODE_ON = "screen_on";
+    const std::string SCREEN_MODE_OFF = "screen_off";
     const std::string POWER_MODE_KEY = "power";
     const std::string POWER_MODE = "powerMode";
     const std::string PRELOAD_MODE = "isPreload";
@@ -981,6 +984,8 @@ void SocPerfPlugin::HandleScreenOn()
     } else if (deviceMode_ == DISPLAY_MODE_MAIN) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
     }
+    const std::string screenModeOnStr = SCREEN_MODE_KEY + ":" + SCREEN_MODE_ON;
+    OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(screenModeOnStr, true);
 }
 
 void SocPerfPlugin::HandleScreenOff()
@@ -992,6 +997,8 @@ void SocPerfPlugin::HandleScreenOff()
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
     }
+    const std::string screenModeOffStr = SCREEN_MODE_KEY + ":" + SCREEN_MODE_OFF;
+    OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(screenModeOffStr, true);
 }
 
 bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& data)
