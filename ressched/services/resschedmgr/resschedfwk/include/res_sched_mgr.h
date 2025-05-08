@@ -93,10 +93,86 @@ public:
      * @return true if the app is foreground
      */
     bool IsForegroundApp(int32_t pid);
+
+    /**
+     * Get allow sceneboard report ext resTypes.
+     *
+     * @return the set of allow sceneboard report extension resTypes.
+     */
+    std::unordered_set<uint32_t>& GetAllowSCBReportResExt();
+
+    /**
+     * Get allow all sa report extension resTypes.
+     *
+     * @return the set of allow all sa report extension resTypes.
+     */
+    std::unordered_set<uint32_t>& GetAllowAllSAReportResExt();
+
+    /**
+     * Get allow some sa report extension resTypes.
+     *
+     * @return the set of allow some sa report extension resTypes.
+     */
+    std::unordered_map<uint32_t, std::unordered_set<int32_t>>& GetAllowSomeSAReportResExt();
+
+    /**
+     * Get allow all app report extension resTypes.
+     *
+     * @return the set of allow all app report extension resTypes.
+     */
+    std::unordered_set<uint32_t>& GetAllowAllAppReportResExt();
+
+    /**
+     * Get allow foreground app report extension resTypes.
+     *
+     * @return the set of allow foreground app report extension resTypes.
+     */
+    std::unordered_set<uint32_t>& GetAllowFgAppReportResExt();
+
+    /**
+     * Set allow sceneboard report ext resTypes.
+     *
+     * @param allowSCBReportResExt the set of allow sceneboard report extension resTypes.
+     */
+    void SetAllowSCBReportResExt(const std::unordered_set<uint32_t>& allowSCBReportResExt);
+
+    /**
+     * Set allow all sa report extension resTypes.
+     *
+     * @param allowAllSAReportResExt the set of allow all sa report extension resTypes.
+     */
+    void SetAllowAllSAReportResExt(const std::unordered_set<uint32_t>& allowAllSAReportResExt);
+
+    /**
+     * Set allow some sa report extension resTypes.
+     *
+     * @param allowSomeSAReportResExt the set of allow some sa report extension resTypes.
+     */
+    void SetAllowSomeSAReportResExt(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>&
+        allowSomeSAReportResExt);
+
+    /**
+     * Set allow all app report extension resTypes.
+     *
+     * @param allowAllAppReportResExt the set of allow all app report extension resTypes.
+     */
+    void SetAllowAllAppReportResExt(const std::unordered_set<uint32_t>& allowAllAppReportResExt);
+
+    /**
+     * Set allow foreground app report extension resTypes.
+     *
+     * @param allowFgAppReportResExt the set of allow foreground app report extension resTypes.
+     */
+    void SetAllowFgAppReportResExt(const std::unordered_set<uint32_t>& allowFgAppReportResExt);
 private:
     std::shared_ptr<KillProcess> killProcess_ = nullptr;
     std::mutex foregroundPidsMutex_;
     std::unordered_set<int32_t> foregroundPids_;
+    std::unordered_set<uint32_t> allowSCBReportResExt_;
+    std::unordered_set<uint32_t> allowAllSAReportResExt_;
+    std::unordered_map<uint32_t, std::unordered_set<int32_t>> allowSomeSAReportResExt_;
+    std::unordered_set<uint32_t> allowAllAppReportResExt_;
+    std::unordered_set<uint32_t> allowFgAppReportResExt_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -284,6 +284,86 @@ void ResSchedMgr::InitForegroundAppInfo()
     RESSCHED_LOGI("%{public}s succeed", __func__);
 }
 
+
+std::unordered_set<uint32_t>& ResSchedMgr::GetAllowSCBReportResExt()
+{
+    return allowSCBReportResExt_;
+}
+
+std::unordered_set<uint32_t>& ResSchedMgr::GetAllowAllSAReportResExt()
+{
+    return allowAllSAReportResExt_;
+}
+
+std::unordered_map<uint32_t, std::unordered_set<int32_t>>& ResSchedMgr::GetAllowSomeSAReportResExt()
+{
+    return allowSomeSAReportResExt_;
+}
+
+std::unordered_set<uint32_t>& ResSchedMgr::GetAllowAllAppReportResExt()
+{
+    return allowAllAppReportResExt_;
+}
+
+std::unordered_set<uint32_t>& ResSchedMgr::GetAllowFgAppReportResExt()
+{
+    return allowFgAppReportResExt_;
+}
+
+void ResSchedMgr::SetAllowSCBReportResExt(const std::unordered_set<uint32_t>& allowSCBReportResExt)
+{
+    allowSCBReportResExt_ = allowSCBReportResExt;
+}
+
+
+void ResSchedMgr::SetAllowAllSAReportResExt(const std::unordered_set<uint32_t>& allowAllSAReportResExt)
+{
+    allowAllSAReportResExt_ = allowAllSAReportResExt;
+}
+
+
+void ResSchedMgr::SetAllowSomeSAReportResExt(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>&
+    allowSomeSAReportResExt)
+{
+    allowSomeSAReportResExt_ = allowSomeSAReportResExt;
+}
+
+void ResSchedMgr::SetAllowAllAppReportResExt(const std::unordered_set<uint32_t>& allowAllAppReportResExt)
+{
+    allowAllAppReportResExt_ = allowAllAppReportResExt;
+}
+
+void ResSchedMgr::SetAllowFgAppReportResExt(const std::unordered_set<uint32_t>& allowFgAppReportResExt)
+{
+    allowFgAppReportResExt_ = allowFgAppReportResExt;
+}
+
+extern "C" void SetAllowSCBReportResExt(const std::unordered_set<uint32_t>& allowSCBReportResExt)
+{
+    ResSchedMgr::GetInstance().SetAllowSCBReportResExt(allowSCBReportResExt);
+}
+
+extern "C" void SetAllowAllSAReportResExt(const std::unordered_set<uint32_t>& allowAllSAReportResExt)
+{
+    ResSchedMgr::GetInstance().SetAllowAllSAReportResExt(allowAllSAReportResExt);
+}
+
+extern "C" void SetAllowSomeSAReportResExt(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>&
+    allowSomeSAReportResExt)
+{
+    ResSchedMgr::GetInstance().SetAllowSomeSAReportResExt(allowSomeSAReportResExt);
+}
+
+extern "C" void SetAllowAllAppReportResExt(const std::unordered_set<uint32_t>& allowAllAppReportResExt)
+{
+    ResSchedMgr::GetInstance().SetAllowAllAppReportResExt(allowAllAppReportResExt);
+}
+
+extern "C" void SetAllowFgAppReportResExt(const std::unordered_set<uint32_t>& allowFgAppReportResExt)
+{
+    ResSchedMgr::GetInstance().SetAllowFgAppReportResExt(allowFgAppReportResExt);
+}
+
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     ResSchedMgr::GetInstance().ReportData(resType, value, payload);
