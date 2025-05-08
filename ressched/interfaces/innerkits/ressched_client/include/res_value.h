@@ -768,6 +768,14 @@ enum CopyStatus : uint64_t {
     COPY_START = 1,
     COPY_STATUS_MAX,
 };
+
+/**
+* @brief AbilityOrPageSwitch status
+*/
+enum AbilityOrPageSwitchStatus : int64_t {
+    SWITCH_START = 0,
+    SWITCH_END = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
