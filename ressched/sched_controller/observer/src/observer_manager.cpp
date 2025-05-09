@@ -330,47 +330,38 @@ void ObserverManager::InitAudioObserver()
     if (!audioObserver_) {
         audioObserver_ = std::make_shared<AudioObserver>();
     }
-
     auto res = AudioStandard::AudioStreamManager::GetInstance()->RegisterAudioRendererEventListener(pid_,
         audioObserver_);
-    if (res == OPERATION_SUCCESS) {
-        RESSCHED_LOGD("ObserverManager init audioRenderStateObserver successfully");
-    } else {
+    if (res != OPERATION_SUCCESS) {
         RESSCHED_LOGW("ObserverManager init audioRenderStateObserver failed");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
+                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a audio observer failed!");
     }
-
-    res = AudioStandard::AudioSystemManager::GetInstance()->SetRingerModeCallback(pid_, audioObserver_);
-    if (res == OPERATION_SUCCESS) {
-        RESSCHED_LOGD("ObserverManager init audioRingModeObserver successfully");
-    } else {
+    res = -1;
+    auto audioSystemMgr = AudioStandard::AudioSystemManager::GetInstance();
+    if (audioSystemMgr) {
+        auto groupMgr = audioSystemMgr->GetGroupManager(AudioStandard::DEFAULT_VOLUME_GROUP_ID);
+        if (groupMgr) {
+            res = groupMgr->SetRingerModeCallback(pid_, audioObserver_);
+        }
+    }
+    if (res != OPERATION_SUCCESS) {
         RESSCHED_LOGW("ObserverManager init audioRingModeObserver failed");
     }
-
     res = AudioStandard::AudioSystemManager::GetInstance()->RegisterVolumeKeyEventCallback(pid_, audioObserver_);
-    if (res == OPERATION_SUCCESS) {
-        RESSCHED_LOGD("ObserverManager init audioVolumeKeyObserver successfully");
-    } else {
+    if (res != OPERATION_SUCCESS) {
         RESSCHED_LOGW("ObserverManager init audioVolumeKeyObserver failed");
     }
-
     res = AudioStandard::AudioSystemManager::GetInstance()->SetAudioSceneChangeCallback(audioObserver_);
-    if (res == OPERATION_SUCCESS) {
-        RESSCHED_LOGD("ObserverManager init audioSceneKeyObserver successfully");
-    } else {
+    if (res != OPERATION_SUCCESS) {
         RESSCHED_LOGW("ObserverManager init audioSceneKeyObserver failed");
     }
-
     AudioStandard::AudioRendererInfo rendererInfo = {};
     rendererInfo.streamUsage = AudioStandard::StreamUsage::STREAM_USAGE_MUSIC;
     res = AudioStandard::AudioRoutingManager::GetInstance()
         ->SetPreferredOutputDeviceChangeCallback(rendererInfo, audioObserver_);
-    if (res == OPERATION_SUCCESS) {
-        RESSCHED_LOGD("ObserverManager init audioOutputDeviceChangeObserver successfully");
-    } else {
+    if (res != OPERATION_SUCCESS) {
         RESSCHED_LOGW("ObserverManager init audioOutputDeviceChangeObserver failed");
     }
 #endif
