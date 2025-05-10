@@ -90,6 +90,7 @@ private:
     bool isFocusAppsGameType_ = false;
     int64_t screenStatus_;
     std::string deviceMode_;
+    std::string deviceOrientation_;
     ffrt::mutex screenMutex_;
     void* handle_ = nullptr;
     ReqAppTypeFunc reqAppTypeFunc_ = nullptr;
@@ -132,6 +133,7 @@ private:
     void HandleMousewheel(const std::shared_ptr<ResData>& data);
     bool HandleAppStateChange(const std::shared_ptr<ResData>& data);
     void HandleDeviceModeStatusChange(const std::shared_ptr<ResData>& data);
+    void HandleDeviceOrientationStatusChange(const std::shared_ptr<ResData>& data);
     void HandleWebDragResize(const std::shared_ptr<ResData>& data);
     bool HandleSocperfSceneBoard(const std::shared_ptr<ResData>& data);
     bool HandleSocperfAccountActivating(const std::shared_ptr<ResData> &data);
@@ -163,6 +165,7 @@ private:
     bool IsAllowBoostScene();
     bool HandleMoveEventBoost(const std::shared_ptr<ResData>& data, bool isSet);
     bool HandleSceenModeBoost(const std::string& deviceModeType);
+    bool HandleSceenOrientationBoost(const std::string& deviceModeType);
     bool HandleGameStateChange(const std::shared_ptr<ResData>& data);
     bool UpdateCustGameState(const std::shared_ptr<ResData>& data);
     bool HandleCustAction(const std::shared_ptr<ResData> &data);

@@ -325,6 +325,8 @@ enum : uint32_t {
     RES_TYPE_RECENT_BUILD = 150,
     // overlay event
     RES_TYPE_OVERLAY_EVENT = 151,
+    // report game state change
+    RES_TYPE_DEVICE_ORIENTATION_STATUS = 152,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

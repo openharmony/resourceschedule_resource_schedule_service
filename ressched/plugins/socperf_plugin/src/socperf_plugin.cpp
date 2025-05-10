@@ -54,6 +54,7 @@ namespace {
     const std::string DEVICE_MODE_TYPE_KEY = "deviceModeType";
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
     const std::string DISPLAY_MODE_KEY = "display";
+    const std::string DEVICE_ORIENTATION_TYPE_KEY = "deviceOrientation";
     const std::string DISPLAY_MODE_FULL = "displayFull";
     const std::string DISPLAY_MODE_MAIN = "displayMain";
     const std::string DISPLAY_MODE_SUB = "displaySub";
@@ -122,6 +123,8 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL2     = 10094;
     const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL3     = 10095;
     const int32_t PERF_REQUEST_CMD_ID_WEB_SLIDE_SCROLL      = 10097;
+    const int32_t PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L      = 10098;
+    const int32_t PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P      = 10203;
     const int32_t PERF_REQUEST_CMD_ID_RECENT_BUILD          = 10200;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
@@ -362,6 +365,8 @@ void SocPerfPlugin::AddOtherEventToFunctionMap()
 {
     functionMap.insert(std::make_pair(RES_TYPE_RECENT_BUILD,
         [this](const std::shared_ptr<ResData>& data) { HandleRecentBuild(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_DEVICE_ORIENTATION_STATUS,
+        [this](const std::shared_ptr<ResData>& data) { HandleDeviceOrientationStatusChange(data); }));
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
@@ -388,6 +393,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_DEVICE_MODE_STATUS,
         RES_TYPE_WEB_DRAG_RESIZE,
         RES_TYPE_ACCOUNT_ACTIVATING,
+        RES_TYPE_DEVICE_ORIENTATION_STATUS,
 #ifdef RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
         RES_TYPE_ANCO_CUST,
         RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
@@ -983,6 +989,16 @@ void SocPerfPlugin::HandleScreenOn()
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
     } else if (deviceMode_ == DISPLAY_MODE_MAIN) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
+    }  else if (deviceMode_ == DISPLAY_MODE_GLOBAL_FULL && deviceOrientation_ == DISPLAY_ORIENTAYION_LANDSCAPE) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, true, "");
+    } else if (deviceMode_ == DISPLAY_MODE_GLOBAL_FULL && deviceOrientation_ == DISPLAY_ORIENTAYION_PORTRAIT) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, true, "");
     }
     const std::string screenModeOnStr = SCREEN_MODE_KEY + ":" + SCREEN_MODE_ON;
     OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(screenModeOnStr, true);
@@ -996,6 +1012,8 @@ void SocPerfPlugin::HandleScreenOff()
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_OFF, true, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
     }
     const std::string screenModeOffStr = SCREEN_MODE_KEY + ":" + SCREEN_MODE_OFF;
     OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(screenModeOffStr, true);
@@ -1051,15 +1069,73 @@ bool SocPerfPlugin::HandleSceenModeBoost(const std::string& deviceModeType)
     std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
     if (deviceMode_ == DISPLAY_MODE_FULL && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
     } else if (deviceMode_ == DISPLAY_MODE_MAIN && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
+    } else if (deviceMode_ == DISPLAY_MODE_GLOBAL_FULL && screenStatus_ == SCREEN_ON &&
+        deviceOrientation_ == DISPLAY_ORIENTAYION_LANDSCAPE) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, true, "");
+    } else if (deviceMode_ == DISPLAY_MODE_GLOBAL_FULL && screenStatus_ == SCREEN_ON &&
+        deviceOrientation_ == DISPLAY_ORIENTAYION_PORTRAIT) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, true, "");
     }
 
     if (deviceMode_ == DISPLAY_MODE_FULL) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_SWITCHED, true, "");
     }
+    return true;
+}
+
+void SocPerfPlugin::HandleDeviceOrientationStatusChange(const std::shared_ptr<ResData>& data)
+{
+    if ((data->value != DeviceModeStatus::MODE_ENTER) && (data->value != DeviceModeStatus::MODE_QUIT)) {
+        SOC_PERF_LOGW("SocPerfPlugin: device mode status value is error");
+        return;
+    }
+
+    if (!data->payload.contains(DEVICE_MODE_TYPE_KEY) || !data->payload[DEVICE_MODE_TYPE_KEY].is_string() ||
+        !data->payload.contains(DEVICE_MODE_PAYMODE_NAME) || !data->payload[DEVICE_MODE_PAYMODE_NAME].is_string()) {
+        SOC_PERF_LOGW("SocPerfPlugin: device mode status payload is error");
+        return;
+    }
+    deviceOrientation_ = data->payload[DEVICE_MODE_PAYMODE_NAME];
+    const std::string deviceOrientationType = data->payload[DEVICE_MODE_TYPE_KEY];
+    HandleSceenOrientationBoost(deviceOrientationType);
+}
+
+bool SocPerfPlugin::HandleSceenOrientationBoost(const std::string& deviceOrientationType)
+{
+    if (deviceOrientationType != DEVICE_ORIENTATION_TYPE_KEY) {
+        return false;
+    }
+
+    if (deviceMode_ != DISPLAY_MODE_GLOBAL_FULL) {
+        return false;
+    }
+    std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
+    if (screenStatus_ == SCREEN_ON && deviceOrientation_ == DISPLAY_ORIENTAYION_LANDSCAPE) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, true, "");
+    } else if (screenStatus_ == SCREEN_ON && deviceOrientation_ == DISPLAY_ORIENTAYION_PORTRAIT) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, true, "");
+    }
+
     return true;
 }
 

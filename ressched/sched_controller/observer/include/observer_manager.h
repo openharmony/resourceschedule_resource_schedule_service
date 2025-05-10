@@ -86,6 +86,8 @@ public:
     void DisableDeviceMovementObserver();
     void InitDisplayModeObserver();
     void DisableDisplayModeObserver();
+    void InitDisplayOrientationObserver();
+    void DisableDisplayOrientationObserver();
     void InitSysAbilityListener();
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
     void InitObserverCbMap();
@@ -131,6 +133,7 @@ public:
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
     std::shared_ptr<ConnectionSubscriber> connectionSubscriber_ = nullptr;
     sptr<FoldDisplayModeObserver> foldDisplayModeObserver_ = nullptr;
+    sptr<FoldDisplayOrientationObserver> foldDisplayOrientationObserver_ = nullptr;
 #ifdef RESOURCE_REQUEST_REQUEST
     std::shared_ptr<DownLoadUploadObserver> downLoadUploadObserver_ = nullptr;
 #endif
