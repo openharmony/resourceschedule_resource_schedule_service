@@ -126,8 +126,8 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
     payload["bundleName"] = abilityStateData.bundleName;
     payload["abilityName"] = abilityStateData.abilityName;
     payload["recordId"] = std::to_string(abilityStateData.abilityRecordId);
-    payload["abilityState"] = std::to_string(abilityStateData.abilityState);
-    payload["extensionState"] = std::to_string(abilityStateData.abilityType);
+    payload["extensionState"] = std::to_string(abilityStateData.abilityState);
+    payload["abilityType"] = std::to_string(abilityStateData.abilityType);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_EXTENSION_STATE_CHANGE,
         abilityStateData.abilityState, payload);
 }
