@@ -58,6 +58,9 @@ namespace {
     const std::string DISPLAY_MODE_FULL = "displayFull";
     const std::string DISPLAY_MODE_MAIN = "displayMain";
     const std::string DISPLAY_MODE_SUB = "displaySub";
+    const std::string DISPLAY_MODE_GLOBAL_FULL = "displayGlobalFull";
+    const std::string DISPLAY_ORIENTAYION_LANDSCAPE = "displayLandscape";
+    const std::string DISPLAY_ORIENTAYION_PORTRAIT = "displayPortrait";
     const std::string SCREEN_MODE_KEY = "screenStatus";
     const std::string SCREEN_MODE_ON = "screen_on";
     const std::string SCREEN_MODE_OFF = "screen_off";
