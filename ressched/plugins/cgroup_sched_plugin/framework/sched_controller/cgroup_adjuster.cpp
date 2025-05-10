@@ -217,7 +217,7 @@ void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
         traceStr.append(" for ").append(std::to_string(pid)).append(", group change from ")
             .append(std::to_string((int32_t)(pr.lastSchedGroup_))).append(" to ")
             .append(std::to_string((int32_t)(pr.curSchedGroup_)));
-        StartTrace(HITRACE_TAG_OHOS, traceStr);
+        StartTrace(HITRACE_TAG_OHOS | HITRACE_TAG_APP, traceStr);
 
         nlohmann::json payload;
         payload["pid"] = std::to_string(pr.GetPid());
@@ -227,7 +227,7 @@ void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
         payload["newGroup"] = std::to_string((int32_t)(pr.curSchedGroup_));
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CGROUP_ADJUSTER, 0, payload);
         AdjustForkProcessGroup(app, pr);
-        FinishTrace(HITRACE_TAG_OHOS);
+        FinishTrace(HITRACE_TAG_OHOS | HITRACE_TAG_APP);
     }
 }
 } // namespace ResourceSchedule
