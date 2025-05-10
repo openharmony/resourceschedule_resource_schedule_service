@@ -85,8 +85,23 @@ public:
      * @param pid the app's pid
      */
     void OnApplicationStateChange(int32_t state, int32_t pid);
+
+    /**
+     * ReportAppStateInProcess.
+     *
+     * @param state the app's state
+     * @param pid the app's pid
+     */
     void ReportAppStateInProcess(int32_t state, int32_t pid);
+
+    /**
+     * ReportProcessStateInProcess.
+     *
+     * @param state the Process's state
+     * @param pid the Process's pid
+     */
     void ReportProcessStateInProcess(int32_t state, int32_t pid);
+
     /**
      * judge app is foreground.
      *

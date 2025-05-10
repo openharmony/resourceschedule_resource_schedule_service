@@ -162,10 +162,8 @@ void CgroupEventHandler::HandleApplicationStateChanged(uint32_t resType, int64_t
     std::string bundleName;
     int32_t state = 0;
 
-    if (!ParseValue(uid, "uid", payload) ||
-        !ParseValue(pid, "pid", payload) ||
-        !ParseString(bundleName, "bundleName", payload) ||
-        !ParseValue(state, "state", payload)) {
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
+        !ParseString(bundleName, "bundleName", payload) || !ParseValue(state, "state", payload)) {
         CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
@@ -217,13 +215,10 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     int32_t recordId = 0;
     int32_t abilityState = 0;
     int32_t abilityType = 0;
-    if (!ParseValue(uid, "uid", payload) ||
-        !ParseValue(pid, "pid", payload) ||
-        !ParseString(bundleName, "bundleName", payload) ||
-        !ParseString(abilityName, "abilityName", payload) ||
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
+        !ParseString(bundleName, "bundleName", payload) || !ParseString(abilityName, "abilityName", payload) ||
         !ParseValue(recordId, "recordId", payload) ||
-        !ParseValue(abilityState, "abilityState", payload) ||
-        !ParseValue(abilityType, "abilityType", payload)) {
+        !ParseValue(abilityState, "abilityState", payload) || !ParseValue(abilityType, "abilityType", payload)) {
         CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
@@ -272,14 +267,11 @@ void CgroupEventHandler::HandleExtensionStateChanged(uint32_t resType, int64_t v
     int32_t recordId = 0;
     int32_t extensionState = 0;
     int32_t abilityType = 0;
-    if (!ParseValue(uid, "uid", payload) ||
-        !ParseValue(pid, "pid", payload) ||
-        !ParseString(bundleName, "bundleName", payload) ||
-        !ParseString(abilityName, "abilityName", payload) ||
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
+        !ParseString(bundleName, "bundleName", payload) || !ParseString(abilityName, "abilityName", payload) ||
         !ParseValue(recordId, "recordId", payload) ||
-        !ParseValue(extensionState, "extensionState", payload) ||
-        !ParseValue(abilityType, "abilityType", payload)) {
-            CGS_LOGE("%{public}s: param error", __func__);
+        !ParseValue(extensionState, "extensionState", payload) || !ParseValue(abilityType, "abilityType", payload)) {
+        CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
     
@@ -309,7 +301,7 @@ void CgroupEventHandler::HandleExtensionStateChanged(uint32_t resType, int64_t v
         AdjustSource::ADJS_EXTENSION_STATE);
 }
 
-void CgroupEventHandler::HandleProcessStateChangedx(uint32_t resType, int64_t value, const nlohmann::json& payload)
+void CgroupEventHandler::HandleProcessStateChangedEx(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -333,12 +325,9 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
     int32_t extensionType = 0;
     int32_t processType = 0;
     int32_t isPreloadModule = 0;
-    if (!ParseValue(uid, "uid", payload) ||
-        !ParseValue(pid, "pid", payload) ||
-        !ParseString(bundleName, "bundleName", payload) ||
-        !ParseValue(hostPid, "hostPid", payload) ||
-        !ParseValue(extensionType, "extensionType", payload) ||
-        !ParseValue(processType, "processType", payload) ||
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
+        !ParseString(bundleName, "bundleName", payload) || !ParseValue(hostPid, "hostPid", payload) ||
+        !ParseValue(extensionType, "extensionType", payload) || !ParseValue(processType, "processType", payload) ||
         !ParseValue(isPreloadModule, "isPreloadModule", payload)) {
         CGS_LOGE("%{public}s: param error", __func__);
         return;

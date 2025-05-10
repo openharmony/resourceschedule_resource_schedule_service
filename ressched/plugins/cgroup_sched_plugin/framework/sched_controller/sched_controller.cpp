@@ -274,19 +274,24 @@ void SchedController::InitDispatchResFuncMap()
         { ResType::RES_TYPE_APP_STOPPED, [](std::shared_ptr<CgroupEventHandler> handler,
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleOnAppStopped(resType, value, payload); } },
-        { ResType::RES_TYPE_ABILITY_STATE_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
-            uint32_t resType, int64_t value, const nlohmann::json& payload)
-            { handler->HandleAbilityStateChanged(resType, value, payload); } },
-        { ResType::RES_TYPE_EXTENSION_STATE_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
-            uint32_t resType, int64_t value, const nlohmann::json& payload)
-            { handler->HandleExtensionStateChanged(resType, value, payload); } },
-        { ResType::RES_TYPE_PROCESS_STATE_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
-            uint32_t resType, int64_t value, const nlohmann::json& payload)
-            { handler->HandleProcessStateChangedx(resType, value, payload); } },
-        { ResType::RES_TYPE_APP_STATE_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
-            uint32_t resType, int64_t value, const nlohmann::json& payload)
-            { handler->HandleApplicationStateChanged(resType, value, payload); } },
     };
+    InitDispatchResFuncMap();
+}
+
+void SchedController::InitDispatchResFuncMap()
+{
+    dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
+        [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value, 
+        const nlohmann::json& payload) { handler->HandleAbilityStateChanged(resType, value, payload); }));
+    dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_EXTENSION_STATE_CHANGE,
+        [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value, 
+        const nlohmann::json& payload) { handler->HandleExtensionStateChanged(resType, value, payload); }));
+    dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_PROCESS_STATE_CHANGE,
+        [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value, 
+        const nlohmann::json& payload) { handler->HandleProcessStateChangedEx(resType, value, payload); }));
+    dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_APP_STATE_CHANGE,
+        [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value, 
+        const nlohmann::json& payload) { handler->HandleApplicationStateChanged(resType, value, payload); }));
 }
 
 bool SchedController::SubscribeBackgroundTask()

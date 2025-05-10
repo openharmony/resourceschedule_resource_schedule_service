@@ -37,7 +37,7 @@ public:
     void HandleAbilityAdded(int32_t saId, const std::string& deviceId);
     void HandleAbilityRemoved(int32_t saId, const std::string& deviceId);
     void HandleApplicationStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload);
-    void HandleProcessStateChangedx(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleProcessStateChangedEx(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleProcessStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleAbilityStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleExtensionStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload);

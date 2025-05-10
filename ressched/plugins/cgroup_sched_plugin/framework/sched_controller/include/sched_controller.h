@@ -98,6 +98,7 @@ private:
     inline void InitAppStartupSceneRec();
     inline void DeinitAppStartupSceneRec();
     void InitDispatchResFuncMap();
+    void InitAddDispatchResFuncMap();
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

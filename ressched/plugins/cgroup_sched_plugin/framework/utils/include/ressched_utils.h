@@ -66,7 +66,6 @@ private:
     ReportArbitrationResultFunc reportArbitrationResultFunc_ = nullptr;
     ReportSysEventFunc reportSysEventFunc_ = nullptr;
     DispatchResourceExtFunc dispatchResourceExtFunc_ = nullptr;
-    ReportAppStateFunc reportAppStateFunc_ = nullptr;
     SubscribeResourceExtFunc subscribeResourceExtFunc_ = nullptr;
 };
 } // namespace ResourceSchedule
