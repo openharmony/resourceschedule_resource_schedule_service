@@ -68,7 +68,7 @@ void ObserverManager::Init()
 
 void ObserverManager::Disable()
 {
-    AppStartupSceneRec::GetInstance().DeInit();
+    AppStartupSceneRec::GetInstance().Deinit();
     handleObserverMap_.clear();
     removeObserverMap_.clear();
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
