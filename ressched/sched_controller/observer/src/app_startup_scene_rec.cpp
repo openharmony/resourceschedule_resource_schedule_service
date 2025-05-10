@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
-#include "res_type.h"
-#include "ressched_utils.h"
 #include "app_startup_scene_rec.h"
-#include "cgroup_sched_log.h"
+
+#include "res_sched_log.h"
+#include "res_sched_mgr.h"
+#include "res_type.h"
+
 namespace OHOS {
 namespace ResourceSchedule {
 static const int32_t CONTINUOUS_START_TIME_OUT = 15 * 1000 * 1000;
@@ -76,7 +78,7 @@ void AppStartupSceneRec::RecordIsContinuousStartup(const std::string& uid, const
     UpdateAppStartupNum(uid, curTime, bundleName);
     if (IsContinuousStartup() && !isReportContinuousStartup_.load()) {
         nlohmann::json payload;
-        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CONTINUOUS_STARTUP,
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_CONTINUOUS_STARTUP,
             ResType::ContinuousStartupStatus::START_CONTINUOUS_STARTUP, payload);
         isReportContinuousStartup_ = true;
     }
@@ -87,14 +89,14 @@ void AppStartupSceneRec::RecordIsContinuousStartup(const std::string& uid, const
 }
 void AppStartupSceneRec::CleanRecordSceneData()
 {
-    CGS_LOGI("CleanRecordSceneData");
+    RESSCHED_LOGI("CleanRecordSceneData");
     appStartCount_ = 0;
     startPkgs_.clear();
     startUidSet_.clear();
     exitContinuousStartupTask = nullptr;
     if (isReportContinuousStartup_.load()) {
         nlohmann::json payload;
-        ResSchedUtils::GetInstance().ReportDataInProcess(
+        ResSchedMgr::GetInstance().ReportData(
             ResType::RES_TYPE_CONTINUOUS_STARTUP, ResType::ContinuousStartupStatus::STOP_CONTINUOUS_STARTUP, payload);
         isReportContinuousStartup_ = false;
     }
@@ -104,7 +106,7 @@ void AppStartupSceneRec::UpdateAppStartupNum(std::string uid, int64_t curTime, s
     lastAppStartTime_ = curTime;
     appStartCount_++;
     if (isReportContinuousStartup_.load()) {
-        CGS_LOGI("UpdateAppStartupNum appStartCount_:%{public}d", appStartCount_);
+        RESSCHED_LOGI("UpdateAppStartupNum appStartCount_:%{public}d", appStartCount_);
         return;
     }
     startPkgs_.emplace_back(bundleName);

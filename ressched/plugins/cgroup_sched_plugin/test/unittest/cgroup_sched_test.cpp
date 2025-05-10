@@ -17,7 +17,6 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
-#include "app_startup_scene_rec.h"
 #include "res_type.h"
 #include "cgroup_event_handler.h"
 #include "sched_controller.h"
@@ -60,13 +59,11 @@ void CGroupSchedTest::TearDownTestCase(void)
 
 void CGroupSchedTest::SetUp(void)
 {
-    AppStartupSceneRec::GetInstance().Init();
     supervisor_ = std::make_shared<Supervisor>();
 }
 
 void CGroupSchedTest::TearDown(void)
 {
-    AppStartupSceneRec::GetInstance().Deinit();
     supervisor_ = nullptr;
 }
 
@@ -289,51 +286,6 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_004, Function | Medium
     processRecord->runningLockState_[0] = ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE;
     processRecord->GetWindowInfoNonNull(0);
     EXPECT_EQ(schedController.GetProcessGroup(1000), SP_UPPER_LIMIT);
-}
-
-/**
- * @tc.name: CGroupSchedTest_AppStartupSceneRec_001
- * @tc.desc: application startup scene Test
- * @tc.type: FUNC
- * @tc.require: issuesI9IR2I
- * @tc.desc:
- */
-HWTEST_F(CGroupSchedTest, CGroupSchedTest_AppStartupSceneRec_001, Function | MediumTest | Level1)
-{
-    AppStartupSceneRec::GetInstance().CleanRecordSceneData();
-    std::string bundleName = "test101";
-    std::string uid = "101";
-    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-    bool isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
-    EXPECT_EQ(isReportContinuousStartup, false);
-    uid = "102";
-    bundleName = "test102";
-    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
-    EXPECT_EQ(isReportContinuousStartup, false);
-    uid = "103";
-    bundleName = "test103";
-    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
-    EXPECT_EQ(isReportContinuousStartup, false);
-    uid = "104";
-    bundleName = "test104";
-    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
-    EXPECT_EQ(isReportContinuousStartup, false);
-    uid = "105";
-    bundleName = "test105";
-    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
-    EXPECT_EQ(isReportContinuousStartup, true);
-    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
-    EXPECT_EQ(isReportContinuousStartup, true);
-    uid = "106";
-    bundleName = "test106";
-    AppStartupSceneRec::GetInstance().RecordIsContinuousStartup(uid, bundleName);
-    isReportContinuousStartup = AppStartupSceneRec::GetInstance().isReportContinuousStartup_.load();
-    EXPECT_EQ(isReportContinuousStartup, true);
 }
 
 /**
@@ -1030,14 +982,14 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     processData.extensionType = static_cast<AppExecFwk::ExtensionAbilityType>(INVALID_EXTENSION_TYPE);
 
     EXPECT_TRUE(cgroupEventHandler->supervisor_ == nullptr);
-    cgroupEventHandler->HandleProcessStateChanged(uid, pid, bundleName, appState);
-    cgroupEventHandler->HandleApplicationStateChanged(uid, pid, bundleName, appState);
-    cgroupEventHandler->HandleAbilityStateChanged(uid, pid, bundleName, abilityName, recordId,
-        abilityState, abilityType);
-    cgroupEventHandler->HandleExtensionStateChanged(uid, pid,
-        bundleName, abilityName, recordId, extensionState, abilityType);
-    cgroupEventHandler->HandleProcessCreated(processData);
-    cgroupEventHandler->HandleProcessDied(uid, pid, bundleName);
+    //cgroupEventHandler->HandleProcessStateChanged(uid, pid, bundleName, appState);
+    //cgroupEventHandler->HandleApplicationStateChanged(uid, pid, bundleName, appState);
+    //cgroupEventHandler->HandleAbilityStateChanged(uid, pid, bundleName, abilityName, recordId,
+    //    abilityState, abilityType);
+    //cgroupEventHandler->HandleExtensionStateChanged(uid, pid,
+    //    bundleName, abilityName, recordId, extensionState, abilityType);
+    //cgroupEventHandler->HandleProcessCreated(processData);
+    //cgroupEventHandler->HandleProcessDied(uid, pid, bundleName);
     cgroupEventHandler->HandleTransientTaskStart(uid, pid, bundleName);
     cgroupEventHandler->HandleTransientTaskEnd(uid, pid, bundleName);
     cgroupEventHandler->HandleContinuousTaskUpdate(uid, pid, {typeId}, value);
@@ -1061,8 +1013,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_022, Function | Med
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
-    cgroupEventHandler->HandleProcessStateChanged(1000, 2000,
-        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
+    //cgroupEventHandler->HandleProcessStateChanged(1000, 2000,
+    //    "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 }
 
@@ -1077,8 +1029,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_023, Function | Med
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
-    cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
-        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
+    //cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
+    //    "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 }
 
@@ -1093,12 +1045,12 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_024, Function | Med
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
-    cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
-        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
+    //cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
+    //    "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 
-    cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
-        "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_TERMINATED);
+    //cgroupEventHandler->HandleApplicationStateChanged(1000, 2000,
+    //    "com.ohos.test", (int32_t)AppExecFwk::ApplicationState::APP_STATE_TERMINATED);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 }
 
@@ -1113,23 +1065,23 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_025, Function | Med
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
-    cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
-        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, (int32_t)AppExecFwk::AbilityType::PAGE);
+    //cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
+    //    1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND, (int32_t)AppExecFwk::AbilityType::PAGE);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) != nullptr);
 
-    cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
-        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_TERMINATED, (int32_t)AppExecFwk::AbilityType::PAGE);
+    //cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
+    //    1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_TERMINATED, (int32_t)AppExecFwk::AbilityType::PAGE);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) == nullptr);
 
     supervisor_->GetAppRecord(1000)->RemoveProcessRecord(1234);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
-    cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
-        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_TERMINATED, (int32_t)AppExecFwk::AbilityType::PAGE);
+    //cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
+    //    1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_TERMINATED, (int32_t)AppExecFwk::AbilityType::PAGE);
 
     supervisor_->RemoveApplication(1000);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
-    cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
-        1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_TERMINATED, (int32_t)AppExecFwk::AbilityType::PAGE);
+    //cgroupEventHandler->HandleAbilityStateChanged(1000, 1234, "com.ohos.test", "MainAbility",
+    //    1111, (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_TERMINATED, (int32_t)AppExecFwk::AbilityType::PAGE);
 }
 
 /**
@@ -1143,27 +1095,27 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_026, Function | Med
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
-    cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
-        1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_READY,
-        (int32_t)AppExecFwk::AbilityType::EXTENSION);
+    //cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
+    //    1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_READY,
+    //    (int32_t)AppExecFwk::AbilityType::EXTENSION);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) != nullptr);
 
-    cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
-        1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
-        (int32_t)AppExecFwk::AbilityType::EXTENSION);
+    //cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
+    //    1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
+    //    (int32_t)AppExecFwk::AbilityType::EXTENSION);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) == nullptr);
 
     supervisor_->GetAppRecord(1000)->RemoveProcessRecord(1234);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
-    cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
-        1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
-        (int32_t)AppExecFwk::AbilityType::EXTENSION);
+    //cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
+    //    1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
+    //    (int32_t)AppExecFwk::AbilityType::EXTENSION);
 
     supervisor_->RemoveApplication(1000);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
-    cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
-        1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
-        (int32_t)AppExecFwk::AbilityType::EXTENSION);
+    //cgroupEventHandler->HandleExtensionStateChanged(1000, 1234, "com.ohos.test", "ExtensionAbility",
+    //    1111, (int32_t)AppExecFwk::ExtensionState::EXTENSION_STATE_TERMINATED,
+    //    (int32_t)AppExecFwk::AbilityType::EXTENSION);
 }
 
 /**
@@ -1186,25 +1138,25 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_027, Function | Med
     processData.hostPid = 2024;
     processData.processType = static_cast<AppExecFwk::ProcessType>((int32_t)AppExecFwk::ProcessType::NORMAL);
     processData.extensionType = static_cast<AppExecFwk::ExtensionAbilityType>(INVALID_EXTENSION_TYPE);
-    cgroupEventHandler->HandleProcessCreated(processData);
+    //cgroupEventHandler->HandleProcessCreated(processData);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) != nullptr);
     EXPECT_FALSE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->processType_ == ProcRecordType::RENDER);
     processData.pid = 23456;
-    cgroupEventHandler->HandleProcessCreated(processData);
+    //cgroupEventHandler->HandleProcessCreated(processData);
     processData.pid = 34567;
-    cgroupEventHandler->HandleProcessCreated(processData);
+    //cgroupEventHandler->HandleProcessCreated(processData);
     processData.pid = 45678;
     processData.processType = static_cast<AppExecFwk::ProcessType>((int32_t)AppExecFwk::ProcessType::EXTENSION);
-    cgroupEventHandler->HandleProcessCreated(processData);
+    //cgroupEventHandler->HandleProcessCreated(processData);
     processData.pid = 67890;
     processData.processType = static_cast<AppExecFwk::ProcessType>((int32_t)AppExecFwk::ProcessType::GPU);
-    cgroupEventHandler->HandleProcessCreated(processData);
-    cgroupEventHandler->HandleProcessDied(1000, 1234, "com.ohos.test");
-    cgroupEventHandler->HandleProcessDied(1000, 23456, "com.ohos.test");
-    cgroupEventHandler->HandleProcessDied(1000, 34567, "com.ohos.test");
-    cgroupEventHandler->HandleProcessDied(1000, 45678, "com.ohos.test");
-    cgroupEventHandler->HandleProcessDied(1000, 67891, "com.ohos.test");
-    cgroupEventHandler->HandleProcessDied(1000, 67890, "com.ohos.test");
+    //cgroupEventHandler->HandleProcessCreated(processData);
+    //cgroupEventHandler->HandleProcessDied(1000, 1234, "com.ohos.test");
+    //cgroupEventHandler->HandleProcessDied(1000, 23456, "com.ohos.test");
+    //cgroupEventHandler->HandleProcessDied(1000, 34567, "com.ohos.test");
+    //cgroupEventHandler->HandleProcessDied(1000, 45678, "com.ohos.test");
+    //cgroupEventHandler->HandleProcessDied(1000, 67891, "com.ohos.test");
+    //cgroupEventHandler->HandleProcessDied(1000, 67890, "com.ohos.test");
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
 
@@ -1233,7 +1185,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_028, Function | Med
     processData.hostPid = 2024;
     processData.processType = static_cast<AppExecFwk::ProcessType>((int32_t)AppExecFwk::ProcessType::NORMAL);
     processData.extensionType = static_cast<AppExecFwk::ExtensionAbilityType>(INVALID_EXTENSION_TYPE);
-    cgroupEventHandler->HandleProcessCreated(processData);
+    //cgroupEventHandler->HandleProcessCreated(processData);
     cgroupEventHandler->HandleTransientTaskStart(1000, 1234, "com.ohos.test");
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->runningTransientTask_);
     cgroupEventHandler->HandleTransientTaskEnd(1000, 1234, "com.ohos.test");

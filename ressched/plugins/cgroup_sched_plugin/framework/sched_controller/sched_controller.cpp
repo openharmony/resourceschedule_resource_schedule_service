@@ -19,8 +19,6 @@
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
 #include "app_mgr_interface.h"
-#include "app_state_observer.h"
-#include "app_startup_scene_rec.h"
 #ifdef CONFIG_BGTASK_MGR
 #include "background_task_mgr_helper.h"
 #include "background_task_observer.h"
@@ -54,18 +52,6 @@ namespace {
 using OHOS::BackgroundTaskMgr::BackgroundTaskMgrHelper;
 #endif
 
-OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
-{
-    OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
-        OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (!systemAbilityManager) {
-        CGS_LOGE("%{public}s : systemAbilityManager nullptr!", __func__);
-        return nullptr;
-    }
-    OHOS::sptr<OHOS::IRemoteObject> object = systemAbilityManager->GetSystemAbility(OHOS::APP_MGR_SERVICE_ID);
-    return OHOS::iface_cast<OHOS::AppExecFwk::IAppMgr>(object);
-}
-
 IMPLEMENT_SINGLE_INSTANCE(SchedController)
 
 void SchedController::Init()
@@ -79,7 +65,6 @@ void SchedController::Init()
     InitCgroupHandler();
     // Init cgroup adjuster thread
     InitCgroupAdjuster();
-    InitAppStartupSceneRec();
     // Subscribe ResTypes
     InitResTypes();
     for (auto resType: resTypes) {
@@ -97,14 +82,12 @@ void SchedController::Disable()
     if (supervisor_) {
         supervisor_ = nullptr;
     }
-    DeinitAppStartupSceneRec();
     UnregisterStateObservers();
 }
 
 
 void SchedController::UnregisterStateObservers()
 {
-    UnsubscribeAppState();
     UnsubscribeBackgroundTask();
     UnsubscribeWindowState();
 }
@@ -149,6 +132,10 @@ void SchedController::InitResTypes()
         ResType::RES_TYPE_THERMAL_STATE,
         ResType::RES_TYPE_COSMIC_CUBE_STATE_CHANGE,
         ResType::RES_TYPE_APP_STOPPED,
+        ResType::RES_TYPE_ABILITY_STATE_CHANGE,
+        ResType::RES_TYPE_EXTENSION_STATE_CHANGE,
+        ResType::RES_TYPE_PROCESS_STATE_CHANGE,
+        ResType::RES_TYPE_APP_STATE_CHANGE,
     };
 }
 
@@ -239,15 +226,6 @@ inline void SchedController::InitSupervisor()
     supervisor_ = std::make_shared<Supervisor>();
 }
 
-inline void SchedController::InitAppStartupSceneRec()
-{
-    AppStartupSceneRec::GetInstance().Init();
-}
-
-inline void SchedController::DeinitAppStartupSceneRec()
-{
-    AppStartupSceneRec::GetInstance().Deinit();
-}
 void SchedController::InitDispatchResFuncMap()
 {
     dispatchResFuncMap_ = {
@@ -296,50 +274,19 @@ void SchedController::InitDispatchResFuncMap()
         { ResType::RES_TYPE_APP_STOPPED, [](std::shared_ptr<CgroupEventHandler> handler,
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleOnAppStopped(resType, value, payload); } },
+        { ResType::RES_TYPE_ABILITY_STATE_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleAbilityStateChanged(resType, value, payload); } },
+        { ResType::RES_TYPE_EXTENSION_STATE_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleExtensionStateChanged(resType, value, payload); } },
+        { ResType::RES_TYPE_PROCESS_STATE_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleProcessStateChangedx(resType, value, payload); } },
+        { ResType::RES_TYPE_APP_STATE_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleApplicationStateChanged(resType, value, payload); } },
     };
-}
-
-bool SchedController::SubscribeAppState()
-{
-    if (appStateObserver_) {
-        return true;
-    }
-    sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
-    if (!appManager) {
-        CGS_LOGE("%{public}s app manager nullptr!", __func__);
-        return false;
-    }
-    appStateObserver_ = new (std::nothrow)RmsApplicationStateObserver();
-    if (!appStateObserver_) {
-        CGS_LOGE("%{public}s allocate app state observer failed!", __func__);
-        return false;
-    }
-    int32_t err = appManager->RegisterApplicationStateObserver(appStateObserver_);
-    if (err != 0) {
-        CGS_LOGE("%{public}s register to appmanager failed. err:%{public}d", __func__, err);
-        appStateObserver_ = nullptr;
-        return false;
-    }
-    CGS_LOGI("%{public}s success.", __func__);
-    return true;
-}
-
-void SchedController::UnsubscribeAppState()
-{
-    if (!appStateObserver_) {
-        return;
-    }
-
-    sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
-    if (appManager) {
-        int32_t err = appManager->UnregisterApplicationStateObserver(appStateObserver_);
-        if (err == 0) {
-            CGS_LOGI("%{public}s success.", __func__);
-        } else {
-            CGS_LOGE("%{public}s failed. err:%{public}d", __func__, err);
-        }
-    }
-    appStateObserver_ = nullptr;
 }
 
 bool SchedController::SubscribeBackgroundTask()

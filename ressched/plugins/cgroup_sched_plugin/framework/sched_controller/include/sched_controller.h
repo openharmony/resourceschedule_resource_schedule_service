@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-class RmsApplicationStateObserver;
 #ifdef CONFIG_BGTASK_MGR
 class BackgroundTaskObserver;
 #endif
@@ -46,8 +45,6 @@ public:
     void Init() override;
     void Disable() override;
 
-    bool SubscribeAppState();
-    void UnsubscribeAppState();
     bool SubscribeBackgroundTask();
     void UnsubscribeBackgroundTask();
     void SubscribeWindowState();
@@ -83,7 +80,6 @@ private:
 
     std::shared_ptr<CgroupEventHandler> cgHandler_;
     std::shared_ptr<Supervisor> supervisor_;
-    sptr<RmsApplicationStateObserver> appStateObserver_;
 #ifdef CONFIG_BGTASK_MGR
     bool isBgtaskSubscribed_ {false};
     std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_;

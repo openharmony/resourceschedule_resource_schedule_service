@@ -36,14 +36,13 @@ public:
     void SetSupervisor(std::shared_ptr<Supervisor> supervisor);
     void HandleAbilityAdded(int32_t saId, const std::string& deviceId);
     void HandleAbilityRemoved(int32_t saId, const std::string& deviceId);
-    void HandleApplicationStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
-    void HandleProcessStateChanged(uid_t uid, pid_t pid, const std::string& bundleName, int32_t state);
-    void HandleAbilityStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
-        const std::string& abilityName, int32_t recordId, int32_t abilityState, int32_t abilityType);
-    void HandleExtensionStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
-        const std::string& abilityName, int32_t recordId, int32_t extensionState, int32_t abilityType);
-    void HandleProcessCreated(const ProcessData &processData);
-    void HandleProcessDied(uid_t uid, pid_t pid, const std::string& bundleName);
+    void HandleApplicationStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleProcessStateChangedx(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleProcessStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleAbilityStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleExtensionStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleProcessCreated(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleProcessDied(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleTransientTaskStart(uid_t uid, pid_t pid, const std::string& packageName);
     void HandleTransientTaskEnd(uid_t uid, pid_t pid, const std::string& packageName);
     void HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId, int32_t abilityId);
@@ -88,6 +87,7 @@ private:
     bool ParsePayload(int32_t& uid, int32_t& pid, const nlohmann::json& payload);
     bool ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid, int64_t value, const nlohmann::json& payload);
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
+    bool ParseString(std::string& value, const char* name, const nlohmann::json& payload);
     void UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, int32_t windowId, int32_t state,
         const std::shared_ptr<ProcessRecord>& proc);
     void HandleEmptyPayloadForCosmicCubeState(uint32_t resType, int64_t value);

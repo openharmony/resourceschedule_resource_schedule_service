@@ -39,7 +39,6 @@ public:
     std::string GetProcessFilePath(int32_t uid, std::string bundleName, int32_t pid);
     void DispatchResourceExt(uint32_t resType, int64_t value, const nlohmann::json& payload);
     bool CheckTidIsInPid(int32_t pid, int32_t tid);
-    void ReportAppStateInProcess(int32_t state, int32_t pid);
     void SubscribeResourceExt();
 
 private:

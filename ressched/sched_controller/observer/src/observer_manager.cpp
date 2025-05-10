@@ -18,6 +18,8 @@
 #include <dlfcn.h>
 #include <string>
 
+#include "app_mgr_interface.h"
+#include "app_startup_scene_rec.h"
 #include "display_manager.h"
 #include "dm_common.h"
 #include "hisysevent.h"
@@ -61,10 +63,12 @@ const static char* RES_SCHED_CG_EXT_SO = "libcgroup_sched_ext.z.so";
 void ObserverManager::Init()
 {
     InitSysAbilityListener();
+    AppStartupSceneRec::GetInstance().Init();
 }
 
 void ObserverManager::Disable()
 {
+    AppStartupSceneRec::GetInstance().DeInit();
     handleObserverMap_.clear();
     removeObserverMap_.clear();
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
@@ -97,6 +101,7 @@ void ObserverManager::InitObserverCbMap()
 #endif
         { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->InitAccountObserver(); }},
         { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitWindowStateObserver(); }},
+        { APP_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->SubscribeAppState(); }},
     };
 
     removeObserverMap_ = {
@@ -122,6 +127,7 @@ void ObserverManager::InitObserverCbMap()
 #endif
         { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->DisableAccountObserver(); }},
         { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableWindowStateObserver(); }},
+        { APP_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->UnsubscribeAppState(); }},
     };
 }
 
@@ -163,6 +169,7 @@ void ObserverManager::InitSysAbilityListener()
 #endif
     AddItemToSysAbilityListener(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, systemAbilityManager);
     AddItemToSysAbilityListener(WINDOW_MANAGER_SERVICE_ID, systemAbilityManager);
+    AddItemToSysAbilityListener(APP_MGR_SERVICE_ID, systemAbilityManager);
 }
 
 inline void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId,
@@ -738,6 +745,58 @@ void ObserverManager::DisableWindowStateObserver()
         pipStateObserver_ = nullptr;
     }
     RESSCHED_LOGI("UnsubscribePipchange success");
+}
+
+OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
+{
+    OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
+        OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (!systemAbilityManager) {
+        RESSCHED_LOGE("%{public}s : systemAbilityManager nullptr!", __func__);
+        return nullptr;
+    }
+    OHOS::sptr<OHOS::IRemoteObject> object = systemAbilityManager->GetSystemAbility(OHOS::APP_MGR_SERVICE_ID);
+    return OHOS::iface_cast<OHOS::AppExecFwk::IAppMgr>(object);
+}
+
+void ObserverManager::SubscribeAppState()
+{
+    sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
+    if (!appManager) {
+        RESSCHED_LOGE("%{public}s app manager nullptr!", __func__);
+        return;
+    }
+    appStateObserver_ = new (std::nothrow)RmsApplicationStateObserver();
+    if (!appStateObserver_) {
+        RESSCHED_LOGE("%{public}s allocate app state observer failed!", __func__);
+        return;
+    }
+    int32_t err = appManager->RegisterApplicationStateObserver(appStateObserver_);
+    if (err != 0) {
+        RESSCHED_LOGE("%{public}s register to appmanager failed. err:%{public}d", __func__, err);
+        appStateObserver_ = nullptr;
+        return;
+    }
+    RESSCHED_LOGI("%{public}s success.", __func__);
+    return;
+}
+
+void ObserverManager::UnsubscribeAppState()
+{
+    if (!appStateObserver_) {
+        return;
+    }
+
+    sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
+    if (appManager) {
+        int32_t err = appManager->UnregisterApplicationStateObserver(appStateObserver_);
+        if (err == 0) {
+            RESSCHED_LOGI("%{public}s success.", __func__);
+        } else {
+            RESSCHED_LOGE("%{public}s failed. err:%{public}d", __func__, err);
+        }
+    }
+    appStateObserver_ = nullptr;
 }
 
 void ObserverManager::DisableAccountObserver()
