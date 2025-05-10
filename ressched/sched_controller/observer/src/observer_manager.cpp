@@ -87,6 +87,7 @@ void ObserverManager::InitObserverCbMap()
         { AUDIO_POLICY_SERVICE_ID, []() { ObserverManager::GetInstance()->InitAudioObserver(); }},
         { MSDP_MOVEMENT_SERVICE_ID, []() { ObserverManager::GetInstance()->InitDeviceMovementObserver(); }},
         { DISPLAY_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitDisplayModeObserver(); }},
+        { DISPLAY_MANAGER_SERVICE_SA_ID, []() { ObserverManager::GetInstance()->InitDisplayOrientationObserver(); }},
         { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->InitConnectionSubscriber(); }},
         { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, []() { ObserverManager::GetInstance()->InitDataShareObserver(); }},
 #ifdef RESOURCE_REQUEST_REQUEST
@@ -111,6 +112,7 @@ void ObserverManager::InitObserverCbMap()
         { AUDIO_POLICY_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableAudioObserver(); }},
         { MSDP_MOVEMENT_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableDeviceMovementObserver(); }},
         { DISPLAY_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableDisplayModeObserver(); }},
+        { DISPLAY_MANAGER_SERVICE_SA_ID, []() { ObserverManager::GetInstance()->DisableDisplayOrientationObserver(); }},
         { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableConnectionSubscriber(); }},
         { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, []() {
             ObserverManager::GetInstance()->DisableDataShareObserver(); }},
@@ -153,6 +155,7 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(MSDP_MOVEMENT_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(MULTIMODAL_INPUT_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(DISPLAY_MANAGER_SERVICE_ID, systemAbilityManager);
+    AddItemToSysAbilityListener(DISPLAY_MANAGER_SERVICE_SA_ID, systemAbilityManager);
     AddItemToSysAbilityListener(ABILITY_MGR_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, systemAbilityManager);
 #ifdef RESOURCE_REQUEST_REQUEST
@@ -583,6 +586,51 @@ void ObserverManager::DisableDisplayModeObserver()
         return;
     }
     foldDisplayModeObserver_ = nullptr;
+}
+
+void ObserverManager::InitDisplayOrientationObserver()
+{
+    RESSCHED_LOGI("ObserverManager Init display orientation observer.");
+    bool isFoldable = OHOS::Rosen::DisplayManager::GetInstance().IsFoldable();
+    if (!isFoldable) {
+        RESSCHED_LOGI("ObserverManager Init display mode observer return for foldable.");
+        return;
+    }
+
+    if (!foldDisplayOrientationObserver_) {
+        foldDisplayOrientationObserver_ = new (std::nothrow)FoldDisplayOrientationObserver();
+        if (foldDisplayOrientationObserver_ == nullptr) {
+            RESSCHED_LOGE("Failed to create fold ChangeListener due to no memory");
+            return;
+        }
+    }
+
+    auto ret = OHOS::Rosen::DisplayManager::GetInstance().RegisterDisplayListener(foldDisplayOrientationObserver_);
+    if (ret == OHOS::Rosen::DMError::DM_OK) {
+        RESSCHED_LOGI("ObserverManager init displayOrientationObserver successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager init displayOrientationObserver failed");
+        foldDisplayOrientationObserver_ = nullptr;
+        return;
+    }
+}
+
+void ObserverManager::DisableDisplayOrientationObserver()
+{
+    RESSCHED_LOGI("ObserverManager Disable display orientation observer.");
+    if (!foldDisplayOrientationObserver_) {
+        RESSCHED_LOGE("ObserverManager has been disable displayModeObserver");
+        return;
+    }
+
+    auto ret = OHOS::Rosen::DisplayManager::GetInstance().UnregisterDisplayListener(foldDisplayOrientationObserver_);
+    if (ret == OHOS::Rosen::DMError::DM_OK) {
+        RESSCHED_LOGI("ObserverManager disable displayModeObserver successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager disable displayModeObserver failed");
+        return;
+    }
+    foldDisplayOrientationObserver_ = nullptr;
 }
 
 void ObserverManager::InitConnectionSubscriber()
