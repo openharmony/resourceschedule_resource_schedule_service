@@ -22,8 +22,8 @@ namespace ResCommonUtil {
 void HiSysAbnormalErrReport(const std::string& moduleName, const std::string& funcName, const std::string errInfo)
 {
     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS,
-    "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
-    "MODULE_NAME", moduleName, "FUNC_NAME", funcName, "ERR_INFO", errInfo);
+        "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+        "MODULE_NAME", moduleName, "FUNC_NAME", funcName, "ERR_INFO", errInfo);
 }
 }
 } // namespace ResourceSchedule
