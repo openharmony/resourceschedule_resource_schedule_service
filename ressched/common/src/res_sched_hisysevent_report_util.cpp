@@ -14,16 +14,41 @@
  */
 
 #include "res_sched_hisysevent_report_util.h"
-#include "hisysevent.h"
+#include "hisysevent_c.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 namespace ResCommonUtil {
 void HiSysAbnormalErrReport(const std::string& moduleName, const std::string& funcName, const std::string errInfo)
 {
-    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS,
-        "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
-        "MODULE_NAME", moduleName, "FUNC_NAME", funcName, "ERR_INFO", errInfo);
+    struct HiSysEventParam params[] = {
+        {
+            .name = "MODULE_NAME",
+            .t = HISYSEVENT_STRING,
+            .V = { .s = const_cast<char *>(moduleName) },
+            .arraySize = 0
+        },
+        {
+            .name = "FUNC_NAME",
+            .t = HISYSEVENT_STRING,
+            .V = { .s = const_cast<char *>(funcName) },
+            .arraySize = 0
+        },
+        {
+            .name = "ERR_INFO",
+            .t = HISYSEVENT_STRING,
+            .V = { .s = const_cast<char *>(errInfo) },
+            .arraySize = 0
+        },
+    };
+
+    OH_HiSysEvent_Write(
+        "RSS",
+        "ABNORMAL_ERR",
+        HISYSEVENT_STATISTIC,
+        params,
+        sizeof(params)/sizeof(params[0])
+    );
 }
 }
 } // namespace ResourceSchedule
