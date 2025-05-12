@@ -1059,7 +1059,7 @@ namespace ResourceSchedule {
         nlohmann::json payload;
         payload["uid"] = std::to_string(uid);
         payload["pid"] = std::to_string(pid);
-        payload["bundleName"] = packageName;
+        payload["bundleName"] = bundleName;
         payload["hostPid"] = std::to_string(hostPid);
         payload["processType"] = std::to_string(processType);
         payload["extensionType"] = std::to_string(extensionType);
