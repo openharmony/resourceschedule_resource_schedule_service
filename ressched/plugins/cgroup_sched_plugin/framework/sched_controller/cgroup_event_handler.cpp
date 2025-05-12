@@ -164,7 +164,7 @@ void CgroupEventHandler::HandleApplicationStateChanged(uint32_t resType, int64_t
 
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
         !ParseString(bundleName, "bundleName", payload) || !ParseValue(state, "state", payload)) {
-        CGS_LOGE("%{public}s: param error", __func__);
+        CGS_LOGD("%{public}s: param error", __func__);
         return;
     }
 
