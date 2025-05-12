@@ -955,7 +955,7 @@ namespace ResourceSchedule {
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->SetSupervisor(g_supervisor);
-        //cgroupEventHandler->HandleProcessStateChanged(resType, value, payload);
+        cgroupEventHandler->HandleProcessStateChanged(resType, value, payload);
 
         return true;
     }
