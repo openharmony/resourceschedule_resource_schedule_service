@@ -275,10 +275,10 @@ void SchedController::InitDispatchResFuncMap()
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleOnAppStopped(resType, value, payload); } },
     };
-    InitDispatchResFuncMap();
+    InitAddDispatchResFuncMap();
 }
 
-void SchedController::InitDispatchResFuncMap()
+void SchedController::InitAddDispatchResFuncMap()
 {
     dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
         [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value, 
