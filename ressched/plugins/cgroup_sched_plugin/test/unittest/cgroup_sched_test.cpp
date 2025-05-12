@@ -1016,10 +1016,10 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_022, Function | Med
     uint32_t resType = ResType::RES_TYPE_REPORT_RENDER_THREAD;
     int64_t value = 1235;
     nlohmann::json payload;
-    payload["uid"] = std::to_string(2000);
-    payload["pid"] = std::to_string(1000);
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(2000);
     payload["bundleName"] = "com.ohos.test";
-    payload["state"] = (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND;
+    payload["state"] = std::to_string((int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
     cgroupEventHandler->HandleProcessStateChanged(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 }
@@ -1038,10 +1038,10 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_023, Function | Med
     uint32_t resType = ResType::RES_TYPE_REPORT_RENDER_THREAD;
     int64_t value = 1235;
     nlohmann::json payload;
-    payload["uid"] = std::to_string(2000);
-    payload["pid"] = std::to_string(1000);
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(2000);
     payload["bundleName"] = "com.ohos.test";
-    payload["state"] = (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND;
+    payload["state"] = std::to_string((int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
     cgroupEventHandler->HandleApplicationStateChanged(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 }
@@ -1060,14 +1060,14 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_024, Function | Med
     uint32_t resType = ResType::RES_TYPE_REPORT_RENDER_THREAD;
     int64_t value = 1235;
     nlohmann::json payload;
-    payload["uid"] = std::to_string(2000);
-    payload["pid"] = std::to_string(1000);
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(2000);
     payload["bundleName"] = "com.ohos.test";
-    payload["state"] = (int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND;
+    payload["state"] = std::to_string((int32_t)AppExecFwk::ApplicationState::APP_STATE_FOREGROUND);
     cgroupEventHandler->HandleApplicationStateChanged(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 
-    payload["state"] = (int32_t)AppExecFwk::ApplicationState::APP_STATE_TERMINATED;
+    payload["state"] = std::to_string((int32_t)AppExecFwk::ApplicationState::APP_STATE_TERMINATED);
     cgroupEventHandler->HandleApplicationStateChanged(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 }

@@ -103,7 +103,11 @@ void ObserverManager::InitObserverCbMap()
         { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitWindowStateObserver(); }},
         { APP_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->SubscribeAppState(); }},
     };
+    InitRemoveObserverCbMap();
+}
 
+void ObserverManager::InitRemoveObserverCbMap()
+{
     removeObserverMap_ = {
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, []() { ObserverManager::GetInstance()->DisableHiSysEventObserver(); }},

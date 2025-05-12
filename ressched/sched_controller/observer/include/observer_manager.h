@@ -90,6 +90,7 @@ public:
     void InitSysAbilityListener();
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
     void InitObserverCbMap();
+    void InitRemoveObserverCbMap();
     void InitConnectionSubscriber();
     void DisableConnectionSubscriber();
     void GetReportFunc();
