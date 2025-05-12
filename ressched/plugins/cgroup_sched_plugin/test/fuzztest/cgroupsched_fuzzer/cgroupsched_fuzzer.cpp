@@ -308,15 +308,20 @@ namespace ResourceSchedule {
         g_size = size;
 
         // getdata
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
         uid_t uid = GetData<uid_t>();
         pid_t pid = GetData<pid_t>();
         std::string packageName(std::to_string(*data));
+        nlohmann::json payload;
+        payload["uid"] = std::to_string(uid);
+        payload["pid"] = std::to_string(pid);
+        payload["bundleName"] = packageName;
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
-        //cgroupEventHandler->HandleProcessDied(uid, pid, packageName);
         cgroupEventHandler->SetSupervisor(g_supervisor);
-        //cgroupEventHandler->HandleProcessDied(uid, pid, packageName);
+        cgroupEventHandler->HandleProcessDied(resType, value, payload);
 
         return true;
     }
@@ -903,16 +908,23 @@ namespace ResourceSchedule {
         g_size = size;
 
         // getdata
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
         uid_t uid = GetData<uid_t>();
         pid_t pid = GetData<pid_t>();
         std::string packageName(std::to_string(*data));
         int32_t state = GetData<int32_t>();
+        nlohmann::json payload;
+        payload["uid"] = std::to_string(uid);
+        payload["pid"] = std::to_string(pid);
+        payload["bundleName"] = packageName;
+        payload["state"] = std::to_string(state);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
-        //cgroupEventHandler->HandleApplicationStateChanged(uid, pid, packageName, state);
+        cgroupEventHandler->HandleApplicationStateChanged(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
-        //cgroupEventHandler->HandleApplicationStateChanged(uid, pid, packageName, state);
+        cgroupEventHandler->HandleApplicationStateChanged(resType, value, payload);
 
         return true;
     }
@@ -928,16 +940,22 @@ namespace ResourceSchedule {
         g_size = size;
 
         // getdata
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
         uid_t uid = GetData<uid_t>();
         pid_t pid = GetData<pid_t>();
         std::string packageName(std::to_string(*data));
         int32_t state = GetData<int32_t>();
+        nlohmann::json payload;
+        payload["uid"] = std::to_string(uid);
+        payload["pid"] = std::to_string(pid);
+        payload["bundleName"] = packageName;
+        payload["state"] = std::to_string(state);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
-        //cgroupEventHandler->HandleProcessStateChanged(uid, pid, packageName, state);
         cgroupEventHandler->SetSupervisor(g_supervisor);
-        //cgroupEventHandler->HandleProcessStateChanged(uid, pid, packageName, state);
+        //cgroupEventHandler->HandleProcessStateChanged(resType, value, payload);
 
         return true;
     }
@@ -953,6 +971,8 @@ namespace ResourceSchedule {
         g_size = size;
 
         // getdata
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
         uid_t uid = GetData<uid_t>();
         pid_t pid = GetData<pid_t>();
         std::string bundleName(std::to_string(*data));
@@ -960,14 +980,20 @@ namespace ResourceSchedule {
         int32_t recordId = GetData<int32_t>();
         int32_t abilityState = GetData<int32_t>();
         int32_t abilityType = GetData<int32_t>();
+        nlohmann::json payload;
+        payload["uid"] = std::to_string(uid);
+        payload["pid"] = std::to_string(pid);
+        payload["bundleName"] = bundleName;
+        payload["abilityName"] = abilityName;
+        payload["recordId"] = std::to_string(recordId);
+        payload["abilityState"] = std::to_string(abilityState);
+        payload["abilityType"] = std::to_string(abilityType);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
-        //cgroupEventHandler->HandleAbilityStateChanged(
-        //    uid, pid, bundleName, abilityName, recordId, abilityState, abilityType);
+        cgroupEventHandler->HandleAbilityStateChanged(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
-        //cgroupEventHandler->HandleAbilityStateChanged(
-        //    uid, pid, bundleName, abilityName, recordId, abilityState, abilityType);
+        cgroupEventHandler->HandleAbilityStateChanged(resType, value, payload);
 
         return true;
     }
@@ -983,6 +1009,8 @@ namespace ResourceSchedule {
         g_size = size;
 
         // getdata
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
         uid_t uid = GetData<uid_t>();
         pid_t pid = GetData<pid_t>();
         std::string bundleName(std::to_string(*data));
@@ -990,14 +1018,20 @@ namespace ResourceSchedule {
         int32_t recordId = GetData<int32_t>();
         int32_t extensionState = GetData<int32_t>();
         int32_t abilityType = GetData<int32_t>();
+        nlohmann::json payload;
+        payload["uid"] = std::to_string(uid);
+        payload["pid"] = std::to_string(pid);
+        payload["bundleName"] = bundleName;
+        payload["abilityName"] = abilityName;
+        payload["recordId"] = std::to_string(recordId);
+        payload["extensionState"] = std::to_string(extensionState);
+        payload["abilityType"] = std::to_string(abilityType);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
-        //cgroupEventHandler->HandleExtensionStateChanged(
-        //    uid, pid, bundleName, abilityName, recordId, extensionState, abilityType);
+        cgroupEventHandler->HandleExtensionStateChanged(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
-        //cgroupEventHandler->HandleExtensionStateChanged(
-        //    uid, pid, bundleName, abilityName, recordId, extensionState, abilityType);
+        cgroupEventHandler->HandleExtensionStateChanged(resType, value, payload);
 
         return true;
     }
@@ -1014,19 +1048,26 @@ namespace ResourceSchedule {
         g_size = size;
 
         // getdata
-        ProcessData processData;
-        processData.uid = GetData<uid_t>();
-        processData.pid = GetData<pid_t>();
-        processData.bundleName = std::to_string(*data);
-        processData.hostPid = GetData<int32_t>();
-        processData.processType = static_cast<AppExecFwk::ProcessType>(GetData<int32_t>());
-        processData.extensionType = static_cast<AppExecFwk::ExtensionAbilityType>(GetData<int32_t>());
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
+        uid_t uid = GetData<uid_t>();
+        pid_t pid = GetData<pid_t>();
+        std::string bundleName = std::to_string(*data);
+        int32_t hostPid = GetData<int32_t>();
+        int32_t processType = GetData<int32_t>();
+        int32_t extensionType = GetData<int32_t>();
+        nlohmann::json payload;
+        payload["uid"] = std::to_string(uid);
+        payload["pid"] = std::to_string(pid);
+        payload["bundleName"] = packageName;
+        payload["hostPid"] = std::to_string(hostPid);
+        payload["processType"] = std::to_string(processType);
+        payload["extensionType"] = std::to_string(extensionType);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
-        //cgroupEventHandler->HandleProcessCreated(processData);
         cgroupEventHandler->SetSupervisor(g_supervisor);
-        //cgroupEventHandler->HandleProcessCreated(processData);
+        cgroupEventHandler->HandleProcessCreated(resType, value, payload);
 
         return true;
     }
