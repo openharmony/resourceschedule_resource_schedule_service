@@ -17,9 +17,10 @@
 #define RESSCHED_COMMON_INCLUDE_RES_COMMON_UTIL_H
 
 #include "res_sched_file_util.h"
-#include "res_sched_string_util.h"
-#include "res_sched_time_util.h"
-#include "res_sched_system_util.h"
+#include "res_sched_hisysevent_report_util.h"
 #include "res_sched_json_util.h"
+#include "res_sched_string_util.h"
+#include "res_sched_system_util.h"
+#include "res_sched_time_util.h"
 
 #endif // RESSCHED_COMMON_INCLUDE_RES_COMMON_UTIL_H
