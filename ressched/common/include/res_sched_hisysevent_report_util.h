@@ -29,7 +29,7 @@ namespace ResCommonUtil {
  * @param errInfo the errInfo of the abnormalErr
  *
  */
-void HiSysAbnormalErrReport(const std::string& moduleName, const std::string& funcName, const std::string errInfo);
+void HiSysAbnormalErrReport(const std::string& moduleName, const std::string& funcName, const std::string& errInfo);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

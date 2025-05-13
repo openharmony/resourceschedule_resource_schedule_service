@@ -19,25 +19,25 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace ResCommonUtil {
-void HiSysAbnormalErrReport(const std::string& moduleName, const std::string& funcName, const std::string errInfo)
+void HiSysAbnormalErrReport(const std::string& moduleName, const std::string& funcName, const std::string& errInfo)
 {
     struct HiSysEventParam params[] = {
         {
             .name = "MODULE_NAME",
             .t = HISYSEVENT_STRING,
-            .V = { .s = const_cast<char *>(moduleName) },
+            .v = { .s = const_cast<char *>(moduleName.c_str()) },
             .arraySize = 0
         },
         {
             .name = "FUNC_NAME",
             .t = HISYSEVENT_STRING,
-            .V = { .s = const_cast<char *>(funcName) },
+            .v = { .s = const_cast<char *>(funcName.c_str()) },
             .arraySize = 0
         },
         {
             .name = "ERR_INFO",
             .t = HISYSEVENT_STRING,
-            .V = { .s = const_cast<char *>(errInfo) },
+            .v = { .s = const_cast<char *>(errInfo.c_str()) },
             .arraySize = 0
         },
     };
