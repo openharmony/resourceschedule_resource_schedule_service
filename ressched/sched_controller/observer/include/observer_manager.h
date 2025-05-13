@@ -18,6 +18,7 @@
 
 #include <memory>
 #include "account_observer.h"
+#include "app_state_observer.h"
 #include "if_system_ability_manager.h"
 #include "system_ability_status_change_stub.h"
 #include "singleton.h"
@@ -91,6 +92,7 @@ public:
     void InitSysAbilityListener();
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
     void InitObserverCbMap();
+    void InitRemoveObserverCbMap();
     void InitConnectionSubscriber();
     void DisableConnectionSubscriber();
     void GetReportFunc();
@@ -100,6 +102,8 @@ public:
     void DisableAccountObserver();
     void InitWindowStateObserver();
     void DisableWindowStateObserver();
+    void SubscribeAppState();
+    void UnsubscribeAppState();
 #ifdef RESOURCE_REQUEST_REQUEST
     void InitDownloadUploadObserver();
     void DisableDownloadUploadObserver();
@@ -139,6 +143,7 @@ public:
 #endif
     std::shared_ptr<AccountObserver> accountObserver_ = nullptr;
     sptr<PiPStateObserver> pipStateObserver_ = nullptr;
+    sptr<RmsApplicationStateObserver> appStateObserver_ = nullptr;
     bool isNeedReport_ = true;
     int32_t powerKeySubscribeId_ = -1;
 };

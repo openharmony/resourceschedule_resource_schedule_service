@@ -71,27 +71,6 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
     CGS_LOGD("%{public}s : eventId:%{public}d param:%{public}" PRIu64,
         __func__, eventId, eventParam);
     switch (eventId) {
-        case EVENT_ID_REG_APP_STATE_OBSERVER: {
-            int64_t retry = eventParam;
-            if (!SchedController::GetInstance().SubscribeAppState() &&
-                retry < MAX_RETRY_TIMES) {
-                eventId = EVENT_ID_REG_APP_STATE_OBSERVER;
-                eventParam = retry + 1;
-                this->PostTask(
-                    [this, eventId, eventParam] {
-                        this->ProcessEvent(eventId, eventParam);
-                    },
-                    std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
-                if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
-                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
-                        HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Subscribe app status change observer failed.");
-                }
-            }
-            break;
-        }
         case EVENT_ID_REG_BGTASK_OBSERVER: {
             int64_t retry = eventParam;
             if (!SchedController::GetInstance().SubscribeBackgroundTask() &&
@@ -127,16 +106,6 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
 {
     switch (saId) {
         case APP_MGR_SERVICE_ID:
-            this->RemoveTask(std::to_string(EVENT_ID_REG_APP_STATE_OBSERVER));
-            if (!SchedController::GetInstance().SubscribeAppState()) {
-                uint32_t eventId = EVENT_ID_REG_APP_STATE_OBSERVER;
-                int64_t eventParam = 0;
-                this->PostTask(
-                    [this, eventId, eventParam] {
-                        this->ProcessEvent(eventId, eventParam);
-                    },
-                    std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
-            }
             if (supervisor_ != nullptr) {
                 supervisor_->InitSuperVisorContent();
             }
@@ -169,10 +138,6 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
 void CgroupEventHandler::HandleAbilityRemoved(int32_t saId, const std::string& deviceId)
 {
     switch (saId) {
-        case APP_MGR_SERVICE_ID:
-            this->RemoveTask(std::to_string(EVENT_ID_REG_APP_STATE_OBSERVER));
-            SchedController::GetInstance().UnsubscribeAppState();
-            break;
         case WINDOW_MANAGER_SERVICE_ID:
             SchedController::GetInstance().UnsubscribeWindowState();
             break;
@@ -185,13 +150,24 @@ void CgroupEventHandler::HandleAbilityRemoved(int32_t saId, const std::string& d
     }
 }
 
-void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
-    const std::string& bundleName, int32_t state)
+void CgroupEventHandler::HandleApplicationStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
+
+    int32_t uid = 0;
+    int32_t pid = 0;
+    std::string bundleName;
+    int32_t state = 0;
+
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
+        !ParseString(bundleName, "bundleName", payload) || !ParseValue(state, "state", payload)) {
+        CGS_LOGD("%{public}s: param error", __func__);
+        return;
+    }
+
     CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
     ChronoScope cs("HandleApplicationStateChanged");
     if (state == (int32_t)(ApplicationState::APP_STATE_TERMINATED)) {
@@ -202,11 +178,17 @@ void CgroupEventHandler::HandleApplicationStateChanged(uid_t uid, pid_t pid,
     app->state_ = state;
 }
 
-void CgroupEventHandler::HandleProcessStateChanged(uid_t uid, pid_t pid,
-    const std::string& bundleName, int32_t state)
+void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+    int32_t uid = 0;
+    int32_t pid = 0;
+    std::string bundleName;
+    int32_t state = 0;
+    if (!ParseValue(uid, "uid", payload) ||
+        !ParseValue(pid, "pid", payload) ||
+        !ParseString(bundleName, "bundleName", payload) ||
+        !ParseValue(state, "state", payload)) {
+        CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}d", __func__, uid,
@@ -219,13 +201,28 @@ void CgroupEventHandler::HandleProcessStateChanged(uid_t uid, pid_t pid,
         AdjustSource::ADJS_PROCESS_STATE);
 }
 
-void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
-    const std::string& abilityName, int32_t recordId, int32_t abilityState, int32_t abilityType)
+void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
+
+    int32_t uid = 0;
+    int32_t pid = 0;
+    std::string bundleName;
+    std::string abilityName;
+    int32_t recordId = 0;
+    int32_t abilityState = 0;
+    int32_t abilityType = 0;
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
+        !ParseString(bundleName, "bundleName", payload) || !ParseString(abilityName, "abilityName", payload) ||
+        !ParseValue(recordId, "recordId", payload) ||
+        !ParseValue(abilityState, "abilityState", payload) || !ParseValue(abilityType, "abilityType", payload)) {
+        CGS_LOGE("%{public}s: param error", __func__);
+        return;
+    }
+
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d, %{public}d",
         __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), recordId, abilityState, abilityType);
     if (abilityType == (int32_t)AbilityType::EXTENSION) {
@@ -256,13 +253,28 @@ void CgroupEventHandler::HandleAbilityStateChanged(uid_t uid, pid_t pid, const s
         AdjustSource::ADJS_ABILITY_STATE);
 }
 
-void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, const std::string& bundleName,
-    const std::string& abilityName, int32_t recordId, int32_t extensionState, int32_t abilityType)
+void CgroupEventHandler::HandleExtensionStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
+
+    int32_t uid = 0;
+    int32_t pid = 0;
+    std::string bundleName;
+    std::string abilityName;
+    int32_t recordId = 0;
+    int32_t extensionState = 0;
+    int32_t abilityType = 0;
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
+        !ParseString(bundleName, "bundleName", payload) || !ParseString(abilityName, "abilityName", payload) ||
+        !ParseValue(recordId, "recordId", payload) ||
+        !ParseValue(extensionState, "extensionState", payload) || !ParseValue(abilityType, "abilityType", payload)) {
+        CGS_LOGE("%{public}s: param error", __func__);
+        return;
+    }
+    
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d, %{public}d",
         __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), recordId, extensionState, abilityType);
     ChronoScope cs("HandleExtensionStateChanged");
@@ -289,26 +301,49 @@ void CgroupEventHandler::HandleExtensionStateChanged(uid_t uid, pid_t pid, const
         AdjustSource::ADJS_EXTENSION_STATE);
 }
 
-void CgroupEventHandler::HandleProcessCreated(const ProcessData &processData)
+void CgroupEventHandler::HandleProcessStateChangedEx(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    auto processType = static_cast<int32_t>(processData.processType);
-    auto extensionType = static_cast<int32_t>(processData.extensionType);
+    if (value == ResType::ProcessStatus::PROCESS_CREATED) {
+        HandleProcessCreated(resType, value, payload);
+    } else if (value == ResType::ProcessStatus::PROCESS_DIED) {
+        HandleProcessDied(resType, value, payload);
+    } else {
+        HandleProcessStateChanged(resType, value, payload);
+    }
+}
+
+void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+    int32_t hostPid = 0;
+    std::string bundleName;
+    int32_t extensionType = 0;
+    int32_t processType = 0;
+    int32_t isPreloadModule = 0;
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
+        !ParseString(bundleName, "bundleName", payload) || !ParseValue(hostPid, "hostPid", payload) ||
+        !ParseValue(extensionType, "extensionType", payload) || !ParseValue(processType, "processType", payload) ||
+        !ParseValue(isPreloadModule, "isPreloadModule", payload)) {
+        CGS_LOGE("%{public}s: param error", __func__);
+        return;
+    }
     CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d",
-        __func__, processData.uid, processData.pid, processData.hostPid, processType, processData.bundleName.c_str(),
+        __func__, uid, pid, hostPid, processType, bundleName.c_str(),
         extensionType);
     ChronoScope cs("HandleProcessCreated");
-    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(processData.uid);
-    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(processData.pid);
-    app->SetName(processData.bundleName);
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
+    app->SetName(bundleName);
     switch (processType) {
         case static_cast<int32_t>(ProcessType::RENDER):
             procRecord->processType_ = ProcRecordType::RENDER;
-            procRecord->hostPid_ = processData.hostPid;
-            app->AddHostProcess(processData.hostPid);
+            procRecord->hostPid_ = hostPid;
+            app->AddHostProcess(hostPid);
             break;
         case static_cast<int32_t>(ProcessType::EXTENSION):
             procRecord->processType_ = ProcRecordType::EXTENSION;
@@ -316,27 +351,29 @@ void CgroupEventHandler::HandleProcessCreated(const ProcessData &processData)
             break;
         case static_cast<int32_t>(ProcessType::GPU):
             procRecord->processType_ = ProcRecordType::GPU;
-            procRecord->hostPid_ = processData.hostPid;
-            app->AddHostProcess(processData.hostPid);
+            procRecord->hostPid_ = hostPid;
+            app->AddHostProcess(hostPid);
             break;
         case static_cast<int32_t>(ProcessType::CHILD):
             procRecord->processType_ = ProcRecordType::CHILD;
-            procRecord->hostPid_ = processData.hostPid;
-            app->AddHostProcess(processData.hostPid);
+            procRecord->hostPid_ = hostPid;
+            app->AddHostProcess(hostPid);
             break;
         default:
             break;
     }
-    AdjustSource policy = processData.isPreloadModule ? AdjustSource::ADJS_APP_PRELOAD :
-        AdjustSource::ADJS_PROCESS_CREATE;
-
+    AdjustSource policy = (isPreloadModule != 0) ? AdjustSource::ADJS_APP_PRELOAD : AdjustSource::ADJS_PROCESS_CREATE;
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), policy);
 }
 
-void CgroupEventHandler::HandleProcessDied(uid_t uid, pid_t pid, const std::string& bundleName)
+void CgroupEventHandler::HandleProcessDied(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+    int32_t uid = 0;
+    int32_t pid = 0;
+    std::string bundleName;
+    if (!ParseValue(uid, "uid", payload) ||
+        !ParseValue(pid, "pid", payload) ||
+        !ParseString(bundleName, "bundleName", payload)) {
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, bundleName.c_str());
@@ -1257,6 +1294,16 @@ bool CgroupEventHandler::ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid,
     }
     tid = static_cast<int32_t>(value);
     return true;
+}
+
+bool CgroupEventHandler::ParseString(std::string& value, const char* name,
+    const nlohmann::json& payload)
+{
+    if (payload.contains(name) && payload.at(name).is_string()) {
+        value = payload[name].get<std::string>();
+        return true;
+    }
+    return false;
 }
 
 bool CgroupEventHandler::ParseValue(int32_t& value, const char* name,

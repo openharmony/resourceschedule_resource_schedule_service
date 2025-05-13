@@ -26,8 +26,6 @@
     *EventListenerMgr*SendEvent*;
     *AvSessionStateListener*;
     *ConnectionSubscribe*;
-    ReportAppStateInProcess;
-    ReportProcessStateInProcess;
     ReportDataInProcess;
     KillProcessInProcess;
     SetListFlingTimeoutTime;

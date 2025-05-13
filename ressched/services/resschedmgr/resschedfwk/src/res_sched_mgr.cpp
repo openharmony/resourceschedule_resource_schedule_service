@@ -289,20 +289,20 @@ void ResSchedMgr::InitForegroundAppInfo()
     RESSCHED_LOGI("%{public}s succeed", __func__);
 }
 
-extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
-{
-    ResSchedMgr::GetInstance().ReportData(resType, value, payload);
-}
-
-extern "C" void ReportAppStateInProcess(int32_t state, int32_t pid)
+void ResSchedMgr::ReportAppStateInProcess(int32_t state, int32_t pid)
 {
     NotifierMgr::GetInstance().OnApplicationStateChange(state, pid);
     ResSchedMgr::GetInstance().OnApplicationStateChange(state, pid);
 }
 
-extern "C" void ReportProcessStateInProcess(int32_t state, int32_t pid)
+void ResSchedMgr::ReportProcessStateInProcess(int32_t state, int32_t pid)
 {
     ResSchedMgr::GetInstance().OnApplicationStateChange(state, pid);
+}
+
+extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 
 extern "C" int32_t KillProcessInProcess(const nlohmann::json& payload)
