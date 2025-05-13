@@ -359,6 +359,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_UID = 506,
     // get suspend state by pid
     SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_PID = 507,
+    // report wifi power state
+    RES_TYPE_WIFI_POWER_STATE_CHANGE = 508,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
