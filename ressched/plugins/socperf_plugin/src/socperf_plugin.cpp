@@ -262,6 +262,8 @@ bool SocPerfPlugin::HandleSubValue(const std::string& subValue, std::set<std::st
     return true;
 }
 
+bool SocPerfPlugin::HandleSubValue
+
 void SocPerfPlugin::InitFunctionMap()
 {
     functionMap = {
