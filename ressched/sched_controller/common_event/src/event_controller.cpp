@@ -201,6 +201,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_CONNECTED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_DISCONNECTED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_WIFI_POWER_STATE);
     matchingSkills.AddEvent(DATA_SHARE_READY);
     matchingSkills.AddEvent(COMMON_EVENT_CAMERA_STATUS);
     matchingSkills.AddEvent(CONFIG_UPDATE_ACTION);
@@ -316,6 +317,11 @@ void EventController::handleEvent(int32_t userId, const std::string &action, nlo
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_POWER_SAVE_MODE_CHANGED) {
         ReportDataInProcess(ResType::RES_TYPE_POWER_MODE_CHANGED, static_cast<int64_t>(userId), payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_WIFI_POWER_STATE) {
+        payload["state"] = std::to_string(userId);
+        ReportDataInProcess(ResType::RES_TYPE_WIFI_POWER_STATE_CHANGE, static_cast<int64_t>(userId), payload);
         return;
     }
     handleOtherEvent(userId, action, payload, want);

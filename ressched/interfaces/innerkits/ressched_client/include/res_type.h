@@ -327,6 +327,8 @@ enum : uint32_t {
     RES_TYPE_OVERLAY_EVENT = 151,
     // report game state change
     RES_TYPE_DEVICE_ORIENTATION_STATUS = 152,
+    // report wifi power state
+    RES_TYPE_WIFI_POWER_STATE_CHANGE = 153,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
