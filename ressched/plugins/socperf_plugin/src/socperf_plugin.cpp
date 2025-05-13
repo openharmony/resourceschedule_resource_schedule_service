@@ -262,7 +262,47 @@ bool SocPerfPlugin::HandleSubValue(const std::string& subValue, std::set<std::st
     return true;
 }
 
-bool SocPerfPlugin::HandleSubValue
+std::set<std::string> SocPerfPlugin::StringToSet(const std::string& str, const std::string& pattern)
+{
+    int32_t position;
+    std::set<std::string> result;
+    std::string tempStr = str;
+    tempStr += pattern;
+    int32_t length = (int32_t)tempStr.size();
+    for (int32_t i = 0; i < length; i++) {
+        position = (int32_t)tempStr.find(pattern, i);
+        if (position < length) {
+            std::string tmp = tempStr.substr(i, position - i);
+            result.insert(tmp);
+            i = position + (int32_t)pattern.size() - 1;
+        }
+    }
+    return result;
+}
+
+void SocPerfPlugin::AddSpecialExtension(SubItem& sub)
+{
+    if (!sub.properties.count("bundleName") || !sub.properties.count("callerBundleName")) {
+        return;
+    }
+    std::string bundleName = sub.properties.at("bundleName");
+    std::string callerBundleNames = sub.properties.at("callerBundleName");
+    std::set<std::string> callerBundleNamesList = StringToSet(callerBundleNames, "|");
+    specialExtensionMap_[bundleName] = callerBundleNamesList;
+}
+
+void SocPerfPlugin::InitSpecialExtension()
+{
+    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, "specialExtension");
+    for (const Item& item : itemLists.itemList) {
+        for (SubItem sub : item.subItemList) {
+            if (sub.name == "info") {
+                AddSpecialExtension(sub);
+            }
+        }
+    }
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, "specialExtension");
+}
 
 void SocPerfPlugin::InitFunctionMap()
 {
