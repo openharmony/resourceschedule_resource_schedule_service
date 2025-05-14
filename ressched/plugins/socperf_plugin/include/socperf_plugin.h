@@ -85,6 +85,7 @@ private:
     std::map<int32_t, AppKeyMessage> uidToAppMsgMap_;
     // app's pid match app type
     std::map<int32_t, int32_t> pidToAppTypeMap_;
+    std::unordered_map<std::string, std::set<std::string>> specialExtensionMap_;
     std::string perfReqAppTypeSoPath_;
     std::string perfReqAppTypeSoFunc_;
     bool isFocusAppsGameType_ = false;
@@ -102,7 +103,7 @@ private:
     void InitFunctionMap();
     void InitSpecialExtension();
     void AddSpecialExtension(SubItem& sub);
-    void std::set<std::string> SocPerfPlugin::StringToSet(const std::string& str, const std::string& pattern);
+    std::set<std::string> StringToSet(const std::string& str, const std::string& pattern);
     void AddEventToFunctionMap();
     void AddOtherEventToFunctionMap();
     void InitResTypes();
