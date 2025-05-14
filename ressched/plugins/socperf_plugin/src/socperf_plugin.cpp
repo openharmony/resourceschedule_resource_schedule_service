@@ -1002,6 +1002,20 @@ bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
         UpdateUidToAppMsgMap(data);
         return true;
     }
+    if (data->payload.contains("bundleName") && data->payload.contains("callerBundleName") &&
+        data->payload.at("bundleName").is_string() && data->payload.at("callerBundleName").is_string()) {
+        std::string bundleName = data->payload["bundleName"].get<std::string>();
+        std::string callerBundleName = data->payload["callerBundleName"].get<std::string>();
+        if (specialExtensionMap_.count(bundleName)) {
+            std::set<std::string>& callerBundleNames = specialExtensionMap_[bundleName];
+            if (callerBundleNames.empty() || callerBundleNames.count(callerBundleName)) {
+                SOC_PERF_LOGI("SocPerfPlugin: socperf->EXTENSION %{public}d,%{public}s,%{public}s",
+                    extensionType, bundleName.c_str(), callerBundleName.c_str());
+                OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+                return true;
+            }
+        }
+    }
     return false;
 }
 
