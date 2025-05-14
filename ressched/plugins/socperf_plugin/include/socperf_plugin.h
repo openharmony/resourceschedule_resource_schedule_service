@@ -100,6 +100,9 @@ private:
     bool custGameState_ = false;
     void InitEventId();
     void InitFunctionMap();
+    void InitSpecialExtension();
+    void AddSpecialExtension(SubItem& sub);
+    void std::set<std::string> SocPerfPlugin::StringToSet(const std::string& str, const std::string& pattern);
     void AddEventToFunctionMap();
     void AddOtherEventToFunctionMap();
     void InitResTypes();
