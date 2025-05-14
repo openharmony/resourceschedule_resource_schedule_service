@@ -137,6 +137,7 @@ void SocPerfPlugin::Init()
     InitEventId();
     InitResTypes();
     InitFunctionMap();
+    InitSpecialExtension();
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
