@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +23,7 @@
 #include "plugin.h"
 #include "single_instance.h"
 #include "socperf_client.h"
+#include <vector>
 #include <string>
 #include <sstream>
 
@@ -58,6 +59,27 @@ public:
     }
 };
 
+struct Frequencies {
+    std::vector<int32_t> tags;
+    std::vector<int64_t> configs;
+};
+
+/**
+ * Type for acquire BatteryChargeState.
+ */
+enum class BatteryChargeState : uint32_t {
+    // Battery is discharge
+    CHARGE_STATE_NONE,
+    // Battery is charging
+    CHARGE_STATE_ENABLE,
+    // Battery is not charging
+    CHARGE_STATE_DISABLE,
+    // Battery charge full
+    CHARGE_STATE_FULL,
+    // The bottom of the enum
+    CHARGE_STATE_BUTT
+};
+
 class SocPerfPlugin : public Plugin {
     DECLARE_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -85,6 +107,8 @@ private:
     std::map<int32_t, AppKeyMessage> uidToAppMsgMap_;
     // app's pid match app type
     std::map<int32_t, int32_t> pidToAppTypeMap_;
+    // socperf battery capacity config
+    std::map<int32_t, Frequencies> socperfBatteryConfig_;
     std::string perfReqAppTypeSoPath_;
     std::string perfReqAppTypeSoFunc_;
     bool isFocusAppsGameType_ = false;
@@ -96,6 +120,8 @@ private:
     ReqAppTypeFunc reqAppTypeFunc_ = nullptr;
     int32_t RES_TYPE_SCENE_BOARD_ID = 0;
     int32_t RES_TYPE_RGM_BOOTING_STATUS = 0;
+    int32_t maxBatteryLimitCapacity_ = -1;
+    int32_t lastBatteryLimitCap_ = -1;
     bool socperfGameBoostSwitch_ = false;
     bool custGameState_ = false;
     void InitEventId();
@@ -170,10 +196,19 @@ private:
     bool UpdateCustGameState(const std::shared_ptr<ResData>& data);
     bool HandleCustAction(const std::shared_ptr<ResData> &data);
     bool HandleRecentBuild(const std::shared_ptr<ResData>& data);
+    bool InitBatteryCapacityLimitFreq();
+    bool HandleBatteryStatusChange(const std::shared_ptr<ResData>& data);
+    bool HandleBatterySubValue(const int32_t capacity, const int32_t tag, const int64_t config);
+    bool HandleFreqLimit(const std::shared_ptr<ResData>& data, bool isChargeState);
+    bool HandleChargingStatusChange(const std::shared_ptr<ResData>& data);
+    bool HandleRecoverBatteryLimit();
+    bool HandleBatteryLimit(int32_t capacity);
+    int32_t GetLimitCapacity(int32_t capacity);
     int32_t GetPidByData(const std::shared_ptr<ResData>& data, const std::string& key);
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
     void HandleScreenOff();
+    std::vector<int64_t> GetConfigs(int32_t size);
     std::string GetBundleNameByUid(const int32_t uid);
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
     bool HandleFileCopyStatus(const std::shared_ptr<ResData>& data);
