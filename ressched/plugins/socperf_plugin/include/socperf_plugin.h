@@ -103,7 +103,7 @@ private:
     void InitFunctionMap();
     void InitSpecialExtension();
     void AddSpecialExtension(SubItem& sub);
-    std::set<std::string> StringToSet(const std::string& str, const std::string& pattern);
+    std::set<std::string> StringToSet(const std::string& str, char pattern);
     void AddEventToFunctionMap();
     void AddOtherEventToFunctionMap();
     void InitResTypes();

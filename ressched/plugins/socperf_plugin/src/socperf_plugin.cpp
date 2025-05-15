@@ -266,20 +266,14 @@ bool SocPerfPlugin::HandleSubValue(const std::string& subValue, std::set<std::st
     return true;
 }
 
-std::set<std::string> SocPerfPlugin::StringToSet(const std::string& str, const std::string& pattern)
+std::set<std::string> SocPerfPlugin::StringToSet(const std::string& str, char pattern)
 {
-    int32_t position;
     std::set<std::string> result;
-    std::string tempStr = str;
+    std::string token;
+    std::istringstream tokenStream(str);
     tempStr += pattern;
-    int32_t length = (int32_t)tempStr.size();
-    for (int32_t i = 0; i < length; i++) {
-        position = (int32_t)tempStr.find(pattern, i);
-        if (position < length) {
-            std::string tmp = tempStr.substr(i, position - i);
-            result.insert(tmp);
-            i = position + (int32_t)pattern.size() - 1;
-        }
+    while (getline(tokenStream, token, pattern))
+        result.insert(token);
     }
     return result;
 }
@@ -291,7 +285,7 @@ void SocPerfPlugin::AddSpecialExtension(SubItem& sub)
     }
     std::string bundleName = sub.properties.at(BUNDLE_NAME);
     std::string callerBundleNames = sub.properties.at(CALLER_BUNDLE_NAME);
-    std::set<std::string> callerBundleNamesList = StringToSet(callerBundleNames, "|");
+    std::set<std::string> callerBundleNamesList = StringToSet(callerBundleNames, '|');
     specialExtensionMap_[bundleName] = callerBundleNamesList;
 }
 
