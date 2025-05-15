@@ -85,6 +85,14 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
         RESSCHED_LOGD("ResSchedClient::ReportData fail to get resource schedule service.");
         return;
     }
+    if (!isGetResTypeList_) {
+        rss_->GetResTypeList(resTypeList_);
+        isGetResTypeList_ = true;
+    }
+    if (resTypeList_.find(resType) == resTypeList_.end()) {
+        RESSCHED_LOGD("ResSchedClient::ReportData type not subscribed.");
+        return;
+    }
     rss_->ReportData(resType, value, payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
 }
 

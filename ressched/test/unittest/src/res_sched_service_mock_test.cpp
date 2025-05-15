@@ -142,6 +142,11 @@ public:
     {
         return ERR_OK;
     }
+
+    ErrCode GetResTypeList(std::set<uint32_t>& resTypeList) override
+    {
+        return ERR_OK;
+    }
 };
 
 class ResSchedServiceMockTest : public testing::Test {

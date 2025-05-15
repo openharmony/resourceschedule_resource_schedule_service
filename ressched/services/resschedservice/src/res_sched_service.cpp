@@ -413,6 +413,12 @@ ErrCode ResSchedService::GetSystemloadLevel(int32_t& resultValue)
     return ERR_OK;
 }
 
+ErrCode ResSchedService::GetResTypeList(std::set<uint32_t>& resTypeList)
+{
+    PluginMgr::GetInstance().GetResTypeList(resTypeList);
+    return ERR_OK;
+}
+
 void ResSchedService::OnDeviceLevelChanged(int32_t type, int32_t level)
 {
     NotifierMgr::GetInstance().OnDeviceLevelChanged(type, level);

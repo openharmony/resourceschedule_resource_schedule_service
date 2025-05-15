@@ -27,4 +27,5 @@ interface OHOS.ResourceSchedule.IResSchedService {
     void GetSystemloadLevel([out] int resultValue);
     void IsAllowedAppPreload([in] String bundleName, [in] int preloadMode, [out] boolean resultValue);
     void IsAllowedLinkJump([in] boolean isAllowedLinkJump, [out] int resultValue);
+    void GetResTypeList([out] Set<unsigned int> resTypeList);
 }

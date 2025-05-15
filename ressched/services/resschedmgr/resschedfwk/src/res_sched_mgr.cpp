@@ -202,7 +202,6 @@ void ResSchedMgr::Stop()
 void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     ReportDataInner(resType, value, payload);
-    SceneRecognizerMgr::GetInstance().DispatchResource(resType, value, payload);
 }
 
 void ResSchedMgr::ReportDataInner(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -213,7 +212,9 @@ void ResSchedMgr::ReportDataInner(uint32_t resType, int64_t value, const nlohman
     trace_str.append(",resType[").append(std::to_string(resType)).append("]");
     trace_str.append(",value[").append(std::to_string(value)).append("]");
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
+    auto resData = std::make_shared<ResData>(resType, value, payload);
+    PluginMgr::GetInstance().DispatchResource(resData);
+    SceneRecognizerMgr::GetInstance().DispatchResource(resData);
     FinishTrace(HITRACE_TAG_OHOS);
 }
 

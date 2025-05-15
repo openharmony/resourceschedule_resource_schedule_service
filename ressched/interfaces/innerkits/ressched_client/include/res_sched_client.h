@@ -217,6 +217,8 @@ private:
     sptr<InnerEventListener> innerEventListener_;
     sptr<ResSchedSvcStatusChange> resSchedSvcStatusListener_;
     bool systemloadCbRegistered_ = false;
+    bool isGetResTypeList_ = false;
+    std::set<uint32_t> resTypeList_;
     std::unordered_map<uint32_t, std::unordered_set<uint32_t>> registeredInnerEvents;
     DISALLOW_COPY_AND_MOVE(ResSchedClient);
 };
