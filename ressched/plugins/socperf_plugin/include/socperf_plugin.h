@@ -85,6 +85,7 @@ private:
     std::map<int32_t, AppKeyMessage> uidToAppMsgMap_;
     // app's pid match app type
     std::map<int32_t, int32_t> pidToAppTypeMap_;
+    std::unordered_map<std::string, std::set<std::string>> specialExtensionMap_;
     std::string perfReqAppTypeSoPath_;
     std::string perfReqAppTypeSoFunc_;
     bool isFocusAppsGameType_ = false;
@@ -100,6 +101,9 @@ private:
     bool custGameState_ = false;
     void InitEventId();
     void InitFunctionMap();
+    void InitSpecialExtension();
+    void AddSpecialExtension(SubItem& sub);
+    std::set<std::string> StringToSet(const std::string& str, char pattern);
     void AddEventToFunctionMap();
     void AddOtherEventToFunctionMap();
     void InitResTypes();

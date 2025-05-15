@@ -44,6 +44,9 @@ namespace {
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_PATH = "socperf_req_apptype_path";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_FUNC = "socperf_req_apptype_func";
     const std::string BUNDLE_NAME = "bundleName";
+    const std::string CALLER_BUNDLE_NAME = "callerBundleName";
+    const std::string SPECIAL_EXTENSION_STRING = "specialExtension";
+    const std::string INFO_STRING = "info";
     const std::string PID_NAME = "pid";
     const std::string CLIENT_PID_NAME = "clientPid";
     const std::string UID_NAME = "uid";
@@ -137,6 +140,7 @@ void SocPerfPlugin::Init()
     InitEventId();
     InitResTypes();
     InitFunctionMap();
+    InitSpecialExtension();
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
@@ -260,6 +264,41 @@ bool SocPerfPlugin::HandleSubValue(const std::string& subValue, std::set<std::st
         nameSet.insert(bundleName);
     }
     return true;
+}
+
+std::set<std::string> SocPerfPlugin::StringToSet(const std::string& str, char pattern)
+{
+    std::set<std::string> result;
+    std::string token;
+    std::istringstream tokenStream(str);
+    while (getline(tokenStream, token, pattern)) {
+        result.insert(token);
+    }
+    return result;
+}
+
+void SocPerfPlugin::AddSpecialExtension(SubItem& sub)
+{
+    if (!sub.properties.count(BUNDLE_NAME) || !sub.properties.count(CALLER_BUNDLE_NAME)) {
+        return;
+    }
+    std::string bundleName = sub.properties.at(BUNDLE_NAME);
+    std::string callerBundleNames = sub.properties.at(CALLER_BUNDLE_NAME);
+    std::set<std::string> callerBundleNamesList = StringToSet(callerBundleNames, '|');
+    specialExtensionMap_[bundleName] = callerBundleNamesList;
+}
+
+void SocPerfPlugin::InitSpecialExtension()
+{
+    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, SPECIAL_EXTENSION_STRING);
+    for (const Item& item : itemLists.itemList) {
+        for (SubItem sub : item.subItemList) {
+            if (sub.name == INFO_STRING) {
+                AddSpecialExtension(sub);
+            }
+        }
+    }
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, SPECIAL_EXTENSION_STRING);
 }
 
 void SocPerfPlugin::InitFunctionMap()
@@ -959,6 +998,20 @@ bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
         UpdateUidToAppMsgMap(data);
         return true;
+    }
+    if (data->payload.contains(BUNDLE_NAME) && data->payload.contains(CALLER_BUNDLE_NAME) &&
+        data->payload.at(BUNDLE_NAME).is_string() && data->payload.at(CALLER_BUNDLE_NAME).is_string()) {
+        std::string bundleName = data->payload[BUNDLE_NAME].get<std::string>();
+        std::string callerBundleName = data->payload[CALLER_BUNDLE_NAME].get<std::string>();
+        if (specialExtensionMap_.count(bundleName)) {
+            std::set<std::string>& callerBundleNames = specialExtensionMap_[bundleName];
+            if (callerBundleNames.empty() || callerBundleNames.count(callerBundleName)) {
+                SOC_PERF_LOGI("SocPerfPlugin: socperf->EXTENSION %{public}d,%{public}s,%{public}s",
+                    extensionType, bundleName.c_str(), callerBundleName.c_str());
+                OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+                return true;
+            }
+        }
     }
     return false;
 }
