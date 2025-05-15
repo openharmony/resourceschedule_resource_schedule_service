@@ -271,7 +271,6 @@ std::set<std::string> SocPerfPlugin::StringToSet(const std::string& str, char pa
     std::set<std::string> result;
     std::string token;
     std::istringstream tokenStream(str);
-    tempStr += pattern;
     while (getline(tokenStream, token, pattern))
         result.insert(token);
     }
