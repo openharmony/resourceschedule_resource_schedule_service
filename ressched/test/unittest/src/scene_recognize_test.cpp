@@ -46,16 +46,17 @@ void SceneRecognizeTest::TearDown() {}
 HWTEST_F(SceneRecognizeTest, AppInstallTest001, Function | MediumTest | Level0)
 {
     nlohmann::json payload;
-    SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_SCREEN_STATUS,
-        ResType::ScreenStatus::SCREEN_ON, payload);
+    SceneRecognizerMgr::GetInstance().DispatchResource(std::make_shared<ResData>(ResType::RES_TYPE_SCREEN_STATUS,
+        ResType::ScreenStatus::SCREEN_ON, payload));
     EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
-    SceneRecognizerMgr::GetInstance().DispatchResource(-1, -1, payload);
+    SceneRecognizerMgr::GetInstance().DispatchResource(std::make_shared<ResData>(-1,
+        -1, payload));
     EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
-    SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
-        ResType::AppInstallStatus::APP_INSTALL_END, payload);
+    SceneRecognizerMgr::GetInstance().DispatchResource(std::make_shared<ResData>(
+        ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_INSTALL_END, payload));
     EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
-    SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
-        ResType::AppInstallStatus::APP_INSTALL_END, payload);
+    SceneRecognizerMgr::GetInstance().DispatchResource(std::make_shared<ResData>(
+        ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_INSTALL_END, payload));
 }
 
 /**
@@ -145,16 +146,17 @@ HWTEST_F(SceneRecognizeTest, SlideTest001, Function | MediumTest | Level0)
 {
     nlohmann::json payload;
     payload["clientPid"] = "2000";
-    SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_SLIDE_RECOGNIZE,
-        ResType::SlideEventStatus::SLIDE_EVENT_DETECTING, payload);
+    SceneRecognizerMgr::GetInstance().DispatchResource(std::make_shared<ResData>(ResType::RES_TYPE_SLIDE_RECOGNIZE,
+        ResType::SlideEventStatus::SLIDE_EVENT_DETECTING, payload));
     EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
-    SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_SEND_FRAME_EVENT, 0, payload);
+    SceneRecognizerMgr::GetInstance().DispatchResource(std::make_shared<ResData>(ResType::RES_TYPE_SEND_FRAME_EVENT,
+        0, payload));
     EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
-    SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_CLICK_RECOGNIZE,
-        ResType::ClickEventType::TOUCH_EVENT_UP, payload);
+    SceneRecognizerMgr::GetInstance().DispatchResource(std::make_shared<ResData>(ResType::RES_TYPE_CLICK_RECOGNIZE,
+        ResType::ClickEventType::TOUCH_EVENT_UP, payload));
     EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
-    SceneRecognizerMgr::GetInstance().DispatchResource(ResType::RES_TYPE_CLICK_RECOGNIZE,
-        ResType::ClickEventType::TOUCH_EVENT_PULL_UP, payload);
+    SceneRecognizerMgr::GetInstance().DispatchResource(std::make_shared<ResData>(ResType::RES_TYPE_CLICK_RECOGNIZE,
+        ResType::ClickEventType::TOUCH_EVENT_PULL_UP, payload));
     EXPECT_NE(SceneRecognizerMgr::GetInstance().sceneRecognizers_.size(), 0);
 }
 

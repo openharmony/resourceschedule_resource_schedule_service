@@ -23,6 +23,7 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include <set>
 #include <unordered_set>
 #include "datetime_ex.h"
 #include "event_handler.h"
@@ -217,6 +218,8 @@ public:
     void SetLinkJumpOptSet(const std::unordered_set<std::string> linkJumpOptSet);
 
     bool GetLinkJumpOptConfig(const std::string& bundleName, bool& isAllowedLinkJump);
+
+    void GetResTypeList(std::set<uint32_t>& resTypeList);
 private:
     PluginMgr() = default;
     void OnDestroy();
