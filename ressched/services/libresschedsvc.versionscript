@@ -32,6 +32,11 @@
     SetListFlingEndTime;
     SetListFlingSpeedLimit;
     SetBlockedTime;
+    SetAllowSCBReportResExt;
+    SetAllowAllSAReportResExt;
+    SetAllowSomeSAReportResExt;
+    SetAllowAllAppReportResExt;
+    SetAllowFgAppReportResExt;
   local:
     *;
 };
