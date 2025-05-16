@@ -26,6 +26,11 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+struct ProcessRenderState {
+    int32_t pid;
+    int32_t uid;
+    std::unordered_set<int32_t> renderRunningSessionSet;
+};
 class AudioObserver :
     public AudioStandard::AudioRendererStateChangeCallback,
     public AudioStandard::AudioRingerModeCallback,
@@ -40,14 +45,29 @@ public:
     void OnAudioSceneChange(const AudioStandard::AudioScene audioScene) override;
     void OnPreferredOutputDeviceUpdated(
         const std::vector<std::shared_ptr<AudioStandard::AudioDeviceDescriptor>> &descs)  override;
+    void Init();
 private:
     int32_t mode_ = -1;
     void MarshallingAudioRendererChangeInfo(
         const std::shared_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo,
         nlohmann::json &payload);
     bool IsRenderStateChange(const std::shared_ptr<AudioStandard::AudioRendererChangeInfo>& info);
+    void HandleInnerAudioStateChange(
+        const std::shared_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo,
+        std::unordered_set<int32_t>& newRunningPid, std::unordered_set<int32_t>& newStopSessionPid);
+    void ProcessRunningSessionState(
+        const std::shared_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo,
+        std::unordered_set<int32_t>& newRunningPid);
+    void ProcessStopSessionState(
+        const std::shared_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo,
+        std::unordered_set<int32_t>& newStopSessionPid);
+    void HandleStartAudioStateEvent(const std::unordered_set<int32_t>& newRunningPid);
+    void HandleStopAudioStateEvent(const std::unordered_set<int32_t>& newStopSessionPid);
+    void MarshallingInnerAudioRendererChangeInfo(int32_t pid, nlohmann::json &payload);
+    
     std::unordered_map<int32_t, AudioStandard::RendererState> renderState_;
     std::unordered_map<int32_t, int32_t> volumeState_;
+    std::unordered_map<int32_t, ProcessRenderState> processRenderStateMap_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

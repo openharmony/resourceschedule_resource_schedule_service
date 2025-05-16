@@ -329,6 +329,8 @@ enum : uint32_t {
     RES_TYPE_DEVICE_ORIENTATION_STATUS = 152,
     // report wifi power state
     RES_TYPE_WIFI_POWER_STATE_CHANGE = 153,
+    // report inner audio state
+    RES_TYPE_INNER_AUDIO_STATE = 154,
     // report battery status change
     RES_TYPE_REPORT_BATTERY_STATUS_CHANGE = 155,
     // last async resType

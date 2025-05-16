@@ -378,6 +378,7 @@ void ObserverManager::InitAudioObserver()
     if (res != OPERATION_SUCCESS) {
         RESSCHED_LOGW("ObserverManager init audioOutputDeviceChangeObserver failed");
     }
+    audioObserver_->Init();
 #endif
 }
 
