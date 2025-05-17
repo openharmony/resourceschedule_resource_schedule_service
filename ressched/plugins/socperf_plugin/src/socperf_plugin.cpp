@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,6 +33,7 @@ using namespace ResType;
 namespace {
     const std::string LIB_NAME = "libsocperf_plugin.z.so";
     const std::string PLUGIN_NAME = "SOCPERF";
+    const std::string ITEM_KEY_CAPACITY = "capacity";
     const std::string CONFIG_NAME_SOCPERF_FEATURE_SWITCH = "socperfFeatureSwitch";
     const std::string CONFIG_NAME_SOCPERF_EVENT_ID = "socperfEventId";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND = "socperf_on_demand";
@@ -43,7 +44,11 @@ namespace {
     const std::string CNOFIG_NAME_SOCPERF_CRUCIAL_FUNC = "socperfCrucialFunc";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_PATH = "socperf_req_apptype_path";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_FUNC = "socperf_req_apptype_func";
+    const std::string CONFIG_NAME_SOCPERF_BATTERY_CAPACITY_LIMIT_FREQ = "socperfBatteryCapacityLimitFreq";
     const std::string BUNDLE_NAME = "bundleName";
+    const std::string CALLER_BUNDLE_NAME = "callerBundleName";
+    const std::string SPECIAL_EXTENSION_STRING = "specialExtension";
+    const std::string INFO_STRING = "info";
     const std::string PID_NAME = "pid";
     const std::string CLIENT_PID_NAME = "clientPid";
     const std::string UID_NAME = "uid";
@@ -54,9 +59,13 @@ namespace {
     const std::string DEVICE_MODE_TYPE_KEY = "deviceModeType";
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
     const std::string DISPLAY_MODE_KEY = "display";
+    const std::string DEVICE_ORIENTATION_TYPE_KEY = "deviceOrientation";
     const std::string DISPLAY_MODE_FULL = "displayFull";
     const std::string DISPLAY_MODE_MAIN = "displayMain";
     const std::string DISPLAY_MODE_SUB = "displaySub";
+    const std::string DISPLAY_MODE_GLOBAL_FULL = "displayGlobalFull";
+    const std::string DISPLAY_ORIENTAYION_LANDSCAPE = "displayLandscape";
+    const std::string DISPLAY_ORIENTAYION_PORTRAIT = "displayPortrait";
     const std::string SCREEN_MODE_KEY = "screenStatus";
     const std::string SCREEN_MODE_ON = "screen_on";
     const std::string SCREEN_MODE_OFF = "screen_off";
@@ -67,6 +76,8 @@ namespace {
     const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
     const std::string KEY_APP_TYPE = "key_app_type";
     const std::string GAME_ENV = "env";
+    const std::string RES_ID = "resId";
+    const std::string COMMON_EVENT_CHARGE_STATE = "chargeState";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -122,6 +133,8 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL2     = 10094;
     const int32_t PERF_REQUEST_CMD_ID_GAME_BOOST_LEVEL3     = 10095;
     const int32_t PERF_REQUEST_CMD_ID_WEB_SLIDE_SCROLL      = 10097;
+    const int32_t PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L      = 10098;
+    const int32_t PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P      = 10203;
     const int32_t PERF_REQUEST_CMD_ID_RECENT_BUILD          = 10200;
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
@@ -131,12 +144,14 @@ void SocPerfPlugin::Init()
     InitEventId();
     InitResTypes();
     InitFunctionMap();
+    InitSpecialExtension();
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
     }
     InitPerfCrucialSo();
     InitBundleNameBoostList();
     InitWeakInterAction();
+    InitBatteryCapacityLimitFreq();
     SOC_PERF_LOGI("SocPerfPlugin::Init success");
 }
 
@@ -256,6 +271,73 @@ bool SocPerfPlugin::HandleSubValue(const std::string& subValue, std::set<std::st
     return true;
 }
 
+bool SocPerfPlugin::InitBatteryCapacityLimitFreq()
+{
+    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME,
+        CONFIG_NAME_SOCPERF_BATTERY_CAPACITY_LIMIT_FREQ);
+    bool ret = false;
+    for (Item& item : itemLists.itemList) {
+        std::string itemCapacity = item.itemProperties[ITEM_KEY_CAPACITY];
+        for (SubItem sub : item.subItemList) {
+            ret = HandleBatterySubValue(atoi(itemCapacity.c_str()),
+                atoi(sub.properties[RES_ID].c_str()), atoi(sub.value.c_str()));
+        }
+    }
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_BATTERY_CAPACITY_LIMIT_FREQ);
+    return ret;
+}
+
+bool SocPerfPlugin::HandleBatterySubValue(const int32_t capacity,
+    const int32_t tag, const int64_t config)
+{
+    struct Frequencies frequencies;
+    if (socperfBatteryConfig_.find(capacity) != socperfBatteryConfig_.end()) {
+        frequencies = socperfBatteryConfig_[capacity];
+    }
+    if (capacity > maxBatteryLimitCapacity_) {
+        maxBatteryLimitCapacity_ = capacity;
+    }
+    frequencies.tags.push_back(tag);
+    frequencies.configs.push_back(config);
+    socperfBatteryConfig_[capacity] = frequencies;
+    return true;
+}
+
+std::set<std::string> SocPerfPlugin::StringToSet(const std::string& str, char pattern)
+{
+    std::set<std::string> result;
+    std::string token;
+    std::istringstream tokenStream(str);
+    while (getline(tokenStream, token, pattern)) {
+        result.insert(token);
+    }
+    return result;
+}
+
+void SocPerfPlugin::AddSpecialExtension(SubItem& sub)
+{
+    if (!sub.properties.count(BUNDLE_NAME) || !sub.properties.count(CALLER_BUNDLE_NAME)) {
+        return;
+    }
+    std::string bundleName = sub.properties.at(BUNDLE_NAME);
+    std::string callerBundleNames = sub.properties.at(CALLER_BUNDLE_NAME);
+    std::set<std::string> callerBundleNamesList = StringToSet(callerBundleNames, '|');
+    specialExtensionMap_[bundleName] = callerBundleNamesList;
+}
+
+void SocPerfPlugin::InitSpecialExtension()
+{
+    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, SPECIAL_EXTENSION_STRING);
+    for (const Item& item : itemLists.itemList) {
+        for (SubItem sub : item.subItemList) {
+            if (sub.name == INFO_STRING) {
+                AddSpecialExtension(sub);
+            }
+        }
+    }
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, SPECIAL_EXTENSION_STRING);
+}
+
 void SocPerfPlugin::InitFunctionMap()
 {
     functionMap = {
@@ -362,6 +444,10 @@ void SocPerfPlugin::AddOtherEventToFunctionMap()
 {
     functionMap.insert(std::make_pair(RES_TYPE_RECENT_BUILD,
         [this](const std::shared_ptr<ResData>& data) { HandleRecentBuild(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_DEVICE_ORIENTATION_STATUS,
+        [this](const std::shared_ptr<ResData>& data) { HandleDeviceOrientationStatusChange(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_REPORT_BATTERY_STATUS_CHANGE,
+        [this](const std::shared_ptr<ResData>& data) { HandleBatteryStatusChange(data); }));       
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
@@ -388,6 +474,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_DEVICE_MODE_STATUS,
         RES_TYPE_WEB_DRAG_RESIZE,
         RES_TYPE_ACCOUNT_ACTIVATING,
+        RES_TYPE_DEVICE_ORIENTATION_STATUS,
 #ifdef RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
         RES_TYPE_ANCO_CUST,
         RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
@@ -416,6 +503,7 @@ void SocPerfPlugin::InitResTypes()
 
 void SocPerfPlugin::InitOtherResTypes()
 {
+    resTypes.insert(RES_TYPE_REPORT_BATTERY_STATUS_CHANGE);
     resTypes.insert(RES_TYPE_RECENT_BUILD);
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
@@ -951,6 +1039,20 @@ bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
         UpdateUidToAppMsgMap(data);
         return true;
     }
+    if (data->payload.contains(BUNDLE_NAME) && data->payload.contains(CALLER_BUNDLE_NAME) &&
+        data->payload.at(BUNDLE_NAME).is_string() && data->payload.at(CALLER_BUNDLE_NAME).is_string()) {
+        std::string bundleName = data->payload[BUNDLE_NAME].get<std::string>();
+        std::string callerBundleName = data->payload[CALLER_BUNDLE_NAME].get<std::string>();
+        if (specialExtensionMap_.count(bundleName)) {
+            std::set<std::string>& callerBundleNames = specialExtensionMap_[bundleName];
+            if (callerBundleNames.empty() || callerBundleNames.count(callerBundleName)) {
+                SOC_PERF_LOGI("SocPerfPlugin: socperf->EXTENSION %{public}d,%{public}s,%{public}s",
+                    extensionType, bundleName.c_str(), callerBundleName.c_str());
+                OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+                return true;
+            }
+        }
+    }
     return false;
 }
 
@@ -983,6 +1085,16 @@ void SocPerfPlugin::HandleScreenOn()
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
     } else if (deviceMode_ == DISPLAY_MODE_MAIN) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
+    }  else if (deviceMode_ == DISPLAY_MODE_GLOBAL_FULL && deviceOrientation_ == DISPLAY_ORIENTAYION_LANDSCAPE) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, true, "");
+    } else if (deviceMode_ == DISPLAY_MODE_GLOBAL_FULL && deviceOrientation_ == DISPLAY_ORIENTAYION_PORTRAIT) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, true, "");
     }
     const std::string screenModeOnStr = SCREEN_MODE_KEY + ":" + SCREEN_MODE_ON;
     OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(screenModeOnStr, true);
@@ -996,6 +1108,8 @@ void SocPerfPlugin::HandleScreenOff()
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_OFF, true, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
         const std::string screenModeOffStr = SCREEN_MODE_KEY + ":" + SCREEN_MODE_OFF;
         OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(screenModeOffStr, true);
     }
@@ -1051,15 +1165,73 @@ bool SocPerfPlugin::HandleSceenModeBoost(const std::string& deviceModeType)
     std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
     if (deviceMode_ == DISPLAY_MODE_FULL && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
     } else if (deviceMode_ == DISPLAY_MODE_MAIN && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, true, "");
+    } else if (deviceMode_ == DISPLAY_MODE_GLOBAL_FULL && screenStatus_ == SCREEN_ON &&
+        deviceOrientation_ == DISPLAY_ORIENTAYION_LANDSCAPE) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, true, "");
+    } else if (deviceMode_ == DISPLAY_MODE_GLOBAL_FULL && screenStatus_ == SCREEN_ON &&
+        deviceOrientation_ == DISPLAY_ORIENTAYION_PORTRAIT) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, true, "");
     }
 
     if (deviceMode_ == DISPLAY_MODE_FULL) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_SWITCHED, true, "");
     }
+    return true;
+}
+
+void SocPerfPlugin::HandleDeviceOrientationStatusChange(const std::shared_ptr<ResData>& data)
+{
+    if ((data->value != DeviceModeStatus::MODE_ENTER) && (data->value != DeviceModeStatus::MODE_QUIT)) {
+        SOC_PERF_LOGW("SocPerfPlugin: device mode status value is error");
+        return;
+    }
+
+    if (!data->payload.contains(DEVICE_MODE_TYPE_KEY) || !data->payload[DEVICE_MODE_TYPE_KEY].is_string() ||
+        !data->payload.contains(DEVICE_MODE_PAYMODE_NAME) || !data->payload[DEVICE_MODE_PAYMODE_NAME].is_string()) {
+        SOC_PERF_LOGW("SocPerfPlugin: device mode status payload is error");
+        return;
+    }
+    deviceOrientation_ = data->payload[DEVICE_MODE_PAYMODE_NAME];
+    const std::string deviceOrientationType = data->payload[DEVICE_MODE_TYPE_KEY];
+    HandleSceenOrientationBoost(deviceOrientationType);
+}
+
+bool SocPerfPlugin::HandleSceenOrientationBoost(const std::string& deviceOrientationType)
+{
+    if (deviceOrientationType != DEVICE_ORIENTATION_TYPE_KEY) {
+        return false;
+    }
+
+    if (deviceMode_ != DISPLAY_MODE_GLOBAL_FULL) {
+        return false;
+    }
+    std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
+    if (screenStatus_ == SCREEN_ON && deviceOrientation_ == DISPLAY_ORIENTAYION_LANDSCAPE) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, true, "");
+    } else if (screenStatus_ == SCREEN_ON && deviceOrientation_ == DISPLAY_ORIENTAYION_PORTRAIT) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, true, "");
+    }
+
     return true;
 }
 
@@ -1357,6 +1529,89 @@ bool SocPerfPlugin::HandleRecentBuild(const std::shared_ptr<ResData>& data)
     } else if (data->value == RecentBuildStatus::RECENT_BUILD_STOP) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_RECENT_BUILD, false, "");
     }
+    return true;
+}
+
+bool SocPerfPlugin::HandleBatteryStatusChange(const std::shared_ptr<ResData>& data)
+{
+    bool ret = false;
+    if (data == nullptr || socperfBatteryConfig_.empty()) {
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryStatusChange invalid data");
+        return ret;
+    }
+    if (!data->payload.contains(COMMON_EVENT_CHARGE_STATE) ||
+        !data->payload.at(COMMON_EVENT_CHARGE_STATE).is_number_integer()) {
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryStatusChange invalid data payload");
+        return ret;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleBatteryStatusChange: %{public}lld", (long long)data->value);
+    int32_t chargeState = data->payload[COMMON_EVENT_CHARGE_STATE];
+    if (chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_ENABLE) ||
+        chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_FULL)) {
+        ret = HandleFreqLimit(data, true);
+    } else {
+        ret = HandleFreqLimit(data, false);
+    }
+    return ret;
+}
+
+bool SocPerfPlugin::HandleFreqLimit(const std::shared_ptr<ResData>& data, bool isChargeState)
+{
+    if (data->value > maxBatteryLimitCapacity_ || isChargeState) {
+        HandleRecoverBatteryLimit();
+    } else {
+        HandleBatteryLimit(data->value);
+    }
+    return true;
+}
+
+int32_t SocPerfPlugin::GetLimitCapacity(int32_t capacity)
+{
+    int32_t tempCap = maxBatteryLimitCapacity_;
+    for (const auto& pair : socperfBatteryConfig_) {
+        if (pair.first >= capacity && pair.first <= tempCap) {
+            tempCap = pair.first;
+        }
+    }
+    return tempCap;
+}
+
+std::vector<int64_t> SocPerfPlugin::GetConfigs(int32_t size)
+{
+    std::vector<int64_t> configs(size, std::numeric_limits<int32_t>::max());
+    return configs;
+}
+
+bool SocPerfPlugin::HandleRecoverBatteryLimit()
+{
+    if (lastBatteryLimitCap_ == -1) {
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleRecoverLimit no need to recover limit");
+        return false;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleRecoverLimit recover limit on %{public}d", lastBatteryLimitCap_);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(false, "Low_battery_limit");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(OHOS::SOCPERF::ActionType::ACTION_TYPE_BATTERY,
+        socperfBatteryConfig_[lastBatteryLimitCap_].tags,
+        GetConfigs(socperfBatteryConfig_[lastBatteryLimitCap_].configs.size()),
+        "Low_battery_limit");
+    lastBatteryLimitCap_ = -1;
+    return true;
+}
+
+bool SocPerfPlugin::HandleBatteryLimit(int32_t capacity)
+{
+    int32_t limitCapacity = GetLimitCapacity(capacity);
+    if (lastBatteryLimitCap_ == limitCapacity) {
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryLimit already trigger: %{public}d", limitCapacity);
+        return false;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleBatteryLimit limit on %{public}d", limitCapacity);
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(true, "Low_battery_limit");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(OHOS::SOCPERF::ActionType::ACTION_TYPE_BATTERY,
+        socperfBatteryConfig_[limitCapacity].tags,
+        socperfBatteryConfig_[limitCapacity].configs,
+        "Low_battery_limit");
+    lastBatteryLimitCap_ = limitCapacity;
     return true;
 }
 

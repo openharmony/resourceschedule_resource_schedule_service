@@ -39,6 +39,7 @@ enum EventType : uint32_t {
     EVENT_APP_STATE_BACKGROUND_FOREGROUND = 5,
     EVENT_RED_ENVELOPE = 6,
     EVENT_FRAME_RATE_STATISTICS = 7,
+    EVENT_MUTEX_CASE_SMALL_WINDOW_TO_BACKGROUND = 8,
     EVENT_END,
 };
 
@@ -815,6 +816,13 @@ enum RecentBuildStatus : int64_t {
     RECENT_BUILD_STOP = 1,
 };
 
+/**
+* @brief Overlay Status
+*/
+enum OverlayStatus : int64_t {
+    OVERLAY_ADD = 0,
+    OVERLAY_REMOVE = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -18,6 +18,7 @@
 
 #include <memory>
 #include "account_observer.h"
+#include "app_state_observer.h"
 #include "if_system_ability_manager.h"
 #include "system_ability_status_change_stub.h"
 #include "singleton.h"
@@ -46,6 +47,7 @@
 #ifdef RESOURCE_REQUEST_REQUEST
 #include "download_upload_observer.h"
 #endif
+#include "window_state_observer.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -85,9 +87,12 @@ public:
     void DisableDeviceMovementObserver();
     void InitDisplayModeObserver();
     void DisableDisplayModeObserver();
+    void InitDisplayOrientationObserver();
+    void DisableDisplayOrientationObserver();
     void InitSysAbilityListener();
     void AddItemToSysAbilityListener(int32_t systemAbilityId, sptr<ISystemAbilityManager>& systemAbilityManager);
     void InitObserverCbMap();
+    void InitRemoveObserverCbMap();
     void InitConnectionSubscriber();
     void DisableConnectionSubscriber();
     void GetReportFunc();
@@ -95,6 +100,10 @@ public:
     void DisableDataShareObserver();
     void InitAccountObserver();
     void DisableAccountObserver();
+    void InitWindowStateObserver();
+    void DisableWindowStateObserver();
+    void SubscribeAppState();
+    void UnsubscribeAppState();
 #ifdef RESOURCE_REQUEST_REQUEST
     void InitDownloadUploadObserver();
     void DisableDownloadUploadObserver();
@@ -128,10 +137,13 @@ public:
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
     std::shared_ptr<ConnectionSubscriber> connectionSubscriber_ = nullptr;
     sptr<FoldDisplayModeObserver> foldDisplayModeObserver_ = nullptr;
+    sptr<FoldDisplayOrientationObserver> foldDisplayOrientationObserver_ = nullptr;
 #ifdef RESOURCE_REQUEST_REQUEST
     std::shared_ptr<DownLoadUploadObserver> downLoadUploadObserver_ = nullptr;
 #endif
     std::shared_ptr<AccountObserver> accountObserver_ = nullptr;
+    sptr<PiPStateObserver> pipStateObserver_ = nullptr;
+    sptr<RmsApplicationStateObserver> appStateObserver_ = nullptr;
     bool isNeedReport_ = true;
     int32_t powerKeySubscribeId_ = -1;
 };

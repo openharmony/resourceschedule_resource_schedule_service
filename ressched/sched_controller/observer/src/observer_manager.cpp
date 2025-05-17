@@ -18,6 +18,8 @@
 #include <dlfcn.h>
 #include <string>
 
+#include "app_mgr_interface.h"
+#include "app_startup_scene_rec.h"
 #include "display_manager.h"
 #include "dm_common.h"
 #include "hisysevent.h"
@@ -61,10 +63,12 @@ const static char* RES_SCHED_CG_EXT_SO = "libcgroup_sched_ext.z.so";
 void ObserverManager::Init()
 {
     InitSysAbilityListener();
+    AppStartupSceneRec::GetInstance().Init();
 }
 
 void ObserverManager::Disable()
 {
+    AppStartupSceneRec::GetInstance().Deinit();
     handleObserverMap_.clear();
     removeObserverMap_.clear();
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
@@ -87,6 +91,7 @@ void ObserverManager::InitObserverCbMap()
         { AUDIO_POLICY_SERVICE_ID, []() { ObserverManager::GetInstance()->InitAudioObserver(); }},
         { MSDP_MOVEMENT_SERVICE_ID, []() { ObserverManager::GetInstance()->InitDeviceMovementObserver(); }},
         { DISPLAY_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitDisplayModeObserver(); }},
+        { DISPLAY_MANAGER_SERVICE_SA_ID, []() { ObserverManager::GetInstance()->InitDisplayOrientationObserver(); }},
         { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->InitConnectionSubscriber(); }},
         { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, []() { ObserverManager::GetInstance()->InitDataShareObserver(); }},
 #ifdef RESOURCE_REQUEST_REQUEST
@@ -96,8 +101,14 @@ void ObserverManager::InitObserverCbMap()
         { AVSESSION_SERVICE_ID, []() { ObserverManager::GetInstance()->InitAVSessionStateChangeListener(); }},
 #endif
         { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->InitAccountObserver(); }},
+        { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitWindowStateObserver(); }},
+        { APP_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->SubscribeAppState(); }},
     };
+    InitRemoveObserverCbMap();
+}
 
+void ObserverManager::InitRemoveObserverCbMap()
+{
     removeObserverMap_ = {
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
         { DFX_SYS_EVENT_SERVICE_ABILITY_ID, []() { ObserverManager::GetInstance()->DisableHiSysEventObserver(); }},
@@ -110,6 +121,7 @@ void ObserverManager::InitObserverCbMap()
         { AUDIO_POLICY_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableAudioObserver(); }},
         { MSDP_MOVEMENT_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableDeviceMovementObserver(); }},
         { DISPLAY_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableDisplayModeObserver(); }},
+        { DISPLAY_MANAGER_SERVICE_SA_ID, []() { ObserverManager::GetInstance()->DisableDisplayOrientationObserver(); }},
         { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableConnectionSubscriber(); }},
         { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, []() {
             ObserverManager::GetInstance()->DisableDataShareObserver(); }},
@@ -120,6 +132,8 @@ void ObserverManager::InitObserverCbMap()
         { AVSESSION_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableAVSessionStateChangeListener(); }},
 #endif
         { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->DisableAccountObserver(); }},
+        { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableWindowStateObserver(); }},
+        { APP_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->UnsubscribeAppState(); }},
     };
 }
 
@@ -151,6 +165,7 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(MSDP_MOVEMENT_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(MULTIMODAL_INPUT_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(DISPLAY_MANAGER_SERVICE_ID, systemAbilityManager);
+    AddItemToSysAbilityListener(DISPLAY_MANAGER_SERVICE_SA_ID, systemAbilityManager);
     AddItemToSysAbilityListener(ABILITY_MGR_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, systemAbilityManager);
 #ifdef RESOURCE_REQUEST_REQUEST
@@ -160,6 +175,8 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(AVSESSION_SERVICE_ID, systemAbilityManager);
 #endif
     AddItemToSysAbilityListener(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, systemAbilityManager);
+    AddItemToSysAbilityListener(WINDOW_MANAGER_SERVICE_ID, systemAbilityManager);
+    AddItemToSysAbilityListener(APP_MGR_SERVICE_ID, systemAbilityManager);
 }
 
 inline void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId,
@@ -327,47 +344,38 @@ void ObserverManager::InitAudioObserver()
     if (!audioObserver_) {
         audioObserver_ = std::make_shared<AudioObserver>();
     }
-
     auto res = AudioStandard::AudioStreamManager::GetInstance()->RegisterAudioRendererEventListener(pid_,
         audioObserver_);
-    if (res == OPERATION_SUCCESS) {
-        RESSCHED_LOGD("ObserverManager init audioRenderStateObserver successfully");
-    } else {
+    if (res != OPERATION_SUCCESS) {
         RESSCHED_LOGW("ObserverManager init audioRenderStateObserver failed");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
+                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a audio observer failed!");
     }
-
-    res = AudioStandard::AudioSystemManager::GetInstance()->SetRingerModeCallback(pid_, audioObserver_);
-    if (res == OPERATION_SUCCESS) {
-        RESSCHED_LOGD("ObserverManager init audioRingModeObserver successfully");
-    } else {
+    res = -1;
+    auto audioSystemMgr = AudioStandard::AudioSystemManager::GetInstance();
+    if (audioSystemMgr) {
+        auto groupMgr = audioSystemMgr->GetGroupManager(AudioStandard::DEFAULT_VOLUME_GROUP_ID);
+        if (groupMgr) {
+            res = groupMgr->SetRingerModeCallback(pid_, audioObserver_);
+        }
+    }
+    if (res != OPERATION_SUCCESS) {
         RESSCHED_LOGW("ObserverManager init audioRingModeObserver failed");
     }
-
     res = AudioStandard::AudioSystemManager::GetInstance()->RegisterVolumeKeyEventCallback(pid_, audioObserver_);
-    if (res == OPERATION_SUCCESS) {
-        RESSCHED_LOGD("ObserverManager init audioVolumeKeyObserver successfully");
-    } else {
+    if (res != OPERATION_SUCCESS) {
         RESSCHED_LOGW("ObserverManager init audioVolumeKeyObserver failed");
     }
-
     res = AudioStandard::AudioSystemManager::GetInstance()->SetAudioSceneChangeCallback(audioObserver_);
-    if (res == OPERATION_SUCCESS) {
-        RESSCHED_LOGD("ObserverManager init audioSceneKeyObserver successfully");
-    } else {
+    if (res != OPERATION_SUCCESS) {
         RESSCHED_LOGW("ObserverManager init audioSceneKeyObserver failed");
     }
-
     AudioStandard::AudioRendererInfo rendererInfo = {};
     rendererInfo.streamUsage = AudioStandard::StreamUsage::STREAM_USAGE_MUSIC;
     res = AudioStandard::AudioRoutingManager::GetInstance()
         ->SetPreferredOutputDeviceChangeCallback(rendererInfo, audioObserver_);
-    if (res == OPERATION_SUCCESS) {
-        RESSCHED_LOGD("ObserverManager init audioOutputDeviceChangeObserver successfully");
-    } else {
+    if (res != OPERATION_SUCCESS) {
         RESSCHED_LOGW("ObserverManager init audioOutputDeviceChangeObserver failed");
     }
 #endif
@@ -591,6 +599,51 @@ void ObserverManager::DisableDisplayModeObserver()
     foldDisplayModeObserver_ = nullptr;
 }
 
+void ObserverManager::InitDisplayOrientationObserver()
+{
+    RESSCHED_LOGI("ObserverManager Init display orientation observer.");
+    bool isFoldable = OHOS::Rosen::DisplayManager::GetInstance().IsFoldable();
+    if (!isFoldable) {
+        RESSCHED_LOGI("ObserverManager Init display mode observer return for foldable.");
+        return;
+    }
+
+    if (!foldDisplayOrientationObserver_) {
+        foldDisplayOrientationObserver_ = new (std::nothrow)FoldDisplayOrientationObserver();
+        if (foldDisplayOrientationObserver_ == nullptr) {
+            RESSCHED_LOGE("Failed to create fold ChangeListener due to no memory");
+            return;
+        }
+    }
+
+    auto ret = OHOS::Rosen::DisplayManager::GetInstance().RegisterDisplayListener(foldDisplayOrientationObserver_);
+    if (ret == OHOS::Rosen::DMError::DM_OK) {
+        RESSCHED_LOGI("ObserverManager init displayOrientationObserver successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager init displayOrientationObserver failed");
+        foldDisplayOrientationObserver_ = nullptr;
+        return;
+    }
+}
+
+void ObserverManager::DisableDisplayOrientationObserver()
+{
+    RESSCHED_LOGI("ObserverManager Disable display orientation observer.");
+    if (!foldDisplayOrientationObserver_) {
+        RESSCHED_LOGE("ObserverManager has been disable displayModeObserver");
+        return;
+    }
+
+    auto ret = OHOS::Rosen::DisplayManager::GetInstance().UnregisterDisplayListener(foldDisplayOrientationObserver_);
+    if (ret == OHOS::Rosen::DMError::DM_OK) {
+        RESSCHED_LOGI("ObserverManager disable displayModeObserver successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager disable displayModeObserver failed");
+        return;
+    }
+    foldDisplayOrientationObserver_ = nullptr;
+}
+
 void ObserverManager::InitConnectionSubscriber()
 {
     if (connectionSubscriber_ == nullptr) {
@@ -712,6 +765,90 @@ void ObserverManager::InitAccountObserver()
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a account observer failed!");
     }
+}
+
+void ObserverManager::InitWindowStateObserver()
+{
+    if (!pipStateObserver_) {
+        pipStateObserver_ = new (std::nothrow)PiPStateObserver();
+        if (!pipStateObserver_) {
+            RESSCHED_LOGI("new PiPStateObserver fail");
+            return;
+        }
+        if (OHOS::Rosen::WindowManagerLite::GetInstance().
+            RegisterPiPStateChangedListener(pipStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
+                RESSCHED_LOGE("RegisterPiPStateChangedListener fail");
+                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
+                    HiviewDFX::HiSysEvent::EventType::FAULT,
+                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                    "ERR_MSG", "Register a listener of window pip content change failed.");
+        } else {
+            RESSCHED_LOGI("RegisterPiPStateChangedListener success");
+        }
+    } else {
+        RESSCHED_LOGI("PiPStateObserver not null");
+    }
+}
+
+void ObserverManager::DisableWindowStateObserver()
+{
+    if (pipStateObserver_) {
+        OHOS::Rosen::WindowManagerLite::GetInstance().UnregisterPiPStateChangedListener(pipStateObserver_);
+        pipStateObserver_ = nullptr;
+    }
+    RESSCHED_LOGI("UnsubscribePipchange success");
+}
+
+OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
+{
+    OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
+        OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (!systemAbilityManager) {
+        RESSCHED_LOGE("%{public}s : systemAbilityManager nullptr!", __func__);
+        return nullptr;
+    }
+    OHOS::sptr<OHOS::IRemoteObject> object = systemAbilityManager->GetSystemAbility(OHOS::APP_MGR_SERVICE_ID);
+    return OHOS::iface_cast<OHOS::AppExecFwk::IAppMgr>(object);
+}
+
+void ObserverManager::SubscribeAppState()
+{
+    sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
+    if (!appManager) {
+        RESSCHED_LOGE("%{public}s app manager nullptr!", __func__);
+        return;
+    }
+    appStateObserver_ = new (std::nothrow)RmsApplicationStateObserver();
+    if (!appStateObserver_) {
+        RESSCHED_LOGE("%{public}s allocate app state observer failed!", __func__);
+        return;
+    }
+    int32_t err = appManager->RegisterApplicationStateObserver(appStateObserver_);
+    if (err != 0) {
+        RESSCHED_LOGE("%{public}s register to appmanager failed. err:%{public}d", __func__, err);
+        appStateObserver_ = nullptr;
+        return;
+    }
+    RESSCHED_LOGI("%{public}s success.", __func__);
+    return;
+}
+
+void ObserverManager::UnsubscribeAppState()
+{
+    if (!appStateObserver_) {
+        return;
+    }
+
+    sptr<OHOS::AppExecFwk::IAppMgr> appManager = GetAppManagerInstance();
+    if (appManager) {
+        int32_t err = appManager->UnregisterApplicationStateObserver(appStateObserver_);
+        if (err == 0) {
+            RESSCHED_LOGI("%{public}s success.", __func__);
+        } else {
+            RESSCHED_LOGE("%{public}s failed. err:%{public}d", __func__, err);
+        }
+    }
+    appStateObserver_ = nullptr;
 }
 
 void ObserverManager::DisableAccountObserver()

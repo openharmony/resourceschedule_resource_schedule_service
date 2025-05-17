@@ -116,6 +116,7 @@ namespace {
         ResType::RES_TYPE_APP_FRAME_DROP,
         ResType::RES_TYPE_AXIS_EVENT,
         ResType::RES_TYPE_WEB_SLIDE_SCROLL,
+        ResType::RES_TYPE_OVERLAY_EVENT,
     };
     static const std::unordered_set<uint32_t> SA_RES = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
@@ -200,6 +201,8 @@ namespace {
         ResType::RES_TYPE_FRAME_RATE_REPORT_FROM_RS,
         ResType::RES_TYPE_SHORT_TERM_LOAD,
         ResType::RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT,
+        ResType::SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_UID,
+        ResType::SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_PID,
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
         ResType::RES_TYPE_FILE_COPY_STATUS,
 #endif
@@ -407,6 +410,12 @@ ErrCode ResSchedService::UnRegisterEventListener(uint32_t eventType, uint32_t li
 ErrCode ResSchedService::GetSystemloadLevel(int32_t& resultValue)
 {
     resultValue = NotifierMgr::GetInstance().GetSystemloadLevel();
+    return ERR_OK;
+}
+
+ErrCode ResSchedService::GetResTypeList(std::set<uint32_t>& resTypeList)
+{
+    PluginMgr::GetInstance().GetResTypeList(resTypeList);
     return ERR_OK;
 }
 

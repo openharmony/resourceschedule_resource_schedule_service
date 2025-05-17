@@ -323,6 +323,14 @@ enum : uint32_t {
     RES_TYPE_SOCPERF_CUST_ACTION = 149,
     // recent bulid resType
     RES_TYPE_RECENT_BUILD = 150,
+    // overlay event
+    RES_TYPE_OVERLAY_EVENT = 151,
+    // report game state change
+    RES_TYPE_DEVICE_ORIENTATION_STATUS = 152,
+    // report wifi power state
+    RES_TYPE_WIFI_POWER_STATE_CHANGE = 153,
+    // report battery status change
+    RES_TYPE_REPORT_BATTERY_STATUS_CHANGE = 155,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -351,6 +359,10 @@ enum : uint32_t {
     RES_TYPE_CHECK_APP_IS_IN_SCHEDULE_LIST,
     // report dynamically set suspend exempt info
     RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT = 505,
+    // get suspend state by uid
+    SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_UID = 506,
+    // get suspend state by pid
+    SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_PID = 507,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType

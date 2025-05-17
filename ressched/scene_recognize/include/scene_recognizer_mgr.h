@@ -24,6 +24,7 @@
 #include "ffrt.h"
 #include "ffrt_inner.h"
 #include "single_instance.h"
+#include "res_data.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -40,7 +41,7 @@ class SceneRecognizerMgr {
 public:
     SceneRecognizerMgr();
     ~SceneRecognizerMgr();
-    void DispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void DispatchResource(const std::shared_ptr<ResData>& resData);
     void SetListFlingTimeoutTime(int64_t value);
     void SetListFlingEndTime(int64_t value);
     void SetListFlingSpeedLimit(float value);

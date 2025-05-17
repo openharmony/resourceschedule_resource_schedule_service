@@ -21,7 +21,6 @@
 #include <string>
 #include "app_mgr_constants.h"
 #include "cgroup_event_handler.h"
-#include "cgroup_sched_common.h"
 #include "cgroup_sched_log.h"
 #include "hitrace_meter.h"
 #include "sched_controller.h"
@@ -220,7 +219,7 @@ void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
         traceStr.append(" for ").append(std::to_string(pid)).append(", group change from ")
             .append(std::to_string((int32_t)(pr.lastSchedGroup_))).append(" to ")
             .append(std::to_string((int32_t)(pr.curSchedGroup_)));
-        StartTrace(HITRACE_TAG_OHOS, traceStr);
+        StartTrace(HITRACE_TAG_OHOS | HITRACE_TAG_APP, traceStr);
 
         nlohmann::json payload;
         payload["pid"] = std::to_string(pr.GetPid());
@@ -230,7 +229,7 @@ void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
         payload["newGroup"] = std::to_string((int32_t)(pr.curSchedGroup_));
         ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_CGROUP_ADJUSTER, 0, payload);
         AdjustForkProcessGroup(app, pr);
-        FinishTrace(HITRACE_TAG_OHOS);
+        FinishTrace(HITRACE_TAG_OHOS | HITRACE_TAG_APP);
     }
 }
 } // namespace ResourceSchedule

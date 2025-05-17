@@ -405,6 +405,13 @@ inline void BuildSimplifyLibAll(const std::list<std::string>& pluginList, std::s
     }
 }
 
+void PluginMgr::GetResTypeList(std::set<uint32_t>& resTypeList)
+{
+    for (auto& [type, pluginList] : resTypeLibMap_) {
+        resTypeList.insert(type);
+    }
+}
+
 std::shared_ptr<PluginLib> PluginMgr::GetPluginLib(const std::string& libPath)
 {
     std::lock_guard<std::mutex> autoLock(libPathMutex_);

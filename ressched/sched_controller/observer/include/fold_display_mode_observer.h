@@ -23,6 +23,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 using OHOS::Rosen::FoldDisplayMode;
+using OHOS::Rosen::DisplayOrientation;
 
 namespace {
     const std::string DISPLAY_MODE_UNKOWN = "displayUnknown";
@@ -39,6 +40,18 @@ public:
 private:
     std::string currentDisplayMode = DISPLAY_MODE_UNKOWN;
     void ReportDisplayModeStatus(int64_t status, const std::string& mode);
+};
+
+class FoldDisplayOrientationObserver : public OHOS::Rosen::DisplayManager::IDisplayListener {
+    public:
+        void OnCreate(Rosen::DisplayId displayId) override;
+        void OnDestroy(Rosen::DisplayId displayId) override;
+        void OnChange(Rosen::DisplayId displayId) override;
+    
+    private:
+        std::string displayOrientation_ = DISPLAY_MODE_UNKOWN;
+        std::string currentDisplayOrientation_ = DISPLAY_MODE_UNKOWN;
+        void ReportDisplayOrientationStatus(int64_t status, const std::string& orientation);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

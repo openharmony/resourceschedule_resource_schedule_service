@@ -34,31 +34,41 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-class CgroupSchedLog {
-public:
-    CgroupSchedLog() = delete;
-    ~CgroupSchedLog() = delete;
-    
-    /**
-     * @brief Judge level.
-     *
-     * @param level The level.
-     * @return True if success,else false.
-     */
-    static bool JudgeLevel(const LogLevel &level);
+using Clock = std::chrono::high_resolution_clock;
+using MilliSecondsType = std::chrono::duration<double, std::milli>;
 
-    /**
-     * @brief Get log level.
-     *
-     * @return Level.
-     */
-    static const LogLevel &GetLogLevel()
+class ChronoScope {
+public:
+    explicit ChronoScope(const std::string outmsg) : outmsg_(outmsg)
     {
-        return level_;
+        out_ = nullptr;
+        t1 = Clock::now();
+    }
+
+    ChronoScope(const std::string outmsg, double* out) : outmsg_(outmsg), out_(out)
+    {
+        t1 = Clock::now();
+    }
+
+    ~ChronoScope()
+    {
+        Clock::time_point t2 = Clock::now();
+        MilliSecondsType time_span = std::chrono::duration_cast<MilliSecondsType>(t2 - t1);
+        CGS_LOGD("[%{public}s] cost %{public}lf milliseconds.", outmsg_.c_str(), time_span.count());
+        if (out_) {
+            *out_ = time_span.count();
+        }
     }
 
 private:
-    static LogLevel level_;
+    ChronoScope(const ChronoScope&) = delete;
+    ChronoScope& operator=(const ChronoScope &) = delete;
+    ChronoScope(ChronoScope&&) = delete;
+    ChronoScope& operator=(ChronoScope&&) = delete;
+
+    std::string outmsg_;
+    double* out_;
+    Clock::time_point t1;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

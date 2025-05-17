@@ -113,8 +113,8 @@ void FrameAwarePlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data
         return;
     }
 
-    int uid = ConvertToInteger(data, "uid");
     int pid = ConvertToInteger(data, "pid");
+    int uid = ConvertToInteger(data, "uid");
     std::string bundleName = data->payload["bundleName"].get<std::string>().c_str();
     RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
     RME::FrameMsgIntf::GetInstance().ReportAppInfo(pid, uid, bundleName, state);
@@ -304,9 +304,10 @@ void FrameAwarePlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 int FrameAwarePlugin::ConvertToInteger(const std::shared_ptr<ResData>& data, const char* idtype)
 {
     char* endPtr = nullptr;
-    const char* target = data->payload[idtype].get<std::string>().c_str();
-    int result = strtol(target, &endPtr, DECIMAL);
-    if (errno == ERANGE || endPtr == target || !endPtr || *endPtr != '\0') {
+    std::string temp = data->payload[idtype].get<std::string>();
+    const char* target = temp.c_str();
+    int result = static_cast<int>(strtol(target, &endPtr, DECIMAL));
+    if (result < 0 ||result > INT_MAX || errno == ERANGE || endPtr == target || !endPtr || *endPtr != '\0') {
         RME_LOGE("FrameAwarePlugin:Failed to convert integer!");
         return -1;
     }

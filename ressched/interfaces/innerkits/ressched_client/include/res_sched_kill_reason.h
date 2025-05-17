@@ -37,6 +37,7 @@ public:
     static constexpr char MEMORY_PRESSURE[] = "Kill Reason:Memory Pressure";
     static constexpr char TEMPERATURE_CONTROL[] = "Kill Reason:Temperature Control";
     static constexpr char RESOURCE_OVERLIMIT[] = "Kill Reason:Resource Overlimit";
+    static constexpr char HEAVYLOAD_MUTEX_KILL[] = "Kill Reason:HeavyLoad:Mutex Kill";
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

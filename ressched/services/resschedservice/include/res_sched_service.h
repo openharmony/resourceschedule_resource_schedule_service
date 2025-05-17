@@ -44,6 +44,8 @@ public:
 
     ErrCode GetSystemloadLevel(int32_t& resultValue) override;
 
+    ErrCode GetResTypeList(std::set<uint32_t>& resTypeList) override;
+
     void OnDeviceLevelChanged(int32_t type, int32_t level);
 
     ErrCode IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode, bool& resultValue) override;

@@ -27,12 +27,10 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-class RmsApplicationStateObserver;
 #ifdef CONFIG_BGTASK_MGR
 class BackgroundTaskObserver;
 #endif
 class WindowStateObserver;
-class PiPStateObserver;
 class WindowVisibilityObserver;
 class WindowUpdateStateObserver;
 class WindowDrawingContentObserver;
@@ -47,16 +45,12 @@ public:
     void Init() override;
     void Disable() override;
 
-    bool SubscribeAppState();
-    void UnsubscribeAppState();
     bool SubscribeBackgroundTask();
     void UnsubscribeBackgroundTask();
     void SubscribeWindowState();
     void UnsubscribeWindowState();
     void SubscribeWindowModeChange();
     void UnsubscribeWindowModeChange();
-    void SubscribePipChange();
-    void UnSubscribePipChange();
     void UnregisterStateObservers();
     int GetProcessGroup(pid_t pid);
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
@@ -86,7 +80,6 @@ private:
 
     std::shared_ptr<CgroupEventHandler> cgHandler_;
     std::shared_ptr<Supervisor> supervisor_;
-    sptr<RmsApplicationStateObserver> appStateObserver_;
 #ifdef CONFIG_BGTASK_MGR
     bool isBgtaskSubscribed_ {false};
     std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_;
@@ -95,7 +88,6 @@ private:
     sptr<WindowVisibilityObserver> windowVisibilityObserver_;
     sptr<WindowDrawingContentObserver> windowDrawingContentObserver_;
     sptr<WindowModeObserver> windowModeObserver_;
-    sptr<PiPStateObserver> pipStateObserver_;
     std::unordered_map<uint32_t, std::function<void(std::shared_ptr<CgroupEventHandler>,
         uint32_t, int64_t, const nlohmann::json&)>> dispatchResFuncMap_;
 
@@ -106,6 +98,7 @@ private:
     inline void InitAppStartupSceneRec();
     inline void DeinitAppStartupSceneRec();
     void InitDispatchResFuncMap();
+    void InitAddDispatchResFuncMap();
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

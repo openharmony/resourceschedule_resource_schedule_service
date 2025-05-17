@@ -156,12 +156,16 @@ namespace {
         { ResType::RES_TYPE_RECV_ABC_LOAD_COMPLETED, "RES_TYPE_RECV_ABC_LOAD_COMPLETED"},
         { ResType::RES_TYPE_CHECK_APP_IS_IN_SCHEDULE_LIST, "RES_TYPE_CHECK_APP_IS_IN_SCHEDULE_LIST" },
         { ResType::RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT, "RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT" },
+        { ResType::SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_UID, "SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_UID" },
+        { ResType::SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_PID, "SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_PID" },
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
         { ResType::RES_TYPE_FILE_COPY_STATUS, "RES_TYPE_FILE_COPY_STATUS" },
 #endif
         { ResType::RES_TYPE_PAGE_TRANSITION, "RES_TYPE_PAGE_TRANSITION" },
         { ResType::RES_TYPE_PARAM_UPADTE_EVENT, "RES_TYPE_PARAM_UPADTE_EVENT" },
         { ResType::RES_TYPE_WEB_SLIDE_SCROLL, "RES_TYPE_WEB_SLIDE_SCROLL" },
+        { ResType::RES_TYPE_OVERLAY_EVENT, "RES_TYPE_OVERLAY_EVENT" },
+        { ResType::RES_TYPE_WIFI_POWER_STATE_CHANGE, "RES_TYPE_WIFI_POWER_STATE_CHANGE" },
     };
     OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
     {
@@ -198,7 +202,6 @@ void ResSchedMgr::Stop()
 void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     ReportDataInner(resType, value, payload);
-    SceneRecognizerMgr::GetInstance().DispatchResource(resType, value, payload);
 }
 
 void ResSchedMgr::ReportDataInner(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -209,7 +212,9 @@ void ResSchedMgr::ReportDataInner(uint32_t resType, int64_t value, const nlohman
     trace_str.append(",resType[").append(std::to_string(resType)).append("]");
     trace_str.append(",value[").append(std::to_string(value)).append("]");
     StartTrace(HITRACE_TAG_OHOS, trace_str, -1);
-    PluginMgr::GetInstance().DispatchResource(std::make_shared<ResData>(resType, value, payload));
+    auto resData = std::make_shared<ResData>(resType, value, payload);
+    PluginMgr::GetInstance().DispatchResource(resData);
+    SceneRecognizerMgr::GetInstance().DispatchResource(resData);
     FinishTrace(HITRACE_TAG_OHOS);
 }
 
@@ -286,20 +291,20 @@ void ResSchedMgr::InitForegroundAppInfo()
     RESSCHED_LOGI("%{public}s succeed", __func__);
 }
 
-extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
-{
-    ResSchedMgr::GetInstance().ReportData(resType, value, payload);
-}
-
-extern "C" void ReportAppStateInProcess(int32_t state, int32_t pid)
+void ResSchedMgr::ReportAppStateInProcess(int32_t state, int32_t pid)
 {
     NotifierMgr::GetInstance().OnApplicationStateChange(state, pid);
     ResSchedMgr::GetInstance().OnApplicationStateChange(state, pid);
 }
 
-extern "C" void ReportProcessStateInProcess(int32_t state, int32_t pid)
+void ResSchedMgr::ReportProcessStateInProcess(int32_t state, int32_t pid)
 {
     ResSchedMgr::GetInstance().OnApplicationStateChange(state, pid);
+}
+
+extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    ResSchedMgr::GetInstance().ReportData(resType, value, payload);
 }
 
 extern "C" int32_t KillProcessInProcess(const nlohmann::json& payload)

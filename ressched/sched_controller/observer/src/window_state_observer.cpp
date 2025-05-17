@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,19 +13,20 @@
  * limitations under the License.
  */
 
-#include "cgroup_sched_log.h"
+#include "window_state_observer.h"
+#include "nlohmann/json.hpp"
+#include "res_sched_log.h"
+#include "res_sched_mgr.h"
+#include "res_type.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-LogLevel CgroupSchedLog::level_ = { LOG_DEBUG };
-
-bool CgroupSchedLog::JudgeLevel(const LogLevel &level)
+void PiPStateObserver::OnPiPStateChanged(const std::string& bundleName, const bool isForeground)
 {
-    const LogLevel &curLevel = CgroupSchedLog::GetLogLevel();
-    if (level < curLevel) {
-        return false;
-    }
-    return true;
+    RESSCHED_LOGI("Receive OnPiPStateChange %{public}s %{public}d", bundleName.c_str(), isForeground);
+    nlohmann::json payload;
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TRPE_PIP_STATUS,
+        static_cast<int64_t>(isForeground), payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
