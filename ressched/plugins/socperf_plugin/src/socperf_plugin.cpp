@@ -1110,9 +1110,9 @@ void SocPerfPlugin::HandleScreenOff()
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
+        const std::string screenModeOffStr = SCREEN_MODE_KEY + ":" + SCREEN_MODE_OFF;
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(screenModeOffStr, true);
     }
-    const std::string screenModeOffStr = SCREEN_MODE_KEY + ":" + SCREEN_MODE_OFF;
-    OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(screenModeOffStr, true);
 }
 
 bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& data)
