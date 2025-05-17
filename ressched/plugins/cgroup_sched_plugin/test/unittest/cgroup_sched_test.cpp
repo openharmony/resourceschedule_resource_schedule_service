@@ -1461,6 +1461,1106 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_035, Function | Med
     cgroupEventHandler->HandleReportBluetoothConnectState(resType, value, payload);
     EXPECT_TRUE(processRecord->bluetoothState_ == 0);
 }
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_036
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_036, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_RUNNINGLOCK_STATE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_037
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_037, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_DRAG_STATUS_BAR;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_038
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_038, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_REPORT_SCENE_BOARD;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_039
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_039, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_REPORT_KEY_THREAD;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_040
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_040, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_REPORT_WINDOW_STATE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_041
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_041, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_REPORT_SCENE_SCHED;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_042
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_042, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_WEB_GESTURE_MOVE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_043
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_043, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_WEB_SLIDE_NORMAL;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_044
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_044, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_LOAD_URL;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_045
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_045, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_MOUSEWHEEL;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_046
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_046, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_047
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_047, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_MMI_INPUT_STATE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_048
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_048, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_ANCO_CUST;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_050
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_050, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_TIMEZONE_CHANGED;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_051
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_051, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_CONNECTION_OBSERVER;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_052
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_052, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_AV_SESSION_ON_SESSION_CREATE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_053
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_053, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_AV_SESSION_ON_SESSION_RELEASE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_054
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_054, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_AV_SESSION_ON_TOP_SESSION_CHANGE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_055
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_055, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_ON_APP_STATE_CHANGED;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_056
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_056, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_057
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_057, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_AV_CODEC_STATE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_058
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_058, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_NITZ_TIME_CHANGED;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_059
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_059, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_TIME_CHANGED;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_060
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_060, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_NITZ_TIMEZONE_CHANGED;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_061
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_061, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_CHARGING_DISCHARGING;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_062
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_062, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_USB_DEVICE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_063
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_063, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_CALL_STATE_CHANGED;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_064
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_064, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_WIFI_P2P_STATE_CHANGED;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_065
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_065, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_APP_ASSOCIATED_START;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_066
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_066, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_THERMAL_STATE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_067
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_067, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_SOCPERF_CUST_EVENT_BEGIN;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_068
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_068, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_SOCPERF_CUST_EVENT_END;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_069
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_069, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_070
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_070, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_REPORT_SCREEN_CAPTURE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_071
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_071, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_LONG_FRAME;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_072
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_072, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_KEY_PERF_SCENE;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_073
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_073, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_SUPER_LAUNCHER;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_074
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_074, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_CAST_SCREEN;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_075
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_075, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPR_SCREEN_COLLABROATION;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_076
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_076, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_SA_CONTROL_APP_EVENT;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_077
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_077, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_SYSTEM_CPU_LOAD;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_078
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_078, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_UPLOAD_DOWNLOAD;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_079
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_079, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_SPLIT_SCREEN;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_80
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_080, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_FLOATING_WINDOW;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.test";
+    payload["hostPid"] = std::to_string(2024);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["isPreloadModule"] = std::to_string(0);
+    cgroupEventHandler->HandleProcessDied(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
