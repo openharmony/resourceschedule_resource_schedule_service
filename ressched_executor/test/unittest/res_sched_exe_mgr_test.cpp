@@ -225,6 +225,21 @@ HWTEST_F(ResSchedExeMgrTest, InitPluginMgr001, TestSize.Level1)
 }
 
 /**
+ * @tc.name: InitPluginMgrPretreatment001
+ * @tc.desc: Verify if InitPluginMgrPretreatment is success
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeMgrTest, InitPluginMgrPretreatment001, TestSize.Level1)
+{
+    nlohmann::json context;
+    context["MESSAGE_INDEX"] = 0;
+    context["MESSAGE_NUMBER"] = 1;
+    context["IPC_MESSAGE"] = "test_switch";
+    ResSchedExeMgr::GetInstance().InitPluginMgrPretreatment(context);
+    EXPECT_TRUE(PluginMgr::GetInstance().configReader_);
+}
+
+/**
  * @tc.name: BuildTraceStr001
  * @tc.desc: BuildTraceStr test
  * @tc.type: FUNC
