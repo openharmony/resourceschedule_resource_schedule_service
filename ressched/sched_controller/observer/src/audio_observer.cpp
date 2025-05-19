@@ -21,6 +21,13 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+void AudioObserver::Init()
+{
+    std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> audioRendererChangeInfos;
+    AudioStandard::AudioStreamManager::GetInstance()->GetCurrentRendererChangeInfos(audioRendererChangeInfos);
+    OnRendererStateChange(audioRendererChangeInfos);
+}
+
 void AudioObserver::MarshallingAudioRendererChangeInfo(
     const std::shared_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo, nlohmann::json &payload)
 {
@@ -50,6 +57,8 @@ bool AudioObserver::IsRenderStateChange(const std::shared_ptr<AudioStandard::Aud
 void AudioObserver::OnRendererStateChange(
     const std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos)
 {
+    std::unordered_set<int32_t> newRunningPid;
+    std::unordered_set<int32_t> newStopSessionPid;
     for (const auto &audioRendererChangeInfo : audioRendererChangeInfos) {
         RESSCHED_LOGD("enter AudioRenderStateObserver::OnRendererStateChange, state: %{public}d",
             audioRendererChangeInfo->rendererState);
@@ -59,11 +68,14 @@ void AudioObserver::OnRendererStateChange(
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
                 audioRendererChangeInfo->rendererState, payload);
         }
+        HandleInnerAudioStateChange(audioRendererChangeInfo, newRunningPid, newStopSessionPid);
     }
     renderState_.clear();
     for (const auto &audioRendererChangeInfo : audioRendererChangeInfos) {
         renderState_[audioRendererChangeInfo->sessionId] = audioRendererChangeInfo->rendererState;
     }
+    HandleStartAudioStateEvent(newRunningPid);
+    HandleStopAudioStateEvent(newStopSessionPid);
 }
 
 void AudioObserver::OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode)
@@ -113,6 +125,99 @@ void AudioObserver::OnPreferredOutputDeviceUpdated(
             desc->deviceId_, payload);
     }
 }
+
+void AudioObserver::HandleInnerAudioStateChange(
+    const std::shared_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo,
+    std::unordered_set<int32_t>& newRunningPid, std::unordered_set<int32_t>& newStopSessionPid)
+{
+    if (audioRendererChangeInfo == nullptr) {
+        return;
+    }
+    switch (audioRendererChangeInfo->rendererState) {
+        case AudioStandard::RendererState::RENDERER_RUNNING:
+            ProcessRunningSessionState(audioRendererChangeInfo, newRunningPid);
+            break;
+        case AudioStandard::RendererState::RENDERER_STOPPED:
+        case AudioStandard::RendererState::RENDERER_RELEASED:
+        case AudioStandard::RendererState::RENDERER_PAUSED:
+            ProcessStopSessionState(audioRendererChangeInfo, newStopSessionPid);
+            break;
+        default:
+            break;
+    }
+}
+
+void AudioObserver::ProcessRunningSessionState(
+    const std::shared_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo,
+    std::unordered_set<int32_t>& newRunningPid)
+{
+    if (audioRendererChangeInfo == nullptr) {
+        return;
+    }
+    int32_t pid = audioRendererChangeInfo->clientPid;
+    if (processRenderStateMap_.find(pid) != processRenderStateMap_.end()) {
+        processRenderStateMap_[pid].renderRunningSessionSet.emplace(audioRendererChangeInfo->sessionId);
+        return;
+    }
+    ProcessRenderState processRenderState;
+    processRenderState.pid = pid;
+    processRenderState.uid = audioRendererChangeInfo->clientUID;
+    processRenderState.renderRunningSessionSet.emplace(audioRendererChangeInfo->sessionId);
+    processRenderStateMap_[processRenderState.pid] = processRenderState;
+    newRunningPid.emplace(pid);
+}
+
+void AudioObserver::ProcessStopSessionState(
+    const std::shared_ptr<AudioStandard::AudioRendererChangeInfo> &audioRendererChangeInfo,
+    std::unordered_set<int32_t>& newStopSessionPid)
+{
+    if (audioRendererChangeInfo == nullptr) {
+        return;
+    }
+    int32_t pid = audioRendererChangeInfo->clientPid;
+    newStopSessionPid.emplace(pid);
+    if (processRenderStateMap_.find(pid) == processRenderStateMap_.end()) {
+        return;
+    }
+    processRenderStateMap_[pid].renderRunningSessionSet.erase(audioRendererChangeInfo->sessionId);
+}
+
+void AudioObserver::HandleStartAudioStateEvent(const std::unordered_set<int32_t>& newRunningPid)
+{
+    for (int32_t pid : newRunningPid) {
+        if (processRenderStateMap_.find(pid) == processRenderStateMap_.end() ||
+            processRenderStateMap_[pid].renderRunningSessionSet.size() <= 0) {
+            continue;
+        }
+        nlohmann::json payload;
+        MarshallingInnerAudioRendererChangeInfo(pid, payload);
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_INNER_AUDIO_STATE,
+            ResType::InnerAudioState::AUDIO_STATE_RUNNING, payload);
+    }
+}
+
+void AudioObserver::HandleStopAudioStateEvent(const std::unordered_set<int32_t>& newStopSessionPid)
+{
+    for (int32_t pid : newStopSessionPid) {
+        if (processRenderStateMap_.find(pid) == processRenderStateMap_.end() ||
+            processRenderStateMap_[pid].renderRunningSessionSet.size() > 0) {
+            continue;
+        }
+        nlohmann::json payload;
+        MarshallingInnerAudioRendererChangeInfo(pid, payload);
+        processRenderStateMap_.erase(pid);
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_INNER_AUDIO_STATE,
+            ResType::InnerAudioState::AUDIO_STATE_STOP, payload);
+    }
+}
+
+void AudioObserver::MarshallingInnerAudioRendererChangeInfo(int32_t pid, nlohmann::json &payload)
+{
+    ProcessRenderState processRenderState = processRenderStateMap_[pid];
+    payload["uid"] = std::to_string(processRenderState.uid);
+    payload["pid"] = std::to_string(processRenderState.pid);
+}
+
 } // namespace ResourceSchedule
 } // namespace OHOS
 #endif

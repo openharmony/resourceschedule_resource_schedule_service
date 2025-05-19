@@ -823,6 +823,14 @@ enum OverlayStatus : int64_t {
     OVERLAY_ADD = 0,
     OVERLAY_REMOVE = 1,
 };
+
+/**
+* @brief Inner Audio State
+*/
+enum InnerAudioState : int64_t {
+    AUDIO_STATE_RUNNING = 0,
+    AUDIO_STATE_STOP = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
