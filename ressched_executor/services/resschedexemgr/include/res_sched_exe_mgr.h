@@ -73,6 +73,7 @@ private:
     void GetCgroupFileContent(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply);
     void CheckProcTaskForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply);
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
+    void InitPluginMgrPretreatment(const nlohmann::json& payload);
 
     class HicollieUtil {
         public:
@@ -83,6 +84,8 @@ private:
     };
 
     bool isInit = false;
+    int ipcNumber_ = 0;
+    std::map<int, std::string> ipcMessage_ = {};
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
