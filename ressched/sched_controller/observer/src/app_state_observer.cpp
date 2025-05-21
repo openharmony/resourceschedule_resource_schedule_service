@@ -215,6 +215,7 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     payload["extensionType"] = std::to_string(static_cast<uint32_t>(appStateData.extensionType));
     payload["isPreload"] = std::to_string(appStateData.isPreloadModule);
     payload["state"] = std::to_string(appStateData.state);
+    payload["callerBundleName"] = appStateData.callerBundleName;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state,
         payload);
     ResSchedMgr::GetInstance().ReportAppStateInProcess(appStateData.state, appStateData.pid);

@@ -518,6 +518,149 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_001, testing::ext::TestSize.Level
     std::vector<std::shared_ptr<AudioStandard::AudioDeviceDescriptor>> descs;
     audioObserver_->OnPreferredOutputDeviceUpdated(descs);
     EXPECT_TRUE(audioObserver_ != nullptr);
+    audioObserver_->processRenderStateMap_.clear();
+#endif
+}
+
+/**
+ * @tc.name: audioObserverObserverEvent_002
+ * @tc.desc: test HandleInnerAudioStateChange
+ * @tc.type: FUNC
+ * @tc.require: issueI8VZVN
+ */
+HWTEST_F(ObserverEventTest, audioObserverEvent_002, testing::ext::TestSize.Level1)
+{
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    std::shared_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo = nullptr;
+    nlohmann::json payload;
+    std::unordered_set<int32_t> newRunningPid;
+    std::unordered_set<int32_t> newStopSessionPid;
+    audioObserver_->HandleInnerAudioStateChange(audioRendererChangeInfo, newRunningPid, newStopSessionPid);
+    audioRendererChangeInfo = std::make_shared<AudioStandard::AudioRendererChangeInfo>();
+    audioRendererChangeInfo->rendererState = AudioStandard::RendererState::RENDERER_INVALID;
+    audioObserver_->HandleInnerAudioStateChange(audioRendererChangeInfo, newRunningPid, newStopSessionPid);
+    EXPECT_EQ(newRunningPid.size(), 0);
+    newRunningPid.clear();
+    newStopSessionPid.clear();
+    audioRendererChangeInfo->rendererState = AudioStandard::RendererState::RENDERER_RUNNING;
+    audioObserver_->HandleInnerAudioStateChange(audioRendererChangeInfo, newRunningPid, newStopSessionPid);
+    EXPECT_EQ(newRunningPid.size(), 1);
+    audioObserver_->HandleInnerAudioStateChange(audioRendererChangeInfo, newRunningPid, newStopSessionPid);
+    newRunningPid.clear();
+    newStopSessionPid.clear();
+    audioRendererChangeInfo->rendererState = AudioStandard::RendererState::RENDERER_STOPPED;
+    audioObserver_->HandleInnerAudioStateChange(audioRendererChangeInfo, newRunningPid, newStopSessionPid);
+    EXPECT_EQ(newStopSessionPid.size(), 1);
+    audioObserver_->HandleInnerAudioStateChange(audioRendererChangeInfo, newRunningPid, newStopSessionPid);
+    newRunningPid.clear();
+    newStopSessionPid.clear();
+    audioRendererChangeInfo->rendererState = AudioStandard::RendererState::RENDERER_RELEASED;
+    audioObserver_->HandleInnerAudioStateChange(audioRendererChangeInfo, newRunningPid, newStopSessionPid);
+    EXPECT_EQ(newStopSessionPid.size(), 1);
+    newRunningPid.clear();
+    newStopSessionPid.clear();
+    audioRendererChangeInfo->rendererState = AudioStandard::RendererState::RENDERER_PAUSED;
+    audioObserver_->HandleInnerAudioStateChange(audioRendererChangeInfo, newRunningPid, newStopSessionPid);
+    EXPECT_EQ(newStopSessionPid.size(), 1);
+    newRunningPid.clear();
+    newStopSessionPid.clear();
+    audioObserver_->processRenderStateMap_.clear();
+#endif
+}
+
+/**
+ * @tc.name: audioObserverObserverEvent_003
+ * @tc.desc: test ProcessRunningSessionState
+ * @tc.type: FUNC
+ * @tc.require: issueI8VZVN
+ */
+HWTEST_F(ObserverEventTest, audioObserverEvent_003, testing::ext::TestSize.Level1)
+{
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    std::shared_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo = nullptr;
+    std::unordered_set<int32_t> newRunningPid;
+    audioObserver_->ProcessRunningSessionState(audioRendererChangeInfo, newRunningPid);
+    audioRendererChangeInfo = std::make_shared<AudioStandard::AudioRendererChangeInfo>();
+    audioRendererChangeInfo->rendererState = AudioStandard::RendererState::RENDERER_RUNNING;
+    audioObserver_->ProcessRunningSessionState(audioRendererChangeInfo, newRunningPid);
+    audioObserver_->ProcessRunningSessionState(audioRendererChangeInfo, newRunningPid);
+    EXPECT_EQ(newRunningPid.size(), 1);
+    audioObserver_->processRenderStateMap_.clear();
+#endif
+}
+
+/**
+ * @tc.name: audioObserverObserverEvent_004
+ * @tc.desc: test ProcessStopSessionState
+ * @tc.type: FUNC
+ * @tc.require: issueI8VZVN
+ */
+HWTEST_F(ObserverEventTest, audioObserverEvent_004, testing::ext::TestSize.Level1)
+{
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    std::shared_ptr<AudioStandard::AudioRendererChangeInfo> audioRendererChangeInfo = nullptr;
+    std::unordered_set<int32_t> newRunningPid;
+    std::unordered_set<int32_t> newStopSessionPid;
+    audioObserver_->ProcessStopSessionState(audioRendererChangeInfo, newStopSessionPid);
+    audioRendererChangeInfo = std::make_shared<AudioStandard::AudioRendererChangeInfo>();
+    audioObserver_->ProcessStopSessionState(audioRendererChangeInfo, newStopSessionPid);
+    EXPECT_EQ(newStopSessionPid.size(), 1);
+    newStopSessionPid.clear();
+    audioObserver_->ProcessRunningSessionState(audioRendererChangeInfo, newRunningPid);
+    audioObserver_->ProcessStopSessionState(audioRendererChangeInfo, newStopSessionPid);
+    EXPECT_EQ(newStopSessionPid.size(), 1);
+    audioObserver_->processRenderStateMap_.clear();
+#endif
+}
+
+/**
+ * @tc.name: audioObserverObserverEvent_005
+ * @tc.desc: test HandleStartAudioStateEvent
+ * @tc.type: FUNC
+ * @tc.require: issueI8VZVN
+ */
+HWTEST_F(ObserverEventTest, audioObserverEvent_005, testing::ext::TestSize.Level1)
+{
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    std::unordered_set<int32_t> newRunningPid;
+    int32_t pid = 0;
+    newRunningPid.insert(pid);
+    audioObserver_->HandleStartAudioStateEvent(newRunningPid);
+    ProcessRenderState processRenderState;
+    audioObserver_->processRenderStateMap_[pid] = processRenderState;
+    audioObserver_->HandleStartAudioStateEvent(newRunningPid);
+    int32_t SessionId = 0;
+    processRenderState.renderRunningSessionSet.insert(SessionId);
+    audioObserver_->processRenderStateMap_[pid] = processRenderState;
+    audioObserver_->HandleStartAudioStateEvent(newRunningPid);
+    EXPECT_TRUE(audioObserver_->processRenderStateMap_.find(pid) != audioObserver_->processRenderStateMap_.end());
+    audioObserver_->processRenderStateMap_.clear();
+#endif
+}
+
+/**
+ * @tc.name: audioObserverObserverEvent_006
+ * @tc.desc: test HandleStopAudioStateEvent
+ * @tc.type: FUNC
+ * @tc.require: issueI8VZVN
+ */
+HWTEST_F(ObserverEventTest, audioObserverEvent_006, testing::ext::TestSize.Level1)
+{
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    int32_t pid = 0;
+    std::unordered_set<int32_t> newStopSessionPid;
+    newStopSessionPid.insert(pid);
+    audioObserver_->HandleStopAudioStateEvent(newStopSessionPid);
+    ProcessRenderState processRenderState;
+    int32_t SessionId = 0;
+    processRenderState.renderRunningSessionSet.insert(SessionId);
+    audioObserver_->processRenderStateMap_[pid] = processRenderState;
+    audioObserver_->HandleStopAudioStateEvent(newStopSessionPid);
+    processRenderState.renderRunningSessionSet.clear();
+    audioObserver_->processRenderStateMap_[pid] = processRenderState;
+    audioObserver_->HandleStopAudioStateEvent(newStopSessionPid);
+    EXPECT_TRUE(audioObserver_->processRenderStateMap_.find(pid) == audioObserver_->processRenderStateMap_.end());
+    audioObserver_->processRenderStateMap_.clear();
 #endif
 }
 

@@ -46,18 +46,22 @@ SceneRecognizerMgr::~SceneRecognizerMgr()
     RESSCHED_LOGI("~SceneRecognizerMgr");
 }
 
-void SceneRecognizerMgr::DispatchResource(uint32_t resType, int64_t value, const nlohmann::json& payload)
+void SceneRecognizerMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 {
     if (ffrtQueue_ == nullptr) {
         return;
     }
+    if (!resData) {
+        RESSCHED_LOGE("%{public}s, failed, null res data.", __func__);
+        return;
+    }
     for (auto recognizerItem : sceneRecognizers_) {
         auto recognizer = recognizerItem.second;
-        if (!recognizer->Accept(resType)) {
+        if (!recognizer->Accept(resData->resType)) {
             continue;
         }
-        ffrtQueue_->submit([resType, value, payload, recognizer]() {
-            recognizer->OnDispatchResource(resType, value, payload);
+        ffrtQueue_->submit([resData, recognizer]() {
+            recognizer->OnDispatchResource(resData->resType, resData->value, resData->payload);
         });
     }
 }

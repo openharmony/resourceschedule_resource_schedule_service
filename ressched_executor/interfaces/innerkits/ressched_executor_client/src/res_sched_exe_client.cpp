@@ -33,6 +33,9 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+const int32_t MAX_IPC_MESSAGE_SIZE = 200000;
+const int32_t IPC_BATCHES_SIZE = 180000;
+
 ResSchedExeClient& ResSchedExeClient::GetInstance()
 {
     static ResSchedExeClient instance;
@@ -47,6 +50,12 @@ ResSchedExeClient::~ResSchedExeClient()
 int32_t ResSchedExeClient::SendRequestSync(uint32_t resType, int64_t value,
     const nlohmann::json& context, nlohmann::json& reply)
 {
+    if (resType == ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT) {
+        std::vector<nlohmann::json> splitContext;
+        if (ProcessJson(context, splitContext, resType)) {
+            return SendRequestBatches(true, resType, splitContext, value, reply);
+        }
+    }
     return SendRequestInner(true, resType, value, context, reply);
 }
 
@@ -54,7 +63,30 @@ void ResSchedExeClient::SendRequestAsync(uint32_t resType, int64_t value,
     const nlohmann::json& context)
 {
     nlohmann::json reply;
+    if (resType == ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT) {
+        std::vector<nlohmann::json> splitContext;
+        if (ProcessJson(context, splitContext, resType)) {
+            SendRequestBatches(false, resType, splitContext, value, reply);
+            return;
+        }
+    }
     SendRequestInner(false, resType, value, context, reply);
+}
+
+int32_t ResSchedExeClient::SendRequestBatches(bool isSync, uint32_t resType,
+    const std::vector<nlohmann::json>& splitContext, int64_t value, nlohmann::json& reply)
+{
+    int32_t ret = ResErrCode::RSSEXE_NO_ERR;
+    RSSEXE_LOGI("ipc messages exceed the limit and are transmitted in batches.");
+    for (const nlohmann::json& jsonMsg : splitContext) {
+        RSSEXE_LOGD("ipc messages index: %{public}d", jsonMsg["MESSAGE_INDEX"].get<int>());
+        ret = SendRequestInner(isSync, resType, value, jsonMsg, reply);
+        if (ret != ResErrCode::RSSEXE_NO_ERR) {
+            RSSEXE_LOGE("SendRequestInner failed.");
+            break;
+        }
+    }
+    return ret;
 }
 
 int32_t ResSchedExeClient::KillProcess(pid_t pid)
@@ -94,6 +126,34 @@ int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64
         proxy->SendRequestAsync(resType, value, jsonTypeContext);
         return ResErrCode::RSSEXE_NO_ERR;
     }
+}
+
+bool ResSchedExeClient::ProcessJson(const nlohmann::json& context, std::vector<nlohmann::json>& splitContext,
+    int32_t resType)
+{
+    std::string dumpJsonStr = context.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
+    size_t dumpJsonStrSize = dumpJsonStr.size();
+    if (dumpJsonStrSize > MAX_IPC_MESSAGE_SIZE) {
+        RSSEXE_LOGI("ResSchedExeClient need to split the json in restype %{public}d.", resType);
+        std::vector<std::string> messageValue;
+        for (size_t idx = 0; idx < dumpJsonStrSize; idx += IPC_BATCHES_SIZE) {
+            size_t end = std::min(idx + IPC_BATCHES_SIZE, dumpJsonStrSize);
+            messageValue.push_back(dumpJsonStr.substr(idx, end - idx));
+        }
+
+        int messageIndex = 0;
+        for (std::string msg : messageValue) {
+            nlohmann::json jsonIpc = {
+                {"IPC_MESSAGE", msg},
+                {"MESSAGE_INDEX", messageIndex},
+                {"MESSAGE_NUMBER", static_cast<int>(messageValue.size())}
+            };
+            splitContext.push_back(jsonIpc);
+            messageIndex++;
+        }
+        return true;
+    }
+    return false;
 }
 
 void ResSchedExeClient::SendDebugCommand(bool isSync)

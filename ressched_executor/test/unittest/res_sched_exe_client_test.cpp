@@ -33,6 +33,7 @@ using namespace testing::ext;
 namespace {
     constexpr int32_t SYNC_THREAD_NUM = 100;
     constexpr int32_t SYNC_INTERNAL_TIME = 200;
+    constexpr int32_t IPC_MESSAGE_SIZE = 220000;
 }
 
 class ResSchedExeClientTest : public testing::Test {
@@ -92,6 +93,25 @@ HWTEST_F(ResSchedExeClientTest, SendRequestSync001, Function | MediumTest | Leve
 }
 
 /**
+ * @tc.name: SendRequestSync002
+ * @tc.desc: send res request stable test
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeClientTest, SendRequestSync002, Function | MediumTest | Level0)
+{
+    nlohmann::json context;
+    std::string msg(IPC_MESSAGE_SIZE, 'a');
+    context["message"] = msg;
+    nlohmann::json reply;
+    for (int i = 0; i < (SYNC_THREAD_NUM / 2); i++) {
+        ResSchedExeClient::GetInstance().SendRequestSync(ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT,
+            0, context, reply);
+        usleep(SYNC_INTERNAL_TIME);
+    }
+    EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);
+}
+
+/**
  * @tc.name: SendRequestAsync001
  * @tc.desc: report data stable test
  * @tc.type: FUNC
@@ -102,6 +122,24 @@ HWTEST_F(ResSchedExeClientTest, SendRequestAsync001, Function | MediumTest | Lev
     context["message"] = "test";
     for (int i = 0; i < SYNC_THREAD_NUM; i++) {
         ResSchedExeClient::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_DEBUG, 0, context);
+        usleep(SYNC_INTERNAL_TIME);
+    }
+    EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);
+}
+
+/**
+ * @tc.name: SendRequestAsync002
+ * @tc.desc: report data stable test
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedExeClientTest, SendRequestAsync002, Function | MediumTest | Level0)
+{
+    nlohmann::json context;
+    std::string msg(IPC_MESSAGE_SIZE, 'a');
+    context["message"] = msg;
+    nlohmann::json reply;
+    for (int i = 0; i < (SYNC_THREAD_NUM / 2); i++) {
+        ResSchedExeClient::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT, 0, context);
         usleep(SYNC_INTERNAL_TIME);
     }
     EXPECT_TRUE(ResSchedExeClient::GetInstance().resSchedExe_);

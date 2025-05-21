@@ -53,6 +53,10 @@ namespace {
     static constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 650;
     static constexpr int32_t LIMIT_REQUEST_TIME = 1000;
     static constexpr int64_t FOUR_HOUR_TIME = 4 * 60 * 60 * 1000;
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+    static const int32_t DEFAULT_VALUE = -1;
+    static const char* EXT_RES_KEY = "extType";
+#endif
     static const std::unordered_set<uint32_t> SCB_RES = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
@@ -123,83 +127,28 @@ namespace {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,
         ResType::SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
         ResType::SYNC_RES_TYPE_GET_THERMAL_DATA,
-        ResType::RES_TYPE_CLICK_RECOGNIZE,
-        ResType::RES_TYPE_SCREEN_STATUS,
-        ResType::RES_TYPE_MODEM_PA_HIGH_POWER_ABNORMAL,
-        ResType::RES_TYPE_APP_STATE_CHANGE,
-        ResType::RES_TYPE_ABILITY_STATE_CHANGE,
-        ResType::RES_TYPE_EXTENSION_STATE_CHANGE,
-        ResType::RES_TYPE_PROCESS_STATE_CHANGE,
-        ResType::RES_TYPE_WINDOW_FOCUS,
-        ResType::RES_TYPE_TRANSIENT_TASK,
-        ResType::RES_TYPE_CONTINUOUS_TASK,
-        ResType::RES_TYPE_CGROUP_ADJUSTER,
-        ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
-        ResType::RES_TYPE_REPORT_MMI_PROCESS,
-        ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
-        ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE,
-        ResType::RES_TYPE_USER_SWITCH,
-        ResType::RES_TYPE_USER_REMOVE,
-        ResType::RES_TYPE_SCREEN_LOCK,
         ResType::RES_TYPE_BLUETOOTH_A2DP_CONNECT_STATE_CHANGE,
         ResType::RES_TYPE_NETWORK_LATENCY_REQUEST,
-        ResType::RES_TYPE_CALL_STATE_UPDATE,
         ResType::RES_TYPE_THREAD_QOS_CHANGE,
-        ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
-        ResType::RES_TYPE_AUDIO_RING_MODE_CHANGE,
-        ResType::RES_TYPE_AUDIO_VOLUME_KEY_CHANGE,
-        ResType::RES_TYPE_APP_ABILITY_START,
-        ResType::RES_TYPE_PRELOAD_APPLICATION,
-        ResType::RES_TYPE_DEVICE_STILL_STATE_CHANGE,
-        ResType::RES_TYPE_RESIZE_WINDOW,
         ResType::RES_TYPE_MOVE_WINDOW,
-        ResType::RES_TYPE_SHOW_REMOTE_ANIMATION,
-        ResType::RES_TYPE_REPORT_CAMERA_STATE,
-        ResType::RES_TYPE_RUNNINGLOCK_STATE,
-        ResType::RES_TYPE_DRAG_STATUS_BAR,
-        ResType::RES_TYPE_REPORT_SCENE_BOARD,
-        ResType::RES_TYPE_MMI_INPUT_STATE,
         ResType::RES_TYPE_ANCO_CUST,
         ResType::RES_TYPE_SOCPERF_CUST_ACTION,
-        ResType::RES_TYPE_TIMEZONE_CHANGED,
-        ResType::RES_TYPE_APP_ASSOCIATED_START,
-        ResType::RES_TYPE_THERMAL_STATE,
         ResType::RES_TYPE_REPORT_SCREEN_CAPTURE,
-        ResType::RES_TYPE_KEY_PERF_SCENE,
-        ResType::RES_TYPE_SUPER_LAUNCHER,
-        ResType::RES_TYPE_CAST_SCREEN,
-        ResType::RES_TYPR_SCREEN_COLLABROATION,
         ResType::RES_TYPE_SA_CONTROL_APP_EVENT,
-        ResType::RES_TYPE_SYSTEM_CPU_LOAD,
         ResType::RES_TYPE_UPLOAD_DOWNLOAD,
         ResType::RES_TYPE_SPLIT_SCREEN,
         ResType::RES_TYPE_FLOATING_WINDOW,
         ResType::RES_TYPE_FRAME_RATE_REPORT,
-        ResType::RES_TYPE_LOCATION_STATUS_CHANGE,
         ResType::RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE,
-        ResType::RES_TYPE_FORM_STATE_CHANGE_EVENT,
         ResType::RES_TYPE_THERMAL_SCENARIO_REPORT,
-        ResType::RES_TYPE_BOOT_COMPLETED,
-        ResType::RES_TYPE_CONTINUOUS_STARTUP,
         ResType::RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK,
-        ResType::RES_TYPE_REPORT_GAME_SCHED,
-        ResType::RES_TYPE_SEND_FRAME_EVENT,
         ResType::RES_TYPE_CLOUD_CONFIG_UPDATE,
-        ResType::RES_TYPE_DEVICE_IDLE,
         ResType::RES_TYPE_BT_SERVICE_EVENT,
-        ResType::RES_TYPE_BMM_MONITER_CHANGE_EVENT,
-        ResType::RES_TYPE_GAME_INFO_NOTIFY,
         ResType::SYNC_RES_TYPE_REQUEST_MUTEX_STATUS,
-        ResType::SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
-        ResType::RES_TYPE_CLICK_RECOGNIZE,
-        ResType::RES_TYPE_RSS_CLOUD_CONFIG_UPDATE,
         ResType::SYNC_RES_TYPE_GET_NWEB_PRELOAD_SET,
         ResType::RES_TYPE_AUDIO_RENDERER_STANDBY,
-        ResType::RES_TYPE_APP_GAME_BOOST_EVENT,
         ResType::RES_TYPE_DISPLAY_MULTI_SCREEN,
         ResType::RES_TYPE_INTENT_CTRL_APP,
-        ResType::RES_TYPE_GET_GAME_SCENE_INFO,
-        ResType::RES_TYPE_FRAME_RATE_REPORT_FROM_RS,
         ResType::RES_TYPE_SHORT_TERM_LOAD,
         ResType::RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT,
         ResType::SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_UID,
@@ -211,71 +160,91 @@ namespace {
         ResType::RES_TYPE_CAMERA_PRELAUNCH,
         ResType::RES_TYPE_DEVICE_MODE_STATUS,
     };
+    static const std::unordered_map<uint32_t, std::unordered_set<int32_t>> ALLOW_SOME_UID_REPORT_RES = {
+        { ResType::RES_TYPE_MODEM_PA_HIGH_POWER_ABNORMAL, { 1201 } },
+        { ResType::RES_TYPE_APP_ABILITY_START, { 5523 } },
+        { ResType::RES_TYPE_PRELOAD_APPLICATION, { 5523 } },
+        { ResType::RES_TYPE_APP_ASSOCIATED_START, { 5523 } },
+        { ResType::RES_TYPE_REPORT_SCREEN_CAPTURE, { 1013 } },
+        { ResType::RES_TYPE_LOCATION_STATUS_CHANGE, { 1021 } },
+        { ResType::RES_TYPE_SYSTEM_CPU_LOAD, { 1201 } },
+        { ResType::RES_TYPE_FRAME_RATE_REPORT, { 1003 } },
+        { ResType::RES_TYPE_FORM_STATE_CHANGE_EVENT, { 5523 } },
+        { ResType::RES_TYPE_SEND_FRAME_EVENT, { 1003 } },
+        { ResType::RES_TYPE_CLICK_RECOGNIZE, { 6696 } },
+        { ResType::RES_TYPE_REPORT_GAME_SCHED, { 7800 } },
+        { ResType::RES_TYPE_DEVICE_IDLE, { 3051 } },
+        { ResType::RES_TYPE_GAME_INFO_NOTIFY, { 7011 } },
+        { ResType::SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS, { 5523 } },
+        { ResType::RES_TYPE_GET_GAME_SCENE_INFO, { 7800 } },
+        { ResType::RES_TYPE_APP_GAME_BOOST_EVENT, { 7800 } },
+        { ResType::RES_TYPE_FRAME_RATE_REPORT_FROM_RS, { 1003 } },
+    };
+}
 
-    bool IsHasPermission(const uint32_t type)
-    {
-        if (SA_RES.find(type) == SA_RES.end()) {
-            RESSCHED_LOGE("resType:%{public}d not sa report", type);
-            return false;
-        }
-        AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
-        auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
-        if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
-            RESSCHED_LOGD("not native sa");
-            return false;
-        }
-        int32_t hasPermission = AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, NEEDED_PERMISSION);
-        if (hasPermission != 0) {
-            RESSCHED_LOGE("not have permission");
-            return false;
-        }
-        return true;
-    }
-
-    bool IsTypeVaild(const uint32_t type)
-    {
-        return type >= ResType::RES_TYPE_FIRST && type < ResType::RES_TYPE_LAST;
-    }
-
-    bool IsThirdPartType(const uint32_t type)
-    {
-        if (THIRDPART_RES.find(type) == THIRDPART_RES.end()) {
-            RESSCHED_LOGD("resType:%{public}d not hap app report", type);
-            return false;
-        }
-        if (FG_THIRDPART_RES.find(type) != FG_THIRDPART_RES.end() &&
-            !ResSchedMgr::GetInstance().IsForegroundApp(IPCSkeleton::GetCallingPid())) {
-            RESSCHED_LOGD("not foreground app");
-            return false;
-        }
-        AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
-        auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
-        if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_HAP) {
-            RESSCHED_LOGE("not hap app");
-            return false;
-        }
-
-        return true;
-    }
-
-    bool IsSBDResType(uint32_t type)
-    {
-        if (SCB_RES.find(type) == SCB_RES.end()) {
-            return false;
-        }
-        AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
-        auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
-        if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_HAP) {
-            return false;
-        }
-        AccessToken::HapTokenInfo callingTokenInfo;
-        AccessToken::AccessTokenKit::GetHapTokenInfo(tokenId, callingTokenInfo);
-        if (callingTokenInfo.bundleName == SCENEBOARD_BUNDLE_NAME) {
-            return true;
-        }
-        RESSCHED_LOGE("%{public}s is not sceneboard bundle name", callingTokenInfo.bundleName.c_str());
+bool ResSchedService::IsThirdPartType(const uint32_t type)
+{
+    if (allowAllAppReportRes_.find(type) == allowAllAppReportRes_.end()) {
+        RESSCHED_LOGD("resType:%{public}d not hap app report", type);
+        return false;
+     }
+    if (allowFgAppReportRes_.find(type) != allowFgAppReportRes_.end() &&
+        !ResSchedMgr::GetInstance().IsForegroundApp(IPCSkeleton::GetCallingPid())) {
+        RESSCHED_LOGD("not foreground app");
         return false;
     }
+    AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
+    auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
+    if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_HAP) {
+        RESSCHED_LOGE("not hap app");
+        return false;
+    }
+    return true;
+}
+
+bool ResSchedService::IsSBDResType(uint32_t type)
+{
+    if (allowSCBReportRes_.find(type) == allowSCBReportRes_.end()) {
+        return false;
+    }
+    AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
+    auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
+    if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_HAP) {
+        return false;
+    }
+    AccessToken::HapTokenInfo callingTokenInfo;
+    AccessToken::AccessTokenKit::GetHapTokenInfo(tokenId, callingTokenInfo);
+    if (callingTokenInfo.bundleName == SCENEBOARD_BUNDLE_NAME) {
+        return true;
+    }
+    RESSCHED_LOGE("%{public}s is not sceneboard bundle name", callingTokenInfo.bundleName.c_str());
+    return false;
+}
+
+bool ResSchedService::IsHasPermission(const uint32_t type, int32_t uid)
+{
+    const auto& item = allowSomeSAReportRes_.find(type);
+    if (item != allowSomeSAReportRes_.end()) {
+        if (item->second.find(uid) == item->second.end()) {
+            RESSCHED_LOGE("resType:%{public}d not allow uid:%{public}d report", type, uid);
+             return false;
+        }
+    } else if (allowAllSAReportRes_.find(type) == allowAllSAReportRes_.end()) {
+        RESSCHED_LOGE("resType:%{public}d not sa report", type);
+        return false;
+    }
+    AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
+    auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
+    if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
+        RESSCHED_LOGD("not native sa");
+        return false;
+    }
+    int32_t hasPermission = AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, NEEDED_PERMISSION);
+    if (hasPermission != 0) {
+        RESSCHED_LOGE("not have permission");
+        return false;
+    }
+    return true;
 }
 
 nlohmann::json ResSchedService::StringToJsonObj(const std::string& str)
@@ -296,6 +265,22 @@ nlohmann::json ResSchedService::StringToJsonObj(const std::string& str)
     return jsonTmp;
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+int32_t ResSchedService::GetExtTypeByResPayload(const std::string& payload)
+{
+    auto jsonPayload = StringToJsonObj(payload);
+    if (!jsonPayload.contains(EXT_RES_KEY) || !jsonPayload[EXT_RES_KEY].is_string()) {
+        return DEFAULT_VALUE;
+    }
+    int type = DEFAULT_VALUE;
+    if (StrToInt(jsonPayload[EXT_RES_KEY], type)) {
+        return type;
+    } else {
+        return DEFAULT_VALUE;
+    }
+}
+#endif
+
 ErrCode ResSchedService::ReportData(uint32_t resType, int64_t value, const std::string& payload)
 {
     int32_t checkResult = RemoteRequestCheck();
@@ -303,8 +288,16 @@ ErrCode ResSchedService::ReportData(uint32_t resType, int64_t value, const std::
         RESSCHED_LOGD("check remote request fail.");
         return checkResult;
     }
-
-    int32_t ret = CheckReportDataParcel(resType, value, payload);
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+    if (resType == ResType::RES_TYPE_KEY_PERF_SCENE) {
+        int32_t extType = GetExtTypeByResPayload(payload);
+        if (extType != DEFAULT_VALUE) {
+            resType = (uint32_t)extType;
+        }
+    }
+#endif
+    int32_t callingUid = IPCSkeleton::GetCallingUid();
+    int32_t ret = CheckReportDataParcel(resType, value, payload, callingUid);
     if (ret != ERR_OK) {
         RESSCHED_LOGE("%{public}s: check report data parcel fail ret=%{public}d, type=%{public}u.",
             __func__, ret, resType);
@@ -315,7 +308,6 @@ ErrCode ResSchedService::ReportData(uint32_t resType, int64_t value, const std::
     RESSCHED_LOGD("ResSchedService receive data from ipc resType: %{public}u, value: %{public}lld, pid: %{public}d",
                   resType, (long long)value, clientPid);
     nlohmann::json reportDataPayload = StringToJsonObj(payload);
-    int32_t callingUid = IPCSkeleton::GetCallingUid();
     reportDataPayload["callingUid"] = std::to_string(callingUid);
     reportDataPayload["clientPid"] = std::to_string(clientPid);
     ResSchedMgr::GetInstance().ReportData(resType, value, reportDataPayload);
@@ -332,8 +324,8 @@ ErrCode ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t v
         resultValue = checkResult;
         return ERR_OK;
     }
-
-    int32_t ret = CheckReportDataParcel(resType, value, payload);
+    int32_t callingUid = IPCSkeleton::GetCallingUid();
+    int32_t ret = CheckReportDataParcel(resType, value, payload, callingUid);
     if (ret != ERR_OK) {
         RESSCHED_LOGE("%{public}s: check report data parcel fail ret=%{public}d, type=%{public}u.",
             __func__, ret, resType);
@@ -344,7 +336,6 @@ ErrCode ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t v
     nlohmann::json replyValue;
     payloadJsonValue = StringToJsonObj(payload);
     int32_t clientPid = IPCSkeleton::GetCallingPid();
-    int32_t callingUid = IPCSkeleton::GetCallingUid();
     payloadJsonValue["clientPid"] = std::to_string(clientPid);
     payloadJsonValue["callingUid"] = std::to_string(callingUid);
     resultValue = PluginMgr::GetInstance().DeliverResource(
@@ -411,6 +402,12 @@ ErrCode ResSchedService::UnRegisterEventListener(uint32_t eventType, uint32_t li
 ErrCode ResSchedService::GetSystemloadLevel(int32_t& resultValue)
 {
     resultValue = NotifierMgr::GetInstance().GetSystemloadLevel();
+    return ERR_OK;
+}
+
+ErrCode ResSchedService::GetResTypeList(std::set<uint32_t>& resTypeList)
+{
+    PluginMgr::GetInstance().GetResTypeList(resTypeList);
     return ERR_OK;
 }
 
@@ -616,13 +613,9 @@ void ResSchedService::DumpAllPluginConfig(std::string &result)
 }
 
 int32_t ResSchedService::CheckReportDataParcel(const uint32_t& type, const int64_t& value,
-    const std::string& payload)
+    const std::string& payload, int32_t uid)
 {
-    if (!IsTypeVaild(type)) {
-        RESSCHED_LOGE("type:%{public}u is invalid", type);
-        return ERR_RES_SCHED_PARCEL_ERROR;
-    }
-    if (!IsSBDResType(type) && !IsThirdPartType(type) && !IsHasPermission(type)) {
+    if (!IsSBDResType(type) && !IsThirdPartType(type) && !IsHasPermission(type, uid)) {
         RESSCHED_LOGD("type:%{public}u, no permission", type);
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
@@ -713,6 +706,51 @@ int32_t ResSchedService::RemoteRequestCheck()
     return ERR_OK;
 }
 
+void ResSchedService::InitAllowIpcReportRes()
+{
+    AddSCBRes(SCB_RES);
+    AddAllSARes(SA_RES);
+    AddSomeSARes(ALLOW_SOME_UID_REPORT_RES);
+    AddAllAppRes(THIRDPART_RES);
+    AddFgAppRes(FG_THIRDPART_RES);
+    AddSCBRes(ResSchedMgr::GetInstance().GetAllowSCBReportResExt());
+    AddAllSARes(ResSchedMgr::GetInstance().GetAllowAllSAReportResExt());
+    AddSomeSARes(ResSchedMgr::GetInstance().GetAllowSomeSAReportResExt());
+    AddAllAppRes(ResSchedMgr::GetInstance().GetAllowAllAppReportResExt());
+    AddFgAppRes(ResSchedMgr::GetInstance().GetAllowFgAppReportResExt());
+}
+
+template <typename T>
+inline void AddAll(T& to, const T& from)
+{
+    if (!from.empty()) {
+        to.insert(from.begin(), from.end());
+    }
+}
+
+void ResSchedService::AddSCBRes(const std::unordered_set<uint32_t>& allowSCBReportRes)
+{
+    AddAll(allowSCBReportRes_, allowSCBReportRes);
+}
+
+void ResSchedService::AddAllSARes(const std::unordered_set<uint32_t>& allowAllSAReportRes)
+{
+    AddAll(allowAllSAReportRes_, allowAllSAReportRes);
+}
+
+void ResSchedService::AddSomeSARes(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>&
+    allowSomeSAReportRes)
+{
+    AddAll(allowSomeSAReportRes_, allowSomeSAReportRes);
+}
+void ResSchedService::AddAllAppRes(const std::unordered_set<uint32_t>& allowAllAppReportRes)
+{
+    AddAll(allowAllAppReportRes_, allowAllAppReportRes);
+}
+void ResSchedService::AddFgAppRes(const std::unordered_set<uint32_t>& allowFgAppReportRes)
+{
+    AddAll(allowFgAppReportRes_, allowFgAppReportRes);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
 

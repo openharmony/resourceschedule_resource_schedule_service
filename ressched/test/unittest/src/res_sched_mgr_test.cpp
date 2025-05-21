@@ -169,5 +169,31 @@ HWTEST_F(ResSchedMgrTest, IsForegroundApp001, TestSize.Level1)
     ResSchedMgr::GetInstance().OnApplicationStateChange((int32_t)ApplicationState::APP_STATE_END, 5000);
     EXPECT_FALSE(ResSchedMgr::GetInstance().IsForegroundApp(5000));
 }
+
+/**
+ * @tc.name: AllowReportResExtTest001
+ * @tc.desc: test func GetAllowXXXReportResExt and SetAllowXXXReportResExt
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedMgrTest, AllowReportResExtTest001, TestSize.Level1)
+{
+    std::unordered_set<uint32_t> testSet = { 0 };
+    std::unordered_map<uint32_t, std::unordered_set<int32_t>> testMap = { { 0, { 0 } } };
+    ResSchedMgr::GetInstance().SetAllowSCBReportResExt(testSet);
+    auto scbSet = ResSchedMgr::GetInstance().GetAllowSCBReportResExt();
+    EXPECT_TRUE(scbSet.find(0) != scbSet.end());
+    ResSchedMgr::GetInstance().SetAllowAllSAReportResExt(testSet);
+    auto saSet = ResSchedMgr::GetInstance().GetAllowAllSAReportResExt();
+    EXPECT_TRUE(saSet.find(0) != saSet.end());
+    ResSchedMgr::GetInstance().SetAllowSomeSAReportResExt(testMap);
+    auto saMap = ResSchedMgr::GetInstance().GetAllowSomeSAReportResExt();
+    EXPECT_TRUE(saMap.find(0) != saMap.end());
+    ResSchedMgr::GetInstance().SetAllowAllAppReportResExt(testSet);
+    auto appSet = ResSchedMgr::GetInstance().GetAllowAllAppReportResExt();
+    EXPECT_TRUE(appSet.find(0) != appSet.end());
+    ResSchedMgr::GetInstance().SetAllowFgAppReportResExt(testSet);
+    auto fgAppSet = ResSchedMgr::GetInstance().GetAllowFgAppReportResExt();
+    EXPECT_TRUE(fgAppSet.find(0) != fgAppSet.end());
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -34,6 +34,7 @@
 #include "res_exe_type.h"
 #include "res_sched_exe_constants.h"
 #include "res_sched_exe_log.h"
+#include "res_sched_string_util.h"
 #include "directory_ex.h"
 
 namespace OHOS {
@@ -43,6 +44,9 @@ namespace {
     const int32_t MAX_CONFIG_SIZE = 1024 * 1024;
     const std::string STR_CONFIG_READER = "config";
     const std::string STR_PLUGIN_SWITCH = "switch";
+    const std::string STR_MESSAGE_INDEX = "MESSAGE_INDEX";
+    const std::string STR_MESSAGE_NUMBER = "MESSAGE_NUMBER";
+    const std::string STR_IPC_MESSAGE = "IPC_MESSAGE";
 #ifdef HICOLLIE_ENABLE
     const unsigned int XCOLLIE_TIMEOUT_SECONDS = 10;
 #endif
@@ -81,7 +85,7 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     HitraceScoped hitrace(HITRACE_TAG_OHOS, traceStr);
     switch (resType) {
         case ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT:
-            InitPluginMgr(payload);
+            InitPluginMgrPretreatment(payload);
             break;
         case ResExeType::RES_TYPE_CGROUP_SYNC_EVENT:
         case ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT:
@@ -107,7 +111,7 @@ void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlo
         .append("_").append(std::to_string(value));
     HicollieUtil hicollie(funcName);
     if (resType == ResExeType::RES_TYPE_EXECUTOR_PLUGIN_INIT) {
-        InitPluginMgr(payload);
+        InitPluginMgrPretreatment(payload);
         return;
     }
     std::string traceStr = BuildTraceStr(__func__, resType, value);
@@ -123,13 +127,41 @@ int32_t ResSchedExeMgr::KillProcess(pid_t pid)
     return killRes;
 }
 
-void ResSchedExeMgr::InitPluginMgr(const nlohmann::json& payload)
+void ResSchedExeMgr::InitPluginMgrPretreatment(const nlohmann::json& payload)
 {
     if (isInit) {
         RSSEXE_LOGE("plugin manager has init");
         return;
     }
 
+    if (payload.contains(STR_MESSAGE_INDEX) && payload[STR_MESSAGE_INDEX].is_number() &&
+        payload.contains(STR_MESSAGE_NUMBER) && payload[STR_MESSAGE_NUMBER].is_number()) {
+        ipcMessage_.insert(std::make_pair(payload[STR_MESSAGE_INDEX].get<int>(),
+            payload[STR_IPC_MESSAGE].get<std::string>()));
+        ipcNumber_++;
+        RSSEXE_LOGD("ipc message number: %{public}d, current number: %{public}d",
+            payload[STR_MESSAGE_NUMBER].get<int>(), ipcNumber_);
+        if (payload[STR_MESSAGE_NUMBER].get<int>() == ipcNumber_) {
+            std::string ipcMessage = "";
+            for (const auto& pair : ipcMessage_) {
+                ipcMessage += pair.second;
+            }
+            nlohmann::json initPayload;
+            if (!ResCommonUtil::StringToJson(ipcMessage, initPayload)) {
+                RSSEXE_LOGE("executor plugin manager has init failed in batches ipc.");
+            }
+            InitPluginMgr(initPayload);
+            ipcNumber_ = 0;
+            ipcMessage_.clear();
+            return;
+        }
+        return;
+    }
+    InitPluginMgr(payload);
+}
+
+void ResSchedExeMgr::InitPluginMgr(const nlohmann::json& payload)
+{
     if (!payload.contains(STR_CONFIG_READER) || !payload[STR_CONFIG_READER].is_array()
         || !payload.contains(STR_PLUGIN_SWITCH) || !payload[STR_PLUGIN_SWITCH].is_array()) {
         RSSEXE_LOGE("recieve config string error");
