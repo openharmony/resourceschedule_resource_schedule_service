@@ -200,7 +200,6 @@ void PluginMgr::GetConfigContent(int32_t configIdx, const std::string& configPat
     if (configFilePaths.size() <= 0) {
         return;
     }
-    std::ifstream ifs;
     for (auto configFilePath : configFilePaths) {
         if (configFilePath.empty()) {
             continue;

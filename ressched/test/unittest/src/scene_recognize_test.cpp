@@ -136,6 +136,47 @@ HWTEST_F(SceneRecognizeTest, BgtaskTest001, Function | MediumTest | Level0)
 }
 
 /**
+ * @tc.name: SceneRecognizerMgr Bgtask test
+ * @tc.desc: test the interface IsValidFilteredTypeIds
+ * @tc.type: FUNC
+ * @tc.require: IC9V05
+ * @tc.author:fengshiyi
+ */
+HWTEST_F(SceneRecognizeTest, BgtaskTest002, Function | MediumTest | Level0)
+{
+    auto bgtaskRecognizer = std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>();
+    std::vector<uint32_t> filteredTypeIds;
+    filteredTypeIds.push_back(0);
+    EXPECT_FALSE(bgtaskRecognizer->IsValidFilteredTypeIds(filteredTypeIds));
+    filteredTypeIds.clear();
+    filteredTypeIds.push_back(1);
+    EXPECT_TRUE(bgtaskRecognizer->IsValidFilteredTypeIds(filteredTypeIds));
+    filteredTypeIds.clear();
+    filteredTypeIds.push_back(100);
+    EXPECT_FALSE(bgtaskRecognizer->IsValidFilteredTypeIds(filteredTypeIds));
+    std::vector<uint32_t> typeIds(100, 1);
+    EXPECT_FALSE(bgtaskRecognizer->IsValidFilteredTypeIds(typeIds));
+}
+
+/**
+ * @tc.name: SceneRecognizerMgr Bgtask test
+ * @tc.desc: test the interface IsValidPid
+ * @tc.type: FUNC
+ * @tc.require: IC9V05
+ * @tc.author:fengshiyi
+ */
+HWTEST_F(SceneRecognizeTest, BgtaskTest003, Function | MediumTest | Level0)
+{
+    auto bgtaskRecognizer = std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>();
+    pid_t pid = -1;
+    EXPECT_FALSE(bgtaskRecognizer->IsValidPid(pid));
+    pid = INT32_MAX;
+    EXPECT_FALSE(bgtaskRecognizer->IsValidPid(pid));
+    pid = 100;
+    EXPECT_TRUE(bgtaskRecognizer->IsValidPid(pid));
+}
+
+/**
  * @tc.name: SceneRecognizerMgr Slide test
  * @tc.desc: test the interface DispatchResource
  * @tc.type: FUNC
