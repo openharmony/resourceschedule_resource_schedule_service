@@ -760,7 +760,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_016, Function | Med
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
     nlohmann::json payload = nlohmann::json::parse("{\"pid\": 1112}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_INNER_AUDIO_STATE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
     cgroupEventHandler->supervisor_ = temp;
 
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
