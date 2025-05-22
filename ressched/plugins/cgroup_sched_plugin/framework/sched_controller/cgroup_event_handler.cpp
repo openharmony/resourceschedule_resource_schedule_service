@@ -770,15 +770,13 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
 {
     int32_t uid = 0;
     int32_t pid = 0;
-    int32_t sessionId = -1;
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
 
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
-        !ParseValue(sessionId, "sessionId", payload)) {
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
         CGS_LOGE("%{public}s : payload does not contain uid or pid", __func__);
         return;
     }
@@ -792,19 +790,10 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
     if (!app || !procRecord) {
         return;
     }
-    if (value == ResType::AudioStatus::RENDERER_RELEASED) {
-        procRecord->audioPlayingState_.erase(sessionId);
-    } else {
-        auto it = procRecord->audioPlayingState_.find(sessionId);
-        if (it != procRecord->audioPlayingState_.end() && it->second == static_cast<int32_t>(value)) {
-            return;
-        }
-        procRecord->audioPlayingState_[sessionId] = static_cast<int32_t>(value);
-    }
 
-    long revertValue = static_cast<long>(value);
-    CGS_LOGI("%{public}s :Appname:%{public}s, uid:%{public}d, pid:%{public}d, sessionId:%{public}d, "\
-        "state:%{public}ld", __func__, app->GetName().c_str(), uid, pid, sessionId, revertValue);
+    procRecord->audioPlayingState_ = static_cast<int32_t>(value);
+    CGS_LOGI("%{public}s :Appname:%{public}s, uid:%{public}d, pid:%{public}d, state:%{public}d",
+        __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
@@ -816,7 +805,6 @@ void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t
 {
     int32_t uid = 0;
     int32_t pid = 0;
-    int32_t sessionId = 0;
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -840,9 +828,9 @@ void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t
         return;
     }
 
-    procRecord->audioPlayingState_[sessionId] = static_cast<int32_t>(value);
+    procRecord->audioPlayingState_ = static_cast<int32_t>(value);
     CGS_LOGI("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
-        __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_[sessionId]);
+        __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_WEBVIEW_AUDIO_STATE_CHANGED);

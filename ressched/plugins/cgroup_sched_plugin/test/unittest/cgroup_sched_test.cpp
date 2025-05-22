@@ -760,33 +760,33 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_016, Function | Med
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
     nlohmann::json payload = nlohmann::json::parse("{\"pid\": 1112}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
     cgroupEventHandler->supervisor_ = temp;
 
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     payload = nlohmann::json::parse("{\"pid\": 1112}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
 
     payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": 1112}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
 
     payload = nlohmann::json::parse("{\"pid\": 1112}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
 
     payload = nlohmann::json::parse("{\"uid\": 1111, \"pid\": \"1112\"}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
 
     payload = nlohmann::json::parse("{\"uid\": 0, \"pid\": 1112}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
 
     payload = nlohmann::json::parse("{\"uid\": 1111, \"pid\": 0}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
 
     payload = nlohmann::json::parse("{\"uid\": 1111, \"pid\": 1112}");
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(1111);
     EXPECT_TRUE(app != nullptr);
-    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, 2, payload);
+    cgroupEventHandler->HandleReportAudioState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
     auto proc = app->GetProcessRecordNonNull(1112);
     EXPECT_TRUE(proc != nullptr);
 }
@@ -804,24 +804,24 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_017, Function | Med
     cgroupEventHandler->SetSupervisor(supervisor_);
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
-    nlohmann::json payload = nlohmann::json::parse("{\"clientPid\": \"1112\"}");
+    nlohmann::json payload = nlohmann::json::parse("{\"pid\": \"1112\"}");
     cgroupEventHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
     cgroupEventHandler->supervisor_ = temp;
 
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
-    payload = nlohmann::json::parse("{\"clientPid\": \"1112\"}");
+    payload = nlohmann::json::parse("{\"pid\": \"1112\"}");
     cgroupEventHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
 
     payload = nlohmann::json::parse("{\"uid\": \"1111\"}");
     cgroupEventHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
 
-    payload = nlohmann::json::parse("{\"uid\": \"0\", \"clientPid\": \"1112\"}");
+    payload = nlohmann::json::parse("{\"uid\": \"0\", \"pid\": \"1112\"}");
     cgroupEventHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
 
-    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"clientPid\": \"0\"}");
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"0\"}");
     cgroupEventHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
 
-    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"clientPid\": \"1112\"}");
+    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(1111);
     EXPECT_TRUE(app != nullptr);
     cgroupEventHandler->HandleReportWebviewAudioState(ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, 0, payload);
