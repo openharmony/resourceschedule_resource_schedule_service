@@ -18,6 +18,7 @@
     *PluginMgr*Init*;
     *PluginMgr*SubscribeResource*;
     *PluginMgr*UnSubscribeResource*;
+    *PluginMgr*UnSubscribeAllResource*;
     *PluginMgr*SubscribeSyncResource*;
     *PluginMgr*UnSubscribeSyncResource*;
   local:
