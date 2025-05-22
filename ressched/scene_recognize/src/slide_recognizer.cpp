@@ -284,5 +284,10 @@ void SlideRecognizer::SetListFlingSpeedLimit(float value)
 {
     listFlingSpeedLimit_ = value;
 }
+
+uint32_t SlideRecognizer::GetSlideStatus()
+{
+    return g_slideState;
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

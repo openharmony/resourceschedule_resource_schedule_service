@@ -72,6 +72,12 @@ ohos_unittest("resschedservice_test") {
     cfi_cross_dso = true
     debug = false
   }
+  defines = []
+
+  if (resource_schedule_service_with_ext_res_enable) {
+    defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
+  }
+
   branch_protector_ret = "pac_ret"
 }
 
@@ -176,6 +182,7 @@ ohos_unittest("resschedfwk_test") {
     "src/plugin_mgr_test.cpp",
     "src/plugin_switch_test.cpp",
     "src/res_sched_mgr_test.cpp",
+    "src/slide_recognize_test.cpp",
   ]
 
   deps = [

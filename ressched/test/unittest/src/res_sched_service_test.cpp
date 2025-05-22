@@ -95,6 +95,7 @@ void ResSchedServiceTest::SetUp()
      */
     resSchedService_ = make_shared<ResSchedService>();
     resSchedServiceAbility_ = make_shared<ResSchedServiceAbility>();
+    resSchedService_->InitAllowIpcReportRes();
 }
 
 void ResSchedServiceTest::TearDown()
@@ -161,6 +162,9 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
 
     std::vector<std::u16string> argsOnePlugin5 = {to_utf16("sendDebugToExecutor")};
     res = resSchedService_->Dump(correctFd, argsOnePlugin5);
+
+    std::vector<std::u16string> argsOnePlugin6 = {to_utf16("PluginConfig")};
+    res = resSchedService_->Dump(correctFd, argsOnePlugin6);
 }
 
 /**
@@ -175,6 +179,123 @@ HWTEST_F(ResSchedServiceTest, Report001, Function | MediumTest | Level0)
     std::string payload;
     EXPECT_TRUE(resSchedService_ != nullptr);
     resSchedService_->ReportData(0, 0, payload);
+}
+
+/**
+ * @tc.name: Ressched service ReportData 002
+ * @tc.desc: Verify if Ressched service ReportData is success.
+ * @tc.type: FUNC
+ * @tc.require: issueIC9NFW
+ * @tc.author:baiheng
+ */
+HWTEST_F(ResSchedServiceTest, Report003, Function | MediumTest | Level0)
+{
+    std::string payload;
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    resSchedService_->ReportData(ResType::RES_TYPE_CLICK_RECOGNIZE, ResType::ClickEventType::TOUCH_EVENT_DOWN, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_PUSH_PAGE, ResType::PushPageType::PUSH_PAGE_START, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_POP_PAGE, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_LOAD_PAGE, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_KEY_EVENT, 0, payload);
+}
+
+/**
+ * @tc.name: Ressched service ReportData 003
+ * @tc.desc: Verify if Ressched service ReportData is success.
+ * @tc.type: FUNC
+ * @tc.require: issueIC9NFW
+ * @tc.author:baiheng
+ */
+HWTEST_F(ResSchedServiceTest, Report004, Function | MediumTest | Level0)
+{
+    std::string payload;
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    resSchedService_->ReportData(ResType::SYNC_RES_TYPE_THAW_ONE_APP, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_REPORT_SCENE_BOARD, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_SHOW_REMOTE_ANIMATION, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_MOVE_WINDOW, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_RESIZE_WINDOW, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_ONLY_PERF_APP_COLD_START, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_GESTURE_ANIMATION, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_SCENE_ROTATION, 0, payload);
+}
+
+/**
+ * @tc.name: Ressched service ReportData 004
+ * @tc.desc: Verify if Ressched service ReportData is success.
+ * @tc.type: FUNC
+ * @tc.require: issueIC9NFW
+ * @tc.author:baiheng
+ */
+HWTEST_F(ResSchedServiceTest, Report005, Function | MediumTest | Level0)
+{
+    std::string payload;
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    resSchedService_->ReportData(ResType::RES_TYPE_SCREEN_STATUS, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_EXTENSION_STATE_CHANGE, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_PROCESS_STATE_CHANGE, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_GET_GAME_SCENE_INFO, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_GAME_INFO_NOTIFY, 0, payload);
+    resSchedService_->ReportData(ResType::SYNC_RES_TYPE_THAW_ONE_APP, 0, payload);
+}
+
+/**
+ * @tc.name: Ressched service StringToJsonObj001
+ * @tc.desc: test StringToJsonObj.
+ * @tc.type: FUNC
+ * @tc.require: issueIC9NFW
+ * @tc.author:baiheng
+ */
+HWTEST_F(ResSchedServiceTest, StringToJsonObj001, Function | MediumTest | Level0)
+{
+    std::string payload;
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    resSchedService_->StringToJsonObj("");
+    resSchedService_->StringToJsonObj("{}");
+    resSchedService_->StringToJsonObj("{\"key\":\"value\"}");
+    resSchedService_->StringToJsonObj("aaa");
+}
+
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+/**
+ * @tc.name: Ressched service GetExtTypeByResPayload001
+ * @tc.desc: test GetExtTypeByResPayload.
+ * @tc.type: FUNC
+ * @tc.require: issueIC9NFW
+ * @tc.author:baiheng
+ */
+HWTEST_F(ResSchedServiceTest, GetExtTypeByResPayload001, Function | MediumTest | Level0)
+{
+    std::string payload;
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    resSchedService_->GetExtTypeByResPayload(payload);
+    payload = "{\"extType\": 1}";
+    resSchedService_->GetExtTypeByResPayload(payload);
+    payload = "{\"extType\": \"-100.00\"}";
+    resSchedService_->GetExtTypeByResPayload(payload);
+    payload = "{\"extType\": \"10000\"}";
+    resSchedService_->GetExtTypeByResPayload(payload);
+}
+#endif
+
+/**
+ * @tc.name: Ressched service IsAllowedAppPreload001
+ * @tc.desc: test IsAllowedAppPreload.
+ * @tc.type: FUNC
+ * @tc.require: issueIC9NFW
+ * @tc.author:baiheng
+ */
+HWTEST_F(ResSchedServiceTest, IsAllowedAppPreload001, Function | MediumTest | Level0)
+{
+    std::string payload;
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    bool res1 = false;
+    int32_t res2 = -1;
+    resSchedService_->IsAllowedAppPreload("test", 0, res1);
+    resSchedService_->LoadAppPreloadPlugin();
+    resSchedService_->IsAllowedLinkJump(false, res2);
+    resSchedService_->IsAllowedLinkJump(true, res2);
 }
 
 /**

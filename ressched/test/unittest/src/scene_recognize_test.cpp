@@ -297,5 +297,22 @@ HWTEST_F(SceneRecognizeTest, SetListFlingSpeedLimit_001, Function | MediumTest |
     slideRecognizer->SetListFlingSpeedLimit(value);
     EXPECT_EQ(slideRecognizer->listFlingSpeedLimit_, value);
 }
+
+/**
+ * @tc.name: SceneRecognizer DispatchResource_001
+ * @tc.desc: test the interface DispatchResource
+ * @tc.type: FUNC
+ * @tc.require: issuesIC5T7D
+ * @tc.author: baiheng
+ */
+HWTEST_F(SceneRecognizeTest, DispatchResource_001, Function | MediumTest | Level0)
+{
+    SceneRecognizerMgr::GetInstance().DispatchResource(nullptr);
+    SceneRecognizerMgr::GetInstance().ffrtQueue_ = nullptr;
+    nlohmann::json payload;
+    auto resData = make_shared<ResData>(0, 0, payload);
+    SceneRecognizerMgr::GetInstance().DispatchResource(resData);
+    EXPECT_EQ(SceneRecognizerMgr::GetInstance().ffrtQueue_, nullptr);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
