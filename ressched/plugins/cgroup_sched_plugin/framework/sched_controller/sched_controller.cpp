@@ -110,7 +110,7 @@ void SchedController::InitResTypes()
         ResType::RES_TYPE_REPORT_KEY_THREAD,
         ResType::RES_TYPE_REPORT_WINDOW_STATE,
         ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
-        ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE,
+        ResType::RES_TYPE_INNER_AUDIO_STATE,
         ResType::RES_TYPE_RUNNINGLOCK_STATE,
         ResType::RES_TYPE_REPORT_SCENE_BOARD,
         ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE,
@@ -244,7 +244,7 @@ void SchedController::InitDispatchResFuncMap()
         { ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleReportWebviewAudioState(resType, value, payload); } },
-        { ResType::RES_TYPE_AUDIO_RENDER_STATE_CHANGE, [](std::shared_ptr<CgroupEventHandler> handler,
+        { ResType::RES_TYPE_INNER_AUDIO_STATE, [](std::shared_ptr<CgroupEventHandler> handler,
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleReportAudioState(resType, value, payload); } },
         { ResType::RES_TYPE_RUNNINGLOCK_STATE, [](std::shared_ptr<CgroupEventHandler> handler,
@@ -514,11 +514,8 @@ void SchedController::DumpProcessEventState(std::string& result)
                 .append(", screenCaptureState: ").append(ToString(process->screenCaptureState_))
                 .append(", videoState: ").append(ToString(process->videoState_))
                 .append(", isActive: ").append(ToString(process->isActive_))
-                .append(", linkedWindowId: ").append(ToString(process->linkedWindowId_));
-            for (const auto& audioItem : process->audioPlayingState_) {
-                result.append(", audioPlayingState[").append(ToString(audioItem.first)).append("]: ")
-                    .append(ToString(audioItem.second));
-            }
+                .append(", linkedWindowId: ").append(ToString(process->linkedWindowId_))
+                .append(", audioPlayingState: ").append(ToString(process->audioPlayingState_));
             result.append("\n");
         }
     }
