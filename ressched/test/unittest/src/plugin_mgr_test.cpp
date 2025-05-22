@@ -303,6 +303,23 @@ HWTEST_F(PluginMgrTest, UnSubscribeResource003, TestSize.Level1)
 }
 
 /**
+ * @tc.name: Plugin mgr test UnSubscribeAllResources 001
+ * @tc.desc: Verify if can SubscribeResource
+ * @tc.type: FUNC
+ * @tc.require: IC9LVT
+ */
+HWTEST_F(PluginMgrTest, UnSubscribeAllResources001, TestSize.Level1)
+{
+    PluginMgr::GetInstance().UnSubscribeAllResources("");
+    EXPECT_EQ(PluginMgr::GetInstance().resTypeLibMap_.size(), 0);
+    PluginMgr::GetInstance().SubscribeResource("test", 1);
+    PluginMgr::GetInstance().SubscribeResource("test", 2);
+    EXPECT_EQ(PluginMgr::GetInstance().resTypeLibMap_.size(), 2);
+    PluginMgr::GetInstance().UnSubscribeAllResources("test");
+    EXPECT_EQ(PluginMgr::GetInstance().resTypeLibMap_.size(), 0);
+}
+
+/**
  * @tc.name: Plugin mgr test DispatchResource 001
  * @tc.desc: Verify if can DispatchResource
  * @tc.type: FUNC

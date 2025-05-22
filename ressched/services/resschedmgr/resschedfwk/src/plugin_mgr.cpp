@@ -572,6 +572,28 @@ void PluginMgr::UnSubscribeResource(const std::string& pluginLib, uint32_t resTy
     }
 }
 
+void PluginMgr::UnSubscribeAllResources(const std::string& pluginLib)
+{
+    if (pluginLib.size() == 0) {
+        RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
+        return;
+    }
+    std::lock_guard<std::mutex> autoLock(resTypeMutex_);
+    std::unordered_set<uint32_t> keysToDelete;
+    for (auto iter : resTypeLibMap_) {
+        auto it = std::find(iter.second.begin(), iter.second.end(), pluginLib);
+        if (it != iter.second.end()) {
+            iter.second.erase(it);
+        }
+        if (iter.second.empty()) {
+            keysToDelete.insert(iter.first);
+        }
+    }
+    for (auto key : keysToDelete) {
+        resTypeLibMap_.erase(key);
+    }
+}
+
 void PluginMgr::SubscribeSyncResource(const std::string& pluginLib, uint32_t resType)
 {
     if (pluginLib.empty()) {

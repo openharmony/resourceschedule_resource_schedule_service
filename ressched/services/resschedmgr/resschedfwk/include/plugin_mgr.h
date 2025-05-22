@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -135,6 +135,13 @@ public:
      * @param resType interested in resource type.
      */
     void UnSubscribeResource(const std::string& pluginLib, uint32_t resType);
+
+    /**
+     * Unsubscribe resource type from plugin.
+     *
+     * @param pluginLib The lib name of plugin.
+     */
+    void UnSubscribeAllResources(const std::string& pluginLib);
 
     /**
      * Subscribe sync resource type from plugin.
