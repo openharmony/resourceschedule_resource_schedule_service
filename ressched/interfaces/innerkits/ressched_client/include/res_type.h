@@ -333,6 +333,8 @@ enum : uint32_t {
     RES_TYPE_INNER_AUDIO_STATE = 154,
     // report battery status change
     RES_TYPE_REPORT_BATTERY_STATUS_CHANGE = 155,
+    // ability or page switch event
+    RES_TYPE_ABILITY_OR_PAGE_SWITCH = 156,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
