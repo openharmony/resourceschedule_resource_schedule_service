@@ -39,6 +39,8 @@ private:
     bool CheckEnterScene();
     void EnterScene();
     void ExitScene();
+    bool IsValidFilteredTypeIds(const std::vector<uint32_t> &filteredTypeIds);
+    bool IsValidPid(pid_t pid);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -28,6 +28,8 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     static const int32_t INVALID_VALUE = -1;
+    static const pid_t PID_MIN = -1;
+    static const pid_t PID_MAX = INT32_MAX;
     static const char* PID_KEY = "pid";
     static const char* TYPE_IDS_KEY = "typeIds";
     static const std::set<uint32_t> PERCEIVABLE_MODES = {
@@ -153,7 +155,7 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::ExitScene()
 void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleTaskStart(pid_t pid,
     const std::vector<uint32_t> &filteredTypeIds)
 {
-    if (filteredTypeIds.size() > BackgroundTaskMgr::BackgroundMode::Type::END) {
+    if (!IsValidPid(pid) || !IsValidFilteredTypeIds(filteredTypeIds)) {
         return;
     }
     perceivableTasks_[pid] = filteredTypeIds;
@@ -209,6 +211,26 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleForeground(uint32_
         RESSCHED_LOGI("sceneboard background and has perceivable task enter scene");
         EnterScene();
     }
+}
+
+bool BackgroundSensitiveTaskOverlappingSceneRecognizer::IsValidPid(pid_t pid)
+{
+    return (pid >= PID_MIN && pid <= PID_MAX);
+}
+
+bool BackgroundSensitiveTaskOverlappingSceneRecognizer::IsValidFilteredTypeIds(
+    const std::vector<uint32_t> &filteredTypeIds)
+{
+    for (auto fileteredTypeId : filteredTypeIds) {
+        if (fileteredTypeId < BackgroundTaskMgr::BackgroundMode::Type::DATA_TRANSFER ||
+            fileteredTypeId > BackgroundTaskMgr::BackgroundMode::Type::END) {
+            return false;
+        }
+    }
+    if (filteredTypeIds.size() > BackgroundTaskMgr::BackgroundMode::Type::END) {
+        return false;
+    }
+    return true;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
