@@ -207,6 +207,8 @@ private:
     bool HandleChargingStatusChange(const std::shared_ptr<ResData>& data);
     bool HandleRecoverBatteryLimit();
     bool HandleBatteryLimit(int32_t capacity);
+    bool HandleBatteryQuantityChange(const std::shared_ptr<ResData>& data);
+    bool HandlePowerStatusChange(const std::shared_ptr<ResData>& data);
     int32_t GetLimitCapacity(int32_t capacity);
     int32_t GetPidByData(const std::shared_ptr<ResData>& data, const std::string& key);
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
