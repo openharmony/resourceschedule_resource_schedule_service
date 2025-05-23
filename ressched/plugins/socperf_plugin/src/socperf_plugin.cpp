@@ -71,6 +71,8 @@ namespace {
     const std::string SCREEN_MODE_OFF = "screen_off";
     const std::string POWER_MODE_KEY = "power";
     const std::string POWER_MODE = "powerMode";
+    const std::string POWER_STATUS_KEY = "powerStatus";
+    const std::string POWER_STATUS_CONNECT = "powerConnect";
     const std::string PRELOAD_MODE = "isPreload";
     const std::string WEAK_ACTION_STRING = "weakInterAction";
     const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
@@ -1534,17 +1536,47 @@ bool SocPerfPlugin::HandleRecentBuild(const std::shared_ptr<ResData>& data)
 
 bool SocPerfPlugin::HandleBatteryStatusChange(const std::shared_ptr<ResData>& data)
 {
+    HandlePowerStatusChange(data);
+    HandleBatteryQuantityChange(data);
+    return true;
+}
+
+bool SocPerfPlugin::HandlePowerStatusChange(const std::shared_ptr<ResData>& data)
+{
     bool ret = false;
-    if (data == nullptr || socperfBatteryConfig_.empty()) {
-        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryStatusChange invalid data");
+    if (data == nullptr) {
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandlePowerStatusChange invalid data");
         return ret;
     }
     if (!data->payload.contains(COMMON_EVENT_CHARGE_STATE) ||
         !data->payload.at(COMMON_EVENT_CHARGE_STATE).is_number_integer()) {
-        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryStatusChange invalid data payload");
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandlePowerStatusChange invalid data payload");
         return ret;
     }
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleBatteryStatusChange: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandlePowerStatusChange: %{public}lld", (long long)data->value);
+    int32_t chargeState = data->payload[COMMON_EVENT_CHARGE_STATE];
+    const std::string powerStatusStr = POWER_STATUS_KEY + ":" + POWER_STATUS_CONNECT;
+    if (chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_ENABLE)) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerStatusStr, true);
+    } else {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerStatusStr, false);
+    }
+    return true;
+}
+
+bool SocPerfPlugin::HandleBatteryQuantityChange(const std::shared_ptr<ResData>& data)
+{
+    bool ret = false;
+    if (data == nullptr || socperfBatteryConfig_.empty()) {
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryQuantityChange invalid data");
+        return ret;
+    }
+    if (!data->payload.contains(COMMON_EVENT_CHARGE_STATE) ||
+        !data->payload.at(COMMON_EVENT_CHARGE_STATE).is_number_integer()) {
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryQuantityChange invalid data payload");
+        return ret;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleBatteryQuantityChange: %{public}lld", (long long)data->value);
     int32_t chargeState = data->payload[COMMON_EVENT_CHARGE_STATE];
     if (chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_ENABLE) ||
         chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_FULL)) {
