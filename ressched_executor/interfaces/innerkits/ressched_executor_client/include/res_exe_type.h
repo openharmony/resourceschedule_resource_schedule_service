@@ -34,6 +34,10 @@ enum : uint32_t {
     RES_TYPE_CGROUP_SYNC_EVENT,
     // cgroup read proc task sync
     RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT,
+    // cgroup set thread sched policy sync
+    RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT,
+    // cgroup set thread group sched policy sync
+    RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT,
     // init executor plugin manager
     RES_TYPE_EXECUTOR_PLUGIN_INIT,
     // last sync resType, please add sync resType before
