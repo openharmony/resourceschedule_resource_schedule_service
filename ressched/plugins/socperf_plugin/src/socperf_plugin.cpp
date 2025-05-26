@@ -575,7 +575,7 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
             SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START is invalid as preload");
             return;
         }
-        SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START");
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->APP_COLD_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
         int32_t appType = INVALID_VALUE;
         if (reqAppTypeFunc_ != nullptr && data->payload != nullptr && data->payload.contains(BUNDLE_NAME)) {
@@ -584,11 +584,11 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
             UpdateUidToAppMsgMap(data, appType, bundleName);
         }
         if (appType == APP_TYPE_GAME) {
-            SOC_PERF_LOGI("SocPerfPlugin: socperf->Game cold start");
+            SOC_PERF_LOGD("SocPerfPlugin: socperf->Game cold start");
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_GAME_START, "");
         }
     } else if (data->value == AppStartType::APP_WARM_START) {
-        SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_WARM_START");
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->APP_WARM_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WARM_START, "");
     }
 }
@@ -608,7 +608,7 @@ bool SocPerfPlugin::UpdateUidToAppMsgMap(const std::shared_ptr<ResData>& data, i
 void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
 {
     if (data->value == WindowFocusStatus::WINDOW_FOCUS) {
-        SOC_PERF_LOGI("SocPerfPlugin: socperf->WINDOW_SWITCH focus");
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->WINDOW_SWITCH focus");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WINDOW_SWITCH, "");
         UpdateFocusAppType(data, true);
     } else if (data->value == WindowFocusStatus::WINDOW_UNFOCUS) {
@@ -642,7 +642,7 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
     if (uid == INVALID_VALUE) {
         return false;
     }
-    SOC_PERF_LOGI("SocPerfPlugin: socperf->UpdateFocusAppType, %{public}d", uid);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->UpdateFocusAppType, %{public}d", uid);
     if (!focusStatus) {
         focusAppUids_.erase(uid);
         UpdateWeakActionStatus();
@@ -878,10 +878,10 @@ int32_t SocPerfPlugin::GetUidByData(const std::shared_ptr<ResData>& data)
 void SocPerfPlugin::HandleLoadPage(const std::shared_ptr<ResData>& data)
 {
     if (data->value == LOAD_PAGE_START) {
-        SOC_PERF_LOGI("SocPerfPlugin: socperf->PUSH_PAGE_START");
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->PUSH_PAGE_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LOAD_PAGE_START, true, "");
     } else if (data->value == LOAD_PAGE_COMPLETE) {
-        SOC_PERF_LOGI("SocPerfPlugin: socperf->PUSH_PAGE_COMPLETE");
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->PUSH_PAGE_COMPLETE");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LOAD_PAGE_START, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_LOAD_PAGE_COMPLETE, "");
     }
@@ -958,12 +958,12 @@ void SocPerfPlugin::HandleMoveWindow(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleRemoteAnimation(const std::shared_ptr<ResData>& data)
 {
-    SOC_PERF_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
     if (data->value == ShowRemoteAnimationStatus::ANIMATION_BEGIN) {
-        SOC_PERF_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, true, "");
     } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
-        SOC_PERF_LOGI("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->REMOTE_ANIMATION: %{public}lld", (long long)data->value);
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, false, "");
     } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_UNLOCK_BEGIN) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_UNLOCK, true, "");
@@ -1013,7 +1013,7 @@ void SocPerfPlugin::HandleWebSlideNormal(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::HandleLoadUrl(const std::shared_ptr<ResData>& data)
 {
-    SOC_PERF_LOGI("SocPerfPlugin: socperf->LOAD_URL");
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->LOAD_URL");
     OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_LOAD_URL, "");
 }
 
@@ -1036,7 +1036,7 @@ bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
             SOC_PERF_LOGI("SocPerfPlugin: socperf->APPSTATECHANGE is invalid as preload");
             return false;
         }
-        SOC_PERF_LOGI("SocPerfPlugin: socperf->APPSTATECHANGE");
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->APPSTATECHANGE");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
         UpdateUidToAppMsgMap(data);
         return true;
@@ -1124,7 +1124,7 @@ bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& d
     }
     std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
     screenStatus_ = data->value;
-    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleScreenStatusAnalysis: %{public}lld", (long long)screenStatus_);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleScreenStatusAnalysis: %{public}lld", (long long)screenStatus_);
     if (screenStatus_ == SCREEN_ON) {
         HandleScreenOn();
     } else if (screenStatus_ == SCREEN_OFF) {
@@ -1270,7 +1270,7 @@ bool SocPerfPlugin::HandleCameraStateChange(const std::shared_ptr<ResData>& data
     if (data == nullptr) {
         return false;
     }
-    SOC_PERF_LOGI("SocPerfPlugin: socperf->CAMERA_STATE_CHANGE: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->CAMERA_STATE_CHANGE: %{public}lld", (long long)data->value);
     if (data->value == CameraState::CAMERA_CONNECT) {
         if (IsAllowBoostScene()) {
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_APP_USE_CAMERA, true, "");
