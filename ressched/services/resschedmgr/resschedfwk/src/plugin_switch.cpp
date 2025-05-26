@@ -51,12 +51,12 @@ bool PluginSwitch::FillinPluginInfo(const xmlNode* currNode, PluginInfo& info, b
         return false;
     }
     std::string libPath = reinterpret_cast<const char*>(attrValue);
+    xmlFree(attrValue);
     if (libPath.empty()) {
         RESSCHED_LOGW("%{public}s, libPath empty!", __func__);
         return false;
     }
     info.libPath = libPath;
-    xmlFree(attrValue);
 
     attrValue = xmlGetProp(currNode, reinterpret_cast<const xmlChar*>(XML_ATTR_SWITCH));
     if (attrValue) {
