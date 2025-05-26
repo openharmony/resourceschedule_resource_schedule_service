@@ -180,6 +180,7 @@ void OOBEManager::StartListen()
             for (auto task : oobeTasks_) {
                 task->ExcutingTask();
             }
+            std::vector <std::shared_ptr<IOOBETask>>().swap(oobeTasks_);
         } else {
             RESSCHED_LOGI("User does not consent authorization!");
             g_oobeValue = false;
