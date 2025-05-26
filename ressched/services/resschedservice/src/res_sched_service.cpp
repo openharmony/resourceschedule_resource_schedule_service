@@ -179,6 +179,7 @@ namespace {
         { ResType::RES_TYPE_GET_GAME_SCENE_INFO, { 7800 } },
         { ResType::RES_TYPE_APP_GAME_BOOST_EVENT, { 7800 } },
         { ResType::RES_TYPE_FRAME_RATE_REPORT_FROM_RS, { 1003 } },
+        { ResType::RES_TRPE_GAME_SUSPEND_MODE, { 7800 } },
     };
 }
 
