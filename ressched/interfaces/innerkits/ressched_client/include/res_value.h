@@ -656,7 +656,8 @@ enum DeviceIdleStatus : int64_t {
 enum BtServiceEvent : int64_t {
     GATT_CONNECT_STATE = 0,
     GATT_APP_REGISTER = 1,
-    SPP_CONNECT_STATE = 2
+    SPP_CONNECT_STATE = 2,
+    GATT_DATA_TRANSFER = 3
 };
 
 /**
