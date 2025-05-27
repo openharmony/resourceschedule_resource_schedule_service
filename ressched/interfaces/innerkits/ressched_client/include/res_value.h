@@ -70,6 +70,22 @@ enum AppFrameDropType : int32_t {
     INTERACTION_APP_JANK,  // 动效丢帧
 };
 
+enum WindowPanelType : int32_t {
+    MINIMIZE = 0,
+    MAXIMIZE,
+    RECOVERY,
+};
+
+enum OptFromRecentType : int32_t {
+    START_APP = 0,
+    CLOSE_APP,
+};
+
+enum SwipeDirectionUpType : int32_t {
+    SWIPE_DIRECTION_ENTER_TASK_CENTER = 0,
+    SWIPE_DIRECTION_EXIT_TASK_CENTER,
+};
+
 /**
 * @brief Screen status
 */
