@@ -35,6 +35,9 @@ ressched_sched_controller = "${resourceschedule_path}/resource_schedule_service/
 ressched_client =
     "${resourceschedule_path}/resource_schedule_service/ressched/interfaces/innerkits/ressched_client"
 
+suspend_manager_base_client =
+    "${resourceschedule_path}/resource_schedule_service/ressched/interfaces/innerkits/suspend_manager_base_client"
+
 declare_args() {
   device_movement_perception_enable = true
   ressched_with_telephony_state_registry_enable = true

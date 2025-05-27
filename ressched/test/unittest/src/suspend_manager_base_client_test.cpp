@@ -77,8 +77,8 @@ HWTEST_F(SuspendManagerBaseClientTest, GetSuspendStateByUid, Function | MediumTe
     MockProcess(uid);
     int32_t appUid = 20020021;
     bool isFrozen;
-    SuspendManagerBaseClient::GetInstance()->GetSuspendStateByUid(appUid, isFrozen);
-    EXPECT_NE(SuspendManagerBaseClient::GetInstance(), nullptr);
+    SuspendManagerBaseClient::GetInstance().GetSuspendStateByUid(appUid, isFrozen);
+    SUCCEED();
 }
 
 /**
@@ -94,8 +94,8 @@ HWTEST_F(SuspendManagerBaseClientTest, GetSuspendStateByPid, Function | MediumTe
     MockProcess(uid);
     int32_t appPid = 6666;
     bool isFrozen;
-    SuspendManagerBaseClient::GetInstance()->GetSuspendStateByPid(appPid, isFrozen);
-    EXPECT_NE(SuspendManagerBaseClient::GetInstance(), nullptr);
+    SuspendManagerBaseClient::GetInstance().GetSuspendStateByPid(appPid, isFrozen);
+    SUCCEED();
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

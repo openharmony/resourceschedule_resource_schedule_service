@@ -85,7 +85,6 @@
         ],
         "fwk_group" : [
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
-          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/suspend_manager_base_client:suspend_manager_base_client",
           "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client:resschedexe_client",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi/systemload:systemload",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi/background_process_manager:backgroundprocessmanager_napi",
@@ -122,15 +121,6 @@
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client"
-        },
-        {
-          "header": {
-            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/suspend_manager_base_client/include",
-            "header_files": [
-              "suspend_manager_base_client.h"
-            ]
-          },
-          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/suspend_manager_base_client:suspend_manager_base_client"
         },
         {
           "header": {

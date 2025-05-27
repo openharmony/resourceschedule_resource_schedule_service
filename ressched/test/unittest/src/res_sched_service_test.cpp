@@ -537,6 +537,26 @@ public:
     {
         return ERR_OK;
     }
+
+    ErrCode RegisterSuspendObserver(const sptr<ISuspendStateObserverBase> &observer, int32_t &funcResult) override
+    {
+        return ERR_OK;
+    }
+
+    ErrCode UnregisterSuspendObserver(const sptr<ISuspendStateObserverBase> &observer, int32_t &funcResult) override
+    {
+        return ERR_OK;
+    }
+
+    ErrCode GetSuspendStateByUid(const int32_t uid, bool &isFrozen, int32_t &funcResult) override
+    {
+        return ERR_OK;
+    }
+
+    ErrCode GetSuspendStateByPid(const int32_t pid, bool &isFrozen, int32_t &funcResult) override
+    {
+        return ERR_OK;
+    }
 };
 
 /**

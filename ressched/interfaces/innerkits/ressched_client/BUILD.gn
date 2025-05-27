@@ -1,4 +1,4 @@
-# Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -28,6 +28,12 @@ idl_gen_interface("res_sched_systemload_notifier_interface") {
   src_idl = rebase_path("IResSchedSystemloadNotifier.idl")
 }
 
+idl_gen_interface("suspend_observer_base_interface") {
+  sources = [
+    "../suspend_manager_base_client/src/ISuspendStateObserverBase.idl",
+  ]
+}
+
 config("client_private_config") {
   include_dirs = [ "${ressched_common}/include" ]
 }
@@ -35,6 +41,7 @@ config("client_private_config") {
 config("client_public_config") {
   include_dirs = [
     "include",
+    "../suspend_manager_base_client/include",
     "${target_gen_dir}",
   ]
 }
@@ -54,8 +61,53 @@ ohos_source_set("res_sched_service_stub") {
   external_deps = [
     "c_utils:utils",
     "ipc:ipc_core",
+    "hilog:libhilog",
   ]
   branch_protector_ret = "pac_ret"
+}
+
+config("suspend_manager_base_client_public_config") {
+  include_dirs = [
+    "include",
+    "../suspend_manager_base_client/include",
+    "${target_gen_dir}",
+  ]
+}
+
+ohos_source_set("suspend_manager_base_client") {
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  deps = [
+    ":suspend_observer_base_interface",
+  ]
+
+  sources = [
+    "../suspend_manager_base_client/src/suspend_manager_base_client.cpp",
+  ]
+
+  output_observer_values = get_target_outputs(":suspend_observer_base_interface")
+  sources += filter_include(output_observer_values, [ "*suspend_state_observer_base_proxy.cpp" ])
+  sources += filter_include(output_observer_values, [ "*suspend_state_observer_base_stub.cpp" ])
+
+  public_configs = [ ":suspend_manager_base_client_public_config" ]
+
+  external_deps = [
+    "hilog:libhilog",
+    "init:libbegetutil",
+    "init:libbeget_proxy",
+    "ipc:ipc_core",
+    "ipc:ipc_single",
+    "samgr:samgr_proxy",
+    "json:nlohmann_json_static",
+  ]
+
+  branch_protector_ret = "pac_ret"
+
+  subsystem_name = "resourceschedule"
+  part_name = "resource_schedule_service"
 }
 
 ohos_shared_library("ressched_client") {
@@ -66,6 +118,7 @@ ohos_shared_library("ressched_client") {
     ":res_sched_event_listener_interface",
     ":res_sched_service_interface",
     ":res_sched_systemload_notifier_interface",
+    ":suspend_manager_base_client",
   ]
 
   sources = [

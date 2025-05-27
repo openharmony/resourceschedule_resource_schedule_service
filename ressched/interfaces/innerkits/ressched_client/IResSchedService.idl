@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 sequenceable OHOS.IRemoteObject;
+interface OHOS.ResourceSchedule.ISuspendStateObserverBase;
 interface OHOS.ResourceSchedule.IResSchedService {
     [oneway] void ReportData([in] unsigned int resType, [in] long value, [in] String payload);
     void ReportSyncEvent([in] unsigned int resType, [in] long value, [in] String payload,
@@ -28,4 +29,9 @@ interface OHOS.ResourceSchedule.IResSchedService {
     void IsAllowedAppPreload([in] String bundleName, [in] int preloadMode, [out] boolean resultValue);
     void IsAllowedLinkJump([in] boolean isAllowedLinkJump, [out] int resultValue);
     void GetResTypeList([out] Set<unsigned int> resTypeList);
+
+    int RegisterSuspendObserver([in] ISuspendStateObserverBase observer);
+    int UnregisterSuspendObserver([in] ISuspendStateObserverBase observer);
+    int GetSuspendStateByUid([in] int uid, [out] boolean isFrozen);
+    int GetSuspendStateByPid([in] int pid, [out] boolean isFrozen);
 }

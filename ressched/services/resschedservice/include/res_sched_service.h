@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +18,7 @@
 
 #include "plugin_mgr.h"
 #include "res_sched_service_stub.h"
+#include "suspend_state_observer_base_stub.h"
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
 #include "res_type.h"
 #endif
@@ -64,6 +65,14 @@ public:
     void DumpAllPluginConfig(std::string &result);
 
     void InitAllowIpcReportRes();
+
+    ErrCode RegisterSuspendObserver(const sptr<ISuspendStateObserverBase> &observer, int32_t &funcResult) override;
+
+    ErrCode UnregisterSuspendObserver(const sptr<ISuspendStateObserverBase> &observer, int32_t &funcResult) override;
+
+    ErrCode GetSuspendStateByUid(const int32_t uid, bool &isFrozen, int32_t &funcResult) override;
+
+    ErrCode GetSuspendStateByPid(const int32_t pid, bool &isFrozen, int32_t &funcResult) override;
 
 private:
     DISALLOW_COPY_AND_MOVE(ResSchedService);
