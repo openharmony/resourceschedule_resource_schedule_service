@@ -550,6 +550,7 @@ bool SocPerfPlugin::InitFeatureSwitch(std::string featureName)
             }
         }
     }
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_FEATURE_SWITCH);
     return false;
 }
 
