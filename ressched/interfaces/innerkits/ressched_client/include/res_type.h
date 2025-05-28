@@ -337,8 +337,14 @@ enum : uint32_t {
     RES_TYPE_ABILITY_OR_PAGE_SWITCH = 156,
     // game with suspend mode
     RES_TRPE_GAME_SUSPEND_MODE = 157,
+    // report task center start app or close app, value 0: start app, value 1: close app
+    RES_TYPE_APP_OPT_FROM_RECENT = 158,
+    // report three finger swipe direction up, value 0: enter task center, value 1:back to the desktop
+    RES_TYPE_SWIPE_DIRECTION_UP = 159,
+    // report window panel, value 0: minimize, value 1: maxmize, value 2: recovery
+    RES_TYPE_WINDOW_PANEL = 160,
     // report boker gatt connect
-    RES_TYPE_REPORT_BOKER_GATT_CONNECT = 158,
+    RES_TYPE_REPORT_BOKER_GATT_CONNECT = 161,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
