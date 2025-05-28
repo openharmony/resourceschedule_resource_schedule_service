@@ -168,6 +168,7 @@ void OOBEManager::StartListen()
         for (auto task : oobeTasks_) {
             task->ExcutingTask();
         }
+        std::vector <std::shared_ptr<IOOBETask>>().swap(oobeTasks_);
         return;
     }
     OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {
