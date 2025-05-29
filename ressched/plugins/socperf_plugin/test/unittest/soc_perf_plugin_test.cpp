@@ -1293,12 +1293,12 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_048, Function | MediumTes
 
     EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleCustAction(nullptr));
     const std::shared_ptr<ResData>& validData5 = std::make_shared<ResData>(
-        nullptr, -1, nullptr);
+        100, -1, nullptr);
     EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleCustAction(validData5));
 
     SocPerfPlugin::GetInstance().custGameState_ = true;
     const std::shared_ptr<ResData>& validData6 = std::make_shared<ResData>(
-        nullptr, 1, nullptr);
+        100, 1, nullptr);
     EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleCustAction(validData6));
     SocPerfPlugin::GetInstance().custGameState_ = false;
     EXPECT_TRUE(SocPerfPlugin::GetInstance().HandleCustAction(validData6));
@@ -1509,11 +1509,13 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_053, Function | MediumTes
  */
 HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_054, Function | MediumTest | Level0)
 {
+    const std::shared_ptr<ResData>& invalidData1 = std::make_shared<ResData>(
+        ResType::RES_TYPE_KEY_EVENT, 0, nullptr);
     SocPerfPlugin::GetInstance().socperfGameBoostSwitch_ = false;
-    SocPerfPlugin::GetInstance().HandleEventKey(nullptr);
+    SocPerfPlugin::GetInstance().HandleEventKey(invalidData1);
     SocPerfPlugin::GetInstance().socperfGameBoostSwitch_ = true;
     SocPerfPlugin::GetInstance().isFocusAppsGameType_ = false;
-    SocPerfPlugin::GetInstance().HandleEventKey(nullptr);
+    SocPerfPlugin::GetInstance().HandleEventKey(invalidData1);
     SocPerfPlugin::GetInstance().isFocusAppsGameType_ = true;
     const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
         ResType::RES_TYPE_KEY_EVENT, 0, nullptr);
