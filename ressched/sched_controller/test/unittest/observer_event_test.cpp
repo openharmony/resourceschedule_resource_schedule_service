@@ -1066,5 +1066,25 @@ HWTEST_F(ObserverEventTest, AddItemToSysAbilityListener_001, testing::ext::TestS
     EXPECT_FALSE(instance->sysAbilityListener_);
 }
 
+/**
+ * @tc.name: ObserverManagerTest_001
+ * @tc.desc: test ObserverManagerTest
+ * @tc.type: FUNC
+ * @tc.require: issuesIC5T7D
+ */
+HWTEST_F(ObserverEventTest, ObserverManagerTest_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    EXPECT_NE(instance, nullptr);
+    if (instance) {
+        instance->sysAbilityListener_->OnAddSystemAbility(APP_MGR_SERVICE_ID, 0);
+        instance->sysAbilityListener_->OnAddSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, 0);
+        instance->sysAbilityListener_->OnAddSystemAbility(WINDOW_MANAGER_SERVICE_ID, 0);
+        instance->sysAbilityListener_->OnRemoveSystemAbility(APP_MGR_SERVICE_ID, 0);
+        instance->sysAbilityListener_->OnRemoveSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, 0);
+        instance->sysAbilityListener_->OnRemoveSystemAbility(WINDOW_MANAGER_SERVICE_ID, 0);
+    }
+    SUCCEED();
+}
 }
 }
