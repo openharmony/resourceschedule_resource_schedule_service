@@ -548,6 +548,27 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_021, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().HandleCustEventEnd(socPerfCustEventEndDataInvalid);
     EXPECT_FALSE(ret);
 }
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_055
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_055, Function | MediumTest | Level0)
+{
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleCustAction(nullptr));
+    const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
+        100, -1, nullptr);
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleCustAction(validData1));
+
+    SocPerfPlugin::GetInstance().custGameState_ = true;
+    const std::shared_ptr<ResData>& validData2 = std::make_shared<ResData>(
+        100, 1, nullptr);
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleCustAction(validData2));
+    SocPerfPlugin::GetInstance().custGameState_ = false;
+    EXPECT_TRUE(SocPerfPlugin::GetInstance().HandleCustAction(validData2));
+}
 #endif // RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
 
 /*
@@ -1290,18 +1311,6 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_048, Function | MediumTes
     const std::shared_ptr<ResData>& validData2 = std::make_shared<ResData>(
         ResType::RES_TYPE_RECENT_BUILD, 1, nullptr);
     EXPECT_TRUE(SocPerfPlugin::GetInstance().HandleRecentBuild(validData2));
-
-    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleCustAction(nullptr));
-    const std::shared_ptr<ResData>& validData5 = std::make_shared<ResData>(
-        100, -1, nullptr);
-    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleCustAction(validData5));
-
-    SocPerfPlugin::GetInstance().custGameState_ = true;
-    const std::shared_ptr<ResData>& validData6 = std::make_shared<ResData>(
-        100, 1, nullptr);
-    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleCustAction(validData6));
-    SocPerfPlugin::GetInstance().custGameState_ = false;
-    EXPECT_TRUE(SocPerfPlugin::GetInstance().HandleCustAction(validData6));
 }
 
 /*
