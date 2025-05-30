@@ -856,6 +856,16 @@ enum GameSuspendModeState : int64_t {
     SET_GAME_SUSPEND_MODE,
     CANCEL_GAME_SUSPEND_MODE,
 };
+
+/**
+ * @brief Sched mode state
+ */
+enum SchedMode : int64_t {
+    UNKNOWN_MODE = -1,
+    NORMAL_MODE = 0,
+    PERF_MODE = 1,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS

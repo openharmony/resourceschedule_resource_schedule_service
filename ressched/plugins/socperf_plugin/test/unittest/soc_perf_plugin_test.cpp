@@ -1256,27 +1256,21 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_046, Function | MediumTes
  */
 HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_047, Function | MediumTest | Level0)
 {
-    SocPerfPlugin::GetInstance().HandleBatteryStatusChange(nullptr);
-    const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(
-        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 100, nullptr);
-    SocPerfPlugin::GetInstance().HandleBatteryStatusChange(invalidData);
+    std::shared_ptr<ResData> invalidData;
+    bool rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
+    EXPECT_EQ(rc, false);
+    invalidData = std::make_shared<ResData>(ResType::RES_TYPE_SCHED_MODE_CHANGE, 1, nullptr);
+    rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
+    EXPECT_EQ(rc, false);
     nlohmann::json payload1;
-    payload1["chargeState"] = "num";
-    const std::shared_ptr<ResData>& invalidData2 = std::make_shared<ResData>(
-        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 50, payload1);
-    SocPerfPlugin::GetInstance().HandleBatteryStatusChange(invalidData2);
-    nlohmann::json payload2;
-    payload1["chargeState"] = 1;
-    const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
-        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 50, payload2);
-    bool ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData1);
-    EXPECT_TRUE(ret);
-    nlohmann::json payload3;
-    payload1["chargeState"] = 2;
-    const std::shared_ptr<ResData>& validData2 = std::make_shared<ResData>(
-        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 50, payload3);
-    ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData2);
-    EXPECT_TRUE(ret);
+    payload1["invalidKey"] = "invalidKey";
+    invalidData = std::make_shared<ResData>(ResType::RES_TYPE_SCHED_MODE_CHANGE, 1, payload1);
+    rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
+    EXPECT_EQ(rc, false);
+    payload1["schedMode"] = "perfMode";
+    invalidData = std::make_shared<ResData>(ResType::RES_TYPE_SCHED_MODE_CHANGE, 1, payload1);
+    rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
+    EXPECT_EQ(rc, true);
 }
 
 /*

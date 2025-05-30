@@ -201,6 +201,7 @@ private:
     bool HandleCustAction(const std::shared_ptr<ResData> &data);
     bool HandleRecentBuild(const std::shared_ptr<ResData>& data);
     bool InitBatteryCapacityLimitFreq();
+    bool HandleSchedModeChange(const std::shared_ptr<ResData>& data);
     bool HandleBatteryStatusChange(const std::shared_ptr<ResData>& data);
     bool HandleBatterySubValue(const int32_t capacity, const int32_t tag, const int64_t config);
     bool HandleFreqLimit(const std::shared_ptr<ResData>& data, bool isChargeState);
