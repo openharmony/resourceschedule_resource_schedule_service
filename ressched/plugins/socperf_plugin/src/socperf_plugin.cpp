@@ -72,8 +72,6 @@ namespace {
     const std::string POWER_MODE_KEY = "power";
     const std::string POWER_MODE = "powerMode";
     const std::string POWER_STATUS_KEY = "powerStatus";
-    const std::string PERF_MODE = "perfMode";
-    const std::string NORMAL_MODE = "normalMode";
     const std::string PRELOAD_MODE = "isPreload";
     const std::string WEAK_ACTION_STRING = "weakInterAction";
     const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
