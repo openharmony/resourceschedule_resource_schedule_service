@@ -344,7 +344,7 @@ enum : uint32_t {
     // report window panel, value 0: minimize, value 1: maxmize, value 2: recovery
     RES_TYPE_WINDOW_PANEL = 160,
     // report sched mode change
-    RES_TYPE_SCHED_MODE_CHANGE = 158,
+    RES_TYPE_SCHED_MODE_CHANGE = 161,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
