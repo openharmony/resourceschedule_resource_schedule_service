@@ -1268,8 +1268,9 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_047, Function | MediumTes
     rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
     EXPECT_EQ(rc, false);
     payload1["schedMode"] = "perfMode";
-    invalidData = std::make_shared<ResData>(ResType::RES_TYPE_SCHED_MODE_CHANGE, 1, payload1);
-    rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
+    std::shared_ptr<ResData> validData = 
+        std::make_shared<ResData>(ResType::RES_TYPE_SCHED_MODE_CHANGE, 1, payload1);
+    rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(validData);
     EXPECT_EQ(rc, true);
 }
 
