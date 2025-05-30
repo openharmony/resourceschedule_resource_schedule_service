@@ -860,7 +860,7 @@ enum GameSuspendModeState : int64_t {
 /**
  * @brief Sched mode state
  */
-enum SchedMode : int64_t {
+enum SchedMode : int32_t {
     UNKNOWN_MODE = -1,
     NORMAL_MODE = 0,
     PERF_MODE = 1,
