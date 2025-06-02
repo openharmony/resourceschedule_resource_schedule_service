@@ -1296,35 +1296,6 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_047, Function | MediumTes
  * @tc.name: SocPerfPluginTest_API_TEST_048
  * @tc.desc: test socperfplugin api
  * @tc.type FUNC
- * @tc.require: issueICBQWP
- */
-HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_048, Function | MediumTest | Level0)
-{
-    std::shared_ptr<ResData> invalidData;
-    bool rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
-    EXPECT_EQ(rc, false);
-    invalidData = std::make_shared<ResData>(
-        ResType::RES_TYPE_SCHED_MODE_CHANGE, 1, nullptr);
-    rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
-    EXPECT_EQ(rc, false);
-    nlohmann::json payload1;
-    payload1["invalidKey"] = "invalidKey";
-    invalidData = std::make_shared<ResData>(
-        ResType::RES_TYPE_SCHED_MODE_CHANGE, 1, payload1);
-    rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
-    EXPECT_EQ(rc, false);
-    payload1["schedMode"] = "perfMode";
- 
-    std::shared_ptr<ResData> validData = std::make_shared<ResData>(
-        ResType::RES_TYPE_SCHED_MODE_CHANGE, 1, payload1);
-    rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(validData);
-    EXPECT_EQ(rc, true);
-}
-
-/*
- * @tc.name: SocPerfPluginTest_API_TEST_048
- * @tc.desc: test socperfplugin api
- * @tc.type FUNC
  * @tc.require: issueI78T3V
  */
 HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_048, Function | MediumTest | Level0)
@@ -1575,6 +1546,35 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_054, Function | MediumTes
         ResType::RES_TYPE_KEY_EVENT, 1, nullptr);
     SocPerfPlugin::GetInstance().HandleEventKey(validData2);
     EXPECT_NE(validData2, nullptr);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_048
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueICBQWP
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_055, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResData> invalidData;
+    bool rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
+    EXPECT_EQ(rc, false);
+    invalidData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SCHED_MODE_CHANGE, 1, nullptr);
+    rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
+    EXPECT_EQ(rc, false);
+    nlohmann::json payload1;
+    payload1["invalidKey"] = "invalidKey";
+    invalidData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SCHED_MODE_CHANGE, 1, payload1);
+    rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
+    EXPECT_EQ(rc, false);
+    payload1["schedMode"] = "perfMode";
+ 
+    std::shared_ptr<ResData> validData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SCHED_MODE_CHANGE, 1, payload1);
+    rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(validData);
+    EXPECT_EQ(rc, true);
 }
 } // namespace SOCPERF
 } // namespace OHOS
