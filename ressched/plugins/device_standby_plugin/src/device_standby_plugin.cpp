@@ -50,6 +50,8 @@ void DeviceStandbyPlugin::Init()
     resTypes_.insert(RES_TYPE_MMI_INPUT_POWER_KEY);
     resTypes_.insert(RES_TYPE_AUDIO_RENDERER_STANDBY);
     resTypes_.insert(RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK);
+    resTypes_.insert(RES_TYPE_BT_SERVICE_EVENT);
+    resTypes_.insert(RES_TYPE_REPORT_BOKER_GATT_CONNECT);
 
     for (auto resType : resTypes_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
