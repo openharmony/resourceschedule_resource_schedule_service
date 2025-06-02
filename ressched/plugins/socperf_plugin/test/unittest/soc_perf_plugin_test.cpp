@@ -1549,7 +1549,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_054, Function | MediumTes
 }
 
 /*
- * @tc.name: SocPerfPluginTest_API_TEST_048
+ * @tc.name: SocPerfPluginTest_API_TEST_055
  * @tc.desc: test socperfplugin api
  * @tc.type FUNC
  * @tc.require: issueICBQWP
