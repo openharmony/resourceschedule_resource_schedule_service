@@ -74,6 +74,7 @@ namespace {
         ResType::RES_TYPE_APP_OPT_FROM_RECENT,
         ResType::RES_TYPE_SWIPE_DIRECTION_UP,
         ResType::RES_TYPE_WINDOW_PANEL,
+        ResType::RES_TYPE_WINDOW_SPLIT_SCREEN,
     };
     static const std::unordered_set<uint32_t> THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -147,6 +148,7 @@ namespace {
         ResType::RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK,
         ResType::RES_TYPE_CLOUD_CONFIG_UPDATE,
         ResType::RES_TYPE_BT_SERVICE_EVENT,
+        ResType::RES_TYPE_REPORT_BOKER_GATT_CONNECT,
         ResType::SYNC_RES_TYPE_REQUEST_MUTEX_STATUS,
         ResType::SYNC_RES_TYPE_GET_NWEB_PRELOAD_SET,
         ResType::RES_TYPE_AUDIO_RENDERER_STANDBY,

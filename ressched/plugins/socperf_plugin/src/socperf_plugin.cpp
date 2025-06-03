@@ -72,7 +72,6 @@ namespace {
     const std::string POWER_MODE_KEY = "power";
     const std::string POWER_MODE = "powerMode";
     const std::string POWER_STATUS_KEY = "powerStatus";
-    const std::string POWER_STATUS_CONNECT = "powerConnect";
     const std::string PRELOAD_MODE = "isPreload";
     const std::string WEAK_ACTION_STRING = "weakInterAction";
     const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
@@ -80,6 +79,7 @@ namespace {
     const std::string GAME_ENV = "env";
     const std::string RES_ID = "resId";
     const std::string COMMON_EVENT_CHARGE_STATE = "chargeState";
+    const std::string SCHED_MODE_KEY = "schedMode";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -449,7 +449,9 @@ void SocPerfPlugin::AddOtherEventToFunctionMap()
     functionMap.insert(std::make_pair(RES_TYPE_DEVICE_ORIENTATION_STATUS,
         [this](const std::shared_ptr<ResData>& data) { HandleDeviceOrientationStatusChange(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_REPORT_BATTERY_STATUS_CHANGE,
-        [this](const std::shared_ptr<ResData>& data) { HandleBatteryStatusChange(data); }));       
+        [this](const std::shared_ptr<ResData>& data) { HandleBatteryStatusChange(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_SCHED_MODE_CHANGE,
+        [this](const std::shared_ptr<ResData>& data) { HandleSchedModeChange(data); }));
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
@@ -507,6 +509,7 @@ void SocPerfPlugin::InitOtherResTypes()
 {
     resTypes.insert(RES_TYPE_REPORT_BATTERY_STATUS_CHANGE);
     resTypes.insert(RES_TYPE_RECENT_BUILD);
+    resTypes.insert(RES_TYPE_SCHED_MODE_CHANGE);
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
     }
@@ -1535,50 +1538,39 @@ bool SocPerfPlugin::HandleRecentBuild(const std::shared_ptr<ResData>& data)
     return true;
 }
 
-bool SocPerfPlugin::HandleBatteryStatusChange(const std::shared_ptr<ResData>& data)
-{
-    HandlePowerStatusChange(data);
-    HandleBatteryQuantityChange(data);
-    return true;
-}
-
-bool SocPerfPlugin::HandlePowerStatusChange(const std::shared_ptr<ResData>& data)
+bool SocPerfPlugin::HandleSchedModeChange(const std::shared_ptr<ResData>& data)
 {
     bool ret = false;
     if (data == nullptr) {
-        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandlePowerStatusChange invalid data");
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleSchedModeChange invalid data");
         return ret;
     }
-    if (data->payload == nullptr || !data->payload.contains(COMMON_EVENT_CHARGE_STATE) ||
-        !data->payload.at(COMMON_EVENT_CHARGE_STATE).is_number_integer()) {
-        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandlePowerStatusChange invalid data payload");
+    if (data->payload == nullptr || !data->payload.contains(SCHED_MODE_KEY)) {
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleSchedModeChange invalid data payload");
         return ret;
     }
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandlePowerStatusChange: %{public}lld", (long long)data->value);
-    int32_t chargeState = data->payload[COMMON_EVENT_CHARGE_STATE];
-    const std::string powerStatusStr = POWER_STATUS_KEY + ":" + POWER_STATUS_CONNECT;
-    if (chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_ENABLE) ||
-        chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_FULL)) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerStatusStr, true);
-    } else {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerStatusStr, false);
-    }
+    SchedMode schedMode = static_cast<SchedMode>(data->value);
+    std::string schedModeStr = data->payload[SCHED_MODE_KEY];
+    const std::string powerStatusStr = POWER_STATUS_KEY + ":" + schedModeStr;
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleSchedModeChange, schedMode:%{public}d modeStr:%{public}s",
+        schedMode, powerStatusStr.c_str());
+    OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerStatusStr, true);
     return true;
 }
 
-bool SocPerfPlugin::HandleBatteryQuantityChange(const std::shared_ptr<ResData>& data)
+bool SocPerfPlugin::HandleBatteryStatusChange(const std::shared_ptr<ResData>& data)
 {
     bool ret = false;
     if (data == nullptr || socperfBatteryConfig_.empty()) {
-        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryQuantityChange invalid data");
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryStatusChange invalid data");
         return ret;
     }
     if (data->payload == nullptr || !data->payload.contains(COMMON_EVENT_CHARGE_STATE) ||
         !data->payload.at(COMMON_EVENT_CHARGE_STATE).is_number_integer()) {
-        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryQuantityChange invalid data payload");
+        SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryStatusChange invalid data payload");
         return ret;
     }
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleBatteryQuantityChange: %{public}lld", (long long)data->value);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleBatteryStatusChange: %{public}lld", (long long)data->value);
     int32_t chargeState = data->payload[COMMON_EVENT_CHARGE_STATE];
     if (chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_ENABLE) ||
         chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_FULL)) {
