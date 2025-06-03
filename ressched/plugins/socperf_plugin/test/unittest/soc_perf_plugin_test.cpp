@@ -548,6 +548,27 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_021, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().HandleCustEventEnd(socPerfCustEventEndDataInvalid);
     EXPECT_FALSE(ret);
 }
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_055
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_055, Function | MediumTest | Level0)
+{
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleCustAction(nullptr));
+    const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
+        100, -1, nullptr);
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleCustAction(validData1));
+
+    SocPerfPlugin::GetInstance().custGameState_ = true;
+    const std::shared_ptr<ResData>& validData2 = std::make_shared<ResData>(
+        100, 1, nullptr);
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleCustAction(validData2));
+    SocPerfPlugin::GetInstance().custGameState_ = false;
+    EXPECT_TRUE(SocPerfPlugin::GetInstance().HandleCustAction(validData2));
+}
 #endif // RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
 
 /*
@@ -1215,6 +1236,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_045, Function | MediumTes
  */
 HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_046, Function | MediumTest | Level0)
 {
+    SocPerfPlugin::GetInstance().HandleWebSildeScroll(nullptr);
     const std::shared_ptr<ResData>& dragStartData = std::make_shared<ResData>(ResType::RES_TYPE_WEB_SLIDE_SCROLL,
         ResType::WebDragResizeStatus::WEB_DRAG_START, nullptr);
     SocPerfPlugin::GetInstance().HandleWebSildeScroll(dragStartData);
@@ -1234,6 +1256,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_046, Function | MediumTes
  */
 HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_047, Function | MediumTest | Level0)
 {
+    SocPerfPlugin::GetInstance().HandleBatteryStatusChange(nullptr);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 100, nullptr);
     SocPerfPlugin::GetInstance().HandleBatteryStatusChange(invalidData);
@@ -1254,6 +1277,262 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_047, Function | MediumTes
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 50, payload3);
     ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData2);
     EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_048
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_048, Function | MediumTest | Level0)
+{
+    const std::string& subValue = "";
+    SocPerfPlugin::GetInstance().AddKeyAppType(subValue);
+    const std::string& subValue1 = "test";
+    SocPerfPlugin::GetInstance().AddKeyAppType(subValue1);
+    const std::string& keyAppName = "";
+    SocPerfPlugin::GetInstance().AddKeyAppName(keyAppName);
+    const std::string& keyAppName1 = "name";
+    SocPerfPlugin::GetInstance().AddKeyAppName(keyAppName1);
+    SocPerfPlugin::GetInstance().StringToSet("1,2,3,4", ',');
+    SocPerfPlugin::GetInstance().HandleScreenOff();
+    SocPerfPlugin::GetInstance().HandleWebDragResize(nullptr);
+    const std::shared_ptr<ResData>& validData3 = std::make_shared<ResData>(
+        ResType::RES_TYPE_WEB_DRAG_RESIZE, 0, nullptr);
+    SocPerfPlugin::GetInstance().HandleWebDragResize(validData3);
+    const std::shared_ptr<ResData>& validData4 = std::make_shared<ResData>(
+        ResType::RES_TYPE_WEB_DRAG_RESIZE, 1, nullptr);
+    SocPerfPlugin::GetInstance().HandleWebDragResize(validData4);
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleRecentBuild(nullptr));
+    const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
+        ResType::RES_TYPE_RECENT_BUILD, 0, nullptr);
+    EXPECT_TRUE(SocPerfPlugin::GetInstance().HandleRecentBuild(validData1));
+    const std::shared_ptr<ResData>& validData2 = std::make_shared<ResData>(
+        ResType::RES_TYPE_RECENT_BUILD, 1, nullptr);
+    EXPECT_TRUE(SocPerfPlugin::GetInstance().HandleRecentBuild(validData2));
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_049
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_049, Function | MediumTest | Level0)
+{
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(97, 1001, 692000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(97, 1003, 1152000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(97, 1005, 1997000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(93, 1001, 418000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(93, 1003, 749000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(93, 1005, 1210000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(95, 1001, 418000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(95, 1003, 1152000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(95, 1005, 1210000);
+
+    nlohmann::json payload1;
+    payload1["chargeState"] = 2;
+    const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 98, payload1);
+    bool ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData1);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& validData2 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 97, payload1);
+    ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData2);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& validData3 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 96, payload1);
+    ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData3);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& validData4 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 95, payload1);
+    ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData4);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& validData5 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 94, payload1);
+    ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData5);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& validData51 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 93, payload1);
+    ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData51);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& validData6 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 92, payload1);
+    ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData6);
+    EXPECT_TRUE(ret);
+    const std::shared_ptr<ResData>& validData7 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 100, payload1);
+    ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData7);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_050
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_050, Function | MediumTest | Level0)
+{
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(97, 1001, 692000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(97, 1003, 1152000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(97, 1005, 1997000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(93, 1001, 418000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(93, 1003, 749000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(93, 1005, 1210000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(95, 1001, 418000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(95, 1003, 1152000);
+    SocPerfPlugin::GetInstance().HandleBatterySubValue(95, 1005, 1210000);
+    nlohmann::json payload1;
+    payload1["chargeState"] = 1;
+    const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 90, payload1);
+    bool ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData1);
+    EXPECT_TRUE(ret);
+
+    nlohmann::json payload2;
+    payload2["chargeState"] = 3;
+    const std::shared_ptr<ResData>& validData2 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 90, payload2);
+    ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData2);
+    EXPECT_TRUE(ret);
+
+    nlohmann::json payload3;
+    payload3["notChargeState"] = 3;
+    const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 90, payload3);
+    ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(invalidData);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_051
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_051, Function | MediumTest | Level0)
+{
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleGameStateChange(nullptr));
+    const std::shared_ptr<ResData>& invalidData1 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_GAME_STATE_CHANGE, 90, nullptr);
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleGameStateChange(invalidData1));
+    nlohmann::json payload1;
+    payload1["uuu"] = 3;
+    const std::shared_ptr<ResData>& invalidData2 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_GAME_STATE_CHANGE, 1, payload1);
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleGameStateChange(invalidData2));
+    nlohmann::json payload2;
+    payload2["uid"] = "er";
+    const std::shared_ptr<ResData>& invalidData3 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_GAME_STATE_CHANGE, 1, payload2);
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleGameStateChange(invalidData3));
+    nlohmann::json payload3;
+    payload3["uid"] = 123;
+    const std::shared_ptr<ResData>& invalidData4 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_GAME_STATE_CHANGE, 1, payload3);
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleGameStateChange(invalidData4));
+
+    payload3["env"] = "ert";
+    const std::shared_ptr<ResData>& invalidData5 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_GAME_STATE_CHANGE, 1, payload3);
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleGameStateChange(invalidData5));
+
+    nlohmann::json payload4;
+    payload4["uid"] = 123;
+    payload4["env"] = 1;
+    const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_GAME_STATE_CHANGE, 4, payload4);
+    EXPECT_TRUE(SocPerfPlugin::GetInstance().HandleGameStateChange(validData1));
+    const std::shared_ptr<ResData>& validData2 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_GAME_STATE_CHANGE, 5, payload4);
+    EXPECT_TRUE(SocPerfPlugin::GetInstance().HandleGameStateChange(validData2));
+
+    nlohmann::json payload5;
+    payload5["uid"] = 123;
+    payload5["env"] = 0;
+    const std::shared_ptr<ResData>& validData3 = std::make_shared<ResData>(
+        ResType::RES_TYPE_REPORT_GAME_STATE_CHANGE, 4, payload5);
+    EXPECT_TRUE(SocPerfPlugin::GetInstance().HandleGameStateChange(validData3));
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_052
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_052, Function | MediumTest | Level0)
+{
+    EXPECT_FALSE(SocPerfPlugin::GetInstance().HandleSceenModeBoost(""));
+    SocPerfPlugin::GetInstance().deviceMode_ = "displayFull";
+    SocPerfPlugin::GetInstance().screenStatus_ = 1;
+    SocPerfPlugin::GetInstance().HandleScreenOn();
+    EXPECT_TRUE(SocPerfPlugin::GetInstance().HandleSceenModeBoost("display"));
+    SocPerfPlugin::GetInstance().deviceMode_ = "displayMain";
+    SocPerfPlugin::GetInstance().HandleScreenOn();
+    EXPECT_TRUE(SocPerfPlugin::GetInstance().HandleSceenModeBoost("display"));
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_053
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_053, Function | MediumTest | Level0)
+{
+    nlohmann::json payload1;
+    payload1["deviceModeType"] = 1;
+    const std::shared_ptr<ResData>& invalidData1 = std::make_shared<ResData>(
+        ResType::RES_TYPE_DEVICE_MODE_STATUS, 0, payload1);
+    SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(invalidData1);
+    nlohmann::json payload2;
+    payload2["deviceModeType"] = "display";
+    const std::shared_ptr<ResData>& invalidData2 = std::make_shared<ResData>(
+        ResType::RES_TYPE_DEVICE_MODE_STATUS, 0, payload2);
+    SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(invalidData2);
+
+    nlohmann::json payload3;
+    payload3["deviceModeType"] = "display";
+    payload3["deviceMode"] = 123;
+    const std::shared_ptr<ResData>& invalidData3 = std::make_shared<ResData>(
+        ResType::RES_TYPE_DEVICE_MODE_STATUS, 0, payload3);
+    SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(invalidData3);
+
+    nlohmann::json payload4;
+    payload4["deviceModeType"] = "display";
+    payload4["deviceMode"] = "displayMain";
+    const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
+        ResType::RES_TYPE_DEVICE_MODE_STATUS, 0, payload4);
+    SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(validData1);
+    EXPECT_NE(validData1, nullptr);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_054
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_054, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& invalidData1 = std::make_shared<ResData>(
+        ResType::RES_TYPE_KEY_EVENT, 0, nullptr);
+    SocPerfPlugin::GetInstance().socperfGameBoostSwitch_ = false;
+    SocPerfPlugin::GetInstance().HandleEventKey(invalidData1);
+    SocPerfPlugin::GetInstance().socperfGameBoostSwitch_ = true;
+    SocPerfPlugin::GetInstance().isFocusAppsGameType_ = false;
+    SocPerfPlugin::GetInstance().HandleEventKey(invalidData1);
+    SocPerfPlugin::GetInstance().isFocusAppsGameType_ = true;
+    const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
+        ResType::RES_TYPE_KEY_EVENT, 0, nullptr);
+    SocPerfPlugin::GetInstance().HandleEventKey(validData1);
+    const std::shared_ptr<ResData>& validData2 = std::make_shared<ResData>(
+        ResType::RES_TYPE_KEY_EVENT, 1, nullptr);
+    SocPerfPlugin::GetInstance().HandleEventKey(validData2);
+    EXPECT_NE(validData2, nullptr);
 }
 } // namespace SOCPERF
 } // namespace OHOS
