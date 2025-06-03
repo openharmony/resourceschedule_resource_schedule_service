@@ -74,6 +74,7 @@ namespace {
         ResType::RES_TYPE_APP_OPT_FROM_RECENT,
         ResType::RES_TYPE_SWIPE_DIRECTION_UP,
         ResType::RES_TYPE_WINDOW_PANEL,
+        ResType::RES_TYPE_WINDOW_SPLIT_SCREEN,
     };
     static const std::unordered_set<uint32_t> THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
