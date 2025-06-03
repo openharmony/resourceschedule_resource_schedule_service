@@ -345,6 +345,8 @@ enum : uint32_t {
     RES_TYPE_WINDOW_PANEL = 160,
     // report boker gatt connect
     RES_TYPE_REPORT_BOKER_GATT_CONNECT = 161,
+    // report main screen split，value 0 enter scene 1 exit scene.
+    RES_TYPE_WINDOW_SPLIT_SCREEN = 162,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
