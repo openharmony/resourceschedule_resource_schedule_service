@@ -170,6 +170,7 @@ namespace {
         { ResType::RES_TYPE_SWIPE_DIRECTION_UP, "RES_TYPE_SWIPE_DIRECTION_UP"},
         { ResType::RES_TYPE_WINDOW_PANEL, "RES_TYPE_WINDOW_PANEL"},
         { ResType::RES_TYPE_WINDOW_SPLIT_SCREEN, "RES_TYPE_WINDOW_SPLIT_SCREEN"},
+        { ResType::RES_TYPE_SUPPLY_LEVEL, "RES_TYPE_SUPPLY_LEVEL"},
     };
     OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
     {
