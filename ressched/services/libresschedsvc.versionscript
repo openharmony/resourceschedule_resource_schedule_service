@@ -19,6 +19,7 @@
     *PluginMgr*Init*;
     *PluginMgr*SubscribeResource*;
     *PluginMgr*UnSubscribeResource*;
+    *PluginMgr*UnSubscribeAllResource*;
     *PluginMgr*GetRunner*;
     *PluginMgr*SetLinkJumpOptSet*;
     *PluginMgr*SubscribeSyncResource*;
