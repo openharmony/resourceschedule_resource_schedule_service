@@ -116,6 +116,7 @@ void AudioObserver::OnAudioSceneChange(const AudioStandard::AudioScene audioScen
 void AudioObserver::OnPreferredOutputDeviceUpdated(
     const std::vector<std::shared_ptr<AudioStandard::AudioDeviceDescriptor>> &descs)
 {
+    volumeState_.clear();
     for (const auto &desc : descs) {
         RESSCHED_LOGI("device change, type: %{public}d", desc->deviceType_);
         nlohmann::json payload;
