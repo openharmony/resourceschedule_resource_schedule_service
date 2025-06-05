@@ -35,7 +35,7 @@ ohos_shared_library("ressched_common_utils") {
     "../common/src/res_sched_event_reporter.cpp",
     "../common/src/res_sched_file_util.cpp",
     "../common/src/res_sched_hisysevent_report_util.cpp",
-    "../common/src/res_sched_hitrace_chain.cpp.cpp",
+    "../common/src/res_sched_hitrace_chain.cpp",
     "../common/src/res_sched_json_util.cpp",
     "../common/src/res_sched_string_util.cpp",
     "../common/src/res_sched_system_util.cpp",

@@ -14,8 +14,8 @@
  */
 
 
-#ifndef RES_SCHED_HITRACE_TRACE_TEST
-#define RES_SCHED_HITRACE_TRACE_TEST
+#ifndef RES_SCHED_HITRACE_CHAIN_TEST
+#define RES_SCHED_HITRACE_CHAIN_TEST
 
 #include "gtest/gtest.h"
 
@@ -31,4 +31,4 @@ public:
 } // namespace ResourceSchedule
 } // namespace OHOS
 
-#endif // RES_SCHED_HITRACE_TRACE_TEST
+#endif // RES_SCHED_HITRACE_CHAIN_TEST

@@ -16,7 +16,7 @@
 #ifndef RESOURCESCHEDULE_COMMON_HITRACE_CHAIN_H
 #define RESOURCESCHEDULE_COMMON_HITRACE_CHAIN_H
 
-#include "hitracechainc.h"
+#include "hitracechain.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
