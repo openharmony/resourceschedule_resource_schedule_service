@@ -25,6 +25,7 @@
 #include "hitrace_meter.h"
 #include "sched_controller.h"
 #include "ressched_utils.h"
+#include "res_sched_hitrace_chain.h"
 #include "res_type.h"
 #include "wm_common.h"
 
@@ -200,6 +201,7 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
 
 void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
 {
+    ResSchedHiTraceChain traceChain(__func__);
     ChronoScope cs("ApplyProcessGroup");
     if (pr.curSchedGroup_ != pr.setSchedGroup_) {
         pid_t pid = pr.GetPid();

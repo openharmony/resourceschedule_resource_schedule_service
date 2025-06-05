@@ -27,6 +27,7 @@ config("cgroup_sched_public_config") {
 ohos_shared_library("cgroup_sched") {
   public_configs = [ ":cgroup_sched_public_config" ]
   sources = [
+    "${ressched_common}/src/res_sched_hitrace_chain.cpp",
     "sched_controller/cgroup_adjuster.cpp",
     "sched_controller/cgroup_event_handler.cpp",
     "sched_controller/sched_controller.cpp",
@@ -52,6 +53,7 @@ ohos_shared_library("cgroup_sched") {
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",
+    "hitrace:libhitracechain",
     "ipc:ipc_single",
     "libxml2:libxml2",
     "samgr:samgr_proxy",
