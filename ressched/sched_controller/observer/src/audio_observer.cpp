@@ -21,6 +21,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+    static const pid_t PID_MIN = -1;
 void AudioObserver::Init()
 {
     std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> audioRendererChangeInfos;
@@ -175,6 +176,9 @@ void AudioObserver::ProcessStopSessionState(
         return;
     }
     int32_t pid = audioRendererChangeInfo->clientPid;
+    if (!IsValidPid(pid)) {
+        return;
+    }
     newStopSessionPid.emplace(pid);
     if (processRenderStateMap_.find(pid) == processRenderStateMap_.end()) {
         return;
@@ -216,6 +220,11 @@ void AudioObserver::MarshallingInnerAudioRendererChangeInfo(int32_t pid, nlohman
     ProcessRenderState processRenderState = processRenderStateMap_[pid];
     payload["uid"] = std::to_string(processRenderState.uid);
     payload["pid"] = std::to_string(processRenderState.pid);
+}
+
+bool AudioObserver::IsValidPid(pid_t pid)
+{
+    return (pid >= PID_MIN && pid <= INT32_MAX);
 }
 
 } // namespace ResourceSchedule

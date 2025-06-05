@@ -64,6 +64,7 @@ private:
     void HandleStartAudioStateEvent(const std::unordered_set<int32_t>& newRunningPid);
     void HandleStopAudioStateEvent(const std::unordered_set<int32_t>& newStopSessionPid);
     void MarshallingInnerAudioRendererChangeInfo(int32_t pid, nlohmann::json &payload);
+    bool IsValidPid(pid_t pid);
     
     std::unordered_map<int32_t, AudioStandard::RendererState> renderState_;
     std::unordered_map<int32_t, int32_t> volumeState_;
