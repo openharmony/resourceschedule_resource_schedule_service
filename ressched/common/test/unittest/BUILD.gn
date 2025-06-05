@@ -70,7 +70,7 @@ ohos_unittest("resschedfileutil_test") {
 
   deps = [ "${ressched_common}:ressched_common_utils" ]
 
-  external_deps = [ "hitrace:libhitracechain" ]
+  external_deps = []
 
   sanitize = {
     cfi = true
@@ -95,7 +95,7 @@ ohos_unittest("resschedhitracechain_test") {
 
   deps = [ "${ressched_common}:ressched_common_utils" ]
 
-  external_deps = []
+  external_deps = [ "hitrace:libhitracechain" ]
 
   sanitize = {
     cfi = true
