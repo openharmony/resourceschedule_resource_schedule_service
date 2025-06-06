@@ -187,7 +187,7 @@ bool ResSchedService::IsThirdPartType(const uint32_t type)
     if (allowAllAppReportRes_.find(type) == allowAllAppReportRes_.end()) {
         RESSCHED_LOGD("resType:%{public}d not hap app report", type);
         return false;
-     }
+    }
     if (allowFgAppReportRes_.find(type) != allowFgAppReportRes_.end() &&
         !ResSchedMgr::GetInstance().IsForegroundApp(IPCSkeleton::GetCallingPid())) {
         RESSCHED_LOGD("not foreground app");
@@ -227,7 +227,7 @@ bool ResSchedService::IsHasPermission(const uint32_t type, int32_t uid)
     if (item != allowSomeSAReportRes_.end()) {
         if (item->second.find(uid) == item->second.end()) {
             RESSCHED_LOGE("resType:%{public}d not allow uid:%{public}d report", type, uid);
-             return false;
+            return false;
         }
     } else if (allowAllSAReportRes_.find(type) == allowAllSAReportRes_.end()) {
         RESSCHED_LOGE("resType:%{public}d not sa report", type);
