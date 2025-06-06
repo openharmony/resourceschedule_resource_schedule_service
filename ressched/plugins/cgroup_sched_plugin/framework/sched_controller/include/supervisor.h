@@ -117,7 +117,7 @@ public:
 
     int32_t processType_ = ProcRecordType::NORMAL;
     uint32_t continuousTaskFlag_ = 0;
-    int32_t audioPlayingState_ = 1;
+    int32_t audioPlayingState_ = -1;
     int32_t renderTid_ = 0;
     int32_t processState_ = 0;
     int32_t linkedWindowId_ {-1};
