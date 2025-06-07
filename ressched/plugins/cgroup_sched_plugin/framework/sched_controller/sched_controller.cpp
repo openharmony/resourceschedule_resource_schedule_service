@@ -88,7 +88,6 @@ void SchedController::Disable()
 void SchedController::UnregisterStateObservers()
 {
     UnsubscribeBackgroundTask();
-    //UnsubscribeWindowState();
 }
 
 int SchedController::GetProcessGroup(pid_t pid)
