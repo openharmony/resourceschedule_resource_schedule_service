@@ -43,6 +43,7 @@ ohos_shared_library("resschedexesvc") {
     "${resschedexe_plugins}/resschedfwk/src/config_reader.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_mgr.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_switch.cpp",
+    "${resschedexe_common}/src/executor_hitrace_chain.cpp",
     "resschedexemgr/src/res_sched_exe_mgr.cpp",
     "resschedexeservice/src/res_sched_exe_service.cpp",
   ]
@@ -63,6 +64,7 @@ ohos_shared_library("resschedexesvc") {
     "hisysevent:libhisysevent",
     "hisysevent:libhisyseventmanager",
     "hitrace:hitrace_meter",
+    "hitrace:libhitracechain",
     "init:libbegetutil",
     "ipc:ipc_single",
     "libxml2:libxml2",
@@ -115,6 +117,7 @@ ohos_static_library("resschedexesvc_static") {
     "${resschedexe_plugins}/resschedfwk/src/config_reader.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_mgr.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_switch.cpp",
+    "${resschedexe_common}/src/executor_hitrace_chain.cpp",
     "resschedexemgr/src/res_sched_exe_mgr.cpp",
     "resschedexeservice/src/res_sched_exe_service.cpp",
   ]
@@ -134,6 +137,7 @@ ohos_static_library("resschedexesvc_static") {
     "hisysevent:libhisysevent",
     "hisysevent:libhisyseventmanager",
     "hitrace:hitrace_meter",
+    "hitrace:libhitracechain",
     "init:libbegetutil",
     "ipc:ipc_single",
     "samgr:samgr_proxy",
