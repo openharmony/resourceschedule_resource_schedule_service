@@ -24,6 +24,7 @@
 #include "system_ability_definition.h"
 
 #include "plugin_mgr.h"
+#include "executor_hitrace_chain.h"
 #include "res_common_util.h"
 #include "res_exe_type.h"
 #include "res_sched_exe_constants.h"
@@ -84,6 +85,7 @@ ResSchedExeService::~ResSchedExeService()
 
 void ResSchedExeService::OnStart()
 {
+    ExecutorHiTraceChain traceChain(__func__);
     ResSchedExeMgr::GetInstance().Init();
     if (!Publish(DelayedSingleton<ResSchedExeService>::GetInstance().get())) {
         RSSEXE_LOGE("ResSchedExeService::Register service failed.");
@@ -94,6 +96,7 @@ void ResSchedExeService::OnStart()
 
 void ResSchedExeService::OnStop()
 {
+    ExecutorHiTraceChain traceChain(__func__);
     ResSchedExeMgr::GetInstance().Stop();
     RSSEXE_LOGI("ResSchedExeService::OnStop!");
 }
@@ -101,6 +104,7 @@ void ResSchedExeService::OnStop()
 ErrCode ResSchedExeService::SendRequestSync(uint32_t resType, int64_t value,
                                             const ResJsonType &context, ResJsonType &response, int32_t &funcResult)
 {
+    ExecutorHiTraceChain traceChain(__func__);
     RSSEXE_LOGD("ResSchedExeService start to exec SendRequestSync, restType: %{public}u", resType);
     if (!IsCallingClientRss()) {
         RSSEXE_LOGE("calling process has no permission!");
@@ -129,6 +133,7 @@ ErrCode ResSchedExeService::SendRequestSync(uint32_t resType, int64_t value,
 
 ErrCode ResSchedExeService::SendRequestAsync(uint32_t resType, int64_t value, const ResJsonType& context)
 {
+    ExecutorHiTraceChain traceChain(__func__);
     RSSEXE_LOGD("ResSchedExeService start to exec SendRequestAsync, restType: %{public}u", resType);
     if (!IsCallingClientRss()) {
         RSSEXE_LOGE("calling process has no permission!");
@@ -155,6 +160,7 @@ ErrCode ResSchedExeService::SendRequestAsync(uint32_t resType, int64_t value, co
 
 ErrCode ResSchedExeService::KillProcess(uint32_t pid, int32_t& funcResult)
 {
+    ExecutorHiTraceChain traceChain(__func__);
     RSSEXE_LOGD("ResSchedExeService start to exec KillProcess, pid: %{public}u", pid);
     if (!IsCallingClientRss()) {
         RSSEXE_LOGE("Calling process has no permission!");
