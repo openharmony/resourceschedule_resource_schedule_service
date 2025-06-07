@@ -32,6 +32,7 @@
 #include "hisysevent.h"
 #include "res_common_util.h"
 #include "res_sa_init.h"
+#include "res_sched_hitrace_chain.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -289,6 +290,7 @@ int32_t ResSchedService::GetExtTypeByResPayload(const std::string& payload)
 
 ErrCode ResSchedService::ReportData(uint32_t resType, int64_t value, const std::string& payload)
 {
+    ResSchedHiTraceChain traceChain(__func__);
     int32_t checkResult = RemoteRequestCheck();
     if (checkResult != ERR_OK) {
         RESSCHED_LOGD("check remote request fail.");
@@ -324,6 +326,7 @@ ErrCode ResSchedService::ReportData(uint32_t resType, int64_t value, const std::
 ErrCode ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t value, const std::string& payload,
     std::string& reply, int32_t& resultValue)
 {
+    ResSchedHiTraceChain traceChain(__func__);
     int32_t checkResult = RemoteRequestCheck();
     if (checkResult != ERR_OK) {
         RESSCHED_LOGD("check remote request fail.");
