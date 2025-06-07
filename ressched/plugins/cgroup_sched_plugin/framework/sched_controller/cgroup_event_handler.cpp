@@ -565,7 +565,7 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t resType, int64_t
 
     int32_t windowId = 0;
     int32_t windowType = 0;
-    int64_t visibilityState = 0;
+    int32_t visibilityState = 0;
     int32_t pid = 0;
     int32_t uid = 0;
 
