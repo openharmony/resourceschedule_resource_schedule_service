@@ -46,6 +46,7 @@ public:
     void HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId, int32_t abilityId);
     void HandleContinuousTaskUpdate(
         uid_t uid, pid_t pid, const std::vector<uint32_t>& typeIds, int32_t abilityId);
+    void HandleFocusStateChange(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleFocusedWindow(uint32_t windowId, uint32_t windowType, uint64_t displayId,
         int32_t pid, int32_t uid);
     void HandleUnfocusedWindow(uint32_t windowId, uint32_t windowType, uint64_t displayId,
@@ -85,6 +86,7 @@ private:
     bool ParsePayload(int32_t& uid, int32_t& pid, const nlohmann::json& payload);
     bool ParsePayload(int32_t& uid, int32_t& pid, int32_t& tid, int64_t value, const nlohmann::json& payload);
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
+    bool ParseLongValue(int64_t& value, const char* name, const nlohmann::json& payload);
     bool ParseString(std::string& value, const char* name, const nlohmann::json& payload);
     void UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, int32_t windowId, int32_t state,
         const std::shared_ptr<ProcessRecord>& proc);

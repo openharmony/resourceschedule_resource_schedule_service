@@ -30,20 +30,7 @@ void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo
     if (!focusChangeInfo) {
         return;
     }
-/*
-    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHandler) {
-        auto windowId = focusChangeInfo->windowId_;
-        auto windowType = focusChangeInfo->windowType_;
-        auto displayId = focusChangeInfo->displayId_;
-        auto pid = focusChangeInfo->pid_;
-        auto uid = focusChangeInfo->uid_;
 
-        cgHandler->PostTask([cgHandler, windowId, windowType, displayId, pid, uid] {
-            cgHandler->HandleFocusedWindow(windowId, windowType, displayId, pid, uid);
-        });
-    }
-*/
     nlohmann::json payload;
     payload["pid"] = std::to_string(focusChangeInfo->pid_);
     payload["uid"] = std::to_string(focusChangeInfo->uid_);
@@ -59,20 +46,7 @@ void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeIn
     if (!focusChangeInfo) {
         return;
     }
-/*
-    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHandler) {
-        auto windowId = focusChangeInfo->windowId_;
-        auto windowType = focusChangeInfo->windowType_;
-        auto displayId = focusChangeInfo->displayId_;
-        auto pid = focusChangeInfo->pid_;
-        auto uid = focusChangeInfo->uid_;
 
-        cgHandler->PostTask([cgHandler, windowId, windowType, displayId, pid, uid] {
-            cgHandler->HandleUnfocusedWindow(windowId, windowType, displayId, pid, uid);
-        });
-    }
-*/
     nlohmann::json payload;
     payload["pid"] = std::to_string(focusChangeInfo->pid_);
     payload["uid"] = std::to_string(focusChangeInfo->uid_);
@@ -98,11 +72,6 @@ void WindowVisibilityObserver::MarshallingWindowVisibilityInfo(const sptr<Window
 void WindowVisibilityObserver::OnWindowVisibilityChanged(
     const std::vector<sptr<WindowVisibilityInfo>>& windowVisibilityInfo)
 {
-    /*
-    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (!cgHandler) {
-        return;
-    }*/
     for (auto& info : windowVisibilityInfo) {
         if (!info) {
             continue;
@@ -112,10 +81,7 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
         auto windowType = info->windowType_;
         auto pid = info->pid_;
         auto uid = info->uid_;
-        /*
-        cgHandler->PostTask([cgHandler, windowId, visibilityState, windowType, pid, uid] {
-            cgHandler->HandleWindowVisibilityChanged(windowId, visibilityState, windowType, pid, uid);
-        });*/
+
         nlohmann::json payload;
         MarshallingWindowVisibilityInfo(info, payload);
         bool isVisible = visibilityState < Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
@@ -137,11 +103,6 @@ void WindowDrawingContentObserver::MarshallingWindowDrawingContentInfo(const spt
 void WindowDrawingContentObserver::OnWindowDrawingContentChanged(
     const std::vector<sptr<WindowDrawingContentInfo>>& changeInfo)
 {
-    /*
-    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (!cgHandler) {
-        return;
-    }*/
     for (const auto& info : changeInfo) {
         if (!info) {
             continue;
@@ -151,10 +112,7 @@ void WindowDrawingContentObserver::OnWindowDrawingContentChanged(
         auto drawingContentState = info->drawingContentState_;
         auto pid = info->pid_;
         auto uid = info->uid_;
-        /*
-        cgHandler->PostTask([cgHandler, windowId, windowType, drawingContentState, pid, uid] {
-            cgHandler->HandleDrawingContentChangeWindow(windowId, windowType, drawingContentState, pid, uid);
-        });*/
+
         nlohmann::json payload;
         MarshallingWindowDrawingContentInfo(info, payload);
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,

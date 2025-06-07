@@ -470,13 +470,35 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_
         AdjustSource::ADJS_CONTINUOUS_END);
 }
 
-void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uint32_t windowType,
-    uint64_t displayId, int32_t pid, int32_t uid)
+void CgroupEventHandler::HandleFocusStateChange(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
+    int32_t windowId = 0;
+    int32_t windowType = 0;
+    int64_t displayId = 0;
+    int32_t pid = 0;
+    int32_t uid = 0;
+
+    if (!ParseValue(pid, "pid", payload) || !ParseValue(uid, "uid", payload) ||
+        !ParseValue(windowId, "windowId", payload) || !ParseValue(windowType, "windowType", payload) ||
+        !ParseLongValue(displayId, "displayId", payload)) {
+        CGS_LOGE("%{public}s: param error", __func__);
+        return;
+    }
+
+    if (value == ResType::WindowFocusStatus::WINDOW_FOCUS) {
+        HandleFocusedWindow(windowId, windowType, displayId, pid, uid);
+    } else if (value == ResType::WindowFocusStatus::WINDOW_UNFOCUS) {
+        HandleUnfocusedWindow(windowId, windowType, displayId, pid, uid);
+    }
+}
+
+void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uint32_t windowType,
+    uint64_t displayId, int32_t pid, int32_t uid)
+{
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
         __func__, windowId, windowType, displayId, pid, uid);
     std::shared_ptr<Application> app = nullptr;
@@ -506,10 +528,6 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uint32_t windowT
 void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uint32_t windowType,
     uint64_t displayId, int32_t pid, int32_t uid)
 {
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        return;
-    }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
         __func__, windowId, windowType, displayId, pid, uid);
     std::shared_ptr<Application> app = nullptr;
@@ -538,13 +556,26 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uint32_t windo
     }
 }
 
-void CgroupEventHandler::HandleWindowVisibilityChanged(
-    uint32_t windowId, uint32_t visibilityState, uint32_t windowType, int32_t pid, int32_t uid)
+void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
+
+    int32_t windowId = 0;
+    int32_t windowType = 0;
+    int64_t visibilityState = 0;
+    int32_t pid = 0;
+    int32_t uid = 0;
+
+    if (!ParseValue(pid, "pid", payload) || !ParseValue(uid, "uid", payload) ||
+        !ParseValue(windowId, "windowId", payload) || !ParseValue(windowType, "windowType", payload) ||
+        !ParseValue(visibilityState, "visibilityState", payload)) {
+        CGS_LOGE("%{public}s: param error", __func__);
+        return;
+    }
+
     bool isVisible = visibilityState < 2;
     //Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
@@ -577,13 +608,26 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(
         AdjustSource::ADJS_WINDOW_VISIBILITY_CHANGED);
 }
 
-void CgroupEventHandler::HandleDrawingContentChangeWindow(
-    uint32_t windowId, uint32_t windowType, bool drawingContentState, int32_t pid, int32_t uid)
+void CgroupEventHandler::HandleDrawingContentChangeWindow(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
+
+    int32_t windowId = 0;
+    int32_t windowType = 0;
+    int32_t drawingContentState = 0;
+    int32_t pid = 0;
+    int32_t uid = 0;
+
+    if (!ParseValue(pid, "pid", payload) || !ParseValue(uid, "uid", payload) ||
+        !ParseValue(windowId, "windowId", payload) || !ParseValue(windowType, "windowType", payload) ||
+        !ParseValue(drawingContentState, "drawingContentState", payload)) {
+        CGS_LOGE("%{public}s: param error", __func__);
+        return;
+    }
+
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
         drawingContentState, (int32_t)windowType, pid, uid);
 
@@ -592,16 +636,16 @@ void CgroupEventHandler::HandleDrawingContentChangeWindow(
     if (!app || !procRecord) {
         return;
     }
-    procRecord->processDrawingState_ = drawingContentState;
+    procRecord->processDrawingState_ = (bool)drawingContentState;
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
     if (!windowInfo) {
         CGS_LOGE("%{public}s : windowInfo nullptr!", __func__);
         return;
     }
-    windowInfo->drawingContentState_ = drawingContentState;
+    windowInfo->drawingContentState_ = (bool)drawingContentState;
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
         ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
-        drawingContentState ? ResType::WindowDrawingStatus::Drawing : ResType::WindowDrawingStatus::NotDrawing);
+        (bool)drawingContentState ? ResType::WindowDrawingStatus::Drawing : ResType::WindowDrawingStatus::NotDrawing);
 }
 
 void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -1293,6 +1337,16 @@ bool CgroupEventHandler::ParseValue(int32_t& value, const char* name,
 {
     if (payload.contains(name) && payload.at(name).is_string()) {
         value = atoi(payload[name].get<std::string>().c_str());
+        return true;
+    }
+    return false;
+}
+
+bool CgroupEventHandler::ParseLongValue(int64_t& value, const char* name,
+    const nlohmann::json& payload)
+{
+    if (payload.contains(name) && payload.at(name).is_string()) {
+        value = atoll(payload[name].get<std::string>().c_str());
         return true;
     }
     return false;

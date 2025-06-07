@@ -134,6 +134,9 @@ void SchedController::InitResTypes()
         ResType::RES_TYPE_EXTENSION_STATE_CHANGE,
         ResType::RES_TYPE_PROCESS_STATE_CHANGE,
         ResType::RES_TYPE_APP_STATE_CHANGE,
+        ResType::RES_TYPE_WINDOW_FOCUS,
+        ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
+        ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
     };
 }
 
@@ -290,6 +293,15 @@ void SchedController::InitAddDispatchResFuncMap()
     dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_APP_STATE_CHANGE,
         [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value,
         const nlohmann::json& payload) { handler->HandleApplicationStateChanged(resType, value, payload); }));
+    dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_WINDOW_FOCUS,
+        [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value,
+        const nlohmann::json& payload) { handler->HandleFocusStateChange(resType, value, payload); }));
+    dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
+        [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value,
+        const nlohmann::json& payload) { handler->HandleWindowVisibilityChanged(resType, value, payload); }));
+    dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
+        [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value,
+        const nlohmann::json& payload) { handler->HandleDrawingContentChangeWindow(resType, value, payload); }));
 }
 
 bool SchedController::SubscribeBackgroundTask()
