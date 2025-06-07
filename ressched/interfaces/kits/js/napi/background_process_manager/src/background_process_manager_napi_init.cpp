@@ -24,11 +24,26 @@
 namespace {
     constexpr int SET_PROCESS_PRIORITY_PARAM_NUM = 2;
     constexpr int RESET_PROCESS_PRIORITY_PARAM_NUM = 1;
+    constexpr int SET_POWER_SAVE_MODE_PARAM_NUM = 2;
+    constexpr int IS_POWER_SAVE_MODE_PARAM_NUM = 1;
     constexpr int PID_INDEX = 0;
     constexpr int PRIORITY_INDEX = 1;
+    constexpr int MODE_INDEX = 1;
+    constexpr int IS_POWER_SAVE_OK = 1;
+    constexpr int IS_POWER_SAVE_NOK = 0;
     std::map<int, std::string> errCodeMsg = {
         { ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM,
-            "Parameter error. Possible causes: priority is out of range." }
+            "Parameter error. Possible causes: priority is out of range." },
+        { ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR,
+            "Parameter error. Possible causes: priority is out of range." },
+        { ERR_BACKGROUND_PROCESS_MANAGER_PERMISSION_DENIED,
+            "Permission denied." },
+        { ERR_BACKGROUND_PROCESS_MANAGER_CAPABILITY_NOT_SUPPORTED,
+            "Capability not supported." },
+        { ERR_BACKGROUND_PROCESS_MANAGER_SETUP_ERROR,
+            "This setting is overridden by setting in Task Manager." },
+        { ERR_BACKGROUND_PROCESS_MANAGER_SYSTEM_SCHEDULING,
+            "The setting failed due to system scheduling reasons." }
     };
 }
 
@@ -122,6 +137,89 @@ napi_value ResetProcessPriority(napi_env env, napi_callback_info info)
     return ret;
 }
 
+napi_value SetPowerSaveMode(napi_env env, napi_callback_info info)
+{
+    napi_value ret;
+    size_t argc = SET_POWER_SAVE_MODE_PARAM_NUM;
+    napi_value argv[SET_POWER_SAVE_MODE_PARAM_NUM] = { nullptr };
+    napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
+    if (argc != SET_POWER_SAVE_MODE_PARAM_NUM) {
+        RESSCHED_LOGE("param num error");
+        napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR, &ret);
+        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
+        return ret;
+    }
+
+    napi_valuetype pidType;
+    napi_typeof(env, argv[PID_INDEX], &pidType);
+
+    napi_valuetype modeType;
+    napi_typeof(env, argv[MODE_INDEX], &modeType);
+
+    if (pidType != napi_number || modeType != napi_number) {
+        RESSCHED_LOGE("param type error");
+        napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR, &ret);
+        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
+        return ret;
+    }
+
+    int32_t pid = -1;
+    int32_t mode = -1;
+
+    napi_get_value_int32(env, argv[PID_INDEX], &pid);
+    napi_get_value_int32(env, argv[MODE_INDEX], &mode);
+
+    BackgroundProcessManager_PowerSaveMode processMode =
+        static_cast<BackgroundProcessManager_PowerSaveMode>(mode);
+
+    int retCode = OH_BackgroundProcessManager_SetPowerSaveMode(pid, processMode);
+    HandleErrorCode(env, retCode);
+    napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS, &ret);
+    return ret;
+}
+
+napi_value IsPowerSaveMode(napi_env env, napi_callback_info info)
+{
+    napi_value ret;
+    size_t argc = IS_POWER_SAVE_MODE_PARAM_NUM;
+    napi_value argv[IS_POWER_SAVE_MODE_PARAM_NUM] = { nullptr };
+    napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
+    if (argc != IS_POWER_SAVE_MODE_PARAM_NUM) {
+        RESSCHED_LOGE("param num error");
+        napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR, &ret);
+        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
+        return ret;
+    }
+
+    napi_valuetype pidType;
+    napi_typeof(env, argv[PID_INDEX], &pidType);
+
+    if (pidType != napi_number) {
+        RESSCHED_LOGE("param type error");
+        napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR, &ret);
+        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
+        return ret;
+    }
+
+    int32_t pid = -1;
+    napi_get_value_int32(env, argv[PID_INDEX], &pid);
+
+    int retCode = OH_BackgroundProcessManager_IsPowerSaveMode(pid);
+    HandleErrorCode(env, retCode);
+    if (retCode != IS_POWER_SAVE_NOK && retCode != IS_POWER_SAVE_OK) {
+        napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS, &ret);
+        return ret;
+    }
+
+    napi_value promise = nullptr;
+    napi_deferred deferred = nullptr;
+    napi_create_promise(env, &deferred, &promise);
+    bool isPowerMode = static_cast<bool>(retCode);
+    napi_get_boolean(env, isPowerMode, &ret);
+    napi_resolve_deferred(env, deferred, ret);
+    return promise;
+}
+
 static void SetPropertyName(napi_env env, napi_value dstObj, int32_t objName, const char * propName)
 {
     napi_value prop = nullptr;
@@ -139,8 +237,16 @@ static napi_value ProcessPriorityInit(napi_env env, napi_value exports)
     SetPropertyName(env, obj, static_cast<uint32_t>(BackgroundProcessManager_ProcessPriority::PROCESS_INACTIVE),
         "PROCESS_INACTIVE");
 
+    napi_value powerMode = nullptr;
+    napi_create_object(env, &powerMode);
+    SetPropertyName(env, powerMode, static_cast<uint32_t>(BackgroundProcessManager_PowerSaveMode::EFFICIENCY_MODE),
+        "EFFICIENCY_MODE");
+    SetPropertyName(env, powerMode, static_cast<uint32_t>(BackgroundProcessManager_PowerSaveMode::DEFAULT_MODE),
+        "DEFAULT_MODE");
+
     napi_property_descriptor desc[] = {
         DECLARE_NAPI_PROPERTY("ProcessPriority", obj),
+        DECLARE_NAPI_PROPERTY("PowerSaveMode", powerMode),
     };
 
     napi_define_properties(env, exports, sizeof(desc) / sizeof(*desc), desc);
@@ -152,6 +258,8 @@ static napi_value InitBackgroundProcessManagerAPi(napi_env env, napi_value expor
     napi_property_descriptor desc[] = {
         DECLARE_NAPI_FUNCTION("setProcessPriority", SetProcessPriority),
         DECLARE_NAPI_FUNCTION("resetProcessPriority", ResetProcessPriority),
+        DECLARE_NAPI_FUNCTION("setPowerSaveMode", SetPowerSaveMode),
+        DECLARE_NAPI_FUNCTION("isPowerSaveMode", IsPowerSaveMode),
     };
 
     NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(*desc), desc));
