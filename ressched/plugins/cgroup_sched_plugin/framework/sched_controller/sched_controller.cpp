@@ -32,7 +32,6 @@
 #include "ressched_utils.h"
 #include "res_type.h"
 #include "supervisor.h"
-//#include "window_state_observer.h"
 #ifdef POWER_MANAGER_ENABLE
 #include "power_mgr_client.h"
 #endif
@@ -329,97 +328,7 @@ void SchedController::UnsubscribeBackgroundTask()
     isBgtaskSubscribed_ = false;
 #endif
 }
-/*
-void SchedController::SubscribeWindowState()
-{
-    if (!windowStateObserver_) {
-        windowStateObserver_ = new (std::nothrow)WindowStateObserver();
-        if (windowStateObserver_) {
-            if (OHOS::Rosen::WindowManager::GetInstance().
-            RegisterFocusChangedListener(windowStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
-                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
-                                HiviewDFX::HiSysEvent::EventType::FAULT,
-                                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                                "ERR_MSG", "Register a listener of window focus change failed.");
-            }
-        }
-    }
-    if (!windowVisibilityObserver_) {
-        windowVisibilityObserver_ = new (std::nothrow)WindowVisibilityObserver();
-        if (windowVisibilityObserver_) {
-            if (OHOS::Rosen::WindowManager::GetInstance().
-            RegisterVisibilityChangedListener(windowVisibilityObserver_) != OHOS::Rosen::WMError::WM_OK) {
-                HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
-                                HiviewDFX::HiSysEvent::EventType::FAULT,
-                                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                                "ERR_MSG", "Register a listener of window visibility change failed.");
-            }
-        }
-    }
-    if (!windowDrawingContentObserver_) {
-        windowDrawingContentObserver_ = new (std::nothrow)WindowDrawingContentObserver();
-        if (windowDrawingContentObserver_) {
-            if (OHOS::Rosen::WindowManager::GetInstance().
-                RegisterDrawingContentChangedListener(windowDrawingContentObserver_) != OHOS::Rosen::WMError::WM_OK) {
-                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
-                                    HiviewDFX::HiSysEvent::EventType::FAULT,
-                                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                                    "ERR_MSG", "Register a listener of window draw content change failed.");
-            }
-        }
-    }
-    SubscribeWindowModeChange();
-    CGS_LOGI("%{public}s success.", __func__);
-}
 
-void SchedController::SubscribeWindowModeChange()
-{
-    if (!windowModeObserver_) {
-        windowModeObserver_ = new (std::nothrow)WindowModeObserver();
-        if (windowModeObserver_) {
-            if (OHOS::Rosen::WindowManager::GetInstance().
-                RegisterWindowModeChangedListener(windowModeObserver_) != OHOS::Rosen::WMError::WM_OK) {
-                    CGS_LOGE("RegisterWindowModeChangedListener fail");
-                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS,
-                                    "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                                    "ERR_MSG", "Register a listener of window mode content change failed.");
-            }
-        }
-    }
-}
-
-void SchedController::UnsubscribeWindowState()
-{
-    if (windowStateObserver_) {
-        // unregister windowStateObserver_
-        OHOS::Rosen::WindowManager::GetInstance().UnregisterFocusChangedListener(windowStateObserver_);
-        windowStateObserver_ = nullptr;
-    }
-
-    if (windowVisibilityObserver_) {
-        OHOS::Rosen::WindowManager::GetInstance().UnregisterVisibilityChangedListener(windowVisibilityObserver_);
-        windowVisibilityObserver_ = nullptr;
-    }
-
-    if (windowDrawingContentObserver_) {
-        OHOS::Rosen::WindowManager::GetInstance().
-            UnregisterDrawingContentChangedListener(windowDrawingContentObserver_);
-        windowDrawingContentObserver_ = nullptr;
-    }
-    UnsubscribeWindowModeChange();
-}
-
-void SchedController::UnsubscribeWindowModeChange()
-{
-    if (windowModeObserver_) {
-        OHOS::Rosen::WindowManager::GetInstance().
-            UnregisterWindowModeChangedListener(windowModeObserver_);
-        windowModeObserver_ = nullptr;
-    }
-    CGS_LOGI("UnsubscribeWindowModeChange success");
-}
-*/
 #ifdef POWER_MANAGER_ENABLE
 void SchedController::GetRunningLockState()
 {
