@@ -19,7 +19,6 @@
 #include <set>
 #include <sys/types.h>
 #include <string>
-#include "hilog/log.h"
 #include "nlohmann/json.hpp"
 #include "plugin.h"
 #include "refbase.h"
@@ -47,10 +46,10 @@ public:
 
     bool SubscribeBackgroundTask();
     void UnsubscribeBackgroundTask();
-    void SubscribeWindowState();
-    void UnsubscribeWindowState();
-    void SubscribeWindowModeChange();
-    void UnsubscribeWindowModeChange();
+    //void SubscribeWindowState();
+    //void UnsubscribeWindowState();
+    //void SubscribeWindowModeChange();
+    //void UnsubscribeWindowModeChange();
     void UnregisterStateObservers();
     int GetProcessGroup(pid_t pid);
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
@@ -84,10 +83,10 @@ private:
     bool isBgtaskSubscribed_ {false};
     std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_;
 #endif
-    sptr<WindowStateObserver> windowStateObserver_;
-    sptr<WindowVisibilityObserver> windowVisibilityObserver_;
-    sptr<WindowDrawingContentObserver> windowDrawingContentObserver_;
-    sptr<WindowModeObserver> windowModeObserver_;
+    //sptr<WindowStateObserver> windowStateObserver_;
+    //sptr<WindowVisibilityObserver> windowVisibilityObserver_;
+    //sptr<WindowDrawingContentObserver> windowDrawingContentObserver_;
+    //sptr<WindowModeObserver> windowModeObserver_;
     std::unordered_map<uint32_t, std::function<void(std::shared_ptr<CgroupEventHandler>,
         uint32_t, int64_t, const nlohmann::json&)>> dispatchResFuncMap_;
 

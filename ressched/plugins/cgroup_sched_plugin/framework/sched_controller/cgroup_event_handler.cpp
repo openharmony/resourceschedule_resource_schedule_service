@@ -545,7 +545,8 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    bool isVisible = visibilityState < Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
+    bool isVisible = visibilityState < 2;
+    //Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
         visibilityState, (int32_t)windowType, pid, uid);
 
