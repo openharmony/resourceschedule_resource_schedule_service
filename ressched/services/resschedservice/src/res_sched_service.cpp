@@ -164,6 +164,7 @@ namespace {
 #endif
         ResType::RES_TYPE_PARAM_UPADTE_EVENT,
         ResType::RES_TYPE_CAMERA_PRELAUNCH,
+        ResType::RES_TYPE_CAMERA_RESET_PRIORITY,
         ResType::RES_TYPE_DEVICE_MODE_STATUS,
     };
     static const std::unordered_map<uint32_t, std::unordered_set<int32_t>> ALLOW_SOME_UID_REPORT_RES = {
