@@ -21,11 +21,9 @@
 #include "ffrt_inner.h"
 #include "nlohmann/json.hpp"
 #include "supervisor.h"
-#include "wm_common.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-using OHOS::Rosen::WindowType;
 using OHOS::AppExecFwk::ProcessData;
 
 class CgroupEventHandler {
@@ -48,13 +46,13 @@ public:
     void HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId, int32_t abilityId);
     void HandleContinuousTaskUpdate(
         uid_t uid, pid_t pid, const std::vector<uint32_t>& typeIds, int32_t abilityId);
-    void HandleFocusedWindow(uint32_t windowId, WindowType windowType, uint64_t displayId,
+    void HandleFocusedWindow(uint32_t windowId, uint32_t windowType, uint64_t displayId,
         int32_t pid, int32_t uid);
-    void HandleUnfocusedWindow(uint32_t windowId, WindowType windowType, uint64_t displayId,
+    void HandleUnfocusedWindow(uint32_t windowId, uint32_t windowType, uint64_t displayId,
         int32_t pid, int32_t uid);
     void HandleWindowVisibilityChanged(uint32_t windowId, uint32_t visibilityState,
-        WindowType windowType, int32_t pid, int32_t uid);
-    void HandleDrawingContentChangeWindow(uint32_t windowId, WindowType windowType,
+        uint32_t windowType, int32_t pid, int32_t uid);
+    void HandleDrawingContentChangeWindow(uint32_t windowId, uint32_t windowType,
         bool drawingContentState, int32_t pid, int32_t uid);
     void HandleReportMMIProcess(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportRenderThread(uint32_t resType, int64_t value, const nlohmann::json& payload);

@@ -32,7 +32,6 @@ ohos_shared_library("cgroup_sched") {
     "sched_controller/cgroup_event_handler.cpp",
     "sched_controller/sched_controller.cpp",
     "sched_controller/supervisor.cpp",
-    "sched_controller/window_state_observer.cpp",
     "utils/ressched_utils.cpp",
   ]
 
@@ -57,7 +56,6 @@ ohos_shared_library("cgroup_sched") {
     "ipc:ipc_single",
     "libxml2:libxml2",
     "samgr:samgr_proxy",
-    "window_manager:libwm",
   ]
 
   defines = []

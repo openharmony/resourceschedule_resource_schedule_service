@@ -32,7 +32,7 @@
 #include "ressched_utils.h"
 #include "res_type.h"
 #include "supervisor.h"
-#include "window_state_observer.h"
+//#include "window_state_observer.h"
 #ifdef POWER_MANAGER_ENABLE
 #include "power_mgr_client.h"
 #endif
@@ -89,7 +89,7 @@ void SchedController::Disable()
 void SchedController::UnregisterStateObservers()
 {
     UnsubscribeBackgroundTask();
-    UnsubscribeWindowState();
+    //UnsubscribeWindowState();
 }
 
 int SchedController::GetProcessGroup(pid_t pid)
@@ -329,7 +329,7 @@ void SchedController::UnsubscribeBackgroundTask()
     isBgtaskSubscribed_ = false;
 #endif
 }
-
+/*
 void SchedController::SubscribeWindowState()
 {
     if (!windowStateObserver_) {
@@ -419,7 +419,7 @@ void SchedController::UnsubscribeWindowModeChange()
     }
     CGS_LOGI("UnsubscribeWindowModeChange success");
 }
-
+*/
 #ifdef POWER_MANAGER_ENABLE
 void SchedController::GetRunningLockState()
 {

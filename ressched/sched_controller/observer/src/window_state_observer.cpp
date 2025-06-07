@@ -19,12 +19,6 @@
 #include "res_sched_mgr.h"
 #include "res_type.h"
 
-#include "cgroup_sched_log.h"
-#include "cgroup_event_handler.h"
-#include "res_type.h"
-#include "sched_controller.h"
-#include "ressched_utils.h"
-
 namespace OHOS {
 namespace ResourceSchedule {
 
@@ -36,7 +30,7 @@ void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo
     if (!focusChangeInfo) {
         return;
     }
-
+/*
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHandler) {
         auto windowId = focusChangeInfo->windowId_;
@@ -49,14 +43,14 @@ void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo
             cgHandler->HandleFocusedWindow(windowId, windowType, displayId, pid, uid);
         });
     }
-
+*/
     nlohmann::json payload;
     payload["pid"] = std::to_string(focusChangeInfo->pid_);
     payload["uid"] = std::to_string(focusChangeInfo->uid_);
     payload["windowId"] = std::to_string(focusChangeInfo->windowId_);
     payload["windowType"] = std::to_string((int32_t)(focusChangeInfo->windowType_));
     payload["displayId"] = std::to_string(focusChangeInfo->displayId_);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_FOCUS, payload);
 }
 
@@ -65,7 +59,7 @@ void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeIn
     if (!focusChangeInfo) {
         return;
     }
-
+/*
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
     if (cgHandler) {
         auto windowId = focusChangeInfo->windowId_;
@@ -78,14 +72,14 @@ void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeIn
             cgHandler->HandleUnfocusedWindow(windowId, windowType, displayId, pid, uid);
         });
     }
-
+*/
     nlohmann::json payload;
     payload["pid"] = std::to_string(focusChangeInfo->pid_);
     payload["uid"] = std::to_string(focusChangeInfo->uid_);
     payload["windowId"] = std::to_string(focusChangeInfo->windowId_);
     payload["windowType"] = std::to_string((int32_t)(focusChangeInfo->windowType_));
     payload["displayId"] = std::to_string(focusChangeInfo->displayId_);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
 }
 
@@ -104,10 +98,11 @@ void WindowVisibilityObserver::MarshallingWindowVisibilityInfo(const sptr<Window
 void WindowVisibilityObserver::OnWindowVisibilityChanged(
     const std::vector<sptr<WindowVisibilityInfo>>& windowVisibilityInfo)
 {
+    /*
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
     if (!cgHandler) {
         return;
-    }
+    }*/
     for (auto& info : windowVisibilityInfo) {
         if (!info) {
             continue;
@@ -117,13 +112,14 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
         auto windowType = info->windowType_;
         auto pid = info->pid_;
         auto uid = info->uid_;
+        /*
         cgHandler->PostTask([cgHandler, windowId, visibilityState, windowType, pid, uid] {
             cgHandler->HandleWindowVisibilityChanged(windowId, visibilityState, windowType, pid, uid);
-        });
+        });*/
         nlohmann::json payload;
         MarshallingWindowVisibilityInfo(info, payload);
         bool isVisible = visibilityState < Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
-        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
             isVisible ? ResType::WindowVisibilityStatus::VISIBLE : ResType::WindowVisibilityStatus::INVISIBLE, payload);
     }
 }
@@ -141,10 +137,11 @@ void WindowDrawingContentObserver::MarshallingWindowDrawingContentInfo(const spt
 void WindowDrawingContentObserver::OnWindowDrawingContentChanged(
     const std::vector<sptr<WindowDrawingContentInfo>>& changeInfo)
 {
+    /*
     auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
     if (!cgHandler) {
         return;
-    }
+    }*/
     for (const auto& info : changeInfo) {
         if (!info) {
             continue;
@@ -154,19 +151,20 @@ void WindowDrawingContentObserver::OnWindowDrawingContentChanged(
         auto drawingContentState = info->drawingContentState_;
         auto pid = info->pid_;
         auto uid = info->uid_;
+        /*
         cgHandler->PostTask([cgHandler, windowId, windowType, drawingContentState, pid, uid] {
             cgHandler->HandleDrawingContentChangeWindow(windowId, windowType, drawingContentState, pid, uid);
-        });
+        });*/
         nlohmann::json payload;
         MarshallingWindowDrawingContentInfo(info, payload);
-        ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
             drawingContentState ? ResType::WindowDrawingStatus::Drawing : ResType::WindowDrawingStatus::NotDrawing,
             payload);
     }
 }
 void WindowModeObserver::OnWindowModeUpdate(const WindowModeType mode)
 {
-    CGS_LOGI("WindowModeObserver OnWindowModeUpdate mode: %{public}hhu ", mode);
+    RESSCHED_LOGI("WindowModeObserver OnWindowModeUpdate mode: %{public}hhu ", mode);
     uint8_t nowWindowMode = MarshallingWindowModeType(mode);
     uint8_t windowModeChangeBit = nowWindowMode ^ lastWindowMode_;
     nlohmann::json payload;
@@ -174,17 +172,17 @@ void WindowModeObserver::OnWindowModeUpdate(const WindowModeType mode)
     uint8_t windowModeFloatingValue = nowWindowMode & WINDOW_MODE_BIT_EXIT;
     switch (windowModeChangeBit) {
         case RSSWindowMode::WINDOW_MODE_FLOATING_CHANGED:
-            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_FLOATING_WINDOW,
+            ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_FLOATING_WINDOW,
                 windowModeFloatingValue, payload);
             break;
         case RSSWindowMode::WINDOW_MODE_SPLIT_CHANGED:
-            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_SPLIT_SCREEN,
+            ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SPLIT_SCREEN,
                 windowModeSplitValue, payload);
             break;
         case RSSWindowMode::WINDOW_MODE_SPLIT_FLOATING_CHANGED:
-            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_SPLIT_SCREEN,
+            ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SPLIT_SCREEN,
                 windowModeSplitValue, payload);
-            ResSchedUtils::GetInstance().ReportDataInProcess(ResType::RES_TYPE_FLOATING_WINDOW,
+            ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_FLOATING_WINDOW,
                 windowModeFloatingValue, payload);
             break;
         default:

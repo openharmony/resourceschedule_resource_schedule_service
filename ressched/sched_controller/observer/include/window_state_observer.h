@@ -18,12 +18,13 @@
 
 #include "window_manager_lite.h"
 
+#include <cstdint>
 #include <sys/types.h>
+
 #include "iremote_object.h"
+#include "nlohmann/json.hpp"
 #include "window_manager.h"
 #include "wm_common.h"
-#include "nlohmann/json.hpp"
-#include <cstdint>
 
 namespace OHOS {
 namespace ResourceSchedule {
