@@ -102,6 +102,10 @@ public:
     void DisableAccountObserver();
     void InitWindowStateObserver();
     void DisableWindowStateObserver();
+    void SubscribeWindowModeChange();
+    void SubscribePipChange();
+    void UnsubscribeWindowModeChange();
+    void UnsubscribePipChange();
     void SubscribeAppState();
     void UnsubscribeAppState();
 #ifdef RESOURCE_REQUEST_REQUEST
@@ -143,6 +147,10 @@ public:
 #endif
     std::shared_ptr<AccountObserver> accountObserver_ = nullptr;
     sptr<PiPStateObserver> pipStateObserver_ = nullptr;
+    sptr<WindowStateObserver> windowStateObserver_ = nullptr;
+    sptr<WindowVisibilityObserver> windowVisibilityObserver_ = nullptr;
+    sptr<WindowDrawingContentObserver> windowDrawingContentObserver_ = nullptr;
+    sptr<WindowModeObserver> windowModeObserver_ = nullptr;
     sptr<RmsApplicationStateObserver> appStateObserver_ = nullptr;
     bool isNeedReport_ = true;
     int32_t powerKeySubscribeId_ = -1;
