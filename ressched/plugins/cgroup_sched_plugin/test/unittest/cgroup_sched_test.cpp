@@ -22,17 +22,12 @@
 #include "sched_controller.h"
 #include "sched_policy.h"
 #include "supervisor.h"
-#include "window_state_observer.h"
-#include "window_manager.h"
-#include "wm_common.h"
 #include "ability_info.h"
 #include "background_mode.h"
 #include "appmgr/app_mgr_constants.h"
 
 using namespace testing::ext;
 using namespace OHOS::ResourceSchedule::CgroupSetting;
-using OHOS::Rosen::WindowModeType;
-using OHOS::Rosen::IWindowModeChangedListener;
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -65,106 +60,6 @@ void CGroupSchedTest::SetUp(void)
 void CGroupSchedTest::TearDown(void)
 {
     supervisor_ = nullptr;
-}
-
-/**
- * @tc.name: CGroupSchedTest_WindowStateObserver_001
- * @tc.desc: Window Mode Observer Test
- * @tc.type: FUNC
- * @tc.require: issuesI9BU37
- * @tc.desc:
- */
-HWTEST_F(CGroupSchedTest, CGroupSchedTest_WindowStateObserver_001, Function | MediumTest | Level1)
-{
-    std::shared_ptr<WindowModeObserver> windowModeObserver_ =
-        std::make_shared<WindowModeObserver>();
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_SPLIT);
-    EXPECT_NE(windowModeObserver_, nullptr);
-
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_FLOATING);
-    EXPECT_NE(windowModeObserver_, nullptr);
-
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_SPLIT);
-    EXPECT_NE(windowModeObserver_, nullptr);
-
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_SPLIT_FLOATING);
-    EXPECT_NE(windowModeObserver_, nullptr);
-
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_SPLIT);
-    EXPECT_NE(windowModeObserver_, nullptr);
-
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_OTHER);
-    EXPECT_NE(windowModeObserver_, nullptr);
-
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_FLOATING);
-    EXPECT_NE(windowModeObserver_, nullptr);
-
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_SPLIT_FLOATING);
-    EXPECT_NE(windowModeObserver_, nullptr);
-
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_FLOATING);
-    EXPECT_NE(windowModeObserver_, nullptr);
-
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_OTHER);
-    EXPECT_NE(windowModeObserver_, nullptr);
-
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_SPLIT_FLOATING);
-    EXPECT_NE(windowModeObserver_, nullptr);
-
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_OTHER);
-    EXPECT_NE(windowModeObserver_, nullptr);
-
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_SPLIT);
-    EXPECT_NE(windowModeObserver_, nullptr);
-
-    windowModeObserver_->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_SPLIT);
-
-    windowModeObserver_ = nullptr;
-}
-
-/**
- * @tc.name: CGroupSchedTest_WindowStateObserver_002
- * @tc.desc: Window Mode Observer Test
- * @tc.type: FUNC
- * @tc.require: issuesI9BU37
- * @tc.desc:
- */
-HWTEST_F(CGroupSchedTest, CGroupSchedTest_WindowStateObserver_002, Function | MediumTest | Level1)
-{
-    std::shared_ptr<WindowModeObserver> windowModeObserver_ =
-        std::make_shared<WindowModeObserver>();
-    uint8_t nowWindowMode = windowModeObserver_->MarshallingWindowModeType(
-        Rosen::WindowModeType::WINDOW_MODE_SPLIT_FLOATING);
-    EXPECT_EQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_SPLIT_FLOATING);
-
-    nowWindowMode = windowModeObserver_->MarshallingWindowModeType(Rosen::WindowModeType::WINDOW_MODE_SPLIT);
-    EXPECT_EQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_SPLIT);
-
-    nowWindowMode = windowModeObserver_->MarshallingWindowModeType(Rosen::WindowModeType::WINDOW_MODE_FLOATING);
-    EXPECT_EQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_FLOATING);
-    nowWindowMode = windowModeObserver_->MarshallingWindowModeType(
-        Rosen::WindowModeType::WINDOW_MODE_FULLSCREEN_FLOATING);
-    EXPECT_EQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_FLOATING);
-
-    nowWindowMode = windowModeObserver_->MarshallingWindowModeType(Rosen::WindowModeType::WINDOW_MODE_OTHER);
-    EXPECT_EQ(nowWindowMode, RSSWindowMode::WINDOW_MODE_OTHER);
-    windowModeObserver_ = nullptr;
-}
-
-/**
- * @tc.name: CGroupSchedTest_WindowStateObserver_002
- * @tc.desc: Window Mode Observer Test
- * @tc.type: FUNC
- * @tc.require: issuesI9BU37
- * @tc.desc:
- */
-HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_001, Function | MediumTest | Level1)
-{
-    auto &schedController = SchedController::GetInstance();
-    EXPECT_EQ(nullptr, schedController.windowStateObserver_);
-    schedController.SubscribeWindowState();
-    schedController.UnsubscribeWindowState();
-    EXPECT_EQ(nullptr, schedController.windowStateObserver_);
 }
 
 /**
@@ -588,19 +483,27 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_010, Function | Med
 {
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
-    Rosen::WindowType windowType = Rosen::WindowType::APP_WINDOW_BASE;
-    uint32_t windowId = 1;
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
-    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, false, windowType, 12121, 12121);
-    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, true, windowType, 12121, 12121);
+
+    uint32_t resType = 0;
+    int64_t value = 0;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(12121);
+    payload["pid"] = std::to_string(12121);
+    payload["windowId"] = std::to_string(1);
+    payload["windowType"] = std::to_string(1);
+    payload["visibilityState"] = std::to_string(false);
+    cgroupEventHandler->HandleWindowVisibilityChanged(resType, value, payload);
+    payload["visibilityState"] = std::to_string(true);
+    cgroupEventHandler->HandleWindowVisibilityChanged(resType, value, payload);
 
     supervisor_->GetAppRecord(12121)->RemoveProcessRecord(12121);
     EXPECT_TRUE(supervisor_->GetAppRecord(12121)->GetProcessRecord(12121) == nullptr);
-    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, true, windowType, 12121, 12121);
+    cgroupEventHandler->HandleWindowVisibilityChanged(resType, value, payload);
 
     supervisor_->RemoveApplication(12121);
     EXPECT_TRUE(supervisor_->GetAppRecord(12121) == nullptr);
-    cgroupEventHandler->HandleWindowVisibilityChanged(windowId, true, windowType, 12121, 12121);
+    cgroupEventHandler->HandleWindowVisibilityChanged(resType, value, payload);
 }
 
 /**
@@ -842,29 +745,34 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_018, Function | Med
     cgroupEventHandler->SetSupervisor(supervisor_);
     auto temp = cgroupEventHandler->supervisor_;
     cgroupEventHandler->supervisor_ = nullptr;
-    cgroupEventHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW,
-        true, 429, 2024);
+
+    uint32_t resType = 0;
+    int64_t value = 0;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(12121);
+    payload["pid"] = std::to_string(12121);
+    payload["windowId"] = std::to_string(1);
+    payload["windowType"] = std::to_string(1);
+    payload["drawingContentState"] = std::to_string(true);
+    cgroupEventHandler->HandleDrawingContentChangeWindow(resType, value, payload);
     cgroupEventHandler->supervisor_ = temp;
 
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(2024);
     app->RemoveProcessRecord(429);
     EXPECT_TRUE(app->GetProcessRecord(429) == nullptr);
-    cgroupEventHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW,
-        true, 429, 2024);
+    cgroupEventHandler->HandleDrawingContentChangeWindow(resType, value, payload);
 
     cgroupEventHandler->supervisor_->RemoveApplication(2024);
     EXPECT_TRUE(cgroupEventHandler->supervisor_->GetAppRecord(2024) == nullptr);
-    cgroupEventHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW,
-        true, 429, 2024);
+    cgroupEventHandler->HandleDrawingContentChangeWindow(resType, value, payload);
 
     app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(2024);
     EXPECT_TRUE(app != nullptr);
     auto proc = app->GetProcessRecordNonNull(429);
     EXPECT_TRUE(proc != nullptr);
 
-    cgroupEventHandler->HandleDrawingContentChangeWindow(2054, WindowType::WINDOW_TYPE_APP_MAIN_WINDOW,
-        true, 429, 2024);
+    cgroupEventHandler->HandleDrawingContentChangeWindow(resType, value, payload);
     EXPECT_TRUE(proc->processDrawingState_);
     auto windowInfo = proc->GetWindowInfoNonNull(2054);
     EXPECT_TRUE(windowInfo->drawingContentState_);
@@ -960,7 +868,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     int32_t hostPid = 2024;
     std::string bundleName = "com.ohos.test";
     std::string abilityName = "MainAbility";
-    Rosen::WindowType windowType = Rosen::WindowType::APP_WINDOW_BASE;
+    uint32_t windowType = 1;
     uint64_t displayId = 1;
     uint32_t windowId = 1;
     uint32_t recordId = 1111;
@@ -1423,7 +1331,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_034, Function | Med
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
-    Rosen::WindowType windowType = Rosen::WindowType::APP_WINDOW_BASE;
+    uint32_t = 1;
     uint64_t displayId = 1;
     uint32_t windowId = 1;
     nlohmann::json payload;
