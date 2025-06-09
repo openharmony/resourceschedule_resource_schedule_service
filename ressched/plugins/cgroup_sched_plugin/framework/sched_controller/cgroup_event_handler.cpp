@@ -565,21 +565,18 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t resType, int64_t
 
     int32_t windowId = 0;
     int32_t windowType = 0;
-    int32_t visibilityState = 0;
     int32_t pid = 0;
     int32_t uid = 0;
 
     if (!ParseValue(pid, "pid", payload) || !ParseValue(uid, "uid", payload) ||
-        !ParseValue(windowId, "windowId", payload) || !ParseValue(windowType, "windowType", payload) ||
-        !ParseValue(visibilityState, "visibilityState", payload)) {
+        !ParseValue(windowId, "windowId", payload) || !ParseValue(windowType, "windowType", payload)) {
         CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
 
-    //Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION = 2;
-    bool isVisible = visibilityState < 2;
+    bool isVisible = (bool)value;
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
-        visibilityState, (int32_t)windowType, pid, uid);
+        isVisible, (int32_t)windowType, pid, uid);
 
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
@@ -597,7 +594,6 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t resType, int64_t
     }
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
     bool visibleStatusNotChanged = windowInfo->isVisible_ == isVisible;
-    windowInfo->visibilityState_ = visibilityState;
     windowInfo->isVisible_ = isVisible;
     windowInfo->windowType_ = (int32_t)windowType;
 

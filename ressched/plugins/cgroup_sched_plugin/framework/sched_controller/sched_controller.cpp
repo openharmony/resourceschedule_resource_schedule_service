@@ -463,7 +463,6 @@ void SchedController::DumpProcessWindowInfo(std::string& result)
                 .append("\n");
             for (auto &windows : process->windows_) {
                 result.append("    windowId:").append(ToString(windows->windowId_))
-                    .append("    visibilityState:").append(ToString(windows->visibilityState_))
                     .append("    isVisible:").append(ToString(windows->isVisible_))
                     .append("    isFocus:").append(ToString(windows->isFocused_))
                     .append("    topWebviewRenderUid:").append(ToString(windows->topWebviewRenderUid_))
