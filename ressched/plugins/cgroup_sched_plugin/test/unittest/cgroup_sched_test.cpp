@@ -492,9 +492,9 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_010, Function | Med
     payload["pid"] = std::to_string(12121);
     payload["windowId"] = std::to_string(1);
     payload["windowType"] = std::to_string(1);
-    payload["visibilityState"] = std::to_string(false);
+
     cgroupEventHandler->HandleWindowVisibilityChanged(resType, value, payload);
-    payload["visibilityState"] = std::to_string(true);
+    value = 1;
     cgroupEventHandler->HandleWindowVisibilityChanged(resType, value, payload);
 
     supervisor_->GetAppRecord(12121)->RemoveProcessRecord(12121);
@@ -747,13 +747,13 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_018, Function | Med
     cgroupEventHandler->supervisor_ = nullptr;
 
     uint32_t resType = 0;
-    int64_t value = 0;
+    int64_t value = 1;
     nlohmann::json payload;
-    payload["uid"] = std::to_string(12121);
-    payload["pid"] = std::to_string(12121);
-    payload["windowId"] = std::to_string(1);
+    payload["uid"] = std::to_string(2024);
+    payload["pid"] = std::to_string(429);
+    payload["windowId"] = std::to_string(2054);
     payload["windowType"] = std::to_string(1);
-    payload["drawingContentState"] = std::to_string(true);
+
     cgroupEventHandler->HandleDrawingContentChangeWindow(resType, value, payload);
     cgroupEventHandler->supervisor_ = temp;
 
@@ -902,8 +902,6 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     cgroupEventHandler->HandleTransientTaskEnd(uid, pid, bundleName);
     cgroupEventHandler->HandleContinuousTaskUpdate(uid, pid, {typeId}, value);
     cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, typeId, value);
-    cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pid, uid);
-    cgroupEventHandler->HandleUnfocusedWindow(windowId, windowType, displayId, pid, uid);
     cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
 
     cgroupEventHandler->supervisor_ = tmp;
