@@ -576,8 +576,8 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t resType, int64_t
         return;
     }
 
+    //Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION = 2;
     bool isVisible = visibilityState < 2;
-    //Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
         visibilityState, (int32_t)windowType, pid, uid);
 
@@ -608,7 +608,8 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t resType, int64_t
         AdjustSource::ADJS_WINDOW_VISIBILITY_CHANGED);
 }
 
-void CgroupEventHandler::HandleDrawingContentChangeWindow(uint32_t resType, int64_t value, const nlohmann::json& payload)
+void CgroupEventHandler::HandleDrawingContentChangeWindow(uint32_t resType, int64_t value,
+    const nlohmann::json& payload)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -617,13 +618,12 @@ void CgroupEventHandler::HandleDrawingContentChangeWindow(uint32_t resType, int6
 
     int32_t windowId = 0;
     int32_t windowType = 0;
-    int32_t drawingContentState = 0;
     int32_t pid = 0;
     int32_t uid = 0;
+    bool drawingContentState = (bool)value;
 
     if (!ParseValue(pid, "pid", payload) || !ParseValue(uid, "uid", payload) ||
-        !ParseValue(windowId, "windowId", payload) || !ParseValue(windowType, "windowType", payload) ||
-        !ParseValue(drawingContentState, "drawingContentState", payload)) {
+        !ParseValue(windowId, "windowId", payload) || !ParseValue(windowType, "windowType", payload)) {
         CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
@@ -636,16 +636,16 @@ void CgroupEventHandler::HandleDrawingContentChangeWindow(uint32_t resType, int6
     if (!app || !procRecord) {
         return;
     }
-    procRecord->processDrawingState_ = (bool)drawingContentState;
+    procRecord->processDrawingState_ = drawingContentState;
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
     if (!windowInfo) {
         CGS_LOGE("%{public}s : windowInfo nullptr!", __func__);
         return;
     }
-    windowInfo->drawingContentState_ = (bool)drawingContentState;
+    windowInfo->drawingContentState_ = drawingContentState;
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
         ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
-        (bool)drawingContentState ? ResType::WindowDrawingStatus::Drawing : ResType::WindowDrawingStatus::NotDrawing);
+        drawingContentState ? ResType::WindowDrawingStatus::Drawing : ResType::WindowDrawingStatus::NotDrawing);
 }
 
 void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
