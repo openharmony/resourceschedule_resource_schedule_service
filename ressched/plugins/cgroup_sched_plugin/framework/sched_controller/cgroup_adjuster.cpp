@@ -27,7 +27,6 @@
 #include "ressched_utils.h"
 #include "res_sched_hitrace_chain.h"
 #include "res_type.h"
-#include "wm_common.h"
 
 #undef LOG_TAG
 #define LOG_TAG "CgroupAdjuster"
@@ -37,7 +36,6 @@ namespace ResourceSchedule {
 using OHOS::AppExecFwk::ApplicationState;
 using OHOS::AppExecFwk::AbilityState;
 using OHOS::AppExecFwk::ExtensionState;
-using OHOS::Rosen::WindowType;
 constexpr uint32_t MAX_SIZE = 4096;
 constexpr uint64_t SCHEDULE_CGROUP_FDSAN_TAG = 0xd001702;
 constexpr uint64_t COMMON_CGROUP_FDSAN_TAG = 0;

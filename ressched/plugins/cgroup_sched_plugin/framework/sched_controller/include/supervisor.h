@@ -53,7 +53,6 @@ public:
     ~WindowInfo() {}
 
     uint32_t windowId_;
-    uint32_t visibilityState_ = 2;
     bool isVisible_ = false;
     bool isFocused_ = false;
     bool drawingContentState_ = false;

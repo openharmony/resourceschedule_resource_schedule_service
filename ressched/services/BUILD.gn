@@ -172,6 +172,7 @@ ohos_shared_library("resschedsvc") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libdm",
+    "window_manager:libwm",
     "window_manager:libwm_lite",
   ]
 
@@ -332,6 +333,7 @@ ohos_static_library("resschedsvc_static") {
     "os_account:os_account_innerkits",
     "samgr:samgr_proxy",
     "window_manager:libdm",
+    "window_manager:libwm",
     "window_manager:libwm_lite",
   ]
 

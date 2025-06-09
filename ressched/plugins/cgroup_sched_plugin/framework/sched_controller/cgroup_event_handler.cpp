@@ -28,7 +28,6 @@
 #ifdef POWER_MANAGER_ENABLE
 #include "power_mgr_client.h"
 #endif
-#include "window_manager.h"
 
 #undef LOG_TAG
 #define LOG_TAG "CgroupEventHandler"
@@ -110,9 +109,6 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
                 supervisor_->InitSuperVisorContent();
             }
             break;
-        case WINDOW_MANAGER_SERVICE_ID:
-            SchedController::GetInstance().SubscribeWindowState();
-            break;
         case BACKGROUND_TASK_MANAGER_SERVICE_ID:
             this->RemoveTask(std::to_string(EVENT_ID_REG_BGTASK_OBSERVER));
             if (!SchedController::GetInstance().SubscribeBackgroundTask()) {
@@ -138,9 +134,6 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
 void CgroupEventHandler::HandleAbilityRemoved(int32_t saId, const std::string& deviceId)
 {
     switch (saId) {
-        case WINDOW_MANAGER_SERVICE_ID:
-            SchedController::GetInstance().UnsubscribeWindowState();
-            break;
         case BACKGROUND_TASK_MANAGER_SERVICE_ID:
             this->RemoveTask(std::to_string(EVENT_ID_REG_BGTASK_OBSERVER));
             SchedController::GetInstance().UnsubscribeBackgroundTask();
@@ -477,13 +470,35 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_
         AdjustSource::ADJS_CONTINUOUS_END);
 }
 
-void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, WindowType windowType,
-    uint64_t displayId, int32_t pid, int32_t uid)
+void CgroupEventHandler::HandleFocusStateChange(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
+    int32_t windowId = 0;
+    int32_t windowType = 0;
+    int64_t displayId = 0;
+    int32_t pid = 0;
+    int32_t uid = 0;
+
+    if (!ParseValue(pid, "pid", payload) || !ParseValue(uid, "uid", payload) ||
+        !ParseValue(windowId, "windowId", payload) || !ParseValue(windowType, "windowType", payload) ||
+        !ParseLongValue(displayId, "displayId", payload)) {
+        CGS_LOGE("%{public}s: param error", __func__);
+        return;
+    }
+
+    if (value == ResType::WindowFocusStatus::WINDOW_FOCUS) {
+        HandleFocusedWindow(windowId, windowType, displayId, pid, uid);
+    } else if (value == ResType::WindowFocusStatus::WINDOW_UNFOCUS) {
+        HandleUnfocusedWindow(windowId, windowType, displayId, pid, uid);
+    }
+}
+
+void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uint32_t windowType,
+    uint64_t displayId, int32_t pid, int32_t uid)
+{
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
         __func__, windowId, windowType, displayId, pid, uid);
     std::shared_ptr<Application> app = nullptr;
@@ -510,13 +525,9 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, WindowType windo
     }
 }
 
-void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, WindowType windowType,
+void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, uint32_t windowType,
     uint64_t displayId, int32_t pid, int32_t uid)
 {
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        return;
-    }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}" PRIu64 ", %{public}d, %{public}d",
         __func__, windowId, windowType, displayId, pid, uid);
     std::shared_ptr<Application> app = nullptr;
@@ -545,16 +556,27 @@ void CgroupEventHandler::HandleUnfocusedWindow(uint32_t windowId, WindowType win
     }
 }
 
-void CgroupEventHandler::HandleWindowVisibilityChanged(
-    uint32_t windowId, uint32_t visibilityState, WindowType windowType, int32_t pid, int32_t uid)
+void CgroupEventHandler::HandleWindowVisibilityChanged(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    bool isVisible = visibilityState < Rosen::WindowVisibilityState::WINDOW_VISIBILITY_STATE_TOTALLY_OCCUSION;
+
+    int32_t windowId = 0;
+    int32_t windowType = 0;
+    int32_t pid = 0;
+    int32_t uid = 0;
+
+    if (!ParseValue(pid, "pid", payload) || !ParseValue(uid, "uid", payload) ||
+        !ParseValue(windowId, "windowId", payload) || !ParseValue(windowType, "windowType", payload)) {
+        CGS_LOGE("%{public}s: param error", __func__);
+        return;
+    }
+
+    bool isVisible = (bool)value;
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
-        visibilityState, (int32_t)windowType, pid, uid);
+        isVisible, (int32_t)windowType, pid, uid);
 
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
@@ -572,7 +594,6 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(
     }
     auto windowInfo = procRecord->GetWindowInfoNonNull(windowId);
     bool visibleStatusNotChanged = windowInfo->isVisible_ == isVisible;
-    windowInfo->visibilityState_ = visibilityState;
     windowInfo->isVisible_ = isVisible;
     windowInfo->windowType_ = (int32_t)windowType;
 
@@ -583,13 +604,26 @@ void CgroupEventHandler::HandleWindowVisibilityChanged(
         AdjustSource::ADJS_WINDOW_VISIBILITY_CHANGED);
 }
 
-void CgroupEventHandler::HandleDrawingContentChangeWindow(
-    uint32_t windowId, WindowType windowType, bool drawingContentState, int32_t pid, int32_t uid)
+void CgroupEventHandler::HandleDrawingContentChangeWindow(uint32_t resType, int64_t value,
+    const nlohmann::json& payload)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
+
+    int32_t windowId = 0;
+    int32_t windowType = 0;
+    int32_t pid = 0;
+    int32_t uid = 0;
+    bool drawingContentState = (bool)value;
+
+    if (!ParseValue(pid, "pid", payload) || !ParseValue(uid, "uid", payload) ||
+        !ParseValue(windowId, "windowId", payload) || !ParseValue(windowType, "windowType", payload)) {
+        CGS_LOGE("%{public}s: param error", __func__);
+        return;
+    }
+
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}d", __func__, windowId,
         drawingContentState, (int32_t)windowType, pid, uid);
 
@@ -1299,6 +1333,16 @@ bool CgroupEventHandler::ParseValue(int32_t& value, const char* name,
 {
     if (payload.contains(name) && payload.at(name).is_string()) {
         value = atoi(payload[name].get<std::string>().c_str());
+        return true;
+    }
+    return false;
+}
+
+bool CgroupEventHandler::ParseLongValue(int64_t& value, const char* name,
+    const nlohmann::json& payload)
+{
+    if (payload.contains(name) && payload.at(name).is_string()) {
+        value = atoll(payload[name].get<std::string>().c_str());
         return true;
     }
     return false;

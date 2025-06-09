@@ -17,9 +17,7 @@
 #include "background_task_observer.h"
 #include "cgroup_event_handler.h"
 #include "cgroup_adjuster.h"
-#include "wm_common.h"
 #include "sched_controller.h"
-#include "window_state_observer.h"
 #include "cgroup_controller.h"
 
 #include <cstddef>
@@ -805,18 +803,26 @@ namespace ResourceSchedule {
         g_size = size;
 
         // getdata
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
         int32_t uid = GetData<int32_t>();
         int32_t pid = GetData<int32_t>();
         uint32_t windowId = GetData<int32_t>();
+        uint32_t windowType = GetData<int32_t>();
         uint32_t visibilityState = GetData<uint32_t>();
+
+        nlohmann::json payload;
+        payload["uid"] = std::to_string(uid);
+        payload["pid"] = std::to_string(pid);
+        payload["windowId"] = std::to_string(windowId);
+        payload["windowType"] = std::to_string(windowType);
+        payload["visibilityState"] = std::to_string(visibilityState);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
-        cgroupEventHandler->HandleWindowVisibilityChanged(
-            windowId, visibilityState, WindowType::APP_WINDOW_BASE, pid, uid);
+        cgroupEventHandler->HandleWindowVisibilityChanged(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
-        cgroupEventHandler->HandleWindowVisibilityChanged(
-            windowId, visibilityState, WindowType::APP_WINDOW_BASE, pid, uid);
+        cgroupEventHandler->HandleWindowVisibilityChanged(resType, value, payload);
 
         return true;
     }
@@ -832,15 +838,26 @@ namespace ResourceSchedule {
         g_size = size;
 
         // getdata
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
         int32_t uid = GetData<int32_t>();
         int32_t pid = GetData<int32_t>();
         uint32_t windowId = GetData<int32_t>();
+        uint32_t windowType = GetData<int32_t>();
+        uint32_t drawingContentState = GetData<uint32_t>();
+
+        nlohmann::json payload;
+        payload["uid"] = std::to_string(uid);
+        payload["pid"] = std::to_string(pid);
+        payload["windowId"] = std::to_string(windowId);
+        payload["windowType"] = std::to_string(windowType);
+        payload["drawingContentState"] = std::to_string(drawingContentState);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
-        cgroupEventHandler->HandleDrawingContentChangeWindow(windowId, WindowType::APP_WINDOW_BASE, false, pid, uid);
+        cgroupEventHandler->HandleDrawingContentChangeWindow(resType, value, payload);
         cgroupEventHandler->SetSupervisor(g_supervisor);
-        cgroupEventHandler->HandleDrawingContentChangeWindow(windowId, WindowType::APP_WINDOW_BASE, true, pid, uid);
+        cgroupEventHandler->HandleDrawingContentChangeWindow(resType, value, payload);
 
         return true;
     }
@@ -862,12 +879,10 @@ namespace ResourceSchedule {
         uint64_t displayId = GetData<uint64_t>();
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
-        
-        cgroupEventHandler->HandleUnfocusedWindow(
-            windowId, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
+
         cgroupEventHandler->SetSupervisor(g_supervisor);
         cgroupEventHandler->HandleUnfocusedWindow(
-            windowId, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
+            windowId, 1, displayId, pid, uid);
 
         return true;
     }
@@ -890,9 +905,8 @@ namespace ResourceSchedule {
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
         cgroupEventHandler->SetSupervisor(g_supervisor);
-
         cgroupEventHandler->HandleFocusedWindow(
-            windowId, WindowType::APP_WINDOW_BASE, displayId, pid, uid);
+            windowId, 1, displayId, pid, uid);
 
         return true;
     }
@@ -1384,69 +1398,6 @@ namespace ResourceSchedule {
         return true;
     }
 
-    bool MarshallingWindowVisibilityInfoFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-
-        // getdata
-        uint32_t winId = GetData<uint32_t>();
-        int32_t pid = GetData<int32_t>();
-        int32_t uid = GetData<int32_t>();
-        nlohmann::json payload;
-        sptr<WindowVisibilityInfo> windowInfoPtrSend = new (std::nothrow)WindowVisibilityInfo();
-        windowInfoPtrSend->windowId_ = winId;
-        windowInfoPtrSend->pid_ = pid;
-        windowInfoPtrSend->uid_ = uid;
-        windowInfoPtrSend->visibilityState_ = static_cast<OHOS::Rosen::WindowVisibilityState>(1);
-        windowInfoPtrSend->windowType_ = Rosen::WindowType::WINDOW_TYPE_APP_SUB_WINDOW;
-        auto windowVisibilityObserver = std::make_shared<WindowVisibilityObserver>();
-        windowVisibilityObserver->MarshallingWindowVisibilityInfo(windowInfoPtrSend, payload);
-
-        return true;
-    }
-
-    bool WindowDrawingContentChangedFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-
-        // getdata
-        std::vector<sptr<WindowDrawingContentInfo>> changeInfo;
-        OHOS::sptr<OHOS::Rosen::WindowDrawingContentInfo> info = new OHOS::Rosen::WindowDrawingContentInfo();
-        changeInfo.push_back(info);
-        auto windowDrawingContentObserver = std::make_shared<WindowDrawingContentObserver>();
-        windowDrawingContentObserver->OnWindowDrawingContentChanged(changeInfo);
-
-        return true;
-    }
-
-    bool WindowModeUpdateFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-
-        // getdata
-        auto windowModeObserver = std::make_shared<WindowModeObserver>();
-        windowModeObserver->OnWindowModeUpdate(WindowModeType::WINDOW_MODE_SPLIT_FLOATING);
-        return true;
-    }
-
     bool AddTidToCgroupFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -1588,13 +1539,6 @@ namespace ResourceSchedule {
         OHOS::ResourceSchedule::DumpProcessWindowInfoFuzzTest(data, size);
     }
 
-    void WindowStateObserverFuzzExecute(const uint8_t* data, size_t size)
-    {
-        OHOS::ResourceSchedule::MarshallingWindowVisibilityInfoFuzzTest(data, size);
-        OHOS::ResourceSchedule::WindowDrawingContentChangedFuzzTest(data, size);
-        OHOS::ResourceSchedule::WindowModeUpdateFuzzTest(data, size);
-    }
-
     void CgroupControllerFuzzExecute(const uint8_t* data, size_t size)
     {
         OHOS::ResourceSchedule::AddTidToCgroupFuzzTest(data, size);
@@ -1626,10 +1570,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     // sched_controller.cpp
     OHOS::ResourceSchedule::SchedControllerFuzzExecute(data, size);
     // sched_controller.cpp end
-
-    // window_state_observer.cpp
-    OHOS::ResourceSchedule::WindowStateObserverFuzzExecute(data, size);
-    // window_state_observer.cpp end
 
     // cgroup_controller.cpp
     OHOS::ResourceSchedule::CgroupControllerFuzzExecute(data, size);
