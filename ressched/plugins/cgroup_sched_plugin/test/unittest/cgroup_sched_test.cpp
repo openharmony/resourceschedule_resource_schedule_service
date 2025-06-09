@@ -1331,7 +1331,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_034, Function | Med
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
     EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
-    uint32_t = 1;
+    uint32_t windowType = 1;
     uint64_t displayId = 1;
     uint32_t windowId = 1;
     nlohmann::json payload;
