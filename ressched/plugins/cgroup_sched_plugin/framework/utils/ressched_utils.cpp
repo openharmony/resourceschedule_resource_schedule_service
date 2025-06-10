@@ -189,7 +189,19 @@ bool ResSchedUtils::CheckTidIsInPid(int32_t pid, int32_t tid)
     }
     return reply[resStr];
 }
---
+
+int32_t ResSchedUtils::RssExeSendRequestSync(uint32_t resType, int64_t value,
+    const nlohmann::json& context, nlohmann::json& reply)
+{
+    return ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(
+        resType, value, context, reply);
+}
+
+void ResSchedUtils::RssExeSendRequestAsync(uint32_t resType, int64_t value,
+    const nlohmann::json& context)
+{
+    ResSchedExeClient::GetInstance().SendRequestAsync(resType, value, context);
+}
 
 void ResSchedUtils::SubscribeResourceExt()
 {
