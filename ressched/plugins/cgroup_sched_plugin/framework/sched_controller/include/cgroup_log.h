@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,37 +13,21 @@
  * limitations under the License.
  */
 
-#include "cgroup_log.h"
+#ifndef CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_CGROUP_LOG_H_
+#define CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_CGROUP_LOG_H_
 
-#include "cgroup_sched_log.h"
+#include <string>
 
 namespace OHOS {
 namespace ResourceSchedule {
 
-void CgsLogD(std::string str)
-{
-    CGS_LOGD("%{public}s", str.c_str());
-}
-
-void CgsLogI(std::string str)
-{
-    CGS_LOGI("%{public}s", str.c_str());
-}
-
-void CgsLogW(std::string str)
-{
-    CGS_LOGW("%{public}s", str.c_str());
-}
-
-void CgsLogE(std::string str)
-{
-    CGS_LOGE("%{public}s", str.c_str());
-}
-
-void CgsLogF(std::string str)
-{
-    CGS_LOGF("%{public}s", str.c_str());
-}
+void CgsLogD(std::string str);
+void CgsLogI(std::string str);
+void CgsLogW(std::string str);
+void CgsLogE(std::string str);
+void CgsLogF(std::string str);
 
 } // namespace ResourceSchedule
 } // namespace OHOS
+
+#endif // CGROUP_SCHED_FRAMEWORK_SCHED_CONTROLLER_INCLUDE_CGROUP_LOG_H_
