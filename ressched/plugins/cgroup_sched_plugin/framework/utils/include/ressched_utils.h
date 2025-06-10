@@ -43,6 +43,7 @@ public:
     int32_t RssExeSendRequestSync(uint32_t resType, int64_t value,
         const nlohmann::json& context, nlohmann::json& reply);
     void RssExeSendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& context);
+
 private:
     ResSchedUtils()
     {
