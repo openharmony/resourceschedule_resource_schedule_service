@@ -1193,7 +1193,7 @@ bool SocPerfPlugin::HandleSceenModeBoost(const std::string& deviceModeType)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, true, "");
     }
 
-    if (deviceMode_ == DISPLAY_MODE_FULL) {
+    if (deviceMode_ == DISPLAY_MODE_FULL || deviceMode_ == DISPLAY_MODE_GLOBAL_FULL) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_SWITCHED, true, "");
     }
     return true;
