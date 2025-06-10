@@ -293,7 +293,7 @@ HWTEST_F(SceneRecognizeTest, FillRealPidAndUid_001, Function | MediumTest | Leve
     auto slideRecognizer = std::make_shared<SlideRecognizer>();
     nlohmann::json payload;
     auto result = slideRecognizer->FillRealPidAndUid(payload);
-    EXPECT_EQ(payload, result);
+    EXPECT_EQ(result["scrTid"], "");
 }
 
 /**
