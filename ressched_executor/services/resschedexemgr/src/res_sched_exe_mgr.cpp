@@ -101,6 +101,9 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
             }
             break;
     }
+    if (reply.empty()) {
+        reply["retCode"] = std::to_string(ResIpcErrCode::RSSEXE_REPLY_EMPTY);
+    }
     return ResErrCode::RSSEXE_NO_ERR;
 }
 

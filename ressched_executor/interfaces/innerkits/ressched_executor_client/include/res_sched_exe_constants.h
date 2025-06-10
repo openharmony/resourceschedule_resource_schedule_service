@@ -55,6 +55,8 @@ enum ResIpcErrCode : int32_t {
     RSSEXE_GET_SERVICE_FAIL,
     // client connect to ressched_executor serveice error
     RSSEXE_CONNECT_FAIL,
+    // return empty in the sync interface
+    RSSEXE_REPLY_EMPTY,
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
