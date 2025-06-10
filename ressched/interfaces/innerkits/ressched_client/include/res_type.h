@@ -351,6 +351,8 @@ enum : uint32_t {
     RES_TYPE_SCHED_MODE_CHANGE = 163,
     // report supply level
     RES_TYPE_SUPPLY_LEVEL = 164,
+    // reset camera rss priority
+    RES_TYPE_CAMERA_RESET_PRIORITY = 165,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
