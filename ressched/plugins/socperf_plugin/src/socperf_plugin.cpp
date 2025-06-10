@@ -758,19 +758,17 @@ void SocPerfPlugin::HandleEventClick(const std::shared_ptr<ResData>& data)
 
 bool SocPerfPlugin::HandleMoveEventBoost(const std::shared_ptr<ResData>& data, bool isSet)
 {
-    if (data->payload == nullptr || !data->payload.contains(CALLING_UID_NAME) ||
-        !data->payload[CALLING_UID_NAME].is_string()) {
+    if (data->payload == nullptr || !data->payload.contains(BUNDLE_NAME) ||
+        !data->payload[BUNDLE_NAME].is_string()) {
         SOC_PERF_LOGE("SocPerfPlugin: socperf->MOVE_EVENT param invalid");
         return false;
     }
-    bool ret = false;
-    int32_t uid = atoi(data->payload[CALLING_UID_NAME].get<std::string>().c_str());
-    if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end() &&
-        appNameMoveEvent_.find(uidToAppMsgMap_[uid].GetBundleName()) != appNameMoveEvent_.end()) {
+    std::string bundleName = data->payload[BUNDLE_NAME].get<std::string>();
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->MOVE_EVENT for %{public}s", bundleName.c_str());
+    if (appNameMoveEvent_.find(bundleName) != appNameMoveEvent_.end()) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_MOVE_EVENT_BOOST, isSet, "");
-        ret = true;
     }
-    return ret;
+    return true;
 }
 
 void SocPerfPlugin::HandleEventKey(const std::shared_ptr<ResData>& data)
