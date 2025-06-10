@@ -189,6 +189,7 @@ bool ResSchedUtils::CheckTidIsInPid(int32_t pid, int32_t tid)
     }
     return reply[resStr];
 }
+--
 
 void ResSchedUtils::SubscribeResourceExt()
 {
