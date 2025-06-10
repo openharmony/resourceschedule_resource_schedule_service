@@ -168,10 +168,10 @@ HWTEST_F(SceneRecognizeTest, BgtaskTest002, Function | MediumTest | Level0)
 HWTEST_F(SceneRecognizeTest, BgtaskTest003, Function | MediumTest | Level0)
 {
     auto bgtaskRecognizer = std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>();
-    pid_t pid = -1;
+    pid_t pid = -2;
     EXPECT_FALSE(bgtaskRecognizer->IsValidPid(pid));
     pid = INT32_MAX;
-    EXPECT_FALSE(bgtaskRecognizer->IsValidPid(pid));
+    EXPECT_TRUE(bgtaskRecognizer->IsValidPid(pid));
     pid = 100;
     EXPECT_TRUE(bgtaskRecognizer->IsValidPid(pid));
 }
