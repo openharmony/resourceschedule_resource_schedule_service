@@ -51,12 +51,7 @@ void CgroupAdjuster::InitAdjuster()
 {
     // Trigger load shared library
     (void)ResSchedUtils::GetInstance();
-    auto handler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (handler) {
-        handler->PostTask([this] {
-            this->AdjustSelfProcessGroup();
-        });
-    }
+    AdjustSelfProcessGroup();
 }
 
 void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
