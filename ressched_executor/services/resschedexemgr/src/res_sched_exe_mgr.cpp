@@ -258,7 +258,7 @@ void ResSchedExeMgr::GetCgroupFileContent(uint32_t resType, const nlohmann::json
     std::string path = std::string("/proc/").append(std::to_string(pid)).append("/cgroup");
     char resolvedPath[PATH_MAX] = { 0 };
     if (path.size() > PATH_MAX || !realpath(path.c_str(), resolvedPath)) {
-        RSSEXE_LOGE("%{public}s realpath failed", __func__);
+        RSSEXE_LOGE("%{public}s realpath failed, pid = %{public}d.", __func__, pid);
         return;
     }
     auto realPath = std::string(resolvedPath);
