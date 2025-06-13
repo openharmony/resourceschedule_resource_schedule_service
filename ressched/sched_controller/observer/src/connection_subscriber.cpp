@@ -32,6 +32,7 @@ void ConnectionSubscriber::MarshallingConnectionData(
     payload["callerUid"] = data.callerUid;
     payload["callerPid"] = data.callerPid;
     payload["callerName"] = data.callerName;
+    payload["isSuspended"] = data.isSuspended;
 }
 
 void ConnectionSubscriber::OnExtensionConnected(const AbilityRuntime::ConnectionData& data)
@@ -50,6 +51,24 @@ void ConnectionSubscriber::OnExtensionDisconnected(const AbilityRuntime::Connect
     MarshallingConnectionData(data, payload);
     ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_CONNECTION_OBSERVER, ResType::ConnectionObserverStatus::EXTENSION_DISCONNECTED, payload);
+}
+
+void ConnectionSubscriber::OnExtensionSuspended(const AbilityRuntime::ConnectionData& data)
+{
+    RESSCHED_LOGD("Ressched ConnectionSubscriber OnExtensionSuspended");
+    nlohmann::json payload;
+    MarshallingConnectionData(data, payload);
+    ResSchedMgr::GetInstance().ReportData(
+        ResType::RES_TYPE_CONNECTION_OBSERVER, ResType::ConnectionObserverStatus::EXTENSION_SUSPENDED, payload);
+}
+
+void ConnectionSubscriber::OnExtensionResumed(const AbilityRuntime::ConnectionData& data)
+{
+    RESSCHED_LOGD("Ressched ConnectionSubscriber OnExtensionResumed");
+    nlohmann::json payload;
+    MarshallingConnectionData(data, payload);
+    ResSchedMgr::GetInstance().ReportData(
+        ResType::RES_TYPE_CONNECTION_OBSERVER, ResType::ConnectionObserverStatus::EXTENSION_RESUMED, payload);
 }
 
 void ConnectionSubscriber::MarshallingDlpStateData(const AbilityRuntime::DlpStateData& data, nlohmann::json &payload)

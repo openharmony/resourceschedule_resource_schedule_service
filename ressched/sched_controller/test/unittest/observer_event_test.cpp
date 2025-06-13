@@ -467,6 +467,8 @@ HWTEST_F(ObserverEventTest, connectionSubscriberEvent_001, testing::ext::TestSiz
     SUCCEED();
     connectionSubscriber_->OnExtensionDisconnected(data);
     SUCCEED();
+    connectionSubscriber_->OnExtensionSuspended(data);
+    connectionSubscriber_->OnExtensionResumed(data);
     connectionSubscriber_->MarshallingDlpStateData(data1, payload);
     SUCCEED();
     connectionSubscriber_->OnDlpAbilityOpened(data1);

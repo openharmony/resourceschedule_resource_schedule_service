@@ -387,6 +387,8 @@ namespace {
         auto connectionSubscriber = std::make_unique<ConnectionSubscriber>();
         connectionSubscriber->OnExtensionConnected(connectionData);
         connectionSubscriber->OnExtensionDisconnected(connectionData);
+        connectionSubscriber->OnExtensionSuspended(connectionData);
+        connectionSubscriber->OnExtensionResumed(connectionData);
         return true;
     }
 
