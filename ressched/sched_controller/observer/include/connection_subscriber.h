@@ -25,6 +25,8 @@ class ConnectionSubscriber : public AbilityRuntime::ConnectionObserver {
 public:
     virtual void OnExtensionConnected(const AbilityRuntime::ConnectionData& data) override;
     virtual void OnExtensionDisconnected(const AbilityRuntime::ConnectionData& data) override;
+    virtual void OnExtensionSuspended(const AbilityRuntime::ConnectionData& data) override;
+    virtual void OnExtensionResumed(const AbilityRuntime::ConnectionData& data) override;
     virtual void OnDlpAbilityOpened(const AbilityRuntime::DlpStateData& data) override;
     virtual void OnDlpAbilityClosed(const AbilityRuntime::DlpStateData& data) override;
     virtual void OnServiceDied() override;
