@@ -38,7 +38,7 @@ public:
     static constexpr char TEMPERATURE_CONTROL[] = "Kill Reason:Temperature Control";
     static constexpr char RESOURCE_OVERLIMIT[] = "Kill Reason:Resource Overlimit";
     static constexpr char STANDBY_CLEAN[] = "Kill Reason:ResourceLeak:Standby Clean";
-    static constexpr char KERNEL_ZONE[] = "Kill Reason:ResourceLeak:Kernel Zone Low";
+    static constexpr char KERNEL_ZONE[] = "Kill Reason:Kernel Zone Low";
     static constexpr char HEAVYLOAD_MUTEX_KILL[] = "Kill Reason:HeavyLoad:Mutex Kill";
 };
 } // namespace ResourceSchedule
