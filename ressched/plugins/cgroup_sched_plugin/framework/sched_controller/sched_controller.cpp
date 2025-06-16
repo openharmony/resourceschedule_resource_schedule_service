@@ -19,10 +19,12 @@
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
 #include "app_mgr_interface.h"
+/*
 #ifdef CONFIG_BGTASK_MGR
 #include "background_task_mgr_helper.h"
 #include "background_task_observer.h"
 #endif
+*/
 #include "bundle_mgr_interface.h"
 #include "cgroup_adjuster.h"
 #include "cgroup_event_handler.h"
@@ -47,9 +49,11 @@ namespace {
     constexpr int32_t DUMP_OPTION = 0;
 }
 
+/*
 #ifdef CONFIG_BGTASK_MGR
 using OHOS::BackgroundTaskMgr::BackgroundTaskMgrHelper;
 #endif
+*/
 
 IMPLEMENT_SINGLE_INSTANCE(SchedController)
 
@@ -81,14 +85,15 @@ void SchedController::Disable()
     if (supervisor_) {
         supervisor_ = nullptr;
     }
-    UnregisterStateObservers();
+    //UnregisterStateObservers();
 }
 
-
+/*
 void SchedController::UnregisterStateObservers()
 {
     UnsubscribeBackgroundTask();
 }
+*/
 
 int SchedController::GetProcessGroup(pid_t pid)
 {
@@ -304,6 +309,7 @@ void SchedController::InitAddDispatchResFuncMap()
         const nlohmann::json& payload) { handler->HandleDrawingContentChangeWindow(resType, value, payload); }));
 }
 
+/*
 bool SchedController::SubscribeBackgroundTask()
 {
 #ifdef CONFIG_BGTASK_MGR
@@ -339,6 +345,7 @@ void SchedController::UnsubscribeBackgroundTask()
     isBgtaskSubscribed_ = false;
 #endif
 }
+*/
 
 #ifdef POWER_MANAGER_ENABLE
 void SchedController::GetRunningLockState()

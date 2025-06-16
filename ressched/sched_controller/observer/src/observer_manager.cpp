@@ -103,6 +103,9 @@ void ObserverManager::InitObserverCbMap()
         { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->InitAccountObserver(); }},
         { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitWindowStateObserver(); }},
         { APP_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->SubscribeAppState(); }},
+#ifdef CONFIG_BGTASK_MGR
+        { BACKGROUND_TASK_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->SubscribeBackgroundTask(); }},
+#endif
     };
     InitRemoveObserverCbMap();
 }
@@ -134,6 +137,9 @@ void ObserverManager::InitRemoveObserverCbMap()
         { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->DisableAccountObserver(); }},
         { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableWindowStateObserver(); }},
         { APP_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->UnsubscribeAppState(); }},
+#ifdef CONFIG_BGTASK_MGR
+        { BACKGROUND_TASK_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->UnsubscribeBackgroundTask(); }},
+#endif
     };
 }
 
@@ -890,6 +896,40 @@ void ObserverManager::UnsubscribePipChange()
     }
     RESSCHED_LOGI("UnsubscribePipchange success");
 }
+
+#ifdef CONFIG_BGTASK_MGR
+bool ObserverManager::SubscribeBackgroundTask()
+{
+    if (isBgtaskSubscribed_) {
+        return true;
+    }
+    if (!backgroundTaskObserver_) {
+        backgroundTaskObserver_ = std::make_shared<BackgroundTaskObserver>();
+    }
+    int ret = BackgroundTaskMgrHelper::SubscribeBackgroundTask(*backgroundTaskObserver_);
+    if (ret != 0) {
+        CGS_LOGE("%{public}s failed, err:%{public}d.", __func__, ret);
+        return false;
+    }
+    isBgtaskSubscribed_ = true;
+    CGS_LOGI("%{public}s success.", __func__);
+    return true;
+}
+
+void ObserverManager::UnsubscribeBackgroundTask()
+{
+    if (!isBgtaskSubscribed_ || !backgroundTaskObserver_) {
+        return;
+    }
+    int32_t ret = BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*backgroundTaskObserver_);
+    if (ret == 0) {
+        CGS_LOGI("%{public}s success.", __func__);
+    } else {
+        CGS_LOGE("%{public}s failed. ret:%{public}d", __func__, ret);
+    }
+    isBgtaskSubscribed_ = false;
+}
+#endif
 
 OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
 {

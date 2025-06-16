@@ -70,27 +70,6 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
     CGS_LOGD("%{public}s : eventId:%{public}d param:%{public}" PRIu64,
         __func__, eventId, eventParam);
     switch (eventId) {
-        case EVENT_ID_REG_BGTASK_OBSERVER: {
-            int64_t retry = eventParam;
-            if (!SchedController::GetInstance().SubscribeBackgroundTask() &&
-                retry < MAX_RETRY_TIMES) {
-                eventId = EVENT_ID_REG_BGTASK_OBSERVER;
-                eventParam = retry + 1;
-                this->PostTask(
-                    [this, eventId, eventParam] {
-                        this->ProcessEvent(eventId, eventParam);
-                    },
-                    std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
-                if (retry + 1 == static_cast<int64_t>(MAX_RETRY_TIMES)) {
-                    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
-                        HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Subscribe background task observer failed.");
-                }
-            }
-            break;
-        }
         default:
             break;
     }
@@ -109,18 +88,6 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
                 supervisor_->InitSuperVisorContent();
             }
             break;
-        case BACKGROUND_TASK_MANAGER_SERVICE_ID:
-            this->RemoveTask(std::to_string(EVENT_ID_REG_BGTASK_OBSERVER));
-            if (!SchedController::GetInstance().SubscribeBackgroundTask()) {
-                uint32_t eventId = EVENT_ID_REG_BGTASK_OBSERVER;
-                int64_t eventParam = 0;
-                this->PostTask(
-                    [this, eventId, eventParam] {
-                        this->ProcessEvent(eventId, eventParam);
-                    },
-                    std::to_string(eventId), DELAYED_RETRY_REGISTER_DURATION);
-            }
-            break;
 #ifdef POWER_MANAGER_ENABLE
         case POWER_MANAGER_SERVICE_ID:
             SchedController::GetInstance().GetRunningLockState();
@@ -134,10 +101,6 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
 void CgroupEventHandler::HandleAbilityRemoved(int32_t saId, const std::string& deviceId)
 {
     switch (saId) {
-        case BACKGROUND_TASK_MANAGER_SERVICE_ID:
-            this->RemoveTask(std::to_string(EVENT_ID_REG_BGTASK_OBSERVER));
-            SchedController::GetInstance().UnsubscribeBackgroundTask();
-            break;
         default:
             break;
     }
@@ -387,6 +350,25 @@ void CgroupEventHandler::HandleProcessDied(uint32_t resType, int64_t value, cons
     }
 }
 
+void CgroupEventHandler::HandleTransientTaskStatus(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+    std::string bundleName;
+    if (!ParseValue(uid, "uid", payload) ||
+        !ParseValue(pid, "pid", payload) ||
+        !ParseString(bundleName, "bundleName", payload)) {
+        CGS_LOGE("%{public}s: param error", __func__);
+        return;
+    }
+
+    if (value == ResType::TransientTaskStatus::TRANSIENT_TASK_START) {
+        HandleTransientTaskStart(uid, pid, bundleName);
+    } else if (value == ResType::TransientTaskStatus::TRANSIENT_TASK_START) {
+        HandleTransientTaskEnd(uid, pid, bundleName);
+    }
+}
+
 void CgroupEventHandler::HandleTransientTaskStart(uid_t uid, pid_t pid, const std::string& packageName)
 {
     if (!supervisor_) {
@@ -419,6 +401,31 @@ void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, const std:
     procRecord->runningTransientTask_ = false;
 }
 
+void CgroupEventHandler::HandleContinuousTaskStatus(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+    int32_t typeId = 0;
+    int32_t abilityId = 0;
+    if (!ParseValue(uid, "uid", payload) ||
+        !ParseValue(pid, "pid", payload) ||
+        !ParseValue(abilityId, "abilityId", payload)) {
+        CGS_LOGE("%{public}s: param error", __func__);
+        return;
+    }
+
+    if (value == ResType::ContinuousTaskStatus::CONTINUOUS_TASK_START ||
+        value == ResType::ContinuousTaskStatus::CONTINUOUS_TASK_UPDATE) {
+        std::vector<uint32_t> typeIds;
+        if (payload.contains("typeIds") && payload["typeIds"].is_array()) {
+            typeIds = payload["typeIds"].get<std::vector<uint32_t>>();
+        }
+        HandleContinuousTaskUpdate(uid, pid, typeIds, abilityId)
+    } else if (value == ResType::TransientTaskStatus::TRANSIENT_TASK_START) {
+        HandleContinuousTaskCancel(uid, pid, abilityId)
+    }
+}
+
 void CgroupEventHandler::HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
     const std::vector<uint32_t>& typeIds, int32_t abilityId)
 {
@@ -444,15 +451,13 @@ void CgroupEventHandler::HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
         AdjustSource::ADJS_CONTINUOUS_BEGIN);
 }
 
-void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId,
-    int32_t abilityId)
+void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t abilityId)
 {
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d",
-        __func__, uid, pid, typeId, abilityId);
+    CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d", __func__, uid, pid, abilityId);
     ChronoScope cs("HandleContinuousTaskCancel");
     auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecord(pid);

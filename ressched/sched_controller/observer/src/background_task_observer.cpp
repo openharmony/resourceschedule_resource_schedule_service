@@ -16,10 +16,10 @@
 #include "background_task_observer.h"
 
 #ifdef CONFIG_BGTASK_MGR
-#include "cgroup_sched_log.h"
-#include "sched_controller.h"
-#include "cgroup_event_handler.h"
-#include "ressched_utils.h"
+//#include "cgroup_sched_log.h"
+//#include "sched_controller.h"
+//#include "cgroup_event_handler.h"
+//#include "ressched_utils.h"
 #include "res_type.h"
 
 #undef LOG_TAG
@@ -40,17 +40,6 @@ void BackgroundTaskObserver::OnTransientTaskStart(const std::shared_ptr<Transien
     if (!ValidateTaskInfo(info)) {
         return;
     }
-    /* class TransientTaskAppInfo {std::string& GetPackageName(); int32_t GetUid(); int32_t GetPid();} */
-    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHandler) {
-        auto uid = info->GetUid();
-        auto pid = info->GetPid();
-        auto pkgName = info->GetPackageName();
-
-        cgHandler->PostTask([cgHandler, uid, pid, pkgName] {
-            cgHandler->HandleTransientTaskStart(uid, pid, pkgName);
-        });
-    }
 
     nlohmann::json payload;
     MarshallingTransientTaskAppInfo(info, payload);
@@ -61,18 +50,8 @@ void BackgroundTaskObserver::OnTransientTaskStart(const std::shared_ptr<Transien
 void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientTaskAppInfo>& info)
 {
     if (!ValidateTaskInfo(info)) {
-        CGS_LOGE("%{public}s failed, invalid app info!", __func__);
+        RESSCHED_LOGE("%{public}s failed, invalid app info!", __func__);
         return;
-    }
-    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHandler) {
-        auto uid = info->GetUid();
-        auto pid = info->GetPid();
-        auto pkgName = info->GetPackageName();
-
-        cgHandler->PostTask([cgHandler, uid, pid, pkgName] {
-            cgHandler->HandleTransientTaskEnd(uid, pid, pkgName);
-        });
     }
 
     nlohmann::json payload;
@@ -84,7 +63,7 @@ void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientT
 void BackgroundTaskObserver::OnTransientTaskErr(const std::shared_ptr<TransientTaskAppInfo>& info)
 {
     if (!ValidateTaskInfo(info)) {
-        CGS_LOGE("%{public}s failed, invalid app info!", __func__);
+        RESSCHED_LOGE("%{public}s failed, invalid app info!", __func__);
         return;
     }
 
@@ -128,18 +107,8 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
     const std::shared_ptr<ContinuousTaskCallbackInfo> &continuousTaskCallbackInfo)
 {
     if (!ValidateTaskInfo(continuousTaskCallbackInfo)) {
-        CGS_LOGE("%{public}s failed, invalid event data!", __func__);
+        RESSCHED_LOGE("%{public}s failed, invalid event data!", __func__);
         return;
-    }
-    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHandler) {
-        auto uid = continuousTaskCallbackInfo->GetCreatorUid();
-        auto pid = continuousTaskCallbackInfo->GetCreatorPid();
-        auto abilityId = continuousTaskCallbackInfo->GetAbilityId();
-        auto typeIds = continuousTaskCallbackInfo->GetTypeIds();
-        cgHandler->PostTask([cgHandler, uid, pid, typeIds, abilityId] {
-            cgHandler->HandleContinuousTaskUpdate(uid, pid, typeIds, abilityId);
-        });
     }
 
     nlohmann::json payload;
@@ -152,19 +121,8 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
     const std::shared_ptr<ContinuousTaskCallbackInfo> &continuousTaskCallbackInfo)
 {
     if (!ValidateTaskInfo(continuousTaskCallbackInfo)) {
-        CGS_LOGE("%{public}s failed, invalid event data!", __func__);
+        RESSCHED_LOGE("%{public}s failed, invalid event data!", __func__);
         return;
-    }
-    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHandler) {
-        auto uid = continuousTaskCallbackInfo->GetCreatorUid();
-        auto pid = continuousTaskCallbackInfo->GetCreatorPid();
-        auto typeId = continuousTaskCallbackInfo->GetTypeId();
-        auto abilityId = continuousTaskCallbackInfo->GetAbilityId();
-
-        cgHandler->PostTask([cgHandler, uid, pid, typeId, abilityId] {
-            cgHandler->HandleContinuousTaskCancel(uid, pid, typeId, abilityId);
-        });
     }
 
     nlohmann::json payload;
@@ -177,19 +135,8 @@ void BackgroundTaskObserver::OnContinuousTaskUpdate(
     const std::shared_ptr<ContinuousTaskCallbackInfo> &continuousTaskCallbackInfo)
 {
     if (!ValidateTaskInfo(continuousTaskCallbackInfo)) {
-        CGS_LOGE("%{public}s failed, invalid event data!", __func__);
+        RESSCHED_LOGE("%{public}s failed, invalid event data!", __func__);
         return;
-    }
-    auto cgHandler = SchedController::GetInstance().GetCgroupEventHandler();
-    if (cgHandler) {
-        auto uid = continuousTaskCallbackInfo->GetCreatorUid();
-        auto pid = continuousTaskCallbackInfo->GetCreatorPid();
-        auto typeIds = continuousTaskCallbackInfo->GetTypeIds();
-        auto abilityId = continuousTaskCallbackInfo->GetAbilityId();
-
-        cgHandler->PostTask([cgHandler, uid, pid, typeIds, abilityId] {
-            cgHandler->HandleContinuousTaskUpdate(uid, pid, typeIds, abilityId);
-        });
     }
 
     nlohmann::json payload;
@@ -200,14 +147,14 @@ void BackgroundTaskObserver::OnContinuousTaskUpdate(
 
 void BackgroundTaskObserver::OnRemoteDied(const wptr<IRemoteObject> &object)
 {
-    CGS_LOGI("%{public}s.", __func__);
+    RESSCHED_LOGI("%{public}s.", __func__);
 }
 
 void BackgroundTaskObserver::MarshallingResourceInfo(
     const std::shared_ptr<BackgroundTaskMgr::ResourceCallbackInfo> &resourceInfo, nlohmann::json &payload)
 {
     if (!resourceInfo) {
-        CGS_LOGE("%{public}s : resourceInfo nullptr!", __func__);
+        RESSCHED_LOGE("%{public}s : resourceInfo nullptr!", __func__);
         return;
     }
     payload["pid"] = resourceInfo->GetPid();
