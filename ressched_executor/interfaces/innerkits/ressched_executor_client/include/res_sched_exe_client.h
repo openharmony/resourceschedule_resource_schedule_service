@@ -100,8 +100,8 @@ private:
     int32_t SendRequestInner(bool isSync, uint32_t resType, int64_t value,
         const nlohmann::json& context, nlohmann::json& reply);
     bool ProcessJson(const nlohmann::json& context, std::vector<nlohmann::json>& splitContext, int32_t resType);
-    int32_t SendRequestBatches(bool isSync, uint32_t resType, const std::vector<nlohmann::json>& splitContext, int64_t value,
-        nlohmann::json& reply);
+    int32_t SendRequestBatches(bool isSync, uint32_t resType,
+        const std::vector<nlohmann::json>& splitContext, int64_t value, nlohmann::json& reply);
 
     std::mutex mutex_;
     sptr<IRemoteObject> remoteObject_;
