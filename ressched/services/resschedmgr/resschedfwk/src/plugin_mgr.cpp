@@ -406,6 +406,7 @@ inline void BuildSimplifyLibAll(const std::list<std::string>& pluginList, std::s
 
 void PluginMgr::GetResTypeList(std::set<uint32_t>& resTypeList)
 {
+    std::lock_guard<std::mutex> autoLock(resTypeMutex_);
     for (auto& [type, pluginList] : resTypeLibMap_) {
         resTypeList.insert(type);
     }
