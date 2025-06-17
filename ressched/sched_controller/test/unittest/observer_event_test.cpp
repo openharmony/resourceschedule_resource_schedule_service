@@ -541,6 +541,7 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_002, testing::ext::TestSize.Level
     std::unordered_set<int32_t> newStopSessionPid;
     audioObserver_->HandleInnerAudioStateChange(audioRendererChangeInfo, newRunningPid, newStopSessionPid);
     audioRendererChangeInfo = std::make_shared<AudioStandard::AudioRendererChangeInfo>();
+    audioRendererChangeInfo->clientPid = 1;
     audioRendererChangeInfo->rendererState = AudioStandard::RendererState::RENDERER_INVALID;
     audioObserver_->HandleInnerAudioStateChange(audioRendererChangeInfo, newRunningPid, newStopSessionPid);
     EXPECT_EQ(newRunningPid.size(), 0);
@@ -585,6 +586,7 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_003, testing::ext::TestSize.Level
     std::unordered_set<int32_t> newRunningPid;
     audioObserver_->ProcessRunningSessionState(audioRendererChangeInfo, newRunningPid);
     audioRendererChangeInfo = std::make_shared<AudioStandard::AudioRendererChangeInfo>();
+    audioRendererChangeInfo->clientPid = 1;
     audioRendererChangeInfo->rendererState = AudioStandard::RendererState::RENDERER_RUNNING;
     audioObserver_->ProcessRunningSessionState(audioRendererChangeInfo, newRunningPid);
     audioObserver_->ProcessRunningSessionState(audioRendererChangeInfo, newRunningPid);
@@ -607,6 +609,7 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_004, testing::ext::TestSize.Level
     std::unordered_set<int32_t> newStopSessionPid;
     audioObserver_->ProcessStopSessionState(audioRendererChangeInfo, newStopSessionPid);
     audioRendererChangeInfo = std::make_shared<AudioStandard::AudioRendererChangeInfo>();
+    audioRendererChangeInfo->clientPid = 1;
     audioObserver_->ProcessStopSessionState(audioRendererChangeInfo, newStopSessionPid);
     EXPECT_EQ(newStopSessionPid.size(), 1);
     newStopSessionPid.clear();
