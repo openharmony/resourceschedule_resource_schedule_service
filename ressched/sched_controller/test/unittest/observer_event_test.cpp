@@ -33,6 +33,8 @@
 #include "iservice_registry.h"
 #include "observer_manager.h"
 #include "download_upload_observer.h"
+#include "app_state_observer.h"
+#include "window_state_observer.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -1087,6 +1089,201 @@ HWTEST_F(ObserverEventTest, ObserverManagerTest_001, testing::ext::TestSize.Leve
         instance->sysAbilityListener_->OnRemoveSystemAbility(WINDOW_MANAGER_SERVICE_ID, 0);
     }
     SUCCEED();
+}
+
+/**
+ * @tc.name: RmsApplicationStateObserver_001
+ * @tc.desc: test for OnForegroundApplicationChanged, OnApplicationStateChanged
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest, RmsApplicationStateObserver_001, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    AppExecFwk::AppStateData data;
+    data.bundleName = "com.ohos.test";
+    data.pid = 999;
+    data.uid = 1000;
+    data.state = 0;
+    data.accessTokenId = 0;
+    data.isFocused = false;
+ 
+    observer->OnForegroundApplicationChanged(data);
+    observer->OnApplicationStateChanged(data);
+ 
+    data.uid = -1;
+    observer->OnForegroundApplicationChanged(data);
+    observer->OnApplicationStateChanged(data);
+ 
+    data.uid = 1000;
+    data.pid = -1;
+    observer->OnForegroundApplicationChanged(data);
+    observer->OnApplicationStateChanged(data);
+ 
+    data.pid = 999;
+    data.bundleName = "";
+    observer->OnForegroundApplicationChanged(data);
+    observer->OnApplicationStateChanged(data);
+    sleep(1);
+    SUCCEED();
+}
+ 
+/**
+ * @tc.name: RmsApplicationStateObserver_002
+ * @tc.desc: test for OnAbilityStateChanged, OnExtensionStateChanged
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest, RmsApplicationStateObserver_002, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+ 
+    AppExecFwk::AbilityStateData data;
+    data.moduleName = "entry";
+    data.bundleName = "com.ohos.test";
+    data.abilityName = "MainAbility";
+    data.abilityState = 0;
+    data.pid = 999;
+    data.uid = 1000;
+    data.abilityRecordId = 111;
+    data.abilityType = 0;
+    data.isFocused = false;
+ 
+    observer->OnAbilityStateChanged(data);
+    observer->OnExtensionStateChanged(data);
+    data.bundleName = "";
+    data.uid = -1;
+    observer->OnAbilityStateChanged(data);
+    observer->OnExtensionStateChanged(data);
+    sleep(1);
+    SUCCEED();
+}
+ 
+/**
+ * @tc.name: RmsApplicationStateObserver_003
+ * @tc.desc: test for OnProcessCreated, OnProcessDied
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest, RmsApplicationStateObserver_003, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    AppExecFwk::ProcessData data;
+    data.bundleName = "com.ohos.test";
+    data.pid = 999;
+    data.uid = 1000;
+    data.state = AppExecFwk::AppProcessState::APP_STATE_CREATE;
+    data.isContinuousTask = false;
+    data.isKeepAlive = false;
+    data.isFocused = false;
+ 
+    observer->OnProcessCreated(data);
+    observer->OnProcessDied(data);
+    data.bundleName = "";
+    data.uid = -1;
+    observer->OnProcessCreated(data);
+    observer->OnProcessDied(data);
+    sleep(1);
+    SUCCEED();
+}
+ 
+/**
+ * @tc.name: RmsApplicationStateObserver_004
+ * @tc.desc: test for OnAppStateChanged, OnAppCacheStateChanged
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest, RmsApplicationStateObserver_004, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    AppStateData appStateData;
+    appStateData.pid = 100;
+    appStateData.uid = 1000;
+    appStateData.bundleName = "test";
+    appStateData.extensionType = AppExecFwk::ExtensionAbilityType::UNSPECIFIED;
+    observer->OnAppStateChanged(appStateData);
+    observer->OnAppCacheStateChanged(appStateData);
+    appStateData.uid = -1;
+    observer->OnAppStateChanged(appStateData);
+    observer->OnAppCacheStateChanged(appStateData);
+ 
+    ProcessData processData;
+    processData.pid = 100;
+    processData.uid = 1000;
+    processData.bundleName = "test";
+    observer->OnProcessStateChanged(processData);
+    processData.pid = -1;
+    observer->OnProcessStateChanged(processData);
+    SUCCEED();
+}
+ 
+/**
+ * @tc.name: WindowStateObserver_001
+ * @tc.desc: test for OnFocused, OnUnfocused
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest, WindowStateObserver_001, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<WindowStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    sptr<Rosen::FocusChangeInfo> info = new Rosen::FocusChangeInfo();
+    info->uid_ = 1000;
+    info->pid_ = 999;
+    observer->OnFocused(info);
+    observer->OnUnfocused(info);
+    observer->OnFocused(nullptr);
+    observer->OnUnfocused(nullptr);
+    sleep(1);
+    SUCCEED();
+}
+ 
+/**
+ * @tc.name: WindowStateObserver_002
+ * @tc.desc: test for OnFocused, OnUnfocused
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest, WindowStateObserver_002, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<WindowVisibilityObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    std::vector<sptr<Rosen::WindowVisibilityInfo> > windowVisibilityInfo;
+    for (int32_t i = 0; i < 2; i++) {
+        sptr<Rosen::WindowVisibilityInfo> info = new Rosen::WindowVisibilityInfo();
+        windowVisibilityInfo.push_back(info);
+    }
+    windowVisibilityInfo.push_back(nullptr);
+    observer->OnWindowVisibilityChanged(windowVisibilityInfo);
+    SUCCEED();
+}
+ 
+/**
+ * @tc.name: WindowDrawingContentObserver_001
+ * @tc.desc: test for OnWindowDrawingContentChanged
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest, WindowDrawingContentObserver_001, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<WindowDrawingContentObserver>();
+    EXPECT_TRUE(observer != nullptr);
+ 
+    std::vector<sptr<WindowDrawingContentInfo>> changeInfo;
+    OHOS::sptr<OHOS::Rosen::WindowDrawingContentInfo> info = new OHOS::Rosen::WindowDrawingContentInfo();
+    changeInfo.push_back(info);
+    observer->OnWindowDrawingContentChanged(changeInfo);
 }
 }
 }
