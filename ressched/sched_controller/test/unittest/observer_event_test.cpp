@@ -1088,5 +1088,6 @@ HWTEST_F(ObserverEventTest, ObserverManagerTest_001, testing::ext::TestSize.Leve
     }
     SUCCEED();
 }
+-
 }
 }

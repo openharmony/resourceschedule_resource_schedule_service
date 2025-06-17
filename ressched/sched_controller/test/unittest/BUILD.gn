@@ -47,6 +47,7 @@ ohos_unittest("event_controller_test") {
     "ipc:ipc_single",
     "os_account:os_account_innerkits",
     "samgr:samgr_proxy",
+    -
   ]
 
   defines = []
