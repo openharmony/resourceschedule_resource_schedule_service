@@ -50,8 +50,8 @@
 #include "avsession_manager.h"
 #endif
 #ifdef CONFIG_BGTASK_MGR
-#include "backgroud_task_mgr_helper.h"
-#include "backgroud_task_observer.h"
+#include "background_task_mgr_helper.h"
+#include "background_task_observer.h"
 #endif
 
 namespace OHOS {
