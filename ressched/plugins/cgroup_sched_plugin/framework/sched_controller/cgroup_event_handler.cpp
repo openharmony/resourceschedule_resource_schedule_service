@@ -420,9 +420,9 @@ void CgroupEventHandler::HandleContinuousTaskStatus(uint32_t resType, int64_t va
         if (payload.contains("typeIds") && payload["typeIds"].is_array()) {
             typeIds = payload["typeIds"].get<std::vector<uint32_t>>();
         }
-        HandleContinuousTaskUpdate(uid, pid, typeIds, abilityId)
+        HandleContinuousTaskUpdate(uid, pid, typeIds, abilityId);
     } else if (value == ResType::TransientTaskStatus::TRANSIENT_TASK_START) {
-        HandleContinuousTaskCancel(uid, pid, abilityId)
+        HandleContinuousTaskCancel(uid, pid, abilityId);
     }
 }
 

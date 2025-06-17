@@ -901,7 +901,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     cgroupEventHandler->HandleTransientTaskStart(uid, pid, bundleName);
     cgroupEventHandler->HandleTransientTaskEnd(uid, pid, bundleName);
     cgroupEventHandler->HandleContinuousTaskUpdate(uid, pid, {typeId}, value);
-    cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, typeId, value);
+    cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, value);
     cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
 
     cgroupEventHandler->supervisor_ = tmp;
@@ -1149,8 +1149,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
     int32_t abilityId = 1;
-    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
-        (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
+    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234, abilityId);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) == nullptr);
 
@@ -1159,8 +1158,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_029, Function | Med
     auto proc = supervisor_->GetAppRecord(1000)->GetProcessRecord(1234);
     EXPECT_TRUE(proc->continuousTaskFlag_ == (1 << (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK));
 
-    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234,
-        (int32_t)BackgroundTaskMgr::BackgroundMode::AUDIO_PLAYBACK, abilityId);
+    cgroupEventHandler->HandleContinuousTaskCancel(1000, 1234, abilityId);
     EXPECT_TRUE(proc->continuousTaskFlag_ == 0);
 
     cgroupEventHandler->HandleContinuousTaskUpdate(1000, 1234,

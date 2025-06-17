@@ -49,6 +49,10 @@
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 #include "avsession_manager.h"
 #endif
+#ifdef CONFIG_BGTASK_MGR
+#include "backgroud_task_mgr_helper.h"
+#include "backgroud_task_observer.h"
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -898,22 +902,22 @@ void ObserverManager::UnsubscribePipChange()
 }
 
 #ifdef CONFIG_BGTASK_MGR
-bool ObserverManager::SubscribeBackgroundTask()
+void ObserverManager::SubscribeBackgroundTask()
 {
     if (isBgtaskSubscribed_) {
-        return true;
+        return;
     }
     if (!backgroundTaskObserver_) {
         backgroundTaskObserver_ = std::make_shared<BackgroundTaskObserver>();
     }
-    int ret = BackgroundTaskMgrHelper::SubscribeBackgroundTask(*backgroundTaskObserver_);
+    int ret = BackgroundTaskMgr::BackgroundTaskMgrHelper::SubscribeBackgroundTask(*backgroundTaskObserver_);
     if (ret != 0) {
-        CGS_LOGE("%{public}s failed, err:%{public}d.", __func__, ret);
-        return false;
+        RESSCHED_LOGE("%{public}s failed, err:%{public}d.", __func__, ret);
+        return;
     }
     isBgtaskSubscribed_ = true;
-    CGS_LOGI("%{public}s success.", __func__);
-    return true;
+    RESSCHED_LOGI("%{public}s success.", __func__);
+    return;
 }
 
 void ObserverManager::UnsubscribeBackgroundTask()
@@ -921,11 +925,11 @@ void ObserverManager::UnsubscribeBackgroundTask()
     if (!isBgtaskSubscribed_ || !backgroundTaskObserver_) {
         return;
     }
-    int32_t ret = BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*backgroundTaskObserver_);
+    int32_t ret = BackgroundTaskMgr::BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*backgroundTaskObserver_);
     if (ret == 0) {
-        CGS_LOGI("%{public}s success.", __func__);
+        RESSCHED_LOGI("%{public}s success.", __func__);
     } else {
-        CGS_LOGE("%{public}s failed. ret:%{public}d", __func__, ret);
+        RESSCHED_LOGE("%{public}s failed. ret:%{public}d", __func__, ret);
     }
     isBgtaskSubscribed_ = false;
 }

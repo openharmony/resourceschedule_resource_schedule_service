@@ -16,10 +16,8 @@
 #include "background_task_observer.h"
 
 #ifdef CONFIG_BGTASK_MGR
-//#include "cgroup_sched_log.h"
-//#include "sched_controller.h"
-//#include "cgroup_event_handler.h"
-//#include "ressched_utils.h"
+#include "res_sched_log.h"
+#include "res_sched_mgr.h"
 #include "res_type.h"
 
 #undef LOG_TAG
@@ -43,7 +41,7 @@ void BackgroundTaskObserver::OnTransientTaskStart(const std::shared_ptr<Transien
 
     nlohmann::json payload;
     MarshallingTransientTaskAppInfo(info, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TRANSIENT_TASK_START, payload);
 }
 
@@ -56,7 +54,7 @@ void BackgroundTaskObserver::OnTransientTaskEnd(const std::shared_ptr<TransientT
 
     nlohmann::json payload;
     MarshallingTransientTaskAppInfo(info, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TRANSIENT_TASK_END, payload);
 }
 
@@ -69,7 +67,7 @@ void BackgroundTaskObserver::OnTransientTaskErr(const std::shared_ptr<TransientT
 
     nlohmann::json payload;
     MarshallingTransientTaskAppInfo(info, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TRANSIENT_TASK_ERR, payload);
 }
 
@@ -77,7 +75,7 @@ void BackgroundTaskObserver::OnAppTransientTaskStart(const std::shared_ptr<Trans
 {
     nlohmann::json payload;
     MarshallingTransientTaskAppInfo(info, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::APP_TRANSIENT_TASK_START, payload);
 }
 
@@ -85,7 +83,7 @@ void BackgroundTaskObserver::OnAppTransientTaskEnd(const std::shared_ptr<Transie
 {
     nlohmann::json payload;
     MarshallingTransientTaskAppInfo(info, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::APP_TRANSIENT_TASK_END, payload);
 }
 
@@ -113,7 +111,7 @@ void BackgroundTaskObserver::OnContinuousTaskStart(
 
     nlohmann::json payload;
     MarshallingContinuousTaskCallbackInfo(continuousTaskCallbackInfo, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_START, payload);
 }
 
@@ -127,7 +125,7 @@ void BackgroundTaskObserver::OnContinuousTaskStop(
 
     nlohmann::json payload;
     MarshallingContinuousTaskCallbackInfo(continuousTaskCallbackInfo, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_END, payload);
 }
 
@@ -141,7 +139,7 @@ void BackgroundTaskObserver::OnContinuousTaskUpdate(
 
     nlohmann::json payload;
     MarshallingContinuousTaskCallbackInfo(continuousTaskCallbackInfo, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_CONTINUOUS_TASK, ResType::ContinuousTaskStatus::CONTINUOUS_TASK_UPDATE, payload);
 }
 
@@ -168,7 +166,7 @@ void BackgroundTaskObserver::OnAppEfficiencyResourcesApply(
 {
     nlohmann::json payload;
     MarshallingResourceInfo(resourceInfo, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED,
         ResType::EfficiencyResourcesStatus::APP_EFFICIENCY_RESOURCES_APPLY,
         payload);
@@ -179,7 +177,7 @@ void BackgroundTaskObserver::OnAppEfficiencyResourcesReset(
 {
     nlohmann::json payload;
     MarshallingResourceInfo(resourceInfo, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED,
         ResType::EfficiencyResourcesStatus::APP_EFFICIENCY_RESOURCES_RESET,
         payload);
@@ -190,7 +188,7 @@ void BackgroundTaskObserver::OnProcEfficiencyResourcesApply(
 {
     nlohmann::json payload;
     MarshallingResourceInfo(resourceInfo, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED,
         ResType::EfficiencyResourcesStatus::PROC_EFFICIENCY_RESOURCES_APPLY,
         payload);
@@ -201,7 +199,7 @@ void BackgroundTaskObserver::OnProcEfficiencyResourcesReset(
 {
     nlohmann::json payload;
     MarshallingResourceInfo(resourceInfo, payload);
-    ResSchedUtils::GetInstance().ReportDataInProcess(
+    ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED,
         ResType::EfficiencyResourcesStatus::PROC_EFFICIENCY_RESOURCES_RESET,
         payload);

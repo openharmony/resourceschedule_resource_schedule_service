@@ -41,9 +41,11 @@ public:
     void HandleExtensionStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleProcessCreated(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleProcessDied(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleTransientTaskStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleTransientTaskStart(uid_t uid, pid_t pid, const std::string& packageName);
     void HandleTransientTaskEnd(uid_t uid, pid_t pid, const std::string& packageName);
-    void HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t typeId, int32_t abilityId);
+    void HandleContinuousTaskStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t abilityId);
     void HandleContinuousTaskUpdate(
         uid_t uid, pid_t pid, const std::vector<uint32_t>& typeIds, int32_t abilityId);
     void HandleFocusStateChange(uint32_t resType, int64_t value, const nlohmann::json& payload);
