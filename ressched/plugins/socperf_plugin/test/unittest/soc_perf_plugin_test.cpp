@@ -1416,7 +1416,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_050, Function | MediumTes
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 90, payload3);
     ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(invalidData);
-    EXPECT_TRUE(ret);
+    EXPECT_FALSE(ret);
 }
 
 /*
