@@ -60,9 +60,10 @@ public:
     }
 
 private:
-    std::set<uint32_t> resTypes;
     std::shared_ptr<CgroupEventHandler> cgHandler_;
     std::shared_ptr<Supervisor> supervisor_;
+
+    std::set<uint32_t> resTypes;
     std::unordered_map<uint32_t, std::function<void(std::shared_ptr<CgroupEventHandler>,
         uint32_t, int64_t, const nlohmann::json&)>> dispatchResFuncMap_;
 
