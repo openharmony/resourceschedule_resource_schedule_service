@@ -155,7 +155,10 @@ ohos_shared_library("ressched_client") {
 
   public_external_deps = [ "json:nlohmann_json_static" ]
 
-  innerapi_tags = [ "platformsdk" ]
+  innerapi_tags = [
+    "chipsetsdk_sp_indirect",
+    "platformsdk",
+  ]
   version_script = "libressched_client.versionscript"
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
