@@ -29,7 +29,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-constexpr int32_t CHECK_MUTEX_TIMEOUT = 100;  // 500ms
+constexpr int32_t CHECK_MUTEX_TIMEOUT = 100;  // 100ms
 bool g_isDestroyed = false;
 }
 
