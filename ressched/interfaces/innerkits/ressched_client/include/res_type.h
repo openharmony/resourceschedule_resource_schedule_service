@@ -353,6 +353,8 @@ enum : uint32_t {
     RES_TYPE_SUPPLY_LEVEL = 164,
     // reset camera rss priority
     RES_TYPE_CAMERA_RESET_PRIORITY = 165,
+    // report gc qos status change
+    RES_TYPE_GC_THREAD_QOS_STATUS_CHANGE = 166,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
