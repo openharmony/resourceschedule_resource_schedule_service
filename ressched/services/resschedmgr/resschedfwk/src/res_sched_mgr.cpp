@@ -172,6 +172,7 @@ namespace {
         { ResType::RES_TYPE_WINDOW_PANEL, "RES_TYPE_WINDOW_PANEL" },
         { ResType::RES_TYPE_WINDOW_SPLIT_SCREEN, "RES_TYPE_WINDOW_SPLIT_SCREEN" },
         { ResType::RES_TYPE_SUPPLY_LEVEL, "RES_TYPE_SUPPLY_LEVEL" },
+        { ResType::RES_TYPE_GC_THREAD_QOS_STATUS_CHANGE, "RES_TYPE_GC_THREAD_QOS_STATUS_CHANGE"},
     };
     OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
     {
