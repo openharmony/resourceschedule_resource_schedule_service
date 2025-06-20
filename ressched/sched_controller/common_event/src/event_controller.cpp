@@ -55,7 +55,7 @@ static const char* GAME_STATUS = "type";
 static const char* GAME_ENV = "env";
 static const char* COMMON_EVENT_CAPACITY = "soc";
 static const char* COMMON_EVENT_CHARGE_STATE = "chargeState";
-static const char* COMMON_EVENT_USER_SLEEP_STATE_CHAGED = "COMMON_EVENT_USER_SLEEP_STATE_CHAGED";
+static const char* COMMON_EVENT_USER_SLEEP_STATE_CHANGED = "COMMON_EVENT_USER_SLEEP_STATE_CHANGED";
 
 void EventController::Init()
 {
@@ -207,7 +207,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_DISCONNECTED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_WIFI_POWER_STATE);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BATTERY_CHANGED);
-    matchingSkills.AddEvent(COMMON_EVENT_USER_SLEEP_STATE_CHAGED);
+    matchingSkills.AddEvent(COMMON_EVENT_USER_SLEEP_STATE_CHANGED);
     matchingSkills.AddEvent(DATA_SHARE_READY);
     matchingSkills.AddEvent(COMMON_EVENT_CAMERA_STATUS);
     matchingSkills.AddEvent(CONFIG_UPDATE_ACTION);
@@ -388,10 +388,10 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
         ReportDataInProcess(ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE,
             static_cast<int64_t>(want.GetIntParam(COMMON_EVENT_CAPACITY, -1)), payload);
     }
-    if (action == COMMON_EVENT_USER_SLEEP_STATE_CHAGED) {
+    if (action == COMMON_EVENT_USER_SLEEP_STATE_CHANGED) {
         payload["isSleep"] = want.GetBoolParam("isSleep", false);
         payload["wakeupTime"] = want.GetIntParam("wakeupTime", -1);
-        ReportDataInProcess(ResType::RES_TYPE_USER_SLEEP_STATE_CHAGED, static_cast<int64_t>(userId), payload);
+        ReportDataInProcess(ResType::RES_TYPE_USER_SLEEP_STATE_CHANGED, static_cast<int64_t>(userId), payload);
         return;
     }
 }

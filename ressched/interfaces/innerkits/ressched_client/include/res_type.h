@@ -355,10 +355,10 @@ enum : uint32_t {
     RES_TYPE_CAMERA_RESET_PRIORITY = 165,
     // report gc qos status change
     RES_TYPE_GC_THREAD_QOS_STATUS_CHANGE = 166,
-    //report device idle status chaged
-    RES_TYPE_DEVICE_IDLE_CHAGED = 167,
+    //report device idle status changed
+    RES_TYPE_DEVICE_IDLE_CHANGED = 167,
     //report user sleep status changed
-    RES_TYPE_USER_SLEEP_STATE_CHAGED = 168,
+    RES_TYPE_USER_SLEEP_STATE_CHANGED = 168,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
