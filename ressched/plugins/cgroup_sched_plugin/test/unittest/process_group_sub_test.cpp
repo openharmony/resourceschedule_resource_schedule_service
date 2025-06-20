@@ -21,6 +21,7 @@
 #include "sched_policy.h"
 #include "supervisor.h"
 #include "cgroup_adjuster.h"
+#include "cgroup_log.h"
 #undef private
 #undef protected
 
@@ -196,6 +197,23 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_AdjustProcess_001, Function | 
     auto pr = new ProcessRecord(20150011, 9050);
     EXPECT_TRUE(pr != nullptr);
     CgroupAdjuster::GetInstance().AdjustForkProcessGroup(*application, *pr);
+    SUCCEED();
+}
+
+/*
+ * @tc.number: ProcessGroupSubTest_AdjustProcess_001
+ * @tc.name: Adjust Fork Process Schedule
+ * @tc.type: FUNC
+ */
+HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_CgroupLog_001, Function | MediumTest | Level1)
+{
+    auto application = new Application(20150011);
+    EXPECT_TRUE(application != nullptr);
+    CgsLogD("test logD!");
+    CgsLogI("test logI!");
+    CgsLogW("test logW!");
+    CgsLogE("test logE!");
+    CgsLogF("test logF!");
     SUCCEED();
 }
 } // namespace CgroupSetting

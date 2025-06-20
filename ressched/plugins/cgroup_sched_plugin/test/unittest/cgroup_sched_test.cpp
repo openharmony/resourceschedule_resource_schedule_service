@@ -2467,6 +2467,103 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_080, Function | Med
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_081
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_081, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_WINDOW_FOCUS;
+    int64_t value = ResType::WindowFocusStatus::WINDOW_FOCUS;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["windowId"] = std::to_string(100);
+    payload["windowType"] = std::to_string(200);
+    payload["displayId"] = 0;
+    cgroupEventHandler->HandleFocusStateChange(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_082
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_082, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_WINDOW_FOCUS;
+    int64_t value = ResType::WindowFocusStatus::WINDOW_UNFOCUS;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["windowId"] = std::to_string(100);
+    payload["windowType"] = std::to_string(200);
+    payload["displayId"] = 0;
+    cgroupEventHandler->HandleFocusStateChange(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_083
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_083, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_PROCESS_STATE_CHANGE;
+    int64_t value = ResType::ProcessStatus::PROCESS_CREATED;
+    nlohmann::json payload;
+    cgroupEventHandler->HandleProcessStateChangedEx(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+
+    value = ResType::ProcessStatus::PROCESS_DIED;
+    cgroupEventHandler->HandleProcessStateChangedEx(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+
+    value = ResType::ProcessStatus::PROCESS_BACKGROUND;
+    cgroupEventHandler->HandleProcessStateChangedEx(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_084
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_084, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_REPORT_RENDER_THREAD;
+    int64_t value = 100;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(0);
+    payload["pid"] = std::to_string(1234);
+    cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+
+    payload["uid"] = std::to_string(1000);
+    cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
+    EXPECT_FALSE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
