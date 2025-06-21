@@ -55,6 +55,7 @@ static const char* GAME_STATUS = "type";
 static const char* GAME_ENV = "env";
 static const char* COMMON_EVENT_CAPACITY = "soc";
 static const char* COMMON_EVENT_CHARGE_STATE = "chargeState";
+static const char* COMMON_EVENT_USER_SLEEP_STATE_CHANGED = "common.event.USER_NOT_CARE_CHARGE_SLEEP";
 
 void EventController::Init()
 {
@@ -210,6 +211,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(COMMON_EVENT_CAMERA_STATUS);
     matchingSkills.AddEvent(CONFIG_UPDATE_ACTION);
     matchingSkills.AddEvent(COMMON_EVENT_GAME_STATUS);
+    matchingSkills.AddEvent(COMMON_EVENT_USER_SLEEP_STATE_CHANGED);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
     SubscribeCommonEvent(subscriber_);
@@ -277,7 +279,7 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         DataShareIsReady();
         return;
     }
-    
+
     handleEvent(data.GetCode(), action, payload, want);
 }
 
@@ -380,6 +382,12 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
 
 void EventController::handleLeftEvent(int32_t userId, const std::string &action, nlohmann::json &payload, Want &want)
 {
+    if (action == COMMON_EVENT_USER_SLEEP_STATE_CHANGED) {
+        RESSCHED_LOGI("report sleep state event");
+        ReportDataInProcess(ResType::RES_TYPE_USER_NOT_CARE_CHARGE_SLEEP,
+            static_cast<int64_t>(want.GetBoolParam("isSleep", false)), payload);
+        return;
+    }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_BATTERY_CHANGED) {
         RESSCHED_LOGI("report battery status change event");
         payload[COMMON_EVENT_CHARGE_STATE] = want.GetIntParam(COMMON_EVENT_CHARGE_STATE, -1);

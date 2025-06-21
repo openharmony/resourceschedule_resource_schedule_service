@@ -79,6 +79,7 @@ protected:
     void OnStop() override;
 
 private:
+    void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string &deviceId) override;
     bool AllowDump();
     void DumpAllInfo(std::string &result);
     void DumpUsage(std::string &result);

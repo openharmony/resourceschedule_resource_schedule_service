@@ -359,6 +359,8 @@ enum : uint32_t {
     RES_TYPE_DEVICE_IDLE_CHANGED = 167,
     //report user sleep status changed
     RES_TYPE_USER_SLEEP_STATE_CHANGED = 168,
+    // report user not care charge sleep
+    RES_TYPE_USER_NOT_CARE_CHARGE_SLEEP = 169,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

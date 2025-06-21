@@ -53,6 +53,8 @@ enum : uint32_t {
     EWS_TYPE_SOCPERF_EXECUTOR_ASYNC_EVENT,
     // break socket async
     RES_TYPE_SOCK_EXECUTOR_ASYNC_EVENT,
+    // suspend manager sa changed
+    RES_TYPE_EXT_SUSPEND_MANAGER_SA_CHANGED,
     // last resType, please add resType before
     RES_TYPE_LAST = 1000,
     // resType for debug ipc
