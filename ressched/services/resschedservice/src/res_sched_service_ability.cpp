@@ -181,6 +181,20 @@ void ResSchedServiceAbility::SystemAbilityListenerInitExt()
                         "ERR_MSG", "Register a listener of wifi manager service failed.");
         RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", WIFI_DEVICE_SYS_ABILITY_ID);
     }
+    if (!AddSystemAbilityListener(MSDP_USER_STATUS_SERVICE_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of power manager service failed.");
+        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", MSDP_USER_STATUS_SERVICE_ID);
+    }
+    if (!AddSystemAbilityListener(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of power manager service failed.");
+        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    }
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
