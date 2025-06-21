@@ -91,6 +91,7 @@ void ResSchedExeService::OnStart()
         RSSEXE_LOGE("ResSchedExeService::Register service failed.");
         return;
     }
+    AddSystemAbilityListener(SUSPEND_MANAGER_SYSTEM_ABILITY_ID);
     RSSEXE_LOGI("ResSchedExeService::OnStart.");
 }
 
@@ -99,6 +100,16 @@ void ResSchedExeService::OnStop()
     ExecutorHiTraceChain traceChain(__func__);
     ResSchedExeMgr::GetInstance().Stop();
     RSSEXE_LOGI("ResSchedExeService::OnStop!");
+}
+
+void ResSchedExeService::OnRemoveSystemAbility(int32_t systemAbilityId, const std::string &deviceId)
+{
+    if (systemAbilityId == SUSPEND_MANAGER_SYSTEM_ABILITY_ID) {
+        RSSEXE_LOGI("ResSchedExeService::OnRemoveSystemAbility SUSPEND_MANAGER_SYSTEM_ABILITY_ID.");
+        nlohmann::json jsonContext;
+        ResSchedExeMgr::GetInstance().SendRequestAsync(ResExeType::RES_TYPE_EXT_SUSPEND_MANAGER_SA_CHANGED,
+            static_cast<int64_t>(false), jsonContext);
+    }
 }
 
 ErrCode ResSchedExeService::SendRequestSync(uint32_t resType, int64_t value,
