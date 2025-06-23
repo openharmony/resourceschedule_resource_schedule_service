@@ -170,6 +170,7 @@ namespace {
     };
     static const std::unordered_map<uint32_t, std::unordered_set<int32_t>> ALLOW_SOME_UID_REPORT_RES = {
         { ResType::RES_TYPE_MODEM_PA_HIGH_POWER_ABNORMAL, { 1201 } },
+        { ResType::RES_TYPE_APP_HIGH_POWER_CONSUMPTION, { 1201 } },
         { ResType::RES_TYPE_APP_ABILITY_START, { 5523 } },
         { ResType::RES_TYPE_PRELOAD_APPLICATION, { 5523 } },
         { ResType::RES_TYPE_APP_ASSOCIATED_START, { 5523 } },
