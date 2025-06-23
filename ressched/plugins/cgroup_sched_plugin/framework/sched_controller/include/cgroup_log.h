@@ -21,11 +21,11 @@
 namespace OHOS {
 namespace ResourceSchedule {
 
-void CgsLogD(std::string str);
-void CgsLogI(std::string str);
-void CgsLogW(std::string str);
-void CgsLogE(std::string str);
-void CgsLogF(std::string str);
+void CgsLogD(const std::string& str);
+void CgsLogI(const std::string& str);
+void CgsLogW(const std::string& str);
+void CgsLogE(const std::string& str);
+void CgsLogF(const std::string& str);
 
 } // namespace ResourceSchedule
 } // namespace OHOS

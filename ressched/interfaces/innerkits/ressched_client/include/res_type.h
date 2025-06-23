@@ -355,8 +355,14 @@ enum : uint32_t {
     RES_TYPE_CAMERA_RESET_PRIORITY = 165,
     // report gc qos status change
     RES_TYPE_GC_THREAD_QOS_STATUS_CHANGE = 166,
+    //report device idle status changed
+    RES_TYPE_DEVICE_IDLE_CHANGED = 167,
+    //report user sleep status changed
+    RES_TYPE_USER_SLEEP_STATE_CHANGED = 168,
+    // report user not care charge sleep
+    RES_TYPE_USER_NOT_CARE_CHARGE_SLEEP = 169,
     // report app high power consumption
-    RES_TYPE_APP_HIGH_POWER_CONSUMPTION = 167,
+    RES_TYPE_APP_HIGH_POWER_CONSUMPTION = 170,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

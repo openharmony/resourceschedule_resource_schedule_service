@@ -20,27 +20,27 @@
 namespace OHOS {
 namespace ResourceSchedule {
 
-void CgsLogD(std::string str)
+void CgsLogD(const std::string& str)
 {
     CGS_LOGD("%{public}s", str.c_str());
 }
 
-void CgsLogI(std::string str)
+void CgsLogI(const std::string& str)
 {
     CGS_LOGI("%{public}s", str.c_str());
 }
 
-void CgsLogW(std::string str)
+void CgsLogW(const std::string& str)
 {
     CGS_LOGW("%{public}s", str.c_str());
 }
 
-void CgsLogE(std::string str)
+void CgsLogE(const std::string& str)
 {
     CGS_LOGE("%{public}s", str.c_str());
 }
 
-void CgsLogF(std::string str)
+void CgsLogF(const std::string& str)
 {
     CGS_LOGF("%{public}s", str.c_str());
 }
