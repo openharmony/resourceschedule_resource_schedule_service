@@ -208,14 +208,14 @@ int32_t SuspendManagerBaseObserver::UpdateSuspendObserver(const States state, co
 
     std::lock_guard<std::mutex> lock(suspendObserverLock_);
     if (suspendObservers_.empty()) {
-        SUSPEND_MSG_LOGI("BaseObserver Update observer null.");
+        SUSPEND_MSG_LOGD("BaseObserver Update observer null.");
         return ERR_OK;
     }
     for (auto iter = suspendObservers_.begin(); iter != suspendObservers_.end(); ++iter) {
         cbIt->second(iter, uid, pidList);
     }
 
-    SUSPEND_MSG_LOGI("BaseObserver UpdateSuspendObserver for state: %{public}u, uid: %{public}d.", cbIt->first, uid);
+    SUSPEND_MSG_LOGD("BaseObserver UpdateSuspendObserver for state: %{public}u, uid: %{public}d.", cbIt->first, uid);
     return ERR_OK;
 }
 } // namespace ResourceSchedule
