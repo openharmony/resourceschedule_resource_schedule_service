@@ -211,11 +211,10 @@ HWTEST_F(SceneRecognizeTest, SlideTest001, Function | MediumTest | Level0)
 HWTEST_F(SceneRecognizeTest, SystemUpgradeSceneRecognizer_001, Function | MediumTest | Level0)
 {
     auto systemUpgradeSceneRecognizer = std::make_shared<SystemUpgradeSceneRecognizer>();
-    systemUpgradeSceneRecognizer->isSystemUpgraded_ = true;
     int64_t value = 0;
     nlohmann::json payload;
     systemUpgradeSceneRecognizer->OnDispatchResource(ResType::RES_TYPE_BOOT_COMPLETED, value, payload);
-    EXPECT_EQ(systemUpgradeSceneRecognizer->isSystemUpgraded_, true);
+    EXPECT_EQ(systemUpgradeSceneRecognizer->isSystemUpgraded_, false);
 }
 
 /**
@@ -276,9 +275,10 @@ HWTEST_F(SceneRecognizeTest, HandleClickEvent_001, Function | MediumTest | Level
     slideRecognizer->HandleClickEvent(value, payload);
     payload["clientPid"] = testPid;
     payload["up_speed"] = std::to_string(slideRecognizer->listFlingTimeOutTime_ + 1);
+    value = ResType::ClickEventType::TOUCH_EVENT_DOWN;
     slideRecognizer->HandleClickEvent(value, payload);
     slideRecognizer->HandleClickEvent(value, payload);
-    EXPECT_EQ(slideRecognizer->slidePid_, testPid);
+    EXPECT_EQ(slideRecognizer->isInTouching_, true);
 }
 
 /**

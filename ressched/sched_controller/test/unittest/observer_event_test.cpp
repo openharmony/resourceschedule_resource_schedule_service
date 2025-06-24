@@ -684,9 +684,6 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_002, testing::ext::TestSize.Level1)
     auto samgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     EXPECT_NE(samgr, nullptr);
     auto remoteObj = samgr->GetSystemAbility(MULTIMODAL_INPUT_SERVICE_ID);
-    if (!remoteObj) {
-        return;
-    }
     auto instance = ObserverManager::GetInstance();
     if (instance) {
         instance->GetAllMmiStatusData();
@@ -1011,7 +1008,6 @@ HWTEST_F(ObserverEventTest, DisableDisplayModeObserver_001, testing::ext::TestSi
 {
     auto instance = ObserverManager::GetInstance();
     if (instance) {
-        instance->foldDisplayModeObserver_ = nullptr;
         instance->DisableDisplayModeObserver();
     }
     EXPECT_EQ(instance->foldDisplayModeObserver_, nullptr);
@@ -1027,7 +1023,6 @@ HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.
 {
     auto instance = ObserverManager::GetInstance();
     if (instance) {
-        instance->foldDisplayModeObserver_ = nullptr;
         instance->InitDisplayModeObserver();
         instance->InitDisplayModeObserver();
         instance->DisableDisplayModeObserver();

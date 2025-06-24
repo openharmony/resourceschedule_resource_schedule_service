@@ -167,6 +167,14 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
     res = resSchedService_->Dump(correctFd, argsOnePlugin6);
 }
 
+static void ChangeAbilityTask()
+{
+    std::shared_ptr<ResSchedServiceAbility> resSchedServiceAbility_ = make_shared<ResSchedServiceAbility>();
+    std::string deviceId;
+    resSchedServiceAbility_->OnAddSystemAbility(-1, deviceId);
+    resSchedServiceAbility_->OnRemoveSystemAbility(-1, deviceId);
+}
+
 /**
  * @tc.name: Ressched service ReportData 001
  * @tc.desc: Verify if Ressched service ReportData is success.
@@ -179,6 +187,13 @@ HWTEST_F(ResSchedServiceTest, Report001, Function | MediumTest | Level0)
     std::string payload;
     EXPECT_TRUE(resSchedService_ != nullptr);
     resSchedService_->ReportData(0, 0, payload);
+    std::string deviceId;
+    int32_t systemAbilityId = -1;
+    resSchedServiceAbility_->OnAddSystemAbility(systemAbilityId, deviceId);
+    resSchedServiceAbility_->OnRemoveSystemAbility(systemAbilityId, deviceId);
+    EXPECT_EQ(systemAbilityId, -1);
+    SET_THREAD_NUM(10);
+    GTEST_RUN_TASK(ChangeAbilityTask);
 }
 
 /**
@@ -558,43 +573,6 @@ HWTEST_F(ResSchedServiceTest, GetSystemloadLevel002, Function | MediumTest | Lev
     int32_t res;
     resSchedService_->GetSystemloadLevel(res);
     EXPECT_TRUE(res == 2);
-}
-
-/**
- * @tc.name: ResSchedServiceAbility ChangeAbility 001
- * @tc.desc: Verify if add and remove system ability is success.
- * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
- */
-HWTEST_F(ResSchedServiceTest, ChangeAbility001, Function | MediumTest | Level0)
-{
-    std::string deviceId;
-    int32_t systemAbilityId = -1;
-    resSchedServiceAbility_->OnAddSystemAbility(systemAbilityId, deviceId);
-    resSchedServiceAbility_->OnRemoveSystemAbility(systemAbilityId, deviceId);
-    EXPECT_EQ(systemAbilityId, -1);
-}
-
-static void ChangeAbilityTask()
-{
-    std::shared_ptr<ResSchedServiceAbility> resSchedServiceAbility_ = make_shared<ResSchedServiceAbility>();
-    std::string deviceId;
-    resSchedServiceAbility_->OnAddSystemAbility(-1, deviceId);
-    resSchedServiceAbility_->OnRemoveSystemAbility(-1, deviceId);
-}
-
-/**
- * @tc.name: ResSchedServiceAbility ChangeAbility 002
- * @tc.desc: Test add and remove system ability in multithreading.
- * @tc.type: FUNC
- * @tc.require: issueI7G8VT
- * @tc.author: nizihao
- */
-HWTEST_F(ResSchedServiceTest, ChangeAbility002, Function | MediumTest | Level0)
-{
-    SET_THREAD_NUM(10);
-    GTEST_RUN_TASK(ChangeAbilityTask);
 }
 
 class TestResSchedServiceStub : public ResSchedServiceStub {
