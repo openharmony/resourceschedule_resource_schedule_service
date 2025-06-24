@@ -73,7 +73,8 @@
         "av_session",
         "json",
         "libxml2",
-        "jsoncpp"
+        "jsoncpp",
+        "runtime_core"
       ]
     },
     "build": {
@@ -87,6 +88,7 @@
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
           "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client:resschedexe_client",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi/systemload:systemload",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/ets/taihe/systemload:systemload_taihe",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi/background_process_manager:backgroundprocessmanager_napi",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/c/background_process_manager:background_process_manager",
           "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
@@ -186,6 +188,9 @@
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
+        },
+        {
+          "name":"//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/kits/ets/taihe/system_load:systemload_taihe"
         }
       ],
       "test": [
