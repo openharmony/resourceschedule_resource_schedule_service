@@ -36,6 +36,7 @@ ohos_shared_library("libprocess_group") {
     "c_utils:utils",
     "config_policy:configpolicy_util",
     "hilog:libhilog",
+    "init:libbegetutil",
     "ipc:ipc_single",
   ]
 

@@ -21,6 +21,7 @@
 #include <map>
 #include <sstream>
 
+#include "cgroup_action.h"
 #include "hitrace_meter.h"
 
 #include "plugin_mgr.h"
@@ -72,6 +73,8 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
             break;
         case ResExeType::RES_TYPE_CGROUP_SYNC_EVENT:
         case ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT:
+        case ResExeType::RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT:
+        case ResExeType::RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT:
             HandleRequestForCgroup(resType, payload, reply);
             break;
         default:
@@ -147,9 +150,25 @@ std::string ResSchedExeMgr::BuildTraceStr(const std::string& func, uint32_t resT
 void ResSchedExeMgr::HandleRequestForCgroup(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply)
 {
     if (resType != ResExeType::RES_TYPE_CGROUP_SYNC_EVENT &&
-        resType != ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT) {
+        resType != ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT &&
+        resType != ResExeType::RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT &&
+        resType != ResExeType::RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT) {
         return;
     }
+
+    int tid;
+    int policy;
+    CgroupSetting::SchedPolicy schedPolicy;
+    if (resType == ResExeType::RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT ||
+        resType == ResExeType::RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT) {
+        if (!(ParseValue(tid, "tid", payload)) || !(ParseValue(policy, "policy", payload))) {
+            RSSEXE_LOGE("%{public}s : ParseValue failed", __func__);
+            return;
+        }
+        schedPolicy = CgroupSetting::SchedPolicy(policy);
+    }
+
+    int ret = 0;
     switch (resType) {
         case ResExeType::RES_TYPE_CGROUP_SYNC_EVENT:
             GetCgroupFileContent(resType, payload, reply);
@@ -157,10 +176,27 @@ void ResSchedExeMgr::HandleRequestForCgroup(uint32_t resType, const nlohmann::js
         case ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT:
             CheckProcTaskForCgroup(resType, payload, reply);
             break;
+        case ResExeType::RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT:
+            ret = CgroupSetting::CgroupAction::GetInstance().SetThreadSchedPolicy(tid, schedPolicy) ? 0 : -1;
+            reply["ret"] = std::to_string(ret);
+            break;
+        case ResExeType::RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT:
+            ret = CgroupSetting::CgroupAction::GetInstance().SetThreadGroupSchedPolicy(tid, schedPolicy) ? 0 : -1;
+            reply["ret"] = std::to_string(ret);
+            break;
         default:
             break;
     }
     return;
+}
+
+bool ResSchedExeMgr::ParseValue(int32_t& value, const char* name, const nlohmann::json& payload)
+{
+    if (payload.contains(name) && payload.at(name).is_string()) {
+        value = atoi(payload[name].get<std::string>().c_str());
+        return true;
+    }
+    return false;
 }
 
 void ResSchedExeMgr::GetCgroupFileContent(uint32_t resType, const nlohmann::json& payload, nlohmann::json& reply)

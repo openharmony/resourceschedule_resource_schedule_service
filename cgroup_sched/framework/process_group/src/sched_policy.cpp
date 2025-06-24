@@ -15,10 +15,16 @@
 #include "sched_policy.h"
 #include <unistd.h>         // for gettid, getpid
 #include "cgroup_action.h"  // for CgroupAction
+#include "parameters.h"     // for GetParameter
+#include "res_exe_type.h"   // for ResExeType
 
 namespace OHOS {
 namespace ResourceSchedule {
 namespace CgroupSetting {
+namespace {
+    const bool IS_NEED_TO_SET_POLICY_BY_EXECUTOR = system::GetParameter("ohos.boot.kernel", "").size() == 0;
+}
+
 int SetThreadSchedPolicy(int tid, int policy)
 {
     if (tid < 0) {
@@ -28,7 +34,12 @@ int SetThreadSchedPolicy(int tid, int policy)
         tid = gettid();
     }
     SchedPolicy schedPolicy = SchedPolicy(policy);
-    return CgroupAction::GetInstance().SetThreadSchedPolicy(tid, schedPolicy) ? 0 : -1;
+    int ret = CgroupAction::GetInstance().SetThreadSchedPolicy(tid, schedPolicy) ? 0 : -1;
+    if (IS_NEED_TO_SET_POLICY_BY_EXECUTOR) {
+        ret = CgroupAction::GetInstance().SetSchedPolicyByExecutor(tid, policy,
+            ResourceSchedule::ResExeType::RES_TYPE_SET_THREAD_SCHED_POLICY_SYNC_EVENT);
+    }
+    return ret;
 }
 
 int SetThreadGroupSchedPolicy(int pid, int policy)
@@ -40,7 +51,12 @@ int SetThreadGroupSchedPolicy(int pid, int policy)
         pid = getpid();
     }
     SchedPolicy schedPolicy = SchedPolicy(policy);
-    return CgroupAction::GetInstance().SetThreadGroupSchedPolicy(pid, schedPolicy) ? 0 : -1;
+    int ret = CgroupAction::GetInstance().SetThreadGroupSchedPolicy(pid, schedPolicy) ? 0 : -1;
+    if (IS_NEED_TO_SET_POLICY_BY_EXECUTOR) {
+        ret = CgroupAction::GetInstance().SetSchedPolicyByExecutor(pid, policy,
+            ResourceSchedule::ResExeType::RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT);
+    }
+    return ret;
 }
 
 int GetThreadSchedPolicy(int tid, SchedPolicy* policy)
