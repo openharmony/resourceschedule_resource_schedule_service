@@ -728,13 +728,14 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
         procRecord->keyThreadRoleMap_.erase(keyTid);
     }
 
+    CGS_LOGI("%{public}s : appName: %{public}s, uid: %{public}d, pid: %{public}d, keyTid: %{public}d",
+        __func__, app->GetName().c_str(), uid, pid, keyTid);
+
     // if role of thread is important display, adjust it
     auto hostProcRecord = app->GetProcessRecord(procRecord->hostPid_);
     if (!hostProcRecord) {
         return;
     }
-    CGS_LOGI("%{public}s : appName: %{public}s, uid: %{public}d, pid: %{public}d, keyTid: %{public}d",
-        __func__, app->GetName().c_str(), uid, pid, keyTid);
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(hostProcRecord.get()),
         AdjustSource::ADJS_REPORT_IMPORTANT_DISPLAY_THREAD);
 }
