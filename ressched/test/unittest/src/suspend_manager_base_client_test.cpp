@@ -78,7 +78,11 @@ HWTEST_F(SuspendManagerBaseClientTest, GetSuspendStateByUid, Function | MediumTe
     int32_t appUid = 20020021;
     bool isFrozen;
     SuspendManagerBaseClient::GetInstance().GetSuspendStateByUid(appUid, isFrozen);
-    SUCCEED();
+    if (SuspendManagerBaseClient::GetInstance().GetSuspendManagerProxy()) {
+        EXPECT_NE(SuspendManagerBaseClient::GetInstance().suspendManagerBaseProxy_, nullptr);
+    } else {
+        EXPECT_EQ(SuspendManagerBaseClient::GetInstance().suspendManagerBaseProxy_, nullptr);
+    }
 }
 
 /**
@@ -95,7 +99,11 @@ HWTEST_F(SuspendManagerBaseClientTest, GetSuspendStateByPid, Function | MediumTe
     int32_t appPid = 6666;
     bool isFrozen;
     SuspendManagerBaseClient::GetInstance().GetSuspendStateByPid(appPid, isFrozen);
-    SUCCEED();
+    if (SuspendManagerBaseClient::GetInstance().GetSuspendManagerProxy()) {
+        EXPECT_NE(SuspendManagerBaseClient::GetInstance().suspendManagerBaseProxy_, nullptr);
+    } else {
+        EXPECT_EQ(SuspendManagerBaseClient::GetInstance().suspendManagerBaseProxy_, nullptr);
+    }
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
