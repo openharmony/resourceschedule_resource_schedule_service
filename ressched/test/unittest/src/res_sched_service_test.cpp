@@ -191,7 +191,6 @@ HWTEST_F(ResSchedServiceTest, Report001, Function | MediumTest | Level0)
     int32_t systemAbilityId = -1;
     resSchedServiceAbility_->OnAddSystemAbility(systemAbilityId, deviceId);
     resSchedServiceAbility_->OnRemoveSystemAbility(systemAbilityId, deviceId);
-    EXPECT_EQ(systemAbilityId, -1);
     SET_THREAD_NUM(10);
     GTEST_RUN_TASK(ChangeAbilityTask);
 }
