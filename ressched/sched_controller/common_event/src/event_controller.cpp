@@ -233,7 +233,7 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
 {
     Want want = data.GetWant();
     std::string action = want.GetAction();
-    RESSCHED_LOGI("Recieved common event:%{public}s", action.c_str());
+    RESSCHED_LOGD("Recieved common event:%{public}s", action.c_str());
 
     nlohmann::json payload = nlohmann::json::object();
     if (HandlePkgCommonEvent(action, want, payload)) {
