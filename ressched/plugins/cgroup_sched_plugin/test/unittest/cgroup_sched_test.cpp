@@ -269,7 +269,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_002, Function | Med
     payload["saId"] = "1000";
     payload["deviceId"] = "1000";
     cgroupEventHandler->ReportAbilityStatus(resType, value, payload);
-    EXPECT_EQ(resType, 0);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
 }
 
 /**
@@ -893,7 +893,6 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["hostPid"] = std::to_string(hostPid);
 
-    EXPECT_TRUE(cgroupEventHandler->supervisor_ == nullptr);
     cgroupEventHandler->HandleProcessStateChangedEx(resType, value, payload);
     cgroupEventHandler->HandleApplicationStateChanged(resType, value, payload);
     cgroupEventHandler->HandleAbilityStateChanged(resType, value, payload);

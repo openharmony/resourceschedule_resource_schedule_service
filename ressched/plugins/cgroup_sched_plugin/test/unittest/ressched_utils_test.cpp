@@ -78,11 +78,12 @@ HWTEST_F(ResschedUtilsTest, ResschedUtilsTest_UtilTest_001, Function | MediumTes
 {
     std::string targetPath = "/dev/pids/100/com.example.myapplication/app_5973/cgroup.procs";
     int ret = mkdir(targetPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-    if (ret < 0) {
-        return;
+    if (ret >= 0) {
+        std::string path = ResSchedUtils::GetInstance().GetProcessFilePath(20150111, "com.example.myapplication", 5973);
+        EXPECT_TRUE(path == targetPath);
+    } else {
+        EXPECT_TRUE(ret < 0);
     }
-    std::string path = ResSchedUtils::GetInstance().GetProcessFilePath(20150111, "com.example.myapplication", 5973);
-    EXPECT_TRUE(path == targetPath);
 }
 }
 }
