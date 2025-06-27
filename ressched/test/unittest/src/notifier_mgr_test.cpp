@@ -25,6 +25,17 @@ using namespace std;
 using namespace testing::ext;
 
 namespace OHOS {
+namespace AppExecFwk {
+    int32_t AppMgrClient::GetBundleNameByPid(const int pid , std::string &bundleName, int32_t &uid)
+    {
+        if (pid == 1) {
+            bundleName = "";
+        } else {
+            bundleName ="com.example.myapp";
+        }
+        return ERR_OK;
+    }
+}
 namespace ResourceSchedule {
 static constexpr int32_t APP_STATE_EXIT = 4;
 
@@ -239,6 +250,69 @@ HWTEST_F(NotifierMgrTest, RegisterNotifier004, Function | MediumTest | Level0)
     auto callingPid = IPCSkeleton::GetCallingPid();
     NotifierMgr::GetInstance().notifierDeathRecipient_ = nullptr;
     NotifierMgr::GetInstance().RegisterNotifier(callingPid, notifier);
+}
+
+/**
+ * @tc.name: notifier manager RegisterNotifier 005
+ * @tc.desc: test the interface RegisterNotifier
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:zhuxiaofei
+ */
+HWTEST_F(NotifierMgrTest, RegisterNotifier005, Function | MediumTest | Level0)
+{
+    NotifierMgr::GetInstance().isTaskSubmit_ = false;
+    NotifierMgr::GetInstance().ReportPidToHisysevent(1);
+    EXPECT_TRUE(!NotifierMgr::GetInstance().isTaskSubmit_);
+}
+
+/**
+ * @tc.name: notifier manager RegisterNotifier 006
+ * @tc.desc: test the interface RegisterNotifier
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:zhuxiaofei
+ */
+HWTEST_F(NotifierMgrTest, RegisterNotifier006, Function | MediumTest | Level0)
+{
+    NotifierMgr::GetInstance().isTaskSubmit_ = true;
+    NotifierMgr::GetInstance().hisyseventBundleNames_.clear();
+    for (int i = 1; i < 100; i++) {
+        NotifierMgr::GetInstance().hisyseventBundleNames_.insert(std::to_string(i));
+    }
+    NotifierMgr::GetInstance().ReportPidToHisysevent(100);
+    EXPECT_TRUE(NotifierMgr::GetInstance().hisyseventBundleNames_.size() == 0);
+}
+
+/**
+ * @tc.name: notifier manager RegisterNotifier 007
+ * @tc.desc: test the interface RegisterNotifier
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:zhuxiaofei
+ */
+HWTEST_F(NotifierMgrTest, RegisterNotifier007, Function | MediumTest | Level0)
+{
+    NotifierMgr::GetInstance().isTaskSubmit_ = false;
+    NotifierMgr::GetInstance().hisyseventBundleNames_.clear();
+    NotifierMgr::GetInstance().hisyseventBundleNames_.insert("1");
+    NotifierMgr::GetInstance().NotifierEventReportPeriod();
+    EXPECT_TRUE(NotifierMgr::GetInstance().hisyseventBundleNames_.size() == 0);
+}
+
+/**
+ * @tc.name: notifier manager RegisterNotifier 008
+ * @tc.desc: test the interface RegisterNotifier
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:zhuxiaofei
+ */
+HWTEST_F(NotifierMgrTest, RegisterNotifier008, Function | MediumTest | Level0)
+{
+    NotifierMgr::GetInstance().isTaskSubmit_ = false;
+    NotifierMgr::GetInstance().hisyseventBundleNames_.clear();
+    NotifierMgr::GetInstance().ReportPidToHisysevent(100);
+    EXPECT_TRUE(NotifierMgr::GetInstance().isTaskSubmit_);
 }
 
 /**
