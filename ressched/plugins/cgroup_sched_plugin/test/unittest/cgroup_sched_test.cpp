@@ -861,6 +861,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
     cgroupEventHandler->SetSupervisor(supervisor_);
     auto tmp = cgroupEventHandler->supervisor_;
+    EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
     cgroupEventHandler->supervisor_ = nullptr;
 
     uid_t uid = 1000;
