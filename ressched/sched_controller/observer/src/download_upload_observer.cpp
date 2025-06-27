@@ -22,7 +22,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 void DownLoadUploadObserver::OnRunningTaskCountUpdate(int count)
 {
-    RESSCHED_LOGI("download upload on running task count %{public}d", count);
+    RESSCHED_LOGD("download upload on running task count %{public}d", count);
     const nlohmann::json payload = nlohmann::json::object();
     if (count > 0 && !isReportScene) {
         ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,

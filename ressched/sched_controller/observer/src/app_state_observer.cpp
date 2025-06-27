@@ -65,7 +65,7 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     }
 
     if (abilityStateData.isInnerNotify) {
-        RESSCHED_LOGI("%{public}s : Redundancy report dont need care!", __func__);
+        RESSCHED_LOGD("%{public}s : Redundancy report dont need care!", __func__);
         return;
     }
 
