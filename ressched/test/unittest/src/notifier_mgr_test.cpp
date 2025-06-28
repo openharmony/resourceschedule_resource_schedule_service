@@ -26,7 +26,7 @@ using namespace testing::ext;
 
 namespace OHOS {
 namespace AppExecFwk {
-    int32_t AppMgrClient::GetBundleNameByPid(const int pid , std::string &bundleName, int32_t &uid)
+    int32_t AppMgrClient::GetBundleNameByPid(const int pid, std::string &bundleName, int32_t &uid)
     {
         if (pid == 1) {
             bundleName = "";
