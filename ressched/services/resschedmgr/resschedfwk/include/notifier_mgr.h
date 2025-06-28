@@ -60,7 +60,7 @@ private:
     void NotifierEventReportDelay(int64_t delay);
     void NotifierEventReportPeriod();
     void NotifierEventReport();
-    std::string GetBundleNameByPid(int32_t delay);
+    std::string GetBundleNameByPid(int32_t pid);
 
     bool initialized_ = false;
     bool isTaskSubmit_ = false;
