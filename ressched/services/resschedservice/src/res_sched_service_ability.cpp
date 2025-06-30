@@ -105,6 +105,7 @@ void ResSchedServiceAbility::OnRemoveSystemAbility(int32_t systemAbilityId, cons
     payload["deviceId"] = deviceId;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE,
         ResType::SystemAbilityStatus::SA_REMOVE, payload);
+    RESSCHED_LOGI("OnRemoveSystemAbility systemAbilityId:%{public}d", systemAbilityId);
 }
 
 void ResSchedServiceAbility::OnDeviceLevelChanged(int32_t type, int32_t level, std::string& action)
@@ -194,6 +195,9 @@ void ResSchedServiceAbility::SystemAbilityListenerInitExt()
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of power manager service failed.");
         RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    }
+    if (!AddSystemAbilityListener(MEMORY_MANAGER_SA_ID)) {
+        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", MEMORY_MANAGER_SA_ID);
     }
 }
 } // namespace ResourceSchedule

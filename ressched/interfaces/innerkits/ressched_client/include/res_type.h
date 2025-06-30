@@ -363,6 +363,8 @@ enum : uint32_t {
     RES_TYPE_USER_NOT_CARE_CHARGE_SLEEP = 169,
     // report app high power consumption
     RES_TYPE_APP_HIGH_POWER_CONSUMPTION = 170,
+    // set protectlru reclaim ratio
+    RES_TYPE_ADJUST_PROTECTLRU_RECLAIM_RATIO = 171,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
