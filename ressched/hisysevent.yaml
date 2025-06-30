@@ -37,3 +37,7 @@ LIMIT_REQUEST:
 SERVICE_REQUEST_LIMIT:
   __BASE: {type: BEHAVIOR, level: MINOR, desc: RSS_SERVICE_REQUEST_LIMIT, preserve: true}
   REQUEST_LIMIT_COUNT: {type: INT32, desc: SERVICE_REQUEST_LIMIT_COUNT}
+
+SYSTEM_LOAD_LEVEL:
+  __BASE: {type: STATISTIC, level: MINOR, desc: Application subscription fusion level event, preserve: true}
+  BUNDLE_NAMES: {type: STRING, arrsize: 100, desc: BUNDLE NAMES}

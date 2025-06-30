@@ -25,11 +25,15 @@
 #include "res_sched_common_death_recipient.h"
 #include "res_sched_systemload_notifier_proxy.h"
 #include "res_sched_event_reporter.h"
+#include "hisysevent.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 using OHOS::AppExecFwk::ApplicationState;
 
+static constexpr size_t MAX_REPORT_SIZE = 100;
+static constexpr int64_t REPORT_INTERVAL_MS = static_cast<int64_t>(2) * 60 * 60 * 1000 * 1000;
+static constexpr int64_t FIRST_REPORT_DELAY_MS = 10 * 1000 * 1000;
 static const char* SYSTEMLOAD_CHANGE = "systemLoadChange";
 
 static std::map<ResType::DeviceStatus, std::string> g_DeviceStatusType = {
@@ -57,8 +61,11 @@ NotifierMgr& NotifierMgr::GetInstance()
 
 NotifierMgr::~NotifierMgr()
 {
+    // 先锁notifierMutex_后锁hisyseventMutex_，防止与RegisterNotifier死锁
     std::lock_guard<std::mutex> autoLock(notifierMutex_);
     notifierMap_.clear();
+    std::lock_guard<ffrt::mutex> hisyseventLock(hisyseventMutex_);
+    hisyseventBundleNames_.clear();
 }
 
 void NotifierMgr::Init()
@@ -101,15 +108,78 @@ void NotifierMgr::RegisterNotifier(int32_t pid, const sptr<IRemoteObject>& notif
         RESSCHED_LOGE("RegisterNotifier error due to notifierDeathRecipient null");
         return;
     }
-    std::lock_guard<std::mutex> autoLock(notifierMutex_);
-    auto iter = notifierMap_.find(pid);
-    if (iter == notifierMap_.end()) {
-        NotifierInfo info;
-        info.notifier = notifier;
-        info.hapApp = IsHapApp();
-        notifierMap_[pid] = info;
-        notifier->AddDeathRecipient(notifierDeathRecipient_);
+    // 加{}控制notifierMutex_锁作用域
+    {
+        std::lock_guard<std::mutex> autoLock(notifierMutex_);
+        auto iter = notifierMap_.find(pid);
+        if (iter == notifierMap_.end()) {
+            NotifierInfo info;
+            info.notifier = notifier;
+            info.hapApp = IsHapApp();
+            notifierMap_[pid] = info;
+            notifier->AddDeathRecipient(notifierDeathRecipient_);
+        }
     }
+    NotifierMgr::GetInstance().ReportPidToHisysevent(pid);
+}
+
+void NotifierMgr::ReportPidToHisysevent(const int32_t pid)
+{
+    std::string bundleName = NotifierMgr::GetInstance().GetBundleNameByPid(pid);
+    if (bundleName.empty()) {
+        RESSCHED_LOGW("pid %{public}d get bundleName error, not report", pid);
+        return;
+    }
+    std::lock_guard<ffrt::mutex> autoLock(hisyseventMutex_);
+    hisyseventBundleNames_.insert(bundleName);
+    if (!isTaskSubmit_) {
+        NotifierMgr::GetInstance().NotifierEventReportDelay(FIRST_REPORT_DELAY_MS);
+        isTaskSubmit_ = true;
+    }
+    size_t size = hisyseventBundleNames_.size();
+    if (size >= MAX_REPORT_SIZE) {
+        NotifierMgr::GetInstance().NotifierEventReport();
+    }
+}
+
+void NotifierMgr::NotifierEventReportDelay(int64_t delay)
+{
+    ffrt::submit([]() {
+         NotifierMgr::GetInstance().NotifierEventReportPeriod();
+        }, ffrt::task_attr().delay(delay));
+}
+
+void NotifierMgr::NotifierEventReportPeriod()
+{
+    std::lock_guard<ffrt::mutex> autoLock(hisyseventMutex_);
+    NotifierMgr::GetInstance().NotifierEventReport();
+    NotifierEventReportDelay(REPORT_INTERVAL_MS);
+}
+
+void NotifierMgr::NotifierEventReport()
+{
+    if (!hisyseventBundleNames_.empty()) {
+        std::vector<std::string> bundleNames;
+        for (const auto& item : hisyseventBundleNames_) {
+            bundleNames.emplace_back(item);
+        }
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "SYSTEM_LOAD_LEVEL",
+            HiviewDFX::HiSysEvent::EventType::STATISTIC, "BUNDLE_NAMES", bundleNames);
+    }
+    hisyseventBundleNames_.clear();
+}
+
+std::string NotifierMgr::GetBundleNameByPid(int32_t pid)
+{
+    std::string bundleName = "";
+    int32_t uid = 0;
+    if (appMgrClient_ == nullptr) {
+        appMgrClient_ = std::make_shared<AppExecFwk::AppMgrClient>();
+    }
+    std::string identity = IPCSkeleton::ResetCallingIdentity();
+    int32_t ret = static_cast<int32_t>(appMgrClient_->GetBundleNameByPid(pid, bundleName, uid));
+    IPCSkeleton::SetCallingIdentity(identity);
+    return bundleName;
 }
 
 void NotifierMgr::UnRegisterNotifier(int32_t pid)
