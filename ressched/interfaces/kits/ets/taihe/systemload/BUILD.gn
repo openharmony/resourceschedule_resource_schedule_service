@@ -17,7 +17,7 @@ import("//build/ohos/taihe_idl/taihe.gni")
 
 subsystem_name = "resourceschedule"
 part_name = "resource_schedule_service"
-taihe_generated_file_path = "$taihe_file_path/out/$subsystem_name/$part_name"
+taihe_generated_file_path = "$taihe_file_path/out/$subsystem_name/$part_name/systemload"
 
 copy_taihe_idl("copy_systemload_taihe") {
   sources = [ "idl/ohos.resourceschedule.systemload.taihe" ]
@@ -27,8 +27,8 @@ ohos_taihe("run_taihe") {
   taihe_generated_file_path = "$taihe_generated_file_path"
   deps = [ ":copy_systemload_taihe" ]
   outputs = [
-    "$taihe_generated_file_path/systemload/src/ohos.resourceschedule.systemload.ani.cpp",
-    "$taihe_generated_file_path/systemload/src/ohos.resourceschedule.systemload.abi.c",
+    "$taihe_generated_file_path/src/ohos.resourceschedule.systemload.ani.cpp",
+    "$taihe_generated_file_path/src/ohos.resourceschedule.systemload.abi.c",
   ]
 }
 
