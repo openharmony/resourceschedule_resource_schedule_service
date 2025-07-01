@@ -80,6 +80,8 @@ namespace {
     const std::string RES_ID = "resId";
     const std::string COMMON_EVENT_CHARGE_STATE = "chargeState";
     const std::string SCHED_MODE_KEY = "schedMode";
+    const std::string CLOUD_PARAMS = "params";
+    const std::string ENABLE_STRING = "enable";
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -180,16 +182,33 @@ void SocPerfPlugin::InitPerfCrucialSo()
 void SocPerfPlugin::InitWeakInterAction()
 {
     PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, WEAK_ACTION_STRING);
+    LoadWeakInterAction(itemLists);
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, WEAK_ACTION_STRING);
+}
+
+void SocPerfPlugin::LoadWeakInterAction(const PluginConfig& itemLists)
+{
     for (const Item& item : itemLists.itemList) {
         for (SubItem sub : item.subItemList) {
-            if (sub.name == BUNDLE_NAME) {
+            if (sub.name == ENABLE_STRING) {
+                SetWeakActionEnable(sub.value);
+            } else if (sub.name == BUNDLE_NAME) {
                 AddKeyAppName(sub.value);
             } else if (sub.name == KEY_APP_TYPE) {
                 AddKeyAppType(sub.value);
             }
         }
     }
-    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, WEAK_ACTION_STRING);
+}
+
+void SocPerfPlugin::SetWeakActionEnable(const std::string& subValue)
+{
+    if (subValue.empty()) {
+        return;
+    }
+    weakActionEnable_ = (bool)atoi(subValue.c_str());
+    SOC_PERF_LOGI("SocPerfPlugin::Init weakActionEnable %{public}d", weakActionEnable_);
+    UpdateWeakActionStatus();
 }
 
 void SocPerfPlugin::AddKeyAppName(const std::string& subValue)
@@ -323,6 +342,7 @@ void SocPerfPlugin::AddSpecialExtension(SubItem& sub)
     }
     std::string bundleName = sub.properties.at(BUNDLE_NAME);
     std::string callerBundleNames = sub.properties.at(CALLER_BUNDLE_NAME);
+    SOC_PERF_LOGI("AddSpecialExtension:[%{public}s],[%{public}s]", bundleName.c_str(), callerBundleNames.c_str());
     std::set<std::string> callerBundleNamesList = StringToSet(callerBundleNames, '|');
     specialExtensionMap_[bundleName] = callerBundleNamesList;
 }
@@ -330,6 +350,12 @@ void SocPerfPlugin::AddSpecialExtension(SubItem& sub)
 void SocPerfPlugin::InitSpecialExtension()
 {
     PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, SPECIAL_EXTENSION_STRING);
+    LoadSpecialExtension(itemLists);
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, SPECIAL_EXTENSION_STRING);
+}
+
+void SocPerfPlugin::LoadSpecialExtension(const PluginConfig& itemLists)
+{
     for (const Item& item : itemLists.itemList) {
         for (SubItem sub : item.subItemList) {
             if (sub.name == INFO_STRING) {
@@ -337,7 +363,6 @@ void SocPerfPlugin::InitSpecialExtension()
             }
         }
     }
-    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, SPECIAL_EXTENSION_STRING);
 }
 
 void SocPerfPlugin::InitFunctionMap()
@@ -452,6 +477,10 @@ void SocPerfPlugin::AddOtherEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleBatteryStatusChange(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_SCHED_MODE_CHANGE,
         [this](const std::shared_ptr<ResData>& data) { HandleSchedModeChange(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_RSS_CLOUD_CONFIG_UPDATE,
+        [this](const std::shared_ptr<ResData>& data) { HandleRssCloudConfigUpdate(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE,
+        [this](const std::shared_ptr<ResData>& data) { ReportAbilityStatus(data); }));
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
@@ -510,6 +539,8 @@ void SocPerfPlugin::InitOtherResTypes()
     resTypes.insert(RES_TYPE_REPORT_BATTERY_STATUS_CHANGE);
     resTypes.insert(RES_TYPE_RECENT_BUILD);
     resTypes.insert(RES_TYPE_SCHED_MODE_CHANGE);
+    resTypes.insert(RES_TYPE_RSS_CLOUD_CONFIG_UPDATE);
+    resTypes.insert(RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE);
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
     }
@@ -622,7 +653,7 @@ void SocPerfPlugin::HandleWindowFocus(const std::shared_ptr<ResData>& data)
 
 void SocPerfPlugin::UpdateWeakActionStatus()
 {
-    bool status = true;
+    bool status = weakActionEnable_;
     for (const int32_t& appUid : focusAppUids_) {
         if (uidToAppMsgMap_.find(appUid) != uidToAppMsgMap_.end()) {
             if (keyAppName_.find(uidToAppMsgMap_[appUid].GetBundleName()) != keyAppName_.end()) {
