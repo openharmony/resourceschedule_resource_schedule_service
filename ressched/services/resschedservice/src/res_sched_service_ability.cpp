@@ -79,6 +79,7 @@ void ResSchedServiceAbility::OnStop()
     RemoveSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID);
     RemoveSystemAbilityListener(APP_MGR_SERVICE_ID);
     RemoveSystemAbilityListener(POWER_MANAGER_SERVICE_ID);
+    RemoveSystemAbilityListener(SOC_PERF_SERVICE_SA_ID);
     ResSchedMgr::GetInstance().Stop();
     RESSCHED_LOGI("ResSchedServiceAbility::OnStop!");
 }
@@ -195,6 +196,13 @@ void ResSchedServiceAbility::SystemAbilityListenerInitExt()
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of power manager service failed.");
         RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    }
+    if (!AddSystemAbilityListener(SOC_PERF_SERVICE_SA_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of power manager service failed.");
+        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", SOC_PERF_SERVICE_SA_ID);
     }
     if (!AddSystemAbilityListener(MEMORY_MANAGER_SA_ID)) {
         RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", MEMORY_MANAGER_SA_ID);
