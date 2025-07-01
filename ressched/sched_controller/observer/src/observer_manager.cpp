@@ -108,7 +108,7 @@ void ObserverManager::InitObserverCbMap()
         { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitWindowStateObserver(); }},
         { APP_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->SubscribeAppState(); }},
 #ifdef CONFIG_BGTASK_MGR
-        { BACKGROUND_TASK_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->SubscribeBackgroundTask(); }},
+        { BACKGROUND_TASK_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitBackgroundTask(); }},
 #endif
     };
     InitRemoveObserverCbMap();
@@ -142,7 +142,7 @@ void ObserverManager::InitRemoveObserverCbMap()
         { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableWindowStateObserver(); }},
         { APP_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->UnsubscribeAppState(); }},
 #ifdef CONFIG_BGTASK_MGR
-        { BACKGROUND_TASK_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->UnsubscribeBackgroundTask(); }},
+        { BACKGROUND_TASK_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableBackgroundTask(); }},
 #endif
     };
 }
@@ -186,6 +186,9 @@ void ObserverManager::InitSysAbilityListener()
 #endif
     AddItemToSysAbilityListener(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, systemAbilityManager);
     AddItemToSysAbilityListener(WINDOW_MANAGER_SERVICE_ID, systemAbilityManager);
+#ifdef CONFIG_BGTASK_MGR
+    AddItemToSysAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID, systemAbilityManager);
+#endif
     AddItemToSysAbilityListener(APP_MGR_SERVICE_ID, systemAbilityManager);
 }
 
@@ -902,7 +905,7 @@ void ObserverManager::UnsubscribePipChange()
 }
 
 #ifdef CONFIG_BGTASK_MGR
-void ObserverManager::SubscribeBackgroundTask()
+void ObserverManager::InitBackgroundTask()
 {
     if (isBgtaskSubscribed_) {
         return;
@@ -920,7 +923,7 @@ void ObserverManager::SubscribeBackgroundTask()
     return;
 }
 
-void ObserverManager::UnsubscribeBackgroundTask()
+void ObserverManager::DisableBackgroundTask()
 {
     if (!isBgtaskSubscribed_ || !backgroundTaskObserver_) {
         return;

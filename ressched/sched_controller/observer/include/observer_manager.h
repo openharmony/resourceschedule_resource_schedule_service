@@ -112,8 +112,8 @@ public:
     void SubscribeAppState();
     void UnsubscribeAppState();
 #ifdef CONFIG_BGTASK_MGR
-    void SubscribeBackgroundTask();
-    void UnsubscribeBackgroundTask();
+    void InitBackgroundTask();
+    void DisableBackgroundTask();
 #endif
 #ifdef RESOURCE_REQUEST_REQUEST
     void InitDownloadUploadObserver();
@@ -161,7 +161,7 @@ public:
     sptr<RmsApplicationStateObserver> appStateObserver_ = nullptr;
 #ifdef CONFIG_BGTASK_MGR
     bool isBgtaskSubscribed_ {false};
-    std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_;
+    std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_ = nullptr;
 #endif
     bool isNeedReport_ = true;
     int32_t powerKeySubscribeId_ = -1;

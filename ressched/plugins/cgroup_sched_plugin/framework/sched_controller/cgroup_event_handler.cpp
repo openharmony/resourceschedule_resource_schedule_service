@@ -364,7 +364,7 @@ void CgroupEventHandler::HandleTransientTaskStatus(uint32_t resType, int64_t val
 
     if (value == ResType::TransientTaskStatus::TRANSIENT_TASK_START) {
         HandleTransientTaskStart(uid, pid, bundleName);
-    } else if (value == ResType::TransientTaskStatus::TRANSIENT_TASK_START) {
+    } else if (value == ResType::TransientTaskStatus::TRANSIENT_TASK_END) {
         HandleTransientTaskEnd(uid, pid, bundleName);
     }
 }
@@ -421,7 +421,7 @@ void CgroupEventHandler::HandleContinuousTaskStatus(uint32_t resType, int64_t va
             typeIds = payload["typeIds"].get<std::vector<uint32_t>>();
         }
         HandleContinuousTaskUpdate(uid, pid, typeIds, abilityId);
-    } else if (value == ResType::TransientTaskStatus::TRANSIENT_TASK_START) {
+    } else if (value == ResType::TransientTaskStatus::CONTINUOUS_TASK_END) {
         HandleContinuousTaskCancel(uid, pid, abilityId);
     }
 }
