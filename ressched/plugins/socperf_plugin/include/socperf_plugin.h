@@ -94,6 +94,7 @@ private:
     using ReqAppTypeFunc = int32_t (*)(const std::string &bundleName);
     std::set<uint32_t> resTypes;
     std::set<int32_t> focusAppUids_;
+    bool weakActionEnable_ = true;
     bool weakActionStatus_ = true;
     std::set<std::string> keyAppName_;
     std::set<int32_t> focusCustGameUids_;
@@ -128,6 +129,7 @@ private:
     void InitEventId();
     void InitFunctionMap();
     void InitSpecialExtension();
+    void LoadSpecialExtension(const PluginConfig& itemLists);
     void AddSpecialExtension(SubItem& sub);
     std::set<std::string> StringToSet(const std::string& str, char pattern);
     void AddEventToFunctionMap();
@@ -136,6 +138,8 @@ private:
     void InitOtherResTypes();
     void InitPerfCrucialSo();
     void InitWeakInterAction();
+    void LoadWeakInterAction(const PluginConfig& itemLists);
+    void SetWeakActionEnable(const std::string& subValue);
     void AddKeyAppName(const std::string& subValue);
     void AddKeyAppType(const std::string& subValue);
     void UpdateWeakActionStatus();
@@ -221,9 +225,18 @@ private:
     bool HandleFileCopyStatus(const std::shared_ptr<ResData>& data);
 #endif
     void HandleWebSildeScroll(const std::shared_ptr<ResData>& data);
+    bool HandleRssCloudConfigUpdate(const std::shared_ptr<ResData>& data);
+    bool ReportAbilityStatus(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
+
+namespace nlohmann {
+// auto generate from_json and to_json by macro
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(OHOS::ResourceSchedule::SubItem, name, value, properties)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(OHOS::ResourceSchedule::Item, itemProperties, subItemList)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(OHOS::ResourceSchedule::PluginConfig, itemList)
+} // namespace nlohmann
 
 #endif //RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE
 #endif // RESSCHED_PLUGINS_SOCPERF_PLUGIN_INCLUDE_SOCPERF_PLUGIN_H
