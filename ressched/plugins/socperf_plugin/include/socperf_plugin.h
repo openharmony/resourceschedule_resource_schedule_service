@@ -26,7 +26,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
-
+-
 namespace OHOS {
 namespace ResourceSchedule {
 class AppKeyMessage {

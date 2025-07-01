@@ -26,7 +26,7 @@
 #include "res_type.h"
 #include "socperf_log.h"
 #include "system_ability_definition.h"
-
+-
 namespace OHOS {
 namespace ResourceSchedule {
 using namespace ResType;

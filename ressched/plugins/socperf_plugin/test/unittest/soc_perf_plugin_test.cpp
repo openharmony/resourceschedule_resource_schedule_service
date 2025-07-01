@@ -15,7 +15,7 @@
 
 #define private public
 #define protected public
-
+-
 #include <dlfcn.h>
 #include <gtest/gtest.h>
 #include <gtest/hwext/gtest-multithread.h>

@@ -27,7 +27,7 @@
 #include "system_ability_definition.h"
 
 #define GAME_SERVICE_SERVICE_ID 66058
-
+-
 namespace OHOS {
 namespace ResourceSchedule {
 const bool REGISTER_RESULT =
