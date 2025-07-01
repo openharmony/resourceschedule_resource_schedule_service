@@ -133,3 +133,46 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_059, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().HandleRssCloudConfigUpdate(data);
     EXPECT_EQ(ret, true);
 }
+
+bool SocPerfPlugin::HandleRssCloudConfigUpdate(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr ||
+        data->payload.is_null() ||
+        !data->payload.contains(CLOUD_PARAMS) ||
+        !data->payload[CLOUD_PARAMS].is_object()) {
+        return false;
+    }
+ 
+    if (!data->payload[CLOUD_PARAMS].contains(PLUGIN_NAME) ||
+        !data->payload[CLOUD_PARAMS].at(PLUGIN_NAME).is_object()) {
+        return false;
+    }
+ 
+    PluginConfigMap pluginConfigs = (data->payload)[CLOUD_PARAMS][PLUGIN_NAME].get<PluginConfigMap>();
+    if (pluginConfigs.find(SPECIAL_EXTENSION_STRING) != pluginConfigs.end()) {
+        LoadSpecialExtension(pluginConfigs[SPECIAL_EXTENSION_STRING]);
+    }
+    if (pluginConfigs.find(WEAK_ACTION_STRING) != pluginConfigs.end()) {
+        LoadWeakInterAction(pluginConfigs[WEAK_ACTION_STRING]);
+    }
+    return true;
+}
+ 
+bool SocPerfPlugin::ReportAbilityStatus(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr || data->payload == nullptr) {
+        return false;
+    }
+ 
+    if (!data->payload.contains("saId") || !data->payload.at("saId").is_number_integer()) {
+        return false;
+    }
+ 
+    int32_t saId = data->payload["saId"].get<int32_t>();
+    if (saId == 1906 && data->value > 0) {
+        SOC_PERF_LOGI("SocPerfPlugin: socperf start");
+        UpdateWeakActionStatus();
+        return true;
+    }
+    return false;
+}
