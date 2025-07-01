@@ -82,6 +82,7 @@ namespace {
     const std::string SCHED_MODE_KEY = "schedMode";
     const std::string CLOUD_PARAMS = "params";
     const std::string ENABLE_STRING = "enable";
+    const int32_t SOC_PERF_SA_ID                            = 1906;
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
@@ -1705,7 +1706,7 @@ bool SocPerfPlugin::ReportAbilityStatus(const std::shared_ptr<ResData>& data)
     }
  
     int32_t saId = data->payload["saId"].get<int32_t>();
-    if (saId == 1906 && data->value > 0) {
+    if (saId == SOC_PERF_SA_ID && data->value > 0) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf start");
         UpdateWeakActionStatus();
         return true;
