@@ -1588,7 +1588,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_057, Function | MediumTes
     bool ret = SocPerfPlugin::GetInstance().HandleRssCloudConfigUpdate(nullptr);
     EXPECT_EQ(ret, false);
     nlohmann::json payload = nlohmann::json::parse(R"({
-	"params" : {
+    "params" : {
         "SOCPERF": {
             "specialExtension": {
                 "itemList": [
@@ -1602,7 +1602,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_057, Function | MediumTes
                                 "value": "0",
                                 "properties": {
                                     "bundleName" : "1",
-									"callerBundleName" : ""
+                                    "callerBundleName" : ""
                                 }
                             }
                         ]
@@ -1629,7 +1629,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_058, Function | MediumTes
     bool ret = SocPerfPlugin::GetInstance().HandleRssCloudConfigUpdate(nullptr);
     EXPECT_EQ(ret, false);
     nlohmann::json payload = nlohmann::json::parse(R"({
-	"params" : {
+    "params" : {
         "SOCPERF": {
             "weakInterAction": {
                 "itemList": [
@@ -1667,7 +1667,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_059, Function | MediumTes
     bool ret = SocPerfPlugin::GetInstance().HandleRssCloudConfigUpdate(nullptr);
     EXPECT_EQ(ret, false);
     nlohmann::json payload = nlohmann::json::parse(R"({
-	"params" : {
+    "params" : {
         "SOCPERF": {
             "specialExtension": {
                 "itemList": [
@@ -1681,7 +1681,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_059, Function | MediumTes
                                 "value": "0",
                                 "properties": {
                                     "bundleName" : "2",
-									"callerBundleName" : "1"
+                                    "callerBundleName" : "1"
                                 }
                             }
                         ]
