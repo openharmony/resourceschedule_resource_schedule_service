@@ -137,7 +137,7 @@ ohos_unittest("resschedservice_mock_test") {
   ]
 
   sources = [
-    "src/res_sched_service_mock_test.cpp"，
+    "src/res_sched_service_mock_test.cpp",
     "src/res_sched_mgr_test.cpp"
   ]
 
