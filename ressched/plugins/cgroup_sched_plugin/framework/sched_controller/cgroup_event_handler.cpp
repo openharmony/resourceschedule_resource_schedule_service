@@ -69,10 +69,6 @@ void CgroupEventHandler::ProcessEvent(uint32_t eventId, int64_t eventParam)
 {
     CGS_LOGD("%{public}s : eventId:%{public}d param:%{public}" PRIu64,
         __func__, eventId, eventParam);
-    switch (eventId) {
-        default:
-            break;
-    }
 }
 
 void CgroupEventHandler::SetSupervisor(std::shared_ptr<Supervisor> supervisor)
@@ -100,10 +96,7 @@ void CgroupEventHandler::HandleAbilityAdded(int32_t saId, const std::string& dev
 
 void CgroupEventHandler::HandleAbilityRemoved(int32_t saId, const std::string& deviceId)
 {
-    switch (saId) {
-        default:
-            break;
-    }
+    CGS_LOGD("%{public}s : saId:%{public}d", __func__, saId);
 }
 
 void CgroupEventHandler::HandleApplicationStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload)
