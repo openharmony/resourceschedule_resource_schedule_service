@@ -398,7 +398,6 @@ void CgroupEventHandler::HandleContinuousTaskStatus(uint32_t resType, int64_t va
 {
     int32_t uid = 0;
     int32_t pid = 0;
-    int32_t typeId = 0;
     int32_t abilityId = 0;
     if (!ParseValue(uid, "uid", payload) ||
         !ParseValue(pid, "pid", payload) ||
