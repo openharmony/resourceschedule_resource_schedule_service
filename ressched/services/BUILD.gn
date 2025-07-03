@@ -215,6 +215,11 @@ ohos_shared_library("resschedsvc") {
         [ "../sched_controller/observer/src/av_session_state_listener.cpp" ]
     external_deps += [ "av_session:avsession_client" ]
   }
+  if (has_bg_task_mgr) {
+    defines += [ "CONFIG_BGTASK_MGR" ]
+    sources += [ "../sched_controller/observer/src/background_task_observer.cpp" ]
+    external_deps += [ "background_task_mgr:bgtaskmgr_innerkits" ]
+  }
   if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
     defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
     external_deps += [ "audio_framework:audio_client" ]
@@ -370,6 +375,11 @@ ohos_static_library("resschedsvc_static") {
         [ "../sched_controller/observer/src/av_session_state_listener.cpp" ]
     external_deps += [ "av_session:avsession_client" ]
   }
+  if (has_bg_task_mgr) {
+    defines += [ "CONFIG_BGTASK_MGR" ]
+    sources += [ "../sched_controller/observer/src/background_task_observer.cpp" ]
+    external_deps += [ "background_task_mgr:bgtaskmgr_innerkits" ]
+  }
   if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
     defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
     external_deps += [ "audio_framework:audio_client" ]
@@ -393,7 +403,6 @@ ohos_static_library("resschedsvc_static") {
     defines += [ "MMI_ENABLE" ]
     external_deps += [ "input:libmmi-client" ]
   }
-
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
   branch_protector_ret = "pac_ret"

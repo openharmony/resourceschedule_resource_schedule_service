@@ -14,7 +14,6 @@
  */
 
 #include "cgroupsched_fuzzer.h"
-#include "background_task_observer.h"
 #include "cgroup_event_handler.h"
 #include "cgroup_adjuster.h"
 #include "sched_controller.h"
@@ -92,179 +91,6 @@ namespace ResourceSchedule {
         }
         std::string str(cstr);
         return str;
-    }
-
-    bool TransientTaskStartFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-
-        // getdata
-        int32_t uid = GetData<int32_t>();
-        int32_t pid = GetData<int32_t>();
-        std::string packageName = GetStringFromData(STR_LEN);
-        auto transientTaskAppInfo =
-            std::make_shared<TransientTaskAppInfo>(packageName, uid, pid);
-        auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
-        backgroundTaskObserver->OnTransientTaskStart(transientTaskAppInfo);
-
-        return true;
-    }
-
-    bool TransientTaskEndFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-
-        // getdata
-        int32_t uid = GetData<int32_t>();
-        int32_t pid = GetData<int32_t>();
-        std::string packageName = GetStringFromData(STR_LEN);
-        auto transientTaskAppInfo =
-        std::make_shared<TransientTaskAppInfo>(packageName, uid, pid);
-        auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
-        backgroundTaskObserver->OnTransientTaskEnd(transientTaskAppInfo);
-
-        return true;
-    }
-
-    bool MarshallingContinuousTaskCallbackInfoFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-
-        // getdata
-        uint32_t typeId = GetData<int32_t>();
-        std::vector<uint32_t> typeIds;
-        typeIds.push_back(typeId);
-        int32_t creatorUid = GetData<int32_t>();
-        int32_t abilityId = GetData<int32_t>();
-        pid_t creatorPid = GetData<pid_t>();
-        std::string abilityName = GetStringFromData(STR_LEN);
-        bool isBatchApi = GetData<bool>();
-        bool isFromWebview = GetData<bool>();
-        nlohmann::json payload;
-        auto continuousTaskCallbackInfo =
-            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName,
-            isFromWebview, isBatchApi, typeIds, abilityId);
-        auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
-        backgroundTaskObserver->MarshallingContinuousTaskCallbackInfo(continuousTaskCallbackInfo, payload);
-
-        return true;
-    }
-
-    bool ContinuousTaskStartFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-
-        // getdata
-        int32_t typeId = DATA_TRANSFER;
-        int32_t creatorUid = GetData<int32_t>();
-        pid_t creatorPid = GetData<pid_t>();
-        std::string abilityName = GetStringFromData(STR_LEN);
-        auto continuousTaskCallbackInfo =
-            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
-        auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
-        backgroundTaskObserver->OnContinuousTaskStart(continuousTaskCallbackInfo);
-        typeId = TASK_KEEPING;
-        continuousTaskCallbackInfo =
-            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
-        backgroundTaskObserver->OnContinuousTaskStart(continuousTaskCallbackInfo);
-
-        return true;
-    }
-
-    bool ContinuousTaskStopFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-
-        // getdata
-        int32_t typeId = DATA_TRANSFER;
-        int32_t creatorUid = GetData<int32_t>();
-        pid_t creatorPid = GetData<pid_t>();
-        std::string abilityName = GetStringFromData(STR_LEN);
-        auto continuousTaskCallbackInfo =
-            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
-        auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
-        backgroundTaskObserver->OnContinuousTaskStop(continuousTaskCallbackInfo);
-        typeId = TASK_KEEPING;
-        continuousTaskCallbackInfo =
-            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
-        backgroundTaskObserver->OnContinuousTaskStop(continuousTaskCallbackInfo);
-
-        return true;
-    }
-
-    bool ContinuousTaskUpdateFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-
-        // getdata
-        int32_t typeId = DATA_TRANSFER;
-        int32_t creatorUid = GetData<int32_t>();
-        pid_t creatorPid = GetData<pid_t>();
-        std::string abilityName = GetStringFromData(STR_LEN);
-        auto continuousTaskCallbackInfo =
-            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
-        auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
-        backgroundTaskObserver->OnContinuousTaskUpdate(continuousTaskCallbackInfo);
-        typeId = TASK_KEEPING;
-        continuousTaskCallbackInfo =
-            std::make_shared<ContinuousTaskCallbackInfo>(typeId, creatorUid, creatorPid, abilityName);
-        backgroundTaskObserver->OnContinuousTaskUpdate(continuousTaskCallbackInfo);
-
-        return true;
-    }
-
-    bool RemoteDiedFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-
-        // getdata
-        wptr<IRemoteObject> iRemoteObject = nullptr;
-        auto backgroundTaskObserver = std::make_unique<BackgroundTaskObserver>();
-        backgroundTaskObserver->OnRemoteDied(iRemoteObject);
-
-        return true;
     }
 
     bool ProcessEventFuzzTest(const uint8_t* data, size_t size)
@@ -416,9 +242,9 @@ namespace ResourceSchedule {
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
-        cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, typeId, abilityId);
+        cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, abilityId);
         cgroupEventHandler->SetSupervisor(g_supervisor);
-        cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, typeId, abilityId);
+        cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, abilityId);
 
         return true;
     }
@@ -1473,17 +1299,6 @@ namespace ResourceSchedule {
         return true;
     }
 
-    void BackgroundTaskObserverFuzzExecute(const uint8_t* data, size_t size)
-    {
-        OHOS::ResourceSchedule::TransientTaskStartFuzzTest(data, size);
-        OHOS::ResourceSchedule::TransientTaskEndFuzzTest(data, size);
-        OHOS::ResourceSchedule::MarshallingContinuousTaskCallbackInfoFuzzTest(data, size);
-        OHOS::ResourceSchedule::ContinuousTaskStartFuzzTest(data, size);
-        OHOS::ResourceSchedule::ContinuousTaskStopFuzzTest(data, size);
-        OHOS::ResourceSchedule::ContinuousTaskUpdateFuzzTest(data, size);
-        OHOS::ResourceSchedule::RemoteDiedFuzzTest(data, size);
-    }
-
     void CgroupEventHandlerFuzzExecute(const uint8_t* data, size_t size)
     {
         OHOS::ResourceSchedule::ProcessEventFuzzTest(data, size);
@@ -1555,10 +1370,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     OHOS::ResourceSchedule::SetPos();
     /* Run your code on data */
-    // background_task_observer.cpp
-    OHOS::ResourceSchedule::BackgroundTaskObserverFuzzExecute(data, size);
-    // background_task_observer.cpp end
-
     // cgroup_event_handler.cpp
     OHOS::ResourceSchedule::CgroupEventHandlerFuzzExecute(data, size);
     // cgroup_event_handler.cpp end

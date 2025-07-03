@@ -68,11 +68,6 @@ ohos_fuzztest("CgroupSchedFuzzTest") {
     "window_manager:libwmutil_base",
   ]
 
-  if (has_bg_task_mgr) {
-    defines = [ "CONFIG_BGTASK_MGR" ]
-    external_deps += [ "background_task_mgr:bgtaskmgr_innerkits" ]
-  }
-
   part_name = "resource_schedule_service"
   subsystem_name = "resourceschedule"
 }

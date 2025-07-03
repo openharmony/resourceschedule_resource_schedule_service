@@ -49,6 +49,10 @@
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 #include "avsession_manager.h"
 #endif
+#ifdef CONFIG_BGTASK_MGR
+#include "background_task_mgr_helper.h"
+#include "background_task_observer.h"
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -103,6 +107,9 @@ void ObserverManager::InitObserverCbMap()
         { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->InitAccountObserver(); }},
         { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitWindowStateObserver(); }},
         { APP_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->SubscribeAppState(); }},
+#ifdef CONFIG_BGTASK_MGR
+        { BACKGROUND_TASK_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitBackgroundTask(); }},
+#endif
     };
     InitRemoveObserverCbMap();
 }
@@ -134,6 +141,9 @@ void ObserverManager::InitRemoveObserverCbMap()
         { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->DisableAccountObserver(); }},
         { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableWindowStateObserver(); }},
         { APP_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->UnsubscribeAppState(); }},
+#ifdef CONFIG_BGTASK_MGR
+        { BACKGROUND_TASK_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableBackgroundTask(); }},
+#endif
     };
 }
 
@@ -176,6 +186,9 @@ void ObserverManager::InitSysAbilityListener()
 #endif
     AddItemToSysAbilityListener(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, systemAbilityManager);
     AddItemToSysAbilityListener(WINDOW_MANAGER_SERVICE_ID, systemAbilityManager);
+#ifdef CONFIG_BGTASK_MGR
+    AddItemToSysAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID, systemAbilityManager);
+#endif
     AddItemToSysAbilityListener(APP_MGR_SERVICE_ID, systemAbilityManager);
 }
 
@@ -890,6 +903,40 @@ void ObserverManager::UnsubscribePipChange()
     }
     RESSCHED_LOGI("UnsubscribePipchange success");
 }
+
+#ifdef CONFIG_BGTASK_MGR
+void ObserverManager::InitBackgroundTask()
+{
+    if (isBgtaskSubscribed_) {
+        return;
+    }
+    if (!backgroundTaskObserver_) {
+        backgroundTaskObserver_ = std::make_shared<BackgroundTaskObserver>();
+    }
+    int ret = BackgroundTaskMgr::BackgroundTaskMgrHelper::SubscribeBackgroundTask(*backgroundTaskObserver_);
+    if (ret != 0) {
+        RESSCHED_LOGE("%{public}s failed, err:%{public}d.", __func__, ret);
+        return;
+    }
+    isBgtaskSubscribed_ = true;
+    RESSCHED_LOGI("%{public}s success.", __func__);
+    return;
+}
+
+void ObserverManager::DisableBackgroundTask()
+{
+    if (!isBgtaskSubscribed_ || !backgroundTaskObserver_) {
+        return;
+    }
+    int32_t ret = BackgroundTaskMgr::BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*backgroundTaskObserver_);
+    if (ret == 0) {
+        RESSCHED_LOGI("%{public}s success.", __func__);
+    } else {
+        RESSCHED_LOGE("%{public}s failed. ret:%{public}d", __func__, ret);
+    }
+    isBgtaskSubscribed_ = false;
+}
+#endif
 
 OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
 {

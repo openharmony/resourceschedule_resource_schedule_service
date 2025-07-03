@@ -26,9 +26,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-#ifdef CONFIG_BGTASK_MGR
-class BackgroundTaskObserver;
-#endif
 class Supervisor;
 class CgroupAdjuster;
 class CgroupEventHandler;
@@ -39,9 +36,6 @@ public:
     void Init() override;
     void Disable() override;
 
-    bool SubscribeBackgroundTask();
-    void UnsubscribeBackgroundTask();
-    void UnregisterStateObservers();
     int GetProcessGroup(pid_t pid);
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
     void DispatchOtherResource(uint32_t resType, int64_t value, const nlohmann::json& payload);
@@ -66,14 +60,10 @@ public:
     }
 
 private:
-    std::set<uint32_t> resTypes;
-
     std::shared_ptr<CgroupEventHandler> cgHandler_;
     std::shared_ptr<Supervisor> supervisor_;
-#ifdef CONFIG_BGTASK_MGR
-    bool isBgtaskSubscribed_ {false};
-    std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_;
-#endif
+
+    std::set<uint32_t> resTypes;
     std::unordered_map<uint32_t, std::function<void(std::shared_ptr<CgroupEventHandler>,
         uint32_t, int64_t, const nlohmann::json&)>> dispatchResFuncMap_;
 

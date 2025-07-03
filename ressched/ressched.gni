@@ -118,4 +118,10 @@ declare_args() {
       ressched_frame_aware_sched_enable = true
     }
   }
+
+  has_bg_task_mgr = false
+  if (defined(global_parts_info) &&
+      defined(global_parts_info.resourceschedule_background_task_mgr)) {
+    has_bg_task_mgr = true
+  }
 }

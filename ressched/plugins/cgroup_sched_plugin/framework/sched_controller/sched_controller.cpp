@@ -19,10 +19,6 @@
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
 #include "app_mgr_interface.h"
-#ifdef CONFIG_BGTASK_MGR
-#include "background_task_mgr_helper.h"
-#include "background_task_observer.h"
-#endif
 #include "bundle_mgr_interface.h"
 #include "cgroup_adjuster.h"
 #include "cgroup_event_handler.h"
@@ -46,10 +42,6 @@ namespace {
     const std::string LIB_NAME = "libcgroup_sched.z.so";
     constexpr int32_t DUMP_OPTION = 0;
 }
-
-#ifdef CONFIG_BGTASK_MGR
-using OHOS::BackgroundTaskMgr::BackgroundTaskMgrHelper;
-#endif
 
 IMPLEMENT_SINGLE_INSTANCE(SchedController)
 
@@ -81,13 +73,6 @@ void SchedController::Disable()
     if (supervisor_) {
         supervisor_ = nullptr;
     }
-    UnregisterStateObservers();
-}
-
-
-void SchedController::UnregisterStateObservers()
-{
-    UnsubscribeBackgroundTask();
 }
 
 int SchedController::GetProcessGroup(pid_t pid)
@@ -137,6 +122,8 @@ void SchedController::InitResTypes()
         ResType::RES_TYPE_WINDOW_FOCUS,
         ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
         ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
+        ResType::RES_TYPE_TRANSIENT_TASK,
+        ResType::RES_TYPE_CONTINUOUS_TASK,
     };
 }
 
@@ -302,42 +289,12 @@ void SchedController::InitAddDispatchResFuncMap()
     dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
         [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value,
         const nlohmann::json& payload) { handler->HandleDrawingContentChangeWindow(resType, value, payload); }));
-}
-
-bool SchedController::SubscribeBackgroundTask()
-{
-#ifdef CONFIG_BGTASK_MGR
-    if (isBgtaskSubscribed_) {
-        return true;
-    }
-    if (!backgroundTaskObserver_) {
-        backgroundTaskObserver_ = std::make_shared<BackgroundTaskObserver>();
-    }
-    int ret = BackgroundTaskMgrHelper::SubscribeBackgroundTask(*backgroundTaskObserver_);
-    if (ret != 0) {
-        CGS_LOGE("%{public}s failed, err:%{public}d.", __func__, ret);
-        return false;
-    }
-    isBgtaskSubscribed_ = true;
-    CGS_LOGI("%{public}s success.", __func__);
-#endif
-    return true;
-}
-
-void SchedController::UnsubscribeBackgroundTask()
-{
-#ifdef CONFIG_BGTASK_MGR
-    if (!isBgtaskSubscribed_ || !backgroundTaskObserver_) {
-        return;
-    }
-    int32_t ret = BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*backgroundTaskObserver_);
-    if (ret == 0) {
-        CGS_LOGI("%{public}s success.", __func__);
-    } else {
-        CGS_LOGE("%{public}s failed. ret:%{public}d", __func__, ret);
-    }
-    isBgtaskSubscribed_ = false;
-#endif
+    dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_TRANSIENT_TASK,
+        [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value,
+        const nlohmann::json& payload) { handler->HandleTransientTaskStatus(resType, value, payload); }));
+    dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_CONTINUOUS_TASK,
+        [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value,
+        const nlohmann::json& payload) { handler->HandleContinuousTaskStatus(resType, value, payload); }));
 }
 
 #ifdef POWER_MANAGER_ENABLE
