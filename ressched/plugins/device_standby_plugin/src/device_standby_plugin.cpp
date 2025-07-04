@@ -44,7 +44,7 @@ void DeviceStandbyPlugin::Init()
     resTypes_.insert(RES_TYPE_WIFI_P2P_STATE_CHANGED);
     resTypes_.insert(RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED);
     resTypes_.insert(RES_TYPE_POWER_MODE_CHANGED);
-#ifdef FEATURE_PRODUCT_WATCH
+#ifdef FEATURE_PRODUCT_STANDBY_CLICK_RECOGNIZE
     resTypes_.insert(RES_TYPE_CLICK_RECOGNIZE);
 #endif
     resTypes_.insert(RES_TYPE_MMI_INPUT_POWER_KEY);
