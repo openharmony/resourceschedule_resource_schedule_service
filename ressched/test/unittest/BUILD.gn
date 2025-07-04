@@ -136,7 +136,10 @@ ohos_unittest("resschedservice_mock_test") {
     "${ressched_interfaces}/innerkits/ressched_client/include",
   ]
 
-  sources = [ "src/res_sched_service_mock_test.cpp" ]
+  sources = [
+    "src/res_sched_service_mock_test.cpp",
+    "src/res_sched_mgr_test.cpp"
+  ]
 
   deps = [ "${ressched_services}:resschedsvc_static" ]
 
@@ -184,7 +187,6 @@ ohos_unittest("resschedfwk_test") {
     "src/notifier_mgr_test.cpp",
     "src/plugin_mgr_test.cpp",
     "src/plugin_switch_test.cpp",
-    "src/res_sched_mgr_test.cpp",
     "src/slide_recognize_test.cpp",
   ]
 
