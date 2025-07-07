@@ -57,6 +57,7 @@ taihe_shared_library("systemload_taihe_native") {
   external_deps = [
     "c_utils:utils",
     "hilog:libhilog",
+    "samgr:samgr_proxy",
   ]
 }
 
