@@ -53,6 +53,7 @@ void DeviceStandbyPlugin::Init()
     resTypes_.insert(RES_TYPE_BT_SERVICE_EVENT);
     resTypes_.insert(RES_TYPE_REPORT_BOKER_GATT_CONNECT);
     resTypes_.insert(RES_TYPE_BOOT_COMPLETED);
+    resTypes_.insert(RES_TYPE_THERMAL_SCENARIO_REPORT);
 
     for (auto resType : resTypes_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
