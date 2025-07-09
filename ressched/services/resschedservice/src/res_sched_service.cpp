@@ -228,7 +228,7 @@ bool ResSchedService::IsSBDResType(uint32_t type)
     if (callingTokenInfo.bundleName == SCENEBOARD_BUNDLE_NAME) {
         return true;
     }
-    RESSCHED_LOGE("%{public}s is not sceneboard bundle name", callingTokenInfo.bundleName.c_str());
+    RESSCHED_LOGD("%{public}s is not sceneboard bundle name", callingTokenInfo.bundleName.c_str());
     return false;
 }
 
@@ -460,7 +460,7 @@ void ResSchedService::LoadAppPreloadPlugin()
     }
 
     if (isLoadAppPreloadPlugin_) {
-        RESSCHED_LOGI("ResSchedService::LoadAppPreloadPlugin, already loaded AppPreloadPlugin");
+        RESSCHED_LOGD("ResSchedService::LoadAppPreloadPlugin, already loaded AppPreloadPlugin");
         return;
     }
 

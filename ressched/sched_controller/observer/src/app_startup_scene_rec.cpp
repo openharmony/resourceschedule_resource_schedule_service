@@ -106,7 +106,7 @@ void AppStartupSceneRec::UpdateAppStartupNum(std::string uid, int64_t curTime, s
     lastAppStartTime_ = curTime;
     appStartCount_++;
     if (isReportContinuousStartup_.load()) {
-        RESSCHED_LOGI("UpdateAppStartupNum appStartCount_:%{public}d", appStartCount_);
+        RESSCHED_LOGD("UpdateAppStartupNum appStartCount_:%{public}d", appStartCount_);
         return;
     }
     startPkgs_.emplace_back(bundleName);
