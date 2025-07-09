@@ -460,7 +460,6 @@ void ResSchedService::LoadAppPreloadPlugin()
     }
 
     if (isLoadAppPreloadPlugin_) {
-        RESSCHED_LOGD("ResSchedService::LoadAppPreloadPlugin, already loaded AppPreloadPlugin");
         return;
     }
 
