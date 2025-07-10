@@ -2562,6 +2562,76 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_084, Function | Med
     EXPECT_FALSE(supervisor_->GetAppRecord(1000) == nullptr);
 }
 
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_085
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_085, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    cgroupEventHandler->ProcessEvent(1, 1235);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_086
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_086, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->HandleAbilityAdded(501, "test");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    cgroupEventHandler->HandleAbilityAdded(501, "test");
+    cgroupEventHandler->HandleAbilityAdded(3301, "test");
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_087
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_087, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_REPORT_RENDER_THREAD;
+    int64_t value = ResType::TRANSIENT_TASK_START;
+    nlohmann::json payload;
+    cgroupEventHandler->HandleTransientTaskStatus(resType, value, payload);
+    payload["uid"] = std::to_string(0);
+    cgroupEventHandler->HandleTransientTaskStatus(resType, value, payload);
+    payload["pid"] = std::to_string(1234);
+    cgroupEventHandler->HandleTransientTaskStatus(resType, value, payload);
+    payload["bundleName"] = "com.ohos.test";
+    cgroupEventHandler->HandleTransientTaskStatus(resType, value, payload);
+    value = ResType::TRANSIENT_TASK_END;
+    cgroupEventHandler->HandleTransientTaskStatus(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_088
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_088, Function | MediumTest | Level1)
+{
+    
+}
+
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
