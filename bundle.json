@@ -90,6 +90,7 @@
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi/systemload:systemload",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/ets/taihe/systemload:systemload_taihe",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi/background_process_manager:backgroundprocessmanager_napi",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/ets/taihe/background_process_manager:backgroundprocessmanager_taihe",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/c/background_process_manager:background_process_manager",
           "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
         ],
