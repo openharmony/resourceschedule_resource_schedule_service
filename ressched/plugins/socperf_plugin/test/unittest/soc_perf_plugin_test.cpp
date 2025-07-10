@@ -1199,31 +1199,18 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_045, Function | MediumTes
     EXPECT_FALSE(ret);
 
     nlohmann::json payload1;
-    payload1["uid"] = "19000";
+    payload1["bundleName"] = 19000;
     std::shared_ptr<ResData> invalidData2 = std::make_shared<ResData>(-1, -1, payload1);
     ret = SocPerfPlugin::GetInstance().HandleMoveEventBoost(invalidData2, true);
     EXPECT_FALSE(ret);
 
     nlohmann::json payload2;
-    payload2["callingUid"] = 19000;
-    std::shared_ptr<ResData> invalidData3 = std::make_shared<ResData>(-1, -1, payload2);
-    ret = SocPerfPlugin::GetInstance().HandleMoveEventBoost(invalidData3, true);
-    EXPECT_FALSE(ret);
-
-    nlohmann::json payload3;
-    payload3["callingUid"] = "19000";
-    std::shared_ptr<ResData> validData1 = std::make_shared<ResData>(-1, -1, payload3);
-    SocPerfPlugin::GetInstance().appNameMoveEvent_.insert("www");
-    SocPerfPlugin::GetInstance().uidToAppMsgMap_.clear();
+    payload2["bundleName"] = "appName";
+    std::shared_ptr<ResData> validData1 = std::make_shared<ResData>(-1, -1, payload2);
     ret = SocPerfPlugin::GetInstance().HandleMoveEventBoost(validData1, true);
-    EXPECT_FALSE(ret);
+    EXPECT_TRUE(ret);
 
-    AppKeyMessage appMsg(2, "dadaw");
-    SocPerfPlugin::GetInstance().uidToAppMsgMap_[19000] = appMsg;
-    ret = SocPerfPlugin::GetInstance().HandleMoveEventBoost(validData1, true);
-    EXPECT_FALSE(ret);
-
-    SocPerfPlugin::GetInstance().appNameMoveEvent_.insert("dadaw");
+    SocPerfPlugin::GetInstance().appNameMoveEvent_.insert("appName");
     ret = SocPerfPlugin::GetInstance().HandleMoveEventBoost(validData1, false);
     EXPECT_TRUE(ret);
 }
