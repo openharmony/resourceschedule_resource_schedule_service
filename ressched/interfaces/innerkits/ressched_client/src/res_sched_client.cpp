@@ -153,7 +153,7 @@ int32_t ResSchedClient::ReportMutexBeforeStartEvent(const uint32_t resType, cons
             isSucceed->store(true);
         }
         cv->notify_all();
-        }, ffrt::task_attr().timeout(CHECK_MUTEX_TIMEOUT_NS * 1000).qos(ffrt::qos_user_interactive));
+        }, ffrt::task_attr().timeout(CHECK_MUTEX_TIMEOUT_NS).qos(ffrt::qos_user_interactive));
     cv->wait_for(lock, std::chrono::milliseconds(CHECK_MUTEX_TIMEOUT));
     if (!isSucceed->load()) {
         RESSCHED_LOGW("%{public}s: sync time out", __func__);
