@@ -166,6 +166,8 @@ private:
     int32_t InitInnerEventListenerLocked();
     void UnRegisterSystemloadListenersLocked();
     void UnRegisterEventListenerLocked(uint32_t eventType, uint32_t listenerGroup);
+    int32_t ReportMutexBeforeStartEvent(const uint32_t resType, const int64_t value,
+        const nlohmann::json& payload, nlohmann::json& reply, sptr<IResSchedService>& proxy);
     void RecoverEventListener();
     class SystemloadLevelListener : public ResSchedSystemloadNotifierStub {
     public:

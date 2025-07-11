@@ -30,6 +30,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
 constexpr int32_t CHECK_MUTEX_TIMEOUT = 100;  // 100ms
+constexpr int32_t CHECK_MUTEX_TIMEOUT_NS = 100 * 1000;  // 100ms
 bool g_isDestroyed = false;
 }
 
@@ -108,26 +109,7 @@ int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t va
     }
     std::string payloadValue = payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
     if (resType == ResType::SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START) {
-        ffrt::future<std::pair<int32_t, nlohmann::json>> fut = ffrt::async([resType, value, payloadValue, proxy] {
-            nlohmann::json ffrtReply;
-            std::string replyValue;
-            if (proxy == nullptr) {
-                return std::pair<int32_t, nlohmann::json>(RES_SCHED_CONNECT_FAIL, ffrtReply);
-            }
-            int32_t ret;
-            proxy->ReportSyncEvent(resType, value, payloadValue, replyValue, ret);
-            ffrtReply = StringToJsonObj(replyValue);
-            return std::pair<int32_t, nlohmann::json>(ret, ffrtReply);
-        });
-
-        ffrt::future_status status = fut.wait_for(std::chrono::milliseconds(CHECK_MUTEX_TIMEOUT));
-        if (status == ffrt::future_status::ready) {
-            auto result = fut.get();
-            reply = std::move(result.second);
-            return result.first;
-        }
-        RESSCHED_LOGW("%{public}s: sync time out", __func__);
-        return RES_SCHED_REQUEST_FAIL;
+        return ReportMutexBeforeStartEvent(resType, value, payload, reply, proxy);
     } else {
         int32_t ret;
         std::string replyValue;
@@ -135,6 +117,51 @@ int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t va
         reply = StringToJsonObj(replyValue);
         return ret;
     }
+}
+
+int32_t ResSchedClient::ReportMutexBeforeStartEvent(const uint32_t resType, const int64_t value,
+    const nlohmann::json& payload, nlohmann::json& reply, sptr<IResSchedService>& proxy)
+{
+    auto mtx = std::make_shared<ffrt::mutex>();
+    auto cv = std::make_shared<ffrt::condition_variable>();
+    auto result = std::make_shared<std::pair<int32_t, nlohmann::json>>();
+    auto isSucceed = std::make_shared<std::atomic<bool>>(false);
+    auto payloadValue = payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
+    std::unique_lock<ffrt::mutex> lock(*mtx);
+
+    ffrt::submit([resType, value, payload, payloadValue, isSucceed, result, mtx, cv, proxy]() {
+        nlohmann::json ffrtReply;
+        int32_t ret;
+        std::string replyValue;
+        if (proxy == nullptr) {
+            {
+                std::unique_lock<ffrt::mutex> lock(mtx);
+                result->first = RES_SCHED_CONNECT_FAIL;
+                result->second = ffrtReply;
+                isSucceed->store(false);
+            }
+            cv->notify_all();
+            return;
+        }
+        proxy->ReportSyncEvent(resType, value, *payloadValue, replyValue, ret);
+        ffrtReply = StringToJsonObj(replyValue);
+        {
+            std::unique_lock<ffrt::mutex> lock(*mtx);
+            result->first = ret;
+            result->second = ffrtReply;
+            isSucceed->store(true);
+        }
+        cv->notify_all();
+        }, ffrt::task_attr().timeout(CHECK_MUTEX_TIMEOUT_NS * 1000).qos(ffrt::qos_user_interactive));
+    cv->wait_for(lock, std::chrono::milliseconds(CHECK_MUTEX_TIMEOUT));
+    if (!isSucceed->load()) {
+        RESSCHED_LOGW("%{public}s: sync time out", __func__);
+        result->first = RES_SCHED_REQUEST_FAIL;
+        result->second = nlohmann::json{};
+        isSucceed->store(false);
+    }
+    reply = std::move(result->second);
+    return result->first;
 }
 
 int32_t ResSchedClient::ReportSyncEvent(const uint32_t resType, const int64_t value,
