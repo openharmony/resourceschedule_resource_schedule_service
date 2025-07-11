@@ -126,7 +126,8 @@ int32_t ResSchedClient::ReportMutexBeforeStartEvent(const uint32_t resType, cons
     auto cv = std::make_shared<ffrt::condition_variable>();
     auto result = std::make_shared<std::pair<int32_t, nlohmann::json>>();
     auto isSucceed = std::make_shared<std::atomic<bool>>(false);
-    auto payloadValue = payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
+    auto payloadValue = std::make_shared<std::string>(
+        payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
     std::unique_lock<ffrt::mutex> lock(*mtx);
 
     ffrt::submit([resType, value, payload, payloadValue, isSucceed, result, mtx, cv, proxy]() {
@@ -135,7 +136,7 @@ int32_t ResSchedClient::ReportMutexBeforeStartEvent(const uint32_t resType, cons
         std::string replyValue;
         if (proxy == nullptr) {
             {
-                std::unique_lock<ffrt::mutex> lock(mtx);
+                std::unique_lock<ffrt::mutex> lock(*mtx);
                 result->first = RES_SCHED_CONNECT_FAIL;
                 result->second = ffrtReply;
                 isSucceed->store(false);
