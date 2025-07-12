@@ -1741,7 +1741,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_059, Function | MediumTes
         ResType::DeviceModeStatus::MODE_ENTER,payload1);
     SocPerfPlugin::GetInstance().HandleDeviceOrientationStatusChange(invalidPayload1);
     deviceOrientationType = "deviceOrientation";
-    bool ret = SocPerfPlugin::GetInstance().HandleSceenOrientationBoot(deviceOrientationType);
+    ret = SocPerfPlugin::GetInstance().HandleSceenOrientationBoot(deviceOrientationType);
     EXPECT_TRUE(ret);
 
     payload["deviceModeType"] = "deviceModeType";
@@ -1758,7 +1758,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_059, Function | MediumTes
         ResType::DeviceModeStatus::MODE_ENTER,payload1);
     SocPerfPlugin::GetInstance().HandleDeviceOrientationStatusChange(invalidPayload1);
     deviceOrientationType = "deviceOrientation";
-    bool ret = SocPerfPlugin::GetInstance().HandleSceenOrientationBoot(deviceOrientationType);
+    ret = SocPerfPlugin::GetInstance().HandleSceenOrientationBoot(deviceOrientationType);
     EXPECT_TRUE(ret);
 }
 } // namespace SOCPERF
