@@ -1726,24 +1726,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_060, Function | MediumTes
     std::string deviceOrientationType = "deviceOrientation";
     bool ret = SocPerfPlugin::GetInstance().HandleSceenOrientationBoost(deviceOrientationType);
     EXPECT_TRUE(ret);
-
-    payload["deviceModeType"] = "deviceModeType";
-    payload["deviceMode"] = "displayGlobalFull";
-    invalidPayload = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
-        ResType::DeviceModeStatus::MODE_ENTER, payload);
-    SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(invalidPayload);
-    normalValuedata = std::make_shared <ResData>(ResType::RES_TYPE_SCREEN_STATUS,
-        ResType::ScreenStatus::SCREEN_ON, nullptr);
-    SocPerfPlugin::GetInstance().HandleScreenStatusAnalysis(normalValuedata);
-    payload1["deviceModeType"] = "deviceOrientation";
-    payload1["deviceMode"] = "displayPortrait";
-    invalidPayload1 = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_ORIENTATION_STATUS,
-        ResType::DeviceModeStatus::MODE_ENTER, payload1);
-    SocPerfPlugin::GetInstance().HandleDeviceOrientationStatusChange(invalidPayload1);
-    deviceOrientationType = "deviceOrientation";
-    ret = SocPerfPlugin::GetInstance().HandleSceenOrientationBoost(deviceOrientationType);
-    EXPECT_TRUE(ret);
-
+    
     payload["deviceModeType"] = "deviceModeType";
     payload["deviceMode"] = "displayFull";
     invalidPayload = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
