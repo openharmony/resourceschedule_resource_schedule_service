@@ -1035,7 +1035,7 @@ HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.
 
 /**
  * @tc.name: InitDisplayOrientationObserver_001
- * @tc.desc: test account observer InitDisplayModeObserver
+ * @tc.desc: test account observer InitDisplayOrientationObserver
  * @tc.type: FUNC
  * @tc.require: issuesI9SSQY
  */
@@ -1049,7 +1049,7 @@ HWTEST_F(ObserverEventTest, InitDisplayOrientationObserver_001, testing::ext::Te
     if (instance) {
         instance->foldDisplayOrientationObserver_ = nullptr;
         instance->InitDisplayOrientationObserver();
-        EXPECT_NC(instance->foldDisplayOrientationObserver_, nullptr);
+        EXPECT_NE(instance->foldDisplayOrientationObserver_, nullptr);
         instance->DisableDisplayOrientationObserver();
         EXPECT_EQ(instance->foldDisplayOrientationObserver_, nullptr);
     }
