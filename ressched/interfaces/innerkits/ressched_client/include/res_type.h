@@ -365,6 +365,8 @@ enum : uint32_t {
     RES_TYPE_APP_HIGH_POWER_CONSUMPTION = 170,
     // set protectlru reclaim ratio
     RES_TYPE_ADJUST_PROTECTLRU_RECLAIM_RATIO = 171,
+    // report kernel standby failed
+    RES_TYPE_STANDBY_FREEZE_FAILED = 172,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
