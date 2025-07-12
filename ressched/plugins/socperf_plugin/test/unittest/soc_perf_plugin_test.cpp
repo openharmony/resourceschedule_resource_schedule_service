@@ -1699,5 +1699,67 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_059, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().HandleRssCloudConfigUpdate(data);
     EXPECT_EQ(ret, true);
 }
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_060
+ * @tc.desc: test socperfplugin api
+ * @tc.type FUNC
+ * @tc.require:
+ */
+ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_060, Function | MediumTest | Level0)
+{
+    nlohmann::json payload;
+    payload["devcieModeType"] = "devcieModeType";
+    payload["devcieMode"] = "displayGlobalFull";
+    std::shared_ptr<ResData> invalidPayload = std::make_shared<ResDate>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
+        ResType::DeviceModeStatus::MODE_ENTER,payload);
+    SocPerfPlugin::GetInstance.HandleDeviceModeStatusChange(invalidPayload);
+    std::shared_ptr<ResData> normalValuedata = std::make_shared <ResData>(ResType::RES_TYPE_SCREEN_STATUS,
+        ResType::ScreenStatus::SCREEN_ON,nullptr);
+    SocPerfPlugin::GetInstance.HandleScreenStatusAnalysis(normalValuedata);
+    nlohmann::json payload1;
+    payload1["devcieModeType"] = "devcieOrientation";
+    payload1["devcieMode"] = "displayLandscape";
+    std::shared_ptr<ResData> invalidPayload1 = std::make_shared<ResDate>(ResType::RES_TYPE_DEVICE_ORIENTATION_STATUS,
+        ResType::DeviceModeStatus::MODE_ENTER,payload1);
+    SocPerfPlugin::GetInstance.HandleDeviceOrientationStatusChange(invalidPayload1);
+    std::string devcieOrientationType = "devcieOrientation";
+    bool ret = SocPerfPlugin::GetInstance().HandleSceenOrientationBoot(devcieOrientationType);
+    EXPECT_TRUE(ret);
+
+    payload["devcieModeType"] = "devcieModeType";
+    payload["devcieMode"] = "displayGlobalFull";
+    invalidPayload = std::make_shared<ResDate>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
+        ResType::DeviceModeStatus::MODE_ENTER,payload);
+    SocPerfPlugin::GetInstance.HandleDeviceModeStatusChange(invalidPayload);
+    normalValuedata = std::make_shared <ResData>(ResType::RES_TYPE_SCREEN_STATUS,
+        ResType::ScreenStatus::SCREEN_ON,nullptr);
+    SocPerfPlugin::GetInstance.HandleScreenStatusAnalysis(normalValuedata);
+    payload1["devcieModeType"] = "devcieOrientation";
+    payload1["devcieMode"] = "displayPortrait";
+    invalidPayload1 = std::make_shared<ResDate>(ResType::RES_TYPE_DEVICE_ORIENTATION_STATUS,
+        ResType::DeviceModeStatus::MODE_ENTER,payload1);
+    SocPerfPlugin::GetInstance.HandleDeviceOrientationStatusChange(invalidPayload1);
+    std::string devcieOrientationType = "devcieOrientation";
+    bool ret = SocPerfPlugin::GetInstance().HandleSceenOrientationBoot(devcieOrientationType);
+    EXPECT_TRUE(ret);
+
+    payload["devcieModeType"] = "devcieModeType";
+    payload["devcieMode"] = "displayFull";
+    invalidPayload = std::make_shared<ResDate>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
+        ResType::DeviceModeStatus::MODE_ENTER,payload);
+    SocPerfPlugin::GetInstance.HandleDeviceModeStatusChange(invalidPayload);
+    normalValuedata = std::make_shared <ResData>(ResType::RES_TYPE_SCREEN_STATUS,
+        ResType::ScreenStatus::SCREEN_ON,nullptr);
+    SocPerfPlugin::GetInstance.HandleScreenStatusAnalysis(normalValuedata);
+    payload1["devcieModeType"] = "devcieOrientation";
+    payload1["devcieMode"] = "displayPortrait";
+    invalidPayload1 = std::make_shared<ResDate>(ResType::RES_TYPE_DEVICE_ORIENTATION_STATUS,
+        ResType::DeviceModeStatus::MODE_ENTER,payload1);
+    SocPerfPlugin::GetInstance.HandleDeviceOrientationStatusChange(invalidPayload1);
+    std::string devcieOrientationType = "devcieOrientation";
+    bool ret = SocPerfPlugin::GetInstance().HandleSceenOrientationBoot(devcieOrientationType);
+    EXPECT_TRUE(ret);
+}
 } // namespace SOCPERF
 } // namespace OHOS
