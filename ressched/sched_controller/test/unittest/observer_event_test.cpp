@@ -1043,7 +1043,7 @@ HWTEST_F(ObserverEventTest, InitDisplayOrientationObserver_001, testing::ext::Te
 {
     auto instance = ObserverManager::GetInstance();
     bool isFoldable = OHOS::Rosen::DisplayManager::GetInstance().IsFoldable();
-    if(!isFoldable){
+    if (!isFoldable) {
         return;
     }
     if (instance) {
