@@ -73,6 +73,7 @@ public:
     static std::shared_ptr<AudioObserver> audioObserver_;
 #endif
     static std::shared_ptr<FoldDisplayModeObserver> foldDisplayModeObserver_;
+    static std::shared_ptr<FoldDisplayOrientationObserver> foldDisplayOrientationObserver_;
 };
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
@@ -82,6 +83,7 @@ std::shared_ptr<MmiObserver> ObserverEventTest::mmiObserver_ = nullptr;
 #endif
 #endif
 std::shared_ptr<FoldDisplayModeObserver> ObserverEventTest::foldDisplayModeObserver_ = nullptr;
+std::shared_ptr<FoldDisplayOrientationObserver> ObserverEventTest::foldDisplayOrientationObserver_ = nullptr;
 std::shared_ptr<ConnectionSubscriber> ObserverEventTest::connectionSubscriber_ = nullptr;
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
     std::shared_ptr<DeviceMovementObserver> ObserverEventTest::deviceMovementObserver_ = nullptr;
@@ -103,6 +105,7 @@ void ObserverEventTest::SetUpTestCase()
 #endif
     connectionSubscriber_ = std::make_shared<ConnectionSubscriber>();
     foldDisplayModeObserver_ = std::make_shared<FoldDisplayModeObserver>();
+    foldDisplayOrientationObserver_ = std::make_shared<FoldDisplayOrientationObserver>();
 #ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
     deviceMovementObserver_ = std::make_shared<DeviceMovementObserver>();
 #endif
@@ -1030,6 +1033,28 @@ HWTEST_F(ObserverEventTest, InitDisplayModeObserver_001, testing::ext::TestSize.
     EXPECT_EQ(instance->foldDisplayModeObserver_, nullptr);
 }
 
+/**
+ * @tc.name: InitDisplayOrientationObserver_001
+ * @tc.desc: test account observer InitDisplayOrientationObserver
+ * @tc.type: FUNC
+ * @tc.require: issuesI9SSQY
+ */
+HWTEST_F(ObserverEventTest, InitDisplayOrientationObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    bool isFoldable = OHOS::Rosen::DisplayManager::GetInstance().IsFoldable();
+    if (!isFoldable) {
+        return;
+    }
+    if (instance) {
+        instance->foldDisplayOrientationObserver_ = nullptr;
+        instance->InitDisplayOrientationObserver();
+        EXPECT_NE(instance->foldDisplayOrientationObserver_, nullptr);
+        instance->DisableDisplayOrientationObserver();
+        EXPECT_EQ(instance->foldDisplayOrientationObserver_, nullptr);
+    }
+    EXPECT_EQ(instance->foldDisplayOrientationObserver_, nullptr);
+}
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 #ifdef MMI_ENABLE
 /**
