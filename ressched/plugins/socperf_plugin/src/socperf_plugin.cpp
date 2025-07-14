@@ -966,7 +966,7 @@ void SocPerfPlugin::HandleContinuousDrag()
     if (curMs > lastTime && curMs - lastTime >= TIME_INTERVAL) {
         lastTime = curMs;
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_DRAG, true, "");
-     }
+    }
  }
 
 void SocPerfPlugin::HandleEventWebGesture(const std::shared_ptr<ResData>& data)
