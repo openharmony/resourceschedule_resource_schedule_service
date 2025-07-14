@@ -87,7 +87,7 @@ namespace {
     const int32_t APP_TYPE_GAME                             = 2;
     const int32_t INVALID_APP_TYPE                          = 0;
     const int32_t POWERMODE_ON                              = 601;
-    const int64_t TIME_INTERVAL                             = 5000;
+    const int64_t TIME_INTERVAL                             = 4500;
     const int64_t SCREEN_OFF_TIME_DELAY                     = 5000000L;
     const int32_t PERF_REQUEST_CMD_ID_RGM_BOOTING_START     = 1000;
     const int32_t PERF_REQUEST_CMD_ID_POWERMODE_CHANGED     = 9000;
@@ -943,13 +943,31 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
     } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_FLING, false, "");
     } else if (data->value == SlideEventStatus::SLIDE_NORMAL_BEGIN) {
+        isFirstDrag_ = true;
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_DRAG, true, "");
     } else if (data->value == SlideEventStatus::SLIDE_NORMAL_END) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_DRAG, false, "");
     } else if (data->value == SlideEventStatus::MOVE_EVENT_ON) {
         HandleMoveEventBoost(data, true);
+        HandleContinousDrag();
     }
 }
+
+void SocPerfPlugin::HandleContinuousDrag()
+{
+    static uint64_t lastTime = 0;
+    auto now = std::chrono::steady_clock::now();
+    uint64_t curMs = static_cast<uint64_t>(
+        std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
+    if (isFirstDrag_) {
+        lastTime = curMs;
+        isFirstDrag_ = false;
+    }
+    if (curMs > lastTime && curMs - lastTime >= TIME_INTERVAL) {
+        lastTime = curMs;
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_DRAG, true, "");
+     }
+ }
 
 void SocPerfPlugin::HandleEventWebGesture(const std::shared_ptr<ResData>& data)
 {
