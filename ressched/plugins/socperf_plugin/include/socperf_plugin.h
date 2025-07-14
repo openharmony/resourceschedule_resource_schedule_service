@@ -219,6 +219,7 @@ private:
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
     void HandleScreenOff();
+    void HandleContinuousDrag(int64_t dragStatus);
     std::vector<int64_t> GetConfigs(int32_t size);
     std::string GetBundleNameByUid(const int32_t uid);
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE

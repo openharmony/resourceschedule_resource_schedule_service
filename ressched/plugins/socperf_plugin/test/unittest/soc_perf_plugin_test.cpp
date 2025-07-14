@@ -188,6 +188,10 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_005, Function | MediumTes
     const std::shared_ptr<ResData>& slideNormalEndData = std::make_shared<ResData>(ResType::RES_TYPE_SLIDE_RECOGNIZE,
         ResType::SlideEventStatus::SLIDE_NORMAL_END, nullptr);
     SocPerfPlugin::GetInstance().HandleEventSlide(slideNormalEndData);
+    const std::shared_ptr<ResData>& moveData = std::make_shared<ResData>(ResType::RES_TYPE_SLIDE_RECOGNIZE,
+        ResType::SlideEventStatus::MOVE_EVENT_ON, nullptr);
+    SocPerfPlugin::GetInstance().HandleEventSlide(moveData);
+    SocPerfPlugin::GetInstance().HandleContinuousDrag(7);
     const std::shared_ptr<ResData>& invalidData = std::make_shared<ResData>(-1, -1, nullptr);
     SocPerfPlugin::GetInstance().HandleEventSlide(invalidData);
     EXPECT_NE(slideEventOnData, nullptr);
