@@ -114,7 +114,6 @@ private:
     std::string perfReqAppTypeSoPath_;
     std::string perfReqAppTypeSoFunc_;
     bool isFocusAppsGameType_ = false;
-    bool isFirstDrag_ = true;
     int64_t screenStatus_;
     std::string deviceMode_;
     std::string deviceOrientation_;
@@ -220,7 +219,7 @@ private:
     int32_t GetUidByData(const std::shared_ptr<ResData>& data);
     void HandleScreenOn();
     void HandleScreenOff();
-    void HandleContinuousDrag();
+    void HandleContinuousDrag(int64_t dragStatus);
     std::vector<int64_t> GetConfigs(int32_t size);
     std::string GetBundleNameByUid(const int32_t uid);
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE

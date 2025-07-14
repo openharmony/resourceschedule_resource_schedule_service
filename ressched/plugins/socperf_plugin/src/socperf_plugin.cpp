@@ -943,31 +943,36 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
     } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_FLING, false, "");
     } else if (data->value == SlideEventStatus::SLIDE_NORMAL_BEGIN) {
-        isFirstDrag_ = true;
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_DRAG, true, "");
+        HandleContinuousDrag(data->value);
     } else if (data->value == SlideEventStatus::SLIDE_NORMAL_END) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_DRAG, false, "");
+        HandleContinuousDrag(data->value);
     } else if (data->value == SlideEventStatus::MOVE_EVENT_ON) {
         HandleMoveEventBoost(data, true);
-        HandleContinuousDrag();
+        HandleContinuousDrag(data->value);
     }
 }
 
-void SocPerfPlugin::HandleContinuousDrag()
+void SocPerfPlugin::HandleContinuousDrag(int64_t dragStatus)
 {
     static uint64_t lastTime = 0;
     auto now = std::chrono::steady_clock::now();
     uint64_t curMs = static_cast<uint64_t>(
         std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
-    if (isFirstDrag_) {
-        lastTime = curMs;
-        isFirstDrag_ = false;
+    static int64_t lastStatus = SlideEventStatus::SLIDE_NORMAL_END;
+    if (lastStatus == SlideEventStatus::SLIDE_NORMAL_END && dragStatus == SlideEventStatus::MOVE_EVENT_ON) {
+        return;
+    }
+    lastStatus = dragStatus;
+    if (dragStatus == SlideEventStatus::SLIDE_NORMAL_END) {
+        lastTime = 0;
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_DRAG, false, "");
+        return;
     }
     if (curMs > lastTime && curMs - lastTime >= TIME_INTERVAL) {
         lastTime = curMs;
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_DRAG, true, "");
     }
- }
+}
 
 void SocPerfPlugin::HandleEventWebGesture(const std::shared_ptr<ResData>& data)
 {
