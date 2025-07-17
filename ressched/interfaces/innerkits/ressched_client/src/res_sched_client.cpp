@@ -130,7 +130,7 @@ int32_t ResSchedClient::ReportMutexBeforeStartEvent(const uint32_t resType, cons
         payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
     std::unique_lock<ffrt::mutex> lock(*mtx);
 
-    ffrt::submit([resType, value, payload, &payloadValue, &isSucceed, &result, &mtx, &cv, proxy]() {
+    ffrt::submit([resType, value, payload, payloadValue, isSucceed, result, mtx, cv, proxy]() {
         nlohmann::json ffrtReply;
         int32_t ret;
         std::string replyValue;
