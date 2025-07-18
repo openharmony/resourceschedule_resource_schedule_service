@@ -30,7 +30,6 @@ ohos_shared_library("cgroup_sched") {
     "${ressched_common}/src/res_sched_hitrace_chain.cpp",
     "sched_controller/cgroup_adjuster.cpp",
     "sched_controller/cgroup_event_handler.cpp",
-    "sched_controller/cgroup_log.cpp",
     "sched_controller/sched_controller.cpp",
     "sched_controller/supervisor.cpp",
     "utils/ressched_utils.cpp",

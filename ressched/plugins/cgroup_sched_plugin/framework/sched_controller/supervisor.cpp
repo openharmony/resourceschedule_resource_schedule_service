@@ -24,6 +24,13 @@ namespace OHOS {
 namespace ResourceSchedule {
 using OHOS::AppExecFwk::AbilityType;
 
+void ProcessRecord::SetName(const std::string& name)
+{
+    if (processName_.empty()) {
+        processName_ = name;
+    }
+}
+
 std::shared_ptr<AbilityInfo> ProcessRecord::GetAbilityInfoNonNull(int32_t recordId)
 {
     auto a = std::find_if(abilities_.begin(), abilities_.end(), [ recordId ] (const auto& a) {
