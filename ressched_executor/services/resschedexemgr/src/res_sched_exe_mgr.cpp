@@ -77,10 +77,10 @@ void ResSchedExeMgr::Stop()
 int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     const nlohmann::json& payload, nlohmann::json& reply)
 {
-    RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
+    RSSEXE_LOGD("ResSchedExeMgr receive sync request resType = %{public}u, value = %{public}lld.",
+        resType, (long long)value);
     std::string funcName = std::string(__func__).append("_").append(std::to_string(resType))
-        .append("_").append(std::to_string(value));
-    HicollieUtil hicollie(funcName);
+        .append("_").append(std::to_string(value));    HicollieUtil hicollie(funcName);
     std::string traceStr = BuildTraceStr(__func__, resType, value);
     HitraceScoped hitrace(HITRACE_TAG_OHOS, traceStr);
     switch (resType) {
@@ -109,7 +109,8 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
 
 void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    RSSEXE_LOGD("receive resType = %{public}u, value = %{public}lld.", resType, (long long)value);
+    RSSEXE_LOGD("ResSchedExeMgr receive async request resType = %{public}u, value = %{public}lld.",
+        resType, (long long)value);
     std::string funcName = std::string(__func__).append("_").append(std::to_string(resType))
         .append("_").append(std::to_string(value));
     HicollieUtil hicollie(funcName);
@@ -124,6 +125,7 @@ void ResSchedExeMgr::SendRequestAsync(uint32_t resType, int64_t value, const nlo
 
 int32_t ResSchedExeMgr::KillProcess(pid_t pid)
 {
+    RSSEXE_LOGD("ResSchedExeMgr receive kill request pid = %{public}d", pid);
     std::string funcName = std::string(__func__).append("_").append(std::to_string(pid));
     HicollieUtil hicollie(funcName);
     int32_t killRes = kill(pid, SIGNAL_KILL);
