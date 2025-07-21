@@ -83,6 +83,7 @@ public:
         windows_.clear();
     };
 
+    void SetName(const std::string& name);
     std::shared_ptr<AbilityInfo> GetAbilityInfoNonNull(int32_t recordId);
     std::shared_ptr<AbilityInfo> GetAbilityInfo(int32_t recordId);
     std::shared_ptr<WindowInfo> GetWindowInfoNonNull(uint32_t windowId);
@@ -100,6 +101,11 @@ public:
     inline uid_t GetUid() const
     {
         return uid_;
+    }
+
+    const std::string& GetName() const
+    {
+        return processName_;
     }
 
     SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
@@ -140,6 +146,8 @@ public:
 
     std::unordered_map<int32_t, SchedPolicy> specialSchedThread_;
     std::unordered_map<uint32_t, SchedPolicy> policyBeforUnlimitedSuppress_;
+
+    std::string processName_;
 private:
     uid_t uid_;
     pid_t pid_;

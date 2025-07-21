@@ -288,25 +288,22 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
     app->SetName(bundleName);
+    std::string processName;
+    if (ParseString(processName, "processName", payload)) {
+        procRecord->SetName(processName);
+    } else {
+        CGS_LOGE("%{public}s: param error,not have processName", __func__);
+    }
+    procRecord->processType_ = processType;
     switch (processType) {
         case static_cast<int32_t>(ProcessType::RENDER):
-            procRecord->processType_ = ProcRecordType::RENDER;
+        case static_cast<int32_t>(ProcessType::CHILD):
+        case static_cast<int32_t>(ProcessType::GPU):
             procRecord->hostPid_ = hostPid;
             app->AddHostProcess(hostPid);
             break;
         case static_cast<int32_t>(ProcessType::EXTENSION):
-            procRecord->processType_ = ProcRecordType::EXTENSION;
             procRecord->extensionType_ = extensionType;
-            break;
-        case static_cast<int32_t>(ProcessType::GPU):
-            procRecord->processType_ = ProcRecordType::GPU;
-            procRecord->hostPid_ = hostPid;
-            app->AddHostProcess(hostPid);
-            break;
-        case static_cast<int32_t>(ProcessType::CHILD):
-            procRecord->processType_ = ProcRecordType::CHILD;
-            procRecord->hostPid_ = hostPid;
-            app->AddHostProcess(hostPid);
             break;
         default:
             break;
