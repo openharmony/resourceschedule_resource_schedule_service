@@ -150,6 +150,22 @@ void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t val
         AdjustSource::ADJS_PROCESS_STATE);
 }
 
+void CgroupEventHandler::HandleUIExtensionAbilityStateChange(uint32_t resType, int64_t value,
+    const nlohmann::json& payload)
+{
+    int32_t extensionAbilityType = 0;
+    int32_t uiExtensionState = 0;
+    if (!ParseValue(extensionAbilityType, "extensionAbilityType", payload) ||
+        !ParseValue(uiExtensionState, "uiExtensionState", payload)) {
+        CGS_LOGD("%{public}s : this type of event is not dealt with here", __func__);
+        return;
+    }
+
+    nlohmann::json& payloadChange = const_cast<nlohmann::json&>(payload);
+    payloadChange["extensionState"] = std::to_string(uiExtensionState);
+    HandleExtensionStateChanged(resType, value, payloadChange);
+}
+
 void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!supervisor_) {
@@ -175,7 +191,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d, %{public}d",
         __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), recordId, abilityState, abilityType);
     if (abilityType == (int32_t)AbilityType::EXTENSION) {
-        CGS_LOGD("%{public}s : this type of event is not dealt with here", __func__);
+        HandleUIExtensionAbilityStateChange(resType, value, payload);
         return;
     }
     ChronoScope cs("HandleAbilityStateChanged");
