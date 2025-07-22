@@ -125,12 +125,12 @@ void NotifierMgr::RegisterNotifier(int32_t pid, const sptr<IRemoteObject>& notif
 
 void NotifierMgr::ReportPidToHisysevent(const int32_t pid)
 {
+    std::lock_guard<ffrt::mutex> autoLock(hisyseventMutex_);
     std::string bundleName = NotifierMgr::GetInstance().GetBundleNameByPid(pid);
     if (bundleName.empty()) {
         RESSCHED_LOGW("pid %{public}d get bundleName error, not report", pid);
         return;
     }
-    std::lock_guard<ffrt::mutex> autoLock(hisyseventMutex_);
     hisyseventBundleNames_.insert(bundleName);
     if (!isTaskSubmit_) {
         NotifierMgr::GetInstance().NotifierEventReportDelay(FIRST_REPORT_DELAY_MS);
