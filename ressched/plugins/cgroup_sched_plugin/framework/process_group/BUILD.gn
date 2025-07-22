@@ -15,7 +15,10 @@ import("//build/ohos.gni")
 import("../../cgroup_sched.gni")
 
 config("libprocess_group_config") {
-  include_dirs = [ "./include" ]
+  include_dirs = [
+    "../../common/include",
+    "./include"
+  ]
 }
 
 ohos_shared_library("libprocess_group") {
@@ -25,7 +28,6 @@ ohos_shared_library("libprocess_group") {
     "./src/cgroup_action.cpp",
     "./src/cgroup_controller.cpp",
     "./src/cgroup_map.cpp",
-    "./src/process_group_log.cpp",
     "./src/process_group_util.cpp",
     "./src/sched_policy.cpp",
   ]

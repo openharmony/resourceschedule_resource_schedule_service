@@ -22,9 +22,9 @@
 #include <utility>                // for pair
 #include "cgroup_controller.h"    // for CgroupController
 #include "cgroup_map.h"           // for CgroupMap
+#include "cgroup_sched_log.h"
 #include "config_policy_utils.h"  // for GetOneCfgFile
 #include "nlohmann/json.hpp"           // for Value
-#include "process_group_log.h"    // for PGCGS_LOGI, PGCGS_LOGE
 #include "process_group_util.h"   // for ReadFileToString
 #include "res_common_util.h"
 #include "res_sched_exe_client.h" // for ResSchedExeClient
@@ -70,12 +70,12 @@ void CgroupAction::AddSchedPolicyDeclaration(const SchedPolicy policy,
 {
     std::lock_guard<ffrt::mutex> lock(mutex_);
     if (!allowToAdd_) {
-        PGCGS_LOGI("%{public}s not allowed: %{public}u, %{public}s, %{public}s",
+        CGS_LOGI("%{public}s not allowed: %{public}u, %{public}s, %{public}s",
             __func__, policy, fullName.c_str(), abbrName.c_str());
         return;
     }
     if (policy >= SP_UPPER_LIMIT) {
-        PGCGS_LOGI("%{public}s out of range: %{public}u, %{public}s, %{public}s",
+        CGS_LOGI("%{public}s out of range: %{public}u, %{public}s, %{public}s",
             __func__, policy, fullName.c_str(), abbrName.c_str());
         return;
     }
@@ -89,7 +89,7 @@ void CgroupAction::AddSchedPolicyDeclaration(const SchedPolicy policy,
         [ &fullName ] (const auto& kv) { return kv.second == fullName; })) {
         return;
     }
-    PGCGS_LOGI("%{public}s add sched policy: %{public}u, %{public}s, %{public}s",
+    CGS_LOGI("%{public}s add sched policy: %{public}u, %{public}s, %{public}s",
         __func__, policy, fullName.c_str(), abbrName.c_str());
     fullNames_[policy] = fullName;
     abbrNames_[policy] = abbrName;
@@ -159,7 +159,7 @@ int CgroupAction::SetSchedPolicyByExecutor(int tid, int policy, uint32_t resType
     nlohmann::json reply;
     ret = ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(resType, 0, payload, reply);
     if (ret != 0) {
-        PGCGS_LOGE("%{public}s SendRequestSync %{public}d failed", __func__, resType);
+        CGS_LOGE("%{public}s SendRequestSync %{public}d failed", __func__, resType);
         return ret;
     }
     if (reply.contains("ret") && reply.at("ret").is_string()) {
@@ -170,7 +170,7 @@ int CgroupAction::SetSchedPolicyByExecutor(int tid, int policy, uint32_t resType
 
 bool CgroupAction::LoadConfigFile()
 {
-    PGCGS_LOGI("%{public}s CgroupAction::LoadConfigFile loading config file", __func__);
+    CGS_LOGI("%{public}s CgroupAction::LoadConfigFile loading config file", __func__);
     nlohmann::json jsonObjRoot;
     if (!ParseConfigFileToJsonObj(jsonObjRoot)) {
         return false;
