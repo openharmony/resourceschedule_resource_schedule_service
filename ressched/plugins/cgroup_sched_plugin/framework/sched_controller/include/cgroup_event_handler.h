@@ -91,6 +91,7 @@ private:
     void UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, int32_t windowId, int32_t state,
         const std::shared_ptr<ProcessRecord>& proc);
     void HandleEmptyPayloadForCosmicCubeState(uint32_t resType, int64_t value);
+    void HandleUIExtensionAbilityStateChange(uint32_t resType, int64_t value, const nlohmann::json& payload);
     std::shared_ptr<Supervisor> supervisor_;
     std::shared_ptr<ffrt::queue> cgroupEventQueue_;
     std::unordered_map<std::string, ffrt::task_handle> delayTaskMap_;

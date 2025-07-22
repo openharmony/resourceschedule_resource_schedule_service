@@ -2654,6 +2654,33 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_088, Function | Med
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
 
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_089
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_089, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    uint32_t resType = ResType::RES_TYPE_EXTENSION_STATE_CHANGE;
+    int64_t value = 0;
+    nlohmann::json payload;
+    cgroupEventHandler->HandleUIExtensionAbilityStateChange(resType, value, payload);
+
+    payload["extensionAbilityType"] = std::to_string(0);
+    cgroupEventHandler->HandleUIExtensionAbilityStateChange(resType, value, payload);
+
+    payload["uiExtensionState"] = std::to_string(2);
+    cgroupEventHandler->HandleUIExtensionAbilityStateChange(resType, value, payload);
+
+    payload["extensionAbilityType"] = std::to_string(500);
+    cgroupEventHandler->HandleUIExtensionAbilityStateChange(resType, value, payload);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
+}
+
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS
