@@ -180,6 +180,8 @@ ohos_shared_library("resschedsvc") {
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "json:nlohmann_json_static",
+    "samgr:samgr_proxy",
+    "libxml2:libxml2",
   ]
 
   if (resource_schedule_service_with_app_nap_enable) {
@@ -311,6 +313,7 @@ ohos_static_library("resschedsvc_static") {
     "eventhandler:libeventhandler",
     "libxml2:libxml2",
     "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
   ]
 
   external_deps = [
