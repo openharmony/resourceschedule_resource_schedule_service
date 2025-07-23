@@ -19,7 +19,6 @@
 #include <file_ex.h>
 #include <parameters.h>
 #include <string_ex.h>
-#include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
 #include "notifier_mgr.h"
 #include "plugin_mgr.h"
@@ -27,7 +26,6 @@
 #include "res_sched_exe_client.h"
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
-#include "tokenid_kit.h"
 #include "event_listener_mgr.h"
 #include "hisysevent.h"
 #include "res_common_util.h"
@@ -36,7 +34,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-using namespace OHOS::Security;
 namespace {
     #define PAYLOAD_MAX_SIZE 4096
     static constexpr int32_t DUMP_OPTION = 0;
@@ -251,7 +248,13 @@ bool ResSchedService::IsHasPermission(const uint32_t type, int32_t uid)
         RESSCHED_LOGD("not native sa");
         return false;
     }
-    int32_t hasPermission = AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, NEEDED_PERMISSION);
+    int32_t hasPermission = -1;
+    std::lock_guard<std::mutex> lock(permissionCacheMutex_);
+    if (permissionCache_.get(tokenId, hasPermission)) {
+        return hasPermission == 0;
+    }
+    hasPermission = AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, NEEDED_PERMISSION);
+    permissionCache_.put(tokenId, hasPermission);
     if (hasPermission != 0) {
         RESSCHED_LOGE("not have permission");
         return false;
