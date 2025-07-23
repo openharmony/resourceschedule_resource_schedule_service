@@ -260,6 +260,26 @@ void RmsApplicationStateObserver::OnAppCacheStateChanged(const AppStateData &app
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_KEY_PERF_SCENE, appStateData.state, payload);
 }
 
+void RmsApplicationStateObserver::MarshallingPreForegroundData(const PreloadProcessData &data, nlohmann::json &payload)
+{
+    payload["isPreForeground"] = data.isPreForeground;
+    payload["pid"] = data.pid;
+    payload["uid"] = data.uid;
+    payload["bundleName"] = data.bundleName;
+}
+
+void RmsApplicationStateObserver::OnProcessPreForegroundChanged(const PreloadProcessData &data)
+{
+    if (data.uid <= 0 || data.pid <= 0) {
+        RESSCHED_LOGE("%{public}s: invalid data %{public}d_%{public}d", __func__, data.uid, data.pid);
+        return;
+    }
+
+    nlohmann::json payload;
+    MarshallingPreForegroundData(data, payload);
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_PROCESS_PRE_FOREGROUND_CHANGE, 0, payload);
+}
+
 void RmsApplicationStateObserver::OnProcessStateChanged(const ProcessData &processData)
 {
     if (!ValidateProcessData(processData)) {
