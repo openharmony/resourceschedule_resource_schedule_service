@@ -25,6 +25,7 @@ using OHOS::AppExecFwk::ApplicationStateObserverStub;
 using OHOS::AppExecFwk::AppStateData;
 using OHOS::AppExecFwk::AbilityStateData;
 using OHOS::AppExecFwk::ProcessData;
+using OHOS::AppExecFwk::PreloadProcessData;
 
 class RmsApplicationStateObserver : public ApplicationStateObserverStub {
 public:
@@ -37,6 +38,7 @@ public:
     void OnProcessStateChanged(const ProcessData &processData) override;
     void OnAppStateChanged(const AppStateData &appStateData) override;
     void OnAppCacheStateChanged(const AppStateData &appStateData) override;
+    void OnProcessPreForegroundChanged(const PreloadProcessData &preloadProcessData) override;
     void OnAppStopped(const AppStateData &appStateData) override;
 
 private:
@@ -66,6 +68,7 @@ private:
     }
     void MarshallingProcessData(const ProcessData &processData, nlohmann::json &payload);
     void MarshallingAppStateData(const AppStateData &appStateData, nlohmann::json &payload);
+    void MarshallingPreForegroundData(const PreloadProcessData &data, nlohmann::json &payload);
     bool IsUIExtensionAbilityStateChanged(const AbilityStateData &abilityStateData);
 
     static std::unordered_map<int32_t, int32_t> extensionStateToAbilityState_;

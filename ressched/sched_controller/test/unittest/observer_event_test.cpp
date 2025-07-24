@@ -1247,7 +1247,25 @@ HWTEST_F(ObserverEventTest, RmsApplicationStateObserver_004, testing::ext::TestS
     observer->OnProcessStateChanged(processData);
     SUCCEED();
 }
- 
+
+/**
+ * @tc.name: RmsApplicationStateObserver_005
+ * @tc.desc: test for OnProcessPreForegroundChanged
+ * @tc.type: FUNC
+ */
+HWTEST_F(ObserverEventTest, RmsApplicationStateObserver_005, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    PreloadProcessData processData;
+    observer->OnProcessPreForegroundChanged(processData);
+    processData.isPreForeground = true;
+    processData.pid = 100;
+    processData.uid = 1000;
+    processData.bundleName = "test";
+    observer->OnProcessPreForegroundChanged(processData);
+}
+
 /**
  * @tc.name: WindowStateObserver_001
  * @tc.desc: test for OnFocused, OnUnfocused
