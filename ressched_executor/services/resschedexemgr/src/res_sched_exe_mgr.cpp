@@ -80,7 +80,8 @@ int32_t ResSchedExeMgr::SendRequestSync(uint32_t resType, int64_t value,
     RSSEXE_LOGD("ResSchedExeMgr receive sync request resType = %{public}u, value = %{public}lld.",
         resType, (long long)value);
     std::string funcName = std::string(__func__).append("_").append(std::to_string(resType))
-        .append("_").append(std::to_string(value));    HicollieUtil hicollie(funcName);
+        .append("_").append(std::to_string(value));
+    HicollieUtil hicollie(funcName);
     std::string traceStr = BuildTraceStr(__func__, resType, value);
     HitraceScoped hitrace(HITRACE_TAG_OHOS, traceStr);
     switch (resType) {
