@@ -318,6 +318,7 @@ ohos_static_library("resschedsvc_static") {
 
   external_deps = [
     "ability_base:want",
+    "ability_runtime:ability_manager",
     "ability_runtime:app_manager",
     "ability_runtime:connection_obs_manager",
     "ability_runtime:dataobs_manager",
