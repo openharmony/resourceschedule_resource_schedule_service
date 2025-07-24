@@ -23,7 +23,6 @@
 #include <linux/limits.h>
 #include "nlohmann/json.hpp"
 #include "securec.h"
-#include "process_group_log.h"
 #include "res_common_util.h"
 #include "res_exe_type.h"
 #include "res_sched_exe_client.h"
