@@ -36,6 +36,8 @@ namespace {
     const std::string ITEM_KEY_CAPACITY = "capacity";
     const std::string CONFIG_NAME_SOCPERF_FEATURE_SWITCH = "socperfFeatureSwitch";
     const std::string CONFIG_NAME_SOCPERF_EVENT_ID = "socperfEventId";
+    const std::string CONFIG_NAME_SOCPERF_POLICY_MODE = "socperfPolicyMode";
+    const std::string CONFIG_NAME_SOCPERF_LIMIT_POLICY = "limitPolicy";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_ON_DEMAND = "socperf_on_demand";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST = "socperf_game_boost";
     const std::string CONFIG_NAME_SOCPERF_BUNDLE_NAME_BOOST_LIST = "socperfBundleNameBoostList";
@@ -55,6 +57,7 @@ namespace {
     const std::string CALLING_UID_NAME = "callingUid";
     const std::string SOCPERF_TYPE_ID = "socperf_type_id";
     const std::string SOCPERF_TYPE_RGM = "socperf_type_rgm";
+    const std::string SOCPERF_POLICY_MODE = "socperf_mode";
     const std::string EXTENSION_TYPE_KEY = "extensionType";
     const std::string DEVICE_MODE_TYPE_KEY = "deviceModeType";
     const std::string DEVICE_MODE_PAYMODE_NAME = "deviceMode";
@@ -161,6 +164,7 @@ void SocPerfPlugin::Init()
     InitBundleNameBoostList();
     InitWeakInterAction();
     InitBatteryCapacityLimitFreq();
+    InitPolicyMode();
     SOC_PERF_LOGI("SocPerfPlugin::Init success");
 }
 
@@ -264,6 +268,57 @@ void SocPerfPlugin::InitEventId()
         }
     }
     PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_EVENT_ID);
+}
+
+static std::string GetPolicyMode(const PluginConfig& socperfPolicy)
+{
+    std::string policyMode;
+    for (const Item& item : socperfPolicy.itemList) {
+        for (const SubItem& sub : item.subItemList) {
+            if (sub.name == SOCPERF_POLICY_MODE) {
+                policyMode = sub.value;
+            }
+        }
+    }
+    return policyMode;
+}
+
+static void ApplyPolicyLimits(const PluginConfig& limitPolicy, const std::string& policyMode,
+                              std::optional<bool>& powerLimit, std::optional<bool>& thermalLimit)
+{
+    auto it = std::find_if(limitPolicy.itemList.begin(), limitPolicy.itemList.end(), [&policyMode](const Item& item) {
+        auto tempIt = item.itemProperties.find("key");
+        if (tempIt == item.itemProperties.end()) {
+            return false;
+        }
+        return tempIt->second == policyMode;
+    });
+    if (it == limitPolicy.itemList.end()) {
+        return;
+    }
+
+    const auto& itemList = it->subItemList;
+    for (const auto& item : itemList) {
+        if (item.name == "power_limit") {
+            powerLimit = static_cast<bool>(atoi(item.value.c_str()));
+        }
+        if (item.name == "thermal_limit") {
+            thermalLimit = static_cast<bool>(atoi(item.value.c_str()));
+        }
+    }
+}
+
+void SocPerfPlugin::InitPolicyMode()
+{
+    PluginConfig socperfPolicy = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_POLICY_MODE);
+    PluginConfig limitPolicy = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_LIMIT_POLICY);
+    if (!socperfPolicy.itemList.empty() && !limitPolicy.itemList.empty()) {
+        std::string policyMode = GetPolicyMode(socperfPolicy);
+        ApplyPolicyLimits(limitPolicy, policyMode, powerLimit_, thermalLimit_);
+    }
+
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_POLICY_MODE);
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_LIMIT_POLICY);
 }
 
 bool SocPerfPlugin::InitBundleNameBoostList()
@@ -1767,7 +1822,16 @@ bool SocPerfPlugin::HandleRssCloudConfigUpdate(const std::shared_ptr<ResData>& d
     }
     return true;
 }
- 
+
+static void ReportConfiguredLimitBoost(std::optional<bool>& powerLimit, std::optional<bool>& thermalLimit)
+{
+    if (powerLimit) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(*powerLimit, "type=policy_config");
+    }
+    if (thermalLimit) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(*thermalLimit, "type=policy_config");
+    }
+}
 bool SocPerfPlugin::ReportAbilityStatus(const std::shared_ptr<ResData>& data)
 {
     if (data == nullptr || data->payload == nullptr) {
@@ -1782,6 +1846,7 @@ bool SocPerfPlugin::ReportAbilityStatus(const std::shared_ptr<ResData>& data)
     if (saId == SOC_PERF_SA_ID && data->value > 0) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf start");
         UpdateWeakActionStatus();
+        ReportConfiguredLimitBoost(powerLimit_, thermalLimit_);
         return true;
     }
     return false;
