@@ -161,7 +161,7 @@ void CgroupEventHandler::HandleUIExtensionAbilityStateChange(uint32_t resType, i
         return;
     }
 
-    nlohmann::json& payloadChange = const_cast<nlohmann::json&>(payload);
+    nlohmann::json payloadChange = payload;
     payloadChange["extensionState"] = std::to_string(uiExtensionState);
     HandleExtensionStateChanged(resType, value, payloadChange);
 }
