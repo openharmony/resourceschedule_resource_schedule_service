@@ -854,14 +854,6 @@ enum InnerAudioState : int64_t {
 };
 
 /**
- * @brief game suspend mode state
- */
-enum GameSuspendModeState : int64_t {
-    SET_GAME_SUSPEND_MODE,
-    CANCEL_GAME_SUSPEND_MODE,
-};
-
-/**
  * @brief Sched mode state
  */
 enum SchedMode : int32_t {
@@ -870,6 +862,13 @@ enum SchedMode : int32_t {
     PERF_MODE = 1,
 };
 
+/**
+ * @brief game suspend mode state
+ */
+enum GameSuspendModeState : int64_t {
+    SET_GAME_SUSPEND_MODE,
+    CANCEL_GAME_SUSPEND_MODE,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS

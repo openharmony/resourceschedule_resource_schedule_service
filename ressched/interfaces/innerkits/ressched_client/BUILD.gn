@@ -55,9 +55,12 @@ ohos_source_set("res_sched_service_stub") {
   output_values = get_target_outputs(":res_sched_service_interface")
   sources = filter_include(output_values, [ "*_stub.cpp" ])
   public_configs = []
-  deps = [ ":res_sched_service_interface" ]
-  part_name = "resource_schedule_service"
+  deps = [
+    ":res_sched_service_interface",
+    ":suspend_observer_base_interface",
+  ]
   subsystem_name = "resourceschedule"
+  part_name = "resource_schedule_service"
   external_deps = [
     "c_utils:utils",
     "ipc:ipc_core",
@@ -148,26 +151,26 @@ ohos_shared_library("ressched_client") {
     "samgr:samgr_proxy",
   ]
 
+  public_external_deps = [ "json:nlohmann_json_static" ]
+
   install_images = [
     system_base_dir,
     updater_base_dir,
   ]
-
-  public_external_deps = [ "json:nlohmann_json_static" ]
 
   innerapi_tags = [
     "chipsetsdk_sp_indirect",
     "platformsdk",
   ]
   version_script = "libressched_client.versionscript"
-  subsystem_name = "resourceschedule"
-  part_name = "resource_schedule_service"
-
-  branch_protector_ret = "pac_ret"
 
   sanitize = {
     cfi = true
     cfi_cross_dso = true
     debug = false
   }
+  branch_protector_ret = "pac_ret"
+
+  subsystem_name = "resourceschedule"
+  part_name = "resource_schedule_service"
 }
