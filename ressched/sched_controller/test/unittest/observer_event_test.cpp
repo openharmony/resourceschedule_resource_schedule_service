@@ -35,6 +35,8 @@
 #include "download_upload_observer.h"
 #include "app_state_observer.h"
 #include "window_state_observer.h"
+#include "background_task_observer.h"
+#include "app_startup_scene_rec.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -1164,6 +1166,7 @@ HWTEST_F(ObserverEventTest, RmsApplicationStateObserver_002, testing::ext::TestS
 {
     auto observer = std::make_shared<RmsApplicationStateObserver>();
     EXPECT_TRUE(observer != nullptr);
+    AppStartupSceneRec::GetInstance().Init();
  
     AppExecFwk::AbilityStateData data;
     data.moduleName = "entry";
@@ -1175,7 +1178,7 @@ HWTEST_F(ObserverEventTest, RmsApplicationStateObserver_002, testing::ext::TestS
     data.abilityRecordId = 111;
     data.abilityType = 0;
     data.isFocused = false;
- 
+    data.token = new RmsApplicationStateObserver();
     observer->OnAbilityStateChanged(data);
     observer->OnExtensionStateChanged(data);
     data.bundleName = "";
@@ -1266,6 +1269,15 @@ HWTEST_F(ObserverEventTest, WindowStateObserver_001, testing::ext::TestSize.Leve
     observer->OnUnfocused(info);
     observer->OnFocused(nullptr);
     observer->OnUnfocused(nullptr);
+    auto windowModeObserver = std::make_shared<WindowModeObserver>();
+    windowModeObserver->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_SPLIT);
+    windowModeObserver->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_FLOATING);
+    windowModeObserver->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_FULLSCREEN_FLOATING);
+    windowModeObserver->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_FULLSCREEN);
+    windowModeObserver->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_SPLIT_FLOATING);
+    windowModeObserver->OnWindowModeUpdate(Rosen::WindowModeType::WINDOW_MODE_OTHER);
+    auto pipStateObserver = std::make_shared<PiPStateObserver>();
+    pipStateObserver->OnPiPStateChanged("test", false);
     sleep(1);
     SUCCEED();
 }
@@ -1307,6 +1319,37 @@ HWTEST_F(ObserverEventTest, WindowDrawingContentObserver_001, testing::ext::Test
     OHOS::sptr<OHOS::Rosen::WindowDrawingContentInfo> info = new OHOS::Rosen::WindowDrawingContentInfo();
     changeInfo.push_back(info);
     observer->OnWindowDrawingContentChanged(changeInfo);
+}
+
+/**
+ * @tc.name: BackgroundTaskObserver_001
+ * @tc.desc: test for BackgroundTaskObserver
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest, BackgroundTaskObserver_001, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<BackgroundTaskObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    std::shared_ptr<TransientTaskAppInfo> info = std::make_shared<TransientTaskAppInfo>("test", 1000, 1000);
+    observer->OnTransientTaskStart(info);
+    observer->OnTransientTaskEnd(info);
+    observer->OnTransientTaskErr(info);
+    observer->OnAppTransientTaskStart(info);
+    observer->OnAppTransientTaskEnd(info);
+    std::vector<uint32_t> typeIds = { 1 };
+    std::shared_ptr<ContinuousTaskCallbackInfo> info2 = std::make_shared<ContinuousTaskCallbackInfo>(1,
+        1000, 1000, "test", false, false, typeIds, -1, 0);
+    observer->OnContinuousTaskStart(info2);
+    observer->OnContinuousTaskStop(info2);
+    observer->OnContinuousTaskUpdate(info2);
+    std::shared_ptr<BackgroundTaskMgr::ResourceCallbackInfo> callbackInfo =
+        std::make_shared<BackgroundTaskMgr::ResourceCallbackInfo>(1000, 1000, 1, "test");
+    observer->OnAppEfficiencyResourcesApply(callbackInfo);
+    observer->OnAppEfficiencyResourcesReset(callbackInfo);
+    observer->OnProcEfficiencyResourcesApply(callbackInfo);
+    observer->OnProcEfficiencyResourcesReset(callbackInfo);
 }
 }
 }

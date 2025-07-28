@@ -50,6 +50,7 @@ ohos_unittest("event_controller_test") {
     "window_manager:libwm",
     "window_manager:libwm_lite",
     "window_manager:libwmutil_base",
+    "ffrt:libffrt",
   ]
 
   defines = []
@@ -87,6 +88,10 @@ ohos_unittest("event_controller_test") {
       "core_service:tel_core_service_api",
       "state_registry:tel_state_registry_api",
     ]
+  }
+  if (has_bg_task_mgr) {
+    defines += [ "CONFIG_BGTASK_MGR" ]
+    external_deps += [ "background_task_mgr:bgtaskmgr_innerkits" ]
   }
   if (rss_mmi_enable) {
     defines += [ "MMI_ENABLE" ]
