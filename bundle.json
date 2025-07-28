@@ -48,7 +48,6 @@
         "data_share",
         "eventhandler",
         "ffrt",
-        "hicollie",
         "frame_aware_sched",
         "hilog",
         "hisysevent",
