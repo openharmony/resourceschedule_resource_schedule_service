@@ -30,6 +30,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+using namespace EventFwk;
 class EventControllerTest : public testing::Test {
 public:
     static void SetUpTestCase() {}
@@ -260,6 +261,391 @@ HWTEST_F(EventControllerTest, bootCompleted_001, testing::ext::TestSize.Level1)
     AAFwk::Want want;
     EventFwk::CommonEventData data;
     want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: userSwitch_001
+ * @tc.desc: test the userSwitch_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, userSwitch_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: userRemove_001
+ * @tc.desc: test the userRemove_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, userRemove_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: unlockScreen_001
+ * @tc.desc: test the unlockScreen_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, unlockScreen_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("common.event.UNLOCK_SCREEN");
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: lockScreen_001
+ * @tc.desc: test the lockScreen_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, lockScreen_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("common.event.LOCK_SCREEN");
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: callStateChange_001
+ * @tc.desc: test the callStateChange_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, callStateChange_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_CALL_STATE_CHANGED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: timezoneChange_001
+ * @tc.desc: test the timezoneChange_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, timezoneChange_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(CommonEventSupport::COMMON_EVENT_TIMEZONE_CHANGED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: timeChange_001
+ * @tc.desc: test the timeChange_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, timeChange_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_TIME_CHANGED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: nitzTimeChange_001
+ * @tc.desc: test the nitzTimeChange_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, nitzTimeChange_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_NITZ_TIME_CHANGED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+
+/**
+ * @tc.name: nitzTimezoneChange_001
+ * @tc.desc: test the nitzTimezoneChange_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, nitzTimezoneChange_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_NITZ_TIMEZONE_CHANGED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: charging_001
+ * @tc.desc: test the charging_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, charging_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_CHARGING);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: discharging_001
+ * @tc.desc: test the discharging_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, discharging_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_DISCHARGING);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: usbDeviceAttached_001
+ * @tc.desc: test the usbDeviceAttached_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, usbDeviceAttached_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_USB_DEVICE_ATTACHED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: usbDeviceDetached_001
+ * @tc.desc: test the usbDeviceDetached_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, usbDeviceDetached_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_USB_DEVICE_DETACHED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: wifiP2PStateChange_001
+ * @tc.desc: test the wifiP2PStateChange_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, wifiP2PStateChange_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_WIFI_P2P_STATE_CHANGED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: powerSaveModeChange_001
+ * @tc.desc: test the powerSaveModeChange_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, powerSaveModeChange_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_POWER_SAVE_MODE_CHANGED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: wifiPowerState_001
+ * @tc.desc: test the wifiPowerState_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, wifiPowerState_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_WIFI_POWER_STATE);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: powerConnected_001
+ * @tc.desc: test the powerConnected_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, powerConnected_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_POWER_CONNECTED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: powerDisconnected_001
+ * @tc.desc: test the powerDisconnected_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, powerDisconnected_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_POWER_DISCONNECTED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: cameraStatus_001
+ * @tc.desc: test the cameraStatus_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, cameraStatus_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.CAMERA_STATUS");
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: configUpdate_001
+ * @tc.desc: test the configUpdate_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, configUpdate_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.DUA_SA_CFG_UPDATED");
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: gameStatusChange_001
+ * @tc.desc: test the gameStatusChange_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, gameStatusChange_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.gameservice.GAME_STATUS_CHANGE_UNI");
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: userSleepStateChange_001
+ * @tc.desc: test the userSleepStateChange_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, userSleepStateChange_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("common.event.USER_NOT_CARE_CHARGE_SLEEP");
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: batteryChange_001
+ * @tc.desc: test the batteryChange_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, batteryChange_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_BATTERY_CHANGED);
+    data.SetWant(want);
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: packageInstallStarted_001
+ * @tc.desc: test the packageInstallStarted_001
+ * @tc.type: FUNC
+ * @tc.require: issuesICOFZ6
+ */
+HWTEST_F(EventControllerTest, packageInstallStarted_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction(CommonEventSupport::COMMON_EVENT_PACKAGE_INSTALLATION_STARTED);
     data.SetWant(want);
     EventController::GetInstance().OnReceiveEvent(data);
     EXPECT_NE(want.GetAction(), "");
