@@ -48,7 +48,7 @@ namespace {
     static const int32_t PLUGIN_SWITCH_FILE_IDX = 0;
     static const int32_t CONFIG_FILE_IDX = 1;
     static const int32_t SIMPLIFY_LIB_INDEX = 3;
-    static const int32_t SIMPLIFY_LIB_LENGTH = 5;
+    static const int32_t SIMPLIFY_LIB_LENGTH = 2;
     static const int32_t MAX_FILE_LENGTH = 32 * 1024 * 1024;
     static const int32_t PLUGIN_REQUEST_ERROR = -1;
     static const char* RUNNER_NAME = "rssDispatcher";
@@ -397,9 +397,6 @@ bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>&
 inline void BuildSimplifyLibAll(const std::list<std::string>& pluginList, std::string& simplifyLibAll)
 {
     for (const auto& libName : pluginList) {
-        if (simplifyLibAll.length() != 0) {
-            simplifyLibAll.append(":");
-        }
         simplifyLibAll.append(libName.substr(SIMPLIFY_LIB_INDEX, SIMPLIFY_LIB_LENGTH));
     }
 }
