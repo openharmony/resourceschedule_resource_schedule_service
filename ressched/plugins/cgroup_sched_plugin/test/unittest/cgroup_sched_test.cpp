@@ -1076,11 +1076,13 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_027, Function | Med
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
     payload["isPreloadModule"] = std::to_string(0);
+    payload["processName"] = "com.ohos.test1";
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
     cgroupEventHandler->HandleProcessCreated(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) != nullptr);
     EXPECT_FALSE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->processType_ == ProcRecordType::RENDER);
+    EXPECT_FALSE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetName() == "com.ohos.test1");
     payload["pid"] = std::to_string(23456);
     cgroupEventHandler->HandleProcessCreated(resType, value, payload);
     payload["pid"] = std::to_string(45678);
