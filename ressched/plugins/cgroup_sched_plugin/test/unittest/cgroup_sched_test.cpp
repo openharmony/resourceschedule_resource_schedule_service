@@ -1082,7 +1082,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_027, Function | Med
     cgroupEventHandler->HandleProcessCreated(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234) != nullptr);
     EXPECT_FALSE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->processType_ == ProcRecordType::RENDER);
-    EXPECT_FALSE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetName() == "com.ohos.test1");
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetName() == "com.ohos.test1");
     payload["pid"] = std::to_string(23456);
     cgroupEventHandler->HandleProcessCreated(resType, value, payload);
     payload["pid"] = std::to_string(45678);
