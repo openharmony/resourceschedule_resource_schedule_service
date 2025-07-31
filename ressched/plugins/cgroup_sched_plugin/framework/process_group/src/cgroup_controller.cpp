@@ -121,7 +121,7 @@ bool CgroupController::GetTaskGroup(int tid, std::string& subgroup)
 {
     std::string content;
     if (!ReadFileToStringForVFSFromExecutor(tid, content)) {
-        CGS_LOGE("%{public}s: fail to read pid %{public}d cgroup proc", __func__, tid);
+        CGS_LOGD("%{public}s: fail to read pid %{public}d cgroup proc", __func__, tid);
         return false;
     }
     std::string cgTag = StringPrintf(":%s:", name_.c_str());

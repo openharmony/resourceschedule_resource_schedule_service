@@ -134,7 +134,7 @@ bool CgroupMap::LoadSchedPolicyConfig(CgroupController& controller, const nlohma
             continue;
         }
         if (!policyObj.contains(keyString) || !policyObj.at(keyString).is_string()) {
-            CGS_LOGE("%{public}s %s is not properly configed.", __func__, keyString);
+            CGS_LOGD("%{public}s %{public}s is not properly configed.", __func__, keyString);
             continue;
         }
         if (controller.AddSchedPolicy(policy, policyObj[keyString].get<std::string>())) {
