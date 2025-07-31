@@ -31,6 +31,7 @@ config("service_private_config") {
 }
 
 ohos_shared_library("resschedexesvc") {
+  cflags_cc = [ "-fstack-protector-strong" ]
   configs = [ ":service_private_config" ]
 
   public_configs = [ ":service_public_config" ]
@@ -40,10 +41,10 @@ ohos_shared_library("resschedexesvc") {
   include_dirs = []
 
   sources = [
+    "${resschedexe_common}/src/executor_hitrace_chain.cpp",
     "${resschedexe_plugins}/resschedfwk/src/config_reader.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_mgr.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_switch.cpp",
-    "${resschedexe_common}/src/executor_hitrace_chain.cpp",
     "resschedexemgr/src/res_sched_exe_mgr.cpp",
     "resschedexeservice/src/res_sched_exe_service.cpp",
   ]
@@ -109,10 +110,10 @@ ohos_static_library("resschedexesvc_static") {
   include_dirs = []
 
   sources = [
+    "${resschedexe_common}/src/executor_hitrace_chain.cpp",
     "${resschedexe_plugins}/resschedfwk/src/config_reader.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_mgr.cpp",
     "${resschedexe_plugins}/resschedfwk/src/plugin_switch.cpp",
-    "${resschedexe_common}/src/executor_hitrace_chain.cpp",
     "resschedexemgr/src/res_sched_exe_mgr.cpp",
     "resschedexeservice/src/res_sched_exe_service.cpp",
   ]
