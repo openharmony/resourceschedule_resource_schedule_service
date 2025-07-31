@@ -1619,12 +1619,12 @@ bool SocPerfPlugin::HandleBatteryStatusChange(const std::shared_ptr<ResData>& da
         return ret;
     }
     if (data->payload == nullptr || !data->payload.contains(COMMON_EVENT_CHARGE_STATE) ||
-        !data->payload.at(COMMON_EVENT_CHARGE_STATE).is_number_integer()) {
+        !data->payload.at(COMMON_EVENT_CHARGE_STATE).is_string()) {
         SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryStatusChange invalid data payload");
         return ret;
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleBatteryStatusChange: %{public}lld", (long long)data->value);
-    int32_t chargeState = data->payload[COMMON_EVENT_CHARGE_STATE];
+    int32_t chargeState = atoi(data->payload[COMMON_EVENT_CHARGE_STATE].get<std::string>().c_str());
     if (chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_ENABLE) ||
         chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_FULL)) {
         ret = HandleFreqLimit(data, true);
