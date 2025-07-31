@@ -112,8 +112,9 @@ ohos_source_set("suspend_manager_base_client") {
 
 ohos_shared_library("ressched_client") {
   configs = [ ":client_private_config" ]
-
+  cflags_cc = [ "-fstack-protector-strong" ]
   public_configs = [ ":client_public_config" ]
+
   deps = [
     ":res_sched_event_listener_interface",
     ":res_sched_service_interface",
