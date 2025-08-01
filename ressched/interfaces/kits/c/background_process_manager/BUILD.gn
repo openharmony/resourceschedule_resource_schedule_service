@@ -45,6 +45,8 @@ ohos_shared_library("background_process_manager") {
 
   sources = [ "${ressched_interfaces}/kits/c/background_process_manager/src/background_process_manager.cpp" ]
 
+  cflags_cc = [ "-fstack-protector-strong" ]
+
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
   relative_install_dir = "ndk"
