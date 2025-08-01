@@ -732,7 +732,7 @@ HWTEST_F(ResSchedServiceTest, RemoteRequest002, Function | MediumTest | Level0)
  * @tc.name: Ressched service GetSystemLoadLevel debug 001
  * @tc.desc: Test resschedService DumpSetSystemLoad Err Param Num
  * @tc.type: FUNC
- * @tc.require: issueTEST
+ * @tc.require: issue#ICQCY1
  * @tc.author: jiangfeng
  */
 HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad001, Function | MediumTest | Level0)
@@ -753,7 +753,7 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad001, Function | MediumTest | Le
  * @tc.name: Ressched service GetSystemLoadLevel debug 002
  * @tc.desc: Test resschedService DumpSetSystemLoad Close Debug
  * @tc.type: FUNC
- * @tc.require: issueTEST
+ * @tc.require: issue#ICQCY1
  * @tc.author: jiangfeng
  */
 HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad002, Function | MediumTest | Level0)
@@ -775,7 +775,7 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad002, Function | MediumTest | Le
  * @tc.name: Ressched service GetSystemLoadLevel debug 003
  * @tc.desc: Test resschedService DumpSetSystemLoad over Maximum
  * @tc.type: FUNC
- * @tc.require: issueTEST
+ * @tc.require: issue#ICQCY1
  * @tc.author: jiangfeng
  */
 HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad003, Function | MediumTest | Level0)
@@ -797,7 +797,7 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad003, Function | MediumTest | Le
  * @tc.name: Ressched service GetSystemLoadLevel debug 004
  * @tc.desc: Test resschedService DumpSetSystemLoad err num
  * @tc.type: FUNC
- * @tc.require: issueTEST
+ * @tc.require: issue#ICQCY1
  * @tc.author: jiangfeng
  */
 HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad004, Function | MediumTest | Level0)
@@ -819,7 +819,7 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad004, Function | MediumTest | Le
  * @tc.name: Ressched service GetSystemLoadLevel debug 005
  * @tc.desc: Test resschedService DumpSetSystemLoad valid value(3) and start debug
  * @tc.type: FUNC
- * @tc.require: issueTEST
+ * @tc.require: issue#ICQCY1
  * @tc.author: jiangfeng
  */
 HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad005, Function | MediumTest | Level0)
@@ -841,7 +841,7 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad005, Function | MediumTest | Le
  * @tc.name: Ressched service GetSystemLoadLevel debug 006
  * @tc.desc: Test resschedService DumpSetSystemLoad reset
  * @tc.type: FUNC
- * @tc.require: issueTEST
+ * @tc.require: issue#ICQCY1
  * @tc.author: jiangfeng
  */
 HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad006, Function | MediumTest | Level0)
@@ -863,7 +863,7 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad006, Function | MediumTest | Le
  * @tc.name: Ressched service OnDeviceLevelChanged Debug 001
  * @tc.desc: Test OnDeviceLevelChanged when debugReport is false and debugEnable is close
  * @tc.type: FUNC
- * @tc.require: issueTEST
+ * @tc.require: issue#ICQCY1
  * @tc.author: jiangfeng
  */
 HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug001, Function | MediumTest | Level0)
@@ -888,7 +888,7 @@ HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug001, Function | MediumTes
  * @tc.name: Ressched service OnDeviceLevelChanged Debug 002
  * @tc.desc: Test OnDeviceLevelChanged when debugReport is false and debugEnable is open
  * @tc.type: FUNC
- * @tc.require: issueTEST
+ * @tc.require: issue#ICQCY1
  * @tc.author: jiangfeng
  */
 HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug002, Function | MediumTest | Level0)
@@ -915,7 +915,7 @@ HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug002, Function | MediumTes
  * @tc.name: Ressched service OnDeviceLevelChanged Debug 003
  * @tc.desc: Test OnDeviceLevelChanged when debugReport is TRUE and debugEnable is open
  * @tc.type: FUNC
- * @tc.require: issueTEST
+ * @tc.require: issue#ICQCY1
  * @tc.author: jiangfeng
  */
 HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug003, Function | MediumTest | Level0)
@@ -942,7 +942,7 @@ HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug003, Function | MediumTes
  * @tc.name: Ressched service OnDeviceLevelChanged Debug 004
  * @tc.desc: Test other level, Forward directly
  * @tc.type: FUNC
- * @tc.require: issueTEST
+ * @tc.require: issue#ICQCY1
  * @tc.author: jiangfeng
  */
 HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug003, Function | MediumTest | Level0)
