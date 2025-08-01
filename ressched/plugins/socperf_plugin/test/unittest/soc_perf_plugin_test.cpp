@@ -1247,34 +1247,35 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_046, Function | MediumTes
  */
 HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_047, Function | MediumTest | Level0)
 {
+    SocPerfPlugin::GetInstance().HandleBatteryStatusChange(nullptr);
     std::shared_ptr<ResData> invalidData;
     bool rc = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(invalidData);
     EXPECT_EQ(rc, false);
- 
+
     invalidData = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 100, nullptr);
     rc = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(invalidData);
     EXPECT_EQ(rc, false);
- 
+
     struct Frequencies frequencies;
     SocPerfPlugin::GetInstance().socperfBatteryConfig_[90] = frequencies;
     rc = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(invalidData);
     EXPECT_EQ(rc, false);
- 
+
     nlohmann::json payload1;
     payload1["chargeState"] = 1;
     const std::shared_ptr<ResData>& invalidData2 = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 50, payload1);
     rc = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(invalidData2);
     EXPECT_EQ(rc, false);
- 
+
     nlohmann::json payload2;
     payload2["chargeState"] = "1";
     const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 50, payload2);
     bool ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData1);
     EXPECT_TRUE(ret);
- 
+
     nlohmann::json payload3;
     payload3["chargeState"] = "2";
     const std::shared_ptr<ResData>& validData2 = std::make_shared<ResData>(
@@ -1540,12 +1541,12 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_054, Function | MediumTes
 }
 
 /*
- * @tc.name: SocPerfPluginTest_API_TEST_055
+ * @tc.name: SocPerfPluginTest_API_TEST_056
  * @tc.desc: test socperfplugin api
  * @tc.type FUNC
  * @tc.require: issueICBQWP
  */
-HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_055, Function | MediumTest | Level0)
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_056, Function | MediumTest | Level0)
 {
     std::shared_ptr<ResData> invalidData;
     bool rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
@@ -1561,7 +1562,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_055, Function | MediumTes
     rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(invalidData);
     EXPECT_EQ(rc, false);
     payload1["schedMode"] = "perfMode";
- 
+
     std::shared_ptr<ResData> validData = std::make_shared<ResData>(
         ResType::RES_TYPE_SCHED_MODE_CHANGE, 1, payload1);
     rc = SocPerfPlugin::GetInstance().HandleSchedModeChange(validData);
@@ -1730,7 +1731,24 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_060, Function | MediumTes
     std::string deviceOrientationType = "deviceOrientation";
     bool ret = SocPerfPlugin::GetInstance().HandleSceenOrientationBoost(deviceOrientationType);
     EXPECT_TRUE(ret);
-    
+
+    payload["deviceModeType"] = "deviceModeType";
+    payload["deviceMode"] = "displayGlobalFull";
+    invalidPayload = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
+        ResType::DeviceModeStatus::MODE_ENTER, payload);
+    SocPerfPlugin::GetInstance().HandleDeviceModeStatusChange(invalidPayload);
+    normalValuedata = std::make_shared <ResData>(ResType::RES_TYPE_SCREEN_STATUS,
+        ResType::ScreenStatus::SCREEN_ON, nullptr);
+    SocPerfPlugin::GetInstance().HandleScreenStatusAnalysis(normalValuedata);
+    payload1["deviceModeType"] = "deviceOrientation";
+    payload1["deviceMode"] = "displayPortrait";
+    invalidPayload1 = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_ORIENTATION_STATUS,
+        ResType::DeviceModeStatus::MODE_ENTER, payload1);
+    SocPerfPlugin::GetInstance().HandleDeviceOrientationStatusChange(invalidPayload1);
+    deviceOrientationType = "deviceOrientation";
+    ret = SocPerfPlugin::GetInstance().HandleSceenOrientationBoost(deviceOrientationType);
+    EXPECT_TRUE(ret);
+
     payload["deviceModeType"] = "deviceModeType";
     payload["deviceMode"] = "displayFull";
     invalidPayload = std::make_shared<ResData>(ResType::RES_TYPE_DEVICE_MODE_STATUS,
