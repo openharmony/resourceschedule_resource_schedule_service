@@ -122,7 +122,6 @@ private:
     std::atomic<int32_t> actualSystemLoadLevel_ = {0};
     std::atomic<int32_t> debugSystemLoadLevel_ = {0};
     std::atomic<bool> systemLoadLevelDebugEnable_ = {false};
-
     std::mutex mutex_;
     std::mutex permissionCacheMutex_;
     std::unordered_set<uint32_t> allowSCBReportRes_;

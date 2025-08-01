@@ -436,7 +436,7 @@ ErrCode ResSchedService::GetResTypeList(std::set<uint32_t>& resTypeList)
     return ERR_OK;
 }
 
-void ResSchedService::OnDeviceLevelChanged(int32_t type, int32_t level, bool debugReport = false)
+void ResSchedService::OnDeviceLevelChanged(int32_t type, int32_t level, bool debugReport)
 {
     auto cbType = static_cast<ResType::DeviceStatus>(type);
     if (cbType == ResType::DeviceStatus::SYSTEMLOAD_LEVEL) {
@@ -528,6 +528,7 @@ bool ResSchedService::CheckENGMode()
         RESSCHED_LOGE("Not eng mode");
         return false;
     }
+    return true;
 }
 
 int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& args)
@@ -655,7 +656,7 @@ void ResSchedService::DumpSetSystemLoad(const std::vector<std::string>& args, st
             systemLoadLevelDebugEnable_ = false;
             debugSystemLoadLevel_ = 0;
             result.append("Set SystemLoad Close\n");
-            onDeviceLevelChanged(ResType::DeviceStatus::SYSTEMLOAD_LEVEL. actualSystemLoadLevel_, false);
+            OnDeviceLevelChanged(ResType::DeviceStatus::SYSTEMLOAD_LEVEL. actualSystemLoadLevel_, false);
             return;
         }
         int32_t switchInfo;
@@ -666,9 +667,9 @@ void ResSchedService::DumpSetSystemLoad(const std::vector<std::string>& args, st
         if (switchInfo <= SYSYTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL::DEBUG_LEVEL_MAXIMUM &&
             switchInfo >= SYSYTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL::DEBUG_LEVEL_MINIMUM) {
             systemLoadLevelDebugEnable_ = true;
-            debugSystemLoadLevel = switchInfo;
+            debugSystemLoadLevel_ = switchInfo;
             result.append("setSystemLoadLevel Debug On with Level: ").append(ToString(switchInfo)).append("\n");
-            onDeviceLevelChanged(ResType::DeviceStatus::SYSTEMLOAD_LEVEL. debugSystemLoadLevel, true);
+            OnDeviceLevelChanged(ResType::DeviceStatus::SYSTEMLOAD_LEVEL. debugSystemLoadLevel_, true);
         } else {
             result.append("Err setSystemLoadLevel param. Please insert 0-7 to start debug, \"reset\" to close debug");
         }
