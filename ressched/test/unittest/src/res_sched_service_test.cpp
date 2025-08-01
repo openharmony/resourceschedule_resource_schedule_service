@@ -877,7 +877,7 @@ HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug001, Function | MediumTes
     int32_t level = 5;
     bool debugReport = false;
 
-    resSchedService_->OnDeviceLevelchanged(type, level, debugReport);
+    resSchedService_->OnDeviceLevelChanged(type, level, debugReport);
     
     EXPECT_EQ(resSchedService_->actualSystemLoadLevel_, level);
     EXPECT_EQ(resSchedService_->debugSystemLoadLevel_, 0);
@@ -904,7 +904,7 @@ HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug002, Function | MediumTes
     resSchedService_->debugSystemLoadLevel_ = 3;
     resSchedService_->systemLoadLevelDebugEnable_ = true;
 
-    resSchedService_->OnDeviceLevelchanged(type, level, debugReport);
+    resSchedService_->OnDeviceLevelChanged(type, level, debugReport);
     
     EXPECT_EQ(resSchedService_->actualSystemLoadLevel_, level);
     EXPECT_EQ(resSchedService_->debugSystemLoadLevel_, 3);
@@ -931,7 +931,7 @@ HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug003, Function | MediumTes
     resSchedService_->debugSystemLoadLevel_ = 3;
     resSchedService_->systemLoadLevelDebugEnable_ = true;
 
-    resSchedService_->OnDeviceLevelchanged(type, level, debugReport);
+    resSchedService_->OnDeviceLevelChanged(type, level, debugReport);
     
     EXPECT_EQ(resSchedService_->actualSystemLoadLevel_, 0); // if debugReport is true, cur variable will not change
     EXPECT_EQ(resSchedService_->debugSystemLoadLevel_, 3);
@@ -956,7 +956,7 @@ HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug003, Function | MediumTes
     int32_t level = 5;
     bool debugReport = false;
 
-    resSchedService_->OnDeviceLevelchanged(type, level, debugReport);
+    resSchedService_->OnDeviceLevelChanged(type, level, debugReport);
     EXPECT_EQ(resSchedService_->actualSystemLoadLevel_, 0); // if debugReport is true, cur variable will not change
     EXPECT_EQ(resSchedService_->debugSystemLoadLevel_, 0);
     EXPECT_FALSE(resSchedService_->systemLoadLevelDebugEnable_);
