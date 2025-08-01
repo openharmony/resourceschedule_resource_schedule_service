@@ -1322,6 +1322,37 @@ HWTEST_F(ObserverEventTest, WindowStateObserver_002, testing::ext::TestSize.Leve
 }
  
 /**
+ * @tc.name: WindowStateObserver_003
+ * @tc.desc: test for OnWindowModeUpdate
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest, WindowStateObserver_003, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<WindowModeObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    observer->OnWindowModeUpdate(WindowModeType::WINDOW_MODE_SPLIT);
+    sleep(1);
+    SUCCEED();
+}
+/**
+ * @tc.name: WindowStateObserver_004
+ * @tc.desc: test for OnPiPStateChanged
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest, WindowStateObserver_004, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<PiPStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    observer->OnPiPStateChanged("bundleName",false);
+    sleep(1);
+    SUCCEED();
+}
+
+/**
  * @tc.name: WindowDrawingContentObserver_001
  * @tc.desc: test for OnWindowDrawingContentChanged
  * @tc.type: FUNC
@@ -1337,6 +1368,40 @@ HWTEST_F(ObserverEventTest, WindowDrawingContentObserver_001, testing::ext::Test
     OHOS::sptr<OHOS::Rosen::WindowDrawingContentInfo> info = new OHOS::Rosen::WindowDrawingContentInfo();
     changeInfo.push_back(info);
     observer->OnWindowDrawingContentChanged(changeInfo);
+}
+
+/**
+ * @tc.name: AppStartupSceneRec_001
+ * @tc.desc: test for RecordIsContinuousStartup
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,AppStartupSceneRec_001,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<AppStartupSceneRec>();
+    EXPECT_TRUE(observer != nullptr);
+    observer->Init();
+    observer->RecordIsContinuousStartup("01","TEST");
+    sleep(1);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: AppStartupSceneRec_002
+ * @tc.desc: test for IsAppStartUp
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,AppStartupSceneRec_002,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<AppStartupSceneRec>();
+    EXPECT_TRUE(observer != nullptr);
+    observer->Init();
+    EXPECT_TRUE(observer->IsAppStartUp(0));
+    EXPECT_FALSE(observer->IsAppStartUp(1));
+    SUCCEED();
 }
 
 /**
@@ -1368,6 +1433,357 @@ HWTEST_F(ObserverEventTest, BackgroundTaskObserver_001, testing::ext::TestSize.L
     observer->OnAppEfficiencyResourcesReset(callbackInfo);
     observer->OnProcEfficiencyResourcesApply(callbackInfo);
     observer->OnProcEfficiencyResourcesReset(callbackInfo);
+}
+
+/**
+ * @tc.name: BackgroundTaskObserver_002
+ * @tc.desc: test for OnAppTransientTaskStart,OnAppTransientTaskEnd
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,BackgroundTaskObserver_002,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<BackgroundTaskObserver>();
+    auto info = std::make_shared<TransientTaskAppInfo>();
+    EXPECT_TRUE(observer != nullptr);
+    EXPECT_TRUE(info != nullptr);
+    observer->OnAppTransientTaskStart(info);
+    observer->OnAppTransientTaskEnd(info);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: BackgroundTaskObserver_003
+ * @tc.desc: test for ,OnContinuousTaskStart,OnContinuousTaskStop,OnContinuousTaskUpdate
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,BackgroundTaskObserver_003,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<BackgroundTaskObserver>();
+    auto info = std::make_shared<ContinuousTaskCallbackInfo>();
+    EXPECT_TRUE(observer != nullptr);
+    EXPECT_TRUE(info != nullptr);
+    observer->OnContinuousTaskStart(info);
+    observer->OnContinuousTaskStop(info);
+    observer->OnContinuousTaskUpdate(info);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: BackgroundTaskObserver_004
+ * @tc.desc: test for ,OnContinuousTaskStart,OnContinuousTaskStop,OnContinuousTaskUpdate
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,BackgroundTaskObserver_004,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<BackgroundTaskObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    const sptr<IRemoteObject> sptrDeath = nullptr;
+    wptr<IRemoteObject> wptrDeath = sptrDeath;
+    observer->OnRemoteDied(wptrDeath);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: BackgroundTaskObserver_005
+ * @tc.desc: test for OnAppEfficiencyResourcesApply,OnAppEfficiencyResourcesReset
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,BackgroundTaskObserver_005,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<BackgroundTaskObserver>();
+    auto info = std::make_shared<ResourceCallbackInfo>();
+    EXPECT_TRUE(observer != nullptr);
+    EXPECT_TRUE(info != nullptr);
+    observer->OnAppEfficiencyResourcesApply(info);
+    observer->OnAppEfficiencyResourcesReset(info);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: BackgroundTaskObserver_006
+ * @tc.desc: test for OnAppEfficiencyResourcesApply,OnAppEfficiencyResourcesReset
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,BackgroundTaskObserver_006,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<BackgroundTaskObserver>();
+    auto info = std::make_shared<ResourceCallbackInfo>();
+    EXPECT_TRUE(observer != nullptr);
+    EXPECT_TRUE(info != nullptr);
+    observer->OnProcEfficiencyResourcesApply(info);
+    observer->OnProcEfficiencyResourcesReset(info);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: BackgroundTaskObserver_007
+ * @tc.desc: test for OnTransientTaskStart,OnTransientTaskEnd,OnTransientTaskErr
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,BackgroundTaskObserver_007,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<BackgroundTaskObserver>();
+    auto info = std::make_shared<TransientTaskAppInfo>();
+    EXPECT_TRUE(observer != nullptr);
+    EXPECT_TRUE(info != nullptr);
+    observer->OnTransientTaskStart(info);
+    observer->OnTransientTaskEnd(info);
+    observer->OnTransientTaskErr(info);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: AppStateObserver_001
+ * @tc.desc: test for OnForegroundApplicationChanged
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,AppStateObserver_001,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    AppExecFwk::AppStateData data;
+    data.bundleName = "com.ohos.test";
+    data.pid = 999;
+    data.uid = 1000;
+    data.state = 0;
+    data.accessTokenId = 0;
+    data.isFocused = false;
+    observer->OnForegroundApplicationChanged(data);
+    SUCCEED();
+}
+
+ /**
+ * @tc.name: AppStateObserver_002
+ * @tc.desc: test for OnAbilityStateChanged
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,AppStateObserver_002,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    AppExecFwk::AbilityStateData data;
+    data.moduleName = "entry";
+    data.bundleName = "com.ohos.test";
+    data.abilityName = "MainAbility";
+    data.abilityState = 0;
+    data.pid = 999;
+    data.uid = 1000;
+    data.abilityRecordId = 111;
+    data.abilityType = 0;
+    data.isFocused = false;
+    observer->OnAbilityStateChanged(data);
+    SUCCEED();
+}
+
+ /**
+ * @tc.name: AppStateObserver_003
+ * @tc.desc: test for OnExtensionStateChanged
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,AppStateObserver_003,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    AppExecFwk::AbilityStateData data;
+    data.moduleName = "entry";
+    data.bundleName = "com.ohos.test";
+    data.abilityName = "MainAbility";
+    data.abilityState = 0;
+    data.pid = 999;
+    data.uid = 1000;
+    data.abilityRecordId = 111;
+    data.abilityType = 0;
+    data.isFocused = false;
+    observer->OnExtensionStateChanged(data);
+    SUCCEED();
+}
+
+ /**
+ * @tc.name: AppStateObserver_004
+ * @tc.desc: test for OnProcessCreated
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,AppStateObserver_004,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    AppExecFwk::ProcessData data;
+    data.bundleName = "com.ohos.test";
+    data.pid = 999;
+    data.uid = 1000;
+    data.state = AppExecFwk::AppProcessState::APP_STATE_CREATE;
+    data.isContinuousTask = false;
+    data.isKeepAlive = false;
+    data.isFocused = false;
+    observer->OnProcessCreated(data);
+    SUCCEED();
+}
+
+ /**
+ * @tc.name: AppStateObserver_005
+ * @tc.desc: test for OnProcessDied
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,AppStateObserver_005,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    AppExecFwk::ProcessData data;
+    data.bundleName = "com.ohos.test";
+    data.pid = 999;
+    data.uid = 1000;
+    data.state = AppExecFwk::AppProcessState::APP_STATE_CREATE;
+    data.isContinuousTask = false;
+    data.isKeepAlive = false;
+    data.isFocused = false;
+    observer->OnProcessDied(data);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: AppStateObserver_006
+ * @tc.desc: test for OnApplicationStateChanged
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,AppStateObserver_006,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    AppStateData appStateData;
+    appStateData.pid = 100;
+    appStateData.uid = 1000;
+    appStateData.bundleName = "test";
+    appStateData.extensionType = AppExecFwk::ExtensionAbilityType::UNSPECIFIED;
+    observer->OnApplicationStateChanged(appStateData);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: AppStateObserver_007
+ * @tc.desc: test for OnProcessStateChanged
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,AppStateObserver_007,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    AppExecFwk::ProcessData data;
+    data.bundleName = "com.ohos.test";
+    data.pid = 999;
+    data.uid = 1000;
+    data.state = AppExecFwk::AppProcessState::APP_STATE_CREATE;
+    data.isContinuousTask = false;
+    data.isKeepAlive = false;
+    data.isFocused = false;
+    observer->OnProcessStateChanged(data);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: AppStateObserver_008
+ * @tc.desc: test for OnAppStateChanged
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,AppStateObserver_008,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    AppStateData appStateData;
+    appStateData.pid = 100;
+    appStateData.uid = 1000;
+    appStateData.bundleName = "test";
+    appStateData.extensionType = AppExecFwk::ExtensionAbilityType::UNSPECIFIED;
+    observer->OnAppStateChanged(appStateData);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: AppStateObserver_009
+ * @tc.desc: test for OnAppCacheStateChanged
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,AppStateObserver_009,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    AppStateData appStateData;
+    appStateData.pid = 100;
+    appStateData.uid = 1000;
+    appStateData.bundleName = "test";
+    appStateData.extensionType = AppExecFwk::ExtensionAbilityType::UNSPECIFIED;
+    observer->OnAppCacheStateChanged(appStateData);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: AppStateObserver_010
+ * @tc.desc: test for OnProcessPreForegroundChanged
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,AppStateObserver_010,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    PreloadProcessData processData;
+    observer->OnProcessPreForegroundChanged(processData);
+    processData.isPreForeground = true;
+    processData.pid = 100;
+    processData.uid = 1000;
+    processData.bundleName = "test";
+    observer->OnProcessPreForegroundChanged(processData);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: AppStateObserver_011
+ * @tc.desc: test for OnAppStopped
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest,AppStateObserver_011,testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    AppStateData appStateData;
+    appStateData.pid = 100;
+    appStateData.uid = 1000;
+    appStateData.bundleName = "test";
+    appStateData.extensionType = AppExecFwk::ExtensionAbilityType::UNSPECIFIED;
+    observer->OnAppStopped(appStateData);
+    SUCCEED();
 }
 }
 }

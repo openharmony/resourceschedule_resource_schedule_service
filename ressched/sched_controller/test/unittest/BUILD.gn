@@ -24,6 +24,7 @@ ohos_unittest("event_controller_test") {
   include_dirs = [
     "${ressched_common}/include",
     "${ressched_interfaces}/innerkits/ressched_client/include",
+    "${ressched_sched_controller}/observer/include"
   ]
 
   sources = [
@@ -39,6 +40,7 @@ ohos_unittest("event_controller_test") {
     "ability_runtime:app_manager",
     "ability_runtime:connection_obs_manager",
     "ability_runtime:wantagent_innerkits",
+    "background_task_mgr:bgtaskmgr_innerkits",
     "bundle_framework:appexecfwk_base",
     "common_event_service:cesfwk_innerkits",
     "hilog:libhilog",
@@ -54,7 +56,7 @@ ohos_unittest("event_controller_test") {
   ]
 
   defines = []
-
+  defines += [ "CONFIG_BGTASK_MGR" ]
   if (resource_schedule_service_with_app_nap_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE" ]
     external_deps += [ "hisysevent:libhisyseventmanager" ]
@@ -88,10 +90,6 @@ ohos_unittest("event_controller_test") {
       "core_service:tel_core_service_api",
       "state_registry:tel_state_registry_api",
     ]
-  }
-  if (has_bg_task_mgr) {
-    defines += [ "CONFIG_BGTASK_MGR" ]
-    external_deps += [ "background_task_mgr:bgtaskmgr_innerkits" ]
   }
   if (rss_mmi_enable) {
     defines += [ "MMI_ENABLE" ]
