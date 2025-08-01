@@ -1377,7 +1377,7 @@ HWTEST_F(ObserverEventTest, WindowDrawingContentObserver_001, testing::ext::Test
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStartupSceneRec_001, testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, AppStartupSceneRec_001, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<AppStartupSceneRec>();
     EXPECT_TRUE(observer != nullptr);
@@ -1394,7 +1394,7 @@ HWTEST_F(ObserverEventTest,AppStartupSceneRec_001, testing::ext::TestSize.Level1
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStartupSceneRec_002, testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, AppStartupSceneRec_002, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<AppStartupSceneRec>();
     EXPECT_TRUE(observer != nullptr);
