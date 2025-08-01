@@ -656,7 +656,7 @@ void ResSchedService::DumpSetSystemLoad(const std::vector<std::string>& args, st
             systemLoadLevelDebugEnable_ = false;
             debugSystemLoadLevel_ = 0;
             result.append("Set SystemLoad Close\n");
-            OnDeviceLevelChanged(ResType::DeviceStatus::SYSTEMLOAD_LEVEL. actualSystemLoadLevel_, false);
+            OnDeviceLevelChanged(ResType::DeviceStatus::SYSTEMLOAD_LEVEL, actualSystemLoadLevel_, false);
             return;
         }
         int32_t switchInfo;
@@ -669,7 +669,7 @@ void ResSchedService::DumpSetSystemLoad(const std::vector<std::string>& args, st
             systemLoadLevelDebugEnable_ = true;
             debugSystemLoadLevel_ = switchInfo;
             result.append("setSystemLoadLevel Debug On with Level: ").append(ToString(switchInfo)).append("\n");
-            OnDeviceLevelChanged(ResType::DeviceStatus::SYSTEMLOAD_LEVEL. debugSystemLoadLevel_, true);
+            OnDeviceLevelChanged(ResType::DeviceStatus::SYSTEMLOAD_LEVEL, debugSystemLoadLevel_, true);
         } else {
             result.append("Err setSystemLoadLevel param. Please insert 0-7 to start debug, \"reset\" to close debug");
         }
