@@ -192,7 +192,7 @@ namespace {
     enum SYSYTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL : int32_t {
         DEBUG_LEVEL_MINIMUM = 0,
         DEBUG_LEVEL_MAXIMUM = 7,
-    }
+    };
 }
 
 bool ResSchedService::IsThirdPartType(const uint32_t type)
