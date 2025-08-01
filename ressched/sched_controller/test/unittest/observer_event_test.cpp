@@ -1347,7 +1347,7 @@ HWTEST_F(ObserverEventTest, WindowStateObserver_004, testing::ext::TestSize.Leve
 {
     auto observer = std::make_shared<PiPStateObserver>();
     EXPECT_TRUE(observer != nullptr);
-    observer->OnPiPStateChanged("bundleName",false);
+    observer->OnPiPStateChanged("bundleName", false);
     sleep(1);
     SUCCEED();
 }
@@ -1377,12 +1377,12 @@ HWTEST_F(ObserverEventTest, WindowDrawingContentObserver_001, testing::ext::Test
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStartupSceneRec_001,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest,AppStartupSceneRec_001, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<AppStartupSceneRec>();
     EXPECT_TRUE(observer != nullptr);
     observer->Init();
-    observer->RecordIsContinuousStartup("01","TEST");
+    observer->RecordIsContinuousStartup("01", "TEST");
     sleep(1);
     SUCCEED();
 }
@@ -1394,7 +1394,7 @@ HWTEST_F(ObserverEventTest,AppStartupSceneRec_001,testing::ext::TestSize.Level1)
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStartupSceneRec_002,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest,AppStartupSceneRec_002, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<AppStartupSceneRec>();
     EXPECT_TRUE(observer != nullptr);
@@ -1442,7 +1442,7 @@ HWTEST_F(ObserverEventTest, BackgroundTaskObserver_001, testing::ext::TestSize.L
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,BackgroundTaskObserver_002,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, BackgroundTaskObserver_002, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<BackgroundTaskObserver>();
     auto info = std::make_shared<TransientTaskAppInfo>();
@@ -1460,7 +1460,7 @@ HWTEST_F(ObserverEventTest,BackgroundTaskObserver_002,testing::ext::TestSize.Lev
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,BackgroundTaskObserver_003,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, BackgroundTaskObserver_003, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<BackgroundTaskObserver>();
     auto info = std::make_shared<ContinuousTaskCallbackInfo>();
@@ -1479,7 +1479,7 @@ HWTEST_F(ObserverEventTest,BackgroundTaskObserver_003,testing::ext::TestSize.Lev
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,BackgroundTaskObserver_004,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, BackgroundTaskObserver_004, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<BackgroundTaskObserver>();
     EXPECT_TRUE(observer != nullptr);
@@ -1496,7 +1496,7 @@ HWTEST_F(ObserverEventTest,BackgroundTaskObserver_004,testing::ext::TestSize.Lev
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,BackgroundTaskObserver_005,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, BackgroundTaskObserver_005, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<BackgroundTaskObserver>();
     auto info = std::make_shared<ResourceCallbackInfo>();
@@ -1514,7 +1514,7 @@ HWTEST_F(ObserverEventTest,BackgroundTaskObserver_005,testing::ext::TestSize.Lev
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,BackgroundTaskObserver_006,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, BackgroundTaskObserver_006, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<BackgroundTaskObserver>();
     auto info = std::make_shared<ResourceCallbackInfo>();
@@ -1532,7 +1532,7 @@ HWTEST_F(ObserverEventTest,BackgroundTaskObserver_006,testing::ext::TestSize.Lev
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,BackgroundTaskObserver_007,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, BackgroundTaskObserver_007, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<BackgroundTaskObserver>();
     auto info = std::make_shared<TransientTaskAppInfo>();
@@ -1551,7 +1551,7 @@ HWTEST_F(ObserverEventTest,BackgroundTaskObserver_007,testing::ext::TestSize.Lev
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStateObserver_001,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, AppStateObserver_001, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<RmsApplicationStateObserver>();
     EXPECT_TRUE(observer != nullptr);
@@ -1573,7 +1573,7 @@ HWTEST_F(ObserverEventTest,AppStateObserver_001,testing::ext::TestSize.Level1)
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStateObserver_002,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, AppStateObserver_002, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<RmsApplicationStateObserver>();
     EXPECT_TRUE(observer != nullptr);
@@ -1598,7 +1598,7 @@ HWTEST_F(ObserverEventTest,AppStateObserver_002,testing::ext::TestSize.Level1)
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStateObserver_003,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, AppStateObserver_003, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<RmsApplicationStateObserver>();
     EXPECT_TRUE(observer != nullptr);
@@ -1623,7 +1623,7 @@ HWTEST_F(ObserverEventTest,AppStateObserver_003,testing::ext::TestSize.Level1)
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStateObserver_004,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, AppStateObserver_004, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<RmsApplicationStateObserver>();
     EXPECT_TRUE(observer != nullptr);
@@ -1646,7 +1646,7 @@ HWTEST_F(ObserverEventTest,AppStateObserver_004,testing::ext::TestSize.Level1)
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStateObserver_005,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, AppStateObserver_005, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<RmsApplicationStateObserver>();
     EXPECT_TRUE(observer != nullptr);
@@ -1669,7 +1669,7 @@ HWTEST_F(ObserverEventTest,AppStateObserver_005,testing::ext::TestSize.Level1)
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStateObserver_006,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, AppStateObserver_006, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<RmsApplicationStateObserver>();
     EXPECT_TRUE(observer != nullptr);
@@ -1689,7 +1689,7 @@ HWTEST_F(ObserverEventTest,AppStateObserver_006,testing::ext::TestSize.Level1)
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStateObserver_007,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, AppStateObserver_007, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<RmsApplicationStateObserver>();
     EXPECT_TRUE(observer != nullptr);
@@ -1712,7 +1712,7 @@ HWTEST_F(ObserverEventTest,AppStateObserver_007,testing::ext::TestSize.Level1)
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStateObserver_008,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, AppStateObserver_008, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<RmsApplicationStateObserver>();
     EXPECT_TRUE(observer != nullptr);
@@ -1732,7 +1732,7 @@ HWTEST_F(ObserverEventTest,AppStateObserver_008,testing::ext::TestSize.Level1)
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStateObserver_009,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, AppStateObserver_009, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<RmsApplicationStateObserver>();
     EXPECT_TRUE(observer != nullptr);
@@ -1752,7 +1752,7 @@ HWTEST_F(ObserverEventTest,AppStateObserver_009,testing::ext::TestSize.Level1)
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStateObserver_010,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, AppStateObserver_010, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<RmsApplicationStateObserver>();
     EXPECT_TRUE(observer != nullptr);
@@ -1773,7 +1773,7 @@ HWTEST_F(ObserverEventTest,AppStateObserver_010,testing::ext::TestSize.Level1)
  * @tc.require:
  * @tc.desc:
  */
-HWTEST_F(ObserverEventTest,AppStateObserver_011,testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, AppStateObserver_011, testing::ext::TestSize.Level1)
 {
     auto observer = std::make_shared<RmsApplicationStateObserver>();
     EXPECT_TRUE(observer != nullptr);
