@@ -45,12 +45,12 @@ ohos_shared_library("socperf_plugin") {
     defines += [ "RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE" ]
   }
   if (ressched_with_resourceschedule_soc_perf_enable &&
-      resource_schedule_service_cust_soc_perf_enable) {
-    defines += [ "RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE" ]
-  }
-  if (ressched_with_resourceschedule_soc_perf_enable &&
       resource_schedule_service_crown_power_key_enable) {
     defines += [ "RESSCHED_RESOURCESCHEDULE_CROWN_POWER_KEY_ENABLE" ]
+  }
+  if (ressched_with_resourceschedule_soc_perf_enable &&
+      resource_schedule_service_cust_soc_perf_enable) {
+    defines += [ "RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE" ]
   }
   if (ressched_with_resourceschedule_soc_perf_enable &&
       resource_schedule_service_file_copy_soc_perf_enable) {

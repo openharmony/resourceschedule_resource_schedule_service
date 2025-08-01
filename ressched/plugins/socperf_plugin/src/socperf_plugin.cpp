@@ -403,10 +403,10 @@ void SocPerfPlugin::InitFunctionMap()
             [this](const std::shared_ptr<ResData>& data) { HandleAppStateChange(data); } },
         { RES_TYPE_DEVICE_MODE_STATUS,
             [this](const std::shared_ptr<ResData>& data) { HandleDeviceModeStatusChange(data); } },
-        { RES_TYPE_WEB_DRAG_RESIZE,
-            [this](const std::shared_ptr<ResData>& data) { HandleWebDragResize(data); } },
         { RES_TYPE_ACCOUNT_ACTIVATING,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfAccountActivating(data); } },
+        { RES_TYPE_WEB_DRAG_RESIZE,
+            [this](const std::shared_ptr<ResData>& data) { HandleWebDragResize(data); } },
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
         { RES_TYPE_FILE_COPY_STATUS,
             [this](const std::shared_ptr<ResData>& data) { HandleFileCopyStatus(data); } },
@@ -506,7 +506,6 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_MOUSEWHEEL,
         RES_TYPE_APP_STATE_CHANGE,
         RES_TYPE_DEVICE_MODE_STATUS,
-        RES_TYPE_WEB_DRAG_RESIZE,
         RES_TYPE_ACCOUNT_ACTIVATING,
         RES_TYPE_DEVICE_ORIENTATION_STATUS,
 #ifdef RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
@@ -524,6 +523,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_APP_INSTALL_UNINSTALL,
         RES_TYPE_MMI_INPUT_POWER_KEY,
         RES_TYPE_CROWN_ROTATION_STATUS,
+        RES_TYPE_WEB_DRAG_RESIZE,
         RES_TYPE_PROCESS_STATE_CHANGE,
         RES_TYPE_REPORT_CAMERA_STATE,
         RES_TYPE_REPORT_GAME_STATE_CHANGE,
@@ -620,13 +620,27 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
             UpdateUidToAppMsgMap(data, appType, bundleName);
         }
         if (appType == APP_TYPE_GAME) {
-            SOC_PERF_LOGD("SocPerfPlugin: socperf->Game cold start");
+            SOC_PERF_LOGI("SocPerfPlugin: socperf->Game cold start");
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_GAME_START, "");
         }
     } else if (data->value == AppStartType::APP_WARM_START) {
         SOC_PERF_LOGD("SocPerfPlugin: socperf->APP_WARM_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WARM_START, "");
     }
+}
+
+bool SocPerfPlugin::HandleSocperfSceneBoard(const std::shared_ptr<ResData> &data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->ANIMATION: %{public}lld", (long long)data->value);
+    if (data->value == ShowRemoteAnimationStatus::ANIMATION_BEGIN) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, true, "");
+    } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, false, "");
+    }
+    return true;
 }
 
 bool SocPerfPlugin::UpdateUidToAppMsgMap(const std::shared_ptr<ResData>& data, int32_t appType,
@@ -715,10 +729,8 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
 bool SocPerfPlugin::IsFocusAppsAllGame()
 {
     if (focusAppUids_.empty() || uidToAppMsgMap_.empty()) {
-        unsigned long focusSize = static_cast<unsigned long>(focusAppUids_.size());
-        unsigned long mapSize = static_cast<unsigned long>(uidToAppMsgMap_.size());
         SOC_PERF_LOGD("SocPerfPlugin: IsFoucsAppsAllGame data is empty, %{public}lu, %{public}lu",
-            focusSize, mapSize);
+            focusAppUids_.size(), uidToAppMsgMap_.size());
         return false;
     }
     bool isAllGame = true;
@@ -1185,7 +1197,7 @@ bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& d
     if (screenStatus_ == SCREEN_ON) {
         HandleScreenOn();
     } else if (screenStatus_ == SCREEN_OFF) {
-        //post screen off task with 5000 milliseconds delay, to avoid frequent screen status change.
+        // post screen off task with 5000 milliseconds delay, to avoid frequent screen status change.
         std::function<void()> screenOffFunc = [this]() {
             HandleScreenOff();
         };
@@ -1220,13 +1232,12 @@ bool SocPerfPlugin::HandleSceenModeBoost(const std::string& deviceModeType)
     if (deviceModeType != DISPLAY_MODE_KEY) {
         return false;
     }
-
     std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
     if (deviceMode_ == DISPLAY_MODE_FULL && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_MAIN, false, "");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, false, "");
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, true, "");
     } else if (deviceMode_ == DISPLAY_MODE_MAIN && screenStatus_ == SCREEN_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_MODE_FULL, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L, false, "");
@@ -1246,6 +1257,7 @@ bool SocPerfPlugin::HandleSceenModeBoost(const std::string& deviceModeType)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P, true, "");
     }
 
+    // Check if the device changes the display mode to FULL.
     if (deviceMode_ == DISPLAY_MODE_FULL || deviceMode_ == DISPLAY_MODE_GLOBAL_FULL) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_SWITCHED, true, "");
     }
@@ -1266,6 +1278,8 @@ void SocPerfPlugin::HandleDeviceOrientationStatusChange(const std::shared_ptr<Re
     }
     deviceOrientation_ = data->payload[DEVICE_MODE_PAYMODE_NAME];
     const std::string deviceOrientationType = data->payload[DEVICE_MODE_TYPE_KEY];
+    bool status = (data->value == DeviceModeStatus::MODE_ENTER);
+    SOC_PERF_LOGI("SocPerfPlugin: device mode %{public}s status%{public}d", deviceOrientation_.c_str(), status);
     HandleSceenOrientationBoost(deviceOrientationType);
 }
 
@@ -1307,19 +1321,6 @@ bool SocPerfPlugin::HandlePowerModeChanged(const std::shared_ptr<ResData> &data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerModeStr, false);
     }
     return true;
-}
-
-void SocPerfPlugin::HandleWebDragResize(const std::shared_ptr<ResData>& data)
-{
-    if (data == nullptr) {
-        return;
-    }
-    SOC_PERF_LOGI("SocPerfPlugin: socperf->WEB_DRAG_RESIZE: %{public}lld", (long long)data->value);
-    if (data->value == WebDragResizeStatus::WEB_DRAG_START) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE, "");
-    } else if (data->value == WebDragResizeStatus::WEB_DRAG_END) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE, false, "");
-    }
 }
 
 bool SocPerfPlugin::HandleCameraStateChange(const std::shared_ptr<ResData>& data)
@@ -1387,20 +1388,6 @@ bool SocPerfPlugin::IsAllowBoostScene()
         }
     }
     return ret;
-}
-
-bool SocPerfPlugin::HandleSocperfSceneBoard(const std::shared_ptr<ResData> &data)
-{
-    if (data == nullptr) {
-        return false;
-    }
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->ANIMATION: %{public}lld", (long long)data->value);
-    if (data->value == ShowRemoteAnimationStatus::ANIMATION_BEGIN) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, true, "");
-    } else if (data->value == ShowRemoteAnimationStatus::ANIMATION_END) {
-        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_REMOTE_ANIMATION, false, "");
-    }
-    return true;
 }
 
 bool SocPerfPlugin::HandleProcessStateChange(const std::shared_ptr<ResData> &data)
@@ -1544,6 +1531,19 @@ bool SocPerfPlugin::HandleBmmMoniterStatus(const std::shared_ptr<ResData> &data)
     return false;
 }
 
+void SocPerfPlugin::HandleWebDragResize(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->WEB_DRAG_RESIZE: %{public}lld", (long long)data->value);
+    if (data->value == WebDragResizeStatus::WEB_DRAG_START) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE, "");
+    } else if (data->value == WebDragResizeStatus::WEB_DRAG_END) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_WEB_DRAG_RESIZE, false, "");
+    }
+}
+
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
 bool SocPerfPlugin::HandleFileCopyStatus(const std::shared_ptr<ResData> &data)
 {
@@ -1668,11 +1668,11 @@ bool SocPerfPlugin::HandleRecoverBatteryLimit()
         return false;
     }
     SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleRecoverLimit recover limit on %{public}d", lastBatteryLimitCap_);
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(false, "Low_battery_limit");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(false, "type=Low_battery_limit");
     OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(OHOS::SOCPERF::ActionType::ACTION_TYPE_BATTERY,
         socperfBatteryConfig_[lastBatteryLimitCap_].tags,
         GetConfigs(socperfBatteryConfig_[lastBatteryLimitCap_].configs.size()),
-        "Low_battery_limit");
+        "type=Low_battery_limit");
     lastBatteryLimitCap_ = -1;
     return true;
 }
@@ -1685,11 +1685,11 @@ bool SocPerfPlugin::HandleBatteryLimit(int32_t capacity)
         return false;
     }
     SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleBatteryLimit limit on %{public}d", limitCapacity);
-    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(true, "Low_battery_limit");
+    OHOS::SOCPERF::SocPerfClient::GetInstance().PowerLimitBoost(true, "type=Low_battery_limit");
     OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(OHOS::SOCPERF::ActionType::ACTION_TYPE_BATTERY,
         socperfBatteryConfig_[limitCapacity].tags,
         socperfBatteryConfig_[limitCapacity].configs,
-        "Low_battery_limit");
+        "tpye=Low_battery_limit");
     lastBatteryLimitCap_ = limitCapacity;
     return true;
 }
