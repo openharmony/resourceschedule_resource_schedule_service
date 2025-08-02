@@ -42,6 +42,7 @@ ohos_shared_library("ressched_common_utils") {
     "../common/src/res_sched_time_util.cpp",
   ]
 
+  cflags_cc = [ "-fstack-protector-strong" ]
   deps = []
 
   external_deps = [
