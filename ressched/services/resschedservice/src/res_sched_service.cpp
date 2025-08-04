@@ -19,7 +19,6 @@
 #include <file_ex.h>
 #include <parameters.h>
 #include <string_ex.h>
-#include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
 #include "notifier_mgr.h"
 #include "plugin_mgr.h"
@@ -27,7 +26,6 @@
 #include "res_sched_exe_client.h"
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
-#include "tokenid_kit.h"
 #include "event_listener_mgr.h"
 #include "hisysevent.h"
 #include "res_common_util.h"
@@ -36,7 +34,6 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-using namespace OHOS::Security;
 namespace {
     #define PAYLOAD_MAX_SIZE 4096
     static constexpr int32_t DUMP_OPTION = 0;
@@ -192,6 +189,10 @@ namespace {
         { ResType::RES_TYPE_STANDBY_FREEZE_FAILED, { 1201 } },
         { ResType::RES_TYPE_ADJUST_PROTECTLRU_RECLAIM_RATIO, { 1111 } },
     };
+    enum SYSYTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL : int32_t {
+        DEBUG_LEVEL_MINIMUM = 0,
+        DEBUG_LEVEL_MAXIMUM = 7,
+    };
 }
 
 bool ResSchedService::IsThirdPartType(const uint32_t type)
@@ -251,7 +252,13 @@ bool ResSchedService::IsHasPermission(const uint32_t type, int32_t uid)
         RESSCHED_LOGD("not native sa");
         return false;
     }
-    int32_t hasPermission = AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, NEEDED_PERMISSION);
+    int32_t hasPermission = -1;
+    std::lock_guard<std::mutex> lock(permissionCacheMutex_);
+    if (permissionCache_.get(tokenId, hasPermission)) {
+        return hasPermission == 0;
+    }
+    hasPermission = AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, NEEDED_PERMISSION);
+    permissionCache_.put(tokenId, hasPermission);
     if (hasPermission != 0) {
         RESSCHED_LOGE("not have permission");
         return false;
@@ -415,7 +422,11 @@ ErrCode ResSchedService::UnRegisterEventListener(uint32_t eventType, uint32_t li
 
 ErrCode ResSchedService::GetSystemloadLevel(int32_t& resultValue)
 {
-    resultValue = NotifierMgr::GetInstance().GetSystemloadLevel();
+    if (systemLoadLevelDebugEnable_) {
+        resultValue = debugSystemLoadLevel_;
+    } else {
+        resultValue = NotifierMgr::GetInstance().GetSystemloadLevel();
+    }
     return ERR_OK;
 }
 
@@ -425,8 +436,17 @@ ErrCode ResSchedService::GetResTypeList(std::set<uint32_t>& resTypeList)
     return ERR_OK;
 }
 
-void ResSchedService::OnDeviceLevelChanged(int32_t type, int32_t level)
+void ResSchedService::OnDeviceLevelChanged(int32_t type, int32_t level, bool debugReport)
 {
+    auto cbType = static_cast<ResType::DeviceStatus>(type);
+    if (cbType == ResType::DeviceStatus::SYSTEMLOAD_LEVEL) {
+        if (!debugReport) {
+            actualSystemLoadLevel_ = level;
+        }
+        if (systemLoadLevelDebugEnable_) {
+            level = debugSystemLoadLevel_;
+        }
+    }
     NotifierMgr::GetInstance().OnDeviceLevelChanged(type, level);
 }
 
@@ -491,12 +511,8 @@ ErrCode ResSchedService::IsAllowedLinkJump(bool isAllowedLinkJump, int32_t& resu
     return ERR_OK;
 }
 
-bool ResSchedService::AllowDump()
+bool ResSchedService::CheckDumpPermission()
 {
-    if (ENG_MODE == 0) {
-        RESSCHED_LOGE("Not eng mode");
-        return false;
-    }
     Security::AccessToken::AccessTokenID tokenId = IPCSkeleton::GetCallingTokenID();
     int32_t ret = Security::AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, "ohos.permission.DUMP");
     if (ret != Security::AccessToken::PermissionState::PERMISSION_GRANTED) {
@@ -506,12 +522,17 @@ bool ResSchedService::AllowDump()
     return true;
 }
 
+bool ResSchedService::CheckENGMode()
+{
+    if (ENG_MODE == 0) {
+        RESSCHED_LOGE("Not eng mode");
+        return false;
+    }
+    return true;
+}
+
 int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& args)
 {
-    if (!AllowDump()) {
-        return ERR_RES_SCHED_PERMISSION_DENIED;
-    }
-    RESSCHED_LOGI("%{public}s Dump service.", __func__);
     std::vector<std::string> argsInStr;
     std::transform(args.begin(), args.end(), std::back_inserter(argsInStr),
         [](const std::u16string &arg) {
@@ -519,6 +540,11 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
         RESSCHED_LOGI("%{public}s arg: %{public}s.", __func__, ret.c_str());
         return ret;
     });
+    if (!CheckDumpPermission() ||
+        (!CheckENGMode() && argsInStr.size() > 0 && argsInStr[DUMP_OPTION] != "setSystemLoadLevel")) {
+        return ERR_RES_SCHED_PERMISSION_DENIED;
+    }
+    RESSCHED_LOGI("%{public}s Dump service.", __func__);
     std::string result;
     if (argsInStr.size() == 0) {
         // hidumper -s said '-h'
@@ -533,6 +559,8 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
             PluginMgr::GetInstance().DumpOnePlugin(result, argsInStr[DUMP_PARAM_INDEX], argsInStrToPlugin);
         } else if (argsInStr[DUMP_OPTION] == "sendDebugToExecutor") {
             DumpExecutorDebugCommand(argsInStr, result);
+        } else if (argsInStr[DUMP_OPTION] == "setSystemLoadLevel") {
+            DumpSetSystemLoad(argsInStr, result);
         }
     }
 
@@ -617,6 +645,37 @@ void ResSchedService::DumpExecutorDebugCommand(const std::vector<std::string>& a
         ResSchedExeClient::GetInstance().SendDebugCommand(isSync);
         usleep(internal);
     }
+}
+
+void ResSchedService::DumpSetSystemLoad(const std::vector<std::string>& args, std::string& result)
+{
+    //hidumper -s 1901 -a "setSystemLoadLevel (LevelNum/reset)"
+    if (args.size() == DUMP_PARAM_INDEX + 1) {
+        const std::string& switchStr = args[DUMP_PARAM_INDEX];
+        if (switchStr == "reset") {
+            systemLoadLevelDebugEnable_ = false;
+            debugSystemLoadLevel_ = 0;
+            result.append("Set SystemLoad Close\n");
+            OnDeviceLevelChanged(ResType::DeviceStatus::SYSTEMLOAD_LEVEL, actualSystemLoadLevel_, false);
+            return;
+        }
+        int32_t switchInfo;
+        if (!StrToInt(switchStr, switchInfo)) {
+            result.append("Err setSystemLoadLevel param. Please insert 0-7 to start debug, \"reset\" to close debug");
+            return;
+        }
+        if (switchInfo <= SYSYTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL::DEBUG_LEVEL_MAXIMUM &&
+            switchInfo >= SYSYTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL::DEBUG_LEVEL_MINIMUM) {
+            systemLoadLevelDebugEnable_ = true;
+            debugSystemLoadLevel_ = switchInfo;
+            result.append("setSystemLoadLevel Debug On with Level: ").append(ToString(switchInfo)).append("\n");
+            OnDeviceLevelChanged(ResType::DeviceStatus::SYSTEMLOAD_LEVEL, debugSystemLoadLevel_, true);
+        } else {
+            result.append("Err setSystemLoadLevel param. Please insert 0-7 to start debug, \"reset\" to close debug");
+        }
+        return;
+    }
+    result.append("Err setSystemLoadLevel param num. Please insert one param after \"setSystemLoadLevel\"");
 }
 
 void ResSchedService::DumpAllPluginConfig(std::string &result)

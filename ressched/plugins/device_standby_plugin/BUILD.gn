@@ -29,6 +29,9 @@ ohos_shared_library("device_standby_plugin") {
     cfi_cross_dso = true
     debug = false
   }
+  cflags_cc = [
+    "-fstack-protector-strong",
+  ]
 
   configs = [ ":device_standby_plugin_config" ]
 

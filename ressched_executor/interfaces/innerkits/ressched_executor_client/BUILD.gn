@@ -39,6 +39,7 @@ config("client_public_config") {
 
 ohos_shared_library("resschedexe_client") {
   output_values = get_target_outputs(":ressched_executor_client_interface")
+  cflags_cc = [ "-fstack-protector-strong" ]
 
   configs = [ ":client_private_config" ]
 

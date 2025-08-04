@@ -51,6 +51,8 @@ ohos_fuzztest("ResSchedObserverFuzzTest") {
     "ability_runtime:app_manager",
     "ability_runtime:connection_obs_manager",
     "ability_runtime:wantagent_innerkits",
+    "access_token:libaccesstoken_sdk",
+    "access_token:libtokenid_sdk",
     "bundle_framework:appexecfwk_base",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",

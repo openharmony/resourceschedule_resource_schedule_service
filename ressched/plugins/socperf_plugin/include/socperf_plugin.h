@@ -166,10 +166,9 @@ private:
     void HandleLoadUrl(const std::shared_ptr<ResData>& data);
     void HandleMousewheel(const std::shared_ptr<ResData>& data);
     bool HandleAppStateChange(const std::shared_ptr<ResData>& data);
-    void HandleDeviceModeStatusChange(const std::shared_ptr<ResData>& data);
     void HandleDeviceOrientationStatusChange(const std::shared_ptr<ResData>& data);
-    void HandleWebDragResize(const std::shared_ptr<ResData>& data);
     bool HandleSocperfSceneBoard(const std::shared_ptr<ResData>& data);
+    void HandleDeviceModeStatusChange(const std::shared_ptr<ResData>& data);
     bool HandleSocperfAccountActivating(const std::shared_ptr<ResData> &data);
 #ifdef RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
     bool HandleCustEvent(const std::shared_ptr<ResData>& data);
@@ -197,10 +196,10 @@ private:
     bool InitBundleNameBoostList();
     bool HandleSubValue(const std::string& subValue, std::set<std::string>& nameSet);
     bool IsAllowBoostScene();
-    bool HandleMoveEventBoost(const std::shared_ptr<ResData>& data, bool isSet);
     bool HandleSceenModeBoost(const std::string& deviceModeType);
-    bool HandleSceenOrientationBoost(const std::string& deviceModeType);
+    bool HandleMoveEventBoost(const std::shared_ptr<ResData>& data, bool isSet);
     bool HandleGameStateChange(const std::shared_ptr<ResData>& data);
+    bool HandleSceenOrientationBoost(const std::string& deviceModeType);
     bool UpdateCustGameState(const std::shared_ptr<ResData>& data);
     bool HandleCustAction(const std::shared_ptr<ResData> &data);
     bool HandleRecentBuild(const std::shared_ptr<ResData>& data);
@@ -209,10 +208,8 @@ private:
     bool HandleBatteryStatusChange(const std::shared_ptr<ResData>& data);
     bool HandleBatterySubValue(const int32_t capacity, const int32_t tag, const int64_t config);
     bool HandleFreqLimit(const std::shared_ptr<ResData>& data, bool isChargeState);
-    bool HandleChargingStatusChange(const std::shared_ptr<ResData>& data);
     bool HandleRecoverBatteryLimit();
     bool HandleBatteryLimit(int32_t capacity);
-    bool HandleBatteryQuantityChange(const std::shared_ptr<ResData>& data);
     bool HandlePowerStatusChange(const std::shared_ptr<ResData>& data);
     int32_t GetLimitCapacity(int32_t capacity);
     int32_t GetPidByData(const std::shared_ptr<ResData>& data, const std::string& key);
@@ -222,6 +219,7 @@ private:
     void HandleContinuousDrag(int64_t dragStatus);
     std::vector<int64_t> GetConfigs(int32_t size);
     std::string GetBundleNameByUid(const int32_t uid);
+    void HandleWebDragResize(const std::shared_ptr<ResData>& data);
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
     bool HandleFileCopyStatus(const std::shared_ptr<ResData>& data);
 #endif

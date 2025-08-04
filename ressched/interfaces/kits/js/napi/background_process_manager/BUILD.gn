@@ -40,6 +40,8 @@ ohos_shared_library("backgroundprocessmanager_napi") {
 
   sources = [ "src/background_process_manager_napi_init.cpp" ]
 
+  cflags_cc = [ "-fstack-protector-strong" ]
+
   relative_install_dir = "module/resourceschedule"
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

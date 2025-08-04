@@ -39,7 +39,7 @@ ErrCode ResSchedService::GetSuspendStateByUid(const int32_t uid, bool &isFrozen,
     ReportSyncEvent(
         ResType::SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_UID, 0, payloadValue, replyValue, ret);
 
-    nlohmann::json reply;
+    nlohmann::json reply {};
     reply = StringToJsonObj(replyValue);
     if (ret == ERR_OK && !reply.is_null() && reply.contains("isFrozen") && reply.at("isFrozen").is_boolean()) {
         isFrozen = reply["isFrozen"].get<bool>();
@@ -61,7 +61,7 @@ ErrCode ResSchedService::GetSuspendStateByPid(const int32_t pid, bool &isFrozen,
     ReportSyncEvent(
         ResType::SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_PID, 0, payloadValue, replyValue, ret);
 
-    nlohmann::json reply;
+    nlohmann::json reply {};
     reply = StringToJsonObj(replyValue);
     if (ret == ERR_OK && !reply.is_null() && reply.contains("isFrozen") && reply.at("isFrozen").is_boolean()) {
         isFrozen = reply["isFrozen"].get<bool>();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,22 +13,25 @@
  * limitations under the License.
  */
 
-#include "process_group_log.h"
-#include <vector>  // for vector
+
+#ifndef LRU_CACHE_TEST
+#define LRU_CACHE_TEST
+
+#include "gtest/gtest.h"
+#include "res_sched_lru_cache.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
-namespace CgroupSetting {
-LogLevel ProcessGroupLog::level_ = { LOG_DEBUG };
-
-bool ProcessGroupLog::JudgeLevel(const LogLevel &level)
-{
-    const LogLevel &curLevel = ProcessGroupLog::GetLogLevel();
-    if (level < curLevel) {
-        return false;
-    }
-    return true;
-}
-} // namespace CgroupSetting
+class ResschedLRUCacheTest : public testing::Test {
+public:
+    static void SetUpTestCase();
+    static void TearDownTestCase();
+    void SetUp();
+    void TearDown();
+private:
+    ResschedLRUCache<int, std::string>* cache;
+};
 } // namespace ResourceSchedule
 } // namespace OHOS
+
+#endif // LRU_CACHE_TEST

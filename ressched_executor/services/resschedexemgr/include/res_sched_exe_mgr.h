@@ -75,14 +75,6 @@ private:
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
     void InitPluginMgrPretreatment(const nlohmann::json& payload);
 
-    class HicollieUtil {
-        public:
-            HicollieUtil(const std::string& name);
-            ~HicollieUtil();
-        private:
-            int id_;
-    };
-
     bool isInit = false;
     int ipcNumber_ = 0;
     std::map<int, std::string> ipcMessage_ = {};

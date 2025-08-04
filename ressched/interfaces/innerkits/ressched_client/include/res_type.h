@@ -367,6 +367,8 @@ enum : uint32_t {
     RES_TYPE_ADJUST_PROTECTLRU_RECLAIM_RATIO = 171,
     // report kernel standby failed
     RES_TYPE_STANDBY_FREEZE_FAILED = 172,
+    // report process pre foreground state change
+    RES_TYPE_PROCESS_PRE_FOREGROUND_CHANGE = 173,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

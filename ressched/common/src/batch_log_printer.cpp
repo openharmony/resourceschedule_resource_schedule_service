@@ -47,7 +47,7 @@ void BatchLogPrinter::SubmitLog(const std::string& log)
 
 void BatchLogPrinter::RecordLog(const std::string& log, const int64_t& timestamp)
 {
-    std::string recordLog = ResCommonUtil::ConvertTimestampToStr(timestamp) + ":" + log;
+    std::string recordLog = std::to_string(timestamp) + ":" + log;
     allLogs_.push_back(recordLog);
     auto currentTImestamp = ResCommonUtil::GetNowMillTime(true);
     if (allLogs_.size() >= PRINT_SIZE || currentTImestamp - lastPrintTimestamp_ >= PRINT_DUATION) {

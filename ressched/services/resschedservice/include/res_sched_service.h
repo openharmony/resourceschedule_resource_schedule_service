@@ -22,9 +22,13 @@
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
 #include "res_type.h"
 #endif
+#include "res_sched_lru_cache.h"
+#include "tokenid_kit.h"
+#include "accesstoken_kit.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
+using namespace OHOS::Security;
 class ResSchedService : public ResSchedServiceStub {
 public:
     ResSchedService() = default;
@@ -50,7 +54,7 @@ public:
 
     ErrCode GetResTypeList(std::set<uint32_t>& resTypeList) override;
 
-    void OnDeviceLevelChanged(int32_t type, int32_t level);
+    void OnDeviceLevelChanged(int32_t type, int32_t level, bool debugReport = false);
 
     ErrCode IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode, bool& resultValue) override;
 
@@ -81,7 +85,9 @@ private:
     void DumpUsage(std::string &result);
     void DumpExt(const std::vector<std::string>& argsInStr, std::string &result);
     void DumpExecutorDebugCommand(const std::vector<std::string>& args, std::string& result);
-    bool AllowDump();
+    void DumpSetSystemLoad(const std::vector<std::string>& args, std::string& result);
+    bool CheckDumpPermission();
+    bool CheckENGMode();
 
     nlohmann::json StringToJsonObj(const std::string& str);
     int32_t CheckReportDataParcel(const uint32_t& type, const int64_t& value, const std::string& payload, int32_t uid);
@@ -113,12 +119,17 @@ private:
     std::atomic<int64_t> nextReportBigDataTime_ = {0};
     std::atomic<bool> isReportBigData_ = {false};
     std::atomic<bool> isPrintLimitLog_ = {true};
+    std::atomic<int32_t> actualSystemLoadLevel_ = {0};
+    std::atomic<int32_t> debugSystemLoadLevel_ = {0};
+    std::atomic<bool> systemLoadLevelDebugEnable_ = {false};
     std::mutex mutex_;
+    std::mutex permissionCacheMutex_;
     std::unordered_set<uint32_t> allowSCBReportRes_;
     std::unordered_set<uint32_t> allowAllSAReportRes_;
     std::unordered_map<uint32_t, std::unordered_set<int32_t>> allowSomeSAReportRes_;
     std::unordered_set<uint32_t> allowAllAppReportRes_;
     std::unordered_set<uint32_t> allowFgAppReportRes_;
+    ResschedLRUCache<AccessToken::AccessTokenID, int32_t> permissionCache_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
