@@ -143,8 +143,6 @@ ohos_shared_library("ressched_client") {
     "ffrt:libffrt",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
-    "ipc:ipc_core",
-    "ipc:ipc_single",
     "samgr:samgr_proxy",
   ]
 
@@ -153,7 +151,11 @@ ohos_shared_library("ressched_client") {
     updater_base_dir,
   ]
 
-  public_external_deps = [ "json:nlohmann_json_static" ]
+  public_external_deps = [
+    "json:nlohmann_json_static",
+    "ipc:ipc_core",
+    "ipc:ipc_single",
+  ]
 
   innerapi_tags = [
     "chipsetsdk_sp_indirect",
