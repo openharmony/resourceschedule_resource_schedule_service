@@ -945,7 +945,7 @@ HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug003, Function | MediumTes
  * @tc.require: issue#ICQCY1
  * @tc.author: jiangfeng
  */
-HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug003, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug004, Function | MediumTest | Level0)
 {
     std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
     EXPECT_TRUE(resSchedService_ != nullptr);
