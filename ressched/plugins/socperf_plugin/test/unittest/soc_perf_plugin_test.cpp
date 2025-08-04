@@ -1390,14 +1390,14 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_050, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleBatterySubValue(95, 1003, 1152000);
     SocPerfPlugin::GetInstance().HandleBatterySubValue(95, 1005, 1210000);
     nlohmann::json payload1;
-    payload1["chargeState"] = 1;
+    payload1["chargeState"] = "1";
     const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 90, payload1);
     bool ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData1);
     EXPECT_TRUE(ret);
 
     nlohmann::json payload2;
-    payload2["chargeState"] = 3;
+    payload2["chargeState"] = "3";
     const std::shared_ptr<ResData>& validData2 = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 90, payload2);
     ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData2);
