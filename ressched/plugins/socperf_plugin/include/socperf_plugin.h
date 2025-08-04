@@ -198,8 +198,8 @@ private:
     bool IsAllowBoostScene();
     bool HandleSceenModeBoost(const std::string& deviceModeType);
     bool HandleMoveEventBoost(const std::shared_ptr<ResData>& data, bool isSet);
-    bool HandleSceenOrientationBoost(const std::string& deviceModeType);
     bool HandleGameStateChange(const std::shared_ptr<ResData>& data);
+    bool HandleSceenOrientationBoost(const std::string& deviceModeType);
     bool UpdateCustGameState(const std::shared_ptr<ResData>& data);
     bool HandleCustAction(const std::shared_ptr<ResData> &data);
     bool HandleRecentBuild(const std::shared_ptr<ResData>& data);

@@ -1407,7 +1407,7 @@ bool SocPerfPlugin::HandleDeadProcess(const std::shared_ptr<ResData>& data)
     pidToAppTypeMap_.erase(pid);
     return true;
 }
- 
+
 int32_t SocPerfPlugin::GetPidByData(const std::shared_ptr<ResData>& data, const std::string& key)
 {
     if (data->payload == nullptr || !data->payload.contains(key) ||
@@ -1689,7 +1689,7 @@ bool SocPerfPlugin::HandleBatteryLimit(int32_t capacity)
     OHOS::SOCPERF::SocPerfClient::GetInstance().LimitRequest(OHOS::SOCPERF::ActionType::ACTION_TYPE_BATTERY,
         socperfBatteryConfig_[limitCapacity].tags,
         socperfBatteryConfig_[limitCapacity].configs,
-        "tpye=Low_battery_limit");
+        "type=Low_battery_limit");
     lastBatteryLimitCap_ = limitCapacity;
     return true;
 }
