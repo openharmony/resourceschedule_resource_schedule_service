@@ -147,12 +147,14 @@ ohos_shared_library("ressched_client") {
     "ffrt:libffrt",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
-    "ipc:ipc_core",
-    "ipc:ipc_single",
     "samgr:samgr_proxy",
   ]
 
-  public_external_deps = [ "json:nlohmann_json_static" ]
+  public_external_deps = [
+    "json:nlohmann_json_static",
+    "ipc:ipc_core",
+    "ipc:ipc_single",
+  ]
 
   install_images = [
     system_base_dir,
