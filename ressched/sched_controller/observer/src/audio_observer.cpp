@@ -95,7 +95,7 @@ void AudioObserver::OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent)
         volumeEvent.volumeType, volumeEvent.volume);
     auto item = volumeState_.find(volumeEvent.volumeType);
     if (item != volumeState_.end() && item->second == volumeEvent.volume) {
-        RESSCHED_LOGI("volume not change");
+        RESSCHED_LOGD("volume not change");
         return;
     }
     nlohmann::json payload;

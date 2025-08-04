@@ -216,7 +216,7 @@ void NotifierMgr::OnDeviceLevelChanged(int32_t type, int32_t level)
     for (auto& vec : g_systemloadPair) {
         if (systemloadLevel_ == vec.second) {
             if (SaveStringToFile(SYSTEMLOAD_FILE, vec.first)) {
-                RESSCHED_LOGI("save systemload succeed,systemload is %{public}d", (int)vec.second);
+                RESSCHED_LOGD("save systemload succeed,systemload is %{public}d", (int)vec.second);
             } else {
                 RESSCHED_LOGW("save systemload failed,systemload is %{public}d", (int)vec.second);
             }

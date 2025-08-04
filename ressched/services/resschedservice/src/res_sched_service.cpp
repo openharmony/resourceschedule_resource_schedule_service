@@ -209,7 +209,7 @@ bool ResSchedService::IsThirdPartType(const uint32_t type)
     AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
     auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
     if (tokenType != Security::AccessToken::ATokenTypeEnum::TOKEN_HAP) {
-        RESSCHED_LOGE("not hap app");
+        RESSCHED_LOGD("not hap app");
         return false;
     }
     return true;
