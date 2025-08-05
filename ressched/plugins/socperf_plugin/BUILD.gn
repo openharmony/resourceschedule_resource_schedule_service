@@ -56,6 +56,10 @@ ohos_shared_library("socperf_plugin") {
       resource_schedule_service_file_copy_soc_perf_enable) {
     defines += [ "RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE" ]
   }
+  if (ressched_with_resourceschedule_soc_perf_enable && 
+      resource_schedule_service_turbo_mode_soc_perf_enable) {
+    defines += ["RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE"]
+  }
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
   branch_protector_ret = "pac_ret"
