@@ -1263,21 +1263,21 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_047, Function | MediumTes
     EXPECT_EQ(rc, false);
 
     nlohmann::json payload1;
-    payload1["chargeState"] = 1;
+    payload1["chargeState"] = "num";
     const std::shared_ptr<ResData>& invalidData2 = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 50, payload1);
     rc = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(invalidData2);
     EXPECT_EQ(rc, false);
 
     nlohmann::json payload2;
-    payload2["chargeState"] = "1";
+    payload2["chargeState"] = 1;
     const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 50, payload2);
     bool ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData1);
     EXPECT_TRUE(ret);
 
     nlohmann::json payload3;
-    payload3["chargeState"] = "2";
+    payload3["chargeState"] = 2;
     const std::shared_ptr<ResData>& validData2 = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 50, payload3);
     ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData2);
@@ -1337,7 +1337,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_049, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleBatterySubValue(95, 1005, 1210000);
 
     nlohmann::json payload1;
-    payload1["chargeState"] = "2";
+    payload1["chargeState"] = 2;
     const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 98, payload1);
     bool ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData1);
@@ -1390,14 +1390,14 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_050, Function | MediumTes
     SocPerfPlugin::GetInstance().HandleBatterySubValue(95, 1003, 1152000);
     SocPerfPlugin::GetInstance().HandleBatterySubValue(95, 1005, 1210000);
     nlohmann::json payload1;
-    payload1["chargeState"] = "1";
+    payload1["chargeState"] = 1;
     const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 90, payload1);
     bool ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData1);
     EXPECT_TRUE(ret);
 
     nlohmann::json payload2;
-    payload2["chargeState"] = "3";
+    payload2["chargeState"] = 3;
     const std::shared_ptr<ResData>& validData2 = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 90, payload2);
     ret = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(validData2);
