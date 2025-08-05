@@ -1263,7 +1263,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_047, Function | MediumTes
     EXPECT_EQ(rc, false);
 
     nlohmann::json payload1;
-    payload1["chargeState"] = 1;
+    payload1["chargeState"] = "num";
     const std::shared_ptr<ResData>& invalidData2 = std::make_shared<ResData>(
         ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE, 50, payload1);
     rc = SocPerfPlugin::GetInstance().HandleBatteryStatusChange(invalidData2);
