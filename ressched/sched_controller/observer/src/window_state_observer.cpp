@@ -123,7 +123,7 @@ void WindowDrawingContentObserver::OnWindowDrawingContentChanged(
 }
 void WindowModeObserver::OnWindowModeUpdate(const WindowModeType mode)
 {
-    RESSCHED_LOGI("WindowModeObserver OnWindowModeUpdate mode: %{public}hhu ", mode);
+    RESSCHED_LOGD("WindowModeObserver OnWindowModeUpdate mode: %{public}hhu ", mode);
     uint8_t nowWindowMode = MarshallingWindowModeType(mode);
     uint8_t windowModeChangeBit = nowWindowMode ^ lastWindowMode_;
     nlohmann::json payload;

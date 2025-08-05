@@ -209,13 +209,13 @@ void HiSysEventObserver::ProcessCameraEvent(const nlohmann::json& root, const st
     if (root.contains("UID") && root.at("UID").is_number_integer()) {
         payload["uid"] = std::to_string(root.at("UID").get<std::int32_t>());
     } else {
-        RESSCHED_LOGE("camera event uid format error!");
+        RESSCHED_LOGD("camera event uid format error!");
         return;
     }
     if (root.contains("PID") && root.at("PID").is_number_integer()) {
         payload["pid"] = std::to_string(root.at("PID").get<std::int32_t>());
     } else {
-        RESSCHED_LOGE("camera event pid format error!");
+        RESSCHED_LOGD("camera event pid format error!");
         return;
     }
 
@@ -234,13 +234,13 @@ void HiSysEventObserver::ProcessWifiEvent(const nlohmann::json& root, const std:
     if (root.contains("uid_") && root.at("uid_").is_number_integer()) {
         payload["uid"] = std::to_string(root.at("uid_").get<std::int32_t>());
     } else {
-        RESSCHED_LOGE("Wifi event uid format error!");
+        RESSCHED_LOGD("Wifi event uid format error!");
         return;
     }
     if (root.contains("pid_") && root.at("pid_").is_number_integer()) {
         payload["pid"] = std::to_string(root.at("pid_").get<std::int32_t>());
     } else {
-        RESSCHED_LOGE("Wifi event pid format error!");
+        RESSCHED_LOGD("Wifi event pid format error!");
         return;
     }
 
@@ -248,7 +248,7 @@ void HiSysEventObserver::ProcessWifiEvent(const nlohmann::json& root, const std:
     if (root.contains("TYPE") && root.at("TYPE").is_number_integer()) {
         connectionType = WifiState(root.at("TYPE").get<std::int32_t>());
     } else {
-        RESSCHED_LOGE("Wifi event type format error!");
+        RESSCHED_LOGD("Wifi event type format error!");
         return;
     }
     if (eventName == WIFI_CONNECTION) {

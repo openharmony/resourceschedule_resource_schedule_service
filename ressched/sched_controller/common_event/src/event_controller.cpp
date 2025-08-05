@@ -336,7 +336,7 @@ void EventController::handleEvent(int32_t userId, const std::string &action, nlo
 void EventController::handleOtherEvent(int32_t userId, const std::string &action, nlohmann::json &payload, Want &want)
 {
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED) {
-        RESSCHED_LOGI("report boot completed");
+        RESSCHED_LOGD("report boot completed");
         ReportDataInProcess(ResType::RES_TYPE_BOOT_COMPLETED,
             ResType::BootCompletedStatus::START_BOOT_COMPLETED, payload);
         return;
@@ -356,21 +356,21 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         return;
     }
     if (action == COMMON_EVENT_CAMERA_STATUS) {
-        RESSCHED_LOGI("report camera status completed");
+        RESSCHED_LOGD("report camera status completed");
         payload[CAMERA_TYPE] = want.GetIntParam(IS_SYSTEM_CAMERA, 0);
         ReportDataInProcess(ResType::RES_TYPE_REPORT_CAMERA_STATE,
             static_cast<int64_t>(want.GetIntParam(CAMERA_STATE, 1)), payload);
         return;
     }
     if (action == CONFIG_UPDATE_ACTION) {
-        RESSCHED_LOGI("report param update event");
+        RESSCHED_LOGD("report param update event");
         payload["type"] = want.GetStringParam(EVENT_INFO_TYPE);
         payload["subtype"] = want.GetStringParam(EVENT_INFO_SUBTYPE);
         ReportDataInProcess(ResType::RES_TYPE_PARAM_UPADTE_EVENT, static_cast<int64_t>(userId), payload);
         return;
     }
     if (action == COMMON_EVENT_GAME_STATUS) {
-        RESSCHED_LOGI("report game status event");
+        RESSCHED_LOGD("report game status event");
         payload[GAME_UID] = want.GetIntParam(GAME_UID, -1);
         payload[GAME_ENV] = want.GetIntParam(GAME_ENV, -1);
         ReportDataInProcess(ResType::RES_TYPE_REPORT_GAME_STATE_CHANGE,
@@ -383,7 +383,7 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
 void EventController::handleLeftEvent(int32_t userId, const std::string &action, nlohmann::json &payload, Want &want)
 {
     if (action == COMMON_EVENT_USER_SLEEP_STATE_CHANGED) {
-        RESSCHED_LOGI("report sleep state event");
+        RESSCHED_LOGD("report sleep state event");
         ReportDataInProcess(ResType::RES_TYPE_USER_NOT_CARE_CHARGE_SLEEP,
             static_cast<int64_t>(want.GetBoolParam("isSleep", false)), payload);
         return;
