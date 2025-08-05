@@ -389,8 +389,8 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
         return;
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_BATTERY_CHANGED) {
-        RESSCHED_LOGI("report battery status change event");
-        payload[COMMON_EVENT_CHARGE_STATE] = want.GetStringParam(COMMON_EVENT_CHARGE_STATE);
+        RESSCHED_LOGD("report battery status change event");
+        payload[COMMON_EVENT_CHARGE_STATE] = want.GetIntParam(COMMON_EVENT_CHARGE_STATE, -1);
         ReportDataInProcess(ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE,
             static_cast<int64_t>(want.GetIntParam(COMMON_EVENT_CAPACITY, -1)), payload);
     }
