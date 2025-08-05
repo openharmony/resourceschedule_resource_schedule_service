@@ -189,7 +189,7 @@ namespace {
         { ResType::RES_TYPE_STANDBY_FREEZE_FAILED, { 1201 } },
         { ResType::RES_TYPE_ADJUST_PROTECTLRU_RECLAIM_RATIO, { 1111 } },
     };
-    enum SYSYTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL : int32_t {
+    enum SYSTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL : int32_t {
         DEBUG_LEVEL_MINIMUM = 0,
         DEBUG_LEVEL_MAXIMUM = 7,
     };
@@ -438,8 +438,7 @@ ErrCode ResSchedService::GetResTypeList(std::set<uint32_t>& resTypeList)
 
 void ResSchedService::OnDeviceLevelChanged(int32_t type, int32_t level, bool debugReport)
 {
-    auto cbType = static_cast<ResType::DeviceStatus>(type);
-    if (cbType == ResType::DeviceStatus::SYSTEMLOAD_LEVEL) {
+    if (cbType == static_cast<int32_t>(ResType::DeviceStatus::SYSTEMLOAD_LEVEL)) {
         if (!debugReport) {
             actualSystemLoadLevel_ = level;
         }
@@ -664,8 +663,8 @@ void ResSchedService::DumpSetSystemLoad(const std::vector<std::string>& args, st
             result.append("Err setSystemLoadLevel param. Please insert 0-7 to start debug, \"reset\" to close debug");
             return;
         }
-        if (switchInfo <= SYSYTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL::DEBUG_LEVEL_MAXIMUM &&
-            switchInfo >= SYSYTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL::DEBUG_LEVEL_MINIMUM) {
+        if (switchInfo <= SYSTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL::DEBUG_LEVEL_MAXIMUM &&
+            switchInfo >= SYSTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL::DEBUG_LEVEL_MINIMUM) {
             systemLoadLevelDebugEnable_ = true;
             debugSystemLoadLevel_ = switchInfo;
             result.append("setSystemLoadLevel Debug On with Level: ").append(ToString(switchInfo)).append("\n");
