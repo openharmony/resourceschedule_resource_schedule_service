@@ -874,8 +874,8 @@ enum GameSuspendModeState : int64_t {
 * @brief Turbo Mode state
 */
 enum TurboModeState : int64_t {
-    TURBO_MODE_ON = 1,
     TURBO_MODE_OFF = 0,
+    TURBO_MODE_ON = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
