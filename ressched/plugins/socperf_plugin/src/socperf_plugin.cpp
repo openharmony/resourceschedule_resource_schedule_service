@@ -1654,7 +1654,7 @@ bool SocPerfPlugin::HandleBatteryStatusChange(const std::shared_ptr<ResData>& da
         return ret;
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleBatteryStatusChange: %{public}lld", (long long)data->value);
-    int32_t chargeState = data->payload[COMMON_EVENT_CHARGE_STATE];
+    int32_t chargeState = atoi(data->payload[COMMON_EVENT_CHARGE_STATE].get<std::string>().c_str());
     if (chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_ENABLE) ||
         chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_FULL)) {
         ret = HandleFreqLimit(data, true);
@@ -1673,7 +1673,7 @@ bool SocPerfPlugin::HandleBatteryStatusChange(const std::shared_ptr<ResData>& da
 void SocPerfPlugin::ChargeTurboModeChange(const std::shared_ptr<ResData>& data)
 {
     SOC_PERF_LOGI("SocPerfPlugin: socperf->ChargeTurboModeChange: %{public}lld", (long long)data->value);
-    int32_t chargeState = atoi(data->payload[COMMON_EVENT_CHARGE_STATE].get<std::string>().c_str());
+    int32_t chargeState = data->payload[COMMON_EVENT_CHARGE_STATE];
     if (!(chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_ENABLE) ||
         chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_FULL)) ||
         data->value < BATTERY_POWER) {
