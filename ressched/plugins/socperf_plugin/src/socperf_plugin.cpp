@@ -83,7 +83,7 @@ namespace {
     const std::string CLOUD_PARAMS = "params";
     const std::string ENABLE_STRING = "enable";
 #ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
-    const std::string PERF_MODE = "perfMode"
+    const std::string PERF_MODE = "perfMode";
     const int64_t BATTERY_POWER                             = 20;
 #endif // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
     const int32_t SOC_PERF_SA_ID                            = 1906;
