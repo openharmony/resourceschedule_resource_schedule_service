@@ -126,6 +126,9 @@ private:
     int32_t lastBatteryLimitCap_ = -1;
     bool socperfGameBoostSwitch_ = false;
     bool custGameState_ = false;
+#ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
+    bool isTurboMode_ = false;
+#endif // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
     void InitEventId();
     void InitFunctionMap();
     void InitSpecialExtension();
@@ -226,6 +229,10 @@ private:
     void HandleWebSildeScroll(const std::shared_ptr<ResData>& data);
     bool HandleRssCloudConfigUpdate(const std::shared_ptr<ResData>& data);
     bool ReportAbilityStatus(const std::shared_ptr<ResData>& data);
+#ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
+    bool HandelTurboStatusChange(const std::shared_ptr<ResData>& data);
+    void ChargeTurboModeChange(const std::shared_ptr<ResData>& data);
+#endif  // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
