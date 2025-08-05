@@ -1623,7 +1623,8 @@ bool SocPerfPlugin::HandleSchedModeChange(const std::shared_ptr<ResData>& data)
 }
 
 #ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
-bool SocPerfPlugin::HandelTurboStatusChange(const std::shared_ptr<ResData>& data) {
+bool SocPerfPlugin::HandelTurboStatusChange(const std::shared_ptr<ResData>& data)
+{
     if (data == nullptr) {
         return false;
     }
@@ -1669,7 +1670,8 @@ bool SocPerfPlugin::HandleBatteryStatusChange(const std::shared_ptr<ResData>& da
 }
 
 #ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
-void SocPerfPlugin::ChargeTurboModeChange(const std::shared_ptr<ResData>& data) {
+void SocPerfPlugin::ChargeTurboModeChange(const std::shared_ptr<ResData>& data)
+{
     SOC_PERF_LOGI("SocPerfPlugin: socperf->ChargeTurboModeChange: %{public}lld", (long long)data->value);
     int32_t chargeState = atoi(data->payload[COMMON_EVENT_CHARGE_STATE].get<std::string>().c_str());
     if (!(chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_ENABLE) ||
