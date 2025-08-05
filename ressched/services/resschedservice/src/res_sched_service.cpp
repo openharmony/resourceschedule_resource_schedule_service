@@ -438,7 +438,7 @@ ErrCode ResSchedService::GetResTypeList(std::set<uint32_t>& resTypeList)
 
 void ResSchedService::OnDeviceLevelChanged(int32_t type, int32_t level, bool debugReport)
 {
-    if (cbType == static_cast<int32_t>(ResType::DeviceStatus::SYSTEMLOAD_LEVEL)) {
+    if (type == static_cast<int32_t>(ResType::DeviceStatus::SYSTEMLOAD_LEVEL)) {
         if (!debugReport) {
             actualSystemLoadLevel_ = level;
         }
