@@ -55,6 +55,7 @@ using OHOS::Rosen::FocusChangeInfo;
 using OHOS::Rosen::WindowVisibilityInfo;
 using OHOS::Rosen::WindowDrawingContentInfo;
 using OHOS::Rosen::WindowModeType;
+using OHOS::Rosen::WindowStyleType;
 
 class WindowStateObserver : public IFocusChangedListener {
 public:
@@ -89,7 +90,16 @@ class PiPStateObserver : public OHOS::Rosen::IPiPStateChangedListener {
     public:
         virtual void OnPiPStateChanged(const std::string& bundleName, const bool isForeground) override;
 };
- 
+
+class WindowStyleObserver : public OHOS::Rosen::IWindowStyleChangedListener {
+public:
+    /**
+     * @brief Called back when window style changed.
+     *
+     * @param styleType window style WINDOW_STYLE_DEFAULT = 0, WINDOW_STYLE_FREE_MULTI_WINDOW = 1
+    */
+    void OnWindowStyleUpdate(WindowStyleType styleType) override;
+};
 } // namespace ResourceSchedule
 } // namespace OHOS
 #endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_WINDOW_STATE_OBSERVER_H
