@@ -109,7 +109,8 @@ public:
     void SubscribePipChange();
     void UnsubscribeWindowModeChange();
     void UnsubscribePipChange();
-    bool
+    bool InitWindowStyleObserver();
+    bool DisableWindowStyleObserver();
     void SubscribeAppState();
     void UnsubscribeAppState();
 #ifdef CONFIG_BGTASK_MGR
@@ -159,6 +160,7 @@ public:
     sptr<WindowVisibilityObserver> windowVisibilityObserver_ = nullptr;
     sptr<WindowDrawingContentObserver> windowDrawingContentObserver_ = nullptr;
     sptr<WindowModeObserver> windowModeObserver_ = nullptr;
+    sptr<WindowStyleObserver> windowStyleObserver_ = nullptr;
     sptr<RmsApplicationStateObserver> appStateObserver_ = nullptr;
 #ifdef CONFIG_BGTASK_MGR
     bool isBgtaskSubscribed_ {false};
