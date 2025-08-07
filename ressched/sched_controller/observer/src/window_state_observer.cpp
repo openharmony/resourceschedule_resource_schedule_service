@@ -24,6 +24,7 @@ namespace ResourceSchedule {
 
 const uint8_t WINDOW_MODE_SPLIT_BIT = 1;
 const uint8_t WINDOW_MODE_BIT_EXIT = 1;
+const uint32_t FREE_MULTI_WINDOW_STATE_CHANGE = 10024;
 
 void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo)
 {
@@ -178,6 +179,16 @@ void PiPStateObserver::OnPiPStateChanged(const std::string& bundleName, const bo
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TRPE_PIP_STATUS,
         static_cast<int64_t>(isForeground), payload);
 }
- 
+
+void WindowStyleObserver::OnWindowStyleUpdate(WindowStyleType styleType)
+{
+    bool isFreeStyleType = (styleType == WindowStyleType::WINDOW_STYLE_FREE_MULTI_WINDOW);
+    RESSCHED_LOGI("Update window style : %{public}d", isFreeStyleType);
+    nlohmann::json payload;
+    payload["extType"] = std::to_string(FREE_MULTI_WINDOW_STATE_CHANGE);
+    int64_t value = isFreeStyleType ? 1 : 0;
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_KEY_PERF_SCENE, value, payload);
+    //CgroupSchedEnhance::GetInstance().SetFreeMultiWindowStyle(isFreeStyleType);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
