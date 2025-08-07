@@ -230,7 +230,7 @@ private:
     bool HandleRssCloudConfigUpdate(const std::shared_ptr<ResData>& data);
     bool ReportAbilityStatus(const std::shared_ptr<ResData>& data);
 #ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
-    bool HandelTurboStatusChange(const std::shared_ptr<ResData>& data);
+    bool HandleTurboStatusChange(const std::shared_ptr<ResData>& data);
     void ChargeTurboModeChange(const std::shared_ptr<ResData>& data);
 #endif  // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
 };

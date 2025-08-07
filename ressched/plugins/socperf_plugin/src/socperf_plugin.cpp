@@ -83,7 +83,7 @@ namespace {
     const std::string CLOUD_PARAMS = "params";
     const std::string ENABLE_STRING = "enable";
 #ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
-    const std::string PERF_MODE = "perfMode";
+    const std::string PERF_MODE_VAL = "perfMode";
     const int64_t BATTERY_POWER                             = 20;
 #endif // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
     const int32_t SOC_PERF_SA_ID                            = 1906;
@@ -488,7 +488,7 @@ void SocPerfPlugin::AddOtherEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { ReportAbilityStatus(data); }));
 #ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
     functionMap.insert(std::make_pair(RES_TYPE_TDP_TURBO,
-        [this](const std::shared_ptr<ResData>& data) { HandelTurboStatusChange(data); }));
+        [this](const std::shared_ptr<ResData>& data) { HandleTurboStatusChange(data); }));
 #endif  // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
@@ -1623,13 +1623,13 @@ bool SocPerfPlugin::HandleSchedModeChange(const std::shared_ptr<ResData>& data)
 }
 
 #ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
-bool SocPerfPlugin::HandelTurboStatusChange(const std::shared_ptr<ResData>& data)
+bool SocPerfPlugin::HandleTurboStatusChange(const std::shared_ptr<ResData>& data)
 {
     if (data == nullptr) {
         return false;
     }
-    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandelTurboStatusChange: %{public}lld", (long long)data->value);
-    const std::string powerModeStr = POWER_MODE_KEY + ":" + PERF_MODE;
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleTurboStatusChange: %{public}lld", (long long)data->value);
+    const std::string powerModeStr = POWER_MODE_KEY + ":" + PERF_MODE_VAL;
     if (data->value == TurboModeState::TURBO_MODE_ON) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerModeStr, true);
         isTurboMode_ = true;
@@ -1678,7 +1678,7 @@ void SocPerfPlugin::ChargeTurboModeChange(const std::shared_ptr<ResData>& data)
         chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_FULL)) ||
         data->value < BATTERY_POWER) {
             isTurboMode_ = false;
-            const std::string powerModeStr = POWER_MODE_KEY + ":" + PERF_MODE;
+            const std::string powerModeStr = POWER_MODE_KEY + ":" + PERF_MODE_VAL;
             OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerModeStr, false);
         }
 }
