@@ -1758,16 +1758,16 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_060, Function | MediumTes
  */
 HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_061, Function | MediumTest | Level0)
 {
-    SocPerfPlugin::GetInstance().HandelTurboStatusChange(nullptr);
+    SocPerfPlugin::GetInstance().HandleTurboStatusChange(nullptr);
     std::shared_ptr<ResData> invData;
-    bool rc = SocPerfPlugin::GetInstance().HandelTurboStatusChange(invData);
+    bool rc = SocPerfPlugin::GetInstance().HandleTurboStatusChange(invData);
     EXPECT_FALSE(rc);
     const std::shared_ptr<ResData>& dataOn = std::make_shared<ResData>(ResType::RES_TYPE_TDP_TURBO, 1);
-    bool ret = SocPerfPlugin::GetInstance().HandelTurboStatusChange(dataOn);
+    bool ret = SocPerfPlugin::GetInstance().HandleTurboStatusChange(dataOn);
     EXPECT_TRUE(ret);
     EXPECT_TRUE(isTurboMode_);
     const std::shared_ptr<ResData>& dataOff = std::make_shared<ResData>(ResType::RES_TYPE_TDP_TURBO, 0);
-    ret = SocPerfPlugin::GetInstance().HandelTurboStatusChange(dataOff);
+    ret = SocPerfPlugin::GetInstance().HandleTurboStatusChange(dataOff);
     EXPECT_TRUE(ret);
     EXPECT_FALSE(isTurboMode_);
 }
