@@ -863,7 +863,7 @@ void ObserverManager::SubscribePipChange()
         RESSCHED_LOGI("PiPStateObserver not null");
     }
 }
-
+ 
 void ObserverManager::DisableWindowStateObserver()
 {
     if (windowStateObserver_) {

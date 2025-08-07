@@ -89,7 +89,7 @@ class PiPStateObserver : public OHOS::Rosen::IPiPStateChangedListener {
     public:
         virtual void OnPiPStateChanged(const std::string& bundleName, const bool isForeground) override;
 };
-
+ 
 } // namespace ResourceSchedule
 } // namespace OHOS
 #endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_WINDOW_STATE_OBSERVER_H

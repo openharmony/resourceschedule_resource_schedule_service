@@ -109,6 +109,7 @@ public:
     void SubscribePipChange();
     void UnsubscribeWindowModeChange();
     void UnsubscribePipChange();
+    bool
     void SubscribeAppState();
     void UnsubscribeAppState();
 #ifdef CONFIG_BGTASK_MGR

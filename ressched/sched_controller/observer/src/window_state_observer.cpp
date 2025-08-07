@@ -178,5 +178,6 @@ void PiPStateObserver::OnPiPStateChanged(const std::string& bundleName, const bo
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TRPE_PIP_STATUS,
         static_cast<int64_t>(isForeground), payload);
 }
+ 
 } // namespace ResourceSchedule
 } // namespace OHOS
