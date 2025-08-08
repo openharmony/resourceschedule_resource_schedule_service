@@ -188,7 +188,6 @@ void WindowStyleObserver::OnWindowStyleUpdate(WindowStyleType styleType)
     payload["extType"] = std::to_string(FREE_MULTI_WINDOW_STATE_CHANGE);
     int64_t value = isFreeStyleType ? 1 : 0;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_KEY_PERF_SCENE, value, payload);
-    //CgroupSchedEnhance::GetInstance().SetFreeMultiWindowStyle(isFreeStyleType);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
