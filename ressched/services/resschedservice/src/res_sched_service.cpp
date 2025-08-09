@@ -29,7 +29,7 @@
 #include "event_listener_mgr.h"
 #include "hisysevent.h"
 #include "res_common_util.h"
-#include "res_sa_init.h"
+#include "res_ipc_init.h"
 #include "res_sched_hitrace_chain.h"
 
 namespace OHOS {

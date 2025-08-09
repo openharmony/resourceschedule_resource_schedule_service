@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "res_sa_init.h"
+#include "res_ipc_init.h"
 
 #include "ffrt.h"
 #include "res_sched_client.h"

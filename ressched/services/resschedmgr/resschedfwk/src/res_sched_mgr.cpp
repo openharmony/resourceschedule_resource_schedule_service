@@ -23,7 +23,7 @@
 #include "iservice_registry.h"
 #include "notifier_mgr.h"
 #include "res_exe_type.h"
-#include "res_sa_init.h"
+#include "res_ipc_init.h"
 #include "res_sched_exe_client.h"
 #include "res_sched_log.h"
 #include "res_type.h"
