@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <vector>
 #include "nativetoken_kit.h"
+#include "res_ipc_init.h"
 #include "res_sa_init.h"
 #include "res_sched_client.h"
 #include "res_type.h"
