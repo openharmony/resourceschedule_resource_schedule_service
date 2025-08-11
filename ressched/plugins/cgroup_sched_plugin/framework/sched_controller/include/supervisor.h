@@ -111,6 +111,7 @@ public:
     SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
+    SchedPolicy specialSchedGroup_ = SP_UPPER_LIMIT;
     bool runningTransientTask_ = false;
     bool isActive_ {false};
     bool inSelfRenderCgroup_ = false;
@@ -212,6 +213,7 @@ public:
     void InitSuperVisorContent();
     void ConnectAppManagerService();
 
+    int32_t sceneBoardUid_ = -1;
     int32_t sceneBoardPid_ = -1;
     int32_t installsPid_ = -1;
     int32_t installsUid_ = -1;

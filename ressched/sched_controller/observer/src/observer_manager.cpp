@@ -821,6 +821,7 @@ void ObserverManager::InitWindowStateObserver()
     }
     SubscribeWindowModeChange();
     SubscribePipChange();
+    InitWindowStyleObserver();
     RESSCHED_LOGI("%{public}s success.", __func__);
 }
 
@@ -864,6 +865,28 @@ void ObserverManager::SubscribePipChange()
     }
 }
 
+bool ObserverManager::InitWindowStyleObserver()
+{
+    RESSCHED_LOGI("Init InitWindowStyleObserver");
+    if (!windowStyleObserver_) {
+        windowStyleObserver_ = sptr<WindowStyleObserver>(new WindowStyleObserver());
+        if (windowStyleObserver_ == nullptr) {
+            RESSCHED_LOGE("InitWindowStyleObserver new observer failed");
+            return false;
+        }
+    }
+    auto res = Rosen::WindowManagerLite::GetInstance().RegisterWindowStyleChangedListener(windowStyleObserver_);
+    if (res == Rosen::WMError::WM_OK) {
+        RESSCHED_LOGD("ObserverManager init InitWindowStyleObserver observer successfully");
+        auto windowStyle = Rosen::WindowManagerLite::GetInstance().GetWindowStyleType();
+        windowStyleObserver_->OnWindowStyleUpdate(windowStyle);
+        return true;
+    } else {
+        RESSCHED_LOGE("ObserverManager init InitWindowStyleObserver observer failed, ret(%{public}d)", res);
+        return false;
+    }
+}
+
 void ObserverManager::DisableWindowStateObserver()
 {
     if (windowStateObserver_) {
@@ -884,6 +907,7 @@ void ObserverManager::DisableWindowStateObserver()
     }
     UnsubscribeWindowModeChange();
     UnsubscribePipChange();
+    DisableWindowStyleObserver();
 }
 
 void ObserverManager::UnsubscribeWindowModeChange()
@@ -902,6 +926,21 @@ void ObserverManager::UnsubscribePipChange()
         pipStateObserver_ = nullptr;
     }
     RESSCHED_LOGI("UnsubscribePipchange success");
+}
+
+bool ObserverManager::DisableWindowStyleObserver()
+{
+    RESSCHED_LOGI("Disable DisableDistrWindowStyleObserver");
+    if (windowStyleObserver_ == nullptr) {
+        return true;
+    }
+    auto res = Rosen::WindowManagerLite::GetInstance().UnregisterWindowStyleChangedListener(windowStyleObserver_);
+    if (res != Rosen::WMError::WM_OK) {
+        RESSCHED_LOGW("ObserverManager disable DisableWindowStyleObserver failed, ret(%{public}d)", res);
+        return false;
+    }
+    windowStyleObserver_ = nullptr;
+    return true;
 }
 
 #ifdef CONFIG_BGTASK_MGR

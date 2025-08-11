@@ -39,6 +39,7 @@ ohos_shared_library("systemload") {
     "src/js_systemload_napi_init.cpp",
   ]
 
+  cflags_cc = [ "-fstack-protector-strong" ]
   deps = [ "${ressched_interfaces}/innerkits/ressched_client:ressched_client" ]
 
   external_deps = [
