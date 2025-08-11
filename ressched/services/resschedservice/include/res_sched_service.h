@@ -108,6 +108,8 @@ private:
     void AddSomeSARes(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>& allowSomeSAReportRes);
     void AddAllAppRes(const std::unordered_set<uint32_t>& allowAllAppReportRes);
     void AddFgAppRes(const std::unordered_set<uint32_t>& allowFgAppReportRes);
+    void CheckSuspendPermission();
+
     OnIsAllowedAppPreloadFunc appPreloadFunc_ = nullptr;
     bool isLoadAppPreloadPlugin_ = false;
     using RequestFuncType = std::function<int32_t (MessageParcel& data, MessageParcel& reply)>;
@@ -122,6 +124,7 @@ private:
     std::atomic<int32_t> actualSystemLoadLevel_ = {0};
     std::atomic<int32_t> debugSystemLoadLevel_ = {0};
     std::atomic<bool> systemLoadLevelDebugEnable_ = {false};
+
     std::mutex mutex_;
     std::mutex permissionCacheMutex_;
     std::unordered_set<uint32_t> allowSCBReportRes_;
