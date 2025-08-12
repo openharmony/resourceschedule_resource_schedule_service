@@ -27,9 +27,33 @@ namespace {
     const std::string GET_SUSPEND_STATE_PERMISSION = "ohos.permission.GET_SUSPEND_STATE";
 }
 
+bool ResSchedService::CheckSuspendPermission()
+{
+    Security::AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
+    auto tokenFlag = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
+    if (tokenFlag != Security::AccessToken::TypeATokenTypeEnum::TOKEN_NATIVE) {
+        SUSPEND_MSG_LOGE("Invalid calling token!");
+        return false;
+    }
+
+    int32_t status = Security::AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, GET_SUSPEND_STATE_PERMISSION);
+    if (status != Security::AccessToken::PermissionState::PERMISSION_GRANTED) {
+        SUSPEND_MSG_LOGE("Verify permission denied!");
+        return false;
+    }
+    return true;
+}
+
 ErrCode ResSchedService::GetSuspendStateByUid(const int32_t uid, bool &isFrozen, int32_t &funcResult)
 {
     funcResult = ERR_OK;
+    auto isValid = CheckSuspendPermission();
+    if (!isValid) {
+        SUSPEND_MSG_LOGE("CheckSuspendPermission failed!");
+        funcResult = ERR_INVALID_OPERATION;
+        return ERR_OK;
+    }
+
     nlohmann::json payload;
     payload["uid"] = uid;
     std::string payloadValue = payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
@@ -52,6 +76,13 @@ ErrCode ResSchedService::GetSuspendStateByUid(const int32_t uid, bool &isFrozen,
 ErrCode ResSchedService::GetSuspendStateByPid(const int32_t pid, bool &isFrozen, int32_t &funcResult)
 {
     funcResult = ERR_OK;
+    auto isValid = CheckSuspendPermission();
+    if (!isValid) {
+        SUSPEND_MSG_LOGE("CheckSuspendPermission failed!");
+        funcResult = ERR_INVALID_OPERATION;
+        return ERR_OK;
+    }
+
     nlohmann::json payload;
     payload["pid"] = pid;
     std::string payloadValue = payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
@@ -74,17 +105,9 @@ ErrCode ResSchedService::GetSuspendStateByPid(const int32_t pid, bool &isFrozen,
 ErrCode ResSchedService::RegisterSuspendObserver(const sptr<ISuspendStateObserverBase> &observer, int32_t &funcResult)
 {
     SUSPEND_MSG_LOGI("called");
-    Security::AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
-    auto tokenFlag = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
-    if (tokenFlag != Security::AccessToken::TypeATokenTypeEnum::TOKEN_NATIVE) {
-        SUSPEND_MSG_LOGE("Invalid calling token!");
-        funcResult = ERR_INVALID_OPERATION;
-        return ERR_OK;
-    }
-
-    int32_t status = Security::AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, GET_SUSPEND_STATE_PERMISSION);
-    if (status != Security::AccessToken::PermissionState::PERMISSION_GRANTED) {
-        SUSPEND_MSG_LOGE("Verify permission denied!");
+    auto isValid = CheckSuspendPermission();
+    if (!isValid) {
+        SUSPEND_MSG_LOGE("CheckSuspendPermission failed!");
         funcResult = ERR_INVALID_OPERATION;
         return ERR_OK;
     }
@@ -96,17 +119,9 @@ ErrCode ResSchedService::RegisterSuspendObserver(const sptr<ISuspendStateObserve
 ErrCode ResSchedService::UnregisterSuspendObserver(const sptr<ISuspendStateObserverBase> &observer, int32_t &funcResult)
 {
     SUSPEND_MSG_LOGI("called");
-    Security::AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
-    auto tokenFlag = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(tokenId);
-    if (tokenFlag != Security::AccessToken::TypeATokenTypeEnum::TOKEN_NATIVE) {
-        SUSPEND_MSG_LOGE("Invalid calling token!");
-        funcResult = ERR_INVALID_OPERATION;
-        return ERR_OK;
-    }
-
-    int32_t status = Security::AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, GET_SUSPEND_STATE_PERMISSION);
-    if (status != Security::AccessToken::PermissionState::PERMISSION_GRANTED) {
-        SUSPEND_MSG_LOGE("Verify permission denied!");
+    auto isValid = CheckSuspendPermission();
+    if (!isValid) {
+        SUSPEND_MSG_LOGE("CheckSuspendPermission failed!");
         funcResult = ERR_INVALID_OPERATION;
         return ERR_OK;
     }

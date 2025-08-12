@@ -21,6 +21,7 @@ group("unittest") {
     ":resschedservice_mock_test",
     ":resschedservice_test",
     ":suspendbaseclient_test",
+    ":suspend_manager_base_observer_test",
   ]
 }
 
@@ -256,6 +257,9 @@ ohos_unittest("suspend_manager_base_observer_test") {
     "googletest:gmock_main",
     "access_token:libaccesstoken_sdk",
     "access_token:libtoken_setproc",
+    "json:nlohmann_json_static",
+    "ffrt:libffrt",
+    "eventhandler:libeventhandler",
   ]
 
   defines = []

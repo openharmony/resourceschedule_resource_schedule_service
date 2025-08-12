@@ -82,6 +82,10 @@ namespace {
     const std::string SCHED_MODE_KEY = "schedMode";
     const std::string CLOUD_PARAMS = "params";
     const std::string ENABLE_STRING = "enable";
+#ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
+    const std::string PERF_MODE_VAL = "perfMode";
+    const int64_t BATTERY_POWER                             = 20;
+#endif // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
     const int32_t SOC_PERF_SA_ID                            = 1906;
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
@@ -482,6 +486,10 @@ void SocPerfPlugin::AddOtherEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleRssCloudConfigUpdate(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE,
         [this](const std::shared_ptr<ResData>& data) { ReportAbilityStatus(data); }));
+#ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
+    functionMap.insert(std::make_pair(RES_TYPE_TDP_TURBO,
+        [this](const std::shared_ptr<ResData>& data) { HandleTurboStatusChange(data); }));
+#endif  // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
@@ -542,6 +550,9 @@ void SocPerfPlugin::InitOtherResTypes()
     resTypes.insert(RES_TYPE_SCHED_MODE_CHANGE);
     resTypes.insert(RES_TYPE_RSS_CLOUD_CONFIG_UPDATE);
     resTypes.insert(RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE);
+#ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
+    resTypes.insert(RES_TYPE_TDP_TURBO);
+#endif // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
     }
@@ -1611,6 +1622,25 @@ bool SocPerfPlugin::HandleSchedModeChange(const std::shared_ptr<ResData>& data)
     return true;
 }
 
+#ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
+bool SocPerfPlugin::HandleTurboStatusChange(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleTurboStatusChange: %{public}lld", (long long)data->value);
+    const std::string powerModeStr = POWER_MODE_KEY + ":" + PERF_MODE_VAL;
+    if (data->value == TurboModeState::TURBO_MODE_ON) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerModeStr, true);
+        isTurboMode_ = true;
+    } else {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerModeStr, false);
+        isTurboMode_ = false;
+    }
+    return true;
+}
+#endif // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
+
 bool SocPerfPlugin::HandleBatteryStatusChange(const std::shared_ptr<ResData>& data)
 {
     bool ret = false;
@@ -1619,20 +1649,40 @@ bool SocPerfPlugin::HandleBatteryStatusChange(const std::shared_ptr<ResData>& da
         return ret;
     }
     if (data->payload == nullptr || !data->payload.contains(COMMON_EVENT_CHARGE_STATE) ||
-        !data->payload.at(COMMON_EVENT_CHARGE_STATE).is_string()) {
+        !data->payload.at(COMMON_EVENT_CHARGE_STATE).is_number_integer()) {
         SOC_PERF_LOGE("SocPerfPlugin: socperf->HandleBatteryStatusChange invalid data payload");
         return ret;
     }
     SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleBatteryStatusChange: %{public}lld", (long long)data->value);
-    int32_t chargeState = atoi(data->payload[COMMON_EVENT_CHARGE_STATE].get<std::string>().c_str());
+    int32_t chargeState = data->payload[COMMON_EVENT_CHARGE_STATE];
     if (chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_ENABLE) ||
         chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_FULL)) {
         ret = HandleFreqLimit(data, true);
     } else {
         ret = HandleFreqLimit(data, false);
     }
+    #ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
+    if (isTurboMode_) {
+        ChargeTurboModeChange(data);
+    }
+    #endif // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
     return ret;
 }
+
+#ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
+void SocPerfPlugin::ChargeTurboModeChange(const std::shared_ptr<ResData>& data)
+{
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->ChargeTurboModeChange: %{public}lld", (long long)data->value);
+    int32_t chargeState = data->payload[COMMON_EVENT_CHARGE_STATE];
+    if (!(chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_ENABLE) ||
+        chargeState == static_cast<int32_t>(BatteryChargeState::CHARGE_STATE_FULL)) ||
+        data->value < BATTERY_POWER) {
+            isTurboMode_ = false;
+            const std::string powerModeStr = POWER_MODE_KEY + ":" + PERF_MODE_VAL;
+            OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(powerModeStr, false);
+        }
+}
+# endif // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
 
 bool SocPerfPlugin::HandleFreqLimit(const std::shared_ptr<ResData>& data, bool isChargeState)
 {
