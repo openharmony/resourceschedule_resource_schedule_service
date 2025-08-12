@@ -877,7 +877,7 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad007, Function | MediumTest | Le
     std::vector<std::string> args = {"setSystemLoadLevel", "++"};
     std::string result_;
     resSchedService_->DumpSetSystemLoad(args, result_);
-    EXPECT_FALSE(resSchedService_->systemLoadLevelEnable_);
+    EXPECT_FALSE(resSchedService_->systemLoadLevelDebugEnable_);
 }
 
 /**
@@ -998,10 +998,11 @@ HWTEST_F(ResSchedServiceTest, GetSystemLoadLevelDebug001, Function | MediumTest 
     NotifierMgr::GetInstance().Init();
 
     resSchedService_->systemLoadLevelDebugEnable_ = true;
-    resSchedService_->debugSystemLoadLevel = 2;
+    resSchedService_->debugSystemLoadLevel_ = 2;
     int32_t resultValue = 0;
 
     resSchedService_->GetSystemloadLevel(resultValue);
     EXPECT_EQ(resSchedService_->debugSystemLoadLevel_, resultValue);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
