@@ -539,10 +539,16 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
         RESSCHED_LOGI("%{public}s arg: %{public}s.", __func__, ret.c_str());
         return ret;
     });
+#ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
     if (!CheckDumpPermission() ||
         (!CheckENGMode() && argsInStr.size() > 0 && argsInStr[DUMP_OPTION] != "setSystemLoadLevel")) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
+#else
+    if (!CheckDumpPermission() || !CheckENGMode()) {
+        return ERR_RES_SCHED_PERMISSION_DENIED;
+    }
+#endif //SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
     RESSCHED_LOGI("%{public}s Dump service.", __func__);
     std::string result;
     if (argsInStr.size() == 0) {

@@ -860,13 +860,13 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad006, Function | MediumTest | Le
 }
 
 /**
- * @tc.name: Ressched service GetSystemLoadLevel debug 008
+ * @tc.name: Ressched service GetSystemLoadLevel debug 007
  * @tc.desc: Pass resschedService Dump func strToIntErr Branch
  * @tc.type: FUNC
  * @tc.require: issue#ICQCY1
  * @tc.author: jiangfeng
  */
-HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad008, Function | MediumTest | Level0)
+HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad007, Function | MediumTest | Level0)
 {
     std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
     EXPECT_TRUE(resSchedService_ != nullptr);
