@@ -108,7 +108,7 @@ private:
     void AddSomeSARes(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>& allowSomeSAReportRes);
     void AddAllAppRes(const std::unordered_set<uint32_t>& allowAllAppReportRes);
     void AddFgAppRes(const std::unordered_set<uint32_t>& allowFgAppReportRes);
-    void CheckSuspendPermission();
+    bool CheckSuspendPermission();
 
     OnIsAllowedAppPreloadFunc appPreloadFunc_ = nullptr;
     bool isLoadAppPreloadPlugin_ = false;
