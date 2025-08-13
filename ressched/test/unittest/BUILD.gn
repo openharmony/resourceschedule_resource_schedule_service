@@ -78,7 +78,9 @@ ohos_unittest("resschedservice_test") {
   if (resource_schedule_service_with_ext_res_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
   }
-
+  if (resource_schedule_service_system_load_level_debug_feature_enable_for_2d) {
+    defines += [ "SET_SYSTEM_LOAD_LEVEL_2D_ENABLE" ]
+  }
   branch_protector_ret = "pac_ret"
 }
 

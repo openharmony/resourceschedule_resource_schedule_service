@@ -746,7 +746,7 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad001, Function | MediumTest | Le
     std::vector<std::string> args = {};
     std::string result_;
     resSchedService_->DumpSetSystemLoad(args, result_);
-    EXPECT_TRUE(result_.find("Err setSystemLoadLevel param.") != std::string::npos);
+    EXPECT_TRUE(result_.find("Err setSystemLoadLevel param num") != std::string::npos);
 }
 
 /**
@@ -764,7 +764,7 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad002, Function | MediumTest | Le
     EXPECT_TRUE(notifier != nullptr);
     NotifierMgr::GetInstance().Init();
     // Close Debug
-    std::vector<std::string> args = {"0 reset"};
+    std::vector<std::string> args = {"0", "reset"};
     std::string result_;
     resSchedService_->DumpSetSystemLoad(args, result_);
     EXPECT_FALSE(resSchedService_->systemLoadLevelDebugEnable_);
@@ -786,7 +786,7 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad003, Function | MediumTest | Le
     EXPECT_TRUE(notifier != nullptr);
     NotifierMgr::GetInstance().Init();
     // Close Debug
-    std::vector<std::string> args = {"0 8"};
+    std::vector<std::string> args = {"0", "8"};
     std::string result_;
     resSchedService_->DumpSetSystemLoad(args, result_);
     EXPECT_FALSE(resSchedService_->systemLoadLevelDebugEnable_);
@@ -808,7 +808,7 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad004, Function | MediumTest | Le
     EXPECT_TRUE(notifier != nullptr);
     NotifierMgr::GetInstance().Init();
     // Close Debug
-    std::vector<std::string> args = {"0 -2"};
+    std::vector<std::string> args = {"0", "-2"};
     std::string result_;
     resSchedService_->DumpSetSystemLoad(args, result_);
     EXPECT_FALSE(resSchedService_->systemLoadLevelDebugEnable_);
@@ -830,7 +830,7 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad005, Function | MediumTest | Le
     EXPECT_TRUE(notifier != nullptr);
     NotifierMgr::GetInstance().Init();
     // Close Debug
-    std::vector<std::string> args = {"0 3"};
+    std::vector<std::string> args = {"0", "3"};
     std::string result_;
     resSchedService_->DumpSetSystemLoad(args, result_);
     EXPECT_TRUE(resSchedService_->systemLoadLevelDebugEnable_);
@@ -852,11 +852,32 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad006, Function | MediumTest | Le
     EXPECT_TRUE(notifier != nullptr);
     NotifierMgr::GetInstance().Init();
     // Close Debug
-    std::vector<std::string> args = {"0 reset"};
+    std::vector<std::string> args = {"0", "reset"};
     std::string result_;
     resSchedService_->DumpSetSystemLoad(args, result_);
     EXPECT_FALSE(resSchedService_->systemLoadLevelDebugEnable_);
     EXPECT_EQ(resSchedService_->debugSystemLoadLevel_, 0);
+}
+
+/**
+ * @tc.name: Ressched service GetSystemLoadLevel debug 007
+ * @tc.desc: Pass resschedService Dump func strToIntErr Branch
+ * @tc.type: FUNC
+ * @tc.require: issue#ICQCY1
+ * @tc.author: jiangfeng
+ */
+HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad007, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+
+    std::vector<std::string> args = {"setSystemLoadLevel", "++"};
+    std::string result_;
+    resSchedService_->DumpSetSystemLoad(args, result_);
+    EXPECT_FALSE(resSchedService_->systemLoadLevelDebugEnable_);
 }
 
 /**
@@ -930,9 +951,8 @@ HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug003, Function | MediumTes
     bool debugReport = true;
     resSchedService_->debugSystemLoadLevel_ = 3;
     resSchedService_->systemLoadLevelDebugEnable_ = true;
-
     resSchedService_->OnDeviceLevelChanged(type, level, debugReport);
-    
+
     EXPECT_EQ(resSchedService_->actualSystemLoadLevel_, 0); // if debugReport is true, cur variable will not change
     EXPECT_EQ(resSchedService_->debugSystemLoadLevel_, 3);
     EXPECT_TRUE(resSchedService_->systemLoadLevelDebugEnable_);
@@ -960,6 +980,29 @@ HWTEST_F(ResSchedServiceTest, OnDeviceLevelChangedDebug004, Function | MediumTes
     EXPECT_EQ(resSchedService_->actualSystemLoadLevel_, 0); // if debugReport is true, cur variable will not change
     EXPECT_EQ(resSchedService_->debugSystemLoadLevel_, 0);
     EXPECT_FALSE(resSchedService_->systemLoadLevelDebugEnable_);
+}
+
+/**
+ * @tc.name: Ressched service GetSystemLoadLevelDebug001
+ * @tc.desc: Test other level, Forward directly
+ * @tc.type: FUNC
+ * @tc.require: issue#ICQCY1
+ * @tc.author: jiangfeng
+ */
+HWTEST_F(ResSchedServiceTest, GetSystemLoadLevelDebug001, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    sptr<IRemoteObject> notifier = new (std::nothrow) TestResSchedSystemloadListener();
+    EXPECT_TRUE(notifier != nullptr);
+    NotifierMgr::GetInstance().Init();
+
+    resSchedService_->systemLoadLevelDebugEnable_ = true;
+    resSchedService_->debugSystemLoadLevel_ = 2;
+    int32_t resultValue = 0;
+
+    resSchedService_->GetSystemloadLevel(resultValue);
+    EXPECT_EQ(resSchedService_->debugSystemLoadLevel_, resultValue);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

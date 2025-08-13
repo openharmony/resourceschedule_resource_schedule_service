@@ -244,6 +244,9 @@ ohos_shared_library("resschedsvc") {
       resource_schedule_service_file_copy_soc_perf_enable) {
     defines += [ "RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE" ]
   }
+  if (resource_schedule_service_system_load_level_debug_feature_enable_for_2d) {
+    defines += [ "SET_SYSTEM_LOAD_LEVEL_2D_ENABLE" ]
+  }
   external_deps += [ "data_share:datashare_consumer" ]
 
   version_script = "libresschedsvc.versionscript"
