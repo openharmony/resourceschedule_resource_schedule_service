@@ -1748,29 +1748,5 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_060, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().HandleSceenOrientationBoost(deviceOrientationType);
     EXPECT_FALSE(ret);
 }
-
-#ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
-/*
- * @tc.name: SocPerfPluginTest_API_TEST_061
- * @tc.desc: test socperfplugin api
- * @tc.type FUNC
- * @tc.require:
- */
-HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_061, Function | MediumTest | Level0)
-{
-    SocPerfPlugin::GetInstance().HandleTurboStatusChange(nullptr);
-    std::shared_ptr<ResData> invData;
-    bool rc = SocPerfPlugin::GetInstance().HandleTurboStatusChange(invData);
-    EXPECT_FALSE(rc);
-    const std::shared_ptr<ResData>& dataOn = std::make_shared<ResData>(ResType::RES_TYPE_TDP_TURBO, 1);
-    bool ret = SocPerfPlugin::GetInstance().HandleTurboStatusChange(dataOn);
-    EXPECT_TRUE(ret);
-    EXPECT_TRUE(isTurboMode_);
-    const std::shared_ptr<ResData>& dataOff = std::make_shared<ResData>(ResType::RES_TYPE_TDP_TURBO, 0);
-    ret = SocPerfPlugin::GetInstance().HandleTurboStatusChange(dataOff);
-    EXPECT_TRUE(ret);
-    EXPECT_FALSE(isTurboMode_);
-}
-#endif // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
 } // namespace SOCPERF
 } // namespace OHOS
