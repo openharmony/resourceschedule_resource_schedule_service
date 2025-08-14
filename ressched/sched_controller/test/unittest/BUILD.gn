@@ -97,6 +97,7 @@ ohos_unittest("event_controller_test") {
     defines += [ "MMI_ENABLE" ]
     external_deps += [ "input:libmmi-client" ]
   }
+  defines += [ "OBSERVER_EVENT_TEST" ]
   branch_protector_ret = "pac_ret"
 
   sanitize = {
