@@ -272,7 +272,7 @@ ohos_static_library("resschedsvc_static") {
     "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
   ]
 
-  defines = []
+  defines = [ "OBSERVER_EVENT_TEST" ]
 
   include_dirs = [ "../common/include" ]
 

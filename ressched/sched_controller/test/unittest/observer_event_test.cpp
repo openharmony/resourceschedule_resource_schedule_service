@@ -38,6 +38,8 @@
 #include "background_task_observer.h"
 #include "app_startup_scene_rec.h"
 
+#include "res_sched_mgr.h"
+
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
@@ -52,6 +54,17 @@ namespace {
 #endif
 #endif
 }
+
+nlohmann::json g_capturedPayload;
+int64_t g_capturedState = -1;
+
+void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::json &payload)
+{
+    // Capture the payload and state for testing purposes
+    g_capturedPayload = payload;
+    g_capturedState = value;
+}
+
 class ObserverEventTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -156,39 +169,43 @@ HWTEST_F(ObserverEventTest, hisysEventAvCodecEvent_001, testing::ext::TestSize.L
     // incorrect uid keyword
     sysEvent["UID"] = TEST_UID;
     hisysEventObserver_->ProcessAvCodecEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_NE(g_capturedPayload["uid"], TEST_UID);
 
     // incorrect pid keyword
     sysEvent["CLIENT_UID"] = TEST_UID;
     sysEvent["PID"] = TEST_PID;
     hisysEventObserver_->ProcessAvCodecEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedPayload["uid"], std::to_string(TEST_UID));
+    EXPECT_NE(g_capturedPayload["pid"], TEST_PID);
 
     // incorrect instance id keyword
     sysEvent["CLIENT_UID"] = TEST_UID;
     sysEvent["CLIENT_PID"] = TEST_PID;
     sysEvent["INSTANCE_ID"] = TEST_INSTANCE_ID;
     hisysEventObserver_->ProcessAvCodecEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedPayload["pid"], std::string(TEST_PID));
+    EXPECT_NE(g_capturedPayload["instanceId"], TEST_INSTANCE_ID);
 
     // codec start info state scene
     sysEvent["CODEC_INSTANCE_ID"] = TEST_INSTANCE_ID;
     eventName = "CODEC_START_INFO";
     sysEvent["name_"] = eventName;
     hisysEventObserver_->ProcessAvCodecEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedPayload["instanceId"], std::to_string(TEST_INSTANCE_ID));
+    EXPECT_EQ(g_capturedState, ResType::AvCodecState::CODEC_START_INFO);
 
     // codec stop info state scene
     eventName = "CODEC_STOP_INFO";
     sysEvent["name_"] = eventName;
     hisysEventObserver_->ProcessAvCodecEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedState, ResType::AvCodecState::CODEC_STOP_INFO);
 
+    g_capturedState = -1;
     // codec fault state scene
     eventName = "FAULT";
     sysEvent["name_"] = eventName;
     hisysEventObserver_->ProcessAvCodecEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedState, -1);
 }
 
 /**
@@ -199,47 +216,63 @@ HWTEST_F(ObserverEventTest, hisysEventAvCodecEvent_001, testing::ext::TestSize.L
  */
 HWTEST_F(ObserverEventTest, hisysEventRunningLockEvent_001, testing::ext::TestSize.Level1)
 {
+    g_capturedPayload.clear();
+    g_capturedState = -1;
+
     nlohmann::json sysEvent;
     std::string eventName = "INVAILD";
     // incorrect uid keyword
     sysEvent["uid"] = TEST_UID;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_NE(g_capturedPayload["uid"], TEST_UID);
 
     // incorrect pid keyword
     sysEvent["UID"] = TEST_UID;
     sysEvent["pid"] = TEST_PID;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedPayload["uid"], std::to_string(TEST_UID));
+    EXPECT_NE(g_capturedPayload["pid"], TEST_PID);
 
     // incorrect type keyword
     sysEvent["PID"] = TEST_PID;
     sysEvent["type"] = 0;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedPayload["pid"], std::to_string(TEST_PID));
+    EXPECT_NE(g_capturedPayload["type"], 0);
 
     // incorrect state keyword
     sysEvent["TYPE"] = 0;
     sysEvent["state"] = 0;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedPayload["type"], "0");
+    EXPECT_EQ(g_capturedState, -1);
 
     // running lock state disable
     sysEvent["STATE"] = RunningLockState::RUNNINGLOCK_STATE_DISABLE;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedState, RUNNINGLOCK_STATE_DISABLE);
 
     // running lock state enable
     sysEvent["STATE"] = RunningLockState::RUNNINGLOCK_STATE_ENABLE;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedState, RUNNINGLOCK_STATE_ENABLE);
 
+    g_capturedState = -1;
     // running lock state proxied
     sysEvent["STATE"] = RunningLockState::RUNNINGLOCK_STATE_PROXIED;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
+    EXPECT_EQ(g_capturedState, -1);
+
+    // running lock state unproxied restore
+    sysEvent["STATE"] = RunningLockState::RUNNINGLOCK_STATE_UNPROXIED_RESTORE;
+    hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
+    EXPECT_EQ(g_capturedState, RUNNINGLOCK_STATE_PROXIED);
+
+    g_capturedState = -1;
+    // running lock state invalid
     sysEvent["STATE"] = -1;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedState, -1);
 }
 
 /**
@@ -250,28 +283,33 @@ HWTEST_F(ObserverEventTest, hisysEventRunningLockEvent_001, testing::ext::TestSi
  */
 HWTEST_F(ObserverEventTest, hisysEventCameraEvent_001, testing::ext::TestSize.Level1)
 {
+    g_capturedPayload.clear();
+    g_capturedState = -1;
+
     nlohmann::json sysEvent;
     std::string eventName = "INVAILD";
     // incorrect uid keyword
     sysEvent["uid"] = TEST_UID;
     hisysEventObserver_->ProcessCameraEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_NE(g_capturedPayload["uid"], TEST_UID);
 
     // incorrect pid keyword
     sysEvent["UID"] = TEST_UID;
     sysEvent["pid"] = TEST_PID;
     hisysEventObserver_->ProcessCameraEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedPayload["uid"], std::to_string(TEST_UID));
+    EXPECT_NE(g_capturedPayload["pid"], TEST_PID);
 
     // eventName test
     sysEvent["PID"] = TEST_PID;
     eventName = "CAMERA_CONNECT";
     hisysEventObserver_->ProcessCameraEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedPayload["pid"], std::string(TEST_PID));
+    EXPECT_EQ(g_capturedState, CAMERACONNECT);
 
     eventName = "CAMERA_DISCONNECT";
     hisysEventObserver_->ProcessCameraEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedState, CAMERADISCONNECT);
 }
 
 /**
@@ -282,43 +320,53 @@ HWTEST_F(ObserverEventTest, hisysEventCameraEvent_001, testing::ext::TestSize.Le
  */
 HWTEST_F(ObserverEventTest, hisysEventWifiEvent_001, testing::ext::TestSize.Level1)
 {
+    g_capturedPayload.clear();
+    g_capturedState = -1;
+
     nlohmann::json sysEvent;
     std::string eventName = "INVAILD";
     // incorrect uid keyword
     sysEvent["uid"] = TEST_UID;
     hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_NE(g_capturedPayload["uid"], TEST_UID);
 
     // incorrect pid keyword
     sysEvent["uid_"] = TEST_UID;
     sysEvent["pid"] = TEST_PID;
     hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedPayload["uid"], std::to_string(TEST_UID));
+    EXPECT_NE(g_capturedPayload["pid"], TEST_PID);
 
     // incorrect eventname
     sysEvent["pid_"] = TEST_PID;
     hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedPayload["pid"], std::to_string(TEST_PID));
+    EXPECT_EQ(g_capturedState, -1);
 
     // wifi connection state: connected
     eventName = "WIFI_CONNECTION";
     sysEvent["TYPE"] = WifiState::CONNECTED;
     hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedState, ResType::WifiConnectionState::WIFI_STATE_CONNECTED);
 
     // wifi connection state: disconnected
     sysEvent["TYPE"] = WifiState::DISCONNECTED;
     hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedState, ResType::WifiConnectionState::WIFI_STATE_DISCONNECTED);
 
     // wifi scan state
     eventName = "WIFI_SCAN";
     hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
+    EXPECT_EQ(g_capturedState, ResType::WifiConnectionState::WIFI_STATE_SCAN);
+
+    g_capturedState = -1;
     sysEvent["TYPE"] = -1;
     hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
+    EXPECT_EQ(g_capturedState, -1);
+
     eventName = "test";
     hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedState, -1);
 }
 
 /**
@@ -329,16 +377,63 @@ HWTEST_F(ObserverEventTest, hisysEventWifiEvent_001, testing::ext::TestSize.Leve
  */
 HWTEST_F(ObserverEventTest, processHiSysEvent_001, testing::ext::TestSize.Level1)
 {
+    // reset captured payload and state
+    g_capturedPayload.clear();
+    g_capturedState = -1;
+
+    // test null event
     hisysEventObserver_->OnEvent(nullptr);
+    EXPECT_EQ(g_capturedState, -1);  // No event should not change the state
+
+    // test json parsing failure
+    std::string invalidJson = "{invalid json";
+    auto invalidRecord = std::make_shared<MockHiSysEventRecord>(invalidJson);
+    hisysEventObserver_->OnEvent(invalidRecord);
+    EXPECT_EQ(g_capturedState, -1);
+
+    // test excessively long json
+    nlohmann::json longEvent;
+    longEvent["domain_"] = std::string(2000, 'a'); // longer than MAX_LENGTH
+    auto longRecord = std::make_shared<MockHiSysEventRecord>(longEvent.dump());
+    hisysEventObserver_->OnEvent(longRecord);
+    EXPECT_EQ(g_capturedState, -1);
+
+    // test missing required fields
+    nlohmann::json incompleteEvent;
+    incompleteEvent["domain_"] = "TEST";
+    // missing "name_" field
+    auto incompleteRecord = std::make_shared<MockHiSysEventRecord>(incompleteEvent.dump());
+    hisysEventObserver_->OnEvent(incompleteRecord);
+    EXPECT_EQ(g_capturedState, -1);
+
+    // test type error
+    nlohmann::json wrongTypeEvent;
+    wrongTypeEvent["domain_"] = 123;  // should be a string
+    wrongTypeEvent["name_"] = "TEST";
+    auto wrongTypeRecord = std::make_shared<MockHiSysEventRecord>(wrongTypeEvent.dump());
+    hisysEventObserver_->OnEvent(wrongTypeRecord);
+    EXPECT_EQ(g_capturedState, -1);
+
+    // test service died event
     hisysEventObserver_->OnServiceDied();
+
+    // test valid event
     nlohmann::json sysEvent;
     sysEvent["domain_"] = "RUNNINGLOCK";
     sysEvent["name_"] = "RUNNINGLOCK";
     sysEvent["UID"] = TEST_UID;
     sysEvent["PID"] = TEST_PID;
-    hisysEventObserver_->OnEvent(std::make_shared<HiviewDFX::HiSysEventRecord>(
-        sysEvent.dump(JSON_FORMAT)));
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    sysEvent["TYPE"] = 1;
+    sysEvent["STATE"] = 1; // RUNNINGLOCK_STATE_ENABLE
+
+    auto record = std::make_shared<HiviewDFX::HiSysEventRecord>(sysEvent.dump(JSON_FORMAT));
+    hisysEventObserver_->OnEvent(record);
+
+    // test the complete invocation of OnEvent: OnEvent->ProcessHiSysEvent->ProcessRunningLockEvent->ReportData
+    EXPECT_EQ(g_capturedState, 1); // RUNNINGLOCK_ENABLE
+    EXPECT_EQ(g_capturedPayload["uid"].get<std::string>(), std::to_string(TEST_UID));
+    EXPECT_EQ(g_capturedPayload["pid"].get<std::string>(), std::to_string(TEST_PID));
+    EXPECT_EQ(g_capturedPayload["type"].get<std::string>(), "1");
 }
 
 /**
@@ -349,16 +444,32 @@ HWTEST_F(ObserverEventTest, processHiSysEvent_001, testing::ext::TestSize.Level1
  */
 HWTEST_F(ObserverEventTest, processHiSysEvent_002, testing::ext::TestSize.Level1)
 {
+    g_capturedPayload.clear();
+    g_capturedState = -1;
+
     nlohmann::json sysEvent;
     std::string eventName = "INVAILD";
     sysEvent["domain_"] = "AV_CODEC";
+    sysEvent["CLIENT_UID"] = TEST_UID;
+    sysEvent["CLIENT_PID"] = TEST_PID;
+    sysEvent["CLIENT_INSTANCE_ID"] = TEST_INSTANCE_ID;
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedPayload["uid"], std::to_string(TEST_UID));
+    EXPECT_EQ(g_capturedPayload["pid"], std::to_string(TEST_PID));
+    EXPECT_EQ(g_capturedPayload["instanceId"], std::to_string(TEST_INSTANCE_ID));
+    EXPECT_EQ(g_capturedState, -1);
 
+    g_capturedPayload.clear();
+    g_capturedState = -1;
     sysEvent["domain_"] = "INVAILD";
     eventName = "RUNNINGLOCK";
+    sysEvent["TYPE"] = 0;
+    sysEvent["STATE"] = RunningLockState::RUNNINGLOCK_STATE_ENABLE;
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedPayload["uid"], std::to_string(TEST_UID));
+    EXPECT_EQ(g_capturedPayload["pid"], std::to_string(TEST_PID));
+    EXPECT_EQ(g_capturedPayload["type"], std::to_string(0));
+    EXPECT_EQ(g_capturedState, RunningLockState::RUNNINGLOCK_STATE_ENABLE);
 }
 
 /**
@@ -371,17 +482,32 @@ HWTEST_F(ObserverEventTest, processHiSysEvent_003, testing::ext::TestSize.Level1
 {
     nlohmann::json sysEvent;
     sysEvent["domain_"] = "INVAILD";
+
+    g_capturedPayload.clear();
+    g_capturedState = -1;
     std::string eventName = "CAMERA_CONNECT";
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+    EXPECT_EQ(g_capturedState, CAMERACONNECT);
+
+    g_capturedState = -1;
     eventName = "CAMERA_DISCONNECT";
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+    EXPECT_EQ(g_capturedState, CAMERADISCONNECT);
+
+    g_capturedState = -1;
     eventName = "WIFI_CONNECTION";
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+    EXPECT_EQ(g_capturedState, ResType::WifiConnectionState::WIFI_STATE_CONNECTED);
+
+    g_capturedState = -1;
     eventName = "WIFI_SCAN";
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+    EXPECT_EQ(g_capturedState, ResType::WifiConnectionState::WIFI_STATE_SCAN);
+
+    g_capturedState = -1;
     eventName = "PLAYER_STATE";
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
-    EXPECT_NE(hisysEventObserver_, nullptr);
+    EXPECT_EQ(g_capturedState, -1);  // No valid state for PLAYER_STATE
 }
 
 #ifdef MMI_ENABLE
@@ -399,12 +525,16 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_001, testing::ext::TestSize.Level1)
     int32_t status = 0;
     // the scene of bundleName is null
     mmiObserver_->SyncBundleName(pid, uid, bundleName, status);
-    EXPECT_NE(mmiObserver_, nullptr);
+    EXPECT_EQ(g_capturedState, -1);
 
     // the scene of bundleName is not null
     bundleName = "inputmethod";
     mmiObserver_->SyncBundleName(pid, uid, bundleName, status);
-    EXPECT_NE(mmiObserver_, nullptr);
+    EXPECT_EQ(g_capturedPayload["pid"], std::to_string(pid));
+    EXPECT_EQ(g_capturedPayload["uid"], std::to_string(uid));
+    EXPECT_EQ(g_capturedPayload["bundleName"], bundleName);
+    EXPECT_EQ(g_capturedPayload["syncStatus"], std::to_string(status));
+    EXPECT_EQ(g_capturedState, MMI_STATE);
 }
 #endif
 #endif
