@@ -169,12 +169,15 @@ HWTEST_F(ObserverEventTest, hisysEventAvCodecEvent_001, testing::ext::TestSize.L
     // incorrect uid keyword
     sysEvent["UID"] = TEST_UID;
     hisysEventObserver_->ProcessAvCodecEvent(sysEvent, eventName);
-    EXPECT_NE(g_capturedPayload["uid"], TEST_UID);
+    ASSERT_FALSE(g_capturedPayload.contains("uid")) 
+    << "g_capturedPayload should not contain 'uid' when using incorrect 'UID' key";
 
     // incorrect pid keyword
     sysEvent["CLIENT_UID"] = TEST_UID;
     sysEvent["PID"] = TEST_PID;
     hisysEventObserver_->ProcessAvCodecEvent(sysEvent, eventName);
+    ASSERT_TRUE(g_capturedPayload.contains("uid"))
+    << "g_capturedPayload must contain 'uid' key";
     EXPECT_EQ(g_capturedPayload["uid"], std::to_string(TEST_UID));
     EXPECT_NE(g_capturedPayload["pid"], TEST_PID);
 
@@ -183,14 +186,19 @@ HWTEST_F(ObserverEventTest, hisysEventAvCodecEvent_001, testing::ext::TestSize.L
     sysEvent["CLIENT_PID"] = TEST_PID;
     sysEvent["INSTANCE_ID"] = TEST_INSTANCE_ID;
     hisysEventObserver_->ProcessAvCodecEvent(sysEvent, eventName);
+    ASSERT_TRUE(g_capturedPayload.contains("pid"))
+    << "g_capturedPayload must contain 'pid' key";
     EXPECT_EQ(g_capturedPayload["pid"], std::string(TEST_PID));
-    EXPECT_NE(g_capturedPayload["instanceId"], TEST_INSTANCE_ID);
+    ASSERT_FALSE(g_capturedPayload.contains("instanceId"))
+    << "g_capturedPayload should not contain 'instanceId' when using incorrect 'INSTANCE_ID' key";
 
     // codec start info state scene
     sysEvent["CODEC_INSTANCE_ID"] = TEST_INSTANCE_ID;
     eventName = "CODEC_START_INFO";
     sysEvent["name_"] = eventName;
     hisysEventObserver_->ProcessAvCodecEvent(sysEvent, eventName);
+    ASSERT_TRUE(g_capturedPayload.contains("instanceId"))
+    << "g_capturedPayload must contain 'instanceId' key";
     EXPECT_EQ(g_capturedPayload["instanceId"], std::to_string(TEST_INSTANCE_ID));
     EXPECT_EQ(g_capturedState, ResType::AvCodecState::CODEC_START_INFO);
 
@@ -224,26 +232,35 @@ HWTEST_F(ObserverEventTest, hisysEventRunningLockEvent_001, testing::ext::TestSi
     // incorrect uid keyword
     sysEvent["uid"] = TEST_UID;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
-    EXPECT_NE(g_capturedPayload["uid"], TEST_UID);
+    ASSERT_FALSE(g_capturedPayload.contains("uid")) 
+    << "g_capturedPayload should not contain 'uid' when using incorrect 'uid' key";
 
     // incorrect pid keyword
     sysEvent["UID"] = TEST_UID;
     sysEvent["pid"] = TEST_PID;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
+    ASSERT_TRUE(g_capturedPayload.contains("uid"))
+    << "g_capturedPayload must contain 'uid' key";
     EXPECT_EQ(g_capturedPayload["uid"], std::to_string(TEST_UID));
-    EXPECT_NE(g_capturedPayload["pid"], TEST_PID);
+    ASSERT_FALSE(g_capturedPayload.contains("pid"))
+    << "g_capturedPayload should not contain 'pid' when using incorrect 'pid' key";
 
     // incorrect type keyword
     sysEvent["PID"] = TEST_PID;
     sysEvent["type"] = 0;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
+    ASSERT_TRUE(g_capturedPayload.contains("pid"))
+    << "g_capturedPayload must contain 'pid' key";
     EXPECT_EQ(g_capturedPayload["pid"], std::to_string(TEST_PID));
-    EXPECT_NE(g_capturedPayload["type"], 0);
+    ASSERT_FALSE(g_capturedPayload.contains("type"))
+    << "g_capturedPayload should not contain 'type' when using incorrect 'type' key";
 
     // incorrect state keyword
     sysEvent["TYPE"] = 0;
     sysEvent["state"] = 0;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
+    ASSERT_TRUE(g_capturedPayload.contains("type"))
+    << "g_capturedPayload must contain 'type' key";
     EXPECT_EQ(g_capturedPayload["type"], "0");
     EXPECT_EQ(g_capturedState, -1);
 
@@ -291,19 +308,25 @@ HWTEST_F(ObserverEventTest, hisysEventCameraEvent_001, testing::ext::TestSize.Le
     // incorrect uid keyword
     sysEvent["uid"] = TEST_UID;
     hisysEventObserver_->ProcessCameraEvent(sysEvent, eventName);
-    EXPECT_NE(g_capturedPayload["uid"], TEST_UID);
+    ASSERT_FALSE(g_capturedPayload.contains("uid")) 
+    << "g_capturedPayload should not contain 'uid' when using incorrect 'uid' key";
 
     // incorrect pid keyword
     sysEvent["UID"] = TEST_UID;
     sysEvent["pid"] = TEST_PID;
     hisysEventObserver_->ProcessCameraEvent(sysEvent, eventName);
+    ASSERT_TRUE(g_capturedPayload.contains("uid"))
+    << "g_capturedPayload must contain 'uid' key";
     EXPECT_EQ(g_capturedPayload["uid"], std::to_string(TEST_UID));
-    EXPECT_NE(g_capturedPayload["pid"], TEST_PID);
+    ASSERT_FALSE(g_capturedPayload.contains("pid"))
+    << "g_capturedPayload should not contain 'pid' when using incorrect 'pid' key";
 
     // eventName test
     sysEvent["PID"] = TEST_PID;
     eventName = "CAMERA_CONNECT";
     hisysEventObserver_->ProcessCameraEvent(sysEvent, eventName);
+    ASSERT_TRUE(g_capturedPayload.contains("pid"))
+    << "g_capturedPayload must contain 'pid' key";
     EXPECT_EQ(g_capturedPayload["pid"], std::string(TEST_PID));
     EXPECT_EQ(g_capturedState, CAMERACONNECT);
 
@@ -328,19 +351,25 @@ HWTEST_F(ObserverEventTest, hisysEventWifiEvent_001, testing::ext::TestSize.Leve
     // incorrect uid keyword
     sysEvent["uid"] = TEST_UID;
     hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
-    EXPECT_NE(g_capturedPayload["uid"], TEST_UID);
+    ASSERT_FALSE(g_capturedPayload.contains("uid")) 
+    << "g_capturedPayload should not contain 'uid' when using incorrect 'uid' key";
 
     // incorrect pid keyword
     sysEvent["uid_"] = TEST_UID;
     sysEvent["pid"] = TEST_PID;
     hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
+    ASSERT_TRUE(g_capturedPayload.contains("uid"))
+    << "g_capturedPayload must contain 'uid' key";
     EXPECT_EQ(g_capturedPayload["uid"], std::to_string(TEST_UID));
-    EXPECT_NE(g_capturedPayload["pid"], TEST_PID);
+    ASSERT_FALSE(g_capturedPayload.contains("pid"))
+    << "g_capturedPayload should not contain 'pid' when using incorrect 'pid' key";
 
     // incorrect eventname
     sysEvent["pid_"] = TEST_PID;
     hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
-    EXPECT_EQ(g_capturedPayload["pid"], std::to_string(TEST_PID));
+    ASSERT_TRUE(g_capturedPayload.contains("pid"))
+    << "g_capturedPayload must contain 'pid' key";
+    EXPECT_EQ(g_capturedPayload["pid"], std::string(TEST_PID));
     EXPECT_EQ(g_capturedState, -1);
 
     // wifi connection state: connected
@@ -431,8 +460,14 @@ HWTEST_F(ObserverEventTest, processHiSysEvent_001, testing::ext::TestSize.Level1
 
     // test the complete invocation of OnEvent: OnEvent->ProcessHiSysEvent->ProcessRunningLockEvent->ReportData
     EXPECT_EQ(g_capturedState, 1); // RUNNINGLOCK_ENABLE
+    ASSERT_TRUE(g_capturedPayload.contains("uid"))
+    << "g_capturedPayload must contain 'uid' key";
     EXPECT_EQ(g_capturedPayload["uid"].get<std::string>(), std::to_string(TEST_UID));
+    ASSERT_TRUE(g_capturedPayload.contains("pid"))
+    << "g_capturedPayload must contain 'pid' key";
     EXPECT_EQ(g_capturedPayload["pid"].get<std::string>(), std::to_string(TEST_PID));
+    ASSERT_TRUE(g_capturedPayload.contains("type"))
+    << "g_capturedPayload must contain 'type' key";
     EXPECT_EQ(g_capturedPayload["type"].get<std::string>(), "1");
 }
 
@@ -454,8 +489,14 @@ HWTEST_F(ObserverEventTest, processHiSysEvent_002, testing::ext::TestSize.Level1
     sysEvent["CLIENT_PID"] = TEST_PID;
     sysEvent["CLIENT_INSTANCE_ID"] = TEST_INSTANCE_ID;
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+    ASSERT_TRUE(g_capturedPayload.contains("uid"))
+    << "g_capturedPayload must contain 'uid' key";
     EXPECT_EQ(g_capturedPayload["uid"], std::to_string(TEST_UID));
+    ASSERT_TRUE(g_capturedPayload.contains("pid"))
+    << "g_capturedPayload must contain 'pid' key";
     EXPECT_EQ(g_capturedPayload["pid"], std::to_string(TEST_PID));
+    ASSERT_TRUE(g_capturedPayload.contains("instanceId"))
+    << "g_capturedPayload must contain 'instanceId' key";
     EXPECT_EQ(g_capturedPayload["instanceId"], std::to_string(TEST_INSTANCE_ID));
     EXPECT_EQ(g_capturedState, -1);
 
@@ -466,8 +507,14 @@ HWTEST_F(ObserverEventTest, processHiSysEvent_002, testing::ext::TestSize.Level1
     sysEvent["TYPE"] = 0;
     sysEvent["STATE"] = RunningLockState::RUNNINGLOCK_STATE_ENABLE;
     hisysEventObserver_->ProcessHiSysEvent(eventName, sysEvent);
+    ASSERT_TRUE(g_capturedPayload.contains("uid"))
+    << "g_capturedPayload must contain 'uid' key";
     EXPECT_EQ(g_capturedPayload["uid"], std::to_string(TEST_UID));
+    ASSERT_TRUE(g_capturedPayload.contains("pid"))
+    << "g_capturedPayload must contain 'pid' key";
     EXPECT_EQ(g_capturedPayload["pid"], std::to_string(TEST_PID));
+    ASSERT_TRUE(g_capturedPayload.contains("type"))
+    << "g_capturedPayload must contain 'type' key";
     EXPECT_EQ(g_capturedPayload["type"], std::to_string(0));
     EXPECT_EQ(g_capturedState, RunningLockState::RUNNINGLOCK_STATE_ENABLE);
 }
@@ -530,9 +577,17 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_001, testing::ext::TestSize.Level1)
     // the scene of bundleName is not null
     bundleName = "inputmethod";
     mmiObserver_->SyncBundleName(pid, uid, bundleName, status);
+    ASSERT_TRUE(g_capturedPayload.contains("pid"))
+    << "g_capturedPayload must contain 'pid' key";
     EXPECT_EQ(g_capturedPayload["pid"], std::to_string(pid));
+    ASSERT_TRUE(g_capturedPayload.contains("uid"))
+    << "g_capturedPayload must contain 'uid' key";
     EXPECT_EQ(g_capturedPayload["uid"], std::to_string(uid));
+    ASSERT_TRUE(g_capturedPayload.contains("bundleName"))
+    << "g_capturedPayload must contain 'bundleName' key";
     EXPECT_EQ(g_capturedPayload["bundleName"], bundleName);
+    ASSERT_TRUE(g_capturedPayload.contains("syncStatus"))
+    << "g_capturedPayload must contain 'syncStatus' key";
     EXPECT_EQ(g_capturedPayload["syncStatus"], std::to_string(status));
     EXPECT_EQ(g_capturedState, MMI_STATE);
 }
