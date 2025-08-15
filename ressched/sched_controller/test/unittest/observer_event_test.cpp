@@ -169,7 +169,7 @@ HWTEST_F(ObserverEventTest, hisysEventAvCodecEvent_001, testing::ext::TestSize.L
     // incorrect uid keyword
     sysEvent["UID"] = TEST_UID;
     hisysEventObserver_->ProcessAvCodecEvent(sysEvent, eventName);
-    ASSERT_FALSE(g_capturedPayload.contains("uid")) 
+    ASSERT_FALSE(g_capturedPayload.contains("uid"))
     << "g_capturedPayload should not contain 'uid' when using incorrect 'UID' key";
 
     // incorrect pid keyword
@@ -232,7 +232,7 @@ HWTEST_F(ObserverEventTest, hisysEventRunningLockEvent_001, testing::ext::TestSi
     // incorrect uid keyword
     sysEvent["uid"] = TEST_UID;
     hisysEventObserver_->ProcessRunningLockEvent(sysEvent, eventName);
-    ASSERT_FALSE(g_capturedPayload.contains("uid")) 
+    ASSERT_FALSE(g_capturedPayload.contains("uid"))
     << "g_capturedPayload should not contain 'uid' when using incorrect 'uid' key";
 
     // incorrect pid keyword
@@ -308,7 +308,7 @@ HWTEST_F(ObserverEventTest, hisysEventCameraEvent_001, testing::ext::TestSize.Le
     // incorrect uid keyword
     sysEvent["uid"] = TEST_UID;
     hisysEventObserver_->ProcessCameraEvent(sysEvent, eventName);
-    ASSERT_FALSE(g_capturedPayload.contains("uid")) 
+    ASSERT_FALSE(g_capturedPayload.contains("uid"))
     << "g_capturedPayload should not contain 'uid' when using incorrect 'uid' key";
 
     // incorrect pid keyword
@@ -351,7 +351,7 @@ HWTEST_F(ObserverEventTest, hisysEventWifiEvent_001, testing::ext::TestSize.Leve
     // incorrect uid keyword
     sysEvent["uid"] = TEST_UID;
     hisysEventObserver_->ProcessWifiEvent(sysEvent, eventName);
-    ASSERT_FALSE(g_capturedPayload.contains("uid")) 
+    ASSERT_FALSE(g_capturedPayload.contains("uid"))
     << "g_capturedPayload should not contain 'uid' when using incorrect 'uid' key";
 
     // incorrect pid keyword
