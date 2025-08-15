@@ -49,7 +49,6 @@ declare_args() {
   resource_schedule_service_crown_power_key_enable = false
   resource_schedule_service_file_copy_soc_perf_enable = false
   resource_schedule_service_subscribe_click_recognize_enable = false
-  resource_schedule_service_turbo_mode_soc_perf_enable = false
   resource_schedule_service_system_load_level_debug_feature_enable_for_2d = false
 
   if (defined(global_parts_info) && !defined(global_parts_info.msdp_movement)) {
