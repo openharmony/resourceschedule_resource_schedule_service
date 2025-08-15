@@ -19,6 +19,7 @@
 #include <set>
 #include <unordered_map>
 #include <mutex>
+#include <optional>
 #include "ffrt.h"
 #include "plugin.h"
 #include "single_instance.h"
@@ -124,6 +125,8 @@ private:
     int32_t RES_TYPE_RGM_BOOTING_STATUS = 0;
     int32_t maxBatteryLimitCapacity_ = -1;
     int32_t lastBatteryLimitCap_ = -1;
+    std::optional<bool> powerLimit_;
+    std::optional<bool> thermalLimit_;
     bool socperfGameBoostSwitch_ = false;
     bool custGameState_ = false;
 #ifdef RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
@@ -132,6 +135,7 @@ private:
     void InitEventId();
     void InitFunctionMap();
     void InitSpecialExtension();
+    void InitPolicyMode();
     void LoadSpecialExtension(const PluginConfig& itemLists);
     void AddSpecialExtension(SubItem& sub);
     std::set<std::string> StringToSet(const std::string& str, char pattern);

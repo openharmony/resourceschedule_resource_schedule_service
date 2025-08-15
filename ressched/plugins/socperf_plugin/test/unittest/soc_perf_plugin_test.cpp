@@ -1772,5 +1772,33 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_061, Function | MediumTes
     EXPECT_FALSE(isTurboMode_);
 }
 #endif // RESSCHED_RESOURCESCHEDULE_TURBO_MODE_SOC_PERF_ENABLE
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_062
+ * @tc.desc: test ReportConfiguredPolicyMode when SOC_PERF_SA online
+ * @tc.type FUNC
+ * @tc.require:
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_062, Function | MediumTest | Level0)
+{
+    auto backupPower = SocPerfPlugin::GetInstance().powerLimit_;
+    auto backupThermal = SocPerfPlugin::GetInstance().thermalLimit_;
+    const int32_t SOC_PERF_SA_ID = 1906;
+    nlohmann::json payload;
+    payload["saId"] = SOC_PERF_SA_ID;
+    const auto data = std::make_shared<ResData>(ResType::RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE,
+        1, payload);
+
+    SocPerfPlugin::GetInstance().powerLimit_ = 0;
+    SocPerfPlugin::GetInstance().thermalLimit_ = 1;
+    auto ret = SocPerfPlugin::GetInstance().ReportAbilityStatus(data);
+    EXPECT_TRUE(ret);
+
+    // Restore the environment
+    SocPerfPlugin::GetInstance().powerLimit_ = backupPower;
+    SocPerfPlugin::GetInstance().thermalLimit_ = backupThermal;
+    ret = SocPerfPlugin::GetInstance().ReportAbilityStatus(data);
+    EXPECT_TRUE(ret);
+}
 } // namespace SOCPERF
 } // namespace OHOS
