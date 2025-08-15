@@ -790,15 +790,7 @@ void PluginMgr::DispatchResourceToPluginSync(const std::list<std::string>& plugi
             // dispatch resource use too long time, unload it
             RESSCHED_LOGE("%{public}s, ERROR :%{public}s cost time(%{public}dms) over %{public}d ms! disable it.",
                 __func__, pluginLib.c_str(), costTime, DISPATCH_TIME_OUT);
-            auto task = [endTime, pluginLib, libInfo, this] {
-                RepairPlugin(endTime, pluginLib, libInfo);
-            };
-#ifndef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-            std::lock_guard<ffrt::mutex> autoLock2(dispatcherHandlerMutex_);
-            if (dispatcher_) {
-                dispatcher_->PostTask(task);
-            }
-#endif
+            RepairPlugin(endTime, pluginLib, libInfo);
         } else if (costTime > DISPATCH_WARNING_TIME) {
             RESSCHED_LOGW("%{public}s, WARNING :%{public}s plugin cost time(%{public}dms) over %{public}d ms!",
                 __func__, pluginLib.c_str(), costTime, DISPATCH_WARNING_TIME);
