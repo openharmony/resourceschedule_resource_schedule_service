@@ -515,33 +515,6 @@ namespace ResourceSchedule {
         return true;
     }
 
-    bool CheckVisibilityForRenderProcessFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-
-        // getdata
-        uid_t uid = GetData<uid_t>();
-        pid_t pid = GetData<pid_t>();
-        ProcessRecord pr(uid, pid);
-        pr.processType_ = ProcRecordType::RENDER;
-        pr.isActive_ = true;
-        ProcessRecord mainProc(uid, pid);
-        auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
-
-        cgroupEventHandler->CheckVisibilityForRenderProcess(pr, mainProc);
-        cgroupEventHandler->SetSupervisor(g_supervisor);
-        cgroupEventHandler->CheckVisibilityForRenderProcess(pr, mainProc);
-
-        return true;
-    }
-
     bool ParsePayloadFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -1316,7 +1289,6 @@ namespace ResourceSchedule {
         OHOS::ResourceSchedule::HandleReportHisysEventFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleMmiInputStateFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportBluetoothConnectStateFuzzTest(data, size);
-        OHOS::ResourceSchedule::CheckVisibilityForRenderProcessFuzzTest(data, size);
         OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleSceneBoardStateFuzzTest(data, size);

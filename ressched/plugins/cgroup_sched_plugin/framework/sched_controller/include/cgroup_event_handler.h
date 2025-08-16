@@ -80,7 +80,6 @@ public:
     void HandleOnAppStopped(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
-    bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);
     bool GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::shared_ptr<Application>& app,
         std::shared_ptr<ProcessRecord>& procRecord, const nlohmann::json& payload);
     bool ParsePayload(int32_t& uid, int32_t& pid, const nlohmann::json& payload);
@@ -88,8 +87,8 @@ private:
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
     bool ParseLongValue(int64_t& value, const char* name, const nlohmann::json& payload);
     bool ParseString(std::string& value, const char* name, const nlohmann::json& payload);
-    void UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, int32_t windowId, int32_t state,
-        const std::shared_ptr<ProcessRecord>& proc);
+    void UpdateActivepWebRenderInfo(int32_t state, int32_t windowId, const std::shared_ptr<ProcessRecord>& proc,
+        std::shared_ptr<Application>& app);
     void HandleEmptyPayloadForCosmicCubeState(uint32_t resType, int64_t value);
     void HandleUIExtensionAbilityStateChange(uint32_t resType, int64_t value, const nlohmann::json& payload);
     std::shared_ptr<Supervisor> supervisor_;

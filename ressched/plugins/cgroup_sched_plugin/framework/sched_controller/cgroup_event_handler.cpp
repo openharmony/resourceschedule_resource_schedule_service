@@ -518,13 +518,12 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uint32_t windowT
         app = supervisor_->GetAppRecordNonNull(uid);
         procRecord = app->GetProcessRecordNonNull(pid);
         auto win = procRecord->GetWindowInfoNonNull(windowId);
-        procRecord->linkedWindowId_ = (int32_t)(windowId);
+        procRecord->linkedWindow_ = win;
         win->windowType_ = (int32_t)(windowType);
         win->isFocused_ = true;
         win->displayId_ = displayId;
 
         app->focusedProcess_ = procRecord;
-        auto lastFocusApp = supervisor_->focusedApp_;
         supervisor_->focusedApp_ = app;
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FOCUSED_WINDOW);
         ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), ResType::RES_TYPE_WINDOW_FOCUS,
@@ -777,38 +776,50 @@ void CgroupEventHandler::HandleReportWindowState(uint32_t resType, int64_t value
     }
     procRecord->serialNum_ = nowSerialNum;
 
-    if (state == ResType::WindowStates::ACTIVE) {
-        procRecord->linkedWindowId_ = windowId;
-        procRecord->isActive_ = true;
-    } else {
-        procRecord->linkedWindowId_ = -1;
-        procRecord->isActive_ = false;
-    }
+    UpdateActivepWebRenderInfo(state, windowId, procRecord, app);
+
     auto hostProcRecord = app->GetProcessRecord(procRecord->hostPid_);
     if (!hostProcRecord) {
         return;
     }
-    CGS_LOGI("%{public}s : pid: %{public}d, winId: %{public}d, isActive_: %{public}d",
-        __func__, pid, procRecord->linkedWindowId_, procRecord->isActive_);
-    UpdateActivepWebRenderInfo(uid, pid, windowId, state, hostProcRecord);
-    if (CheckVisibilityForRenderProcess(*(procRecord.get()), *hostProcRecord)) {
-        CGS_LOGW("%{public}s : bundle name: %{public}s, uid: %{public}d, pid: %{public}d, winId: %{public}d" \
-            "is not visible but active", __func__, app->GetName().c_str(), uid, pid, procRecord->linkedWindowId_);
-    }
+
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(hostProcRecord.get()),
         AdjustSource::ADJS_REPORT_WINDOW_STATE_CHANGED);
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
         ResType::RES_TYPE_REPORT_WINDOW_STATE, state);
 }
 
-void CgroupEventHandler::UpdateActivepWebRenderInfo(int32_t uid, int32_t pid, int32_t windowId, int32_t state,
-    const std::shared_ptr<ProcessRecord>& proc)
+void CgroupEventHandler::UpdateActivepWebRenderInfo(int32_t state, int32_t windowId,
+    const std::shared_ptr<ProcessRecord>& proc, std::shared_ptr<Application>& app)
 {
-    if (state != ResType::WindowStates::ACTIVE) {
+    if (supervisor_ == nullptr || app == nullptr) {
+        CGS_LOGE("%{public}s : supervisor or app nullptr!", __func__);
         return;
     }
-    auto win = proc->GetWindowInfoNonNull(windowId);
-    win->topWebviewRenderUid_ = (uint32_t)(uid);
+
+    if (state == ResType::WindowStates::ACTIVE) {
+        std::shared_ptr<WindowInfo> win = nullptr;
+        auto hostProc = app->GetProcessRecord(proc->hostPid_);
+        if (hostProc != nullptr) {
+            win = hostProc->GetWindowInfo(windowId);
+        }
+        if (win == nullptr) {
+            if (!supervisor_->SearchWindowId(windowId, win)) {
+                CGS_LOGE("%{public}s : windowId:%{public}d can't find. uid:%{public}d, pid:%{public}d",
+                    __func__, windowId, proc->GetUid(), proc->GetPid());
+                return;
+            }
+        }
+        win->topWebviewRenderUid_ = proc->GetUid();
+        proc->linkedWindow_ = win;
+        proc->isActive_ = true;
+    } else {
+        proc->linkedWindow_ = nullptr;
+        proc->isActive_ = false;
+    }
+
+    CGS_LOGI("%{public}s : uid:%{public}d, pid:%{public}d, winId: %{public}d, isActive_: %{public}d",
+        __func__, proc->GetUid(), proc->GetPid(), windowId, proc->isActive_);
 }
 
 void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -1112,12 +1123,6 @@ void CgroupEventHandler::HandleSceneBoardState(uint32_t resType, int64_t value, 
     supervisor_->sceneBoardUid_ = sceneBoardUid;
     supervisor_->sceneBoardPid_ = sceneBoardPid;
     CGS_LOGI("%{public}s:pid[%{public}d],uid[%{public}d]", __func__, sceneBoardPid, sceneBoardUid);
-}
-
-bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc)
-{
-    return (pr.processType_ == ProcRecordType::RENDER) && pr.isActive_ &&
-        !mainProc.GetWindowInfoNonNull(pr.linkedWindowId_)->isVisible_;
 }
 
 void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload)
