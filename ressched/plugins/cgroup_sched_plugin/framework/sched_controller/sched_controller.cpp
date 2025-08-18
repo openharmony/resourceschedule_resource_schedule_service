@@ -66,6 +66,10 @@ void SchedController::Init()
 
 void SchedController::Disable()
 {
+    for (auto resType: resTypes) {
+        PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
+    }
+
     if (cgHandler_) {
         cgHandler_->PostTaskAndWait([]() {});
         cgHandler_ = nullptr;
