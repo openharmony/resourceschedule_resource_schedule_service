@@ -834,7 +834,7 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad005, Function | MediumTest | Le
     std::string result_;
     resSchedService_->DumpSetSystemLoad(args, result_);
     EXPECT_TRUE(resSchedService_->systemLoadLevelDebugEnable_);
-    EXPECT_EQ(resSchedService_->debugSystemLoadLevel_, 0);
+    EXPECT_EQ(resSchedService_->debugSystemLoadLevel_, 3);
 }
 
 /**
