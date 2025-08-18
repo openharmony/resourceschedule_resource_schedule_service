@@ -68,6 +68,17 @@ std::shared_ptr<WindowInfo> ProcessRecord::GetWindowInfoNonNull(uint32_t windowI
     return win;
 }
 
+std::shared_ptr<WindowInfo> ProcessRecord::GetWindowInfo(uint32_t windowId)
+{
+    auto w = std::find_if(windows_.begin(), windows_.end(), [ windowId ] (const auto& w) {
+        return w->windowId_ == windowId;
+    });
+    if (w != windows_.end()) {
+        return *w;
+    }
+    return nullptr;
+}
+
 void ProcessRecord::RemoveAbilityByRecordId(int32_t recordId)
 {
     for (auto iter = abilities_.begin(); iter != abilities_.end(); ++iter) {
@@ -257,19 +268,24 @@ void Supervisor::SearchAbilityRecordId(std::shared_ptr<Application> &application
     }
 }
 
-void Supervisor::SearchWindowId(std::shared_ptr<Application> &application,
-    std::shared_ptr<ProcessRecord> &procRecord, uint32_t windowId)
+bool Supervisor::SearchWindowId(uint32_t windowId, std::shared_ptr<WindowInfo>& windowInfo)
 {
-    std::shared_ptr<ProcessRecord> pr = nullptr;
-    for (auto iter = uidsMap_.begin(); iter != uidsMap_.end(); iter++) {
-        auto app = iter->second;
-        pr = app->FindProcessRecordByWindowId(windowId);
-        if (pr) {
-            application = app;
-            procRecord = pr;
-            break;
+    auto findWindowById = [&windowId, &windowInfo](const auto& win) {
+        if (win->windowId_ == windowId) {
+            windowInfo = win;
+            return true;
+        }
+        return false;
+    };
+
+    for (const auto& app : uidsMap_) {
+        for (const auto& proc : app.second->GetPidsMap()) {
+            if (std::any_of(proc.second->windows_.begin(), proc.second->windows_.end(), findWindowById)) {
+                return true;
+            }
         }
     }
+    return false;
 }
 
 void Supervisor::SetSystemLoadLevelState(int32_t level)

@@ -2683,6 +2683,39 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_089, Function | Med
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
 
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_090
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_090, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    std::shared_ptr<ProcessRecord> proc = nullptr;
+    std::shared_ptr<Application> app = nullptr;
+    int32_t state = 1;
+    cgroupEventHandler->UpdateActivepWebRenderInfo(state, 200, proc, app);
+
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    cgroupEventHandler->UpdateActivepWebRenderInfo(state, 200, proc, app);
+    state = 0;
+    app = supervisor_->GetAppRecordNonNull(1000);
+    proc = app->GetProcessRecordNonNull(2000);
+    cgroupEventHandler->UpdateActivepWebRenderInfo(state, 200, proc, app);
+    std::shared_ptr<ProcessRecord> hostProc = app->GetProcessRecordNonNull(3000);
+    proc->hostPid_ = 3000;
+    cgroupEventHandler->UpdateActivepWebRenderInfo(state, 200, proc, app);
+    hostProc->GetWindowInfoNonNull(200);
+    cgroupEventHandler->UpdateActivepWebRenderInfo(state, 200, proc, app);
+    cgroupEventHandler->UpdateActivepWebRenderInfo(state, 300, proc, app);
+    std::shared_ptr<ProcessRecord> procOther = app->GetProcessRecordNonNull(3000);
+    procOther->GetWindowInfoNonNull(300);
+    cgroupEventHandler->UpdateActivepWebRenderInfo(state, 300, proc, app);
+    EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
+}
+
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

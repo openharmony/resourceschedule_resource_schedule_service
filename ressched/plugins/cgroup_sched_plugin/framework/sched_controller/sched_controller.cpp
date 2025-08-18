@@ -395,7 +395,8 @@ void SchedController::DumpProcessEventState(std::string& result)
                 .append(", screenCaptureState: ").append(ToString(process->screenCaptureState_))
                 .append(", videoState: ").append(ToString(process->videoState_))
                 .append(", isActive: ").append(ToString(process->isActive_))
-                .append(", linkedWindowId: ").append(ToString(process->linkedWindowId_))
+                .append(", linkedWindowId: ").append(process->linkedWindow_ == nullptr ? "" :
+                    ToString(process->linkedWindow_->windowId_))
                 .append(", audioPlayingState: ").append(ToString(process->audioPlayingState_));
             result.append("\n");
         }

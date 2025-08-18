@@ -87,6 +87,7 @@ public:
     std::shared_ptr<AbilityInfo> GetAbilityInfoNonNull(int32_t recordId);
     std::shared_ptr<AbilityInfo> GetAbilityInfo(int32_t recordId);
     std::shared_ptr<WindowInfo> GetWindowInfoNonNull(uint32_t windowId);
+    std::shared_ptr<WindowInfo> GetWindowInfo(uint32_t windowId);
     void RemoveAbilityByRecordId(int32_t recordId);
     bool HasAbility(int32_t recordId) const;
     bool HasServiceExtension() const;
@@ -126,7 +127,7 @@ public:
     int32_t audioPlayingState_ = -1;
     int32_t renderTid_ = 0;
     int32_t processState_ = 0;
-    int32_t linkedWindowId_ {-1};
+    std::shared_ptr<WindowInfo> linkedWindow_ = nullptr;
     int32_t serialNum_ {-1};
     int32_t extensionType_ = -1;
     int32_t cameraState_ = -1;
@@ -206,8 +207,7 @@ public:
     void RemoveApplication(int32_t uid);
     void SearchAbilityRecordId(std::shared_ptr<Application> &app, std::shared_ptr<ProcessRecord> &procRecord,
         int32_t recordId);
-    void SearchWindowId(std::shared_ptr<Application> &application, std::shared_ptr<ProcessRecord> &procRecord,
-        uint32_t windowId);
+    bool SearchWindowId(uint32_t windowId, std::shared_ptr<WindowInfo>& windowInfo);
     void SetSystemLoadLevelState(int32_t level);
     int32_t GetSystemLoadLevel();
     void InitSuperVisorContent();
