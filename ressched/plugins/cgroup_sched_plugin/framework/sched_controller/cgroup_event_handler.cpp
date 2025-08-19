@@ -40,6 +40,7 @@ namespace {
     constexpr uint32_t DELAYED_RETRY_REGISTER_DURATION = 100;
     constexpr uint32_t MAX_RETRY_TIMES = 100;
     constexpr uint32_t MAX_SPAN_SERIAL = 99;
+    constexpr uint32_t MAX_AUDIO_PLATING_COUNT = 1024;
     const std::string MMI_SERVICE_NAME = "mmi_service";
 }
 
@@ -732,7 +733,6 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
 
     if (value == ResType::ReportChangeStatus::CREATE) {
         procRecord->keyThreadRoleMap_.emplace(keyTid, role);
-        procRecord->isReload_ = false;
     } else {
         procRecord->keyThreadRoleMap_.erase(keyTid);
     }
@@ -963,39 +963,6 @@ void CgroupEventHandler::HandleReportBluetoothConnectState(
         resType, static_cast<int32_t>(value));
 }
 
-void CgroupEventHandler::HandleMmiInputState(uint32_t resType, int64_t value, const nlohmann::json& payload)
-{
-    int32_t uid = 0;
-    int32_t pid = 0;
-
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr.", __func__);
-        return;
-    }
-
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
-        CGS_LOGE("%{public}s : payload does not contain uid or pid", __func__);
-        return;
-    }
-    if (uid <= 0 || pid <= 0) {
-        CGS_LOGE("%{public}s : uid or pid is less than 0", __func__);
-        return;
-    }
-    CGS_LOGD("report mmi input state, uid:%{public}d, pid:%{public}d, value:%{public}lld",
-        uid, pid, (long long)value);
-    std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
-    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
-    if (!app || !procRecord) {
-        return;
-    }
-
-    if (payload.contains("syncStatus") && payload.at("syncStatus").is_string()) {
-        procRecord->mmiStatus_ = atoi(payload["syncStatus"].get<std::string>().c_str());
-    }
-    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
-        resType, static_cast<int32_t>(value));
-}
-
 void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     int32_t uid = 0;
@@ -1123,6 +1090,12 @@ void CgroupEventHandler::HandleSceneBoardState(uint32_t resType, int64_t value, 
     supervisor_->sceneBoardUid_ = sceneBoardUid;
     supervisor_->sceneBoardPid_ = sceneBoardPid;
     CGS_LOGI("%{public}s:pid[%{public}d],uid[%{public}d]", __func__, sceneBoardPid, sceneBoardUid);
+}
+
+bool CgroupEventHandler::CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc)
+{
+    return (pr.processType_ == ProcRecordType::RENDER) && pr.isActive_ &&
+        !mainProc.GetWindowInfoNonNull(pr.linkedWindowId_)->isVisible_;
 }
 
 void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload)

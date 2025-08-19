@@ -62,7 +62,6 @@ public:
     void HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportWebviewAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportBluetoothConnectState(uint32_t resType, int64_t value, const nlohmann::json& payload);
-    void HandleMmiInputState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportRunningLockEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportAvCodecEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
@@ -80,6 +79,7 @@ public:
     void HandleOnAppStopped(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
+    bool CheckVisibilityForRenderProcess(ProcessRecord &pr, ProcessRecord &mainProc);
     bool GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::shared_ptr<Application>& app,
         std::shared_ptr<ProcessRecord>& procRecord, const nlohmann::json& payload);
     bool ParsePayload(int32_t& uid, int32_t& pid, const nlohmann::json& payload);

@@ -133,10 +133,8 @@ public:
     int32_t cameraState_ = -1;
     int32_t bluetoothState_ = -1;
     int32_t wifiState_ = -1;
-    int32_t mmiStatus_ {-1};
     int32_t hostPid_ = -1;
     uint64_t suppressState_ = 0;
-    bool isReload_ = false;
 
     std::map<uint32_t, bool> runningLockState_;
     std::map<int32_t, bool> avCodecState_;
@@ -211,7 +209,6 @@ public:
     void SetSystemLoadLevelState(int32_t level);
     int32_t GetSystemLoadLevel();
     void InitSuperVisorContent();
-    void ConnectAppManagerService();
 
     int32_t sceneBoardUid_ = -1;
     int32_t sceneBoardPid_ = -1;
@@ -225,9 +222,7 @@ public:
     }
 private:
     void ReloadApplication();
-#ifdef SUPPORT_CHILD_PROCESS
     void ReloadChildProcess();
-#endif // SUPPORT_CHILD_PROCESS
 private:
     std::map<int32_t, std::shared_ptr<Application>> uidsMap_;
     int32_t systemLoadLevel_ = -1;

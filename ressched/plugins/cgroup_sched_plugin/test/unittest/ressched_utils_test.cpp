@@ -84,6 +84,7 @@ HWTEST_F(ResschedUtilsTest, ResschedUtilsTest_UtilTest_001, Function | MediumTes
     } else {
         EXPECT_TRUE(ret < 0);
     }
+    sleep(1);
 }
 }
 }
