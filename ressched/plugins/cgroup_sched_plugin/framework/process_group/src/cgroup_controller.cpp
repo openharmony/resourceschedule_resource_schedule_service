@@ -153,7 +153,7 @@ bool CgroupController::AddThreadSchedPolicy(SchedPolicy policy, const std::strin
     }
     int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
-        CGS_LOGE("%{public}s open file failed; file = %{public}s, fd = %{public}d",
+        CGS_LOGE("%{public}s open file failed; file = %{public}s, fd = %{public}d ",
             __func__, realPath_.c_str(), fd);
         return false;
     }
@@ -176,7 +176,7 @@ bool CgroupController::AddThreadGroupSchedPolicy(SchedPolicy policy, const std::
     }
     int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
-        CGS_LOGE("%{public}s open file failed; file = %{public}s; fd = %{public}d",
+        CGS_LOGE("%{public}s open file failed; file = %{public}s'; fd = %{public}d",
             __func__, realPath_.c_str(), fd);
         return false;
     }

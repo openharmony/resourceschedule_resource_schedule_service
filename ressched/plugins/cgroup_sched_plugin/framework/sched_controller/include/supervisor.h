@@ -130,6 +130,7 @@ public:
     std::shared_ptr<WindowInfo> linkedWindow_ = nullptr;
     int32_t serialNum_ {-1};
     int32_t extensionType_ = -1;
+    int32_t mmiStatus_ {-1};
     int32_t cameraState_ = -1;
     int32_t bluetoothState_ = -1;
     int32_t wifiState_ = -1;
@@ -221,6 +222,7 @@ public:
         return uidsMap_;
     }
 private:
+    void ConnectAppManagerService();
     void ReloadApplication();
     void ReloadChildProcess();
 private:
