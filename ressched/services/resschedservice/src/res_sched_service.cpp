@@ -541,8 +541,8 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
         return ret;
     });
 #ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
-    if (!CheckDumpPermission() ||
-        (!CheckENGMode() && argsInStr.size() > 0 && argsInStr[DUMP_OPTION] != "setSystemLoadLevel")) {
+    if (!CheckDumpPermission() || (!CheckENGMode() && argsInStr.size() > 0 &&
+        (argsInStr[DUMP_OPTION] != "setSystemLoadLevel" && argsInStr[DUMP_OPTION] != "getSystemloadInfo"))) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
 #else
