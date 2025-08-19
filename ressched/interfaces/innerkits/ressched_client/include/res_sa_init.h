@@ -17,7 +17,6 @@
 #define RESSCHED_INTERFACES_INNERKITS_RESSCHED_CLIENT_INCLUDE_RES_SA_INIT_H
 
 #include <mutex>
-#include <unordered_set>
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -31,39 +30,6 @@ public:
      * @return Returns ResSchedSaInit&.
      */
     static ResSchedSaInit& GetInstance();
-};
-
-class ResSchedIpcThread {
-private:
-    int32_t selfPid_;
-    std::unordered_set<int32_t> ipcThreadTids_;
-    std::mutex ipcThreadSetQosMutex_;
-    std::atomic<bool> isInit_ = {false};
-    const uint32_t MAX_IPC_THREAD_NUM = 32;
-    const uint32_t RSS_IPC_QOS_LEVEL = 7;
-    const std::string RSS_BUNDLE_NAME = "resource_schedule_service";
-
-public:
-    /**
-     * @brief Get the Instance object.
-     *
-     * @return Returns ResSchedIpcThread&.
-     */
-    static ResSchedIpcThread& GetInstance();
-
-    /**
-     * @brief SetQos.
-     *
-     * @param clientPid client pid.
-     */
-    void SetQos(int32_t clientPid);
-
-    /**
-     * @brief SetInitFlag.
-     *
-     * @param flag init finish flag.
-     */
-    void SetInitFlag(bool flag);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
