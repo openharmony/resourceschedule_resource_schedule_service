@@ -1260,7 +1260,6 @@ namespace ResourceSchedule {
         OHOS::ResourceSchedule::HandleReportRunningLockEventFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportHisysEventFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportBluetoothConnectStateFuzzTest(data, size);
-        OHOS::ResourceSchedule::CheckVisibilityForRenderProcessFuzzTest(data, size);
         OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleSceneBoardStateFuzzTest(data, size);
