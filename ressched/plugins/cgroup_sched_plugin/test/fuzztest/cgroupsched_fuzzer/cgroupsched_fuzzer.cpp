@@ -504,7 +504,7 @@ namespace ResourceSchedule {
         pr.processType_ = ProcessRecordType::RENDER;
         pr.isActive_ = true;
         ProcessRecord mainProc(uid, pid);
-        auto cgroupEventHandler = 
+        auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
         cgroupEventHandler->CheckVisibilityForRenderProcess(pr, mainProc);
