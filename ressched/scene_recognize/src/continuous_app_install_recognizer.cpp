@@ -53,7 +53,7 @@ void ContinuousAppInstallRecognizer::OnDispatchResource(uint32_t resType, int64_
             isInContinuousInstall_.store(true);
         }
     } else if (value == ResType::AppInstallStatus::APP_INSTALL_END ||
-        value == ResType::AppInstallStatus::APP_REPLACED) {
+        value == ResType::AppInstallStatus::APP_CHANGED) {
         if (exitAppInstall_) {
             ffrt::skip(exitAppInstall_);
         }
