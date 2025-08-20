@@ -489,7 +489,7 @@ namespace ResourceSchedule {
 
     bool CheckVisibilityForRenderProcessFuzzTest(const uint8_t* data, size_t size)
     {
-        if (data = nullptr) {
+        if (data == nullptr) {
             return false;
         }
 
@@ -501,7 +501,7 @@ namespace ResourceSchedule {
         uid_t uid = GetData<uid_t>();
         pid_t pid = GetData<pid_t>();
         ProcessRecord pr(uid, pid);
-        pr.processType_ = ProcessRecordType::RENDER;
+        pr.processType_ = ProcRecordType::RENDER;
         pr.isActive_ = true;
         ProcessRecord mainProc(uid, pid);
         auto cgroupEventHandler =
@@ -510,6 +510,8 @@ namespace ResourceSchedule {
         cgroupEventHandler->CheckVisibilityForRenderProcess(pr, mainProc);
         cgroupEventHandler->SetSupervisor(g_supervisor);
         cgroupEventHandler->CheckVisibilityForRenderProcess(pr, mainProc);
+
+        return true;
     }
 
     bool ParsePayloadFuzzTest(const uint8_t* data, size_t size)

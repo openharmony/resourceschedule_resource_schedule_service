@@ -82,7 +82,7 @@ void ResSchedUtils::LoadUtilsExtra()
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "ResSchedUtils dlsm 'ReportArbitrationResult' in " + RES_SCHED_CG_EXT_SO + "!");
+                        "ERR_MSG", "ResSchedUtils dlsym 'ReportArbitrationResult' in " + RES_SCHED_CG_EXT_SO + "!");
         dlclose(handle);
         return;
     }
