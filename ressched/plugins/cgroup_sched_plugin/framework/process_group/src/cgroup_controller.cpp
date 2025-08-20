@@ -154,7 +154,7 @@ bool CgroupController::AddThreadSchedPolicy(SchedPolicy policy, const std::strin
     int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
         CGS_LOGE("%{public}s open file failed; file = %{public}s, fd = %{public}d ",
-            __func__, realPath_.c_str(), fd);
+            __func__, realPath.c_str(), fd);
         return false;
     }
     fdsan_exchange_owner_tag(fd, COMMON_CGROUP_FDSAN_TAG, SCHEDULE_CGROUP_FDSAN_TAG);
