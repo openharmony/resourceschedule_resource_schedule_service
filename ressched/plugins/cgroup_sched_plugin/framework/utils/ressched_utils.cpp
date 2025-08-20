@@ -153,7 +153,7 @@ bool ResSchedUtils::CheckTidIsInPid(int32_t pid, int32_t tid)
     ResourceSchedule::ResSchedExeClient::GetInstance().SendRequestSync(
         ResExeType::RES_TYPE_CGROUP_PROC_TASK_SYNC_EVENT, 0, payload, reply);
     std::string resStr{"res"};
-    if (!reply.contains(resStr) || !reply[resStr].is_boolean) {
+    if (!reply.contains(resStr) || !reply[resStr].is_boolean()) {
         return false;
     }
     return reply[resStr];
