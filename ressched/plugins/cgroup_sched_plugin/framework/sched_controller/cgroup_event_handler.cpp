@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -810,9 +810,11 @@ void CgroupEventHandler::UpdateActivepWebRenderInfo(int32_t state, int32_t windo
                 return;
             }
         }
-        win->topWebviewRenderUid_ = proc->GetUid();
-        proc->linkedWindow_ = win;
-        proc->isActive_ = true;
+        if (win != nullptr) {
+            win->topWebviewRenderUid_ = proc->GetUid();
+            proc->linkedWindow_ = win;
+            proc->isActive_ = true;
+        }
     } else {
         proc->linkedWindow_ = nullptr;
         proc->isActive_ = false;
@@ -994,6 +996,12 @@ void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value,
             procRecord->wifiState_ = static_cast<int32_t>(value);
             break;
         }
+        case ResType::RES_TYPE_MMI_INPUT_STATE: {
+            if (payload.contains("syncStatus") && payload.at("syncStatus").is_string()) {
+                procRecord->mmiStatus_ = atoi(payload["syncStatus"].get<std::string>().c_str());
+            }
+            break;
+        }
         default: {
             break;
         }
@@ -1096,6 +1104,7 @@ void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t va
 {
     int32_t uid = 0;
     int32_t pid = 0;
+
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
 
@@ -1216,6 +1225,7 @@ void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t
 {
     int32_t uid = 0;
     int32_t pid = 0;
+
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
 
