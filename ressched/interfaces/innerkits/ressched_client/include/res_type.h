@@ -403,6 +403,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_UID = 506,
     // get suspend state by pid
     SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_PID = 507,
+    // query topn bundle usage info
+    SYNC_RES_TYPE_QUERY_TOPN_BUNDLE_USAGE_INFO = 508,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
