@@ -32,6 +32,12 @@
 #include "scene_recognizer_mgr.h"
 #include "system_ability_definition.h"
 
+#ifdef OBSERVER_EVENT_TEST
+#define WEAK_FUNC __attribute__((weak))
+#else
+#define WEAK_FUNC
+#endif
+
 namespace OHOS {
 namespace ResourceSchedule {
 using namespace AppExecFwk;
@@ -210,7 +216,7 @@ void ResSchedMgr::Stop()
     PluginMgr::GetInstance().Stop();
 }
 
-void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
+WEAK_FUNC void ResSchedMgr::ReportData(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     ReportDataInner(resType, value, payload);
 }
