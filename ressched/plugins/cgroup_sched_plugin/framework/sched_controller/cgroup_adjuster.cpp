@@ -140,7 +140,6 @@ void CgroupAdjuster::AdjustAllProcessGroup(Application &app, AdjustSource source
         const auto &procRecord = iter.second;
         if (procRecord && (procRecord->processType_ != ProcRecordType::RENDER) &&
             (procRecord->processType_ != ProcRecordType::GPU) &&
-            (procRecord->processType_ != ProcRecordType::LINUX) &&
             (procRecord->processType_ != ProcRecordType::CHILD)) {
             AdjustProcessGroup(app, *procRecord, source);
         }

@@ -310,7 +310,7 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
     } else {
         CGS_LOGE("%{public}s: param error,not have processName", __func__);
     }
-    procRecord->processType_ = processType;
+    procRecord->processType_ = processType < PROC_RECORD_TYPE_MAX ? processType : ProcRecordType::NORMAL;
     switch (processType) {
         case static_cast<int32_t>(ProcessType::RENDER):
         case static_cast<int32_t>(ProcessType::CHILD):
