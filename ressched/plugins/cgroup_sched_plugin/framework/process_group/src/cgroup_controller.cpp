@@ -153,8 +153,8 @@ bool CgroupController::AddThreadSchedPolicy(SchedPolicy policy, const std::strin
     }
     int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
-        CGS_LOGE("%{public}s open tasks file failed, name is %{public}s, subgroup is %{public}s",
-            __func__, name_.c_str(), subgroup.c_str());
+        CGS_LOGE("%{public}s open file failed; file = %{public}s, fd = %{public}d ",
+            __func__, realPath.c_str(), fd);
         return false;
     }
     fdsan_exchange_owner_tag(fd, COMMON_CGROUP_FDSAN_TAG, SCHEDULE_CGROUP_FDSAN_TAG);
@@ -176,8 +176,8 @@ bool CgroupController::AddThreadGroupSchedPolicy(SchedPolicy policy, const std::
     }
     int fd = TEMP_FAILURE_RETRY(open(realPath.c_str(), O_WRONLY | O_CLOEXEC));
     if (fd < 0) {
-        CGS_LOGE("%{public}s open cgroup.procs file failed, name is %{public}s, subgroup is %{public}s",
-            __func__, name_.c_str(), subgroup.c_str());
+        CGS_LOGE("%{public}s open file failed; file = %{public}s'; fd = %{public}d",
+            __func__, realPath.c_str(), fd);
         return false;
     }
     fdsan_exchange_owner_tag(fd, COMMON_CGROUP_FDSAN_TAG, SCHEDULE_CGROUP_FDSAN_TAG);

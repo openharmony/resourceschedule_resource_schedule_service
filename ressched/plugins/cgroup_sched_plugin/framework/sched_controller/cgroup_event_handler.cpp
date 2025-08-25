@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,6 +40,7 @@ namespace {
     constexpr uint32_t DELAYED_RETRY_REGISTER_DURATION = 100;
     constexpr uint32_t MAX_RETRY_TIMES = 100;
     constexpr uint32_t MAX_SPAN_SERIAL = 99;
+    constexpr uint32_t MAX_AUDIO_PLATING_COUNT = 1024;
     const std::string MMI_SERVICE_NAME = "mmi_service";
 }
 
@@ -732,7 +733,6 @@ void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, 
 
     if (value == ResType::ReportChangeStatus::CREATE) {
         procRecord->keyThreadRoleMap_.emplace(keyTid, role);
-        procRecord->isReload_ = false;
     } else {
         procRecord->keyThreadRoleMap_.erase(keyTid);
     }
@@ -810,9 +810,11 @@ void CgroupEventHandler::UpdateActivepWebRenderInfo(int32_t state, int32_t windo
                 return;
             }
         }
-        win->topWebviewRenderUid_ = proc->GetUid();
-        proc->linkedWindow_ = win;
-        proc->isActive_ = true;
+        if (win != nullptr) {
+            win->topWebviewRenderUid_ = proc->GetUid();
+            proc->linkedWindow_ = win;
+            proc->isActive_ = true;
+        }
     } else {
         proc->linkedWindow_ = nullptr;
         proc->isActive_ = false;
@@ -963,39 +965,6 @@ void CgroupEventHandler::HandleReportBluetoothConnectState(
         resType, static_cast<int32_t>(value));
 }
 
-void CgroupEventHandler::HandleMmiInputState(uint32_t resType, int64_t value, const nlohmann::json& payload)
-{
-    int32_t uid = 0;
-    int32_t pid = 0;
-
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr.", __func__);
-        return;
-    }
-
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload)) {
-        CGS_LOGE("%{public}s : payload does not contain uid or pid", __func__);
-        return;
-    }
-    if (uid <= 0 || pid <= 0) {
-        CGS_LOGE("%{public}s : uid or pid is less than 0", __func__);
-        return;
-    }
-    CGS_LOGD("report mmi input state, uid:%{public}d, pid:%{public}d, value:%{public}lld",
-        uid, pid, (long long)value);
-    std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
-    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
-    if (!app || !procRecord) {
-        return;
-    }
-
-    if (payload.contains("syncStatus") && payload.at("syncStatus").is_string()) {
-        procRecord->mmiStatus_ = atoi(payload["syncStatus"].get<std::string>().c_str());
-    }
-    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
-        resType, static_cast<int32_t>(value));
-}
-
 void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     int32_t uid = 0;
@@ -1025,6 +994,12 @@ void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value,
         }
         case ResType::RES_TYPE_WIFI_CONNECT_STATE_CHANGE: {
             procRecord->wifiState_ = static_cast<int32_t>(value);
+            break;
+        }
+        case ResType::RES_TYPE_MMI_INPUT_STATE: {
+            if (payload.contains("syncStatus") && payload.at("syncStatus").is_string()) {
+                procRecord->mmiStatus_ = atoi(payload["syncStatus"].get<std::string>().c_str());
+            }
             break;
         }
         default: {
@@ -1129,6 +1104,7 @@ void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t va
 {
     int32_t uid = 0;
     int32_t pid = 0;
+
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
 
@@ -1249,6 +1225,7 @@ void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t
 {
     int32_t uid = 0;
     int32_t pid = 0;
+
     std::shared_ptr<Application> app = nullptr;
     std::shared_ptr<ProcessRecord> procRecord = nullptr;
 
