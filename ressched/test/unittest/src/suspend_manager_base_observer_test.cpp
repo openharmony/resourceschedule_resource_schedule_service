@@ -29,9 +29,27 @@ using namespace testing;
 using namespace testing::ext;
 
 namespace OHOS {
+namespace Security {
+namespace AccessToken {
+int32_t g_accessFlag = PermissionState::PERMISSION_GRANTED;
+int AccessTokenKit::VerifyAccessToken(AccessTokenID tokenId, const std::string& permissionName)
+{
+    return g_accessFlag;
+}
+
+ATokenTypeEnum g_tokenTypeFlag = TypeATokenTypeEnum::TOKEN_NATIVE;
+ATokenTypeEnum AccessTokenKit::GetTokenTypeFlag(AccessTokenID tokenId)
+{
+    return g_tokenTypeFlag;
+}
+}
+}
+
 namespace ResourceSchedule {
 namespace {
     static const std::string FOUNDATION_NAME = "foundation";
+    static constexpr int32_t UID_1 = 10001000;
+    static constexpr int32_t PID_1 = 100;
 }
 
 class SuspendStateObserverBaseStubTestObj : public SuspendStateObserverBaseStub {
@@ -72,10 +90,14 @@ public:
     static void TearDownTestCase() {}
     void SetUp();
     void TearDown();
+
+    std::shared_ptr<ResSchedService> resSchedService_ = nullptr;
 };
 
 void SuspendStateObserverTest::SetUp()
-{}
+{
+    resSchedService_ = std::make_shared<ResSchedService>();
+}
 
 void SuspendStateObserverTest::TearDown()
 {}
@@ -92,7 +114,7 @@ void GetNativeToken(const std::string &name)
  * @tc.type: FUNC
  * @tc.require: ICQKUB
  */
-HWTEST_F(SuspendStateObserverTest, RegisterSuspendObserverTest_001, TestSize.Level1)
+HWTEST_F(SuspendStateObserverTest, RegisterSuspendObserverTest_001, TestSize.Level0)
 {
     auto selfTokenId = GetSelfTokenID();
     GetNativeToken(FOUNDATION_NAME);
@@ -118,11 +140,34 @@ HWTEST_F(SuspendStateObserverTest, RegisterSuspendObserverTest_001, TestSize.Lev
 
 /**
  * @tc.name: RegisterSuspendObserverTest_002
+ * @tc.desc: client侧注册去注册全流程实现.
+ * @tc.type: FUNC
+ * @tc.require: ICUXPB
+ */
+HWTEST_F(SuspendStateObserverTest, RegisterSuspendObserverTest_002, TestSize.Level0)
+{
+    auto selfTokenId = GetSelfTokenID();
+    GetNativeToken("hdf_devmgr");
+    /* 构造一个观察者对象 */
+    sptr<SuspendStateObserverBaseStub> suspendObservers_;
+    /* 注册空对象，失败 */
+    SuspendManagerBaseClient::GetInstance().RegisterSuspendObserver(suspendObservers_);
+    suspendObservers_ = sptr<SuspendStateObserverBaseStub>(new SuspendStateObserverBaseStubTestObj());
+    EXPECT_NE(suspendObservers_, nullptr);
+    /* 注册该对象，失败 */
+    SuspendManagerBaseClient::GetInstance().RegisterSuspendObserver(suspendObservers_);
+    EXPECT_TRUE(SuspendManagerBaseObserver::GetInstance().suspendObservers_.empty());
+
+    EXPECT_EQ(0, SetSelfTokenID(selfTokenId));
+}
+
+/**
+ * @tc.name: RegisterSuspendObserverTest_003
  * @tc.desc: service中序列化反序列化全流程实现.
  * @tc.type: FUNC
  * @tc.require: ICQKUB
  */
-HWTEST_F(SuspendStateObserverTest, RegisterSuspendObserverTest_002, TestSize.Level1)
+HWTEST_F(SuspendStateObserverTest, RegisterSuspendObserverTest_003, TestSize.Level0)
 {
     sptr<SuspendStateObserverBaseStubTestObj> suspendObservers_ =
         sptr<SuspendStateObserverBaseStubTestObj>(new SuspendStateObserverBaseStubTestObj());
@@ -148,12 +193,12 @@ HWTEST_F(SuspendStateObserverTest, RegisterSuspendObserverTest_002, TestSize.Lev
 }
 
 /**
- * @tc.name: RegisterSuspendObserverTest_003
+ * @tc.name: RegisterSuspendObserverTest_004
  * @tc.desc: implement中注册去注册边界实现.
  * @tc.type: FUNC
  * @tc.require: ICQKUB
  */
-HWTEST_F(SuspendStateObserverTest, RegisterSuspendObserverTest_003, TestSize.Level1)
+HWTEST_F(SuspendStateObserverTest, RegisterSuspendObserverTest_004, TestSize.Level0)
 {
     sptr<SuspendStateObserverBaseStubTestObj> suspendObservers_ =
         sptr<SuspendStateObserverBaseStubTestObj>(new SuspendStateObserverBaseStubTestObj());
@@ -170,12 +215,12 @@ HWTEST_F(SuspendStateObserverTest, RegisterSuspendObserverTest_003, TestSize.Lev
 }
 
 /**
- * @tc.name: RegisterSuspendObserverTest_004
+ * @tc.name: RegisterSuspendObserverTest_005
  * @tc.desc: implement中注册去注册边界实现.
  * @tc.type: FUNC
  * @tc.require: ICQKUB
  */
-HWTEST_F(SuspendStateObserverTest, RegisterSuspendObserverTest_004, TestSize.Level1)
+HWTEST_F(SuspendStateObserverTest, RegisterSuspendObserverTest_005, TestSize.Level0)
 {
     sptr<SuspendStateObserverBaseStubTestObj> suspendObservers_ =
         sptr<SuspendStateObserverBaseStubTestObj>(new SuspendStateObserverBaseStubTestObj());
@@ -194,7 +239,7 @@ HWTEST_F(SuspendStateObserverTest, RegisterSuspendObserverTest_004, TestSize.Lev
  * @tc.type: FUNC
  * @tc.require: ICQKUB
  */
-HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_001, TestSize.Level1)
+HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_001, TestSize.Level0)
 {
     /* 构造一个观察者对象 */
     sptr<SuspendStateObserverBaseStubTestObj> suspendObservers_ =
@@ -263,7 +308,7 @@ HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_001, TestSize.Level
  * @tc.type: FUNC
  * @tc.require: ICQKUB
  */
-HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_002, TestSize.Level1)
+HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_002, TestSize.Level0)
 {
     /* 构造一个观察者对象 */
     sptr<SuspendStateObserverBaseStubTestObj> suspendObservers_ =
@@ -297,7 +342,7 @@ HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_002, TestSize.Level
  * @tc.type: FUNC
  * @tc.require: ICQKUB
  */
-HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_003, TestSize.Level1)
+HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_003, TestSize.Level0)
 {
     /* 构造两个观察者对象 */
     sptr<SuspendStateObserverBaseStubTestObj> suspendObservers1_ =
@@ -365,7 +410,7 @@ HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_003, TestSize.Level
  * @tc.type: FUNC
  * @tc.require: ICQKUB
  */
-HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_004, TestSize.Level1)
+HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_004, TestSize.Level0)
 {
     /* 构造两个观察者对象 */
     sptr<SuspendStateObserverBaseStubTestObj> suspendObservers1_ =
@@ -438,7 +483,7 @@ HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_004, TestSize.Level
  * @tc.type: FUNC
  * @tc.require: ICQKUB
  */
-HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_005, TestSize.Level1)
+HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_005, TestSize.Level0)
 {
     /* 构造一个观察者对象 */
     sptr<SuspendStateObserverBaseStubTestObj> suspendObservers_ =
@@ -471,7 +516,7 @@ HWTEST_F(SuspendStateObserverTest, UpdateSuspendObserverTest_005, TestSize.Level
  * @tc.type: FUNC
  * @tc.require: ICQKUB
  */
-HWTEST_F(SuspendStateObserverTest, SuspendStateObserverBaseStubTest_001, TestSize.Level1)
+HWTEST_F(SuspendStateObserverTest, SuspendStateObserverBaseStubTest_001, TestSize.Level0)
 {
     sptr<SuspendStateObserverBaseStubTestObj> suspendObservers_ =
         sptr<SuspendStateObserverBaseStubTestObj>(new SuspendStateObserverBaseStubTestObj());
@@ -500,7 +545,7 @@ HWTEST_F(SuspendStateObserverTest, SuspendStateObserverBaseStubTest_001, TestSiz
  * @tc.type: FUNC
  * @tc.require: ICQKUB
  */
-HWTEST_F(SuspendStateObserverTest, SuspendStateObserverBaseStubTest_002, TestSize.Level1)
+HWTEST_F(SuspendStateObserverTest, SuspendStateObserverBaseStubTest_002, TestSize.Level0)
 {
     sptr<SuspendStateObserverBaseStubTestObj> suspendObservers_ =
         sptr<SuspendStateObserverBaseStubTestObj>(new SuspendStateObserverBaseStubTestObj());
@@ -529,7 +574,7 @@ HWTEST_F(SuspendStateObserverTest, SuspendStateObserverBaseStubTest_002, TestSiz
  * @tc.type: FUNC
  * @tc.require: ICQKUB
  */
-HWTEST_F(SuspendStateObserverTest, SuspendStateObserverBaseStubTest_003, TestSize.Level1)
+HWTEST_F(SuspendStateObserverTest, SuspendStateObserverBaseStubTest_003, TestSize.Level0)
 {
     sptr<SuspendStateObserverBaseStubTestObj> suspendObservers_ =
         sptr<SuspendStateObserverBaseStubTestObj>(new SuspendStateObserverBaseStubTestObj());
@@ -558,7 +603,7 @@ HWTEST_F(SuspendStateObserverTest, SuspendStateObserverBaseStubTest_003, TestSiz
  * @tc.type: FUNC
  * @tc.require: ICQKUB
  */
-HWTEST_F(SuspendStateObserverTest, SuspendStateObserverBaseStubTest_004, TestSize.Level1)
+HWTEST_F(SuspendStateObserverTest, SuspendStateObserverBaseStubTest_004, TestSize.Level0)
 {
     sptr<SuspendStateObserverBaseStubTestObj> suspendObservers_ =
         sptr<SuspendStateObserverBaseStubTestObj>(new SuspendStateObserverBaseStubTestObj());
@@ -577,6 +622,30 @@ HWTEST_F(SuspendStateObserverTest, SuspendStateObserverBaseStubTest_004, TestSiz
     suspendObservers_->OnActive(pidList, uid);
     suspendObservers_->OnDoze(pidList, uid);
     suspendObservers_->OnFrozen(pidList, uid);
+}
+
+/**
+ * @tc.name: GetSuspendStateByUidOrPid
+ * @tc.desc: test GetSuspendStateByUidOrPid.
+ * @tc.type: FUNC
+ * @tc.require: ICUXPB
+ */
+HWTEST_F(SuspendStateObserverTest, GetSuspendStateByUidOrPid, TestSize.Level0)
+{
+    auto selfTokenId = GetSelfTokenID();
+    GetNativeToken(FOUNDATION_NAME);
+
+    /* 调用接口获取应用冻结状态 */
+    bool isFrozen = false;
+    int32_t funcResult;
+    resSchedService_->GetSuspendStateByUid(UID_1, isFrozen, funcResult);
+    EXPECT_EQ(funcResult, ERR_OK);
+
+    isFrozen = false;
+    resSchedService_->GetSuspendStateByPid(PID_1, isFrozen, funcResult);
+    EXPECT_EQ(funcResult, ERR_OK);
+
+    EXPECT_EQ(0, SetSelfTokenID(selfTokenId));
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

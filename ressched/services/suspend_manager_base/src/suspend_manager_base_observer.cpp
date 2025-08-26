@@ -20,6 +20,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 IMPLEMENT_SINGLE_INSTANCE(SuspendManagerBaseObserver)
 
+// LCOV_EXCL_START
 void SuspendManagerBaseObserver::OnObserverDied(const wptr<IRemoteObject> &remote)
 {
     SUSPEND_MSG_LOGI("Suspend manager OnObserverDied called");
@@ -93,6 +94,7 @@ int32_t SuspendManagerBaseObserver::RemoveObserverDeathRecipient(const sptr<ISus
     SUSPEND_MSG_LOGW("Observer not found in observer death recipient.");
     return ERR_OK;
 }
+// LCOV_EXCL_STOP
 
 int32_t SuspendManagerBaseObserver::RegisterSuspendObserver(const sptr<ISuspendStateObserverBase> &observer)
 {
