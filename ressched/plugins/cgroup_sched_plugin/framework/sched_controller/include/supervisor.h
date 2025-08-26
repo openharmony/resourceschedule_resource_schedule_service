@@ -42,8 +42,8 @@ enum ProcRecordType : int32_t {
     EXTENSION,
     RENDER,
     GPU,
-    LINUX,
     CHILD,
+    PROC_RECORD_TYPE_MAX,
 };
 
 class AbilityInfo;
