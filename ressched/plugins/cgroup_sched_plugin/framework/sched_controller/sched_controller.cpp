@@ -453,7 +453,14 @@ extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& resData)
 
 extern "C" int GetProcessGroup(const pid_t pid)
 {
-    return SchedController::GetInstance().GetProcessGroup(pid);
+    int32_t group = static_cast<int32_t>(SP_DEFAULT);
+    auto cgroupEventHandler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (cgroupEventHandler != nullptr) {
+        cgroupEventHandler->PostTaskAndWait([pid, &group] {
+            group = SchedController::GetInstance().GetProcessGroup(pid);
+        });
+    }
+    return group;
 }
 
 extern "C" void OnDump(const std::vector<std::string>& args, std::string& result)
