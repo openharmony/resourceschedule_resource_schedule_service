@@ -69,7 +69,6 @@ ErrCode ResSchedService::GetSuspendStateByUid(const int32_t uid, bool &isFrozen,
         isFrozen = reply["isFrozen"].get<bool>();
         return ERR_OK;
     }
-    funcResult = RES_SCHED_ACCESS_TOKEN_FAIL;
     return ERR_OK;
 }
 
@@ -98,7 +97,6 @@ ErrCode ResSchedService::GetSuspendStateByPid(const int32_t pid, bool &isFrozen,
         isFrozen = reply["isFrozen"].get<bool>();
         return ERR_OK;
     }
-    funcResult = RES_SCHED_ACCESS_TOKEN_FAIL;
     return ERR_OK;
 }
 
