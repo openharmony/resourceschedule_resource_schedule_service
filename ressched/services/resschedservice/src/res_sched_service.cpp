@@ -112,6 +112,7 @@ namespace {
         ResType::RES_TYPE_KEY_PERF_SCENE,
         ResType::RES_TYPE_ABILITY_OR_PAGE_SWITCH,
         ResType::RES_TYPE_GC_THREAD_QOS_STATUS_CHANGE,
+        ResType::RES_TYPE_BACKGROUND_STATUS,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -166,6 +167,7 @@ namespace {
         ResType::RES_TYPE_DEVICE_MODE_STATUS,
         ResType::RES_TYPE_TDP_TURBO,
         ResType::SYNC_RES_TYPE_QUERY_TOPN_BUNDLE_USAGE_INFO,
+        ResType::RES_TYPE_BACKGROUND_STATUS,
     };
     static const std::unordered_map<uint32_t, std::unordered_set<int32_t>> ALLOW_SOME_UID_REPORT_RES = {
         { ResType::RES_TYPE_MODEM_PA_HIGH_POWER_ABNORMAL, { 1201 } },
