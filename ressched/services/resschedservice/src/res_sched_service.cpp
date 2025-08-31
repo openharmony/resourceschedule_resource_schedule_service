@@ -192,7 +192,7 @@ namespace {
         { ResType::RES_TRPE_GAME_SUSPEND_MODE, { 7800 } },
         { ResType::RES_TYPE_STANDBY_FREEZE_FAILED, { 1201 } },
         { ResType::RES_TYPE_ADJUST_PROTECTLRU_RECLAIM_RATIO, { 1111 } },
-        { ResType::SYNC_RES_TYPE_GET_APP_STATUS, { 3051 } },
+        { ResType::SYNC_RES_TYPE_GET_APP_TYPE, { 3051 } },
     };
     enum SYSTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL : int32_t {
         DEBUG_LEVEL_MINIMUM = 0,

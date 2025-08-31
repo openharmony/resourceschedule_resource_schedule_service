@@ -390,7 +390,7 @@ enum : uint32_t {
     // report preload application
     RES_TYPE_PRELOAD_APPLICATION,
     // get the applicaiton type
-    SYNC_RES_TYPE_GET_APP_STATUS,
+    SYNC_RES_TYPE_GET_APP_TYPE,
     // report to request mutex status
     SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // report to check mutex before start
