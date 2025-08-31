@@ -44,7 +44,7 @@ using namespace AppExecFwk;
 namespace {
     static const std::map<uint32_t, std::string> resTypeToStr = {
         { ResType::SYNC_RES_TYPE_THAW_ONE_APP, "SYNC_RES_TYPE_THAW_ONE_APP"},
-        { ResType::SYNC_RES_TYPE_GET_APP_STATUS, "SYNC_RES_TYPE_GET_APP_STATUS"},
+        { ResType::SYNC_RES_TYPE_GET_APP_TYPE, "SYNC_RES_TYPE_GET_APP_TYPE"},
         { ResType::SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE, "SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE"},
         { ResType::SYNC_RES_TYPE_GET_THERMAL_DATA, "SYNC_RES_TYPE_GET_THERMAL_DATA"},
         { ResType::RES_TYPE_SCREEN_STATUS, "SCREEN_STATUS" },
