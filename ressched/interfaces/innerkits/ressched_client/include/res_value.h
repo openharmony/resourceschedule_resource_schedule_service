@@ -807,8 +807,11 @@ enum HighFrequenceLoadSceneState : uint64_t {
 * @brief Camera Status Change
 */
 enum CameraUsingStatus : uint64_t {
+    CAMERA_STATUS_APPEAR = 0,
+    CAMERA_STATUS_DISAPPEAR = 1,
     CAMERA_STATUS_AVAILABLE = 2,
     CAMERA_STATUS_UNAVAILABLE = 3,
+    CAMERA_SERVER_UNAVAILABLE = 4,
 };
 
 /**

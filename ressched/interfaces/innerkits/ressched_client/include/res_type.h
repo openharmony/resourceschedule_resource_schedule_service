@@ -373,6 +373,8 @@ enum : uint32_t {
     RES_TYPE_TDP_TURBO = 174,
     // report background system analyze status
     RES_TYPE_BACKGROUND_STATUS = 175,
+    // report camera status
+    RES_TYPE_CAMERA_STATUS_CHANGED = 176,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
