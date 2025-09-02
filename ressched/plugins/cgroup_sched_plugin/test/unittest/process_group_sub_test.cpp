@@ -61,7 +61,7 @@ void ProcessGroupSubTest::TearDown(void)
  * @tc.require: issueI798UT
  * @tc.desc:
  */
-HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_001, Function | MediumTest | Level0)
+HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_001, TestSize.Level0)
 {
     EXPECT_EQ(SP_BACKGROUND, 1);
 }
@@ -73,7 +73,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_001, Function 
  * @tc.require: issueI798UT
  * @tc.desc:
  */
-HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_002, Function | MediumTest | Level0)
+HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_002, TestSize.Level0)
 {
     EXPECT_EQ(SP_FOREGROUND, 2);
 }
@@ -85,7 +85,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_002, Function 
  * @tc.require: issueI798UT
  * @tc.desc:
  */
-HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_003, Function | MediumTest | Level0)
+HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_003, TestSize.Level0)
 {
     const char* policyName = GetSchedPolicyFullName(SP_DEFAULT);
     EXPECT_TRUE(!strcmp(policyName, "sp_default"));
@@ -98,7 +98,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_003, Function 
  * @tc.require: issueI798UT
  * @tc.desc:
  */
-HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_004, Function | MediumTest | Level0)
+HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_004, TestSize.Level0)
 {
     const char* policyName = GetSchedPolicyFullName(SP_BACKGROUND);
     EXPECT_TRUE(!strcmp(policyName, "sp_background"));
@@ -111,7 +111,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_004, Function 
  * @tc.require: issueI798UT
  * @tc.desc:
  */
-HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_005, Function | MediumTest | Level0)
+HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_005, TestSize.Level0)
 {
     const char* policyName = GetSchedPolicyFullName(SP_FOREGROUND);
     EXPECT_TRUE(!strcmp(policyName, "sp_foreground"));
@@ -124,7 +124,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_005, Function 
  * @tc.require: issueI798UT
  * @tc.desc:
  */
-HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_006, Function | MediumTest | Level0)
+HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_006, TestSize.Level0)
 {
     const char* policyName = GetSchedPolicyFullName(SP_SYSTEM_BACKGROUND);
     EXPECT_TRUE(!strcmp(policyName, "sp_system_background"));
@@ -137,7 +137,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_006, Function 
  * @tc.require: issueI798UT
  * @tc.desc:
  */
-HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_007, Function | MediumTest | Level0)
+HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_007, TestSize.Level0)
 {
     const char* policyName = GetSchedPolicyFullName(SP_TOP_APP);
     EXPECT_TRUE(!strcmp(policyName, "sp_top_app"));
@@ -150,7 +150,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_007, Function 
  * @tc.require: issueI798UT
  * @tc.desc:
  */
-HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_008, Function | MediumTest | Level0)
+HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_008, TestSize.Level0)
 {
     const char* policyName = GetSchedPolicyShortenedName(SP_DEFAULT);
     EXPECT_TRUE(!strcmp(policyName, "df"));
@@ -163,7 +163,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_008, Function 
  * @tc.require: issueI798UT
  * @tc.desc:
  */
-HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_009, Function | MediumTest | Level0)
+HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_009, TestSize.Level0)
 {
     const char* policyName = GetSchedPolicyShortenedName(SP_FOREGROUND);
     EXPECT_TRUE(!strcmp(policyName, "fg"));
@@ -176,7 +176,7 @@ HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_009, Function 
  * @tc.require: issueI798UT
  * @tc.desc:
  */
-HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_010, Function | MediumTest | Level0)
+HWTEST_F(ProcessGroupSubTest, ProcessGroupSubTest_SchedPolicyType_010, TestSize.Level0)
 {
     const char* policyName = GetSchedPolicyShortenedName(SP_BACKGROUND);
     EXPECT_TRUE(!strcmp(policyName, "bg"));

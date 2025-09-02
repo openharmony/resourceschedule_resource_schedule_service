@@ -68,7 +68,7 @@ void SocPerfPluginTest::TearDown(void)
  * @tc.type FUNC
  * @tc.require: issueI78T3V
  */
-HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_LibTest_001, Function | MediumTest | Level0)
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_LibTest_001, TestSize.Level0)
 {
     auto handle = dlopen(SOCPERF_PLUBIN_LIB_NAME.c_str(), RTLD_NOW);
     EXPECT_NE(handle, nullptr);
@@ -96,7 +96,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_LibTest_001, Function | MediumTest
  * @tc.type FUNC
  * @tc.require: issueI78T3V
  */
-HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_001, Function | MediumTest | Level0)
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_001, TestSize.Level0)
 {
     const std::shared_ptr<ResData>& coldStartData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
         ResType::AppStartType::APP_COLD_START, nullptr);
@@ -116,7 +116,7 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_001, Function | MediumTes
  * @tc.type FUNC
  * @tc.require: issueI78T3V
  */
-HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_002, Function | MediumTest | Level0)
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_002, TestSize.Level0)
 {
     const std::shared_ptr<ResData>& data = std::make_shared<ResData>(ResType::RES_TYPE_WINDOW_FOCUS,
         ResType::WindowFocusStatus::WINDOW_FOCUS, nullptr);
