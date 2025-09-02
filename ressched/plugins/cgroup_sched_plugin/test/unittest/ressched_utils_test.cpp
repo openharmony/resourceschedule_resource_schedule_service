@@ -50,7 +50,7 @@ void ResschedUtilsTest::TearDown(void)
  * @tc.require: issueI9BPMB
  * @tc.desc:z30053169
  */
-HWTEST_F(ResschedUtilsTest, ProcessGroupSubTest_SchedPolicyType_001, Function | MediumTest | Level0)
+HWTEST_F(ResschedUtilsTest, ProcessGroupSubTest_SchedPolicyType_001, TestSize.Level0)
 {
     EXPECT_EQ(ResSchedUtils::GetInstance().CheckTidIsInPid(0, 0), false);
 }
@@ -62,7 +62,7 @@ HWTEST_F(ResschedUtilsTest, ProcessGroupSubTest_SchedPolicyType_001, Function | 
  * @tc.require: issueI9BPMB
  * @tc.desc:z30053169
  */
-HWTEST_F(ResschedUtilsTest, ProcessGroupSubTest_SchedPolicyType_002, Function | MediumTest | Level0)
+HWTEST_F(ResschedUtilsTest, ProcessGroupSubTest_SchedPolicyType_002, TestSize.Level0)
 {
     EXPECT_EQ(ResSchedUtils::GetInstance().CheckTidIsInPid(1, 1), false);
 }
