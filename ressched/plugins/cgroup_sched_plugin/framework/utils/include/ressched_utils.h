@@ -27,7 +27,7 @@ namespace ResourceSchedule {
 using ReportDataFunc = void (*)(uint32_t resType, int64_t value, const nlohmann::json& payload);
 using ReportArbitrationResultFunc = void (*)(Application &app, ProcessRecord &pr, AdjustSource source);
 using ReportSysEventFunc = void (*)(Application &app, ProcessRecord &pr, uint32_t resType, int32_t state);
-
+using ReportCallerEventFunc = void (*)(Application &app, ProcessRecord &pr, int32_t callerUid);
 using DispatchResourceExtFunc = void (*)(uint32_t resType, int64_t value, const nlohmann::json& payload);
 using ReportAppStateFunc = void (*)(int32_t state, int32_t pid);
 using SubscribeResourceExtFunc = void (*)();
@@ -36,6 +36,7 @@ public:
     static ResSchedUtils& GetInstance();
     void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void ReportArbitrationResult(Application &app, ProcessRecord &pr, AdjustSource source);
+    void ReportCallerEvent(Application &app, ProcessRecord &pr, int32_t callerUid);
     void ReportSysEvent(Application &app, ProcessRecord &pr, uint32_t resType, int32_t state);
     std::string GetProcessFilePath(int32_t uid, std::string bundleName, int32_t pid);
     bool CheckTidIsInPid(int32_t pid, int32_t tid);
@@ -56,6 +57,7 @@ private:
         reportFunc_ = nullptr;
         reportArbitrationResultFunc_ = nullptr;
         reportSysEventFunc_ = nullptr;
+        reportCallerEventFunc_ = nullptr;
         subscribeResourceExtFunc_ = nullptr;
     }
     void LoadUtils();
@@ -69,6 +71,7 @@ private:
     ReportDataFunc reportFunc_ = nullptr;
     ReportArbitrationResultFunc reportArbitrationResultFunc_ = nullptr;
     ReportSysEventFunc reportSysEventFunc_ = nullptr;
+    ReportCallerEventFunc reportCallerEventFunc_ = nullptr;
     DispatchResourceExtFunc dispatchResourceExtFunc_ = nullptr;
     SubscribeResourceExtFunc subscribeResourceExtFunc_ = nullptr;
 };
