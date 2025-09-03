@@ -170,7 +170,6 @@ void CgroupEventHandler::HandleUIExtensionAbilityStateChange(uint32_t resType, i
 void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
 
@@ -181,11 +180,11 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     int32_t recordId = 0;
     int32_t abilityState = 0;
     int32_t abilityType = 0;
+    int32_t callerUid = -1;
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
         !ParseString(bundleName, "bundleName", payload) || !ParseString(abilityName, "abilityName", payload) ||
-        !ParseValue(recordId, "recordId", payload) ||
+        !ParseValue(recordId, "recordId", payload) || !ParseValue(callerUid, "callerUid", payload) ||
         !ParseValue(abilityState, "abilityState", payload) || !ParseValue(abilityType, "abilityType", payload)) {
-        CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
 
@@ -215,6 +214,9 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     abiInfo->name_ = abilityName;
     abiInfo->state_ = abilityState;
     abiInfo->type_ = abilityType;
+    if (abilityState == 0) {
+        ResSchedUtils::GetInstance().ReportCallerEvent(*(app.get()), *(procRecord.get()), callerUid);
+    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_ABILITY_STATE);
 }

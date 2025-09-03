@@ -94,6 +94,7 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     payload["recordId"] = std::to_string(abilityStateData.abilityRecordId);
     payload["abilityType"] = std::to_string(abilityStateData.abilityType);
     payload["abilityState"] = std::to_string(abilityState);
+    payload["callerUid"] = std::to_string(abilityStateData.callerUid);
 
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
         abilityState, payload);
