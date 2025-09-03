@@ -27,6 +27,7 @@ namespace ResourceSchedule {
 using ReportDataFunc = void (*)(uint32_t resType, int64_t value, const nlohmann::json& payload);
 using ReportArbitrationResultFunc = void (*)(Application &app, ProcessRecord &pr, AdjustSource source);
 using ReportSysEventFunc = void (*)(Application &app, ProcessRecord &pr, uint32_t resType, int32_t state);
+
 using DispatchResourceExtFunc = void (*)(uint32_t resType, int64_t value, const nlohmann::json& payload);
 using ReportAppStateFunc = void (*)(int32_t state, int32_t pid);
 using SubscribeResourceExtFunc = void (*)();

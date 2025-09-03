@@ -108,7 +108,7 @@ void ResSchedUtils::LoadUtilsExtra()
         dlclose(handle);
         return;
     }
-
+    
     subscribeResourceExtFunc_ = reinterpret_cast<SubscribeResourceExtFunc>(dlsym(handle, "SubscribeResourceExt"));
     if (!subscribeResourceExtFunc_) {
         CGS_LOGD("%{public}s load function:SubscribeResourceExtFunc failed! errno:%{public}d", __func__, errno);

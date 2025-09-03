@@ -183,7 +183,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     int32_t abilityType = 0;
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
         !ParseString(bundleName, "bundleName", payload) || !ParseString(abilityName, "abilityName", payload) ||
-        !ParseValue(recordId, "recordId", payload) ||
+        !ParseValue(recordId, "recordId", payload) || 
         !ParseValue(abilityState, "abilityState", payload) || !ParseValue(abilityType, "abilityType", payload)) {
         CGS_LOGE("%{public}s: param error", __func__);
         return;

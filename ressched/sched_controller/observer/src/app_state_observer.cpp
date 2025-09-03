@@ -94,7 +94,7 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     payload["recordId"] = std::to_string(abilityStateData.abilityRecordId);
     payload["abilityType"] = std::to_string(abilityStateData.abilityType);
     payload["abilityState"] = std::to_string(abilityState);
-
+    
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
         abilityState, payload);
     if (AppStartupSceneRec::GetInstance().IsAppStartUp(abilityState)) {
