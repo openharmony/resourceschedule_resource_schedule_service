@@ -108,7 +108,18 @@ void ResSchedUtils::LoadUtilsExtra()
         dlclose(handle);
         return;
     }
-    
+
+    reportCallerEventFunc_ = reinterpret_cast<ReportCallerEventFunc>(dlsym(handle, "ReportCallerEvent"));
+    if (!reportCallerEventFunc_) {
+        CGS_LOGD("%{public}s load function:ReportCallerEvent failed! errno:%{public}d", __func__, errno);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", RES_SCHED_SERVICE_SO,
+                        "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "ResSchedUtils don't found ReportCallerEvent in " + RES_SCHED_CG_EXT_SO + "!");
+        dlclose(handle);
+        return;
+    }
+
     subscribeResourceExtFunc_ = reinterpret_cast<SubscribeResourceExtFunc>(dlsym(handle, "SubscribeResourceExt"));
     if (!subscribeResourceExtFunc_) {
         CGS_LOGD("%{public}s load function:SubscribeResourceExtFunc failed! errno:%{public}d", __func__, errno);
@@ -133,6 +144,15 @@ void ResSchedUtils::ReportArbitrationResult(Application &app, ProcessRecord &pr,
         return;
     }
     reportArbitrationResultFunc_(app, pr, source);
+}
+
+void ResSchedUtils::ReportCallerEvent(Application &app, ProcessRecord &pr, int32_t callerUid)
+{
+    if (!reportCallerEventFunc_) {
+        CGS_LOGD("%{public}s failed, function nullptr.", __func__);
+        return;
+    }
+    reportCallerEventFunc_(app, pr, callerUid);
 }
 
 void ResSchedUtils::ReportSysEvent(Application &app, ProcessRecord &pr, uint32_t resType, int32_t state)
