@@ -207,6 +207,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_DISCONNECTED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_WIFI_POWER_STATE);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BATTERY_CHANGED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USER_UNLOCKED);
     matchingSkills.AddEvent(DATA_SHARE_READY);
     matchingSkills.AddEvent(COMMON_EVENT_CAMERA_STATUS);
     matchingSkills.AddEvent(CONFIG_UPDATE_ACTION);
@@ -374,6 +375,11 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         payload[GAME_UID] = want.GetIntParam(GAME_UID, -1);
         payload[GAME_ENV] = want.GetIntParam(GAME_ENV, -1);
         ReportDataInProcess(ResType::RES_TYPE_REPORT_GAME_STATE_CHANGE,
+            static_cast<int64_t>(want.GetIntParam(GAME_STATUS, -1)), payload);
+        return;
+    }
+    if (action == CommonEventSupport::COMMON_EVENT_USER_UNLOCKED) {
+        ReportDataInProcess(ResType::RES_TYPE_UESER_UNLOCKED,
             static_cast<int64_t>(want.GetIntParam(GAME_STATUS, -1)), payload);
         return;
     }
