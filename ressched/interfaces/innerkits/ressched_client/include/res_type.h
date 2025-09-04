@@ -415,6 +415,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_LAST,
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
+    // user unlocked
+    RES_TYPE_UESER_UNLOCKED,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
