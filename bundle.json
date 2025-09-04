@@ -56,7 +56,6 @@
         "init",
         "idl_tool",
         "ipc",
-        "movement",
         "napi",
         "netmanager_base",
         "input",

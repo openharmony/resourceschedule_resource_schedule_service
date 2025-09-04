@@ -24,7 +24,6 @@
 #endif
 #endif
 #include "fold_display_mode_observer.h"
-#include "device_movement_observer.h"
 #include "sched_telephony_observer.h"
 #include "audio_observer.h"
 #include "connection_subscriber.h"
@@ -78,9 +77,6 @@ public:
 #endif
 #endif
     static std::shared_ptr<ConnectionSubscriber> connectionSubscriber_;
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-    static std::shared_ptr<DeviceMovementObserver> deviceMovementObserver_;
-#endif
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     static std::shared_ptr<SchedTelephonyObserver> schedTelephonyObserver_;
 #endif
@@ -100,9 +96,6 @@ std::shared_ptr<MmiObserver> ObserverEventTest::mmiObserver_ = nullptr;
 std::shared_ptr<FoldDisplayModeObserver> ObserverEventTest::foldDisplayModeObserver_ = nullptr;
 std::shared_ptr<FoldDisplayOrientationObserver> ObserverEventTest::foldDisplayOrientationObserver_ = nullptr;
 std::shared_ptr<ConnectionSubscriber> ObserverEventTest::connectionSubscriber_ = nullptr;
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-    std::shared_ptr<DeviceMovementObserver> ObserverEventTest::deviceMovementObserver_ = nullptr;
-#endif
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     std::shared_ptr<SchedTelephonyObserver> ObserverEventTest::schedTelephonyObserver_ = nullptr;
 #endif
@@ -121,9 +114,6 @@ void ObserverEventTest::SetUpTestCase()
     connectionSubscriber_ = std::make_shared<ConnectionSubscriber>();
     foldDisplayModeObserver_ = std::make_shared<FoldDisplayModeObserver>();
     foldDisplayOrientationObserver_ = std::make_shared<FoldDisplayOrientationObserver>();
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-    deviceMovementObserver_ = std::make_shared<DeviceMovementObserver>();
-#endif
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     schedTelephonyObserver_ = std::make_shared<SchedTelephonyObserver>();
 #endif
@@ -142,9 +132,6 @@ void ObserverEventTest::TearDownTestCase()
 #endif
     connectionSubscriber_ = nullptr;
     foldDisplayModeObserver_ = nullptr;
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-    deviceMovementObserver_ = nullptr;
-#endif
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     schedTelephonyObserver_ = nullptr;
 #endif
@@ -595,36 +582,6 @@ HWTEST_F(ObserverEventTest, mmiObserverEvent_001, testing::ext::TestSize.Level1)
 #endif
 
 /**
- * @tc.name: deviceMovementObserverEvent_001
- * @tc.desc: test multimodal input sync bundleName interface
- * @tc.type: FUNC
- * @tc.require: issueI8VZVN
- */
-HWTEST_F(ObserverEventTest, deviceMovementObserverEvent_001, testing::ext::TestSize.Level1)
-{
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-    // data is null
-    int32_t code = -1;
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option;
-    int32_t testRequest = deviceMovementObserver_->OnRemoteRequest(code, data, reply, option);
-    EXPECT_EQ(testRequest, -1);
-
-    //code is MOVEMENT_CHANGE
-    data.WriteInterfaceToken(DeviceMovementObserver::GetDescriptor());
-    code = static_cast<int32_t>(Msdp::ImovementCallback::MOVEMENT_CHANGE);
-    int32_t t1 = deviceMovementObserver_->OnRemoteRequest(code, data, reply, option);
-    EXPECT_EQ(t1, 0);
-
-    //code is not MOVEMENT_CHANGE
-    code = -1;
-    int32_t t2 = deviceMovementObserver_->OnRemoteRequest(code, data, reply, option);
-    EXPECT_EQ(t2, -1);
-#endif
-}
-
-/**
  * @tc.name: schedTelephonyObserverEvent_001
  * @tc.desc: test multimodal input sync bundleName interface
  * @tc.type: FUNC
@@ -1024,27 +981,6 @@ HWTEST_F(ObserverEventTest, DisableAudioObserver_001, testing::ext::TestSize.Lev
     }
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
     EXPECT_EQ(instance->audioObserver_, nullptr);
-#else
-    SUCCEED();
-#endif
-}
-
-/**
- * @tc.name: DisableDeviceMovementObserver_001
- * @tc.desc: test account observer DisableDeviceMovementObserver
- * @tc.type: FUNC
- * @tc.require: issuesI9SSQY
- */
-HWTEST_F(ObserverEventTest, DisableDeviceMovementObserver_001, testing::ext::TestSize.Level1)
-{
-    auto instance = ObserverManager::GetInstance();
-    if (instance) {
-        instance->DisableDeviceMovementObserver();
-        instance->InitDeviceMovementObserver();
-        instance->DisableDeviceMovementObserver();
-    }
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-    EXPECT_EQ(instance->deviceMovementObserver_, nullptr);
 #else
     SUCCEED();
 #endif

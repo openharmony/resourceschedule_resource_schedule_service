@@ -28,7 +28,6 @@
 #endif
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
-#include "parameters.h"
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "res_type.h"
@@ -38,10 +37,6 @@
 #endif
 #include "oobe_manager.h"
 #include "system_ability_definition.h"
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-#include "movement_client.h"
-#include "movement_data_utils.h"
-#endif
 #ifdef MMI_ENABLE
 #include "input_manager.h"
 #endif
@@ -60,8 +55,6 @@ const static int8_t OPERATION_SUCCESS = 0;
 const static int32_t TUPLE_PID = 0;
 const static int32_t TUPLE_UID = 1;
 const static int32_t TUPLE_NAME = 2;
-const static bool DEVICE_MOVEMENT_OBSERVER_ENABLE =
-    system::GetBoolParameter("persist.sys.ressched_device_movement_observer_switch", true);
 const static char* RES_SCHED_CG_EXT_SO = "libcgroup_sched_ext.z.so";
 
 void ObserverManager::Init()
@@ -93,7 +86,6 @@ void ObserverManager::InitObserverCbMap()
 #endif
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, []() { ObserverManager::GetInstance()->InitTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, []() { ObserverManager::GetInstance()->InitAudioObserver(); }},
-        { MSDP_MOVEMENT_SERVICE_ID, []() { ObserverManager::GetInstance()->InitDeviceMovementObserver(); }},
         { DISPLAY_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitDisplayModeObserver(); }},
         { DISPLAY_MANAGER_SERVICE_SA_ID, []() { ObserverManager::GetInstance()->InitDisplayOrientationObserver(); }},
         { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->InitConnectionSubscriber(); }},
@@ -126,7 +118,6 @@ void ObserverManager::InitRemoveObserverCbMap()
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, []() {
             ObserverManager::GetInstance()->DisableTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableAudioObserver(); }},
-        { MSDP_MOVEMENT_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableDeviceMovementObserver(); }},
         { DISPLAY_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableDisplayModeObserver(); }},
         { DISPLAY_MANAGER_SERVICE_SA_ID, []() { ObserverManager::GetInstance()->DisableDisplayOrientationObserver(); }},
         { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableConnectionSubscriber(); }},
@@ -432,47 +423,6 @@ void ObserverManager::DisableAudioObserver()
         RESSCHED_LOGW("ObserverManager disable audioSceneKeyObserver failed");
     }
     audioObserver_ = nullptr;
-#endif
-}
-
-void ObserverManager::InitDeviceMovementObserver()
-{
-    if (!DEVICE_MOVEMENT_OBSERVER_ENABLE) {
-        RESSCHED_LOGI("Device movement observer is not enable");
-        return;
-    }
-
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-    RESSCHED_LOGI("InitDeviceMovementObserver");
-    if (!deviceMovementObserver_) {
-        deviceMovementObserver_ = sptr<DeviceMovementObserver>(new DeviceMovementObserver());
-    }
-    if (Msdp::MovementClient::GetInstance().SubscribeCallback(
-        Msdp::MovementDataUtils::MovementType::TYPE_STILL, deviceMovementObserver_) != ERR_OK) {
-            HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a device movement observer failed!");
-        }
-#endif
-}
-
-void ObserverManager::DisableDeviceMovementObserver()
-{
-    if (!DEVICE_MOVEMENT_OBSERVER_ENABLE) {
-        RESSCHED_LOGI("Device movement observer is not enable");
-        return;
-    }
-
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-    RESSCHED_LOGI("DisableDeviceMovementObserver");
-    if (!deviceMovementObserver_) {
-        RESSCHED_LOGD("ObserverManager has been disable deviceMovementObserver");
-        return;
-    }
-    Msdp::MovementClient::GetInstance().UnSubscribeCallback(
-        Msdp::MovementDataUtils::MovementType::TYPE_STILL, deviceMovementObserver_);
-    deviceMovementObserver_ = nullptr;
 #endif
 }
 
