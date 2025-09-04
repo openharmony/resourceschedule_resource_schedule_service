@@ -2670,6 +2670,26 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_090, Function | Med
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) != nullptr);
 }
 
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_091
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB0CYC
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_091, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    uint32_t resType = 0;
+    int64_t value = 0;
+    nlohmann::json payload;
+    payload["UID"] = "1000";
+    payload["PID"] = "1000";
+    auto processRecord = supervisor_->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
+    cgroupEventHandler->HandleNapModeEvent(resType, value, payload);
+}
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
 } // namespace OHOS

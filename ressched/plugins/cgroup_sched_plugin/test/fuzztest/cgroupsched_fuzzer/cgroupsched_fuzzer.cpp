@@ -459,6 +459,28 @@ namespace ResourceSchedule {
         return true;
     }
 
+    bool HandleNapModeEventFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+        // initialize
+        G_DATA = data;
+        g_size = size;
+        // getdata
+        uid_t uid = GetData<uid_t>();
+        pid_t pid = GetData<pid_t>();
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
+        nlohmann::json payload;
+        payload["UID"] = std::to_string(uid);
+        payload["PID"] = std::to_string(pid);
+        auto cgroupEventHandler =
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
+        cgroupEventHandler->HandleNapModeEvent(resType, value, payload);
+        return true;
+    }
+
     bool HandleReportScreenCaptureEventFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -1260,6 +1282,7 @@ namespace ResourceSchedule {
         OHOS::ResourceSchedule::HandleReportRunningLockEventFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportHisysEventFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportBluetoothConnectStateFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleNapModeEventFuzzTest(data, size);
         OHOS::ResourceSchedule::ParsePayloadFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportAvCodecEventFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleSceneBoardStateFuzzTest(data, size);

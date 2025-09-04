@@ -128,6 +128,7 @@ void SchedController::InitResTypes()
         ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
         ResType::RES_TYPE_TRANSIENT_TASK,
         ResType::RES_TYPE_CONTINUOUS_TASK,
+        ResType::SYNC_RES_TYPE_NAP_MODE,
     };
 }
 
@@ -169,6 +170,10 @@ void SchedController::DispatchOtherResource(uint32_t resType, int64_t value, con
             }
             case ResType::RES_TYPE_AV_CODEC_STATE: {
                 handler->HandleReportAvCodecEvent(resType, value, payload);
+                break;
+            }
+            case ResType::SYNC_RES_TYPE_NAP_MODE: {
+                handler->HandleNapModeEvent(resType, value, payload);
                 break;
             }
             default: {

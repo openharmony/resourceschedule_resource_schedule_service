@@ -169,6 +169,7 @@ namespace {
         ResType::SYNC_RES_TYPE_QUERY_TOPN_BUNDLE_USAGE_INFO,
         ResType::RES_TYPE_BACKGROUND_STATUS,
         ResType::RES_TYPE_CAMERA_STATUS_CHANGED,
+        ResType::SYNC_RES_TYPE_NAP_MODE,
     };
     static const std::unordered_map<uint32_t, std::unordered_set<int32_t>> ALLOW_SOME_UID_REPORT_RES = {
         { ResType::RES_TYPE_MODEM_PA_HIGH_POWER_ABNORMAL, { 1201 } },

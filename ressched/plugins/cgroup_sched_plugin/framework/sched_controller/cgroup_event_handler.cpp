@@ -968,6 +968,33 @@ void CgroupEventHandler::HandleReportBluetoothConnectState(
         resType, static_cast<int32_t>(value));
 }
 
+void CgroupEventHandler::HandleNapModeEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t uid = 0;
+    int32_t pid = 0;
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr.", __func__);
+        return;
+    }
+    if (!ParseValue(uid, "UID", payload) || !ParseValue(pid, "PID", payload)) {
+        CGS_LOGE("%{public}s : payload does not contain uid or pid", __func__);
+        return;
+    }
+    if (uid <= 0 || pid <= 0) {
+        CGS_LOGE("%{public}s : uid or pid is less than 0", __func__);
+        return;
+    }
+    std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
+    std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
+        return;
+    }
+    CGS_LOGD("report nap mode, uid:%{public}d, pid:%{public}d, value:%{public}lld",
+        uid, pid, (long long)value);
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
+        resType, static_cast<int32_t>(value));
+}
+
 void CgroupEventHandler::HandleReportHisysEvent(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     int32_t uid = 0;
