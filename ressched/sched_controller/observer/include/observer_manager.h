@@ -29,9 +29,6 @@
 #include "hisysevent_observer.h"
 #endif
 #include "connection_subscriber.h"
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-#include "device_movement_observer.h"
-#endif
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
 #include "sched_telephony_observer.h"
 #endif
@@ -86,8 +83,6 @@ public:
     void DisableTelephonyObserver();
     void InitAudioObserver();
     void DisableAudioObserver();
-    void InitDeviceMovementObserver();
-    void DisableDeviceMovementObserver();
     void InitDisplayModeObserver();
     void DisableDisplayModeObserver();
     void InitDisplayOrientationObserver();
@@ -143,9 +138,6 @@ public:
 #endif
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
     std::shared_ptr<AudioObserver> audioObserver_ = nullptr;
-#endif
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-    sptr<DeviceMovementObserver> deviceMovementObserver_ = nullptr;
 #endif
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
     std::shared_ptr<ConnectionSubscriber> connectionSubscriber_ = nullptr;

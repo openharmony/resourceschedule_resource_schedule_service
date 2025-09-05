@@ -18,9 +18,6 @@
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
 #include "sched_telephony_observer.h"
 #endif
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-#include "device_movement_observer.h"
-#endif
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
 #include "audio_observer.h"
 #endif
@@ -574,58 +571,6 @@ namespace {
     }
 #endif // RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
 
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-    bool OnRemoteRequestFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        if (size <= sizeof(uint32_t)) {
-            return false;
-        }
-
-        // initialize
-        DATA = data;
-        g_size = size;
-
-        // getdata
-        uint32_t code = GetData<uint32_t>();
-        MessageParcel fuzzData;
-
-        fuzzData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
-        fuzzData.WriteBuffer(DATA + g_pos, g_size - g_pos);
-        fuzzData.RewindRead(0);
-        MessageParcel reply;
-        MessageOption option;
-        auto deviceMovementObserver = std::make_unique<DeviceMovementObserver>();
-        deviceMovementObserver->OnRemoteRequest(code, fuzzData, reply, option);
-
-        return true;
-    }
-
-    bool OnReceiveDeviceMovementEventFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        DATA = data;
-        g_size = size;
-
-        // getdata
-        MessageParcel fuzzData;
-
-        fuzzData.WriteInterfaceToken(ResSchedServiceStub::GetDescriptor());
-        fuzzData.WriteBuffer(DATA + g_pos, g_size - g_pos);
-        fuzzData.RewindRead(0);
-        auto deviceMovementObserver = std::make_unique<DeviceMovementObserver>();
-        deviceMovementObserver->OnReceiveDeviceMovementEvent(fuzzData);
-        return true;
-    }
-#endif // DEVICE_MOVEMENT_PERCEPTION_ENABLE
-
 #ifdef RESOURCE_REQUEST_REQUEST
     bool DownLoadUploadObserverFuzzTest(const uint8_t* data, size_t size)
     {
@@ -686,10 +631,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     /* Run your code on data */
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     OHOS::ResourceSchedule::OnCallStateUpdatedFuzzTest(data, size);
-#endif
-#ifdef DEVICE_MOVEMENT_PERCEPTION_ENABLE
-    OHOS::ResourceSchedule::OnRemoteRequestFuzzTest(data, size);
-    OHOS::ResourceSchedule::OnReceiveDeviceMovementEventFuzzTest(data, size);
 #endif
 #ifdef RESOURCE_REQUEST_REQUEST
     OHOS::ResourceSchedule::DownLoadUploadObserverFuzzTest(data, size);

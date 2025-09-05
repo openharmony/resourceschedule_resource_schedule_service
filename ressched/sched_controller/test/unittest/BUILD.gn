@@ -69,10 +69,6 @@ ohos_unittest("event_controller_test") {
     defines += [ "RESOURCE_REQUEST_REQUEST" ]
     external_deps += [ "request:request_native" ]
   }
-  if (device_movement_perception_enable) {
-    defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
-    external_deps += [ "movement:movement_client" ]
-  }
   if (ressched_with_resourceschedule_multimedia_av_session_enable) {
     defines += [ "RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE" ]
     external_deps += [ "av_session:avsession_client" ]

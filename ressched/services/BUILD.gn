@@ -192,12 +192,6 @@ ohos_shared_library("resschedsvc") {
       "../sched_controller/observer/src/mmi_observer.cpp",
     ]
   }
-  if (device_movement_perception_enable) {
-    defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
-    external_deps += [ "movement:movement_client" ]
-    sources +=
-        [ "../sched_controller/observer/src/device_movement_observer.cpp" ]
-  }
   if (ressched_with_telephony_state_registry_enable) {
     defines += [ "RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE" ]
     external_deps += [
@@ -356,12 +350,6 @@ ohos_static_library("resschedsvc_static") {
       "../sched_controller/observer/src/hisysevent_observer.cpp",
       "../sched_controller/observer/src/mmi_observer.cpp",
     ]
-  }
-  if (device_movement_perception_enable) {
-    defines += [ "DEVICE_MOVEMENT_PERCEPTION_ENABLE" ]
-    external_deps += [ "movement:movement_client" ]
-    sources +=
-        [ "../sched_controller/observer/src/device_movement_observer.cpp" ]
   }
   if (ressched_with_telephony_state_registry_enable) {
     defines += [ "RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE" ]
