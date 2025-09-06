@@ -54,7 +54,6 @@ private:
     ffrt::task_handle listFlingEndTask_ = nullptr;
     ffrt::task_handle listFlingTimeOutTask_ = nullptr;
     int64_t slideDetectingTime_ = -1;
-    uint32_t state_ = SlideRecognizeStat::IDLE;
     int64_t listFlingTimeOutTime_ = DEFAULT_LIST_FLINT_TIME_OUT_TIME;
     int64_t listFlingEndTime_ = DEFAULT_LIST_FLINT_END_TIME;
     float listFlingSpeedLimit_ = DEFAULT_LIST_FLING_SPEED_LIMIT;

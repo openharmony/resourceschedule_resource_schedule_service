@@ -49,7 +49,6 @@ static const char* CAMERA_TYPE = "cameraType";
 static const char* IS_SYSTEM_CAMERA = "isSystemCamera";
 static const char* EVENT_INFO_TYPE = "type";
 static const char* EVENT_INFO_SUBTYPE = "subtype";
-static const char* CONFIG_TYPE = "RSSCONFIG";
 static const char* GAME_UID = "uid";
 static const char* GAME_STATUS = "type";
 static const char* GAME_ENV = "env";

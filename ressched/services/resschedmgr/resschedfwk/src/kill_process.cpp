@@ -28,8 +28,6 @@ namespace OHOS {
 namespace ResourceSchedule {
 using namespace std;
 namespace {
-    static constexpr int32_t MAX_INDEX = 22;
-    static constexpr int32_t START_TIME_INDEX = 19;
     static const char* UNKNOWN_PROCESS = "unknown_process";
 }
 

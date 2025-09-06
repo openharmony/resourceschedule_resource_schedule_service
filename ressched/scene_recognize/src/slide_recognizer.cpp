@@ -29,7 +29,6 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    static const uint32_t AXIS_EVENT_PAD = 0;
     static const uint32_t AXIS_EVENT_FACTOR = 10;
     static const char* AXIS_EVENT_TYPE = "axis_event_type";
     static const char* UP_SPEED_KEY = "up_speed";

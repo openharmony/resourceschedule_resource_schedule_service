@@ -78,11 +78,7 @@ void WindowVisibilityObserver::OnWindowVisibilityChanged(
         if (!info) {
             continue;
         }
-        auto windowId = info->windowId_;
         auto visibilityState = info->visibilityState_;
-        auto windowType = info->windowType_;
-        auto pid = info->pid_;
-        auto uid = info->uid_;
 
         nlohmann::json payload;
         MarshallingWindowVisibilityInfo(info, payload);
@@ -109,11 +105,7 @@ void WindowDrawingContentObserver::OnWindowDrawingContentChanged(
         if (!info) {
             continue;
         }
-        auto windowId = info->windowId_;
-        auto windowType = info->windowType_;
         auto drawingContentState = info->drawingContentState_;
-        auto pid = info->pid_;
-        auto uid = info->uid_;
 
         nlohmann::json payload;
         MarshallingWindowDrawingContentInfo(info, payload);

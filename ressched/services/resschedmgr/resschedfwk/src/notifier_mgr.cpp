@@ -178,6 +178,9 @@ std::string NotifierMgr::GetBundleNameByPid(int32_t pid)
     }
     std::string identity = IPCSkeleton::ResetCallingIdentity();
     int32_t ret = static_cast<int32_t>(appMgrClient_->GetBundleNameByPid(pid, bundleName, uid));
+    if (ret != ERR_OK) {
+        RESSCHED_LOGD("GetBundleNameByPid failed");
+    }
     IPCSkeleton::SetCallingIdentity(identity);
     return bundleName;
 }
