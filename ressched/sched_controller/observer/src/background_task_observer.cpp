@@ -100,6 +100,8 @@ void BackgroundTaskObserver::MarshallingContinuousTaskCallbackInfo(
     payload["isFromWebview"] = continuousTaskCallbackInfo->IsFromWebview();
     payload["typeIds"] = continuousTaskCallbackInfo->GetTypeIds();
     payload["tokenId"] = continuousTaskCallbackInfo->GetTokenId();
+    payload["tokenId"] = continuousTaskCallbackInfo->GetTokenId();
+    payload["isByRequestObject"] = continuousTaskCallbackInfo->IsByRequestObject();
 }
 
 void BackgroundTaskObserver::OnContinuousTaskStart(
