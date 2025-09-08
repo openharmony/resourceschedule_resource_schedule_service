@@ -49,15 +49,16 @@ namespace {
     static const int32_t CONFIG_FILE_IDX = 1;
     static const int32_t SIMPLIFY_LIB_INDEX = 3;
     static const int32_t SIMPLIFY_LIB_LENGTH = 2;
-    static const int32_t MAX_FILE_LENGTH = 32 * 1024 * 1024;
     static const int32_t PLUGIN_REQUEST_ERROR = -1;
-    static const char* RUNNER_NAME = "rssDispatcher";
     static const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
     static const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
     static const char* EXT_CONFIG_LIB = "libsuspend_manager_service.z.so";
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     static const int32_t DEFAULT_VALUE = -1;
     static const char* EXT_RES_KEY = "extType";
+#endif
+#ifndef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+    static const char* RUNNER_NAME = "rssDispatcher";
 #endif
 }
 

@@ -27,7 +27,6 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    static const int32_t INVALID_VALUE = -1;
     static const pid_t PID_MIN = -1;
     static const pid_t PID_MAX = INT32_MAX;
     static const char* PID_KEY = "pid";
@@ -61,7 +60,6 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::OnDispatchResource(uint3
     if (!payload.contains(PID_KEY) || !payload[PID_KEY].is_string()) {
         return;
     }
-    int32_t invalidValue = INVALID_VALUE;
     switch (resType) {
         case ResType::RES_TYPE_APP_STATE_CHANGE:
             HandleForeground(resType, value, payload);
