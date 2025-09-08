@@ -57,6 +57,9 @@ namespace {
     static const int32_t DEFAULT_VALUE = -1;
     static const char* EXT_RES_KEY = "extType";
 #endif
+#ifndef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+    static const char* RUNNER_NAME = "rssDispatcher";
+#endif
 }
 
 IMPLEMENT_SINGLE_INSTANCE(PluginMgr);
