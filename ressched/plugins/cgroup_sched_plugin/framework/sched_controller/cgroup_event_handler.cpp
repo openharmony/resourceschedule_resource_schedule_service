@@ -35,12 +35,7 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
-    constexpr uint32_t EVENT_ID_REG_APP_STATE_OBSERVER = 1;
-    constexpr uint32_t EVENT_ID_REG_BGTASK_OBSERVER = 2;
-    constexpr uint32_t DELAYED_RETRY_REGISTER_DURATION = 100;
-    constexpr uint32_t MAX_RETRY_TIMES = 100;
     constexpr uint32_t MAX_SPAN_SERIAL = 99;
-    constexpr uint32_t MAX_AUDIO_PLATING_COUNT = 1024;
     const std::string MMI_SERVICE_NAME = "mmi_service";
 }
 

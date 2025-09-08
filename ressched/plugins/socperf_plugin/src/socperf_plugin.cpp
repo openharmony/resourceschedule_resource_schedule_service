@@ -93,14 +93,12 @@ namespace {
     const int64_t TIME_INTERVAL                             = 4500;
     const int64_t SCREEN_OFF_TIME_DELAY                     = 5000000L;
     const int32_t PERF_REQUEST_CMD_ID_RGM_BOOTING_START     = 1000;
-    const int32_t PERF_REQUEST_CMD_ID_POWERMODE_CHANGED     = 9000;
     const int32_t PERF_REQUEST_CMD_ID_APP_START             = 10000;
     const int32_t PERF_REQUEST_CMD_ID_WARM_START            = 10001;
     const int32_t PERF_REQUEST_CMD_ID_WINDOW_SWITCH         = 10002;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_CLICK           = 10006;
     const int32_t PERF_REQUEST_CMD_ID_LOAD_PAGE_START       = 10007;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_FLING           = 10008;
-    const int32_t PERF_REQUEST_CMD_ID_EVENT_SLIDE_OVER      = 10009;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_TOUCH_DOWN      = 10010;
     const int32_t PERF_REQUEST_CMD_ID_LOAD_PAGE_COMPLETE    = 10011;
     const int32_t PERF_REQUEST_CMD_ID_EVENT_WEB_GESTURE     = 10012;
