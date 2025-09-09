@@ -1772,8 +1772,7 @@ bool SocPerfPlugin::HandleRssCloudConfigUpdate(const std::shared_ptr<ResData>& d
         return true;
     } catch (const std::exception &e) {
         return false;
-    }
-    
+    } 
 }
 
 static void ReportConfiguredLimitBoost(std::optional<bool>& powerLimit, std::optional<bool>& thermalLimit)
