@@ -1761,14 +1761,18 @@ bool SocPerfPlugin::HandleRssCloudConfigUpdate(const std::shared_ptr<ResData>& d
         return false;
     }
  
-    PluginConfigMap pluginConfigs = (data->payload)[CLOUD_PARAMS][PLUGIN_NAME].get<PluginConfigMap>();
-    if (pluginConfigs.find(SPECIAL_EXTENSION_STRING) != pluginConfigs.end()) {
-        LoadSpecialExtension(pluginConfigs[SPECIAL_EXTENSION_STRING]);
+    try {
+        PluginConfigMap pluginConfigs = (data->payload)[CLOUD_PARAMS][PLUGIN_NAME].get<PluginConfigMap>();
+        if (pluginConfigs.find(SPECIAL_EXTENSION_STRING) != pluginConfigs.end()) {
+            LoadSpecialExtension(pluginConfigs[SPECIAL_EXTENSION_STRING]);
+        }
+        if (pluginConfigs.find(WEAK_ACTION_STRING) != pluginConfigs.end()) {
+            LoadWeakInterAction(pluginConfigs[WEAK_ACTION_STRING]);
+        }
+        return true;
+    } catch (const std::exception &e) {
+        return false;
     }
-    if (pluginConfigs.find(WEAK_ACTION_STRING) != pluginConfigs.end()) {
-        LoadWeakInterAction(pluginConfigs[WEAK_ACTION_STRING]);
-    }
-    return true;
 }
 
 static void ReportConfiguredLimitBoost(std::optional<bool>& powerLimit, std::optional<bool>& thermalLimit)
