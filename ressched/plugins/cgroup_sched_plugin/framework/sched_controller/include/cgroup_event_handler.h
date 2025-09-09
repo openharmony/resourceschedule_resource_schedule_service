@@ -77,6 +77,7 @@ public:
     void UpdateMmiStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportCosmicCubeState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleOnAppStopped(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleNapModeEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
     bool GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::shared_ptr<Application>& app,
