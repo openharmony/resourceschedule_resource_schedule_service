@@ -823,6 +823,9 @@ void PluginMgr::DispatchResourceToPluginAsync(const std::list<std::string>& plug
             continue;
         }
         std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
+        if (dispatchers_[pluginLib] == nullptr) {
+            continue;
+        }
         dispatchers_[pluginLib]->submit(
             [pluginLib, resData, pluginDispatchFunc] {
                 StartTrace(HITRACE_TAG_APP, pluginLib);
