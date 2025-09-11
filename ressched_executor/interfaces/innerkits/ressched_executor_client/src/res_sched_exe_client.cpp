@@ -131,7 +131,8 @@ int32_t ResSchedExeClient::SendRequestInner(bool isSync, uint32_t resType, int64
 bool ResSchedExeClient::ProcessJson(const nlohmann::json& context, std::vector<nlohmann::json>& splitContext,
     int32_t resType)
 {
-    std::string dumpJsonStr = context.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
+    std::string dumpJsonStr;
+    ResCommonUtil::DumpJsonToString(context, dumpJsonStr);
     size_t dumpJsonStrSize = dumpJsonStr.size();
     if (dumpJsonStrSize > MAX_IPC_MESSAGE_SIZE) {
         RSSEXE_LOGI("ResSchedExeClient need to split the json in restype %{public}d.", resType);
