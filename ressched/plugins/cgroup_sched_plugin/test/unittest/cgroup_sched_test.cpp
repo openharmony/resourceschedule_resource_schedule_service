@@ -847,7 +847,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     payload["extensionState"] = std::to_string(extensionState);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["hostPid"] = std::to_string(hostPid);
-
+    payload["callerUid"] = std::to_string(0);
     cgroupEventHandler->HandleProcessStateChangedEx(resType, value, payload);
     cgroupEventHandler->HandleApplicationStateChanged(resType, value, payload);
     cgroupEventHandler->HandleAbilityStateChanged(resType, value, payload);
@@ -953,7 +953,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_025, Function | Med
     payload["recordId"] = std::to_string(1111);
     payload["abilityState"] = std::to_string((int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND);
     payload["abilityType"] = std::to_string((int32_t)AppExecFwk::AbilityType::PAGE);
-
+    payload["callerUid"] = std::to_string(0);
     cgroupEventHandler->HandleAbilityStateChanged(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->GetAbilityInfo(1111) != nullptr);
 
