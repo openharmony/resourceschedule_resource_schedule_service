@@ -302,7 +302,13 @@ void Supervisor::ConnectAppManagerService()
 {
     sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
         OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (systemAbilityManager == nullptr) {
+        return;
+    }
     sptr<OHOS::IRemoteObject> object = systemAbilityManager->GetSystemAbility(OHOS::APP_MGR_SERVICE_ID);
+    if (object == nullptr) {
+        return;
+    }
     appManager_ = OHOS::iface_cast<OHOS::AppExecFwk::IAppMgr>(object);
 }
 
