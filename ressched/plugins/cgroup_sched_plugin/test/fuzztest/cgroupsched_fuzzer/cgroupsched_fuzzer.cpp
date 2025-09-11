@@ -787,6 +787,7 @@ namespace ResourceSchedule {
         int32_t recordId = GetData<int32_t>();
         int32_t abilityState = GetData<int32_t>();
         int32_t abilityType = GetData<int32_t>();
+        int32_t callerUid = GetData<int32_t>();
         nlohmann::json payload;
         payload["uid"] = std::to_string(uid);
         payload["pid"] = std::to_string(pid);
@@ -795,6 +796,7 @@ namespace ResourceSchedule {
         payload["recordId"] = std::to_string(recordId);
         payload["abilityState"] = std::to_string(abilityState);
         payload["abilityType"] = std::to_string(abilityType);
+        payload["callerUid"] = std::to_string(callerUid);
         auto cgroupEventHandler =
             std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
 
