@@ -115,7 +115,7 @@ bool CgroupMap::LoadConfigFromJsonObj(const nlohmann::json& jsonObj)
         CGS_LOGW("%{public}s The number of valid cgroup config is 0, CgroupMap: disabled!", __func__);
         return false;
     }
-    CGS_LOGI("%{public}s CgroupMap: enabled!", __func__);
+    CGS_LOGD("%{public}s CgroupMap: enabled!", __func__);
     return true;
 }
 

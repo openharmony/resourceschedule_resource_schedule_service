@@ -70,12 +70,12 @@ void CgroupAction::AddSchedPolicyDeclaration(const SchedPolicy policy,
 {
     std::lock_guard<ffrt::mutex> lock(mutex_);
     if (!allowToAdd_) {
-        CGS_LOGI("%{public}s not allowed: %{public}u, %{public}s, %{public}s",
+        CGS_LOGD("%{public}s not allowed: %{public}u, %{public}s, %{public}s",
             __func__, policy, fullName.c_str(), abbrName.c_str());
         return;
     }
     if (policy >= SP_UPPER_LIMIT) {
-        CGS_LOGI("%{public}s out of range: %{public}u, %{public}s, %{public}s",
+        CGS_LOGD("%{public}s out of range: %{public}u, %{public}s, %{public}s",
             __func__, policy, fullName.c_str(), abbrName.c_str());
         return;
     }
@@ -89,7 +89,7 @@ void CgroupAction::AddSchedPolicyDeclaration(const SchedPolicy policy,
         [ &fullName ] (const auto& kv) { return kv.second == fullName; })) {
         return;
     }
-    CGS_LOGI("%{public}s add sched policy: %{public}u, %{public}s, %{public}s",
+    CGS_LOGD("%{public}s add sched policy: %{public}u, %{public}s, %{public}s",
         __func__, policy, fullName.c_str(), abbrName.c_str());
     fullNames_[policy] = fullName;
     abbrNames_[policy] = abbrName;
@@ -170,7 +170,7 @@ int CgroupAction::SetSchedPolicyByExecutor(int tid, int policy, uint32_t resType
 
 bool CgroupAction::LoadConfigFile()
 {
-    CGS_LOGI("%{public}s CgroupAction::LoadConfigFile loading config file", __func__);
+    CGS_LOGD("%{public}s CgroupAction::LoadConfigFile loading config file", __func__);
     nlohmann::json jsonObjRoot;
     if (!ParseConfigFileToJsonObj(jsonObjRoot)) {
         return false;
