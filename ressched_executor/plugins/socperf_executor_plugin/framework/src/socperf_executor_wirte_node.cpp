@@ -85,7 +85,7 @@ void SocPerfExecutorWirteNode::WriteNodeThreadWraps(const std::vector<int32_t>& 
 void SocPerfExecutorWirteNode::UpdateResIdCurrentValue(int32_t resId, int64_t currValue)
 {
     if (currValue == NODE_DEFAULT_VALUE) {
-        if (socPerfConfig_.resourceNodeInfo_[resId] == nullptr) {
+        if (socPerfConfig_.resourceNodeInfo_[resId] != nullptr) {
             UpdateCurrentValue(resId, socPerfConfig_.resourceNodeInfo_[resId]->def);
         }
     } else {
