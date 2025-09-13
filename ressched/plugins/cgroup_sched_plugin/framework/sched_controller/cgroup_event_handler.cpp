@@ -406,6 +406,35 @@ void CgroupEventHandler::HandleTransientTaskEnd(uid_t uid, pid_t pid, const std:
     procRecord->runningTransientTask_ = false;
 }
 
+bool CgroupEventHandler::GetArrayFromJson(const nlohmann::json& jsonObj, const std::string& name, nlohmann::json& value)
+{
+    if (jsonObj.is_null() || name.empty()) {
+        return false;
+    }
+    if (jsonObj.find(name) == jsonObj.end() || !jsonObj[name].is_array()) {
+        return false;
+    }
+    value = jsonObj[name];
+    return true;
+}
+
+bool CgroupEventHandler::GetTypeIdsFromJson(const nlohmann::json &payload,
+    std::vector<uint32_t> &typeIds, const std::string& name)
+{
+    nlohmann::json jsonArray;
+    if (!GetArrayFromJson(payload, name, jsonArray)) {
+        return false;
+    }
+    for (const auto &value : jsonArray) {
+        if (!value.is_number_unsigned()) {
+            continue;
+        }
+        uint32_t typeId = value.get<uint32_t>();
+        typeIds.push_back(typeId);
+    }
+    return true;
+}
+
 void CgroupEventHandler::HandleContinuousTaskStatus(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     int32_t uid = 0;
@@ -421,10 +450,7 @@ void CgroupEventHandler::HandleContinuousTaskStatus(uint32_t resType, int64_t va
     if (value == ResType::ContinuousTaskStatus::CONTINUOUS_TASK_START ||
         value == ResType::ContinuousTaskStatus::CONTINUOUS_TASK_UPDATE) {
         std::vector<uint32_t> typeIds;
-        if (payload.contains("typeIds") && payload["typeIds"].is_array()) {
-            typeIds = payload["typeIds"].get<std::vector<uint32_t>>();
-        }
-        
+        GetTypeIdsFromJson(payload, typeIds, "typeIds");
         HandleContinuousTaskUpdate(uid, pid, typeIds, abilityId);
     } else if (value == ResType::ContinuousTaskStatus::CONTINUOUS_TASK_END) {
         HandleContinuousTaskCancel(uid, pid, abilityId);
