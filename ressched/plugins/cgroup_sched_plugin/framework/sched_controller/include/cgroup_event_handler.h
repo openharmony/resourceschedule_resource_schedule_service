@@ -44,6 +44,8 @@ public:
     void HandleTransientTaskStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleTransientTaskStart(uid_t uid, pid_t pid, const std::string& packageName);
     void HandleTransientTaskEnd(uid_t uid, pid_t pid, const std::string& packageName);
+    bool GetArrayFromJson(const nlohmann::json& jsonObj, const std::string& name, nlohmann::json& value);
+    bool GetTypeIdsFromJson(const nlohmann::json &payload, std::vector<uint32_t> &typeIds, const std::string& name);
     void HandleContinuousTaskStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t abilityId);
     void HandleContinuousTaskUpdate(
