@@ -44,6 +44,7 @@ public:
     void HandleTransientTaskStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleTransientTaskStart(uid_t uid, pid_t pid, const std::string& packageName);
     void HandleTransientTaskEnd(uid_t uid, pid_t pid, const std::string& packageName);
+    
     void HandleContinuousTaskStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_t abilityId);
     void HandleContinuousTaskUpdate(

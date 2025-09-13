@@ -424,6 +424,7 @@ void CgroupEventHandler::HandleContinuousTaskStatus(uint32_t resType, int64_t va
         if (payload.contains("typeIds") && payload["typeIds"].is_array()) {
             typeIds = payload["typeIds"].get<std::vector<uint32_t>>();
         }
+        
         HandleContinuousTaskUpdate(uid, pid, typeIds, abilityId);
     } else if (value == ResType::ContinuousTaskStatus::CONTINUOUS_TASK_END) {
         HandleContinuousTaskCancel(uid, pid, abilityId);
