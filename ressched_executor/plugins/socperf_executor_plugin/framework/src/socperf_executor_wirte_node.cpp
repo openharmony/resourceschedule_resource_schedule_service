@@ -85,7 +85,9 @@ void SocPerfExecutorWirteNode::WriteNodeThreadWraps(const std::vector<int32_t>& 
 void SocPerfExecutorWirteNode::UpdateResIdCurrentValue(int32_t resId, int64_t currValue)
 {
     if (currValue == NODE_DEFAULT_VALUE) {
-        UpdateCurrentValue(resId, socPerfConfig_.resourceNodeInfo_[resId]->def);
+        if (socPerfConfig_.resourceNodeInfo_[resId] != nullptr) {
+            UpdateCurrentValue(resId, socPerfConfig_.resourceNodeInfo_[resId]->def);
+        }
     } else {
         UpdateCurrentValue(resId, currValue);
     }
@@ -111,6 +113,9 @@ void SocPerfExecutorWirteNode::UpdateCurrentValue(int32_t resId, int64_t currVal
 
 void SocPerfExecutorWirteNode::WriteNode(int32_t resId, const std::string& filePath, const std::string& value)
 {
+    if (socPerfConfig_.resourceNodeInfo_[resId] == nullptr) {
+        return;
+    }
     if (socPerfConfig_.resourceNodeInfo_[resId]->persistMode == REPORT_TO_PERFSO) {
         return;
     }
