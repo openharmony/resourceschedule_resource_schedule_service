@@ -187,6 +187,7 @@ namespace {
         { ResType::SYNC_RES_TYPE_QUERY_TOPN_BUNDLE_USAGE_INFO, "SYNC_RES_TYPE_QUERY_TOPN_BUNDLE_USAGE_INFO" },
         { ResType::RES_TYPE_BACKGROUND_STATUS, "RES_TYPE_BACKGROUND_STATUS" },
         { ResType::SYNC_RES_TYPE_NAP_MODE, "SYNC_RES_TYPE_NAP_MODE" },
+        { ResType::RES_TYPE_MEM_OFF_PEAK, "RES_TYPE_MEM_OFF_PEAK" },
     };
     OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
     {

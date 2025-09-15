@@ -375,6 +375,8 @@ enum : uint32_t {
     RES_TYPE_BACKGROUND_STATUS = 175,
     // report camera status
     RES_TYPE_CAMERA_STATUS_CHANGED = 176,
+    // report to change camera status
+    RES_TYPE_MEM_OFF_PEAK = 177,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
