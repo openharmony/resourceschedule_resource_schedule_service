@@ -889,7 +889,7 @@ enum TurboModeState : int64_t {
 enum NativeSuspendState : int32_t {
     NATIVE_THAW = 0,
     NATIVE_FREEZE = 1,
-}
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
