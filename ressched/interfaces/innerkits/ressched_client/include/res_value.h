@@ -42,6 +42,7 @@ enum EventType : uint32_t {
     EVENT_MUTEX_CASE_SMALL_WINDOW_TO_BACKGROUND = 8,
     EVENT_MUTEX_CASE_FREE_MULTI_WINDOW_TO_BACKGROUND = 9,
     EVENT_MUTEX_TOPN_BUNDLE_USAGE_INFO = 10,
+    EVENT_REPORT_NATIVE_PROC_SUSPEND_STATE = 11,
     EVENT_END,
 };
 
@@ -880,6 +881,14 @@ enum GameSuspendModeState : int64_t {
 enum TurboModeState : int64_t {
     TURBO_MODE_OFF = 0,
     TURBO_MODE_ON = 1,
+};
+
+/**
+* @brief Native process state
+*/
+enum NativeSuspendState : int32_t {
+    NATIVE_THAW = 0,
+    NATIVE_FREEZE = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
