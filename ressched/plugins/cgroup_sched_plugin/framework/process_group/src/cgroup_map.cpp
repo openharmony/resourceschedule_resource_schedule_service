@@ -101,13 +101,21 @@ bool CgroupMap::LoadConfigFromJsonObj(const nlohmann::json& jsonObj)
             CGS_LOGE("%{public}s empty controller config.", __func__);
             continue;
         }
-
-        CgroupController controller(name, rootPath);
-        if (LoadSchedPolicyConfig(controller, cgroupObj[JSON_KEY_SCHED_POLICY])) {
-            this->AddCgroupController(name, controller);
-            count++;
+        auto it = controllers_.find(name);
+        if (it != controllers_.end()) {
+            if (LoadSchedPolicyConfig(it->second, cgroupObj[JSON_KEY_SCHED_POLICY])) {
+                count++;
+            } else {
+                CGS_LOGE("%{public}s no valid policy config item.", __func__);
+            }
         } else {
-            CGS_LOGE("%{public}s no valid policy config item.", __func__);
+            CgroupController controller(name, rootPath);
+            if (LoadSchedPolicyConfig(controller, cgroupObj[JSON_KEY_SCHED_POLICY])) {
+                this->AddCgroupController(name, controller);
+                count++;
+            } else {
+                CGS_LOGE("%{public}s no valid policy config item.", __func__);
+            }
         }
     }
 
