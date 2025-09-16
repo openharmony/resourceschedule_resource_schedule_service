@@ -171,11 +171,17 @@ int CgroupAction::SetSchedPolicyByExecutor(int tid, int policy, uint32_t resType
 bool CgroupAction::LoadConfigFile()
 {
     CGS_LOGD("%{public}s CgroupAction::LoadConfigFile loading config file", __func__);
-    nlohmann::json jsonObjRoot;
-    if (!ParseConfigFileToJsonObj(jsonObjRoot)) {
+    std::vector<nlohmann::json> jsonObjRoots;
+    if (!ParseConfigFileToJsonObj(jsonObjRoots)) {
         return false;
     }
-    return CgroupMap::GetInstance().LoadConfigFromJsonObj(jsonObjRoot);
+    bool ret = false;
+    for (auto& jsonObjRoot : jsonObjRoots) {
+        if (CgroupMap::GetInstance().LoadConfigFromJsonObj(jsonObjRoot)) {
+            ret = true;
+        }
+    }
+    return ret;
 }
 
 bool CgroupAction::IsEnabled()
@@ -232,26 +238,31 @@ int CgroupAction::GetSchedPolicyByName(const std::string& name, SchedPolicy* pol
     return -1;
 }
 
-bool CgroupAction::ParseConfigFileToJsonObj(nlohmann::json& jsonObjRoot)
+bool CgroupAction::ParseConfigFileToJsonObj(std::vector<nlohmann::json>& jsonObjRoot)
 {
     bool result = false;
     auto cfgFilePaths = GetCfgFiles(CGROUP_SETTING_CONFIG_FILE);
     if (!cfgFilePaths) {
         return result;
     }
+    std::vector<const std::string> cfgFiles;
     for (const auto& configFilePath : cfgFilePaths->paths) {
         char tmpPath[PATH_MAX + 1] = {0};
         if (!configFilePath || strlen(configFilePath) == 0 || strlen(configFilePath) > PATH_MAX ||
             !realpath(configFilePath, tmpPath)) {
             continue;
         }
-        std::string realConfigFile(tmpPath);
+        cfgFiles.emplace_back(std::string(tmpPath));
+    }
+    for (const auto& cfgFile : cfgFiles) {
+        CGS_LOGD("cfg file %{public}s", cfgFile.c_str());
+        std::string realConfigFile(cfgFile);
         nlohmann::json jsonTemp;
         if (!ResCommonUtil::LoadFileToJsonObj(realConfigFile, jsonTemp)) {
             continue;
         }
         if (jsonTemp.contains(JSON_KEY_CGROUPS)) {
-            jsonObjRoot = jsonTemp;
+            jsonObjRoot.emplace_back(jsonTemp);
             result = true;
         }
     }
