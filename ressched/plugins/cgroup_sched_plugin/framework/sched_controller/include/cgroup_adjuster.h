@@ -51,6 +51,7 @@ enum class AdjustSource {
     ADJS_SYSTEMLOAD_LEVEL_CHANGED,
     ADJS_APP_PRELOAD,
     ADJS_CALCULATE_AGAIN,
+    ADJS_KILL_KEEP,
     ADJS_END
 };
 
