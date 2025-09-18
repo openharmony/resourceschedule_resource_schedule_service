@@ -82,7 +82,7 @@ void BackgroundSensitiveTaskOverlappingSceneRecognizer::HandleContinuousTask(uin
     StrToInt(payload[PID_KEY].get<std::string>(), pid);
     std::vector<uint32_t> typeIds;
     if (payload.contains(TYPE_IDS_KEY) && payload[TYPE_IDS_KEY].is_array()) {
-        typeIds = payload[TYPE_IDS_KEY].get<std::vector<uint32_t>>();
+        typeIds = payload.value(TYPE_IDS_KEY, std::vector<uint32_t>());
     }
     std::stringstream typeIdsStr;
     for (auto it = typeIds.begin(); it != typeIds.end();) {
