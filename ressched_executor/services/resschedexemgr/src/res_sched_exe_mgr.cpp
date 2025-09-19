@@ -158,8 +158,8 @@ void ResSchedExeMgr::InitPluginMgr(const nlohmann::json& payload)
     }
 
     isInit = true;
-    std::vector<std::string> configStrs = payload[STR_CONFIG_READER].get<std::vector<std::string>>();
-    std::vector<std::string> switchStrs = payload[STR_PLUGIN_SWITCH].get<std::vector<std::string>>();
+    std::vector<std::string> configStrs = payload.value(STR_CONFIG_READER, std::vector<std::string>());
+    std::vector<std::string> switchStrs = payload.value(STR_PLUGIN_SWITCH, std::vector<std::string>());
     for (auto configStr : configStrs) {
         if (configStr.size() > MAX_CONFIG_SIZE) {
             RSSEXE_LOGE("recieve config string too large");
