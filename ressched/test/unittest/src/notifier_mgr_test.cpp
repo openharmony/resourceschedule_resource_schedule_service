@@ -28,10 +28,13 @@ namespace OHOS {
 namespace AppExecFwk {
     int32_t AppMgrClient::GetBundleNameByPid(const int pid, std::string &bundleName, int32_t &uid)
     {
-        if (pid == 1) {
+        if (pid == 1 || pid == 0) {
             bundleName = "";
         } else {
             bundleName ="com.example.myapp";
+        }
+        if (pid == 0) {
+            return 1;
         }
         return ERR_OK;
     }
@@ -313,6 +316,21 @@ HWTEST_F(NotifierMgrTest, RegisterNotifier008, Function | MediumTest | Level0)
     NotifierMgr::GetInstance().hisyseventBundleNames_.clear();
     NotifierMgr::GetInstance().ReportPidToHisysevent(100);
     EXPECT_TRUE(NotifierMgr::GetInstance().isTaskSubmit_);
+}
+
+/**
+ * @tc.name: notifier manager RegisterNotifier 009
+ * @tc.desc: test the interface RegisterNotifier
+ * @tc.type: FUNC
+ * @tc.require: issueI97M6C
+ * @tc.author:zhuxiaofei
+ */
+HWTEST_F(NotifierMgrTest, RegisterNotifier009, Function | MediumTest | Level0)
+{
+    NotifierMgr::GetInstance().isTaskSubmit_ = false;
+    NotifierMgr::GetInstance().hisyseventBundleNames_.clear();
+    NotifierMgr::GetInstance().ReportPidToHisysevent(0);
+    EXPECT_TRUE(!NotifierMgr::GetInstance().isTaskSubmit_);
 }
 
 /**
