@@ -907,7 +907,7 @@ enum AudioCaptureState : int32_t {
 */
 enum CodecEncodeState : int32_t {
     CODEC_ENCODE_BEGIN = 0,
-    CODE_ENCODE_END = 1,
+    CODEC_ENCODE_END = 1,
 };
 
 /**
