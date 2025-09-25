@@ -1906,5 +1906,207 @@ HWTEST_F(ObserverEventTest, AppStateObserver_011, testing::ext::TestSize.Level1)
     observer->OnAppStopped(appStateData);
     SUCCEED();
 }
+
+/**
+ * @tc.name: audioObserverEvent_007
+ * @tc.desc: test ProcessCapturerBegin function
+ * @tc.type: FUNC
+ * @tc.require: issueIXXXXX
+ */
+HWTEST_F(ObserverEventTest, audioObserverEvent_007, testing::ext::TestSize.Level1)
+{
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    // 清理之前的状态
+    audioObserver_->capturerStateMap_.clear();
+    audioObserver_->capturerInfoPidToUidMap_.clear();
+    
+    int32_t pid = 1000;
+    int32_t uid = 100;
+    int32_t sessionId = 1;
+    
+    // 测试首次添加capturer状态
+    audioObserver_->ProcessCapturerBegin(pid, uid, sessionId);
+    
+    // 验证状态映射是否正确建立
+    EXPECT_TRUE(audioObserver_->capturerStateMap_.find(pid) != audioObserver_->capturerStateMap_.end());
+    EXPECT_TRUE(audioObserver_->capturerStateMap_[pid].find(sessionId) != audioObserver_->capturerStateMap_[pid].end());
+    EXPECT_EQ(audioObserver_->capturerInfoPidToUidMap_[pid], uid);
+    
+    // 测试添加同一PID的不同sessionId
+    int32_t sessionId2 = 2;
+    audioObserver_->ProcessCapturerBegin(pid, uid, sessionId2);
+    
+    // 验证两个session都存在
+    EXPECT_TRUE(audioObserver_->capturerStateMap_[pid].find(sessionId) != audioObserver_->capturerStateMap_[pid].end());
+    EXPECT_TRUE(audioObserver_->capturerStateMap_[pid].find(sessionId2) != audioObserver_->capturerStateMap_[pid].end());
+    
+    // 清理测试数据
+    audioObserver_->capturerStateMap_.clear();
+    audioObserver_->capturerInfoPidToUidMap_.clear();
+#endif
+}
+
+/**
+ * @tc.name: audioObserverEvent_008
+ * @tc.desc: test ProcessCapturerEnd function
+ * @tc.type: FUNC
+ * @tc.require: issueIXXXXX
+ */
+HWTEST_F(ObserverEventTest, audioObserverEvent_008, testing::ext::TestSize.Level1)
+{
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    // 初始化测试数据
+    int32_t pid = 1000;
+    int32_t uid = 100;
+    int32_t sessionId1 = 1;
+    int32_t sessionId2 = 2;
+    
+    // 先添加一些状态
+    audioObserver_->capturerStateMap_[pid].insert(sessionId1);
+    audioObserver_->capturerStateMap_[pid].insert(sessionId2);
+    audioObserver_->capturerInfoPidToUidMap_[pid] = uid;
+    
+    // 测试删除一个session，但不是最后一个
+    audioObserver_->ProcessCapturerEnd(pid, uid, sessionId1);
+    
+    // 验证sessionId1已被删除，但sessionId2仍然存在
+    EXPECT_TRUE(audioObserver_->capturerStateMap_.find(pid) != audioObserver_->capturerStateMap_.end());
+    EXPECT_TRUE(audioObserver_->capturerStateMap_[pid].find(sessionId1) == audioObserver_->capturerStateMap_[pid].end());
+    EXPECT_TRUE(audioObserver_->capturerStateMap_[pid].find(sessionId2) != audioObserver_->capturerStateMap_[pid].end());
+    EXPECT_TRUE(audioObserver_->capturerInfoPidToUidMap_.find(pid) != audioObserver_->capturerInfoPidToUidMap_.end());
+    
+    // 测试删除最后一个session
+    audioObserver_->ProcessCapturerEnd(pid, uid, sessionId2);
+    
+    // 验证整个PID条目已被删除
+    EXPECT_TRUE(audioObserver_->capturerStateMap_.find(pid) == audioObserver_->capturerStateMap_.end());
+    EXPECT_TRUE(audioObserver_->capturerInfoPidToUidMap_.find(pid) == audioObserver_->capturerInfoPidToUidMap_.end());
+    
+    // 清理测试数据
+    audioObserver_->capturerStateMap_.clear();
+    audioObserver_->capturerInfoPidToUidMap_.clear();
+#endif
+}
+
+/**
+ * @tc.name: audioObserverEvent_009
+ * @tc.desc: test ProcessCapturerEndCaseByUnregister function
+ * @tc.type: FUNC
+ * @tc.require: issueIXXXXX
+ */
+HWTEST_F(ObserverEventTest, audioObserverEvent_009, testing::ext::TestSize.Level1)
+{
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    // 初始化测试数据
+    int32_t pid1 = 1000;
+    int32_t uid1 = 100;
+    int32_t pid2 = 2000;
+    int32_t uid2 = 200;
+    int32_t sessionId = 1;
+    
+    // 添加多个PID的状态
+    audioObserver_->capturerStateMap_[pid1].insert(sessionId);
+    audioObserver_->capturerInfoPidToUidMap_[pid1] = uid1;
+    audioObserver_->capturerStateMap_[pid2].insert(sessionId);
+    audioObserver_->capturerInfoPidToUidMap_[pid2] = uid2;
+    
+    // 调用ProcessCapturerEndCaseByUnregister
+    audioObserver_->ProcessCapturerEndCaseByUnregister();
+    
+    // 验证所有状态都被清除
+    EXPECT_TRUE(audioObserver_->capturerStateMap_.empty());
+    EXPECT_TRUE(audioObserver_->capturerInfoPidToUidMap_.empty());
+    
+    // 测试空状态下的调用
+    audioObserver_->ProcessCapturerEndCaseByUnregister();
+    EXPECT_TRUE(audioObserver_->capturerStateMap_.empty());
+    EXPECT_TRUE(audioObserver_->capturerInfoPidToUidMap_.empty());
+#endif
+}
+
+/**
+ * @tc.name: audioObserverEvent_010
+ * @tc.desc: test OnCapturerStateChange function
+ * @tc.type: FUNC
+ * @tc.require: issueIXXXXX
+ */
+HWTEST_F(ObserverEventTest, audioObserverEvent_010, testing::ext::TestSize.Level1)
+{
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    // 创建测试数据
+    std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>> capturerChangeInfos;
+    
+    // 创建一个有效的capturer info
+    auto capturerInfo = std::make_shared<AudioStandard::AudioCapturerChangeInfo>();
+    capturerInfo->clientPid = 1000;
+    capturerInfo->clientUID = 100;
+    capturerInfo->sessionId = 1;
+    capturerInfo->capturerState = AudioStandard::CapturerState::CAPTURER_RUNNING;
+    capturerChangeInfos.push_back(capturerInfo);
+    
+    // 创建一个PID为0的无效info（应该被忽略）
+    auto invalidCapturerInfo = std::make_shared<AudioStandard::AudioCapturerChangeInfo>();
+    invalidCapturerInfo->clientPid = 0;
+    invalidCapturerInfo->clientUID = 100;
+    invalidCapturerInfo->sessionId = 2;
+    invalidCapturerInfo->capturerState = AudioStandard::CapturerState::CAPTURER_PREPARED;
+    capturerChangeInfos.push_back(invalidCapturerInfo);
+    
+    // 创建一个nullptr（应该被忽略）
+    capturerChangeInfos.push_back(nullptr);
+    
+    // 调用OnCapturerStateChange
+    audioObserver_->OnCapturerStateChange(capturerChangeInfos);
+    
+    // 验证只有有效的capturer被处理
+    EXPECT_TRUE(audioObserver_->capturerStateMap_.find(1000) != audioObserver_->capturerStateMap_.end());
+    EXPECT_TRUE(audioObserver_->capturerStateMap_.find(0) == audioObserver_->capturerStateMap_.end());
+    
+    // 清理测试数据
+    audioObserver_->capturerStateMap_.clear();
+    audioObserver_->capturerInfoPidToUidMap_.clear();
+#endif
+}
+
+/**
+ * @tc.name: audioObserverEvent_011
+ * @tc.desc: test capturer state transitions in OnCapturerStateChange
+ * @tc.type: FUNC
+ * @tc.require: issueIXXXXX
+ */
+HWTEST_F(ObserverEventTest, audioObserverEvent_011, testing::ext::TestSize.Level1)
+{
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    // 测试CAPTURER_RUNNING状态
+    auto runningInfo = std::make_shared<AudioStandard::AudioCapturerChangeInfo>();
+    runningInfo->clientPid = 1000;
+    runningInfo->clientUID = 100;
+    runningInfo->sessionId = 1;
+    runningInfo->capturerState = AudioStandard::CapturerState::CAPTURER_RUNNING;
+    
+    std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>> capturerChangeInfos1 = {runningInfo};
+    audioObserver_->OnCapturerStateChange(capturerChangeInfos1);
+    
+    // 验证RUNNING状态被正确处理
+    EXPECT_TRUE(audioObserver_->capturerStateMap_.find(1000) != audioObserver_->capturerStateMap_.end());
+    
+    // 测试CAPTURER_STOPPED状态
+    auto stoppedInfo = std::make_shared<AudioStandard::AudioCapturerChangeInfo>();
+    stoppedInfo->clientPid = 1000;
+    stoppedInfo->clientUID = 100;
+    stoppedInfo->sessionId = 1;
+    stoppedInfo->capturerState = AudioStandard::CapturerState::CAPTURER_STOPPED;
+    
+    std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>> capturerChangeInfos2 = {stoppedInfo};
+    audioObserver_->OnCapturerStateChange(capturerChangeInfos2);
+    
+    // 验证STOPPED状态被正确处理
+    EXPECT_TRUE(audioObserver_->capturerStateMap_.find(1000) == audioObserver_->capturerStateMap_.end());
+    
+    // 清理测试数据
+    audioObserver_->capturerStateMap_.clear();
+    audioObserver_->capturerInfoPidToUidMap_.clear();
+#endif
+}
 }
 }

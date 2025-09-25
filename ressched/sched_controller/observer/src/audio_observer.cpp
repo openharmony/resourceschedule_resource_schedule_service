@@ -228,6 +228,79 @@ bool AudioObserver::IsValidPid(pid_t pid)
     return (pid >= PID_MIN && pid <= INT32_MAX);
 }
 
+void AudioObserver::OnCapturerStateChange(
+    const std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>> &audioCapturerChangeInfos)
+{
+    for (const auto& info : audioCapturerChangeInfos) {
+        // pid 0 with state CAPTURER_PREPARED is useless
+        if (info == nullptr || info->clientPid == 0) {
+            continue;
+        }
+        RESSCHED_LOGE("audioCaptureStateChange: [%{public}d %{public}d %{public}d %{public}d]",
+            info->clientPid, info->clientUID, info->capturerState, info->capturerState);
+        switch (info->capturerState) {
+            case AudioStandard::CapturerState::CAPTURER_RUNNING:
+                ProcessCapturerBegin(info->clientPid, info->clientUID, info->sessionId);
+                break;
+            case AudioStandard::CapturerState::CAPTURER_STOPPED:
+            case AudioStandard::CapturerState::CAPTURER_RELEASED:
+                ProcessCapturerEnd(info->clientPid, info->clientUID, info->sessionId);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+void AudioObserver::ProcessCapturerBegin(const int32_t pid, const int32_t uid, const int32_t sessionId)
+{
+    std::lock_guard<std::mutex> lock(capturerMutex_);
+    if (capturerStateMap_.find(pid) == capturerStateMap_.end()) {
+        nlohmann::json payload;
+        payload["pid"] = std::to_string(pid);
+        payload["uid"] = std::to_string(uid);
+        ResSchedMgr::GetInstance().SendEvent(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
+            ResType::AudioCaptureState::AUDIO_CAPTURE_BEGIN, payload);
+    }
+    captureStateMap_[pid].insert(sessionId);
+    capturerInfoPidToUidMap_[pid] = uid;
+
+}
+
+void AudioObserver::ProcessCapturerEnd(const int32_t pid, const int32_t uid, const int32_t sessionId)
+{
+    std::lock_guard<std::mutex> lock(captureStateMapMutex_);
+    capturerStateMap_[pid].erase(sessionId);
+    if (capturerStateMap_[pid].empty()) {
+        capturerInfoPidToUidMap_.erase(pid);
+        capturerStateMap_.erase(pid);
+        nlomann::json payload;
+        payload["pid"] = std::to_string(pid);
+        payload["uid"] = std::to_string(uid);
+        SendProcessStateChangeEvent(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
+            ResType::AudioCaptureState::AUDIO_CAPTURE_END, payload);
+    }
+}
+
+void AudioObserver::ProcessCapturerEndCaseByUnregister()
+{
+    std::lock_guard<std::mutex> lock(capturerStateMapMutex_);
+    if (capturerStateMap_.empty()) {
+        return;
+    }
+    std::string closedPidStr = "ProcessCapturerEndCaseByUnregister PIDS";
+    for (const auto& pair: capturerStateMap_) {
+        closedPidStr += std::to_string(pair.first);
+        nlomann::json paylaod;
+        payload["pid"] = std::to_string(pair.first);
+        payload["uid"] = std::to_string(capturerInfoPidToUidMap_[pair.first]);
+        capturerInfoPidToUidMap_.erase(pair.first);
+        SendProcessStateChangeEvent(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
+            ResType::AudioCaptureState::AUDIO_CAPTURE_END, payload);
+    }
+    capturerStateMap_.clear();
+    RESSCHED_LOGI("%{public}s", closedPidStr.c_str());
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
 #endif

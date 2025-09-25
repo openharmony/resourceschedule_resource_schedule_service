@@ -311,7 +311,7 @@ enum : uint32_t {
     RES_TYPE_MODEM_PA_HIGH_POWER_ABNORMAL = 143,
     // report param update event
     RES_TYPE_PARAM_UPADTE_EVENT = 144,
-    // report camera prelaunch event
+    // [phased out soon] report camera prelaunch event
     RES_TYPE_CAMERA_PRELAUNCH = 145,
     // report high frequence load scene
     RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_CHANGE = 146,
@@ -373,10 +373,18 @@ enum : uint32_t {
     RES_TYPE_TDP_TURBO = 174,
     // report background system analyze status
     RES_TYPE_BACKGROUND_STATUS = 175,
-    // report camera status
+    // report camera status [mutex used]
     RES_TYPE_CAMERA_STATUS_CHANGED = 176,
     // report to change camera status
     RES_TYPE_MEM_OFF_PEAK = 177,
+    // nap mode
+    RES_TYPE_NAP_MODE = 178,
+    // report audio capturer status
+    RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED = 179,
+    // report codec encode status
+    RES_TYPE_CODEC_ENCODE_STATUS_CHANGED = 180,
+    // report camera lens status [HFLS used]
+    RES_TYPE_CAMERA_LENS_STATUS_CHANGED = 181,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

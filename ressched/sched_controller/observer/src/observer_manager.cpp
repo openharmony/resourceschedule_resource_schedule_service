@@ -356,6 +356,12 @@ void ObserverManager::InitAudioObserver()
                         "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a audio observer failed!");
     }
+    res = AudioStandard::AudioStreamManager::GetInstance()->RegisterAudioCapturerEventListener(pid_, audioObserver_);
+    if (res != OPERATION_SUCCESS) {
+        RESSCHED_LOGW("Register a audio observer failed!");
+    } else {
+        RESSCHED_LOGD("Register a audio observer success!");
+    }
     res = -1;
     auto audioSystemMgr = AudioStandard::AudioSystemManager::GetInstance();
     if (audioSystemMgr) {
@@ -400,6 +406,14 @@ void ObserverManager::DisableAudioObserver()
         RESSCHED_LOGD("ObserverManager disable audioVolumeKeyObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager disable audioVolumeKeyObserver failed");
+    }
+
+    res = AudioStandard::AudioStreamManager::GetInstance()->UnregisterAudioCapturerEventListener(pid_);
+    audioObserver_->ProcessCapturerEndCaseByUnregister();
+    if (res == OPERATION_SUCCESS) {
+        RESSCHED_LOGD("Disable audioCapturerObserver successfully");
+    } else {
+        RESSCHED_LOGW("Disable audioCapturerObserver failed");
     }
 
     res = AudioStandard::AudioSystemManager::GetInstance()->UnsetRingerModeCallback(pid_);
