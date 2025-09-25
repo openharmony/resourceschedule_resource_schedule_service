@@ -229,14 +229,14 @@ bool AudioObserver::IsValidPid(pid_t pid)
 }
 
 void AudioObserver::OnCapturerStateChange(
-    const std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>> &audioCapturerChangeInfos)
+    const std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>>& audioCapturerChangeInfos)
 {
     for (const auto& info : audioCapturerChangeInfos) {
         // pid 0 with state CAPTURER_PREPARED is useless
         if (info == nullptr || info->clientPid == 0) {
             continue;
         }
-        RESSCHED_LOGE("audioCaptureStateChange: [%{public}d %{public}d %{public}d %{public}d]",
+        RESSCHED_LOGD("audioCaptureStateChange: [%{public}d %{public}d %{public}d %{public}d]",
             info->clientPid, info->clientUID, info->capturerState, info->capturerState);
         switch (info->capturerState) {
             case AudioStandard::CapturerState::CAPTURER_RUNNING:
@@ -271,6 +271,9 @@ void AudioObserver::ProcessCapturerEnd(const int32_t pid, const int32_t uid, con
 {
     std::lock_guard<std::mutex> lock(capturerMutex_);
     capturerStateMap_[pid].erase(sessionId);
+    if (capturerStateMap_.find(pid) == capturerStateMap_.end()) {
+        return;
+    }
     if (capturerStateMap_[pid].empty()) {
         capturerInfoPidToUidMap_.erase(pid);
         capturerStateMap_.erase(pid);

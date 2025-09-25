@@ -45,7 +45,7 @@ public:
     void OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent) override;
     void OnAudioSceneChange(const AudioStandard::AudioScene audioScene) override;
     void OnCapturerStateChange(
-        const std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>> &audioCapturerChangeInfos) override;
+        const std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>>& audioCapturerChangeInfos) override;
     void OnPreferredOutputDeviceUpdated(
         const std::vector<std::shared_ptr<AudioStandard::AudioDeviceDescriptor>> &descs)  override;
     void Init();
@@ -78,7 +78,7 @@ private:
 
     std::mutex capturerMutex_;
     std::unordered_map<int32_t, std::unordered_set<int32_t>> capturerStateMap_;
-    std::unordered_map<int32_t, int32_t> capturerInf0o0PidToUidMap_;
+    std::unordered_map<int32_t, int32_t> capturerInfoPidToUidMap_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

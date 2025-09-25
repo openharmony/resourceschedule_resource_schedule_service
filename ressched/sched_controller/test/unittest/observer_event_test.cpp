@@ -1933,12 +1933,12 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_007, testing::ext::TestSize.Level
     EXPECT_EQ(audioObserver_->capturerInfoPidToUidMap_[pid], uid);
     
     // 测试添加同一PID的不同sessionId
-    int32_t sessionId2 = 2;
-    audioObserver_->ProcessCapturerBegin(pid, uid, sessionId2);
+    int32_t session2 = 2;
+    audioObserver_->ProcessCapturerBegin(pid, uid, session2);
     
     // 验证两个session都存在
     EXPECT_TRUE(audioObserver_->capturerStateMap_[pid].find(sessionId) != audioObserver_->capturerStateMap_[pid].end());
-    EXPECT_TRUE(audioObserver_->capturerStateMap_[pid].find(sessionId2) != audioObserver_->capturerStateMap_[pid].end());
+    EXPECT_TRUE(audioObserver_->capturerStateMap_[pid].find(session2) != audioObserver_->capturerStateMap_[pid].end());
     
     // 清理测试数据
     audioObserver_->capturerStateMap_.clear();
@@ -1958,25 +1958,25 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_008, testing::ext::TestSize.Level
     // 初始化测试数据
     int32_t pid = 1000;
     int32_t uid = 100;
-    int32_t sessionId1 = 1;
-    int32_t sessionId2 = 2;
+    int32_t session1 = 1;
+    int32_t session2 = 2;
     
     // 先添加一些状态
-    audioObserver_->capturerStateMap_[pid].insert(sessionId1);
-    audioObserver_->capturerStateMap_[pid].insert(sessionId2);
+    audioObserver_->capturerStateMap_[pid].insert(session1);
+    audioObserver_->capturerStateMap_[pid].insert(session2);
     audioObserver_->capturerInfoPidToUidMap_[pid] = uid;
     
     // 测试删除一个session，但不是最后一个
-    audioObserver_->ProcessCapturerEnd(pid, uid, sessionId1);
+    audioObserver_->ProcessCapturerEnd(pid, uid, session1);
     
     // 验证sessionId1已被删除，但sessionId2仍然存在
     EXPECT_TRUE(audioObserver_->capturerStateMap_.find(pid) != audioObserver_->capturerStateMap_.end());
-    EXPECT_TRUE(audioObserver_->capturerStateMap_[pid].find(sessionId1) == audioObserver_->capturerStateMap_[pid].end());
-    EXPECT_TRUE(audioObserver_->capturerStateMap_[pid].find(sessionId2) != audioObserver_->capturerStateMap_[pid].end());
+    EXPECT_TRUE(audioObserver_->capturerStateMap_[pid].find(session1) == audioObserver_->capturerStateMap_[pid].end());
+    EXPECT_TRUE(audioObserver_->capturerStateMap_[pid].find(session2) != audioObserver_->capturerStateMap_[pid].end());
     EXPECT_TRUE(audioObserver_->capturerInfoPidToUidMap_.find(pid) != audioObserver_->capturerInfoPidToUidMap_.end());
     
     // 测试删除最后一个session
-    audioObserver_->ProcessCapturerEnd(pid, uid, sessionId2);
+    audioObserver_->ProcessCapturerEnd(pid, uid, session2);
     
     // 验证整个PID条目已被删除
     EXPECT_TRUE(audioObserver_->capturerStateMap_.find(pid) == audioObserver_->capturerStateMap_.end());
