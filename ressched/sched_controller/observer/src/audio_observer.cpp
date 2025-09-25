@@ -264,16 +264,15 @@ void AudioObserver::ProcessCapturerBegin(const int32_t pid, const int32_t uid, c
     }
     capturerStateMap_[pid].insert(sessionId);
     capturerInfoPidToUidMap_[pid] = uid;
-
 }
 
 void AudioObserver::ProcessCapturerEnd(const int32_t pid, const int32_t uid, const int32_t sessionId)
 {
     std::lock_guard<std::mutex> lock(capturerMutex_);
-    capturerStateMap_[pid].erase(sessionId);
     if (capturerStateMap_.find(pid) == capturerStateMap_.end()) {
         return;
     }
+    capturerStateMap_[pid].erase(sessionId);
     if (capturerStateMap_[pid].empty()) {
         capturerInfoPidToUidMap_.erase(pid);
         capturerStateMap_.erase(pid);
