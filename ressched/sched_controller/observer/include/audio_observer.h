@@ -36,16 +36,20 @@ class AudioObserver :
     public AudioStandard::AudioRingerModeCallback,
     public AudioStandard::VolumeKeyEventCallback,
     public AudioStandard::AudioManagerAudioSceneChangedCallback,
-    public AudioStandard::AudioPreferredOutputDeviceChangeCallback {
+    public AudioStandard::AudioPreferredOutputDeviceChangeCallback,
+    public AudioStandard::AudioCapturerStateChangeCallback {
 public:
     void OnRendererStateChange(
         const std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos) override;
     void OnRingerModeUpdated(const AudioStandard::AudioRingerMode &ringerMode) override;
     void OnVolumeKeyEvent(AudioStandard::VolumeEvent volumeEvent) override;
     void OnAudioSceneChange(const AudioStandard::AudioScene audioScene) override;
+    void OnCapturerStateChange(
+        const std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>>& audioCapturerChangeInfos) override;
     void OnPreferredOutputDeviceUpdated(
         const std::vector<std::shared_ptr<AudioStandard::AudioDeviceDescriptor>> &descs)  override;
     void Init();
+    void ProcessCapturerEndCaseByUnregister();
 private:
     int32_t mode_ = -1;
     void MarshallingAudioRendererChangeInfo(
@@ -65,10 +69,16 @@ private:
     void HandleStopAudioStateEvent(const std::unordered_set<int32_t>& newStopSessionPid);
     void MarshallingInnerAudioRendererChangeInfo(int32_t pid, nlohmann::json &payload);
     bool IsValidPid(pid_t pid);
-    
+    void ProcessCapturerBegin(const int32_t pid, const int32_t uid, const int32_t sessionId);
+    void ProcessCapturerEnd(const int32_t pid, const int32_t uid, const int32_t sessionId);
+
     std::unordered_map<int32_t, AudioStandard::RendererState> renderState_;
     std::unordered_map<int32_t, int32_t> volumeState_;
     std::unordered_map<int32_t, ProcessRenderState> processRenderStateMap_;
+
+    std::mutex capturerMutex_;
+    std::unordered_map<int32_t, std::unordered_set<int32_t>> capturerStateMap_;
+    std::unordered_map<int32_t, int32_t> capturerInfoPidToUidMap_;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

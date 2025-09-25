@@ -43,6 +43,7 @@ enum EventType : uint32_t {
     EVENT_MUTEX_CASE_FREE_MULTI_WINDOW_TO_BACKGROUND = 9,
     EVENT_MUTEX_TOPN_BUNDLE_USAGE_INFO = 10,
     EVENT_REPORT_NATIVE_PROC_SUSPEND_STATE = 11,
+    EVENT_REPORT_HFLS_LIVE_SCENE_CHANGED = 12,
     EVENT_END,
 };
 
@@ -55,6 +56,8 @@ enum EventValue : uint32_t {
     EVENT_VALUE_FRAME_RATE_STATISTICS_START,
     EVENT_VALUE_FRAME_RATE_STATISTICS_END,
     EVENT_VALUE_FRAME_RATE_STATISTICS_BREAK,
+    EVENT_VALUE_HFLS_BEGIN = 8,
+    EVENT_VALUE_HFLS_END = 9,
     EVENT_VALUE_END,
 };
 
@@ -889,6 +892,30 @@ enum TurboModeState : int64_t {
 enum NativeSuspendState : int32_t {
     NATIVE_THAW = 0,
     NATIVE_FREEZE = 1,
+};
+
+/**
+* @brief audio capture state
+*/
+enum AudioCaptureState : int32_t {
+    AUDIO_CAPTURE_BEGIN = 0,
+    AUDIO_CAPTURE_END = 1,
+};
+
+/**
+* @brief codec encode state
+*/
+enum CodecEncodeState : int32_t {
+    CODEC_ENCODE_BEGIN = 0,
+    CODEC_ENCODE_END = 1,
+};
+
+/**
+* @brief camera len state
+*/
+enum CameraLensState : int32_t {
+    CAMERA_LEN_OPENED = 0,
+    CAMERA_LEN_CLOSED = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
