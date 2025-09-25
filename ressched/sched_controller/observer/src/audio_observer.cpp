@@ -259,43 +259,43 @@ void AudioObserver::ProcessCapturerBegin(const int32_t pid, const int32_t uid, c
         nlohmann::json payload;
         payload["pid"] = std::to_string(pid);
         payload["uid"] = std::to_string(uid);
-        ResSchedMgr::GetInstance().SendEvent(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
             ResType::AudioCaptureState::AUDIO_CAPTURE_BEGIN, payload);
     }
-    captureStateMap_[pid].insert(sessionId);
+    capturerStateMap_[pid].insert(sessionId);
     capturerInfoPidToUidMap_[pid] = uid;
 
 }
 
 void AudioObserver::ProcessCapturerEnd(const int32_t pid, const int32_t uid, const int32_t sessionId)
 {
-    std::lock_guard<std::mutex> lock(captureStateMapMutex_);
+    std::lock_guard<std::mutex> lock(capturerMutex_);
     capturerStateMap_[pid].erase(sessionId);
     if (capturerStateMap_[pid].empty()) {
         capturerInfoPidToUidMap_.erase(pid);
         capturerStateMap_.erase(pid);
-        nlomann::json payload;
+        nlohmann::json payload;
         payload["pid"] = std::to_string(pid);
         payload["uid"] = std::to_string(uid);
-        SendProcessStateChangeEvent(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
             ResType::AudioCaptureState::AUDIO_CAPTURE_END, payload);
     }
 }
 
 void AudioObserver::ProcessCapturerEndCaseByUnregister()
 {
-    std::lock_guard<std::mutex> lock(capturerStateMapMutex_);
+    std::lock_guard<std::mutex> lock(capturerMutex_);
     if (capturerStateMap_.empty()) {
         return;
     }
     std::string closedPidStr = "ProcessCapturerEndCaseByUnregister PIDS";
     for (const auto& pair: capturerStateMap_) {
         closedPidStr += std::to_string(pair.first);
-        nlomann::json paylaod;
+        nlohmann::json payload;
         payload["pid"] = std::to_string(pair.first);
         payload["uid"] = std::to_string(capturerInfoPidToUidMap_[pair.first]);
         capturerInfoPidToUidMap_.erase(pair.first);
-        SendProcessStateChangeEvent(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
+        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
             ResType::AudioCaptureState::AUDIO_CAPTURE_END, payload);
     }
     capturerStateMap_.clear();
