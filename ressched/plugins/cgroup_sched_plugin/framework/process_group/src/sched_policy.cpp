@@ -27,11 +27,8 @@ namespace {
 
 int SetThreadSchedPolicy(int tid, int policy)
 {
-    if (tid < 0) {
+    if (tid <= 0) {
         return -1;
-    }
-    if (tid == 0) {
-        tid = gettid();
     }
     SchedPolicy schedPolicy = SchedPolicy(policy);
     int ret = CgroupAction::GetInstance().SetThreadSchedPolicy(tid, schedPolicy) ? 0 : -1;
@@ -44,11 +41,8 @@ int SetThreadSchedPolicy(int tid, int policy)
 
 int SetThreadGroupSchedPolicy(int pid, int policy)
 {
-    if (pid < 0) {
+    if (pid <= 0) {
         return -1;
-    }
-    if (pid == 0) {
-        pid = getpid();
     }
     SchedPolicy schedPolicy = SchedPolicy(policy);
     int ret = CgroupAction::GetInstance().SetThreadGroupSchedPolicy(pid, schedPolicy) ? 0 : -1;
@@ -61,11 +55,8 @@ int SetThreadGroupSchedPolicy(int pid, int policy)
 
 int GetThreadSchedPolicy(int tid, SchedPolicy* policy)
 {
-    if (tid < 0) {
+    if (tid <= 0) {
         return -1;
-    }
-    if (tid == 0) {
-        tid = gettid();
     }
     return CgroupAction::GetInstance().GetSchedPolicy(tid, policy);
 }
