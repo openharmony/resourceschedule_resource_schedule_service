@@ -242,9 +242,6 @@ void SchedController::InitDispatchResFuncMap()
         { ResType::RES_TYPE_INNER_AUDIO_STATE, [](std::shared_ptr<CgroupEventHandler> handler,
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleReportAudioState(resType, value, payload); } },
-        { ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED, [](std::shared_ptr<CgroupEventHandler> handler,
-            uint32_t resType, int64_t value, const nlohmann::json& payload)
-            { handler->HandleReportAudioCapTureState(resType, value, payload); } },
         { ResType::RES_TYPE_RUNNINGLOCK_STATE, [](std::shared_ptr<CgroupEventHandler> handler,
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleReportRunningLockEvent(resType, value, payload); } },
@@ -305,6 +302,9 @@ void SchedController::InitAddDispatchResFuncMap()
     dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_CONTINUOUS_TASK,
         [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value,
         const nlohmann::json& payload) { handler->HandleContinuousTaskStatus(resType, value, payload); }));
+    dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
+        [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value,
+        const nlohmann::json& payload) { handler->HandleReportAudioCapTureState(resType, value, payload); }));
 }
 
 #ifdef POWER_MANAGER_ENABLE
