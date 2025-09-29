@@ -62,6 +62,7 @@ public:
     void HandleReportKeyThread(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportWindowState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleReportAudioCapTureState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportWebviewAudioState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportBluetoothConnectState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportRunningLockEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
