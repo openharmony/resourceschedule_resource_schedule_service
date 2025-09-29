@@ -129,6 +129,7 @@ void SchedController::InitResTypes()
         ResType::RES_TYPE_TRANSIENT_TASK,
         ResType::RES_TYPE_CONTINUOUS_TASK,
         ResType::SYNC_RES_TYPE_NAP_MODE,
+        ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
     };
 }
 
@@ -241,6 +242,9 @@ void SchedController::InitDispatchResFuncMap()
         { ResType::RES_TYPE_INNER_AUDIO_STATE, [](std::shared_ptr<CgroupEventHandler> handler,
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleReportAudioState(resType, value, payload); } },
+        { ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED, [](std::shared_ptr<CgroupEventHandler> handler,
+            uint32_t resType, int64_t value, const nlohmann::json& payload)
+            { handler->HandleReportAudioCapTureState(resType, value, payload); } },
         { ResType::RES_TYPE_RUNNINGLOCK_STATE, [](std::shared_ptr<CgroupEventHandler> handler,
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleReportRunningLockEvent(resType, value, payload); } },
