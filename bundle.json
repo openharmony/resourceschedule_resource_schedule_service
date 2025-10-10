@@ -189,7 +189,7 @@
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
         },
         {
-          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/ets/taihe/system_load:systemload_taihe"
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/ets/taihe/systemload:systemload_taihe"
         }
       ],
       "test": [
