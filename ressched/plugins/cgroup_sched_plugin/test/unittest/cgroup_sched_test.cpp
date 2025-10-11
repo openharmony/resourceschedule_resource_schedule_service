@@ -176,6 +176,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_004, Function | Medium
         ResType::AppStartType::APP_COLD_START, nullptr);
     schedController.DispatchOtherResource(ResType::RES_TYPE_AV_CODEC_STATE,
         ResType::AppStartType::APP_COLD_START, nullptr);
+    schedController.DispatchOtherResource(ResType::RES_TYPE_NAP_MODE,
+        ResType::AppStartType::APP_COLD_START, nullptr);
     schedController.Init();
     auto processRecord = schedController.GetSupervisor()->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
     processRecord->runningLockState_[0] = ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE;
@@ -2687,7 +2689,34 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_091, Function | Med
     nlohmann::json payload;
     payload["UID"] = "1000";
     payload["PID"] = "1000";
+    cgroupEventHandler->HandleNapModeEvent(resType, value, payload);
     auto processRecord = supervisor_->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
+    cgroupEventHandler->HandleNapModeEvent(resType, value, payload);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_092
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB0CYC
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_092, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(nullptr);
+    EXPECT_TRUE(cgroupEventHandler->supervisor_ == nullptr);
+    uint32_t resType = 0;
+    int64_t value = 0;
+    nlohmann::json payload;
+    cgroupEventHandler->HandleNapModeEvent(resType, value, payload);
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    payload["uid"] = "0";
+    payload["pid"] = "0";
+    cgroupEventHandler->HandleNapModeEvent(resType, value, payload);
+    payload["UID"] = "0";
+    payload["PID"] = "0";
     cgroupEventHandler->HandleNapModeEvent(resType, value, payload);
 }
 } // namespace CgroupSetting

@@ -128,7 +128,7 @@ void SchedController::InitResTypes()
         ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
         ResType::RES_TYPE_TRANSIENT_TASK,
         ResType::RES_TYPE_CONTINUOUS_TASK,
-        ResType::SYNC_RES_TYPE_NAP_MODE,
+        ResType::RES_TYPE_NAP_MODE,
         ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
     };
 }
@@ -173,7 +173,7 @@ void SchedController::DispatchOtherResource(uint32_t resType, int64_t value, con
                 handler->HandleReportAvCodecEvent(resType, value, payload);
                 break;
             }
-            case ResType::SYNC_RES_TYPE_NAP_MODE: {
+            case ResType::RES_TYPE_NAP_MODE: {
                 handler->HandleNapModeEvent(resType, value, payload);
                 break;
             }
