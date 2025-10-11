@@ -76,6 +76,7 @@ namespace {
     const std::string POWER_MODE = "powerMode";
     const std::string POWER_STATUS_KEY = "powerStatus";
     const std::string PRELOAD_MODE = "isPreload";
+    const std::string PRELAUNCH = "isPrelaunch";
     const std::string WEAK_ACTION_STRING = "weakInterAction";
     const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
     const std::string KEY_APP_TYPE = "key_app_type";
@@ -662,6 +663,11 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
         if (data->payload != nullptr && data->payload.contains(PRELOAD_MODE) &&
             atoi(data->payload[PRELOAD_MODE].get<std::string>().c_str()) == 1) {
             SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START is invalid as preload");
+            return;
+        }
+        if (data->payload != nullptr && data->payload.contains(PRELAUNCH) &&
+            atoi(data->payload[PRELAUNCH].get<std::string>().c_str()) == 1) {
+            SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START is invalid as prelaunch");
             return;
         }
         SOC_PERF_LOGD("SocPerfPlugin: socperf->APP_COLD_START");
