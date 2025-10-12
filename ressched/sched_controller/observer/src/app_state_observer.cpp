@@ -173,6 +173,7 @@ void RmsApplicationStateObserver::MarshallingProcessData(const ProcessData &proc
     payload["callerUid"] = std::to_string(processData.callerUid);
     payload["killReason"] = processData.killReason;
     payload["isPreloadModule"] = std::to_string(processData.isPreloadModule);
+    payload["isPrelaunch"] = std::to_string(processData.isPrelaunch);
 }
 
 void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processData)
@@ -216,6 +217,7 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     payload["bundleName"] = appStateData.bundleName;
     payload["extensionType"] = std::to_string(static_cast<uint32_t>(appStateData.extensionType));
     payload["isPreload"] = std::to_string(appStateData.isPreloadModule);
+    payload["isPrelaunch"] = std::to_string(appStateData.isPrelaunch);
     payload["state"] = std::to_string(appStateData.state);
     payload["callerBundleName"] = appStateData.callerBundleName;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state,

@@ -170,11 +170,12 @@ void ResSchedServiceAbility::SystemAbilityListenerInit()
                         "ERR_MSG", "Register a listener of power manager service failed.");
         RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", GAME_SERVICE_SERVICE_ID);
     }
-    SystemAbilityListenerInitExt();
+    SystemAbilityListenerInitExtPartOne();
+    SystemAbilityListenerInitExtPartTwo();
     RESSCHED_LOGI("Init SystemAbilityListener finish");
 }
 
-void ResSchedServiceAbility::SystemAbilityListenerInitExt()
+void ResSchedServiceAbility::SystemAbilityListenerInitExtPartOne()
 {
     if (!AddSystemAbilityListener(WIFI_DEVICE_SYS_ABILITY_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
@@ -206,6 +207,24 @@ void ResSchedServiceAbility::SystemAbilityListenerInitExt()
     }
     if (!AddSystemAbilityListener(MEMORY_MANAGER_SA_ID)) {
         RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", MEMORY_MANAGER_SA_ID);
+    }
+}
+
+void ResSchedServiceAbility::SystemAbilityListenerInitExtPartTwo()
+{
+    if (!AddSystemAbilityListener(LOCATION_LOCATOR_SA_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of location locator failed.");
+        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", LOCATION_LOCATOR_SA_ID);
+    }
+    if (!AddSystemAbilityListener(ADVANCED_NOTIFICATION_SERVICE_ABILITY_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of advanced notification service failed.");
+        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", ADVANCED_NOTIFICATION_SERVICE_ABILITY_ID);
     }
 }
 } // namespace ResourceSchedule

@@ -44,7 +44,9 @@ private:
 
     void SystemAbilityListenerInit();
 
-    void SystemAbilityListenerInitExt();
+    void SystemAbilityListenerInitExtPartOne();
+
+    void SystemAbilityListenerInitExtPartTwo();
 
     sptr<ResSchedService> service_;
 
