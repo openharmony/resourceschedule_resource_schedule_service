@@ -101,6 +101,9 @@ void BackgroundTaskObserver::MarshallingContinuousTaskCallbackInfo(
     payload["typeIds"] = continuousTaskCallbackInfo->GetTypeIds();
     payload["tokenId"] = continuousTaskCallbackInfo->GetTokenId();
     payload["isByRequestObject"] = continuousTaskCallbackInfo->IsByRequestObject();
+    payload["bundleName"] = continuousTaskCallbackInfo->GetBundleName();
+    payload["userId"] = continuousTaskCallbackInfo->GetUserId();
+    payload["appIndex"] = continuousTaskCallbackInfo->GetAppIndex();
 }
 
 void BackgroundTaskObserver::OnContinuousTaskStart(
