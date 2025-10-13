@@ -1256,6 +1256,7 @@ bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& d
     if (screenStatus_ == SCREEN_ON) {
         HandleScreenOn();
     } else if (screenStatus_ == SCREEN_OFF) {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
         // post screen off task with 5000 milliseconds delay, to avoid frequent screen status change.
         std::function<void()> screenOffFunc = [this]() {
             HandleScreenOff();
