@@ -36,23 +36,21 @@ public:
     {
         (*innerCallback_)(SystemLoadLevel(static_cast<SystemLoadLevel::key_t>(level)));
     }
-    using CallbackPair = std::pair<ani_ref, sptr<SystemloadCallback>>;
+    using CallbackPair = std::pair<optional<taihe::callback<void(SystemLoadLevel level)>>, sptr<SystemloadCallback>>;
     static std::list<CallbackPair> callbackList_;
     static std::mutex callbackMutex_;
 };
 std::list<SystemloadCallback::CallbackPair> SystemloadCallback::callbackList_ = {};
 std::mutex SystemloadCallback::callbackMutex_;
 
-void onSystemLoadChange(callback_view<void(SystemLoadLevel)> callback, uintptr_t opq)
+void onSystemLoadChange(callback_view<void(SystemLoadLevel level)> callback)
 {
     RESSCHED_LOGD("Register Systemload Callback");
     std::lock_guard<std::mutex> autoLock(SystemloadCallback::callbackMutex_);
+    auto systemLoadChangeCb = optional<taihe::callback<void(SystemLoadLevel level)>>{std::in_place_t{}, callback};
     auto iter = SystemloadCallback::callbackList_.begin();
-    ani_ref ref = (ani_ref)(opq);
-    ani_env* env = taihe::get_env();
     for (; iter != SystemloadCallback::callbackList_.end(); iter++) {
-        ani_boolean isEquals = false;
-        if (env->Reference_StrictEquals(iter->first, ref, &isEquals) == ANI_OK && isEquals) {
+        if (iter->first == systemLoadChangeCb) {
             RESSCHED_LOGW("Register a exist callback");
             return;
         }
@@ -62,20 +60,17 @@ void onSystemLoadChange(callback_view<void(SystemLoadLevel)> callback, uintptr_t
     sptr<SystemloadCallback> systemloadListener =
         new (std::nothrow)SystemloadCallback(taiheCallback);
     ResSchedClient::GetInstance().RegisterSystemloadNotifier(systemloadListener);
-    SystemloadCallback::callbackList_.emplace_back(std::move(ref), systemloadListener);
+    SystemloadCallback::callbackList_.emplace_back(systemLoadChangeCb, systemloadListener);
     RESSCHED_LOGD("Register Systemload Callback end");
 }
 
-void offSystemLoadChange(callback_view<void(SystemLoadLevel)> callback, uintptr_t opq)
+void offSystemLoadChange(optional_view<callback<void(SystemLoadLevel level)>> callback)
 {
     RESSCHED_LOGD("UnRegister Systemload Callback");
     std::lock_guard<std::mutex> autoLock(SystemloadCallback::callbackMutex_);
     auto iter = SystemloadCallback::callbackList_.begin();
-    ani_ref ref = (ani_ref)(opq);
-    ani_env* env = taihe::get_env();
     for (; iter != SystemloadCallback::callbackList_.end(); iter++) {
-        ani_boolean isEquals = false;
-        if (env->Reference_StrictEquals(iter->first, ref, &isEquals) == ANI_OK && isEquals) {
+        if (iter->first == callback) {
             ResSchedClient::GetInstance().UnRegisterSystemloadNotifier(iter->second);
             SystemloadCallback::callbackList_.erase(iter);
             RESSCHED_LOGD("UnRegister Systemload Callback end");
