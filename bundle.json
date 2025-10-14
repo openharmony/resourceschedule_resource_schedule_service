@@ -137,6 +137,17 @@
         },
         {
           "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/pluginbase/include",
+            "header_files": [
+              "config_info.h",
+              "plugin.h",
+              "res_data.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc_static"
+        },
+        {
+          "header": {
             "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client/include",
             "header_files": [
               "res_sched_exe_client.h",
@@ -156,6 +167,17 @@
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/services:resschedexesvc"
+        },
+        {
+          "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/pluginbase/include",
+            "header_files": [
+              "config_info.h",
+              "plugin.h",
+              "res_data.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/services:resschedexesvc_static"
         },
         {
           "header": {
