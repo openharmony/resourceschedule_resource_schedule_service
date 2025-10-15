@@ -19,20 +19,9 @@
 @!namespace("@ohos.resourceschedule.systemload", "systemLoad")
 enum SystemLoadLevel: i32 {LOW = 0, NORMAL = 1, MEDIUM = 2, HIGH = 3, OVERHEATED = 4, WARNING = 5, EMERGENCY = 6, ESCAPE = 7}
 
-@!sts_inject("""
-    export function on(type: "systemLoadChange", callback:(level: SystemLoadLevel) => void) {
-        on("systemLoadChange", callback, callback);
-    }
-    export function off(type: "systemLoadChange", callback:(level: SystemLoadLevel) => void) {
-        on("systemLoadChange", callback, callback);
-    }
-""")
+function onSystemLoadChange(callback: (level: SystemLoadLevel) => void) : void;
 
-@on_off
-function onSystemLoadChange(callback: (level: SystemLoadLevel) => void, opq: Opaque) : void;
-
-@on_off
-function offSystemLoadChange(callback: (level: SystemLoadLevel) => void, opq: Opaque) : void;
+function offSystemLoadChange(callback: Optional<(level: SystemLoadLevel) => void>) : void;
 
 @gen_promise("getLevel")
 function getLevelSync(): SystemLoadLevel;
