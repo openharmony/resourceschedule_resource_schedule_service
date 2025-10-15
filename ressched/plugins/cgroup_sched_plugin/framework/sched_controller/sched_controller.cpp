@@ -92,8 +92,6 @@ int SchedController::GetProcessGroup(pid_t pid)
 void SchedController::InitResTypes()
 {
     resTypes = {
-        ResType::RES_TYPE_REPORT_MMI_PROCESS,
-        ResType::RES_TYPE_REPORT_RENDER_THREAD,
         ResType::RES_TYPE_REPORT_KEY_THREAD,
         ResType::RES_TYPE_REPORT_WINDOW_STATE,
         ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
@@ -224,12 +222,6 @@ inline void SchedController::InitSupervisor()
 void SchedController::InitDispatchResFuncMap()
 {
     dispatchResFuncMap_ = {
-        { ResType::RES_TYPE_REPORT_MMI_PROCESS, [](std::shared_ptr<CgroupEventHandler> handler,
-            uint32_t resType, int64_t value, const nlohmann::json& payload)
-            { handler->HandleReportMMIProcess(resType, value, payload); } },
-        { ResType::RES_TYPE_REPORT_RENDER_THREAD, [](std::shared_ptr<CgroupEventHandler> handler,
-            uint32_t resType, int64_t value, const nlohmann::json& payload)
-            { handler->HandleReportRenderThread(resType, value, payload); } },
         { ResType::RES_TYPE_REPORT_KEY_THREAD, [](std::shared_ptr<CgroupEventHandler> handler,
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleReportKeyThread(resType, value, payload); } },
