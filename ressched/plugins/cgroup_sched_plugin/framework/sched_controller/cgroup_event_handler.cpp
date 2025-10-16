@@ -679,62 +679,6 @@ void CgroupEventHandler::HandleDrawingContentChangeWindow(uint32_t resType, int6
         drawingContentState ? ResType::WindowDrawingStatus::Drawing : ResType::WindowDrawingStatus::NotDrawing);
 }
 
-void CgroupEventHandler::HandleReportMMIProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
-{
-    int32_t uid = 0;
-    int32_t pid = 0;
-    int32_t mmi_service;
-
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        return;
-    }
-
-    if (!ParsePayload(uid, pid, mmi_service, value, payload)) {
-        return;
-    }
-
-    CGS_LOGD("%{public}s : %{public}u, %{public}d, %{public}d, %{public}d",
-        __func__, resType, uid, pid, mmi_service);
-    if (uid <= 0 || pid <= 0 || mmi_service <= 0) {
-        return;
-    }
-
-    auto app = supervisor_->GetAppRecordNonNull(uid);
-    app->SetName(MMI_SERVICE_NAME);
-    auto procRecord = app->GetProcessRecordNonNull(mmi_service);
-    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-        AdjustSource::ADJS_REPORT_MMI_SERVICE_THREAD);
-}
-
-void CgroupEventHandler::HandleReportRenderThread(uint32_t resType, int64_t value, const nlohmann::json& payload)
-{
-    int32_t uid = 0;
-    int32_t pid = 0;
-    int32_t render = 0;
-
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        return;
-    }
-
-    if (!ParsePayload(uid, pid, render, value, payload)) {
-        return;
-    }
-
-    CGS_LOGD("%{public}s : %{public}u, %{public}d, %{public}d, %{public}d",
-        __func__, resType, uid, pid, render);
-    if (uid <= 0 || pid <= 0 || render <= 0) {
-        return;
-    }
-
-    auto app = supervisor_->GetAppRecordNonNull(uid);
-    auto procRecord = app->GetProcessRecordNonNull(pid);
-    procRecord->renderTid_ = render;
-    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-        AdjustSource::ADJS_REPORT_RENDER_THREAD);
-}
-
 void CgroupEventHandler::HandleReportKeyThread(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
     int32_t uid = 0;
