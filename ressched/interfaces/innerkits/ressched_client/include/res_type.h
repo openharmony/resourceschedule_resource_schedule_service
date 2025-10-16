@@ -403,8 +403,6 @@ enum : uint32_t {
     RES_TYPE_PRELOAD_APPLICATION,
     // get the applicaiton type
     SYNC_RES_TYPE_GET_APP_TYPE,
-    // nap mode
-    SYNC_RES_TYPE_NAP_MODE,
     // report to request mutex status
     SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // report to check mutex before start
