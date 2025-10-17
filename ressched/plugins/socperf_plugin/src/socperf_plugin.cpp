@@ -76,6 +76,7 @@ namespace {
     const std::string POWER_MODE = "powerMode";
     const std::string POWER_STATUS_KEY = "powerStatus";
     const std::string PRELOAD_MODE = "isPreload";
+    const std::string PRELAUNCH = "isPrelaunch";
     const std::string WEAK_ACTION_STRING = "weakInterAction";
     const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
     const std::string KEY_APP_TYPE = "key_app_type";
@@ -664,6 +665,11 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
             SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START is invalid as preload");
             return;
         }
+        if (data->payload != nullptr && data->payload.contains(PRELAUNCH) &&
+            atoi(data->payload[PRELAUNCH].get<std::string>().c_str()) == 1) {
+            SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START is invalid as prelaunch");
+            return;
+        }
         SOC_PERF_LOGD("SocPerfPlugin: socperf->APP_COLD_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
         int32_t appType = INVALID_VALUE;
@@ -1226,7 +1232,9 @@ void SocPerfPlugin::HandleScreenOn()
 
 void SocPerfPlugin::HandleScreenOff()
 {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
+#endif
     if (screenStatus_ == SCREEN_OFF) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_ON, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_OFF, true, "");
@@ -1250,11 +1258,15 @@ bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& d
     if (screenStatus_ == SCREEN_ON) {
         HandleScreenOn();
     } else if (screenStatus_ == SCREEN_OFF) {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
         // post screen off task with 5000 milliseconds delay, to avoid frequent screen status change.
         std::function<void()> screenOffFunc = [this]() {
+#endif
             HandleScreenOff();
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
         };
         ffrt::submit(screenOffFunc, {}, {}, ffrt::task_attr().delay(SCREEN_OFF_TIME_DELAY));
+#endif
     }
     return true;
 }

@@ -72,7 +72,8 @@
         "av_session",
         "json",
         "libxml2",
-        "jsoncpp"
+        "jsoncpp",
+        "runtime_core"
       ]
     },
     "build": {
@@ -86,7 +87,9 @@
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/innerkits/ressched_client:ressched_client",
           "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client:resschedexe_client",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi/systemload:systemload",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/ets/taihe/systemload:systemload_taihe",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/js/napi/background_process_manager:backgroundprocessmanager_napi",
+          "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/ets/taihe/background_process_manager:backgroundprocessmanager_taihe",
           "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/c/background_process_manager:background_process_manager",
           "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
         ],
@@ -134,6 +137,17 @@
         },
         {
           "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/pluginbase/include",
+            "header_files": [
+              "config_info.h",
+              "plugin.h",
+              "res_data.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/services:resschedsvc_static"
+        },
+        {
+          "header": {
             "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/interfaces/innerkits/ressched_executor_client/include",
             "header_files": [
               "res_sched_exe_client.h",
@@ -153,6 +167,17 @@
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/services:resschedexesvc"
+        },
+        {
+          "header": {
+            "header_base": "//foundation/resourceschedule/resource_schedule_service/ressched/services/resschedmgr/pluginbase/include",
+            "header_files": [
+              "config_info.h",
+              "plugin.h",
+              "res_data.h"
+            ]
+          },
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched_executor/services:resschedexesvc_static"
         },
         {
           "header": {
@@ -185,6 +210,9 @@
             ]
           },
           "name": "//foundation/resourceschedule/resource_schedule_service/ressched/common:ressched_common_utils"
+        },
+        {
+          "name": "//foundation/resourceschedule/resource_schedule_service/ressched/interfaces/kits/ets/taihe/systemload:systemload_taihe"
         }
       ],
       "test": [

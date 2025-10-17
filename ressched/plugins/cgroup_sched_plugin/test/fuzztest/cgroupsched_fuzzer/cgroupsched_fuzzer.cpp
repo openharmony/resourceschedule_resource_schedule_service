@@ -249,54 +249,6 @@ namespace ResourceSchedule {
         return true;
     }
 
-    bool HandleReportMMIProcessFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-
-        // getdata
-        uint32_t resType = GetData<uint32_t>();
-        int64_t value = GetData<int64_t>();
-        nlohmann::json payload;
-        auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
-
-        cgroupEventHandler->HandleReportMMIProcess(resType, value, payload);
-        cgroupEventHandler->SetSupervisor(g_supervisor);
-        cgroupEventHandler->HandleReportMMIProcess(resType, value, payload);
-
-        return true;
-    }
-
-    bool HandleReportRenderThreadFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (data == nullptr) {
-            return false;
-        }
-
-        // initialize
-        G_DATA = data;
-        g_size = size;
-
-        // getdata
-        uint32_t resType = GetData<uint32_t>();
-        int64_t value = GetData<int64_t>();
-        nlohmann::json payload;
-        auto cgroupEventHandler =
-            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
-
-        cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
-        cgroupEventHandler->SetSupervisor(g_supervisor);
-        cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
-
-        return true;
-    }
-
     bool HandleReportKeyThreadFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -1276,8 +1228,6 @@ namespace ResourceSchedule {
         OHOS::ResourceSchedule::HandleTransientTaskEndFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleContinuousTaskUpdateFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleContinuousTaskCancelFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleReportMMIProcessFuzzTest(data, size);
-        OHOS::ResourceSchedule::HandleReportRenderThreadFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportKeyThreadFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportWindowStateFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportWebviewAudioStateFuzzTest(data, size);

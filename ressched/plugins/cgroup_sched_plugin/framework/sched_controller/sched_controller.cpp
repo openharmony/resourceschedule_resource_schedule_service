@@ -92,8 +92,6 @@ int SchedController::GetProcessGroup(pid_t pid)
 void SchedController::InitResTypes()
 {
     resTypes = {
-        ResType::RES_TYPE_REPORT_MMI_PROCESS,
-        ResType::RES_TYPE_REPORT_RENDER_THREAD,
         ResType::RES_TYPE_REPORT_KEY_THREAD,
         ResType::RES_TYPE_REPORT_WINDOW_STATE,
         ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
@@ -128,7 +126,8 @@ void SchedController::InitResTypes()
         ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
         ResType::RES_TYPE_TRANSIENT_TASK,
         ResType::RES_TYPE_CONTINUOUS_TASK,
-        ResType::SYNC_RES_TYPE_NAP_MODE,
+        ResType::RES_TYPE_NAP_MODE,
+        ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
     };
 }
 
@@ -172,7 +171,7 @@ void SchedController::DispatchOtherResource(uint32_t resType, int64_t value, con
                 handler->HandleReportAvCodecEvent(resType, value, payload);
                 break;
             }
-            case ResType::SYNC_RES_TYPE_NAP_MODE: {
+            case ResType::RES_TYPE_NAP_MODE: {
                 handler->HandleNapModeEvent(resType, value, payload);
                 break;
             }
@@ -223,12 +222,6 @@ inline void SchedController::InitSupervisor()
 void SchedController::InitDispatchResFuncMap()
 {
     dispatchResFuncMap_ = {
-        { ResType::RES_TYPE_REPORT_MMI_PROCESS, [](std::shared_ptr<CgroupEventHandler> handler,
-            uint32_t resType, int64_t value, const nlohmann::json& payload)
-            { handler->HandleReportMMIProcess(resType, value, payload); } },
-        { ResType::RES_TYPE_REPORT_RENDER_THREAD, [](std::shared_ptr<CgroupEventHandler> handler,
-            uint32_t resType, int64_t value, const nlohmann::json& payload)
-            { handler->HandleReportRenderThread(resType, value, payload); } },
         { ResType::RES_TYPE_REPORT_KEY_THREAD, [](std::shared_ptr<CgroupEventHandler> handler,
             uint32_t resType, int64_t value, const nlohmann::json& payload)
             { handler->HandleReportKeyThread(resType, value, payload); } },
@@ -301,6 +294,9 @@ void SchedController::InitAddDispatchResFuncMap()
     dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_CONTINUOUS_TASK,
         [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value,
         const nlohmann::json& payload) { handler->HandleContinuousTaskStatus(resType, value, payload); }));
+    dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
+        [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value,
+        const nlohmann::json& payload) { handler->HandleReportAudioCapTureState(resType, value, payload); }));
 }
 
 #ifdef POWER_MANAGER_ENABLE

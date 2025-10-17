@@ -176,6 +176,8 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_SchedController_004, Function | Medium
         ResType::AppStartType::APP_COLD_START, nullptr);
     schedController.DispatchOtherResource(ResType::RES_TYPE_AV_CODEC_STATE,
         ResType::AppStartType::APP_COLD_START, nullptr);
+    schedController.DispatchOtherResource(ResType::RES_TYPE_NAP_MODE,
+        ResType::AppStartType::APP_COLD_START, nullptr);
     schedController.Init();
     auto processRecord = schedController.GetSupervisor()->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
     processRecord->runningLockState_[0] = ResType::RunninglockState::RUNNINGLOCK_STATE_ENABLE;
@@ -458,35 +460,6 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_010, Function | Med
     supervisor_->RemoveApplication(12121);
     EXPECT_TRUE(supervisor_->GetAppRecord(12121) == nullptr);
     cgroupEventHandler->HandleWindowVisibilityChanged(resType, value, payload);
-}
-
-/**
- * @tc.name: CGroupSchedTest_CgroupEventHandler_011
- * @tc.desc: cgroup event handler Test
- * @tc.type: FUNC
- * @tc.require: issuesIB3UW9
- * @tc.desc:
- */
-HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_011, Function | MediumTest | Level1)
-{
-    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
-    cgroupEventHandler->SetSupervisor(supervisor_);
-    EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
-    nlohmann::json payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"1112\"}");
-    cgroupEventHandler->HandleReportMMIProcess(1, 1, payload);
-    cgroupEventHandler->HandleReportMMIProcess(1, -1, payload);
-
-    payload = nlohmann::json::parse("{\"uid\": \"-1\", \"pid\": \"1112\"}");
-    cgroupEventHandler->HandleReportMMIProcess(1, 1, payload);
-
-    payload = nlohmann::json::parse("{\"uid\": \"1111\", \"pid\": \"-1\"}");
-    cgroupEventHandler->HandleReportMMIProcess(1, 1, payload);
-
-    payload = nlohmann::json::parse("{\"uid\": \"1111\"}");
-    cgroupEventHandler->HandleReportMMIProcess(1, 1, payload);
-
-    payload = nlohmann::json::parse("{\"pid\": \"1112\"}");
-    cgroupEventHandler->HandleReportMMIProcess(1, 1, payload);
 }
 
 /**
@@ -856,7 +829,6 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_021, Function | Med
     cgroupEventHandler->HandleTransientTaskEnd(uid, pid, bundleName);
     cgroupEventHandler->HandleContinuousTaskUpdate(uid, pid, {typeId}, value);
     cgroupEventHandler->HandleContinuousTaskCancel(uid, pid, value);
-    cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
 
     cgroupEventHandler->supervisor_ = tmp;
     SUCCEED();
@@ -2495,30 +2467,6 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_083, Function | Med
 }
 
 /**
- * @tc.name: CGroupSchedTest_CgroupEventHandler_084
- * @tc.desc: cgroup event handler Test
- * @tc.type: FUNC
- * @tc.require: issuesIB3UW9
- * @tc.desc:
- */
-HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_084, Function | MediumTest | Level1)
-{
-    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
-    cgroupEventHandler->SetSupervisor(supervisor_);
-    uint32_t resType = ResType::RES_TYPE_REPORT_RENDER_THREAD;
-    int64_t value = 100;
-    nlohmann::json payload;
-    payload["uid"] = std::to_string(0);
-    payload["pid"] = std::to_string(1234);
-    cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
-    EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
-
-    payload["uid"] = std::to_string(1000);
-    cgroupEventHandler->HandleReportRenderThread(resType, value, payload);
-    EXPECT_FALSE(supervisor_->GetAppRecord(1000) == nullptr);
-}
-
-/**
  * @tc.name: CGroupSchedTest_CgroupEventHandler_085
  * @tc.desc: cgroup event handler Test
  * @tc.type: FUNC
@@ -2687,7 +2635,34 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_091, Function | Med
     nlohmann::json payload;
     payload["UID"] = "1000";
     payload["PID"] = "1000";
+    cgroupEventHandler->HandleNapModeEvent(resType, value, payload);
     auto processRecord = supervisor_->GetAppRecordNonNull(1000)->GetProcessRecordNonNull(1000);
+    cgroupEventHandler->HandleNapModeEvent(resType, value, payload);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_092
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB0CYC
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_092, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(nullptr);
+    EXPECT_TRUE(cgroupEventHandler->supervisor_ == nullptr);
+    uint32_t resType = 0;
+    int64_t value = 0;
+    nlohmann::json payload;
+    cgroupEventHandler->HandleNapModeEvent(resType, value, payload);
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    EXPECT_NE(cgroupEventHandler->supervisor_, nullptr);
+    payload["uid"] = "0";
+    payload["pid"] = "0";
+    cgroupEventHandler->HandleNapModeEvent(resType, value, payload);
+    payload["UID"] = "0";
+    payload["PID"] = "0";
     cgroupEventHandler->HandleNapModeEvent(resType, value, payload);
 }
 } // namespace CgroupSetting

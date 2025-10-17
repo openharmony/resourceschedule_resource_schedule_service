@@ -44,6 +44,8 @@ enum EventType : uint32_t {
     EVENT_MUTEX_TOPN_BUNDLE_USAGE_INFO = 10,
     EVENT_REPORT_NATIVE_PROC_SUSPEND_STATE = 11,
     EVENT_REPORT_HFLS_LIVE_SCENE_CHANGED = 12,
+    EVENT_LIMITED_EXECUTION = 14,
+    EVENT_RECOVER_EXECUTION = 15,
     EVENT_END,
 };
 
@@ -719,6 +721,7 @@ enum HeavyLoadMutexAddReasons : int64_t {
     HeavyLoadMutexStatusAddFailByMutex = 2,
     HeavyLoadMutexStatusAddFailByParams = 3,
     HeavyLoadMutexStatusCloseFailByUnopened = 4,
+    HeavyLoadMutexStatusAddSuccWithLimit = 5,
     HeavyLoadMutexStatusCloseSucc = 0,
 };
 
