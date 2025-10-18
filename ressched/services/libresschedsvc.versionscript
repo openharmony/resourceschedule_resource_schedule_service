@@ -38,6 +38,7 @@
     SetAllowSomeSAReportResExt;
     SetAllowAllAppReportResExt;
     SetAllowFgAppReportResExt;
+    ReportSyncEventInProcess;
 
     *SuspendManagerBaseObserver*UpdateSuspendObserver*;
     *SuspendManagerBaseObserver*GetInstance*;

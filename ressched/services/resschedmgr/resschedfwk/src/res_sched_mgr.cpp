@@ -31,6 +31,7 @@
 #include "hitrace_meter.h"
 #include "scene_recognizer_mgr.h"
 #include "system_ability_definition.h"
+#include "res_data.h"
 
 #ifdef OBSERVER_EVENT_TEST
 #define WEAK_FUNC __attribute__((weak))
@@ -411,6 +412,13 @@ extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohm
 extern "C" int32_t KillProcessInProcess(const nlohmann::json& payload)
 {
     return ResSchedMgr::GetInstance().KillProcessByClient(payload);
+}
+
+extern "C" void ReportSyncEventInProcess(uint32_t resType, int64_t value,
+    const nlohmann::json& payload, const nlohmann::json& reply)
+{
+    PluginMgr.GetInstance().DeliverResource(
+        std::make_shared<ResData>(resType, value, payload, reply));
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
