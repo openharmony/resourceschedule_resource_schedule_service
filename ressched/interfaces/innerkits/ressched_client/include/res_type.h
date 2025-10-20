@@ -426,7 +426,7 @@ enum : uint32_t {
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
     // user unlocked
-    RES_TYPE_USER_UNLOCKED,
+    RES_TYPE_UESER_UNLOCKED,
     // usage topn
     RES_TYPE_TOPN_USAGE_INFO,
 };
