@@ -194,9 +194,14 @@ void FrameAwarePlugin::HandleWindowsFocus(const std::shared_ptr<ResData>& data)
         return;
     }
 
+    int displayId = 0;
+    if (data->payload.contains("displayId") && data->payload["displayId"].is_string()) {
+        displayId = ConvertToInteger(data, "displayId");
+    }
+
     int pid = ConvertToInteger(data, "pid");
     int uid = ConvertToInteger(data, "uid");
-    RME::FrameMsgIntf::GetInstance().ReportWindowFocus(pid, uid, data->value);
+    RME::FrameMsgIntf::GetInstance().ReportWindowFocus(pid, uid, data->value, displayId);
 }
 
 void FrameAwarePlugin::HandleReportRender(const std::shared_ptr<ResData>& data)
