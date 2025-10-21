@@ -40,6 +40,8 @@ ohos_shared_library("ressched_common_utils") {
     "../common/src/res_sched_string_util.cpp",
     "../common/src/res_sched_system_util.cpp",
     "../common/src/res_sched_time_util.cpp",
+    "../common/src/res_sched_signature_validator.cpp",
+    "../common/src/bundle_mgr_helper.cpp",
   ]
 
   cflags_cc = [ "-fstack-protector-strong" ]
@@ -59,6 +61,9 @@ ohos_shared_library("ressched_common_utils") {
     "json:nlohmann_json_static",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
+    "os_account:os_account_innerkits",
+    "bundle_framework:appexecfwk_core",
+    "bundle_framework:appexecfwk_base",
   ]
 
   public_external_deps = [ "ffrt:libffrt" ]
