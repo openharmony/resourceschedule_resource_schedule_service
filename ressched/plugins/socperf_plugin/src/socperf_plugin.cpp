@@ -1228,7 +1228,9 @@ void SocPerfPlugin::HandleScreenOn()
 
 void SocPerfPlugin::HandleScreenOff()
 {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
+#endif
     if (screenStatus_ == SCREEN_OFF) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_ON, false, "");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_OFF, true, "");
@@ -1252,11 +1254,15 @@ bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& d
     if (screenStatus_ == SCREEN_ON) {
         HandleScreenOn();
     } else if (screenStatus_ == SCREEN_OFF) {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
         // post screen off task with 5000 milliseconds delay, to avoid frequent screen status change.
         std::function<void()> screenOffFunc = [this]() {
+#endif
             HandleScreenOff();
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
         };
         ffrt::submit(screenOffFunc, {}, {}, ffrt::task_attr().delay(SCREEN_OFF_TIME_DELAY));
+#endif
     }
     return true;
 }
