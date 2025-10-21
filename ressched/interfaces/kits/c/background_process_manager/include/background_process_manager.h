@@ -187,7 +187,7 @@ int OH_BackgroundProcessManager_IsPowerSaveMode(int pid);
  * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR} 31800002 - Parameter error.
  * @since 20
  */
-int OH_BackgroundProcessManager_GetPowerSaveMode(int pid);
+int OH_BackgroundProcessManager_GetPowerSaveMode(int pid, BackgroundProcessManager_PowerSaveMode* powerSaveMode);
 #ifdef __cplusplus
 };
 #endif

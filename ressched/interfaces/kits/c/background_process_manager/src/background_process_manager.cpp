@@ -147,8 +147,12 @@ int OH_BackgroundProcessManager_IsPowerSaveMode(int pid)
  * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR} 31800002 - Parameter error.
  * @since 20
  */
-int OH_BackgroundProcessManager_GetPowerSaveMode(int pid)
+int OH_BackgroundProcessManager_GetPowerSaveMode(int pid,
+    BackgroundProcessManager_PowerSaveMode* powerSaveMode)
 {
+    if (powerSaveMode == nullptr) {
+        return ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR;
+    }
     typedef int (*IsPowerSaveMode)(const int64_t, bool&);
     auto handle = dlopen(RES_APP_NAP_CLIENT_SO, RTLD_NOW);
     if (!handle) {
@@ -164,12 +168,13 @@ int OH_BackgroundProcessManager_GetPowerSaveMode(int pid)
     bool result = false;
     int ret = func(pid, result);
     dlclose(handle);
-    if (ret == 0) {
-        if (result) {
-            return DEFAULT_MODE;
-        } else {
-            return EFFICIENCY_MODE;
-        }
+    if (ret != 0) {
+        return ret;
+    }
+    if (result) {
+        *powerSaveMode = DEFAULT_MODE;
+    } else {
+        *powerSaveMode = EFFICIENCY_MODE;
     }
     return ret;
 }

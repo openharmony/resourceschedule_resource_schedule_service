@@ -245,11 +245,10 @@ napi_value GetPowerSaveMode(napi_env env, napi_callback_info info)
 
     int32_t pid = -1;
     napi_get_value_int32(env, argv[PID_INDEX], &pid);
-
-    int retCode = OH_BackgroundProcessManager_GetPowerSaveMode(pid);
+    BackgroundProcessManager_PowerSaveMode processMode;
+    int retCode = OH_BackgroundProcessManager_GetPowerSaveMode(pid, &processMode);
     HandleErrorCode(env, retCode);
-    if (retCode != BackgroundProcessManager_PowerSaveMode::EFFICIENCY_MODE &&
-        retCode != BackgroundProcessManager_PowerSaveMode::DEFAULT_MODE) {
+    if (retCode != IS_POWER_SAVE_NOK) {
         napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS, &ret);
         return ret;
     }
@@ -257,7 +256,7 @@ napi_value GetPowerSaveMode(napi_env env, napi_callback_info info)
     napi_value promise = nullptr;
     napi_deferred deferred = nullptr;
     napi_create_promise(env, &deferred, &promise);
-    napi_create_int32(env, retCode, &ret);
+    napi_create_int32(env, static_cast<int32_t>(processMode), &ret);
     napi_resolve_deferred(env, deferred, ret);
     return promise;
 }
