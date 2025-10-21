@@ -110,6 +110,7 @@ int32_t SuspendManagerBaseObserver::RegisterSuspendObserver(const sptr<ISuspendS
         UnregisterSuspendObserverInner(observer);
         return ret;
     }
+    std::lock_guard<std::mutex> lock(suspendObserverLock_);
     SUSPEND_MSG_LOGI("BaseObserver register succ, size:%{public}u.", (uint32_t)suspendObservers_.size());
     return ERR_OK;
 }
@@ -128,6 +129,7 @@ int32_t SuspendManagerBaseObserver::UnregisterSuspendObserver(const sptr<ISuspen
         RegisterSuspendObserverInner(observer);
         return ret;
     }
+    std::lock_guard<std::mutex> lock(suspendObserverLock_);
     SUSPEND_MSG_LOGI("BaseObserver unregister succ, size:%{public}u.", (uint32_t)suspendObservers_.size());
     return ERR_OK;
 }
