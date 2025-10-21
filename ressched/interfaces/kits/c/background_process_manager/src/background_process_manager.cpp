@@ -136,6 +136,44 @@ int OH_BackgroundProcessManager_IsPowerSaveMode(int pid)
     }
     return ret;
 }
+
+/**
+ * @brief Get the power saving mode of the process.
+ *
+ * @param pid Indicates the process to be checked is the pid of the power saving mode.
+ * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS} 0 - Success.
+ * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_PERMISSION_DENIED} 201 - Permission denied.
+ * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_CAPABILITY_NOT_SUPPORTED} 801 - Capability not supported.
+ * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR} 31800002 - Parameter error.
+ * @since 20
+ */
+ int OH_BackgroundProcessManager_GetPowerSaveMode(int pid)
+ {
+     typedef int (*IsPowerSaveMode)(const int64_t, bool&);
+     auto handle = dlopen(RES_APP_NAP_CLIENT_SO, RTLD_NOW);
+     if (!handle) {
+         RESSCHED_LOGE("Dlopen failed.");
+         return ERR_BACKGROUND_PROCESS_MANAGER_CAPABILITY_NOT_SUPPORTED;
+     }
+
+     IsPowerSaveMode func = reinterpret_cast<IsPowerSaveMode>(dlsym(handle, "IsPowerSaveMode"));
+     if (!func) {
+         RESSCHED_LOGE("Dlsym IsPowerSaveMode failed.");
+         dlclose(handle);
+         return ERR_BACKGROUND_PROCESS_MANAGER_CAPABILITY_NOT_SUPPORTED;
+     }
+     bool result = false;
+     int ret = func(pid, result);
+     dlclose(handle);
+     if (ret == 0) {
+        if (result) {
+            return DEFAULT_MODE;
+        } else {
+            return EFFICIENCY_MODE;
+        }
+     }
+     return ret;
+ }
 #ifdef __cplusplus
 }
 #endif

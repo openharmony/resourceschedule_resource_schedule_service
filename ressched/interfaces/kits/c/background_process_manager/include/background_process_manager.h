@@ -176,6 +176,18 @@ int OH_BackgroundProcessManager_SetPowerSaveMode(int pid, BackgroundProcessManag
  * @since 20
  */
 int OH_BackgroundProcessManager_IsPowerSaveMode(int pid);
+
+/**
+ * @brief Get the power saving mode of the process.
+ *
+ * @param pid Indicates the process to be checked is the pid of the power saving mode.
+ * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS} 0 - Success.
+ * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_PERMISSION_DENIED} 201 - Permission denied.
+ * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_CAPABILITY_NOT_SUPPORTED} 801 - Capability not supported.
+ * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR} 31800002 - Parameter error.
+ * @since 20
+ */
+int OH_BackgroundProcessManager_GetPowerSaveMode(int pid);
 #ifdef __cplusplus
 };
 #endif

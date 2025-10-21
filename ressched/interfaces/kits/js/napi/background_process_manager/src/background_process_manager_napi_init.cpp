@@ -220,6 +220,48 @@ napi_value IsPowerSaveMode(napi_env env, napi_callback_info info)
     return promise;
 }
 
+napi_value GetPowerSaveMode(napi_env env, napi_callback_info info)
+{
+    napi_value ret;
+    size_t argc = IS_POWER_SAVE_MODE_PARAM_NUM;
+    napi_value argv[IS_POWER_SAVE_MODE_PARAM_NUM] = { nullptr };
+    napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
+    if (argc != IS_POWER_SAVE_MODE_PARAM_NUM) {
+        RESSCHED_LOGE("param num error");
+        napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR, &ret);
+        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
+        return ret;
+    }
+
+    napi_valuetype pidType;
+    napi_typeof(env, argv[PID_INDEX], &pidType);
+
+    if (pidType != napi_number) {
+        RESSCHED_LOGE("param type error");
+        napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR, &ret);
+        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
+        return ret;
+    }
+
+    int32_t pid = -1;
+    napi_get_value_int32(env, argv[PID_INDEX], &pid);
+
+    int retCode = OH_BackgroundProcessManager_GetPowerSaveMode(pid);
+    HandleErrorCode(env, retCode);
+    if (retCode != BackgroundProcessManager_PowerSaveMode::EFFICIENCY_MODE &&
+        retCode != BackgroundProcessManager_PowerSaveMode::DEFAULT_MODE) {
+        napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS, &ret);
+        return ret;
+    }
+
+    napi_value promise = nullptr;
+    napi_deferred deferred = nullptr;
+    napi_create_promise(env, &deferred, &promise);
+    napi_create_int32(env, retCode, &ret);
+    napi_resolve_deferred(env, deferred, ret);
+    return promise;
+}
+
 static void SetPropertyName(napi_env env, napi_value dstObj, int32_t objName, const char * propName)
 {
     napi_value prop = nullptr;
@@ -260,6 +302,7 @@ static napi_value InitBackgroundProcessManagerAPi(napi_env env, napi_value expor
         DECLARE_NAPI_FUNCTION("resetProcessPriority", ResetProcessPriority),
         DECLARE_NAPI_FUNCTION("setPowerSaveMode", SetPowerSaveMode),
         DECLARE_NAPI_FUNCTION("isPowerSaveMode", IsPowerSaveMode),
+        DECLARE_NAPI_FUNCTION("isPowerSaveMode", GetPowerSaveMode),
     };
 
     NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(*desc), desc));
