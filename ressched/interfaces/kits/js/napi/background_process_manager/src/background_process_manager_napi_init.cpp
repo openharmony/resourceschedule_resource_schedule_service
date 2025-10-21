@@ -302,7 +302,7 @@ static napi_value InitBackgroundProcessManagerAPi(napi_env env, napi_value expor
         DECLARE_NAPI_FUNCTION("resetProcessPriority", ResetProcessPriority),
         DECLARE_NAPI_FUNCTION("setPowerSaveMode", SetPowerSaveMode),
         DECLARE_NAPI_FUNCTION("isPowerSaveMode", IsPowerSaveMode),
-        DECLARE_NAPI_FUNCTION("isPowerSaveMode", GetPowerSaveMode),
+        DECLARE_NAPI_FUNCTION("getPowerSaveMode", GetPowerSaveMode),
     };
 
     NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(*desc), desc));
