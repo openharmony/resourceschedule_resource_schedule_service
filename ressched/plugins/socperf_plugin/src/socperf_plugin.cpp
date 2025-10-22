@@ -536,6 +536,8 @@ void SocPerfPlugin::AddOtherEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleRssCloudConfigUpdate(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE,
         [this](const std::shared_ptr<ResData>& data) { ReportAbilityStatus(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_DISPLAY_POWER_WAKE_UP,
+        [this](const std::shared_ptr<ResData>& data) { HandleDisplayPowerWakeUp(data); }));
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
@@ -585,6 +587,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_FILE_COPY_STATUS,
 #endif
         RES_TYPE_WEB_SLIDE_SCROLL,
+        RES_TYPE_DISPLAY_POWER_WAKE_UP,
     };
     InitOtherResTypes();
 }
@@ -1256,8 +1259,8 @@ bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& d
     screenStatus_ = data->value;
     SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleScreenStatusAnalysis: %{public}lld", (long long)screenStatus_);
     if (screenStatus_ == SCREEN_ON) {
-        HandleScreenOn();
-    } else if (screenStatus_ == SCREEN_OFF) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleScreenStatusAnalysis,Old path: Trigger HandleScreenOn when SCREEN_ON");
+    } else if (screenStatus_ == SCREEN_OFF) { 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
         // post screen off task with 5000 milliseconds delay, to avoid frequent screen status change.
         std::function<void()> screenOffFunc = [this]() {
@@ -1271,6 +1274,16 @@ bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& d
     return true;
 }
 
+void SocPerfPlugin::HandleDisplayPowerWakeUp(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return;
+    }
+    std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp")
+    HandleScreenOn();
+    return;
+}
 void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>& data)
 {
     if ((data->value != DeviceModeStatus::MODE_ENTER) && (data->value != DeviceModeStatus::MODE_QUIT)) {

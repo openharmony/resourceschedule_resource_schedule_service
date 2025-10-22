@@ -230,6 +230,7 @@ private:
     void HandleWebSildeScroll(const std::shared_ptr<ResData>& data);
     bool HandleRssCloudConfigUpdate(const std::shared_ptr<ResData>& data);
     bool ReportAbilityStatus(const std::shared_ptr<ResData>& data);
+    void HandleDisplayPowerWakeUp(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

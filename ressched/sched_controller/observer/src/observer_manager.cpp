@@ -87,7 +87,7 @@ void ObserverManager::InitObserverCbMap()
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, []() { ObserverManager::GetInstance()->InitTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, []() { ObserverManager::GetInstance()->InitAudioObserver(); }},
         { DISPLAY_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitDisplayModeObserver(); }},
-        { DISPLAY_MANAGER_SERVICE_SA_ID, []() { ObserverManager::GetInstance()->InitDisplayOrientationObserver(); }},
+        { DISPLAY_MANAGER_SERVICE_SA_ID, []() { ObserverManager::GetInstance()->InitDisplayManagerServiceSAObserver(); }},
         { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->InitConnectionSubscriber(); }},
         { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, []() { ObserverManager::GetInstance()->InitDataShareObserver(); }},
 #ifdef RESOURCE_REQUEST_REQUEST
@@ -119,7 +119,7 @@ void ObserverManager::InitRemoveObserverCbMap()
             ObserverManager::GetInstance()->DisableTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableAudioObserver(); }},
         { DISPLAY_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableDisplayModeObserver(); }},
-        { DISPLAY_MANAGER_SERVICE_SA_ID, []() { ObserverManager::GetInstance()->DisableDisplayOrientationObserver(); }},
+        { DISPLAY_MANAGER_SERVICE_SA_ID, []() { ObserverManager::GetInstance()->DisableDisplayManagerServiceSAObserver(); }},
         { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableConnectionSubscriber(); }},
         { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, []() {
             ObserverManager::GetInstance()->DisableDataShareObserver(); }},
@@ -996,6 +996,52 @@ void ObserverManager::UnsubscribeAppState()
 void ObserverManager::DisableAccountObserver()
 {
     RESSCHED_LOGI("account sa removed");
+}
+
+void ObserverManager::InitDisplayManagerServiceSAObserver()
+{
+    ObserverManager::GetInstance()->InitDisplayOrientationObserver();
+    ObserverManager::GetInstance()->InitDisplayPowerEvertObserver();
+}
+
+void ObserverManager::DisbaleDisplayManagerServiceSAObserver()
+{
+    ObserverManager::GetInstance()->DisableDisplayOrientationObserver();
+    ObserverManager::GetInstance()->DisableDisplayPowerEvertObserver();
+}
+
+void ObserverManager::InitDisplayPowerEvertObserver()
+{
+    if(!displayPowerEventListener_) {
+        displayPowerEventListener_ = new (std::nothrow) DisplayPowerEventObserver();
+        if (displayPowerEventListener_ == nullptr) {
+            RESSCHED_LOGD("Failed to create DisplayPowerEventObserver due to no memory");
+            return;
+        }
+    }
+    auto res = OHOS::Rosen::DisplayManager::GetInstance().RegisterDisplayModeListener(displayPowerEventListener_);
+    if (res == OHOS::Rosen::DMError::DM_OK) {
+        RESSCHED_LOGI("ObserverManager init display power event listener successfully");
+    } else {
+        RESSCHED_LOGW("ObserverManager init display power event listener failed");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                "COMPONENT_NAME", "MAIN",
+                "ERR_TYPE", "register failure",
+                "ERR_MSG", "Register display power event listener failed!");
+}
+
+void ObserverManager::DisableDisplayPowerEvertObserver()
+{
+    if (!displayPowerEventListener_) {
+        return;
+    }
+    auto res = OHOS::Rosen::DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
+    if (res == OHOS::Rosen::DMError::DM_OK) {
+        RESSCHED_LOGI("%{public}s success.", __func__);
+    } else {
+        RESSCHED_LOGE("%{public}s failed. err:%{public}d", __func__, res);
+    }
+    displayPowerEventListener_ = nullptr;
 }
 
 extern "C" void ObserverManagerInit()
