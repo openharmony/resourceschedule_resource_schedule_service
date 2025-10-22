@@ -1001,25 +1001,25 @@ void ObserverManager::DisableAccountObserver()
 void ObserverManager::InitDisplayManagerServiceSAObserver()
 {
     ObserverManager::GetInstance()->InitDisplayOrientationObserver();
-    ObserverManager::GetInstance()->InitDisplayPowerEvertObserver();
+    ObserverManager::GetInstance()->InitDisplayPowerEventObserver();
 }
 
 void ObserverManager::DisbaleDisplayManagerServiceSAObserver()
 {
     ObserverManager::GetInstance()->DisableDisplayOrientationObserver();
-    ObserverManager::GetInstance()->DisableDisplayPowerEvertObserver();
+    ObserverManager::GetInstance()->DisableDisplayPowerEventObserver();
 }
 
-void ObserverManager::InitDisplayPowerEvertObserver()
+void ObserverManager::InitDisplayPowerEventObserver()
 {
-    if(!displayPowerEventListener_) {
+    if (!displayPowerEventListener_) {
         displayPowerEventListener_ = new (std::nothrow) DisplayPowerEventObserver();
         if (displayPowerEventListener_ == nullptr) {
             RESSCHED_LOGD("Failed to create DisplayPowerEventObserver due to no memory");
             return;
         }
     }
-    auto res = OHOS::Rosen::DisplayManager::GetInstance().RegisterDisplayModeListener(displayPowerEventListener_);
+    auto res = OHOS::Rosen::DisplayManager::GetInstance().RegisterDisplayPowerEventListener(displayPowerEventListener_);
     if (res == OHOS::Rosen::DMError::DM_OK) {
         RESSCHED_LOGI("ObserverManager init display power event listener successfully");
     } else {
@@ -1030,7 +1030,7 @@ void ObserverManager::InitDisplayPowerEvertObserver()
                 "ERR_MSG", "Register display power event listener failed!");
 }
 
-void ObserverManager::DisableDisplayPowerEvertObserver()
+void ObserverManager::DisableDisplayPowerEventObserver()
 {
     if (!displayPowerEventListener_) {
         return;
