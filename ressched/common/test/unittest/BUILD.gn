@@ -27,8 +27,7 @@ group("unittest") {
   ]
 }
 
-module_output_path =
-    "resource_schedule_service/resource_schedule_service/ressched/common"
+module_output_path = "resource_schedule_service/resource_schedule_service/ressched/common"
 
 ohos_unittest("resschedeventreporter_test") {
   module_out_path = module_output_path
@@ -225,6 +224,73 @@ ohos_unittest("lrucache_test") {
   deps = [ "${ressched_common}:ressched_common_utils" ]
 
   external_deps = []
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  branch_protector_ret = "pac_ret"
+}
+
+ohos_unittest("res_sched_bundle_mgr_helper_test") {
+  module_out_path = module_output_path
+  cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
+  include_dirs = [
+    "./include",
+    "${ressched_common}/include",
+  ]
+
+  sources = [ "src/bundle_mgr_helper_test.cpp" ]
+
+  deps = [ "${ressched_common}:ressched_common_utils" ]
+
+  external_deps = [
+    "bundle_framework:appexecfwk_core",
+    "bundle_framework:appexecfwk_base",
+    "ipc:ipc_core",
+    "c_utils:utils",
+  ]
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  branch_protector_ret = "pac_ret"
+}
+
+ohos_unittest("resschedsignaturevalidator_test") {
+  module_out_path = module_output_path
+  cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
+  ]
+  cflags_cc = [ "-DRES_SCHED_UNIT_TEST" ]
+  include_dirs = [
+    "./include",
+    "${ressched_common}/include",
+  ]
+
+  sources = [
+    "${ressched_common}/src/res_sched_signature_validator.cpp",
+    "${ressched_common}/src/bundle_mgr_helper.cpp",
+    "src/res_sched_signature_validator_test.cpp",
+  ]
+
+  deps = [ ]
+
+  external_deps = [
+    "hilog:libhilog",
+    "json:nlohmann_json_static",
+    "os_account:os_account_innerkits",
+    "bundle_framework:appexecfwk_core",
+    "bundle_framework:appexecfwk_base",
+    "ffrt:libffrt",
+  ]
 
   sanitize = {
     cfi = true
