@@ -421,6 +421,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_PID = 507,
     // query topn bundle usage info
     SYNC_RES_TYPE_QUERY_TOPN_BUNDLE_USAGE_INFO = 508,
+    // report display power wake up, earlier than the screen-on event
+    RES_TYPE_DISPLAY_POWER_WAKE_UP = 509,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
