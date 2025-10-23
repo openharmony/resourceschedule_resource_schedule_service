@@ -50,7 +50,8 @@ enum class AdjustSource {
     ADJS_APP_PRELOAD,
     ADJS_CALCULATE_AGAIN,
     ADJS_KILL_KEEP,
-    ADJS_END
+    ADJS_END,
+    ADJS_UPLIMIT = 255
 };
 
 class CgroupAdjuster {
@@ -61,7 +62,7 @@ public:
     void AdjustForkProcessGroup(Application &app, ProcessRecord &pr);
     void AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source);
     void AdjustAllProcessGroup(Application &app, AdjustSource source);
-    void ApplyProcessGroup(Application &app, ProcessRecord &pr);
+    void ApplyProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source = AdjustSource::ADJS_UPLIMIT);
 
 private:
     CgroupAdjuster() = default;
