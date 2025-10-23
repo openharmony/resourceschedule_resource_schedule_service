@@ -384,6 +384,7 @@ void SchedController::DumpProcessEventState(std::string& result)
             result.append("uid: ").append(ToString(uid))
                 .append(", pid: ").append(ToString(pid))
                 .append(", processState: ").append(ToString(process->processState_))
+                .append(", extensionType: ").append(ToString(process->extensionType_))
                 .append(", napState: ").append(ToString(process->isNapState_))
                 .append(", processDrawingState: ").append(ToString(process->processDrawingState_))
                 .append(", mmiState: ").append(ToString(process->mmiStatus_))
@@ -395,7 +396,10 @@ void SchedController::DumpProcessEventState(std::string& result)
                 .append(", isActive: ").append(ToString(process->isActive_))
                 .append(", linkedWindowId: ").append(process->linkedWindow_ == nullptr ? "" :
                     ToString(process->linkedWindow_->windowId_))
-                .append(", audioPlayingState: ").append(ToString(process->audioPlayingState_));
+                .append(", audioCapTureState: ").append(ToString(process->audioCapTureState_))
+                .append(", audioPlayingState: ").append(ToString(process->audioPlayingState_))
+                .append(", policyDescription: ").append(ToString(process->policyDescription_))
+                .append(", curSchedGroup: ").append(ToString(process->curSchedGroup_));
             result.append("\n");
         }
     }
