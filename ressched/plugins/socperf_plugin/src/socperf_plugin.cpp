@@ -1259,7 +1259,8 @@ bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& d
     screenStatus_ = data->value;
     SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleScreenStatusAnalysis: %{public}lld", (long long)screenStatus_);
     if (screenStatus_ == SCREEN_ON) {
-        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleScreenStatusAnalysis,Old path: Trigger HandleScreenOn when SCREEN_ON");
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleScreenStatusAnalysis,Old path: "
+                      "Trigger HandleScreenOn when SCREEN_ON");
     } else if (screenStatus_ == SCREEN_OFF) { 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
         // post screen off task with 5000 milliseconds delay, to avoid frequent screen status change.

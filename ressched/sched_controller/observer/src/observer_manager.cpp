@@ -87,7 +87,8 @@ void ObserverManager::InitObserverCbMap()
         { TELEPHONY_STATE_REGISTRY_SYS_ABILITY_ID, []() { ObserverManager::GetInstance()->InitTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, []() { ObserverManager::GetInstance()->InitAudioObserver(); }},
         { DISPLAY_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitDisplayModeObserver(); }},
-        { DISPLAY_MANAGER_SERVICE_SA_ID, []() { ObserverManager::GetInstance()->InitDisplayManagerServiceSAObserver(); }},
+        { DISPLAY_MANAGER_SERVICE_SA_ID, []() { 
+            ObserverManager::GetInstance()->InitDisplayManagerServiceSAObserver(); }},
         { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->InitConnectionSubscriber(); }},
         { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, []() { ObserverManager::GetInstance()->InitDataShareObserver(); }},
 #ifdef RESOURCE_REQUEST_REQUEST
@@ -119,7 +120,8 @@ void ObserverManager::InitRemoveObserverCbMap()
             ObserverManager::GetInstance()->DisableTelephonyObserver(); }},
         { AUDIO_POLICY_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableAudioObserver(); }},
         { DISPLAY_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableDisplayModeObserver(); }},
-        { DISPLAY_MANAGER_SERVICE_SA_ID, []() { ObserverManager::GetInstance()->DisableDisplayManagerServiceSAObserver(); }},
+        { DISPLAY_MANAGER_SERVICE_SA_ID, []() { 
+            ObserverManager::GetInstance()->DisableDisplayManagerServiceSAObserver(); }},
         { ABILITY_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableConnectionSubscriber(); }},
         { DISTRIBUTED_KV_DATA_SERVICE_ABILITY_ID, []() {
             ObserverManager::GetInstance()->DisableDataShareObserver(); }},
@@ -1024,10 +1026,10 @@ void ObserverManager::InitDisplayPowerEventObserver()
         RESSCHED_LOGI("ObserverManager init display power event listener successfully");
     } else {
         RESSCHED_LOGW("ObserverManager init display power event listener failed");
-        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                "COMPONENT_NAME", "MAIN",
-                "ERR_TYPE", "register failure",
-                "ERR_MSG", "Register display power event listener failed!");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", 
+                        HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN","ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register display power event listener failed!");
 }
 
 void ObserverManager::DisableDisplayPowerEventObserver()
