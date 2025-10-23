@@ -1038,7 +1038,7 @@ void ObserverManager::DisableDisplayPowerEventObserver()
     if (!displayPowerEventListener_) {
         return;
     }
-    auto res = OHRosen::DisplayManager::GetInstance().
+    auto res = OHOS::Rosen::DisplayManager::GetInstance().
         UnregisterDisplayPowerEventListener(displayPowerEventListener_);
     if (res == OHOS::Rosen::DMError::DM_OK) {
         RESSCHED_LOGI("%{public}s success.", __func__);
