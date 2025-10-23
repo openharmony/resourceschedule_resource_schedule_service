@@ -125,7 +125,7 @@ public:
 #endif
     void InitDisplayManagerServiceSAObserver();
     void DisableDisplayManagerServiceSAObserver();
-    void InitDisplayPowerEventOberver();
+    void InitDisplayPowerEventObserver();
     void DisableDisplayPowerEventObserver();
 
     pid_t pid_ = -1;

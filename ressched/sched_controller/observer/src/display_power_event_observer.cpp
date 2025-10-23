@@ -28,8 +28,8 @@ void DisplayPowerEventObserver::OnDisplayPowerEvent(Rosen::DisplayPowerEvent eve
             if (status == Rosen::EventStatus::BEGIN) {
                 RESSCHED_LOGI("OnDisplayPowerEvent WAKE_UP BEGIN");
                 nlohmann::json payload;
-                ResScheMgr::GetInstance().ReportData(ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP,
-                                                        0, payload);
+                ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP,
+                    0, payload);
             }
             break;
         default:
