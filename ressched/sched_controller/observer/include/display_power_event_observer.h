@@ -13,14 +13,14 @@
  * limitations under the License.
  */
  
-#ifdef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_INCLUDE_DISPLAY_POWER_EVENT_OBSERVER_H
+#ifndef RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_INCLUDE_DISPLAY_POWER_EVENT_OBSERVER_H
 #define RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_INCLUDE_DISPLAY_POWER_EVENT_OBSERVER_H
 #include "display_manager.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 
-class DisplayPowerEventObserver : public Rosen::IDisplayPowerEventListenser {
+class DisplayPowerEventObserver : public Rosen::IDisplayPowerEventListener {
 public:
     void OnDisplayPowerEvent(Rosen::DisplayPowerEvent event, Rosen::EventStatus status) override;
 };
