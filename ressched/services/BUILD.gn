@@ -137,7 +137,7 @@ ohos_shared_library("resschedsvc") {
     "resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
     "resschedservice/src/res_sched_service.cpp",
     "resschedservice/src/res_sched_service_ability.cpp",
-    "../sched_controller/observer/src/display_power_event_observer.cpp"
+    "../sched_controller/observer/src/display_power_event_observer.cpp",
   ]
 
   deps = [
@@ -297,6 +297,7 @@ ohos_static_library("resschedsvc_static") {
     "resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
     "resschedservice/src/res_sched_service.cpp",
     "resschedservice/src/res_sched_service_ability.cpp",
+    "../sched_controller/observer/src/display_power_event_observer.cpp",
   ]
 
   deps = [
