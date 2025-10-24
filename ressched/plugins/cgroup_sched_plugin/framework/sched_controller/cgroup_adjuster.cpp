@@ -100,10 +100,10 @@ void CgroupAdjuster::AdjustForkProcessGroup(Application &app, ProcessRecord &pr)
 
 void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
 {
-    CGS_LOGI("%{public}s for %{public}d, source : %{public}d", __func__, pr.GetPid(), source);
+    CGS_LOGD("%{public}s for %{public}d, source : %{public}d", __func__, pr.GetPid(), source);
     ComputeProcessGroup(app, pr, source);
     ResSchedUtils::GetInstance().ReportArbitrationResult(app, pr, source);
-    ApplyProcessGroup(app, pr);
+    ApplyProcessGroup(app, pr, source);
 
     if (!app.IsHostProcess(pr.GetPid())) {
         return;
@@ -129,7 +129,7 @@ void CgroupAdjuster::AdjustProcessGroup(Application &app, ProcessRecord &pr, Adj
                 ResSchedUtils::GetInstance().ReportArbitrationResult(app, *(procRecord.get()),
                     AdjustSource::ADJS_SELF_RENDER_THREAD);
             }
-            ApplyProcessGroup(app, *procRecord);
+            ApplyProcessGroup(app, *procRecord, source);
         }
     }
 }
@@ -196,7 +196,7 @@ void CgroupAdjuster::ComputeProcessGroup(Application &app, ProcessRecord &pr, Ad
     } // end ChronoScope
 }
 
-void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
+void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr, AdjustSource source)
 {
     ResSchedHiTraceChain traceChain(__func__);
     ChronoScope cs("ApplyProcessGroup");
@@ -211,13 +211,14 @@ void CgroupAdjuster::ApplyProcessGroup(Application &app, ProcessRecord &pr)
 
         pr.lastSchedGroup_ = pr.curSchedGroup_;
         pr.curSchedGroup_ = pr.setSchedGroup_;
-        CGS_LOGI("%{public}s Set %{public}d's cgroup from %{public}d to %{public}d.",
-            __func__, pr.GetPid(), pr.lastSchedGroup_, pr.curSchedGroup_);
+        CGS_LOGI("%{public}s:%{public}d's cgroup from %{public}d to %{public}d. Reason:%{public}d. Event:%{public}d",
+            __func__, pr.GetPid(), pr.lastSchedGroup_, pr.curSchedGroup_, pr.policyDescription_, source);
 
         std::string traceStr(__func__);
         traceStr.append(" for ").append(std::to_string(pid)).append(", group change from ")
             .append(std::to_string((int32_t)(pr.lastSchedGroup_))).append(" to ")
-            .append(std::to_string((int32_t)(pr.curSchedGroup_)));
+            .append(std::to_string((int32_t)(pr.curSchedGroup_))).append(" Reason ")
+            .append(std::to_string(pr.policyDescription_)).append(" Event ").append(std::to_string((int32_t)source));
         StartTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP, traceStr.c_str());
 
         nlohmann::json payload;

@@ -38,6 +38,7 @@ public:
     void HandleProcessStateChangedEx(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleProcessStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleAbilityStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleAbilityTerminated(int32_t uid, int32_t pid, int32_t recordId);
     void HandleExtensionStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleProcessCreated(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleProcessDied(uint32_t resType, int64_t value, const nlohmann::json& payload);

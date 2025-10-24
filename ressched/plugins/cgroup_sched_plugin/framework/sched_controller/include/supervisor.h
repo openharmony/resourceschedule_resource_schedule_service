@@ -113,6 +113,8 @@ public:
     SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
     SchedPolicy specialSchedGroup_ = SP_UPPER_LIMIT;
+    uint32_t policyDescription_ = 0;
+
     bool runningTransientTask_ = false;
     bool isActive_ {false};
     bool inSelfRenderCgroup_ = false;
@@ -184,11 +186,7 @@ public:
         return name_;
     }
 
-    int32_t state_ = -1;
     std::shared_ptr<ProcessRecord> focusedProcess_ = nullptr;
-    SchedPolicy lastSchedGroup_ = SP_UPPER_LIMIT;
-    SchedPolicy curSchedGroup_ = SP_UPPER_LIMIT;
-    SchedPolicy setSchedGroup_ = SP_UPPER_LIMIT;
     bool isCosmicCubeStateHide_ = false;
 
 private:
@@ -215,7 +213,6 @@ public:
     int32_t sceneBoardPid_ = -1;
     int32_t installsPid_ = -1;
     int32_t installsUid_ = -1;
-    std::shared_ptr<Application> focusedApp_ = nullptr;
 
     inline std::map<int32_t, std::shared_ptr<Application>> GetUidsMap() const
     {

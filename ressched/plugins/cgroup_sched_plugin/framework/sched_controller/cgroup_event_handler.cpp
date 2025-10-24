@@ -19,6 +19,7 @@
 #include "app_mgr_constants.h"
 #include "cgroup_adjuster.h"
 #include "cgroup_sched_log.h"
+#include "hitrace_meter.h"
 #include "hisysevent.h"
 #include "ressched_utils.h"
 #include "res_type.h"
@@ -114,13 +115,16 @@ void CgroupEventHandler::HandleApplicationStateChanged(uint32_t resType, int64_t
     }
 
     CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
+    std::string traceStr(__func__);
+    traceStr.append(":").append(std::to_string(pid)).append(",").append(std::to_string(state));
+    StartTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP, traceStr.c_str());
+    FinishTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP);
     ChronoScope cs("HandleApplicationStateChanged");
     if (state == (int32_t)(ApplicationState::APP_STATE_TERMINATED)) {
         return;
     }
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     app->SetName(bundleName);
-    app->state_ = state;
 }
 
 void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -138,6 +142,10 @@ void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t val
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}d", __func__, uid,
         pid, bundleName.c_str(), state);
+    std::string traceStr(__func__);
+    traceStr.append(":").append(std::to_string(pid)).append(",").append(std::to_string(state));
+    StartTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP, traceStr.c_str());
+    FinishTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP);
     ChronoScope cs("HandleProcessStateChanged");
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
@@ -167,7 +175,6 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     if (!supervisor_) {
         return;
     }
-
     int32_t uid = 0;
     int32_t pid = 0;
     std::string bundleName;
@@ -190,16 +197,13 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
         return;
     }
     ChronoScope cs("HandleAbilityStateChanged");
+    std::string traceStr(__func__);
+    traceStr.append(":").append(std::to_string(pid)).append(",").append(abilityName).append(",")
+        .append(std::to_string(abilityType)).append(",").append(std::to_string(abilityState));
+    StartTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP, traceStr.c_str());
+    FinishTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP);
     if (abilityState == (int32_t)(AbilityState::ABILITY_STATE_TERMINATED)) {
-        auto app = supervisor_->GetAppRecord(uid);
-        if (app) {
-            auto procRecord = app->GetProcessRecord(pid);
-            if (procRecord) {
-                procRecord->RemoveAbilityByRecordId(recordId);
-                CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-                    AdjustSource::ADJS_ABILITY_STATE);
-            }
-        }
+        HandleAbilityTerminated(uid, pid, recordId);
         return;
     }
     auto app = supervisor_->GetAppRecordNonNull(uid);
@@ -214,6 +218,19 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_ABILITY_STATE);
+}
+
+void CgroupEventHandler::HandleAbilityTerminated(int32_t uid, int32_t pid, int32_t recordId)
+{
+    auto app = supervisor_->GetAppRecord(uid);
+    if (app) {
+        auto procRecord = app->GetProcessRecord(pid);
+        if (procRecord) {
+            procRecord->RemoveAbilityByRecordId(recordId);
+            CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
+                AdjustSource::ADJS_ABILITY_STATE);
+        }
+    }
 }
 
 void CgroupEventHandler::HandleExtensionStateChanged(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -240,6 +257,11 @@ void CgroupEventHandler::HandleExtensionStateChanged(uint32_t resType, int64_t v
     
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d, %{public}d",
         __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), recordId, extensionState, abilityType);
+    std::string traceStr(__func__);
+    traceStr.append(":").append(std::to_string(pid)).append(",").append(abilityName).append(",")
+        .append(std::to_string(abilityType)).append(",").append(std::to_string(extensionState));
+    StartTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP, traceStr.c_str());
+    FinishTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP);
     ChronoScope cs("HandleExtensionStateChanged");
     if (extensionState == (int32_t)(ExtensionState::EXTENSION_STATE_TERMINATED)) {
         auto app = supervisor_->GetAppRecord(uid);
@@ -296,8 +318,12 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
         return;
     }
     CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d",
-        __func__, uid, pid, hostPid, processType, bundleName.c_str(),
-        extensionType);
+        __func__, uid, pid, hostPid, processType, bundleName.c_str(), extensionType);
+    std::string traceStr(__func__);
+    traceStr.append(":").append(std::to_string(pid)).append(",").append(std::to_string(processType))
+        .append(",").append(std::to_string(extensionType));
+    StartTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP, traceStr.c_str());
+    FinishTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP);
     ChronoScope cs("HandleProcessCreated");
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
@@ -338,6 +364,10 @@ void CgroupEventHandler::HandleProcessDied(uint32_t resType, int64_t value, cons
         return;
     }
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s", __func__, uid, pid, bundleName.c_str());
+    std::string traceStr(__func__);
+    traceStr.append(":").append(std::to_string(pid));
+    StartTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP, traceStr.c_str());
+    FinishTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP);
     std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
     if (!app) {
         CGS_LOGE("%{public}s : application %{public}s not exist!", __func__, bundleName.c_str());
@@ -470,7 +500,7 @@ void CgroupEventHandler::HandleContinuousTaskUpdate(uid_t uid, pid_t pid,
     procRecord->continuousTaskFlag_ = 0;
     procRecord->abilityIdAndContinuousTaskFlagMap_[abilityId] = typeIds;
     for (const auto& typeId : typeIds) {
-        CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, abilityId %{public}d,",
+        CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d, abilityId %{public}d,",
             __func__, uid, pid, typeId, abilityId);
     }
     for (const auto& ablityIdAndcontinuousTaskFlag : procRecord->abilityIdAndContinuousTaskFlagMap_) {
@@ -488,7 +518,7 @@ void CgroupEventHandler::HandleContinuousTaskCancel(uid_t uid, pid_t pid, int32_
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
         return;
     }
-    CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d", __func__, uid, pid, abilityId);
+    CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}d", __func__, uid, pid, abilityId);
     ChronoScope cs("HandleContinuousTaskCancel");
     auto app = supervisor_->GetAppRecordNonNull(uid);
     auto procRecord = app->GetProcessRecord(pid);
@@ -525,6 +555,11 @@ void CgroupEventHandler::HandleFocusStateChange(uint32_t resType, int64_t value,
         return;
     }
 
+    std::string traceStr(__func__);
+    traceStr.append(":").append(std::to_string(pid)).append(",").append(std::to_string(value));
+    StartTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP, traceStr.c_str());
+    FinishTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP);
+
     if (value == ResType::WindowFocusStatus::WINDOW_FOCUS) {
         HandleFocusedWindow(windowId, windowType, displayId, pid, uid);
     } else if (value == ResType::WindowFocusStatus::WINDOW_UNFOCUS) {
@@ -550,7 +585,6 @@ void CgroupEventHandler::HandleFocusedWindow(uint32_t windowId, uint32_t windowT
         win->displayId_ = displayId;
 
         app->focusedProcess_ = procRecord;
-        supervisor_->focusedApp_ = app;
         CgroupAdjuster::GetInstance().AdjustAllProcessGroup(*(app.get()), AdjustSource::ADJS_FOCUSED_WINDOW);
         ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), ResType::RES_TYPE_WINDOW_FOCUS,
             ResType::WindowFocusStatus::WINDOW_FOCUS);
@@ -819,7 +853,7 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
     }
 
     procRecord->audioPlayingState_ = static_cast<int32_t>(value);
-    CGS_LOGI("%{public}s :Appname:%{public}s, uid:%{public}d, pid:%{public}d, state:%{public}d",
+    CGS_LOGD("%{public}s :Appname:%{public}s, uid:%{public}d, pid:%{public}d, state:%{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
@@ -853,7 +887,7 @@ void CgroupEventHandler::HandleReportAudioCapTureState(uint32_t resType, int64_t
     }
  
     procRecord->audioCapTureState_ = static_cast<int32_t>(value);
-    CGS_LOGI("%{public}s :Appname:%{public}s, uid:%{public}d, pid:%{public}d, state:%{public}d",
+    CGS_LOGD("%{public}s :Appname:%{public}s, uid:%{public}d, pid:%{public}d, state:%{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->audioCapTureState_);
  
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
@@ -888,7 +922,7 @@ void CgroupEventHandler::HandleReportWebviewAudioState(uint32_t resType, int64_t
     }
 
     procRecord->audioPlayingState_ = static_cast<int32_t>(value);
-    CGS_LOGI("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+    CGS_LOGD("%{public}s : audio process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
@@ -919,7 +953,7 @@ void CgroupEventHandler::HandleReportRunningLockEvent(uint32_t resType, int64_t 
         type = static_cast<uint32_t>(atoi(payload["type"].get<std::string>().c_str()));
     }
     state = static_cast<int32_t>(value);
-    CGS_LOGI("report running lock event, uid:%{public}d, pid:%{public}d, lockType:%{public}d, state:%{public}d",
+    CGS_LOGD("report running lock event, uid:%{public}d, pid:%{public}d, lockType:%{public}d, state:%{public}d",
         uid, pid, type, state);
 #ifdef POWER_MANAGER_ENABLE
     if (type == static_cast<uint32_t>(PowerMgr::RunningLockType::RUNNINGLOCK_PROXIMITY_SCREEN_CONTROL)) {
@@ -1097,7 +1131,7 @@ void CgroupEventHandler::HandleReportAvCodecEvent(uint32_t resType, int64_t valu
         return;
     }
     state = static_cast<int32_t>(value);
-    CGS_LOGI("report av_codec event, uid:%{public}d, pid:%{public}d, instanceId:%{public}d, state:%{public}d",
+    CGS_LOGD("report av_codec event, uid:%{public}d, pid:%{public}d, instanceId:%{public}d, state:%{public}d",
         uid, pid, instanceId, state);
     std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
     std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
@@ -1125,7 +1159,7 @@ void CgroupEventHandler::HandleSceneBoardState(uint32_t resType, int64_t value, 
     }
     supervisor_->sceneBoardUid_ = sceneBoardUid;
     supervisor_->sceneBoardPid_ = sceneBoardPid;
-    CGS_LOGI("%{public}s:pid[%{public}d],uid[%{public}d]", __func__, sceneBoardPid, sceneBoardUid);
+    CGS_LOGD("%{public}s:pid[%{public}d],uid[%{public}d]", __func__, sceneBoardPid, sceneBoardUid);
 }
 
 void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -1141,7 +1175,7 @@ void CgroupEventHandler::HandleWebviewScreenCapture(uint32_t resType, int64_t va
     }
 
     procRecord->screenCaptureState_= (value == ResType::WebScreenCapture::WEB_SCREEN_CAPTURE_START);
-    CGS_LOGI("%{public}s : screen capture process: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+    CGS_LOGD("%{public}s : screen capture process: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->screenCaptureState_);
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
@@ -1214,7 +1248,7 @@ void CgroupEventHandler::HandleEmptyPayloadForCosmicCubeState(uint32_t resType, 
             int32_t pid = pidIt->first;
             std::shared_ptr <ProcessRecord> procRecord = pidIt->second;
             if (procRecord->processType_ == ProcRecordType::NORMAL) {
-                CGS_LOGI("%{public}s, uid:%{public}d pid:%{public}d recover", __func__, uid, pid);
+                CGS_LOGD("%{public}s, uid:%{public}d pid:%{public}d recover", __func__, uid, pid);
                 CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
                     AdjustSource::ADJS_PROCESS_STATE);
             }
@@ -1243,7 +1277,7 @@ void CgroupEventHandler::HandleReportCosmicCubeState(uint32_t resType, int64_t v
     }
     app->isCosmicCubeStateHide_ = (value == ResType::CosmicCubeState::APPLICATION_ABOUT_TO_HIDE);
     if (procRecord->processType_ == ProcRecordType::NORMAL) {
-        CGS_LOGI("%{public}s uid:%{public}d, pid:%{public}d, value:%{public}lld", __func__, uid, pid, (long long)value);
+        CGS_LOGD("%{public}s uid:%{public}d, pid:%{public}d, value:%{public}lld", __func__, uid, pid, (long long)value);
         CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
             AdjustSource::ADJS_PROCESS_STATE);
     }
@@ -1262,7 +1296,7 @@ void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t
     }
 
     procRecord->videoState_ = (value == ResType::WebVideoState::WEB_VIDEO_PLAYING_START);
-    CGS_LOGI("%{public}s : video process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+    CGS_LOGD("%{public}s : video process name: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->videoState_);
 
     ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType,
@@ -1271,6 +1305,10 @@ void CgroupEventHandler::HandleReportWebviewVideoState(uint32_t resType, int64_t
 
 void CgroupEventHandler::HandleOnAppStopped(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
     if (!payload.contains("uid") || !payload.at("uid").is_number_integer()) {
         CGS_LOGE("%{public}s : uid invalid!", __func__);
         return;
@@ -1282,11 +1320,11 @@ void CgroupEventHandler::HandleOnAppStopped(uint32_t resType, int64_t value, con
     }
     std::string bundleName = payload["bundleName"].get<std::string>();
 
-    if (!supervisor_) {
-        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
-        return;
-    }
-    CGS_LOGI("%{public}s : %{public}d, %{public}s", __func__, uid, bundleName.c_str());
+    std::string traceStr(__func__);
+    traceStr.append(":").append(std::to_string(uid)).append(",").append(bundleName);
+    StartTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP, traceStr.c_str());
+    FinishTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP);
+    CGS_LOGD("%{public}s : %{public}d, %{public}s", __func__, uid, bundleName.c_str());
     supervisor_->RemoveApplication(uid);
 }
 
