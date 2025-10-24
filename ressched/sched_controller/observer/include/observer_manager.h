@@ -48,6 +48,7 @@
 #ifdef CONFIG_BGTASK_MGR
 #include "background_task_observer.h"
 #endif
+#include "display_power_event_observer.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -122,6 +123,10 @@ public:
     void DisableAVSessionStateChangeListener();
     std::shared_ptr<AvSessionStateListener> avSessionStateListener_ = nullptr;
 #endif
+    void InitDisplayManagerServiceSAObserver();
+    void DisableDisplayManagerServiceSAObserver();
+    void InitDisplayPowerEventObserver();
+    void DisableDisplayPowerEventObserver();
 
     pid_t pid_ = -1;
     std::map<int32_t, std::function<void()>> handleObserverMap_;
@@ -158,6 +163,7 @@ public:
     bool isBgtaskSubscribed_ {false};
     std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_ = nullptr;
 #endif
+    sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_ = nullptr;
     bool isNeedReport_ = true;
     int32_t powerKeySubscribeId_ = -1;
 };
