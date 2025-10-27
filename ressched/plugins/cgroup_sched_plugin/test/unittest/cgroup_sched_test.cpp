@@ -622,6 +622,51 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_016, Function | Med
 }
 
 /**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_016_1
+ * @tc.desc: cgroup event handler Test
+ * @tc.type: FUNC
+ * @tc.require: issuesIB3UW9
+ * @tc.desc:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_016_1, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    auto temp = cgroupEventHandler->supervisor_;
+    cgroupEventHandler->supervisor_ = nullptr;
+    nlohmann::json payload = nlohmann::json::parse("{\"pid\": 1611}");
+    cgroupEventHandler->HandleReportAudioCapTureState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
+    cgroupEventHandler->supervisor_ = temp;
+ 
+    EXPECT_TRUE(cgroupEventHandler->supervisor_ != nullptr);
+    payload = nlohmann::json::parse("{\"pid\": 1611}");
+    cgroupEventHandler->HandleReportAudioCapTureState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
+ 
+    payload = nlohmann::json::parse("{\"uid\": \"1612\", \"pid\": 1611}");
+    cgroupEventHandler->HandleReportAudioCapTureState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
+ 
+    payload = nlohmann::json::parse("{\"pid\": 1611}");
+    cgroupEventHandler->HandleReportAudioCapTureState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
+ 
+    payload = nlohmann::json::parse("{\"uid\": 1612, \"pid\": \"1611\"}");
+    cgroupEventHandler->HandleReportAudioCapTureState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
+ 
+    payload = nlohmann::json::parse("{\"uid\": 0, \"pid\": 1611}");
+    cgroupEventHandler->HandleReportAudioCapTureState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
+ 
+    payload = nlohmann::json::parse("{\"uid\": 1612, \"pid\": 0}");
+    cgroupEventHandler->HandleReportAudioCapTureState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
+ 
+    payload = nlohmann::json::parse("{\"uid\": 1612, \"pid\": 1611}");
+    cgroupEventHandler->HandleReportAudioCapTureState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
+    auto app = cgroupEventHandler->supervisor_->GetAppRecordNonNull(1612);
+    EXPECT_TRUE(app != nullptr);
+    cgroupEventHandler->HandleReportAudioCapTureState(ResType::RES_TYPE_INNER_AUDIO_STATE, 0, payload);
+    auto proc = app->GetProcessRecordNonNull(1611);
+    EXPECT_TRUE(proc != nullptr);
+}
+
+/**
  * @tc.name: CGroupSchedTest_CgroupEventHandler_017
  * @tc.desc: cgroup event handler Test
  * @tc.type: FUNC
