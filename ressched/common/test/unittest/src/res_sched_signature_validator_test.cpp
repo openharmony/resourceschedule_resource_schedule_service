@@ -125,5 +125,16 @@ HWTEST_F(ResSchedSignatureValidatorTest, CheckSignature_001, Function | MediumTe
     EXPECT_EQ(instance.CheckSignature(UID_NOT_EXIST, BUNDLE_VALID), SignatureCheckResult::ERR_INTERNAL_ERROR);
 }
 
+HWTEST_F(ResSchedSignatureValidatorTest, AddSignatureConfig_001, Function | MediumTest | Level0)
+{
+    auto &instance = ResSchedSignatureValidator::GetInstance();
+    instance.signatureConfig_.clear();
+    InitDefaultConfig();
+    EXPECT_EQ(instance.signatureConfig_.size(), 1);
+    std::unordered_map<std::string, std::string> config = {{"test_add_bundle", "test"}};
+    ResSchedSignatureValidator::GetInstance().AddSignatureConfig(config);
+    EXPECT_EQ(instance.signatureConfig_.size(), 2);
+}
+
 }  // namespace ResourceSchedule
 }  // namespace OHOS
