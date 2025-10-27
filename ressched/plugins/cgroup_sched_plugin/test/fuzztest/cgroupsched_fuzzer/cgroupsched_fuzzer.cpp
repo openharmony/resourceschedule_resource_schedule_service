@@ -857,6 +857,30 @@ namespace ResourceSchedule {
         return true;
     }
 
+    bool HandleReportAudioCapTureStateFuzzTest(const uint8_t* data, size_t size)
+    {
+        if (data == nullptr) {
+            return false;
+        }
+ 
+        // initialize
+        G_DATA = data;
+        g_size = size;
+ 
+        // getdata
+        uint32_t resType = GetData<uint32_t>();
+        int64_t value = GetData<int64_t>();
+        nlohmann::json payload;
+        auto cgroupEventHandler =
+            std::make_shared<CgroupEventHandler>("CgroupEventHandler_fuzz");
+ 
+        cgroupEventHandler->HandleReportAudioCapTureState(resType, value, payload);
+        cgroupEventHandler->SetSupervisor(g_supervisor);
+        cgroupEventHandler->HandleReportAudioCapTureState(resType, value, payload);
+ 
+        return true;
+    }
+
     bool HandleWebviewScreenCaptureFuzzTest(const uint8_t* data, size_t size)
     {
         if (data == nullptr) {
@@ -1247,6 +1271,7 @@ namespace ResourceSchedule {
         OHOS::ResourceSchedule::HandleAbilityStateChangedFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleExtensionStateChangedFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportAudioStateFuzzTest(data, size);
+        OHOS::ResourceSchedule::HandleReportAudioCapTureStateFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleProcessCreatedFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleWebviewScreenCaptureFuzzTest(data, size);
         OHOS::ResourceSchedule::HandleReportWebviewVideoStateFuzzTest(data, size);
