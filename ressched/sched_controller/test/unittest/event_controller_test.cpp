@@ -196,21 +196,6 @@ HWTEST_F(EventControllerTest, connectivityChange_00106, testing::ext::TestSize.L
 }
 
 /**
- * @tc.name: connectivityChange_00107
- * @tc.desc: test the interface
- * @tc.type: FUNC
- * @tc.require: issueI8VZVN
- */
-HWTEST_F(EventControllerTest, connectivityChange_00107, testing::ext::TestSize.Level1)
-{
-    int32_t userId = 0;
-    std::string bundleName = "test";
-    int32_t result = EventController::GetInstance().GetUid(userId, bundleName);
-    EXPECT_EQ(result, -1);
-    EventController::GetInstance().Stop();
-}
-
-/**
  * @tc.name: connectivityChange_00108
  * @tc.desc: test the interface Init
  * @tc.type: FUNC
@@ -649,6 +634,21 @@ HWTEST_F(EventControllerTest, packageInstallStarted_001, testing::ext::TestSize.
     data.SetWant(want);
     EventController::GetInstance().OnReceiveEvent(data);
     EXPECT_NE(want.GetAction(), "");
+}
+
+/**
+ * @tc.name: connectivityChange_00107
+ * @tc.desc: test the interface
+ * @tc.type: FUNC
+ * @tc.require: issueI8VZVN
+ */
+ HWTEST_F(EventControllerTest, connectivityChange_00107, testing::ext::TestSize.Level1)
+ {
+    int32_t userId = 0;
+    std::string bundleName = "test";
+    int32_t result = EventController::GetInstance().GetUid(userId, bundleName);
+    EXPECT_EQ(result, -1);
+    EventController::GetInstance().Stop();
 }
 }
 }
