@@ -385,6 +385,10 @@ enum : uint32_t {
     RES_TYPE_CODEC_ENCODE_STATUS_CHANGED = 180,
     // report camera lens status [HFLS used]
     RES_TYPE_CAMERA_LENS_STATUS_CHANGED = 181,
+    // sa pull app identifier
+    RES_TYPE_SA_PULL_APP_IDENTIFIER = 182,
+    // swiperfling end exception flag
+    RES_TYPE_SWIPER_FLING_END_EXCEPTION_FLAG = 183,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
