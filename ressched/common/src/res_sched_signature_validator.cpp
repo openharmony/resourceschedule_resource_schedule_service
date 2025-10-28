@@ -34,19 +34,15 @@ ResSchedSignatureValidator &ResSchedSignatureValidator::GetInstance()
     return *instance;
 }
 
-SignatureCheckResult ResSchedSignatureValidator::CheckSignatureByBundleName(
-    const std::string &bundleName, const int32_t userId)
+SignatureCheckResult ResSchedSignatureValidator::CheckSignatureByBundleName(const std::string &bundleName)
 {
     if (bundleName.empty()) {
         RESSCHED_LOGE("%{public}s: bundleName is empty", __func__);
         return SignatureCheckResult::ERR_PARAM_INVALID;
     }
-    int32_t realUserId = userId;
-    if (userId == UNSPECIFIED_USERID) {
-        realUserId = GetCurrentUserId();
-    }
+    int32_t userId = GetCurrentUserId();
     auto bundleMgr = BundleMgrHelper::GetInstance();
-    auto uid = bundleMgr->GetUidByBundleName(bundleName, realUserId);
+    auto uid = bundleMgr->GetUidByBundleName(bundleName, userId);
     if (uid < 0) {
         RESSCHED_LOGE("%{public}s: convert bundleName %{public}s to uid error", __func__, bundleName.c_str());
         return SignatureCheckResult::ERR_INTERNAL_ERROR;
@@ -119,8 +115,7 @@ SignatureCheckResult ResSchedSignatureValidator::CheckSignature(const int32_t ui
         validCache_[bundleName] = {uid, isValid};
     }
     if (!isValid) {
-        RESSCHED_LOGE("%{public}s: %{public}s illegal signature %{public}s",
-            __func__, bundleName.c_str(), signatureInfo.appIdentifier.c_str());
+        RESSCHED_LOGE("%{public}s: %{public}s illegal signature", __func__, bundleName.c_str());
     }
     RESSCHED_LOGD("%{public}s: %{public}s immediately check is valid %{public}d", __func__, bundleName.c_str(),
         isValid);
@@ -148,6 +143,15 @@ void ResSchedSignatureValidator::SetSignatureConfig(std::unordered_map<std::stri
     std::lock_guard<ffrt::mutex> autoLock(mutex_);
     signatureConfig_ = std::move(config);
     validCache_.clear();
+}
+
+void ResSchedSignatureValidator::AddSignatureConfig(std::unordered_map<std::string, std::string> &config)
+{
+    std::lock_guard<ffrt::mutex> autoLock(mutex_);
+    for (const auto &[key, value] : config) {
+        signatureConfig_[key] = value;
+        validCache_.erase(key);
+    }
 }
 
 }  // namespace ResourceSchedule

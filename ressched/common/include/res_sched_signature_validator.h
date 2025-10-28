@@ -35,12 +35,9 @@ enum SignatureCheckResult : int8_t {
 
 class ResSchedSignatureValidator {
 public:
-    static constexpr int32_t UNSPECIFIED_USERID = -2;
-
     static ResSchedSignatureValidator &GetInstance();
 
-    SignatureCheckResult CheckSignatureByBundleName(
-        const std::string &bundleName, const int32_t userId = UNSPECIFIED_USERID);
+    SignatureCheckResult CheckSignatureByBundleName(const std::string &bundleName);
 
     SignatureCheckResult CheckSignatureByUid(const int32_t uid);
 
@@ -48,6 +45,7 @@ public:
 
     void SetSignatureConfig(std::unordered_map<std::string, std::string> &config);
 
+    void AddSignatureConfig(std::unordered_map<std::string, std::string> &config);
 private:
     ResSchedSignatureValidator() = default;
 
