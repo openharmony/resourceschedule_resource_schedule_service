@@ -124,7 +124,8 @@ void ResSchedExeMgr::InitPluginMgrPretreatment(const nlohmann::json& payload)
     }
 
     if (payload.contains(STR_MESSAGE_INDEX) && payload[STR_MESSAGE_INDEX].is_number() &&
-        payload.contains(STR_MESSAGE_NUMBER) && payload[STR_MESSAGE_NUMBER].is_number()) {
+        payload.contains(STR_MESSAGE_NUMBER) && payload[STR_MESSAGE_NUMBER].is_number() &&
+        payload.contains(STR_IPC_MESSAGE) && payload[STR_IPC_MESSAGE].is_string()) {
         ipcMessage_.insert(std::make_pair(payload[STR_MESSAGE_INDEX].get<int>(),
             payload[STR_IPC_MESSAGE].get<std::string>()));
         ipcNumber_++;
