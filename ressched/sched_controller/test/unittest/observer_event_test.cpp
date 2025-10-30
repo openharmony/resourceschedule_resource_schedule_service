@@ -38,6 +38,8 @@
 #include "app_startup_scene_rec.h"
 
 #include "res_sched_mgr.h"
+#include "display_power_event_observer.h"
+#include "display_manager.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -2107,6 +2109,160 @@ HWTEST_F(ObserverEventTest, audioObserverEvent_011, testing::ext::TestSize.Level
     audioObserver_->capturerStateMap_.clear();
     audioObserver_->capturerInfoPidToUidMap_.clear();
 #endif
+}
+
+/**
+ * @tc.name: DisplayPowerEventObserver_001
+ * @tc.desc: test display power event observer initialization
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ObserverEventTest, DisplayPowerEventObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->displayPowerEventListener_ = nullptr;
+        instance->InitDisplayPowerEventObserver();
+        EXPECT_NE(instance->displayPowerEventListener_, nullptr);
+        instance->DisableDisplayPowerEventObserver();
+        EXPECT_EQ(instance->displayPowerEventListener_, nullptr);
+    }
+}
+
+/**
+ * @tc.name: DisplayPowerEventObserver_002
+ * @tc.desc: test display power event observer memory management
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ObserverEventTest, DisplayPowerEventObserver_002, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        for (int i = 0; i < 5; ++i) {
+            instance->displayPowerEventListener_ = nullptr;
+            instance->InitDisplayPowerEventObserver();
+            EXPECT_NE(instance->displayPowerEventListener_, nullptr);
+            instance->DisableDisplayPowerEventObserver();
+            EXPECT_EQ(instance->displayPowerEventListener_, nullptr);
+        }
+        SUCCEED();
+    }
+}
+
+/**
+ * @tc.name: DisplayPowerEventObserver_003
+ * @tc.desc: test display power event observer initialization
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ObserverEventTest, DisplayPowerEventObserver_003, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->displayPowerEventListener_ = nullptr;
+        instance->InitDisplayManagerServiceSAObserver();
+        EXPECT_NE(instance->displayPowerEventListener_, nullptr);
+        instance->DisableDisplayManagerServiceSAObserver();
+        EXPECT_EQ(instance->displayPowerEventListener_, nullptr);
+    }
+}
+
+/**
+ * @tc.name: DisplayPowerEventObserver_004
+ * @tc.desc: test display power event observer double initialization
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ObserverEventTest, DisplayPowerEventObserver_004, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->displayPowerEventListener_ = nullptr;
+        instance->InitDisplayPowerEventObserver();
+        sptr<Rosen::IDisplayPowerEventListener> firstListener = instance->displayPowerEventListener_;
+        EXPECT_NE(firstListener, nullptr);
+
+        instance->InitDisplayPowerEventObserver();
+        sptr<Rosen::IDisplayPowerEventListener> secondListener = instance->displayPowerEventListener_;
+        EXPECT_EQ(firstListener, secondListener);
+
+        instance->DisableDisplayPowerEventObserver();
+        EXPECT_EQ(instance->displayPowerEventListener_, nullptr);
+    }
+}
+
+/**
+ * @tc.name: DisplayPowerEventObserver_005
+ * @tc.desc: test display power event observer disable when already null
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ObserverEventTest, DisplayPowerEventObserver_005, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->displayPowerEventListener_ = nullptr;
+        instance->DisableDisplayPowerEventObserver();
+        EXPECT_EQ(instance->displayPowerEventListener_, nullptr);
+        SUCCEED();
+    }
+}
+
+/**
+ * @tc.name: DisplayPowerEventObserver_006
+ * @tc.desc: test display power event callback
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ObserverEventTest, DisplayPowerEventObserver_006, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_unique<DisplayPowerEventObserver>();
+    EXPECT_NE(observer, nullptr);
+    
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::WAKE_UP, Rosen::EventStatus::BEGIN);
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::WAKE_UP, Rosen::EventStatus::END);
+
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::SLEEP, Rosen::EventStatus::BEGIN);
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::SLEEP, Rosen::EventStatus::END);
+
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::DISPLAY_ON, Rosen::EventStatus::BEGIN);
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::DISPLAY_ON, Rosen::EventStatus::END);
+
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::DISPLAY_OFF, Rosen::EventStatus::BEGIN);
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::DISPLAY_OFF, Rosen::EventStatus::END);
+
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::DISPLAY_OFF_CANCELED, Rosen::EventStatus::BEGIN);
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::DISPLAY_OFF_CANCELED, Rosen::EventStatus::END);
+
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::DISPLAY_START_DREAM, Rosen::EventStatus::BEGIN);
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::DISPLAY_START_DREAM, Rosen::EventStatus::END);
+
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::DISPLAY_END_DREAM, Rosen::EventStatus::BEGIN);
+    observer->OnDisplayPowerEvent(Rosen::DisplayPowerEvent::DISPLAY_END_DREAM, Rosen::EventStatus::END);
+    
+    SUCCEED();
+}
+
+/**
+ * @tc.name: DisplayPowerEventObserver_007
+ * @tc.desc: test display power event callback with invalid parameters
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ObserverEventTest, DisplayPowerEventObserver_007, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_unique<DisplayPowerEventObserver>();
+    EXPECT_NE(observer, nullptr);
+    observer->OnDisplayPowerEvent(
+        static_cast<Rosen::DisplayPowerEvent>(999),
+        Rosen::EventStatus::BEGIN
+    );
+    observer->OnDisplayPowerEvent(
+        Rosen::DisplayPowerEvent::WAKE_UP,
+        static_cast<Rosen::EventStatus>(999)
+    );
+    SUCCEED();
 }
 }
 }
