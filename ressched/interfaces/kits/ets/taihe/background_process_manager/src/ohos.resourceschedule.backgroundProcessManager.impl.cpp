@@ -25,6 +25,25 @@ using namespace OHOS::ResourceSchedule;
 using namespace ohos::resourceschedule::backgroundProcessManager;
 
 namespace {
+std::string GetErrCodeMsg(const int32_t errorCode)
+{
+    switch (errorCode) {
+        case BackgroundProcessManager_ErrorCode::ERR_BACKGROUND_PROCESS_MANAGER_PERMISSION_DENIED:
+            return "Permission denied.";
+        case BackgroundProcessManager_ErrorCode::ERR_BACKGROUND_PROCESS_MANAGER_INVALID_PARAM:
+            return "Parameter error. Possible causes: priority is out of range.";
+        case BackgroundProcessManager_ErrorCode::ERR_BACKGROUND_PROCESS_MANAGER_CAPABILITY_NOT_SUPPORTED:
+            return "Capability not supported.";
+        case BackgroundProcessManager_ErrorCode::ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR:
+            return "Parameter error. Possible causes: priority is out of range.";
+        case BackgroundProcessManager_ErrorCode::ERR_BACKGROUND_PROCESS_MANAGER_SETUP_ERROR:
+            return "This setting is overridden by setting in Task Manager.";
+        case BackgroundProcessManager_ErrorCode::ERR_BACKGROUND_PROCESS_MANAGER_SYSTEM_SCHEDULING:
+            return "The setting failed due to system scheduling reasons.";
+        default:
+            return "Inner error";
+    }
+}
 
 void SetProcessPrioritySync(int32_t pid, ProcessPriority priority)
 {
@@ -36,10 +55,34 @@ void ResetProcessPrioritySync(int32_t pid)
 {
     OH_BackgroundProcessManager_ResetProcessPriority(pid);
 }
+
+void SetPowerSaveModeSync(int32_t pid, PowerSaveMode powerSaveMode)
+{
+    BackgroundProcessManager_PowerSaveMode processMode =
+        static_cast<BackgroundProcessManager_PowerSaveMode>(powerSaveMode.get_value());
+    int ret = OH_BackgroundProcessManager_SetPowerSaveMode(pid, processMode);
+    if (ret != 0) {
+        ::taihe::set_business_error(ret, GetErrCodeMsg(ret));
+    }
+}
+
+bool IsPowerSaveModeSync(int32_t pid)
+{
+    constexpr int isPowerSaveOk = 1;
+    constexpr int isPowerSaveNOk = 0;
+    int ret = OH_BackgroundProcessManager_IsPowerSaveMode(pid);
+    if (ret != isPowerSaveNOk && ret != isPowerSaveOk) {
+        ::taihe::set_business_error(ret, GetErrCodeMsg(ret));
+        return false;
+    }
+    return static_cast<bool>(ret);
+}
 }   // namespace
 
 // Since these macros are auto-generate, lint will cause false positive.
 // NOLINTBEGIN
 TH_EXPORT_CPP_API_setProcessPrioritySync(SetProcessPrioritySync);
 TH_EXPORT_CPP_API_resetProcessPrioritySync(ResetProcessPrioritySync);
+TH_EXPORT_CPP_API_setPowerSaveModeSync(SetPowerSaveModeSync);
+TH_EXPORT_CPP_API_isPowerSaveModeSync(IsPowerSaveModeSync);
 // NOLINTEND
