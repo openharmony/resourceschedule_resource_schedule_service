@@ -1776,5 +1776,119 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_062, Function | MediumTes
     ret = SocPerfPlugin::GetInstance().ReportAbilityStatus(data);
     EXPECT_TRUE(ret);
 }
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_063
+ * @tc.desc: test socperfplugin HandleDisplayPowerWakeUp with null data
+ * @tc.type FUNC
+ * @tc.require:
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_063, Function | MediumTest | Level0)
+{
+    bool ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(nullptr);
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_064
+ * @tc.desc: test socperfplugin HandleDisplayPowerWakeUp with valid data (value=0)
+ * @tc.type FUNC
+ * @tc.require
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_064, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& validData = std::make_shared<ResData>(
+        ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, 0, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(validData);
+    EXPECT_TRUE(ret);
+
+    const std::shared_ptr<ResData>& invalidData1 = std::make_shared<ResData>(
+        ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, 1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(invalidData1);
+    EXPECT_FALSE(ret);
+    
+    const std::shared_ptr<ResData>& invalidData2 = std::make_shared<ResData>(
+        ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, -1, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(invalidData2);
+    EXPECT_FALSE(ret);
+
+    const std::shared_ptr<ResData>& invalidData3 = std::make_shared<ResData>(
+        ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, INT32_MIN, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(invalidData3);
+    EXPECT_FALSE(ret);
+
+    const std::shared_ptr<ResData>& invalidData4 = std::make_shared<ResData>(
+        ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, INT32_MAX, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(invalidData4);
+    EXPECT_FALSE(ret);
+}
+
+/**
+ * @tc.name: SocPerfPluginTest_API_TEST_065
+ * @tc.desc: test socperfplugin HandleDisplayPowerWakeUp with multiple wrong resource types
+ * @tc.type FUNC
+ * @tc.require: issueI78T3V
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_065, Function | MediumTest | Level0)
+{
+    ResType::RES_TYPE_WINDOW_FOCUS;
+    ResType::RES_TYPE_APP_ABILITY_START;
+
+    const std::shared_ptr<ResData>& wrongTypeData1 = std::make_shared<ResData>(
+        ResType::RES_TYPE_WINDOW_FOCUS, 0, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(wrongTypeData1);
+    EXPECT_FALSE(ret);
+
+    const std::shared_ptr<ResData>& wrongTypeData2 = std::make_shared<ResData>(
+        ResType::RES_TYPE_APP_ABILITY_START, 0, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(wrongTypeData2);
+    EXPECT_FALSE(ret);
+    
+    const std::shared_ptr<ResData>& correctTypeData = std::make_shared<ResData>(
+        ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, 0, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(correctTypeData);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_066
+ * @tc.desc: test socperfplugin HandleScreenStatusAnalysis api
+ * @tc.type FUNC
+ * @tc.require
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_066, Function | MediumTest | Level0)
+{
+    bool ret = SocPerfPlugin::GetInstance().HandleScreenStatusAnalysis(nullptr);
+    EXPECT_FALSE(ret);
+    
+    const std::shared_ptr<ResData>& screenOnData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SCREEN_STATUS, ResType::ScreenStatus::SCREEN_ON, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleScreenStatusAnalysis(screenOnData);
+    EXPECT_TRUE(ret);
+    
+    const std::shared_ptr<ResData>& screenOffData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SCREEN_STATUS, ResType::ScreenStatus::SCREEN_OFF, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleScreenStatusAnalysis(screenOffData);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: SocPerfPluginTest_API_TEST_067
+ * @tc.desc: test socperfplugin HandleScreenStatusAnalysis with boundary values
+ * @tc.type FUNC
+ * @tc.require:
+ */
+HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_067, Function | MediumTest | Level0)
+{
+    const std::shared_ptr<ResData>& minValueData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SCREEN_STATUS, INT32_MIN, nullptr);
+    bool ret = SocPerfPlugin::GetInstance().HandleScreenStatusAnalysis(minValueData);
+    EXPECT_TRUE(ret);
+    
+    const std::shared_ptr<ResData>& maxValueData = std::make_shared<ResData>(
+        ResType::RES_TYPE_SCREEN_STATUS, INT32_MAX, nullptr);
+    ret = SocPerfPlugin::GetInstance().HandleScreenStatusAnalysis(maxValueData);
+    EXPECT_TRUE(ret);
+}
 } // namespace SOCPERF
 } // namespace OHOS

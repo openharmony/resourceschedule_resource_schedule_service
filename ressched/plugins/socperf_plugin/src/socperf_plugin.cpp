@@ -1275,16 +1275,28 @@ bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& d
     return true;
 }
 
-void SocPerfPlugin::HandleDisplayPowerWakeUp(const std::shared_ptr<ResData>& data)
+bool SocPerfPlugin::HandleDisplayPowerWakeUp(const std::shared_ptr<ResData>& data)
 {
     if (data == nullptr) {
-        return;
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp null data");
+        return false;
     }
+    if (data->resType != ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp invalid res type: %{public}d", data->resType);
+        return false;
+    }
+    if (data->value != 0) {
+        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp invalid value: %{public}lld",
+            (long long)data->value);
+        return false;
+    }
+    
     std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp");
+    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp: %{public}lld", (long long)data->value);
     HandleScreenOn();
-    return;
+    return true;
 }
+
 void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>& data)
 {
     if ((data->value != DeviceModeStatus::MODE_ENTER) && (data->value != DeviceModeStatus::MODE_QUIT)) {
