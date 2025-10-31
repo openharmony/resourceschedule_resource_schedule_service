@@ -20,7 +20,12 @@ group("etc") {
 }
 
 ohos_prebuilt_etc("resource_schedule_service.cfg") {
-  source = "resource_schedule_service.cfg"
+  if (resource_schedule_service_has_sys_nice_enable) {
+    source = "resource_schedule_service_has_nice.cfg"
+  } else {
+    source = "resource_schedule_service.cfg"
+  }
+  output = "resource_schedule_service.cfg"
   relative_install_dir = "init"
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
