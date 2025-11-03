@@ -22,6 +22,7 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <set>
 #include <unordered_set>
@@ -38,6 +39,20 @@
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
 #include "res_type.h"
 #endif
+
+namespace std {
+    template<>
+    struct hash<pair<uint32_t, uin64_t>> {
+        size_t operator()(const pair<uint32_t, uin64_t>) const {
+            size_t h1 = hash<uint32_t>()(v.first);
+            size_t h2 = hash<uint64_t>()(v.second);
+            uint32_t delocalizationOne = 6;
+            uint32_t delocalizationTwo = 2;
+            uint32_t hashNum = 0x9e377969;
+            return h1 ^ (h2 + hashNum + (h1 << delocalizationOne) + (h2 >> delocalizationTwo));
+        }
+    }
+} // namespace std
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -227,6 +242,10 @@ public:
     bool GetLinkJumpOptConfig(const std::string& bundleName, bool& isAllowedLinkJump);
 
     void GetResTypeList(std::set<uint32_t>& resTypeList);
+
+    void SubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, uint64_t resValue);
+    void UnSubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, uint64_t resValue);
+
 private:
     PluginMgr() = default;
     void OnDestroy();
@@ -249,6 +268,7 @@ private:
     void RemoveDisablePluginHandler();
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);
     bool GetPluginListByResType(uint32_t resType, std::list<std::string>& pluginList);
+    bool GetPluginListByResTypeAndValue(uint32_t resType, uint64_t resValue, std::list<std::string>& pluginList);
     bool CheckRealPath(const std::string& partialPath, std::string& fullPath);
     std::vector<std::string> GetAllRealConfigPath(const std::string& configName);
     std::string BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,
@@ -282,6 +302,8 @@ private:
 
     // mutex for resTypeMap_
     std::mutex resTypeMutex_;
+    // mutex for resTyperesValueLibMap_
+    std::mutex resTypeResValueMutex_;
     // mutex for resTypeLibSyncMap_
     std::mutex resTypeSyncMutex_;
     // mutex for resTypeStrMap_
@@ -291,6 +313,7 @@ private:
     std::mutex libPathMutex_;
     std::mutex linkJumpOptMutex_;
     std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
+    std::map<std::pair<uint32_t, uint64_t>, std::list<std::string>> resTyperesValueLibMap_;
     std::map<uint32_t, std::string> resTypeLibSyncMap_;
     std::map<uint32_t, std::string> resTypeStrMap_;
     std::unordered_set<std::string> linkJumpOptSet_;
