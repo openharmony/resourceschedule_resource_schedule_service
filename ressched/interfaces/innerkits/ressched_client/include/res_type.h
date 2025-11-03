@@ -389,6 +389,8 @@ enum : uint32_t {
     RES_TYPE_SA_PULL_APP_IDENTIFIER = 182,
     // swiperfling end exception flag
     RES_TYPE_SWIPER_FLING_END_EXCEPTION_FLAG = 183,
+    // report backpressed event
+    RES_TYPE_BACKPRESSED_EVENT = 184,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -427,6 +429,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_QUERY_TOPN_BUNDLE_USAGE_INFO = 508,
     // report display power wake up, earlier than the screen-on event
     RES_TYPE_DISPLAY_POWER_WAKE_UP = 509,
+    // get smart gc scene info
+    SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO = 510,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
