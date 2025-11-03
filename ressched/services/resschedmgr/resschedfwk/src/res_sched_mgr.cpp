@@ -189,6 +189,8 @@ namespace {
         { ResType::RES_TYPE_BACKGROUND_STATUS, "RES_TYPE_BACKGROUND_STATUS" },
         { ResType::RES_TYPE_NAP_MODE, "RES_TYPE_NAP_MODE" },
         { ResType::RES_TYPE_MEM_OFF_PEAK, "RES_TYPE_MEM_OFF_PEAK" },
+        { ResType::RES_TYPE_BACKPRESSED_EVENT, "RES_TYPE_BACKPRESSED_EVENT"},
+        { ResType::SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO, "SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO"},
     };
     OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
     {

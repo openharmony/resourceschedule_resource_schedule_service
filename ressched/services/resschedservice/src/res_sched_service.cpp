@@ -113,6 +113,8 @@ namespace {
         ResType::RES_TYPE_ABILITY_OR_PAGE_SWITCH,
         ResType::RES_TYPE_GC_THREAD_QOS_STATUS_CHANGE,
         ResType::RES_TYPE_BACKGROUND_STATUS,
+        ResType::RES_TYPE_BACKPRESSED_EVENT,
+        ResType::SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
