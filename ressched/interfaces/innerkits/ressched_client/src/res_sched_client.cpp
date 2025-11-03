@@ -90,7 +90,10 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
         rss_->GetResTypeList(resTypeList_);
         isGetResTypeList_ = true;
     }
-    if (resTypeList_.find(resType) == resTypeList_.end()) {
+    if (resType != ResType::RES_TYPE_SEND_FRAME_EVENT &&
+        resType != ResType::RES_TYPE_AXIS_EVENT &&
+        resType != ResType::RES_TYPE_KEY_PERF_SCENE &&
+        resTypeList_.find(resType) == resTypeList_.end()) {
         RESSCHED_LOGD("ResSchedClient::ReportData type not subscribed.");
         return;
     }
