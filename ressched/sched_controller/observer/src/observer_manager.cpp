@@ -1030,7 +1030,7 @@ void ObserverManager::InitDisplayPowerEventObserver()
                         HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register display power event listener failed!");
-        displayPowerEventListener_ = nullptr；
+        displayPowerEventListener_ = nullptr;
         return;
     }
 }
