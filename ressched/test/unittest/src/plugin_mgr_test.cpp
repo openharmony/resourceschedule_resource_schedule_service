@@ -807,5 +807,162 @@ HWTEST_F(PluginMgrTest, ParsePluginSwitchr001, TestSize.Level0)
     pluginMgr_->ParsePluginSwitch(switchStrs);
     EXPECT_TRUE(pluginMgr_->configReader_ != nullptr);
 }
+
+/**
+ * @tc.name: RemovePluginConfig001
+ * @tc.desc: Verify RemovePluginConfig can remove all configurations for specified plugin.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, RemovePluginConfig001, TestSize.Level1)
+{
+    pluginMgr_->Init();
+    PluginConfig config = pluginMgr_->GetConfig("demo", "sample");
+    EXPECT_FALSE(config.itemList.empty());
+    
+    pluginMgr_->RemovePluginConfig("demo");
+    
+    config = pluginMgr_->GetConfig("demo", "sample");
+    EXPECT_TRUE(config.itemList.empty());
+}
+
+/**
+ * @tc.name: RemovePluginConfig002
+ * @tc.desc: Verify RemovePluginConfig handles null configReader.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, RemovePluginConfig002, TestSize.Level1)
+{
+    PluginMgr::GetInstance().configReader_ = nullptr;
+    PluginMgr::GetInstance().RemovePluginConfig("test_plugin");
+    EXPECT_TRUE(PluginMgr::GetInstance().configReader_ == nullptr);
+}
+
+/**
+ * @tc.name: GetPluginListByResTypeAndValue001
+ * @tc.desc: Verify GetPluginListByResTypeAndValue returns false when no plugin registered.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, GetPluginListByResTypeAndValue001, TestSize.Level1)
+{
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(100, 200, pluginList);
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(pluginList.empty());
+}
+
+/**
+ * @tc.name: SubscribeResourceAccurately001
+ * @tc.desc: Verify SubscribeResourceAccurately handles empty pluginLib.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, SubscribeResourceAccurately001, TestSize.Level1)
+{
+    PluginMgr::GetInstance().SubscribeResourceAccurately("", 100, 200);
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(100, 200, pluginList);
+    EXPECT_FALSE(result);
+}
+
+/**
+ * @tc.name: SubscribeResourceAccurately002
+ * @tc.desc: Verify SubscribeResourceAccurately subscribes plugin correctly.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, SubscribeResourceAccurately002, TestSize.Level1)
+{
+    const std::string pluginLib = "test_plugin";
+    uint32_t resType = 100;
+    uint64_t resValue = 200;
+    
+    PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib, resType, resValue);
+    
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
+    
+    EXPECT_TRUE(result);
+    EXPECT_FALSE(pluginList.empty());
+    EXPECT_EQ(pluginList.front(), pluginLib);
+}
+
+/**
+ * @tc.name: UnSubscribeResourceAccurately001
+ * @tc.desc: Verify UnSubscribeResourceAccurately handles empty pluginLib.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, UnSubscribeResourceAccurately001, TestSize.Level1)
+{
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately("", 100, 200);
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(100, 200, pluginList);
+    EXPECT_FALSE(result);
+}
+
+/**
+ * @tc.name: UnSubscribeResourceAccurately002
+ * @tc.desc: Verify UnSubscribeResourceAccurately handles non-existent subscription.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, UnSubscribeResourceAccurately002, TestSize.Level1)
+{
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately("test_plugin", 100, 200);
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(100, 200, pluginList);
+    EXPECT_FALSE(result);
+}
+
+/**
+ * @tc.name: UnSubscribeResourceAccurately003
+ * @tc.desc: Verify UnSubscribeResourceAccurately unsubscribes plugin correctly.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, UnSubscribeResourceAccurately003, TestSize.Level1)
+{
+    const std::string pluginLib = "test_plugin";
+    uint32_t resType = 100;
+    uint64_t resValue = 200;
+    
+    PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib, resType, resValue);
+    
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
+    EXPECT_TRUE(result);
+    EXPECT_FALSE(pluginList.empty());
+    
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately(pluginLib, resType, resValue);
+    
+    pluginList.clear();
+    result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(pluginList.empty());
+}
+
+/**
+ * @tc.name: GetResTypeList001
+ * @tc.desc: Verify GetResTypeList includes types from resTyperesValueLibMap.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, GetResTypeList001, TestSize.Level1)
+{
+    const std::string pluginLib = "test_plugin";
+    uint32_t resType = 100;
+    uint64_t resValue = 200;
+    
+    PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib, resType, resValue);
+    
+    std::set<uint32_t> resTypeList;
+    PluginMgr::GetInstance().GetResTypeList(resTypeList);
+    
+    EXPECT_FALSE(resTypeList.empty());
+    EXPECT_NE(resTypeList.find(resType), resTypeList.end());
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
