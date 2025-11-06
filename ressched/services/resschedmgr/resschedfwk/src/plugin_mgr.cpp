@@ -359,6 +359,15 @@ void PluginMgr::RemoveConfig(const std::string& pluginName, const std::string& c
     configReader_->RemoveConfig(pluginName, configName);
 }
 
+void PluginMgr::RemovePluginConfig(const std::string& pluginName)
+{
+    PluginConfig config;
+    if (!configReader_) {
+        return;
+    }
+    configReader_->RemovePluginConfig(pluginName);
+}
+
 void PluginMgr::Stop()
 {
     OnDestroy();
@@ -469,7 +478,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     }
 #endif
     if (!GetPluginListByResType(resData->resType, pluginList) &&
-        !GetPluginListByResTypeAndValue(resData->resType, resData->resValue, pluginList)) {
+        !GetPluginListByResTypeAndValue(resData->resType, resData->value, pluginList)) {
         return;
     }
     std::string libNameAll = "";

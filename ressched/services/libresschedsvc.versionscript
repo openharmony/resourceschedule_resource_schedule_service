@@ -15,6 +15,7 @@
   global:
     *PluginMgr*GetConfig*;
     *PluginMgr*RemoveConfig*;
+    *PluginMgr*RemovePluginConfig*;
     *PluginMgr*GetInstance*;
     *PluginMgr*Init*;
     *PluginMgr*SubscribeResource*;

@@ -40,20 +40,6 @@
 #include "res_type.h"
 #endif
 
-namespace std {
-    template<>
-    struct hash<pair<uint32_t, uin64_t>> {
-        size_t operator()(const pair<uint32_t, uin64_t>) const {
-            size_t h1 = hash<uint32_t>()(v.first);
-            size_t h2 = hash<uint64_t>()(v.second);
-            uint32_t delocalizationOne = 6;
-            uint32_t delocalizationTwo = 2;
-            uint32_t hashNum = 0x9e377969;
-            return h1 ^ (h2 + hashNum + (h1 << delocalizationOne) + (h2 >> delocalizationTwo));
-        }
-    }
-} // namespace std
-
 namespace OHOS {
 namespace ResourceSchedule {
 using Clock = std::chrono::high_resolution_clock;
@@ -195,6 +181,9 @@ public:
 
     void RemoveConfig(const std::string& pluginName, const std::string& configName);
 
+    void RemovePluginConfig(const std::string& pluginName);
+
+
     void SetResTypeStrMap(const std::map<uint32_t, std::string>& resTypeStr);
 
     std::shared_ptr<PluginLib> GetPluginLib(const std::string& libPath);
@@ -244,6 +233,7 @@ public:
     void GetResTypeList(std::set<uint32_t>& resTypeList);
 
     void SubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, uint64_t resValue);
+
     void UnSubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, uint64_t resValue);
 
 private:
@@ -312,9 +302,9 @@ private:
     ffrt::mutex dispatcherHandlerMutex_;
     std::mutex libPathMutex_;
     std::mutex linkJumpOptMutex_;
-    std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
-    std::map<std::pair<uint32_t, uint64_t>, std::list<std::string>> resTyperesValueLibMap_;
-    std::map<uint32_t, std::string> resTypeLibSyncMap_;
+    std::unordered_map<uint32_t, std::list<std::string>> resTypeLibMap_;
+    std::unordered_map<std::pair<uint32_t, uint64_t>, std::list<std::string>> resTyperesValueLibMap_;
+    std::unordered_map<uint32_t, std::string> resTypeLibSyncMap_;
     std::map<uint32_t, std::string> resTypeStrMap_;
     std::unordered_set<std::string> linkJumpOptSet_;
 

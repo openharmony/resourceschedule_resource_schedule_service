@@ -51,6 +51,13 @@ public:
      */
     void RemoveConfig(const std::string& pluginName, const std::string& configName);
 
+    /**
+     * Remove all configurations for the specified plugin.
+     *
+     * @param pluginName The name of the plugin whose configurations need to be removed.
+     */
+    void RemovePluginConfig(const std::string& pluginName);
+
     void Dump(std::string &result);
 
     void DumpItem(const Item& item, std::string &result);
