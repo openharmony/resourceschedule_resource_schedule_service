@@ -88,6 +88,12 @@ ErrCode BundleMgrHelper::GetSignatureInfoByUid(const int32_t uid, AppExecFwk::Si
 
 // TESTCASE
 
+/**
+ * @tc.name: ResSchedSignatureValidatorTest CheckSignatureByUid_001
+ * @tc.desc: test for CheckSignatureByUid
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
 HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureByUid_001, Function | MediumTest | Level0)
 {
     auto &instance = ResSchedSignatureValidator::GetInstance();
@@ -96,6 +102,12 @@ HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureByUid_001, Function | Med
     EXPECT_EQ(instance.CheckSignatureByUid(UID_INVALID), SignatureCheckResult::ERR_INTERNAL_ERROR);
 }
 
+/**
+ * @tc.name: ResSchedSignatureValidatorTest CheckSignatureByBundleName_001
+ * @tc.desc: test for CheckSignatureByBundleName normal
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
 HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureByBundleName_001, Function | MediumTest | Level0)
 {
     auto &instance = ResSchedSignatureValidator::GetInstance();
@@ -105,6 +117,28 @@ HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureByBundleName_001, Functio
     EXPECT_EQ(instance.CheckSignatureByBundleName(BUNDLE_INVALID), SignatureCheckResult::ERR_PARAM_INVALID);
 }
 
+/**
+ * @tc.name: ResSchedSignatureValidatorTest CheckSignatureByBundleName_002
+ * @tc.desc: test for CheckSignatureByBundleName install changed
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
+HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureByBundleName_002, Function | MediumTest | Level0)
+{
+    auto &instance = ResSchedSignatureValidator::GetInstance();
+    InitDefaultConfig();
+    EXPECT_EQ(instance.CheckSignatureByBundleName(BUNDLE_VALID), SignatureCheckResult::CHECK_OK);
+    EXPECT_EQ(instance.CheckSignatureByBundleName(BUNDLE_VALID), SignatureCheckResult::CHECK_OK);
+    instance.OnAppInstallChanged(BUNDLE_VALID);
+    EXPECT_EQ(instance.CheckSignatureByBundleName(BUNDLE_VALID), SignatureCheckResult::CHECK_OK);
+}
+
+/**
+ * @tc.name: ResSchedSignatureValidatorTest CheckBundleInList_001
+ * @tc.desc: test for CheckBundleInList
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
 HWTEST_F(ResSchedSignatureValidatorTest, CheckBundleInList_001, Function | MediumTest | Level0)
 {
     auto &instance = ResSchedSignatureValidator::GetInstance();
@@ -114,6 +148,12 @@ HWTEST_F(ResSchedSignatureValidatorTest, CheckBundleInList_001, Function | Mediu
     EXPECT_EQ(instance.CheckBundleInList(list, BUNDLE_NOT_EXIST), SignatureCheckResult::ERR_NOT_IN_LIST);
 }
 
+/**
+ * @tc.name: ResSchedSignatureValidatorTest CheckSignature_001
+ * @tc.desc: test for CheckSignature
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
 HWTEST_F(ResSchedSignatureValidatorTest, CheckSignature_001, Function | MediumTest | Level0)
 {
     auto &instance = ResSchedSignatureValidator::GetInstance();
@@ -125,6 +165,12 @@ HWTEST_F(ResSchedSignatureValidatorTest, CheckSignature_001, Function | MediumTe
     EXPECT_EQ(instance.CheckSignature(UID_NOT_EXIST, BUNDLE_VALID), SignatureCheckResult::ERR_INTERNAL_ERROR);
 }
 
+/**
+ * @tc.name: ResSchedSignatureValidatorTest AddSignatureConfig_001
+ * @tc.desc: test for AddSignatureConfig
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
 HWTEST_F(ResSchedSignatureValidatorTest, AddSignatureConfig_001, Function | MediumTest | Level0)
 {
     auto &instance = ResSchedSignatureValidator::GetInstance();
