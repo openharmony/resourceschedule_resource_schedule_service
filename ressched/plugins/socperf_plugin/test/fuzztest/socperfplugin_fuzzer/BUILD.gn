@@ -30,7 +30,8 @@ ohos_fuzztest("SocperfPluginFuzzTest") {
   ]
   sources = [ "socperfplugin_fuzzer.cpp" ]
   defines = [ "RESSCHED_RESOURCESCHEDULE_SOC_PERF_ENABLE" ]
-  deps = [ "${ressched_plugins}/socperf_plugin:socperf_plugin_static" ]
+  deps = [ "${ressched_plugins}/socperf_plugin:socperf_plugin_static",
+           "${ressched_common}:ressched_common_utils", ]
   external_deps = [
     "c_utils:utils",
     "ffrt:libffrt",
