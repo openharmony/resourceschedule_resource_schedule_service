@@ -34,15 +34,44 @@ ResSchedSignatureValidator &ResSchedSignatureValidator::GetInstance()
     return *instance;
 }
 
+void ResSchedSignatureValidator::OnAppInstallChanged(const std::string &bundleName)
+{
+    std::lock_guard<ffrt::mutex> autoLock(mutex_);
+    bundleNameToUid_.erase(bundleName);
+    validCache_.erase(bundleName);
+}
+
 SignatureCheckResult ResSchedSignatureValidator::CheckSignatureByBundleName(const std::string &bundleName)
 {
     if (bundleName.empty()) {
         RESSCHED_LOGE("%{public}s: bundleName is empty", __func__);
         return SignatureCheckResult::ERR_PARAM_INVALID;
     }
-    int32_t userId = GetCurrentUserId();
-    auto bundleMgr = BundleMgrHelper::GetInstance();
-    auto uid = bundleMgr->GetUidByBundleName(bundleName, userId);
+    int32_t uid = -1;
+    {
+        // try use cache
+        std::lock_guard<ffrt::mutex> autoLock(mutex_);
+        auto item = bundleNameToUid_.find(bundleName);
+        if (item != bundleNameToUid_.end()) {
+            uid = item->second;
+        }
+    }
+    if (uid < 0) {
+        // no cache, call GetUidByBundleName
+        std::vector<int> activatedOsAccountIds;
+        GetCurrentUserId(activatedOsAccountIds);
+        auto bundleMgr = BundleMgrHelper::GetInstance();
+        // activatedOsAccountIds[0] is current active user. If current user no install, try another user.
+        for (const auto &userId : activatedOsAccountIds) {
+            uid = bundleMgr->GetUidByBundleName(bundleName, userId);
+            if (uid >= 0) {
+                // write cache
+                std::lock_guard<ffrt::mutex> autoLock(mutex_);
+                bundleNameToUid_[bundleName] = uid;
+                break;
+            }
+        }
+    }
     if (uid < 0) {
         RESSCHED_LOGE("%{public}s: convert bundleName %{public}s to uid error", __func__, bundleName.c_str());
         return SignatureCheckResult::ERR_INTERNAL_ERROR;
@@ -122,20 +151,17 @@ SignatureCheckResult ResSchedSignatureValidator::CheckSignature(const int32_t ui
     return isValid ? SignatureCheckResult::CHECK_OK : SignatureCheckResult::ERR_SIGNATURE_NO_MATCH;
 }
 
-int32_t ResSchedSignatureValidator::GetCurrentUserId()
+void ResSchedSignatureValidator::GetCurrentUserId(std::vector<int> &activatedOsAccountIds)
 {
-    int32_t userId = 0;
-    std::vector<int> activatedOsAccountIds;
     auto ret = OHOS::AccountSA::OsAccountManager::QueryActiveOsAccountIds(activatedOsAccountIds);
     if (ret != ERR_OK) {
         RESSCHED_LOGE("%{public}s: query account error %{public}d", __func__, ret);
-        return DEFAULT_USER_ID;
+        activatedOsAccountIds.push_back(DEFAULT_USER_ID);
     }
     if (activatedOsAccountIds.size() == 0) {
         RESSCHED_LOGE("%{public}s: query account empty", __func__);
-        return DEFAULT_USER_ID;
+        activatedOsAccountIds.push_back(DEFAULT_USER_ID);
     }
-    return activatedOsAccountIds[0];
 }
 
 void ResSchedSignatureValidator::SetSignatureConfig(std::unordered_map<std::string, std::string> &config)

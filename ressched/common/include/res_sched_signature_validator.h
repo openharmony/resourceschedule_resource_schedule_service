@@ -43,6 +43,8 @@ public:
 
     SignatureCheckResult CheckBundleInList(const std::vector<std::string> &whiteList, const std::string &bundleName);
 
+    void OnAppInstallChanged(const std::string &bundleName);
+
     void SetSignatureConfig(std::unordered_map<std::string, std::string> &config);
 
     void AddSignatureConfig(std::unordered_map<std::string, std::string> &config);
@@ -53,13 +55,15 @@ private:
 
     SignatureCheckResult CheckSignature(const int32_t uid, const std::string &bundleName);
 
-    int32_t GetCurrentUserId();
+    void GetCurrentUserId(std::vector<int> &activatedOsAccountIds);
 
     ffrt::mutex mutex_;
 
     std::unordered_map<std::string, std::pair<int32_t, bool>> validCache_;
 
     std::unordered_map<std::string, std::string> signatureConfig_;
+
+    std::unordered_map<std::string, int32_t> bundleNameToUid_;
 };
 }  // namespace ResourceSchedule
 }  // namespace OHOS
