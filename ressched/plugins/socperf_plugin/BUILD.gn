@@ -28,7 +28,8 @@ ohos_shared_library("socperf_plugin") {
 
   sources = [ "src/socperf_plugin.cpp" ]
 
-  deps = [ "${ressched_services}:resschedsvc" ]
+  deps = [ "${ressched_services}:resschedsvc", 
+          "${ressched_common}:ressched_common_utils",]
 
   external_deps = [
     "ability_runtime:app_manager",

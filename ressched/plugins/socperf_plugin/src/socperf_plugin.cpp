@@ -26,6 +26,7 @@
 #include "res_type.h"
 #include "socperf_log.h"
 #include "system_ability_definition.h"
+#include "res_sched_signature_validator.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -733,7 +734,9 @@ void SocPerfPlugin::UpdateWeakActionStatus()
     bool status = weakActionEnable_;
     for (const int32_t& appUid : focusAppUids_) {
         if (uidToAppMsgMap_.find(appUid) != uidToAppMsgMap_.end()) {
-            if (keyAppName_.find(uidToAppMsgMap_[appUid].GetBundleName()) != keyAppName_.end()) {
+            if (keyAppName_.find(uidToAppMsgMap_[appUid].GetBundleName()) != keyAppName_.end() &&
+                ResSchedSignatureValidator::GetInstance().
+                CheckSignatureByBundleName(uidToAppMsgMap_[appUid].GetBundleName()) == SignatureCheckResult::CHECK_OK) {
                 status = false;
                 break;
             } else if (keyAppType_.find(uidToAppMsgMap_[appUid].GetAppType()) != keyAppType_.end()) {
@@ -871,7 +874,9 @@ bool SocPerfPlugin::HandleMoveEventBoost(const std::shared_ptr<ResData>& data, b
     }
     std::string bundleName = data->payload[BUNDLE_NAME].get<std::string>();
     SOC_PERF_LOGD("SocPerfPlugin: socperf->MOVE_EVENT for %{public}s", bundleName.c_str());
-    if (appNameMoveEvent_.find(bundleName) != appNameMoveEvent_.end()) {
+    if (appNameMoveEvent_.find(bundleName) != appNameMoveEvent_.end() &&
+        ResSchedSignatureValidator::GetInstance().CheckSignatureByBundleName(bundleName) ==
+        SignatureCheckResult::CHECK_OK) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_MOVE_EVENT_BOOST, isSet, "");
     }
     return true;
