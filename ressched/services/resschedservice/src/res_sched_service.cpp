@@ -98,6 +98,7 @@ namespace {
         ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
         ResType::RES_TYPE_BT_SERVICE_EVENT,
         ResType::RES_TYPE_APP_FRAME_DROP,
+        ResType::RES_TYPE_GC_EVENT,
         ResType::RES_TYPE_REPORT_DISTRIBUTE_TID,
         ResType::RES_TYPE_AXIS_EVENT,
         ResType::RES_TYPE_CROWN_ROTATION_STATUS,
