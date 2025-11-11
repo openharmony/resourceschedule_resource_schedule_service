@@ -96,6 +96,11 @@ enum SwipeDirectionUpType : int32_t {
     SWIPE_DIRECTION_EXIT_TASK_CENTER,
 };
 
+enum GcEventType : int64_t {
+    GC_START = 0,
+    GC_STOP,
+};
+
 /**
 * @brief Screen status
 */

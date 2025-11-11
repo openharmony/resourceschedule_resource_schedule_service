@@ -391,6 +391,8 @@ enum : uint32_t {
     RES_TYPE_SWIPER_FLING_END_EXCEPTION_FLAG = 183,
     // report backpressed event
     RES_TYPE_BACKPRESSED_EVENT = 184,
+    // gc start or stop
+    RES_TYPE_GC_EVENT = 185,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
