@@ -79,6 +79,9 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
             payload["extensionAbilityType"] = std::to_string(abilityStateData.extensionAbilityType);
             payload["processType"] = std::to_string(abilityStateData.processType);
             payload["uiExtensionState"] = std::to_string(abilityStateData.abilityState);
+            payload["moduleName"] = abilityStateData.moduleName;
+            payload["hostPid"] = std::to_string(abilityStateData.hostPid);
+            payload["hostBundleName"] = abilityStateData.hostBundleName;
         } else {
             RESSCHED_LOGE("%{public}s : abilityState trans to extensionState failed", __func__);
         }
@@ -307,6 +310,28 @@ void RmsApplicationStateObserver::OnAppStopped(const AppStateData &appStateData)
     nlohmann::json payload;
     MarshallingAppStateData(appStateData, payload);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_APP_STOPPED, appStateData.state, payload);
+}
+
+void RmsApplicationStateObserver::MarshallingPageStateData(const PageStateData &pageStateData, nlohmann::json &payload)
+{
+    payload["bundleName"] = pageStateData.bundleName;
+    payload["moduleName"] = pageStateData.moduleName;
+    payload["abilityName"] = pageStateData.abilityName;
+    payload["pageName"] = pageStateData.pageName;
+    payload["targetBundleName"] = pageStateData.targetBundleName;
+    payload["targetModuleName"] = pageStateData.targetModuleName;
+}
+
+void RmsApplicationStateObserver::OnPageShow(const PageStateData &pageStateData)
+{
+    if (!ValidatePageStateData(pageStateData)) {
+        RESSCHED_LOGE("%{public}s : validate page state data failed!", __func__);
+        return;
+    }
+
+    nlohmann::json payload;
+    MarshallingPageStateData(pageStateData, payload);
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_PAGE_CHANGE, 0, payload);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

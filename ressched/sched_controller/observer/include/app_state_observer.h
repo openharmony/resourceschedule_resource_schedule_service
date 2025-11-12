@@ -18,6 +18,7 @@
 
 #include "nlohmann/json.hpp"
 #include "application_state_observer_stub.h"
+#include "res_sched_string_util.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -26,6 +27,7 @@ using OHOS::AppExecFwk::AppStateData;
 using OHOS::AppExecFwk::AbilityStateData;
 using OHOS::AppExecFwk::ProcessData;
 using OHOS::AppExecFwk::PreloadProcessData;
+using OHOS::AppExecFwk::PageStateData;
 
 class RmsApplicationStateObserver : public ApplicationStateObserverStub {
 public:
@@ -40,6 +42,7 @@ public:
     void OnAppCacheStateChanged(const AppStateData &appStateData) override;
     void OnProcessPreForegroundChanged(const PreloadProcessData &preloadProcessData) override;
     void OnAppStopped(const AppStateData &appStateData) override;
+    void OnPageShow(const PageStateData &pageStateData) override;
 
 private:
     inline bool ValidateAppStateData(const AppStateData &appStateData) const
@@ -66,9 +69,16 @@ private:
     {
         return abilityStateData.extensionAbilityType >= 0;
     }
+
+    inline bool ValidatePageStateData(const PageStateData &pageStateData) const
+    {
+        return ResCommonUtil::CheckBundleName(pageStateData.bundleName)
+            && pageStateData.pageName.size() > 0;
+    }
     void MarshallingProcessData(const ProcessData &processData, nlohmann::json &payload);
     void MarshallingAppStateData(const AppStateData &appStateData, nlohmann::json &payload);
     void MarshallingPreForegroundData(const PreloadProcessData &data, nlohmann::json &payload);
+    void MarshallingPageStateData(const PageStateData &pageStateData, nlohmann::json &payload);
     bool IsUIExtensionAbilityStateChanged(const AbilityStateData &abilityStateData);
 
     static std::unordered_map<int32_t, int32_t> extensionStateToAbilityState_;

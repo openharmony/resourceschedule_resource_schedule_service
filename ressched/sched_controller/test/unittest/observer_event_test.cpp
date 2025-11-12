@@ -1910,6 +1910,100 @@ HWTEST_F(ObserverEventTest, AppStateObserver_011, testing::ext::TestSize.Level1)
 }
 
 /**
+ * @tc.name: AppStateObserver_012
+ * @tc.desc: test for MarshallingPageStateData
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest, AppStateObserver_012, testing::ext::TestSize.Level1)
+{
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    PageStateData pageStateData;
+    pageStateData.bundleName = "bundleName";
+    pageStateData.moduleName = "moduleName";
+    pageStateData.abilityName = "abilityName";
+    pageStateData.pageName = "pageName";
+    pageStateData.targetBundleName = "targetBundleName";
+    pageStateData.targetModuleName = "targetModuleName";
+    nlohmann::json payload;
+    observer->MarshallingPageStateData(pageStateData, payload);
+
+    EXPECT_EQ(payload["bundleName"], "bundleName");
+    EXPECT_EQ(payload["moduleName"], "moduleName");
+    EXPECT_EQ(payload["abilityName"], "abilityName");
+    EXPECT_EQ(payload["pageName"], "pageName");
+    EXPECT_EQ(payload["targetBundleName"], "targetBundleName");
+    EXPECT_EQ(payload["targetModuleName"], "targetModuleName");
+    SUCCEED();
+}
+
+/**
+ * @tc.name: AppStateObserver_013
+ * @tc.desc: test for OnPageShow.
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest, AppStateObserver_013, testing::ext::TestSize.Level1)
+{
+    g_capturedPayload.clear();
+    g_capturedState = -1;
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    PageStateData pageStateData;
+    pageStateData.bundleName        = "bundleName";
+    pageStateData.moduleName        = "moduleName";
+    pageStateData.abilityName       = "abilityName";
+    pageStateData.pageName          = "pageName";
+    pageStateData.targetBundleName  = "targetBundleName";
+    pageStateData.targetModuleName  = "targetModuleName";
+    observer->OnPageShow(pageStateData);
+
+    EXPECT_TRUE(g_capturedPayload.contains("bundleName"));
+    EXPECT_EQ(g_capturedPayload["bundleName"], pageStateData.bundleName);
+    EXPECT_TRUE(g_capturedPayload.contains("moduleName"));
+    EXPECT_EQ(g_capturedPayload["moduleName"], pageStateData.moduleName);
+    EXPECT_TRUE(g_capturedPayload.contains("abilityName"));
+    EXPECT_EQ(g_capturedPayload["abilityName"], pageStateData.abilityName);
+    EXPECT_TRUE(g_capturedPayload.contains("pageName"));
+    EXPECT_EQ(g_capturedPayload["pageName"], pageStateData.pageName);
+    EXPECT_TRUE(g_capturedPayload.contains("targetBundleName"));
+    EXPECT_EQ(g_capturedPayload["targetBundleName"], pageStateData.targetBundleName);
+    EXPECT_TRUE(g_capturedPayload.contains("targetModuleName"));
+    EXPECT_EQ(g_capturedPayload["targetModuleName"], pageStateData.targetModuleName);
+    EXPECT_EQ(g_capturedState, 0);
+    SUCCEED();
+}
+
+/**
+ * @tc.name: AppStateObserver_014
+ * @tc.desc: test for OnPageShow.
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.desc:
+ */
+HWTEST_F(ObserverEventTest, AppStateObserver_014, testing::ext::TestSize.Level1)
+{
+    g_capturedPayload.clear();
+    g_capturedState = -1;
+    auto observer = std::make_shared<RmsApplicationStateObserver>();
+    EXPECT_TRUE(observer != nullptr);
+    PageStateData pageStateData;
+    observer->OnPageShow(pageStateData);
+
+    EXPECT_FALSE(g_capturedPayload.contains("bundleName"));
+    EXPECT_FALSE(g_capturedPayload.contains("moduleName"));
+    EXPECT_FALSE(g_capturedPayload.contains("abilityName"));
+    EXPECT_FALSE(g_capturedPayload.contains("pageName"));
+    EXPECT_FALSE(g_capturedPayload.contains("targetBundleName"));
+    EXPECT_FALSE(g_capturedPayload.contains("targetModuleName"));
+    EXPECT_EQ(g_capturedState, -1);
+    SUCCEED();
+}
+
+/**
  * @tc.name: audioObserverEvent_007
  * @tc.desc: test ProcessCapturerBegin function
  * @tc.type: FUNC
