@@ -393,6 +393,12 @@ enum : uint32_t {
     RES_TYPE_BACKPRESSED_EVENT = 184,
     // gc start or stop
     RES_TYPE_GC_EVENT = 185,
+    // report start input method process
+    RES_TYPE_START_INPUT_METHOD_PROCESS = 186,
+    // report page change
+    RES_TYPE_PAGE_CHANGE = 187,
+    // report trigger preload application
+    RES_TYPE_TRIGGER_PRELOAD_APPLICATION = 188,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
