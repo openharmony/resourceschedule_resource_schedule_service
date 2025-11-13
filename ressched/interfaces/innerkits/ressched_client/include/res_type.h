@@ -371,6 +371,8 @@ enum : uint32_t {
     RES_TYPE_PROCESS_PRE_FOREGROUND_CHANGE = 173,
     // Turbo Mode
     RES_TYPE_TDP_TURBO = 174,
+    // media ctrl playback event
+    RES_TYPE_MEDIA_CTRL_EVENT = 189,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
