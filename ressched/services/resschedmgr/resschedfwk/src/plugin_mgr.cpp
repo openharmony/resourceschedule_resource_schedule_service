@@ -611,8 +611,7 @@ void PluginMgr::UnSubscribeAllResources(const std::string& pluginLib)
     }
     {
         std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
-        std::unordered_set<std::pair<uint32_t, uint64_t>,
-                       std::hash<std::pair<uint32_t, uint64_t>>> keysToDelete;
+        std::unordered_set<ResPair, std::hash<ResPair>> keysToDelete;
         for (auto iter : resTyperesValueLibMap_) {
             auto it = std::find(iter.second.begin(), iter.second.end(), pluginLib);
             if (it != iter.second.end()) {
@@ -1030,7 +1029,7 @@ void PluginMgr::SubscribeResourceAccurately(const std::string& pluginLib, uint32
         return;
     }
     std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
-    std::pair<uint32_t, uint64_t> resTypeValuePair = std::make_pair(resType, resValue);
+    ResPair resTypeValuePair = std::make_pair(resType, resValue);
     resTyperesValueLibMap_[resTypeValuePair].emplace_back(pluginLib);
 }
 
@@ -1041,7 +1040,7 @@ void PluginMgr::UnSubscribeResourceAccurately(const std::string& pluginLib, uint
         return;
     }
     std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
-    std::pair<uint32_t, uint64_t> resTypeValuePair = std::make_pair(resType, resValue);
+    ResPair resTypeValuePair = std::make_pair(resType, resValue);
     auto iter = resTyperesValueLibMap_.find(resTypeValuePair);
     if (iter == resTyperesValueLibMap_.end()) {
         RESSCHED_LOGE("%{public}s, PluginMgr failed, res type and value has no plugin subscribe.", __func__);
@@ -1057,7 +1056,7 @@ void PluginMgr::UnSubscribeResourceAccurately(const std::string& pluginLib, uint
 bool PluginMgr::GetPluginListByResTypeAndValue(uint32_t resType, uint64_t resValue, std::list<std::string>& pluginList)
 {
     std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
-    std::pair<uint32_t, uint64_t> resTypeValuePair = std::make_pair(resType, resValue);
+    ResPair resTypeValuePair = std::make_pair(resType, resValue);
     auto iter = resTyperesValueLibMap_.find(resTypeValuePair);
     if (iter == resTyperesValueLibMap_.end()) {
         RESSCHED_LOGD("%{public}s, PluginMgr resType and resValue no lib register!", __func__);

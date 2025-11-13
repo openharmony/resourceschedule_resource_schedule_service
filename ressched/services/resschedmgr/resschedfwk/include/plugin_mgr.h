@@ -303,7 +303,7 @@ private:
     std::mutex libPathMutex_;
     std::mutex linkJumpOptMutex_;
     std::unordered_map<uint32_t, std::list<std::string>> resTypeLibMap_;
-    std::unordered_map<std::pair<uint32_t, uint64_t>, std::list<std::string>> resTyperesValueLibMap_;
+    std::unordered_map<ResPair, std::list<std::string>> resTyperesValueLibMap_;
     std::unordered_map<uint32_t, std::string> resTypeLibSyncMap_;
     std::map<uint32_t, std::string> resTypeStrMap_;
     std::unordered_set<std::string> linkJumpOptSet_;
