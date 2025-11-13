@@ -37,6 +37,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 IMPLEMENT_SINGLE_INSTANCE(EventController);
 
+static const char* COMMON_EVENT_MEDIA_CTRL_EVENT = "usual.event.MEDIA_CTRL_EVENT";
 static const char* COMMON_EVENT_CAMERA_STATUS = "usual.event.CAMERA_STATUS";
 static const char* COMMON_EVENT_GAME_STATUS = "usual.event.gameservice.GAME_STATUS_CHANGE_UNI";
 static const char* DATA_SHARE_READY = "usual.event.DATA_SHARE_READY";
@@ -52,6 +53,7 @@ static const char* EVENT_INFO_SUBTYPE = "subtype";
 static const char* GAME_UID = "uid";
 static const char* GAME_STATUS = "type";
 static const char* GAME_ENV = "env";
+static const char* PID = "pid";
 static const char* COMMON_EVENT_CAPACITY = "soc";
 static const char* COMMON_EVENT_CHARGE_STATE = "chargeState";
 static const char* COMMON_EVENT_USER_SLEEP_STATE_CHANGED = "common.event.USER_NOT_CARE_CHARGE_SLEEP";
@@ -212,6 +214,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CONFIG_UPDATE_ACTION);
     matchingSkills.AddEvent(COMMON_EVENT_GAME_STATUS);
     matchingSkills.AddEvent(COMMON_EVENT_USER_SLEEP_STATE_CHANGED);
+    matchingSkills.AddEvent(COMMON_EVENT_MEDIA_CTRL_EVENT);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
     SubscribeCommonEvent(subscriber_);
@@ -399,6 +402,29 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
         ReportDataInProcess(ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE,
             static_cast<int64_t>(want.GetIntParam(COMMON_EVENT_CAPACITY, -1)), payload);
     }
+    if (action == COMMON_EVENT_MEDIA_CTRL_EVENT) {
+        HandleMediaCtrlEvent(want);
+        return;
+    }
+}
+
+void EventController::HandleMediaCtrlEvent(const EventFwk::Want &want)
+{
+    int64_t value = -1;
+    std::string cmd = want.GetStringParam("cmd");
+    if (cmd == "OnPlay") {
+        value = 0;
+    } else {
+        RESSCHED_LOGW("MediaCtrlEvent unknown cmd:%{public}s", cmd.c_str());
+        return;
+    }
+    int32_t uid = want.GetIntParam(GAME_UID, -1);
+    int32_t pid = want.GetIntParam(PID, -1);
+    nlohmann::json payload = nlohmann::json::object();
+    payload[GAME_UID] = uid;
+    payload[PID] = pid;
+    ReportDataInProcess(ResType::RES_TYPE_MEDIA_CTRL_EVENT, value, payload);
+    RESSCHED_LOGD("HandleMediaCtrlEvent cmd:%{public}s uid:%{public}d pid:%{public}d", cmd.c_str(), uid, pid);
 }
 
 bool EventController::HandlePkgCommonEvent(const std::string &action, Want &want, nlohmann::json &payload)
