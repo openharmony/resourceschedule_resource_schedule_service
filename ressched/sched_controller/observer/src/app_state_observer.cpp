@@ -54,6 +54,7 @@ void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateD
     payload["pid"] = std::to_string(appStateData.pid);
     payload["uid"] = std::to_string(appStateData.uid);
     payload["bundleName"] = appStateData.bundleName;
+    payload["preloadMode"] = std::to_string(appStateData.preloadMode);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);
 }
 
@@ -98,6 +99,7 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     payload["abilityType"] = std::to_string(abilityStateData.abilityType);
     payload["abilityState"] = std::to_string(abilityState);
     payload["callerUid"] = std::to_string(abilityStateData.callerUid);
+    payload["preloadMode"] = std::to_string(abilityStateData.preloadMode);
 
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
         abilityState, payload);
@@ -176,7 +178,7 @@ void RmsApplicationStateObserver::MarshallingProcessData(const ProcessData &proc
     payload["callerUid"] = std::to_string(processData.callerUid);
     payload["killReason"] = processData.killReason;
     payload["isPreloadModule"] = std::to_string(processData.isPreloadModule);
-    payload["isPrelaunch"] = std::to_string(processData.isPrelaunch);
+    payload["preloadMode"] = std::to_string(processData.preloadMode);
 }
 
 void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processData)
@@ -220,7 +222,7 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     payload["bundleName"] = appStateData.bundleName;
     payload["extensionType"] = std::to_string(static_cast<uint32_t>(appStateData.extensionType));
     payload["isPreload"] = std::to_string(appStateData.isPreloadModule);
-    payload["isPrelaunch"] = std::to_string(appStateData.isPrelaunch);
+    payload["preloadMode"] = std::to_string(appStateData.preloadMode);
     payload["state"] = std::to_string(appStateData.state);
     payload["callerBundleName"] = appStateData.callerBundleName;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state,
@@ -236,6 +238,7 @@ void RmsApplicationStateObserver::MarshallingAppStateData(const AppStateData &ap
     payload["state"] = static_cast<uint32_t>(appStateData.state);
     payload["extensionType"] = static_cast<uint32_t>(appStateData.extensionType);
     payload["isFocused"] = static_cast<bool>(appStateData.isFocused);
+    payload["preloadMode"] = std::to_string(appStateData.preloadMode);
 }
 
 void RmsApplicationStateObserver::OnAppStateChanged(const AppStateData &appStateData)
