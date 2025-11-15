@@ -123,6 +123,7 @@ public:
     bool screenCaptureState_ = false;
     bool videoState_ = false;
     bool isLoadState_ = false;
+    bool bgCancelSched = false;
 
     int32_t processType_ = ProcRecordType::NORMAL;
     uint32_t continuousTaskFlag_ = 0;
