@@ -1059,7 +1059,7 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_FLING, false, "");
     } else if (data->value == 8) {
         if (!flingExceptionFlag_ && swiperFlingEndflag_) {
-            SOC_PERF_LOGI("SocPerfPlugin: socperf->WZWZ 0 SLIDE_NORMAL: %{public}lld", (long long)data->value);
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_FLING, false, "");
         }
     } else if (data->value == SlideEventStatus::SLIDE_NORMAL_BEGIN) {
         HandleContinuousDrag(data->value);
