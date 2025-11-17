@@ -129,7 +129,7 @@ void CgroupEventHandler::HandleApplicationStateChanged(uint32_t resType, int64_t
     if (state == (int32_t)ApplicationState::APP_STATE_BACKGROUND &&
         preloadMode == (int32_t)(PreloadMode::PRE_LAUNCH)) {
         CGS_LOGD("%{public}s : APP_STATE_BACKGROUND, preloadMode: %{public}d, "
-        "function return directly", __func__, preloadMode);
+                 "function return directly", __func__, preloadMode);
         return;
     }
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
@@ -164,7 +164,7 @@ void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t val
     if (state == (int32_t)(ResType::ProcessStatus::PROCESS_BACKGROUND) &&
         preloadMode == (int32_t)(PreloadMode::PRE_LAUNCH)) {
         CGS_LOGD("%{public}s : PROCESS_BACKGROUND, preloadMode: %{public}d, "
-        "function return directly", __func__, preloadMode);
+                 "function return directly", __func__, preloadMode);
         return;
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
@@ -201,13 +201,9 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     int32_t abilityType = 0;
     int32_t callerUid = -1;
     int32_t preloadMode = -1;
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
-        !ParseString(bundleName, "bundleName", payload) || !ParseString(abilityName, "abilityName", payload) ||
-        !ParseValue(recordId, "recordId", payload) || !ParseValue(callerUid, "callerUid", payload) ||
-        !ParseValue(abilityState, "abilityState", payload) || !ParseValue(abilityType, "abilityType", payload)) {
+    if (!ParseConfig(uid, pid, bundleName, abilityName, recordId, abilityState, abilityType, callerUid, preloadMode)) {
         return;
     }
-    bool res = ParseValue(preloadMode, "preloadMode", payload);
 
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d, %{public}d",
         __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), recordId, abilityState, abilityType);
@@ -226,10 +222,8 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
         return;
     }
     if ((abilityState == (int32_t)(AbilityState::ABILITY_STATE_CREATE) ||
-        abilityState == (int32_t)(AbilityState::ABILITY_STATE_BACKGROUND)) &&
-        preloadMode == (int32_t)(PreloadMode::PRE_LAUNCH)) {
-        CGS_LOGD("%{public}s : abilityState: %{public}d, preloadMode: %{public}d, " "function return directly",
-            __func__, abilityState, preloadMode);
+        abilityState == (int32_t)(AbilityState::ABILITY_STATE_BACKGROUND)) && preloadMode == (int32_t)(PreloadMode::PRE_LAUNCH)) {
+        CGS_LOGD("%{public}s : abilityState: %{public}d, preloadMode: %{public}d, function return directly", __func__, abilityState, preloadMode);
         return;
     }
     auto app = supervisor_->GetAppRecordNonNull(uid);
@@ -242,8 +236,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     if (abilityState == 0) {
         ResSchedUtils::GetInstance().ReportCallerEvent(*(app.get()), *(procRecord.get()), callerUid);
     }
-    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
-        AdjustSource::ADJS_ABILITY_STATE);
+    CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), AdjustSource::ADJS_ABILITY_STATE);
 }
 
 void CgroupEventHandler::HandleAbilityTerminated(int32_t uid, int32_t pid, int32_t recordId)
@@ -1376,6 +1369,19 @@ bool CgroupEventHandler::GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::s
             __func__, uid, pid);
         return false;
     }
+    return true;
+}
+
+bool CgroupEventHandler::ParseConfig(int32_t& uid, int32_t& pid, std::string& bundleName, std::string& abilityName,
+    int32_t& recordId, int32_t& abilityState, int32_t& abilityType, int32_t& callerUid, int32_t preloadMode)
+{
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
+        !ParseString(bundleName, "bundleName", payload) || !ParseString(abilityName, "abilityName", payload) ||
+        !ParseValue(recordId, "recordId", payload) || !ParseValue(callerUid, "callerUid", payload) ||
+        !ParseValue(abilityState, "abilityState", payload) || !ParseValue(abilityType, "abilityType", payload)) {
+        return false;
+    }
+    bool res = ParseValue(preloadMode, "preloadMode", payload);
     return true;
 }
 
