@@ -416,10 +416,10 @@ extern "C" int32_t KillProcessInProcess(const nlohmann::json& payload)
     return ResSchedMgr::GetInstance().KillProcessByClient(payload);
 }
 
-extern "C" void ReportSyncEventInProcess(uint32_t type, int64_t value,
+extern "C" int32_t ReportSyncEventInProcess(uint32_t type, int64_t value,
     const nlohmann::json& payload, nlohmann::json& reply)
 {
-    PluginMgr::GetInstance().DeliverResource(
+    return PluginMgr::GetInstance().DeliverResource(
         std::make_shared<ResData>(type, value, payload, reply));
 }
 } // namespace ResourceSchedule

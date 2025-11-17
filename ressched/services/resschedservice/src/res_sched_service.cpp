@@ -192,7 +192,6 @@ namespace {
         { ResType::RES_TYPE_SEND_FRAME_EVENT, { 1003 } },
         { ResType::RES_TYPE_CLICK_RECOGNIZE, { 6696 } },
         { ResType::RES_TYPE_REPORT_GAME_SCHED, { 7800 } },
-        { ResType::RES_TYPE_DEVICE_IDLE, { 3051 } },
         { ResType::RES_TYPE_GAME_INFO_NOTIFY, { 7011 } },
         { ResType::SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS, { 5523 } },
         { ResType::RES_TYPE_GET_GAME_SCENE_INFO, { 7800 } },
@@ -201,7 +200,6 @@ namespace {
         { ResType::RES_TRPE_GAME_SUSPEND_MODE, { 7800 } },
         { ResType::RES_TYPE_STANDBY_FREEZE_FAILED, { 1201 } },
         { ResType::RES_TYPE_ADJUST_PROTECTLRU_RECLAIM_RATIO, { 1111 } },
-        { ResType::SYNC_RES_TYPE_GET_APP_TYPE, { 3051 } },
     };
     enum SYSTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL : int32_t {
         DEBUG_LEVEL_MINIMUM = 0,
