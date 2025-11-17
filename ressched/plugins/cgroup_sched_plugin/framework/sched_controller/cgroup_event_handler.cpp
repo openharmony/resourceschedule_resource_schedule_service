@@ -201,7 +201,8 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     int32_t abilityType = 0;
     int32_t callerUid = -1;
     int32_t preloadMode = -1;
-    if (!ParseConfig(uid, pid, bundleName, abilityName, recordId, abilityState, abilityType, callerUid, preloadMode, payload)) {
+    if (!ParseConfig(uid, pid, bundleName, abilityName, recordId, abilityState,
+        abilityType, callerUid, preloadMode, payload)) {
         return;
     }
 
@@ -221,10 +222,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
         HandleAbilityTerminated(uid, pid, recordId);
         return;
     }
-    if ((abilityState == (int32_t)(AbilityState::ABILITY_STATE_CREATE) ||
-        abilityState == (int32_t)(AbilityState::ABILITY_STATE_BACKGROUND))
-        && preloadMode == (int32_t)(PreloadMode::PRE_LAUNCH)) {
-        CGS_LOGD("%{public}s : %{public}d, %{public}d, function return directly", __func__, abilityState, preloadMode);
+    if (HandlePrelaunch(abilityState, preloadMode)) {
         return;
     }
     auto app = supervisor_->GetAppRecordNonNull(uid);
@@ -239,6 +237,17 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_ABILITY_STATE);
+}
+
+bool CgroupEventHandler::HandlePrelaunch(int32_t abilityState, int32_t preloadMode)
+{
+    if ((abilityState == (int32_t)(AbilityState::ABILITY_STATE_CREATE) ||
+        abilityState == (int32_t)(AbilityState::ABILITY_STATE_BACKGROUND))
+        && preloadMode == (int32_t)(PreloadMode::PRE_LAUNCH)) {
+        CGS_LOGD("%{public}s : %{public}d, %{public}d, function return directly", __func__, abilityState, preloadMode);
+        return true;
+    }
+    return false;
 }
 
 void CgroupEventHandler::HandleAbilityTerminated(int32_t uid, int32_t pid, int32_t recordId)

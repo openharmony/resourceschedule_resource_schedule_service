@@ -45,6 +45,7 @@ public:
     void HandleTransientTaskStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleTransientTaskStart(uid_t uid, pid_t pid, const std::string& packageName);
     void HandleTransientTaskEnd(uid_t uid, pid_t pid, const std::string& packageName);
+    bool HandlePrelaunch(int32_t abilityState, int32_t preloadMode);
     bool GetArrayFromJson(const nlohmann::json& jsonObj, const std::string& name, nlohmann::json& value);
     bool GetTypeIdsFromJson(const nlohmann::json &payload, std::vector<uint32_t> &typeIds, const std::string& name);
     void HandleContinuousTaskStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
@@ -89,8 +90,9 @@ private:
     bool ParseValue(int32_t& value, const char* name, const nlohmann::json& payload);
     bool ParseLongValue(int64_t& value, const char* name, const nlohmann::json& payload);
     bool ParseString(std::string& value, const char* name, const nlohmann::json& payload);
-    bool ParseConfig(int32_t& uid, int32_t& pid, std::string& bundleName, std::string& abilityName, int32_t& recordId,
-        int32_t& abilityState, int32_t& abilityType, int32_t& callerUid, int32_t preloadMode, const nlohmann::json& payload);
+    bool ParseConfig(int32_t& uid, int32_t& pid, std::string& bundleName, std::string& abilityName,
+        int32_t& recordId, int32_t& abilityState, int32_t& abilityType, int32_t& callerUid,
+        int32_t preloadMode, const nlohmann::json& payload);
     void UpdateActivepWebRenderInfo(int32_t state, int32_t windowId, const std::shared_ptr<ProcessRecord>& proc,
         std::shared_ptr<Application>& app);
     void HandleEmptyPayloadForCosmicCubeState(uint32_t resType, int64_t value);
