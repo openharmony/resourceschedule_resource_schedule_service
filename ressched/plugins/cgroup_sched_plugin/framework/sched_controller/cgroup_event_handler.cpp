@@ -108,14 +108,12 @@ void CgroupEventHandler::HandleApplicationStateChanged(uint32_t resType, int64_t
     int32_t pid = 0;
     std::string bundleName;
     int32_t state = 0;
-    int32_t preloadMode = -1;
 
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
         !ParseString(bundleName, "bundleName", payload) || !ParseValue(state, "state", payload)) {
         CGS_LOGD("%{public}s: param error", __func__);
         return;
     }
-    bool res = ParseValue(preloadMode, "preloadMode", payload);
 
     CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
     std::string traceStr(__func__);
@@ -124,12 +122,6 @@ void CgroupEventHandler::HandleApplicationStateChanged(uint32_t resType, int64_t
     FinishTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP);
     ChronoScope cs("HandleApplicationStateChanged");
     if (state == (int32_t)(ApplicationState::APP_STATE_TERMINATED)) {
-        return;
-    }
-    if (state == (int32_t)ApplicationState::APP_STATE_BACKGROUND &&
-        preloadMode == (int32_t)(PreloadMode::PRE_LAUNCH)) {
-        CGS_LOGD("%{public}s : APP_STATE_BACKGROUND, preloadMode: %{public}d, "
-                 "function return directly", __func__, preloadMode);
         return;
     }
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
