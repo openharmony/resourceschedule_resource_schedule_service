@@ -1078,7 +1078,7 @@ bool SocPerfPlugin::HandleSwiperFlingEndEx(const std::shared_ptr<ResData>& data)
         return false;
     }
     SOC_PERF_LOGI("SocPerfPlugin: socperf->WZWZ3 SLIDE_NORMAL: %{public}lld", (long long)data->value);
-    if (data->value == 0 ) {
+    if (data->value == 0) {
         flingExceptionFlag_ = false;
     } else {
         flingExceptionFlag_ = true;
