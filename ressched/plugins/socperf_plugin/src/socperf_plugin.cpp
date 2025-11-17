@@ -540,8 +540,6 @@ void SocPerfPlugin::AddEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleCameraStateChange(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_REPORT_GAME_STATE_CHANGE,
         [this](const std::shared_ptr<ResData>& data) { HandleGameStateChange(data); }));
-    functionMap.insert(std::make_pair(RES_TYPE_SWIPER_FLING_END_EXCEPTION_FLAG,
-        [this](const std::shared_ptr<ResData>& data) { HandleSwiperFlingEndEx(data); }));
     if (RES_TYPE_SCENE_BOARD_ID != 0) {
         functionMap.insert(std::make_pair(RES_TYPE_SCENE_BOARD_ID,
             [this](const std::shared_ptr<ResData>& data) { HandleSocperfSceneBoard(data); }));
@@ -569,6 +567,8 @@ void SocPerfPlugin::AddOtherEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { ReportAbilityStatus(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_DISPLAY_POWER_WAKE_UP,
         [this](const std::shared_ptr<ResData>& data) { HandleDisplayPowerWakeUp(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_SWIPER_FLING_END_EXCEPTION_FLAG,
+        [this](const std::shared_ptr<ResData>& data) { HandleSwiperFlingEndEx(data); }));
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
