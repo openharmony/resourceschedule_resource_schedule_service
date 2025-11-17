@@ -443,6 +443,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO = 510,
     // last sync resType
     SYNC_RES_TYPE_LAST,
+    // get first frame drawn
+    RES_TYPE_FIRST_FRAME_DRWAN,
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
     // user unlocked
