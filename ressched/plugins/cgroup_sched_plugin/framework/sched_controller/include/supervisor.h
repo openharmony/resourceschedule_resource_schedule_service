@@ -46,6 +46,14 @@ enum ProcRecordType : int32_t {
     PROC_RECORD_TYPE_MAX,
 };
 
+enum CpuLevelType : int32_t {
+    DEFAULT = -1,
+    LITTLE_CPU = 0,
+    MEDIUM_CPU = 1,
+    BIG_CPU = 2,
+    CPU_LEVEL_TYPE_MAX,
+};
+
 class AbilityInfo;
 class WindowInfo {
 public:
@@ -125,6 +133,7 @@ public:
     bool isLoadState_ = false;
     bool saPullAppState_ = false;
 
+    int32_t cpuLevel_ = CpuLevelType::DEFAULT;
     int32_t processType_ = ProcRecordType::NORMAL;
     uint32_t continuousTaskFlag_ = 0;
     int32_t audioPlayingState_ = -1;
@@ -189,6 +198,7 @@ public:
 
     std::shared_ptr<ProcessRecord> focusedProcess_ = nullptr;
     bool isCosmicCubeStateHide_ = false;
+    int32_t cpuLevel_ = CpuLevelType::DEFAULT;
 
 private:
     uid_t uid_;
