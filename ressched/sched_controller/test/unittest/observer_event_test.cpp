@@ -144,6 +144,50 @@ void ObserverEventTest::TearDownTestCase()
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 /**
+ * @tc.name: hisysEventFirstFrameDrwanEvent_001
+ * @tc.desc: test multimedia encoding and decoding event processing
+ * @tc.type: FUNC
+ * @tc.require: issueI8IDAO
+ */
+HWTEST_F(ObserverEventTest, hisysEventFirstFrameDrwanEvent_001, testing::ext::TestSize.Level1)
+{
+    nlohmann::json sysEvent;
+    std::string eventName = "";
+    g_capturedPayload.clear();
+    g_capturedState = -1;
+
+    // incorrect eventName
+    eventName = "INVAILD";
+    sysEvent["name_"] = eventName;
+    hisysEventObserver_->ProcessFirstFrameDrawnEvent(sysEvent, eventName);
+    ASSERT_FALSE(g_capturedPayload.contains("appPid"));
+    EXPECT_EQ(g_capturedState, -1);
+
+
+    eventName = "FIRST_FRAME_DRAWN";
+    sysEvent["name_"] = eventName;
+    // incorrect pid keyWord
+    sysEvent["PID"] = TEST_PID;
+    hisysEventObserver_->ProcessFirstFrameDrawnEvent(sysEvent, eventName);
+    ASSERT_FALSE(g_capturedPayload.contains("appPid"))
+    << "g_capturedPayload should not contain 'appPid' when using incorrect 'PID' key";
+
+    // incorrect pid value
+    sysEvent["APP_ID"] = "12&";
+    hisysEventObserver_->ProcessFirstFrameDrawnEvent(sysEvent, eventName);
+    ASSERT_FALSE(g_capturedPayload.contains("appPid"))
+    << "g_capturedPayload should not contain 'appPid' when using incorrect pid value";
+
+    // first frame drwan scene
+    sysEvent["APP_ID"] = TEST_PID;
+    hisysEventObserver_->ProcessFirstFrameDrawnEvent(sysEvent, eventName);
+    ASSERT_TRUE(g_capturedPayload.contains("appPid"))
+    << "g_capturedPayload must contain 'appPid' key";
+    EXPECT_EQ(g_capturedPayload["appPid"], std::to_string(TEST_PID));
+    EXPECT_EQ(g_capturedState, 0);
+}
+
+/**
  * @tc.name: hisysEventAvCodecEvent_001
  * @tc.desc: test multimedia encoding and decoding event processing
  * @tc.type: FUNC

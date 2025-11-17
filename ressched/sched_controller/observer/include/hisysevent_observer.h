@@ -39,6 +39,7 @@ private:
     void ProcessCameraEvent(const nlohmann::json& root, const std::string& eventName);
     void ProcessWifiEvent(const nlohmann::json& root, const std::string& eventName);
     bool CheckJsonValue(const nlohmann::json& value, std::initializer_list<std::string> params);
+    void ProcessFirstFrameDrawnEvent(const nlohmann::json& root, const std::string& eventName);
 
     std::map<std::string,
         std::function<void(const nlohmann::json&, const std::string&)>> handleObserverMap_;

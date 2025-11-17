@@ -19,6 +19,7 @@
 #include "res_sched_mgr.h"
 #include "res_type.h"
 #include "res_value.h"
+#include "res_sched_json_util.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -26,6 +27,7 @@ namespace {
     static const char* WIFI_CONNECTION = "WIFI_CONNECTION";
     static const char* WIFI_SCAN = "WIFI_SCAN";
     static const char* CAMERA_CONNECT = "CAMERA_CONNECT";
+    static const char* FIRST_FRAME_DRAWN = "FIRST_FRAME_DRAWN";
     static constexpr int32_t INDENT                    = -1;
     static constexpr int32_t CAMERACONNECT             = 0;
     static constexpr int32_t CAMERADISCONNECT          = 1;
@@ -101,6 +103,11 @@ void HiSysEventObserver::OnEvent(std::shared_ptr<HiviewDFX::HiSysEventRecord> sy
 
 void HiSysEventObserver::ProcessHiSysEvent(const std::string& eventName, const nlohmann::json& root)
 {
+    if (root.at("domain_").get<std::string>() == "GRAPHIC") {
+        ProcessFirstFrameDrawnEvent(root, eventName);
+        return;
+    }
+
     if (root.at("domain_").get<std::string>() == "AV_CODEC") {
         ProcessAvCodecEvent(root, eventName);
         return;
@@ -113,6 +120,24 @@ void HiSysEventObserver::ProcessHiSysEvent(const std::string& eventName, const n
             function(root, eventName);
         }
     }
+}
+
+void HiSysEventObserver::ProcessFirstFrameDrawnEvent(const nlohmann::json& root, const std::string& eventName)
+{
+    if (eventName != FIRST_FRAME_DRAWN) {
+        return;
+    }
+
+    RESSCHED_LOGD("Process firstFrameDrawn event");
+    nlohmann::json payload;
+    if (root.contains("APP_ID") && root.at("APP_ID").is_number_integer()) {
+        payload["appPid"] = std::to_string(root.at("APP_ID").get<std::int32_t>());
+    } else {
+        RESSCHED_LOGE("fristFrameDrawn event pid format error!");
+        return;
+    }
+
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_FIRST_FRAME_DRWAN, 0, payload);
 }
 
 void HiSysEventObserver::ProcessAvCodecEvent(const nlohmann::json& root, const std::string& eventName)
