@@ -45,6 +45,7 @@ using OHOS::AppExecFwk::AbilityState;
 using OHOS::AppExecFwk::AbilityType;
 using OHOS::AppExecFwk::ExtensionState;
 using OHOS::AppExecFwk::ProcessType;
+using OHOS::AppExecFwk::PreloadMode;
 
 CgroupEventHandler::CgroupEventHandler(const std::string &queueName)
 {
@@ -107,12 +108,14 @@ void CgroupEventHandler::HandleApplicationStateChanged(uint32_t resType, int64_t
     int32_t pid = 0;
     std::string bundleName;
     int32_t state = 0;
+    int32_t preloadMode = -1;
 
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
         !ParseString(bundleName, "bundleName", payload) || !ParseValue(state, "state", payload)) {
         CGS_LOGD("%{public}s: param error", __func__);
         return;
     }
+    bool res = ParseValue(preloadMode, "preloadMode", payload);
 
     CGS_LOGD("%{public}s : %{public}d, %{public}s, %{public}d", __func__, uid, bundleName.c_str(), state);
     std::string traceStr(__func__);
@@ -121,6 +124,12 @@ void CgroupEventHandler::HandleApplicationStateChanged(uint32_t resType, int64_t
     FinishTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP);
     ChronoScope cs("HandleApplicationStateChanged");
     if (state == (int32_t)(ApplicationState::APP_STATE_TERMINATED)) {
+        return;
+    }
+    if (state == (int32_t)ApplicationState::APP_STATE_BACKGROUND &&
+        preloadMode == (int32_t)(PreloadMode::PRE_LAUNCH)) {
+        CGS_LOGD("%{public}s : APP_STATE_BACKGROUND, preloadMode: %{public}d, "
+        "function return directly", __func__, preloadMode);
         return;
     }
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
@@ -133,6 +142,7 @@ void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t val
     int32_t pid = 0;
     std::string bundleName;
     int32_t state = 0;
+    int32_t preloadMode = -1;
     if (!ParseValue(uid, "uid", payload) ||
         !ParseValue(pid, "pid", payload) ||
         !ParseString(bundleName, "bundleName", payload) ||
@@ -140,6 +150,7 @@ void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t val
         CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
+    bool res = ParseValue(preloadMode, "preloadMode", payload);
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}d", __func__, uid,
         pid, bundleName.c_str(), state);
     std::string traceStr(__func__);
@@ -150,6 +161,12 @@ void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t val
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
     procRecord->processState_ = state;
+    if (state == (int32_t)(ResType::ProcessStatus::PROCESS_BACKGROUND) &&
+        preloadMode == (int32_t)(PreloadMode::PRE_LAUNCH)) {
+        CGS_LOGD("%{public}s : PROCESS_BACKGROUND, preloadMode: %{public}d, "
+        "function return directly", __func__, preloadMode);
+        return;
+    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_STATE);
 }
@@ -183,12 +200,14 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     int32_t abilityState = 0;
     int32_t abilityType = 0;
     int32_t callerUid = -1;
+    int32_t preloadMode = -1;
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
         !ParseString(bundleName, "bundleName", payload) || !ParseString(abilityName, "abilityName", payload) ||
         !ParseValue(recordId, "recordId", payload) || !ParseValue(callerUid, "callerUid", payload) ||
         !ParseValue(abilityState, "abilityState", payload) || !ParseValue(abilityType, "abilityType", payload)) {
         return;
     }
+    bool res = ParseValue(preloadMode, "preloadMode", payload);
 
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}s, %{public}d, %{public}d, %{public}d",
         __func__, uid, pid, bundleName.c_str(), abilityName.c_str(), recordId, abilityState, abilityType);
@@ -204,6 +223,13 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     FinishTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP);
     if (abilityState == (int32_t)(AbilityState::ABILITY_STATE_TERMINATED)) {
         HandleAbilityTerminated(uid, pid, recordId);
+        return;
+    }
+    if ((abilityState == (int32_t)(AbilityState::ABILITY_STATE_CREATE) ||
+        abilityState == (int32_t)(AbilityState::ABILITY_STATE_BACKGROUND)) &&
+        preloadMode == (int32_t)(PreloadMode::PRE_LAUNCH)) {
+        CGS_LOGD("%{public}s : abilityState: %{public}d, preloadMode: %{public}d, " "function return directly",
+            __func__, abilityState, preloadMode);
         return;
     }
     auto app = supervisor_->GetAppRecordNonNull(uid);
