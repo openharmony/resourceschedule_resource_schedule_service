@@ -201,7 +201,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     int32_t abilityType = 0;
     int32_t callerUid = -1;
     int32_t preloadMode = -1;
-    if (!ParseConfig(uid, pid, bundleName, abilityName, recordId, abilityState, abilityType, callerUid, preloadMode)) {
+    if (!ParseConfig(uid, pid, bundleName, abilityName, recordId, abilityState, abilityType, callerUid, preloadMode, payload)) {
         return;
     }
 
@@ -1374,8 +1374,9 @@ bool CgroupEventHandler::GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::s
     return true;
 }
 
-bool CgroupEventHandler::ParseConfig(int32_t& uid, int32_t& pid, std::string& bundleName, std::string& abilityName,
-    int32_t& recordId, int32_t& abilityState, int32_t& abilityType, int32_t& callerUid, int32_t preloadMode)
+bool CgroupEventHandler::ParseConfig(int32_t& uid, int32_t& pid, std::string& bundleName,
+    std::string& abilityName, int32_t& recordId, int32_t& abilityState, int32_t& abilityType,
+    int32_t& callerUid, int32_t preloadMode, const nlohmann::json& payload)
 {
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
         !ParseString(bundleName, "bundleName", payload) || !ParseString(abilityName, "abilityName", payload) ||
