@@ -79,6 +79,7 @@ namespace {
     const std::string PRELOAD_MODE = "isPreload";
     const std::string PRELAUNCH = "isPrelaunch";
     const std::string WEAK_ACTION_STRING = "weakInterAction";
+    const std::string SWIPER_FLING_END_STRING = "swiperActionEnd";
     const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
     const std::string KEY_APP_TYPE = "key_app_type";
     const std::string GAME_ENV = "env";
@@ -159,6 +160,7 @@ void SocPerfPlugin::Init()
     InitPerfCrucialSo();
     InitBundleNameBoostList();
     InitWeakInterAction();
+    InitSwiperFlingEndApp();
     InitBatteryCapacityLimitFreq();
     InitPolicyMode();
     SOC_PERF_LOGI("SocPerfPlugin::Init success");
@@ -204,6 +206,32 @@ void SocPerfPlugin::LoadWeakInterAction(const PluginConfig& itemLists)
             }
         }
     }
+}
+
+void SocPerfPlugin::InitSwiperFlingEndApp()
+{
+    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, SWIPER_FLING_END_STRING);
+    LoadSwiperFlingEndApp(itemLists);
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, SWIPER_FLING_END_STRING);
+}
+ 
+void SocPerfPlugin::LoadSwiperFlingEndApp(const PluginConfig& itemLists)
+{
+    for (const Item& item : itemLists.itemList) {
+        for (SubItem sub : item.subItemList) {
+            if (sub.name == BUNDLE_NAME) {
+                AddSwiperFlingEndApp(sub.value);
+            }
+        }
+    }
+}
+
+void SocPerfPlugin::AddSwiperFlingEndApp(const std::string& subValue)
+{
+    if (subValue.empty()) {
+        return;
+    }
+    swiperFlingEndApp_.insert(subValue);
 }
 
 void SocPerfPlugin::SetWeakActionEnable(const std::string& subValue)
@@ -539,6 +567,8 @@ void SocPerfPlugin::AddOtherEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { ReportAbilityStatus(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_DISPLAY_POWER_WAKE_UP,
         [this](const std::shared_ptr<ResData>& data) { HandleDisplayPowerWakeUp(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_SWIPER_FLING_END_EXCEPTION_FLAG,
+        [this](const std::shared_ptr<ResData>& data) { HandleSwiperFlingEndEx(data); }));
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
@@ -589,6 +619,7 @@ void SocPerfPlugin::InitResTypes()
 #endif
         RES_TYPE_WEB_SLIDE_SCROLL,
         RES_TYPE_DISPLAY_POWER_WAKE_UP,
+        RES_TYPE_SWIPER_FLING_END_EXCEPTION_FLAG,
     };
     InitOtherResTypes();
 }
@@ -765,6 +796,12 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
         return true;
     }
     focusAppUids_.insert(uid);
+    if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end() &&
+        swiperFlingEndApp_.find(uidToAppMsgMap_[uid].GetBundleName()) != swiperFlingEndApp_.end()) {
+        swiperFlingEndflag_ = true;
+    } else {
+        swiperFlingEndflag_ = false;
+    }
     UpdateWeakActionStatus();
     int32_t pid = GetPidByData(data, PID_NAME);
     if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end()) {
@@ -1021,6 +1058,10 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_FLING, true, "");
     } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_FLING, false, "");
+    } else if (data->value == SlideEventStatus::SWIPER_FLING_END) {
+        if (!flingExceptionFlag_ && swiperFlingEndflag_) {
+            OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_FLING, false, "");
+        }
     } else if (data->value == SlideEventStatus::SLIDE_NORMAL_BEGIN) {
         HandleContinuousDrag(data->value);
     } else if (data->value == SlideEventStatus::SLIDE_NORMAL_END) {
@@ -1029,6 +1070,20 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
         HandleMoveEventBoost(data, true);
         HandleContinuousDrag(data->value);
     }
+}
+
+bool SocPerfPlugin::HandleSwiperFlingEndEx(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->WZWZ3 SLIDE_NORMAL: %{public}lld", (long long)data->value);
+    if (data->value == 0) {
+        flingExceptionFlag_ = false;
+    } else {
+        flingExceptionFlag_ = true;
+    }
+    return true;
 }
 
 void SocPerfPlugin::HandleContinuousDrag(int64_t dragStatus)

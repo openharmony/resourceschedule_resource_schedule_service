@@ -200,6 +200,7 @@ enum SlideEventStatus : int64_t {
     AUTO_PLAY_ON = 5,
     AUTO_PLAY_OFF = 6,
     MOVE_EVENT_ON = 7,
+    SWIPER_FLING_END = 8,
 };
 
 /**
