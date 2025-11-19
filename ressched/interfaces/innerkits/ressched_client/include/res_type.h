@@ -444,7 +444,7 @@ enum : uint32_t {
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // get first frame drawn
-    RES_TYPE_FIRST_FRAME_DRWAN,
+    RES_TYPE_FIRST_FRAME_DRAWN,
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
     // user unlocked
