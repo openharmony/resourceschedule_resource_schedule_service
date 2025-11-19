@@ -401,6 +401,8 @@ enum : uint32_t {
     RES_TYPE_TRIGGER_PRELOAD_APPLICATION = 188,
     // media ctrl playback event
     RES_TYPE_MEDIA_CTRL_EVENT = 189,
+    // report live view event, value 1 enter live view, value 0 exit live view, payload uid, eventName.
+    RES_TYPE_LIVE_VIEW_EVENT = 190,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
