@@ -129,6 +129,10 @@ private:
     std::optional<bool> thermalLimit_;
     bool socperfGameBoostSwitch_ = false;
     bool custGameState_ = false;
+    bool flingExceptionFlag_ = false;
+    bool swiperFlingEndflag_ = false;
+    std::set<std::string> swiperFlingEndApp_;
+
     void InitEventId();
     void InitFunctionMap();
     void InitSpecialExtension();
@@ -141,6 +145,9 @@ private:
     void InitResTypes();
     void InitOtherResTypes();
     void InitPerfCrucialSo();
+    void InitSwiperFlingEndApp();
+    void LoadSwiperFlingEndApp(const PluginConfig& itemLists);
+    void AddSwiperFlingEndApp(const std::string& subValue);
     void InitWeakInterAction();
     void LoadWeakInterAction(const PluginConfig& itemLists);
     void SetWeakActionEnable(const std::string& subValue);
@@ -158,6 +165,7 @@ private:
     void HandleLoadPage(const std::shared_ptr<ResData>& data);
     void HandlePopPage(const std::shared_ptr<ResData>& data);
     void HandleEventSlide(const std::shared_ptr<ResData>& data);
+    bool HandleSwiperFlingEndEx(const std::shared_ptr<ResData>& data);
     void HandleEventWebGesture(const std::shared_ptr<ResData>& data);
     void HandleAppAbilityStart(const std::shared_ptr<ResData>& data);
     void HandleResizeWindow(const std::shared_ptr<ResData>& data);

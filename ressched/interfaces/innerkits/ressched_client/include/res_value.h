@@ -200,6 +200,7 @@ enum SlideEventStatus : int64_t {
     AUTO_PLAY_ON = 5,
     AUTO_PLAY_OFF = 6,
     MOVE_EVENT_ON = 7,
+    SWIPER_FLING_END = 8,
 };
 
 /**
@@ -925,6 +926,14 @@ enum CodecEncodeState : int32_t {
 enum CameraLensState : int32_t {
     CAMERA_LEN_OPENED = 0,
     CAMERA_LEN_CLOSED = 1,
+};
+
+/**
+* @brief inputmethod qos state
+*/
+enum ImeQosState : int64_t {
+    IME_START_UP = 0,
+    IME_START_FINISH = 1,
 };
 
 /**
