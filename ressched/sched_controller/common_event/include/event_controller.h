@@ -58,6 +58,7 @@ private:
     void DataShareIsReady();
     void HandleConnectivityChange(const EventFwk::Want &want, const int32_t &code, nlohmann::json &payload);
     void HandlePkgAddRemove(const EventFwk::Want &want, nlohmann::json &payload) const;
+    void HandleMediaCtrlEvent(const EventFwk::Want &want);
     int32_t GetUid(const int32_t &userId, const std::string &bundleName) const;
     void ReportDataInProcess(const uint32_t &resType, const int64_t &value, const nlohmann::json& payload);
     bool HandlePkgCommonEvent(const std::string &action, EventFwk::Want &want, nlohmann::json &payload);

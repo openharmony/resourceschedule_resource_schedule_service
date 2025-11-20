@@ -604,6 +604,26 @@ HWTEST_F(EventControllerTest, gameStatusChange_001, testing::ext::TestSize.Level
 }
 
 /**
+ * @tc.name: MediaCtrlEvent_001
+ * @tc.desc: test the MediaCtrlEvent_001
+ * @tc.type: FUNC
+ * @tc.require: issues
+ */
+HWTEST_F(EventControllerTest, MediaCtrlEvent_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    want.SetAction("usual.event.MEDIA_CTRL_EVENT");
+    EventFwk::CommonEventData dataEmpty { want };
+    EventController::GetInstance().OnReceiveEvent(dataEmpty);
+    want.SetParam("cmd", std::string("OnPlay"));
+    want.SetParam("uid", 1);
+    want.SetParam("pid", 1);
+    EventFwk::CommonEventData data { want };
+    EventController::GetInstance().OnReceiveEvent(data);
+    EXPECT_NE(want.GetAction(), "");
+}
+
+/**
  * @tc.name: userSleepStateChange_001
  * @tc.desc: test the userSleepStateChange_001
  * @tc.type: FUNC
