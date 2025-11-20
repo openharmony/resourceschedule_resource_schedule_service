@@ -144,12 +144,12 @@ void ObserverEventTest::TearDownTestCase()
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
 /**
- * @tc.name: hisysEventFirstFrameDrwanEvent_001
+ * @tc.name: hisysEventFirstFrameDrawnEvent_001
  * @tc.desc: test multimedia encoding and decoding event processing
  * @tc.type: FUNC
  * @tc.require: issueI8IDAO
  */
-HWTEST_F(ObserverEventTest, hisysEventFirstFrameDrwanEvent_001, testing::ext::TestSize.Level1)
+HWTEST_F(ObserverEventTest, hisysEventFirstFrameDrawnEvent_001, testing::ext::TestSize.Level1)
 {
     nlohmann::json sysEvent;
     std::string eventName = "";
@@ -173,13 +173,13 @@ HWTEST_F(ObserverEventTest, hisysEventFirstFrameDrwanEvent_001, testing::ext::Te
     << "g_capturedPayload should not contain 'appPid' when using incorrect 'PID' key";
 
     // incorrect pid value
-    sysEvent["APP_ID"] = "12&";
+    sysEvent["APP_PID"] = "12&";
     hisysEventObserver_->ProcessFirstFrameDrawnEvent(sysEvent, eventName);
     ASSERT_FALSE(g_capturedPayload.contains("appPid"))
     << "g_capturedPayload should not contain 'appPid' when using incorrect pid value";
 
     // first frame drwan scene
-    sysEvent["APP_ID"] = TEST_PID;
+    sysEvent["APP_PID"] = TEST_PID;
     hisysEventObserver_->ProcessFirstFrameDrawnEvent(sysEvent, eventName);
     ASSERT_TRUE(g_capturedPayload.contains("appPid"))
     << "g_capturedPayload must contain 'appPid' key";

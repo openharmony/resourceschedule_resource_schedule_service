@@ -401,6 +401,8 @@ enum : uint32_t {
     RES_TYPE_TRIGGER_PRELOAD_APPLICATION = 188,
     // media ctrl playback event
     RES_TYPE_MEDIA_CTRL_EVENT = 189,
+    // report inputmethod qos change
+    RES_TYPE_IME_QOS_CHANGE = 190,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -444,7 +446,7 @@ enum : uint32_t {
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // get first frame drawn
-    RES_TYPE_FIRST_FRAME_DRWAN,
+    RES_TYPE_FIRST_FRAME_DRAWN,
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
     // user unlocked

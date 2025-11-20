@@ -129,15 +129,18 @@ void HiSysEventObserver::ProcessFirstFrameDrawnEvent(const nlohmann::json& root,
     }
 
     RESSCHED_LOGD("Process firstFrameDrawn event");
+    constexpr char APP_PID[] = "APP_PID";
     nlohmann::json payload;
-    if (root.contains("APP_ID") && root.at("APP_ID").is_number_integer()) {
-        payload["appPid"] = std::to_string(root.at("APP_ID").get<std::int32_t>());
+    int32_t value;
+    if (root.contains(APP_PID) && ResCommonUtil::ParseIntParameterFromJson(APP_PID, value, root)) {
+        payload["appPid"] = std::to_string(value);
+        RESSCHED_LOGD("ProcessFirstFrameDrawnEvent value = %{public}d", value);
     } else {
-        RESSCHED_LOGE("fristFrameDrawn event pid format error!");
+        RESSCHED_LOGE("firstFrameDrawn event pid format error!");
         return;
     }
 
-    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_FIRST_FRAME_DRWAN, 0, payload);
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_FIRST_FRAME_DRAWN, 0, payload);
 }
 
 void HiSysEventObserver::ProcessAvCodecEvent(const nlohmann::json& root, const std::string& eventName)
