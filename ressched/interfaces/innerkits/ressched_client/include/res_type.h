@@ -403,6 +403,8 @@ enum : uint32_t {
     RES_TYPE_MEDIA_CTRL_EVENT = 189,
     // report inputmethod qos change
     RES_TYPE_IME_QOS_CHANGE = 190,
+    // report live view event, value 1 enter live view, value 0 exit live view, payload uid, eventName.
+    RES_TYPE_LIVE_VIEW_EVENT = 191,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

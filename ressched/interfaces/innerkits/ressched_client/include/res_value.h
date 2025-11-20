@@ -935,6 +935,14 @@ enum ImeQosState : int64_t {
     IME_START_UP = 0,
     IME_START_FINISH = 1,
 };
+
+/**
+* @brief live view state
+*/
+enum LiveViewState : int32_t {
+    LIVE_VIEW_EXIT = 0,
+    LIVE_VIEW_ENTER = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
