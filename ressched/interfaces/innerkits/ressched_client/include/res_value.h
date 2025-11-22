@@ -47,6 +47,7 @@ enum EventType : uint32_t {
     EVENT_LIMITED_EXECUTION = 14,
     EVENT_RECOVER_EXECUTION = 15,
     EVENT_SMART_GC_EVENT = 16,
+    EVENT_CONTINUOUS_TASK_DETECT_STATE = 17,
     EVENT_END,
 };
 
@@ -73,6 +74,11 @@ enum EventListenerGroup : uint32_t {
     LISTENER_GROUP_DH = 5,
     LISTENER_GROUP_KIDDO = 6,
     LISTENER_GROUP_END
+};
+
+enum ContinuousTaskState : uint32_t {
+    AUDIO_RESUME = 0,
+    AUDIO_DETECT_FAIL,
 };
 
 enum AppFrameDropType : int32_t {
