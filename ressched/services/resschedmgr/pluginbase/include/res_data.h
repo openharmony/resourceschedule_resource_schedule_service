@@ -41,13 +41,12 @@ using ResPair = std::pair<uint32_t, int64_t>;
 } // namespace ResourceSchedule
 } // namespace OHOS
 
-namespace std{
+namespace std {
     template<>
     struct hash<OHOS::ResourceSchedule::ResPair> {
         size_t operator()(const OHOS::ResourceSchedule::ResPair& pair) const {
             size_t h1 = std::hash<decltype(pair.first)>{}(pair.first);
             size_t h2 = std::hash<decltype(pair.second)>{}(pair.second);
-            // 避免魔数，使用具名常量
             const size_t GOLDEN_RATIO = 0x9e3779b9;
             const size_t SHIFT_LEFT = 6;
             const size_t SHIFT_RIGHT = 2;
