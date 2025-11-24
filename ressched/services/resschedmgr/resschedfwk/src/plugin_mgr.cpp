@@ -1050,7 +1050,7 @@ void PluginMgr::UnSubscribeResourceAccurately(const std::string& pluginLib, uint
     iter->second.remove(pluginLib);
     if (iter->second.empty()) {
         resTyperesValueLibMap_.erase(iter);
-    } // if为否的情况，覆盖率
+    }
 }
 
 bool PluginMgr::GetPluginListByResTypeAndValue(uint32_t resType, uint64_t resValue, std::list<std::string>& pluginList)
