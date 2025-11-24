@@ -43,8 +43,10 @@ using ResPair = std::pair<uint32_t, int64_t>;
 
 namespace std {
     template<>
-    struct hash<OHOS::ResourceSchedule::ResPair> {
-        size_t operator()(const OHOS::ResourceSchedule::ResPair& pair) const {
+    struct hash<OHOS::ResourceSchedule::ResPair>
+    {
+        size_t operator()(const OHOS::ResourceSchedule::ResPair& pair) const
+        {
             size_t h1 = std::hash<decltype(pair.first)>{}(pair.first);
             size_t h2 = std::hash<decltype(pair.second)>{}(pair.second);
             const size_t GOLDEN_RATIO = 0x9e3779b9;

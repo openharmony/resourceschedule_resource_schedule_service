@@ -1008,8 +1008,6 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_GetPluginListByResType_001, TestSize.Level
 
 /**
  * @tc.name: PluginMgrTest_DispatchResource_006
- * @tc.desc: Verify DispatchResource handles case when GetPluginListByResType returns false 
- *           but GetPluginListByResTypeAndValue returns true.
  * @tc.type: FUNC
  * @tc.require: issue1523
  */
