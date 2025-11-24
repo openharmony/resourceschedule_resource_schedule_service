@@ -339,8 +339,6 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
         CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
-    CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d",
-        __func__, uid, pid, hostPid, processType, bundleName.c_str(), extensionType);
     std::string traceStr(__func__);
     traceStr.append(":").append(std::to_string(pid)).append(",").append(std::to_string(processType))
         .append(",").append(std::to_string(extensionType));
@@ -356,6 +354,8 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
     } else {
         CGS_LOGE("%{public}s: param error,not have processName", __func__);
     }
+    CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d, %{public}s",
+        __func__, uid, pid, hostPid, processType, bundleName.c_str(), extensionType, processName.c_str());
     procRecord->processType_ = processType < ProcRecordType::PROC_RECORD_TYPE_MAX ?
         processType : ProcRecordType::NORMAL;
     switch (processType) {
