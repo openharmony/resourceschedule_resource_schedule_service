@@ -415,13 +415,13 @@ void PluginMgr::GetResTypeList(std::set<uint32_t>& resTypeList)
 {
     {
         std::lock_guard<std::mutex> autoLock(resTypeMutex_);
-        for (auto& [type, pluginList] : resTypeLibMap_) {
+        for (const auto& [type, pluginList] : resTypeLibMap_) {
             resTypeList.insert(type);
         }
     }
     {
         std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
-        for (auto& [typeValuePair, pluginList] : resTyperesValueLibMap_) {
+        for (const auto& [typeValuePair, pluginList] : resTyperesValueLibMap_) {
             resTypeList.insert(typeValuePair.first);
         }
     }
