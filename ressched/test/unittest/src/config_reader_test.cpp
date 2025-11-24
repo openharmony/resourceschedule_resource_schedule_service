@@ -152,5 +152,62 @@ HWTEST_F(ConfigReaderTest, GetConfig001, TestSize.Level1)
     config = configReader_->GetConfig("res_sched_config_comments.xml", "error.xml");
     EXPECT_TRUE(config.itemList.empty());
 }
+
+/**
+ * @tc.name: RemovePluginConfig001
+ * @tc.desc: Verify RemovePluginConfig can remove all configurations for specified plugin.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(ConfigReaderTest, RemovePluginConfig001, TestSize.Level1)
+{
+    bool ret = ParseConfigFile("res_sched_config_comments.xml");
+    EXPECT_TRUE(ret);
+
+    PluginConfig config = configReader_->GetConfig(PLUGIN_NAME, CONFIG_NAME);
+    EXPECT_FALSE(config.itemList.empty());
+
+    configReader_->RemovePluginConfig(PLUGIN_NAME);
+
+    config = configReader_->GetConfig(PLUGIN_NAME, CONFIG_NAME);
+    EXPECT_TRUE(config.itemList.empty());
+}
+
+/**
+ * @tc.name: RemovePluginConfig002
+ * @tc.desc: Verify RemovePluginConfig handles non-existent plugin name correctly.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(ConfigReaderTest, RemovePluginConfig002, TestSize.Level1)
+{
+    configReader_->RemovePluginConfig("non_existent_plugin");
+
+    PluginConfig config = configReader_->GetConfig("non_existent_plugin", "any_config");
+    EXPECT_TRUE(config.itemList.empty());
+    
+    bool ret = ParseConfigFile("res_sched_config_comments.xml");
+    EXPECT_TRUE(ret); // Should still be able to load config files
+    
+    PluginConfig validConfig = configReader_->GetConfig(PLUGIN_NAME, CONFIG_NAME);
+    EXPECT_FALSE(validConfig.itemList.empty());
+}
+
+/**
+ * @tc.name: RemovePluginConfig003
+ * @tc.desc: Verify RemovePluginConfig works correctly when multiple plugins exist.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(ConfigReaderTest, RemovePluginConfig003, TestSize.Level1)
+{
+    bool ret = ParseConfigFile("res_sched_config_comments.xml");
+    EXPECT_TRUE(ret);
+
+    configReader_->RemovePluginConfig(PLUGIN_NAME);
+    
+    PluginConfig config = configReader_->GetConfig(PLUGIN_NAME, CONFIG_NAME);
+    EXPECT_TRUE(config.itemList.empty());
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

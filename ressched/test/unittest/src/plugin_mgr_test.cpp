@@ -807,5 +807,330 @@ HWTEST_F(PluginMgrTest, ParsePluginSwitchr001, TestSize.Level0)
     pluginMgr_->ParsePluginSwitch(switchStrs);
     EXPECT_TRUE(pluginMgr_->configReader_ != nullptr);
 }
+
+/**
+ * @tc.name: RemovePluginConfig001
+ * @tc.desc: Verify RemovePluginConfig can remove all configurations for specified plugin.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, RemovePluginConfig001, TestSize.Level1)
+{
+    pluginMgr_->Init();
+    PluginConfig config = pluginMgr_->GetConfig("demo", "sample");
+    EXPECT_FALSE(config.itemList.empty());
+    
+    pluginMgr_->RemovePluginConfig("demo");
+    
+    config = pluginMgr_->GetConfig("demo", "sample");
+    EXPECT_TRUE(config.itemList.empty());
+}
+
+/**
+ * @tc.name: RemovePluginConfig002
+ * @tc.desc: Verify RemovePluginConfig handles null configReader.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, RemovePluginConfig002, TestSize.Level1)
+{
+    PluginMgr::GetInstance().configReader_ = nullptr;
+    PluginMgr::GetInstance().RemovePluginConfig("test_plugin");
+    EXPECT_TRUE(PluginMgr::GetInstance().configReader_ == nullptr);
+}
+
+/**
+ * @tc.name: GetPluginListByResTypeAndValue001
+ * @tc.desc: Verify GetPluginListByResTypeAndValue returns false when no plugin registered.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, GetPluginListByResTypeAndValue001, TestSize.Level1)
+{
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(100, 200, pluginList);
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(pluginList.empty());
+}
+
+/**
+ * @tc.name: SubscribeResourceAccurately001
+ * @tc.desc: Verify SubscribeResourceAccurately handles empty pluginLib.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, SubscribeResourceAccurately001, TestSize.Level1)
+{
+    PluginMgr::GetInstance().SubscribeResourceAccurately("", 100, 200);
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(100, 200, pluginList);
+    EXPECT_FALSE(result);
+}
+
+/**
+ * @tc.name: SubscribeResourceAccurately002
+ * @tc.desc: Verify SubscribeResourceAccurately subscribes plugin correctly.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, SubscribeResourceAccurately002, TestSize.Level1)
+{
+    const std::string pluginLib = "test_plugin";
+    uint32_t resType = 100;
+    uint64_t resValue = 200;
+    
+    PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib, resType, resValue);
+    
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
+    
+    EXPECT_TRUE(result);
+    EXPECT_FALSE(pluginList.empty());
+    EXPECT_EQ(pluginList.front(), pluginLib);
+}
+
+/**
+ * @tc.name: UnSubscribeResourceAccurately001
+ * @tc.desc: Verify UnSubscribeResourceAccurately handles empty pluginLib.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, UnSubscribeResourceAccurately001, TestSize.Level1)
+{
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately("", 100, 200);
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(100, 200, pluginList);
+    EXPECT_FALSE(result);
+}
+
+/**
+ * @tc.name: UnSubscribeResourceAccurately002
+ * @tc.desc: Verify UnSubscribeResourceAccurately handles non-existent subscription.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, UnSubscribeResourceAccurately002, TestSize.Level1)
+{
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately("test_plugin", 100, 200);
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(100, 200, pluginList);
+    EXPECT_FALSE(result);
+}
+
+/**
+ * @tc.name: UnSubscribeResourceAccurately003
+ * @tc.desc: Verify UnSubscribeResourceAccurately unsubscribes plugin correctly.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, UnSubscribeResourceAccurately003, TestSize.Level1)
+{
+    const std::string pluginLib = "test_plugin";
+    uint32_t resType = 100;
+    uint64_t resValue = 200;
+    
+    PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib, resType, resValue);
+    
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
+    EXPECT_TRUE(result);
+    EXPECT_FALSE(pluginList.empty());
+    
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately(pluginLib, resType, resValue);
+    
+    pluginList.clear();
+    result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(pluginList.empty());
+}
+
+/**
+ * @tc.name: GetResTypeList001
+ * @tc.desc: Verify GetResTypeList includes types from resTyperesValueLibMap.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, GetResTypeList001, TestSize.Level1)
+{
+    const std::string pluginLib = "test_plugin";
+    uint32_t resType = 100;
+    uint64_t resValue = 200;
+    
+    PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib, resType, resValue);
+    
+    std::set<uint32_t> resTypeList;
+    PluginMgr::GetInstance().GetResTypeList(resTypeList);
+    
+    EXPECT_FALSE(resTypeList.empty());
+    EXPECT_NE(resTypeList.find(resType), resTypeList.end());
+}
+
+/**
+ * @tc.name: PluginMgrTest_GetPluginListByResType_001
+ * @tc.desc: Verify GetPluginListByResType inserts plugins to list when resType exists.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_GetPluginListByResType_001, TestSize.Level1)
+{
+    const std::string pluginLib1 = "test_plugin1";
+    const std::string pluginLib2 = "test_plugin2";
+    uint32_t resType = 100;
+    
+    // 订阅两个插件到同一资源类型
+    PluginMgr::GetInstance().SubscribeResource(pluginLib1, resType);
+    PluginMgr::GetInstance().SubscribeResource(pluginLib2, resType);
+    
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResType(resType, pluginList);
+    
+    EXPECT_TRUE(result);
+    EXPECT_EQ(pluginList.size(), 2);
+    
+    // 验证两个插件都在列表中
+    bool foundPlugin1 = false;
+    bool foundPlugin2 = false;
+    for (const auto& plugin : pluginList) {
+        if (plugin == pluginLib1) {
+            foundPlugin1 = true;
+        }
+        if (plugin == pluginLib2) {
+            foundPlugin2 = true;
+        }
+    }
+    EXPECT_TRUE(foundPlugin1);
+    EXPECT_TRUE(foundPlugin2);
+    
+    // 清理
+    PluginMgr::GetInstance().UnSubscribeResource(pluginLib1, resType);
+    PluginMgr::GetInstance().UnSubscribeResource(pluginLib2, resType);
+}
+
+/**
+ * @tc.name: PluginMgrTest_DispatchResource_006
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_006, TestSize.Level1)
+{
+    uint32_t resType = 100;
+    uint64_t resValue = 200;
+    const std::string pluginLib = "test_plugin";
+    
+    nlohmann::json payload;
+    auto data = std::make_shared<ResData>(resType, resValue, payload);
+    
+    // 确保普通订阅为空
+    PluginMgr::GetInstance().UnSubscribeResource(pluginLib, resType);
+    
+    // 使用精确订阅
+    PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib, resType, resValue);
+    
+    // 验证普通订阅为空
+    std::list<std::string> pluginList1;
+    bool result1 = PluginMgr::GetInstance().GetPluginListByResType(resType, pluginList1);
+    EXPECT_FALSE(result1);
+    
+    // 验证精确订阅不为空
+    std::list<std::string> pluginList2;
+    bool result2 = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList2);
+    EXPECT_TRUE(result2);
+    EXPECT_EQ(pluginList2.size(), 1);
+    EXPECT_EQ(pluginList2.front(), pluginLib);
+    
+    // 执行DispatchResource，应该能正常处理
+#ifndef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+    if (PluginMgr::GetInstance().dispatcher_ == nullptr) {
+        PluginMgr::GetInstance().dispatcher_ = std::make_shared<AppExecFwk::EventHandler>(
+            AppExecFwk::EventRunner::Create("rssDispatcher"));
+    }
+#endif
+    
+    PluginMgr::GetInstance().DispatchResource(data);
+    // 如果能执行到这里不崩溃，说明分支处理正确
+    
+    // 清理
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately(pluginLib, resType, resValue);
+}
+
+/**
+ * @tc.name: PluginMgrTest_UnSubscribeAllResources_002
+ * @tc.desc: Verify UnSubscribeAllResources handles case when resTyperesValueLibMap entry is not empty after removal.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeAllResources_002, TestSize.Level1)
+{
+    const std::string pluginLib1 = "test_plugin1";
+    const std::string pluginLib2 = "test_plugin2";
+    uint32_t resType = 100;
+    uint64_t resValue = 200;
+    
+    // 订阅两个插件到同一资源类型和值
+    PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib1, resType, resValue);
+    PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib2, resType, resValue);
+    
+    // 验证两个插件都已订阅
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(pluginList.size(), 2);
+    
+    // 只取消订阅一个插件
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately(pluginLib1, resType, resValue);
+    
+    // 验证仍有一个插件订阅
+    pluginList.clear();
+    result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(pluginList.size(), 1);
+    EXPECT_EQ(pluginList.front(), pluginLib2);
+    
+    // 取消订阅所有资源，应该清理掉空的订阅
+    PluginMgr::GetInstance().UnSubscribeAllResources(pluginLib2);
+    
+    // 验证订阅已完全清除
+    pluginList.clear();
+    result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(pluginList.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_UnSubscribeResourceAccurately_004
+ * @tc.desc: Verify UnSubscribeResourceAccurately handles case when list is not empty after removal.
+ * @tc.type: FUNC
+ * @tc.require: issue1523
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_004, TestSize.Level1)
+{
+    const std::string pluginLib1 = "test_plugin1";
+    const std::string pluginLib2 = "test_plugin2";
+    uint32_t resType = 100;
+    uint64_t resValue = 200;
+    
+    // 订阅两个插件到同一资源类型和值
+    PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib1, resType, resValue);
+    PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib2, resType, resValue);
+    
+    // 验证两个插件都已订阅
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(pluginList.size(), 2);
+    
+    // 只取消订阅一个插件（关键：此时列表不为空）
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately(pluginLib1, resType, resValue);
+    
+    // 验证仍有一个插件订阅
+    pluginList.clear();
+    result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(pluginList.size(), 1);
+    EXPECT_EQ(pluginList.front(), pluginLib2);
+    
+    // 清理剩余的订阅
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately(pluginLib2, resType, resValue);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

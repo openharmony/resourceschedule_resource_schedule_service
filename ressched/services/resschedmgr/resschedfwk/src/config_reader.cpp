@@ -225,6 +225,18 @@ void ConfigReader::RemoveConfig(const std::string& pluginName, const std::string
     }
 }
 
+void ConfigReader::RemovePluginConfig(const std::string& pluginName)
+{
+    lock_guard<mutex> autolock(configMutex_);
+    auto itMap = allPluginConfigs_.find(pluginName);
+    if (itMap == allPluginConfigs_.end()) {
+        RESSCHED_LOGE("%{public}s, pluginName:%{public}s null!", __func__, pluginName.c_str());
+        return;
+    }
+    allPluginConfigs_.erase(itMap);
+    RESSCHED_LOGI("%{public}s, pluginName:%{public}s all plugin removed success", __func__, pluginName.c_str());
+}
+
 void ConfigReader::Dump(std::string &result)
 {
     result.append("================Resource Schedule Plugin Config ================\n");

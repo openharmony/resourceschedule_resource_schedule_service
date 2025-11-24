@@ -359,6 +359,15 @@ void PluginMgr::RemoveConfig(const std::string& pluginName, const std::string& c
     configReader_->RemoveConfig(pluginName, configName);
 }
 
+void PluginMgr::RemovePluginConfig(const std::string& pluginName)
+{
+    PluginConfig config;
+    if (!configReader_) {
+        return;
+    }
+    configReader_->RemovePluginConfig(pluginName);
+}
+
 void PluginMgr::Stop()
 {
     OnDestroy();
@@ -391,7 +400,7 @@ bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>&
         RESSCHED_LOGD("%{public}s, PluginMgr resType no lib register!", __func__);
         return false;
     }
-    pluginList = iter->second;
+    pluginList.insert(pluginList.end(), iter->second.begin(), iter->second.end());
     return true;
 }
 
@@ -404,12 +413,19 @@ inline void BuildSimplifyLibAll(const std::list<std::string>& pluginList, std::s
 
 void PluginMgr::GetResTypeList(std::set<uint32_t>& resTypeList)
 {
-    std::lock_guard<std::mutex> autoLock(resTypeMutex_);
-    for (auto& [type, pluginList] : resTypeLibMap_) {
-        resTypeList.insert(type);
+    {
+        std::lock_guard<std::mutex> autoLock(resTypeMutex_);
+        for (const auto& [type, pluginList] : resTypeLibMap_) {
+            resTypeList.insert(type);
+        }
+    }
+    {
+        std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
+        for (const auto& [typeValuePair, pluginList] : resTyperesValueLibMap_) {
+            resTypeList.insert(typeValuePair.first);
+        }
     }
 }
-
 std::shared_ptr<PluginLib> PluginMgr::GetPluginLib(const std::string& libPath)
 {
     std::lock_guard<std::mutex> autoLock(libPathMutex_);
@@ -461,7 +477,8 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         resData->resType = (uint32_t)extType;
     }
 #endif
-    if (!GetPluginListByResType(resData->resType, pluginList)) {
+    if (!GetPluginListByResType(resData->resType, pluginList) &&
+        !GetPluginListByResTypeAndValue(resData->resType, resData->value, pluginList)) {
         return;
     }
     std::string libNameAll = "";
@@ -576,19 +593,37 @@ void PluginMgr::UnSubscribeAllResources(const std::string& pluginLib)
         RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
         return;
     }
-    std::lock_guard<std::mutex> autoLock(resTypeMutex_);
-    std::unordered_set<uint32_t> keysToDelete;
-    for (auto iter : resTypeLibMap_) {
-        auto it = std::find(iter.second.begin(), iter.second.end(), pluginLib);
-        if (it != iter.second.end()) {
-            iter.second.erase(it);
+    {
+        std::lock_guard<std::mutex> autoLock(resTypeMutex_);
+        std::unordered_set<uint32_t> keysToDelete;
+        for (auto iter : resTypeLibMap_) {
+            auto it = std::find(iter.second.begin(), iter.second.end(), pluginLib);
+            if (it != iter.second.end()) {
+                iter.second.erase(it);
+            }
+            if (iter.second.empty()) {
+                keysToDelete.insert(iter.first);
+            }
         }
-        if (iter.second.empty()) {
-            keysToDelete.insert(iter.first);
+        for (auto key : keysToDelete) {
+            resTypeLibMap_.erase(key);
         }
     }
-    for (auto key : keysToDelete) {
-        resTypeLibMap_.erase(key);
+    {
+        std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
+        std::unordered_set<ResPair, std::hash<ResPair>> keysToDelete;
+        for (auto iter : resTyperesValueLibMap_) {
+            auto it = std::find(iter.second.begin(), iter.second.end(), pluginLib);
+            if (it != iter.second.end()) {
+                iter.second.erase(it);
+            }
+            if (iter.second.empty()) {
+                keysToDelete.insert(iter.first);
+            }
+        }
+        for (auto key : keysToDelete) {
+            resTyperesValueLibMap_.erase(key);
+        }
     }
 }
 
@@ -721,6 +756,10 @@ void PluginMgr::ClearResource()
     {
         std::lock_guard<std::mutex> autoLock(linkJumpOptMutex_);
         linkJumpOptSet_.clear();
+    }
+    {
+        std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
+        resTyperesValueLibMap_.clear();
     }
 }
 
@@ -981,6 +1020,50 @@ extern "C" {
     {
         PluginMgr::GetInstance().SetBlockedTime(time);
     }
+}
+
+void PluginMgr::SubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, uint64_t resValue)
+{
+    if (pluginLib.empty()) {
+        RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
+        return;
+    }
+    std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
+    ResPair resTypeValuePair = std::make_pair(resType, resValue);
+    resTyperesValueLibMap_[resTypeValuePair].emplace_back(pluginLib);
+}
+
+void PluginMgr::UnSubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, uint64_t resValue)
+{
+    if (pluginLib.empty()) {
+        RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
+        return;
+    }
+    std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
+    ResPair resTypeValuePair = std::make_pair(resType, resValue);
+    auto iter = resTyperesValueLibMap_.find(resTypeValuePair);
+    if (iter == resTyperesValueLibMap_.end()) {
+        RESSCHED_LOGE("%{public}s, PluginMgr failed, res type and value has no plugin subscribe.", __func__);
+        return;
+    }
+
+    iter->second.remove(pluginLib);
+    if (iter->second.empty()) {
+        resTyperesValueLibMap_.erase(iter);
+    }
+}
+
+bool PluginMgr::GetPluginListByResTypeAndValue(uint32_t resType, uint64_t resValue, std::list<std::string>& pluginList)
+{
+    std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
+    ResPair resTypeValuePair = std::make_pair(resType, resValue);
+    auto iter = resTyperesValueLibMap_.find(resTypeValuePair);
+    if (iter == resTyperesValueLibMap_.end()) {
+        RESSCHED_LOGD("%{public}s, PluginMgr resType and resValue no lib register!", __func__);
+        return false;
+    }
+    pluginList.insert(pluginList.end(), iter->second.begin(), iter->second.end());
+    return true;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
