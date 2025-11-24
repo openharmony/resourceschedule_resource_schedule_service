@@ -43,8 +43,7 @@ using ResPair = std::pair<uint32_t, int64_t>;
 
 namespace std {
     template<>
-    struct hash<OHOS::ResourceSchedule::ResPair>
-    {
+    struct hash<OHOS::ResourceSchedule::ResPair> {
         size_t operator()(const OHOS::ResourceSchedule::ResPair& pair) const
         {
             size_t h1 = std::hash<decltype(pair.first)>{}(pair.first);
