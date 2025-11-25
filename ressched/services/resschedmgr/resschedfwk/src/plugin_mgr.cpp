@@ -842,6 +842,7 @@ void PluginMgr::DispatchResourceToPluginSync(const std::list<std::string>& plugi
 void PluginMgr::DispatchResourceToPluginAsync(const std::list<std::string>& pluginList,
     const std::shared_ptr<ResData>& resData)
 {
+    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
     for (auto& pluginLib : pluginList) {
         if (disablePlugins_.find(pluginLib) != disablePlugins_.end()) {
             continue;
@@ -861,7 +862,6 @@ void PluginMgr::DispatchResourceToPluginAsync(const std::list<std::string>& plug
             RESSCHED_LOGE("%{public}s, no DispatchResourceFun !", __func__);
             continue;
         }
-        std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
         if (dispatchers_[pluginLib] == nullptr) {
             continue;
         }
