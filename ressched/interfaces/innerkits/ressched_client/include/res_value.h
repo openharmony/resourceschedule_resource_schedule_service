@@ -47,6 +47,7 @@ enum EventType : uint32_t {
     EVENT_LIMITED_EXECUTION = 14,
     EVENT_RECOVER_EXECUTION = 15,
     EVENT_SMART_GC_EVENT = 16,
+    EVENT_CONTINUOUS_TASK_DETECT_STATE = 17,
     EVENT_END,
 };
 
@@ -73,6 +74,11 @@ enum EventListenerGroup : uint32_t {
     LISTENER_GROUP_DH = 5,
     LISTENER_GROUP_KIDDO = 6,
     LISTENER_GROUP_END
+};
+
+enum ContinuousTaskState : uint32_t {
+    AUDIO_RESUME = 0,
+    AUDIO_DETECT_FAIL,
 };
 
 enum AppFrameDropType : int32_t {
@@ -200,6 +206,7 @@ enum SlideEventStatus : int64_t {
     AUTO_PLAY_ON = 5,
     AUTO_PLAY_OFF = 6,
     MOVE_EVENT_ON = 7,
+    SWIPER_FLING_END = 8,
 };
 
 /**
@@ -925,6 +932,22 @@ enum CodecEncodeState : int32_t {
 enum CameraLensState : int32_t {
     CAMERA_LEN_OPENED = 0,
     CAMERA_LEN_CLOSED = 1,
+};
+
+/**
+* @brief inputmethod qos state
+*/
+enum ImeQosState : int64_t {
+    IME_START_UP = 0,
+    IME_START_FINISH = 1,
+};
+
+/**
+* @brief live view state
+*/
+enum LiveViewState : int32_t {
+    LIVE_VIEW_EXIT = 0,
+    LIVE_VIEW_ENTER = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule

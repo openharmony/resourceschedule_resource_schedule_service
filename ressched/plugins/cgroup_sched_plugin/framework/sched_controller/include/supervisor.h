@@ -161,6 +161,7 @@ public:
     std::unordered_map<uint32_t, SchedPolicy> policyBeforUnlimitedSuppress_;
 
     std::string processName_;
+    int32_t codecEncodeState_ = -1;
 private:
     uid_t uid_;
     pid_t pid_;
@@ -198,6 +199,7 @@ public:
 
     std::shared_ptr<ProcessRecord> focusedProcess_ = nullptr;
     bool isCosmicCubeStateHide_ = false;
+    int32_t liveViewState_ = -1;
     int32_t cpuLevel_ = CpuLevelType::DEFAULT;
 
 private:

@@ -191,6 +191,8 @@ namespace {
         { ResType::RES_TYPE_MEM_OFF_PEAK, "RES_TYPE_MEM_OFF_PEAK" },
         { ResType::RES_TYPE_BACKPRESSED_EVENT, "RES_TYPE_BACKPRESSED_EVENT"},
         { ResType::SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO, "SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO"},
+        { ResType::RES_TYPE_IME_QOS_CHANGE, "RES_TYPE_IME_QOS_CHANGE" },
+        { ResType::RES_TYPE_LIVE_VIEW_EVENT, "RES_TYPE_LIVE_VIEW_EVENT"},
     };
     OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
     {

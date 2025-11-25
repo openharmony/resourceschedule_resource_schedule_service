@@ -383,6 +383,7 @@ void SchedController::DumpProcessEventState(std::string& result)
             std::shared_ptr<ProcessRecord> process = pidIt->second;
             result.append("uid: ").append(ToString(uid))
                 .append(", pid: ").append(ToString(pid))
+                .append(", processName: ").append(process->processName_)
                 .append(", processState: ").append(ToString(process->processState_))
                 .append(", extensionType: ").append(ToString(process->extensionType_))
                 .append(", napState: ").append(ToString(process->isNapState_))

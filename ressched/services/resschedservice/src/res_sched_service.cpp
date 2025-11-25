@@ -177,6 +177,7 @@ namespace {
         ResType::RES_TYPE_CAMERA_LENS_STATUS_CHANGED,
         ResType::RES_TYPE_START_INPUT_METHOD_PROCESS,
         ResType::RES_TYPE_SA_PULL_APP_IDENTIFIER,
+        ResType::RES_TYPE_LIVE_VIEW_EVENT,
     };
     static const std::unordered_map<uint32_t, std::unordered_set<int32_t>> ALLOW_SOME_UID_REPORT_RES = {
         { ResType::RES_TYPE_MODEM_PA_HIGH_POWER_ABNORMAL, { 1201 } },
@@ -202,6 +203,7 @@ namespace {
         { ResType::RES_TYPE_STANDBY_FREEZE_FAILED, { 1201 } },
         { ResType::RES_TYPE_ADJUST_PROTECTLRU_RECLAIM_RATIO, { 1111 } },
         { ResType::SYNC_RES_TYPE_GET_APP_TYPE, { 3051 } },
+        { ResType::RES_TYPE_IME_QOS_CHANGE, { 3820 } },
     };
     enum SYSTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL : int32_t {
         DEBUG_LEVEL_MINIMUM = 0,

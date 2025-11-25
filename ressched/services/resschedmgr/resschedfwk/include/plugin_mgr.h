@@ -22,6 +22,7 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <set>
 #include <unordered_set>
@@ -180,6 +181,8 @@ public:
 
     void RemoveConfig(const std::string& pluginName, const std::string& configName);
 
+    void RemovePluginConfig(const std::string& pluginName);
+
     void SetResTypeStrMap(const std::map<uint32_t, std::string>& resTypeStr);
 
     std::shared_ptr<PluginLib> GetPluginLib(const std::string& libPath);
@@ -227,6 +230,11 @@ public:
     bool GetLinkJumpOptConfig(const std::string& bundleName, bool& isAllowedLinkJump);
 
     void GetResTypeList(std::set<uint32_t>& resTypeList);
+
+    void SubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, uint64_t resValue);
+
+    void UnSubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, uint64_t resValue);
+
 private:
     PluginMgr() = default;
     void OnDestroy();
@@ -249,6 +257,7 @@ private:
     void RemoveDisablePluginHandler();
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);
     bool GetPluginListByResType(uint32_t resType, std::list<std::string>& pluginList);
+    bool GetPluginListByResTypeAndValue(uint32_t resType, uint64_t resValue, std::list<std::string>& pluginList);
     bool CheckRealPath(const std::string& partialPath, std::string& fullPath);
     std::vector<std::string> GetAllRealConfigPath(const std::string& configName);
     std::string BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,
@@ -282,6 +291,8 @@ private:
 
     // mutex for resTypeMap_
     std::mutex resTypeMutex_;
+    // mutex for resTyperesValueLibMap_
+    std::mutex resTypeResValueMutex_;
     // mutex for resTypeLibSyncMap_
     std::mutex resTypeSyncMutex_;
     // mutex for resTypeStrMap_
@@ -290,8 +301,9 @@ private:
     ffrt::mutex dispatcherHandlerMutex_;
     std::mutex libPathMutex_;
     std::mutex linkJumpOptMutex_;
-    std::map<uint32_t, std::list<std::string>> resTypeLibMap_;
-    std::map<uint32_t, std::string> resTypeLibSyncMap_;
+    std::unordered_map<uint32_t, std::list<std::string>> resTypeLibMap_;
+    std::unordered_map<ResPair, std::list<std::string>> resTyperesValueLibMap_;
+    std::unordered_map<uint32_t, std::string> resTypeLibSyncMap_;
     std::map<uint32_t, std::string> resTypeStrMap_;
     std::unordered_set<std::string> linkJumpOptSet_;
 

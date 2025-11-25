@@ -45,6 +45,7 @@ using OHOS::AppExecFwk::AbilityState;
 using OHOS::AppExecFwk::AbilityType;
 using OHOS::AppExecFwk::ExtensionState;
 using OHOS::AppExecFwk::ProcessType;
+using OHOS::AppExecFwk::PreloadMode;
 
 CgroupEventHandler::CgroupEventHandler(const std::string &queueName)
 {
@@ -133,6 +134,7 @@ void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t val
     int32_t pid = 0;
     std::string bundleName;
     int32_t state = 0;
+    int32_t preloadMode = -1;
     if (!ParseValue(uid, "uid", payload) ||
         !ParseValue(pid, "pid", payload) ||
         !ParseString(bundleName, "bundleName", payload) ||
@@ -140,6 +142,7 @@ void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t val
         CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
+    bool res = ParseValue(preloadMode, "preloadMode", payload);
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}d", __func__, uid,
         pid, bundleName.c_str(), state);
     std::string traceStr(__func__);
@@ -150,6 +153,12 @@ void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t val
     std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
     procRecord->processState_ = state;
+    if (state == (int32_t)(ResType::ProcessStatus::PROCESS_BACKGROUND) &&
+        preloadMode == (int32_t)(PreloadMode::PRE_LAUNCH)) {
+        CGS_LOGD("%{public}s : PROCESS_BACKGROUND, preloadMode: %{public}d, "
+                 "function return directly", __func__, preloadMode);
+        return;
+    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_STATE);
 }
@@ -183,10 +192,9 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     int32_t abilityState = 0;
     int32_t abilityType = 0;
     int32_t callerUid = -1;
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
-        !ParseString(bundleName, "bundleName", payload) || !ParseString(abilityName, "abilityName", payload) ||
-        !ParseValue(recordId, "recordId", payload) || !ParseValue(callerUid, "callerUid", payload) ||
-        !ParseValue(abilityState, "abilityState", payload) || !ParseValue(abilityType, "abilityType", payload)) {
+    int32_t preloadMode = -1;
+    if (!ParseConfig(uid, pid, bundleName, abilityName, recordId, abilityState,
+        abilityType, callerUid, preloadMode, payload)) {
         return;
     }
 
@@ -206,6 +214,9 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
         HandleAbilityTerminated(uid, pid, recordId);
         return;
     }
+    if (HandlePrelaunch(abilityState, preloadMode)) {
+        return;
+    }
     auto app = supervisor_->GetAppRecordNonNull(uid);
     app->SetName(bundleName);
     auto procRecord = app->GetProcessRecordNonNull(pid);
@@ -218,6 +229,17 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_ABILITY_STATE);
+}
+
+bool CgroupEventHandler::HandlePrelaunch(int32_t abilityState, int32_t preloadMode)
+{
+    if ((abilityState == (int32_t)(AbilityState::ABILITY_STATE_CREATE) ||
+        abilityState == (int32_t)(AbilityState::ABILITY_STATE_BACKGROUND))
+        && preloadMode == (int32_t)(PreloadMode::PRE_LAUNCH)) {
+        CGS_LOGD("%{public}s : %{public}d, %{public}d, function return directly", __func__, abilityState, preloadMode);
+        return true;
+    }
+    return false;
 }
 
 void CgroupEventHandler::HandleAbilityTerminated(int32_t uid, int32_t pid, int32_t recordId)
@@ -317,8 +339,6 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
         CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
-    CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d",
-        __func__, uid, pid, hostPid, processType, bundleName.c_str(), extensionType);
     std::string traceStr(__func__);
     traceStr.append(":").append(std::to_string(pid)).append(",").append(std::to_string(processType))
         .append(",").append(std::to_string(extensionType));
@@ -334,6 +354,8 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
     } else {
         CGS_LOGE("%{public}s: param error,not have processName", __func__);
     }
+    CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d, %{public}s",
+        __func__, uid, pid, hostPid, processType, bundleName.c_str(), extensionType, processName.c_str());
     procRecord->processType_ = processType < ProcRecordType::PROC_RECORD_TYPE_MAX ?
         processType : ProcRecordType::NORMAL;
     switch (processType) {
@@ -1350,6 +1372,20 @@ bool CgroupEventHandler::GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::s
             __func__, uid, pid);
         return false;
     }
+    return true;
+}
+
+bool CgroupEventHandler::ParseConfig(int32_t& uid, int32_t& pid, std::string& bundleName,
+    std::string& abilityName, int32_t& recordId, int32_t& abilityState, int32_t& abilityType,
+    int32_t& callerUid, int32_t preloadMode, const nlohmann::json& payload)
+{
+    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
+        !ParseString(bundleName, "bundleName", payload) || !ParseString(abilityName, "abilityName", payload) ||
+        !ParseValue(recordId, "recordId", payload) || !ParseValue(callerUid, "callerUid", payload) ||
+        !ParseValue(abilityState, "abilityState", payload) || !ParseValue(abilityType, "abilityType", payload)) {
+        return false;
+    }
+    bool res = ParseValue(preloadMode, "preloadMode", payload);
     return true;
 }
 
