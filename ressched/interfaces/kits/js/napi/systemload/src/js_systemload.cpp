@@ -108,7 +108,7 @@ void Systemload::OnSystemloadLevel(napi_env env, napi_value callbackObj, int32_t
     auto task = [env, ctx]() {
         Systemload::CompleteCb(env, ctx);
     };
-    if (napi_status::napi_ok != napi_send_event(env, task, napi_eprio_high)) {
+    if (napi_status::napi_ok != napi_send_event(env, task, napi_eprio_high, "systemLoadChange")) {
         RESSCHED_LOGE("failed to napi_send_event");
         return;
     }
