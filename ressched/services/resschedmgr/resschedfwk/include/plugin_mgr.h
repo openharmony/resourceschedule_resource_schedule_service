@@ -231,9 +231,9 @@ public:
 
     void GetResTypeList(std::set<uint32_t>& resTypeList);
 
-    void SubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, uint64_t resValue);
+    void SubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, int64_t resValue);
 
-    void UnSubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, uint64_t resValue);
+    void UnSubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, int64_t resValue);
 
 private:
     PluginMgr() = default;
@@ -257,7 +257,7 @@ private:
     void RemoveDisablePluginHandler();
     void DumpPluginInfoAppend(std::string &result, PluginInfo info);
     bool GetPluginListByResType(uint32_t resType, std::list<std::string>& pluginList);
-    bool GetPluginListByResTypeAndValue(uint32_t resType, uint64_t resValue, std::list<std::string>& pluginList);
+    bool GetPluginListByResTypeAndValue(uint32_t resType, int64_t resValue, std::list<std::string>& pluginList);
     bool CheckRealPath(const std::string& partialPath, std::string& fullPath);
     std::vector<std::string> GetAllRealConfigPath(const std::string& configName);
     std::string BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,
