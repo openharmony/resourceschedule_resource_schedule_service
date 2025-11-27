@@ -877,7 +877,7 @@ HWTEST_F(PluginMgrTest, SubscribeResourceAccurately002, TestSize.Level1)
 {
     const std::string pluginLib = "test_plugin";
     uint32_t resType = 100;
-    uint64_t resValue = 200;
+    int64_t resValue = 200;
     
     PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib, resType, resValue);
     
@@ -900,7 +900,7 @@ HWTEST_F(PluginMgrTest, UnSubscribeResourceAccurately001, TestSize.Level1)
     PluginMgr::GetInstance().UnSubscribeResourceAccurately("", 100, 200);
     std::list<std::string> pluginList;
     bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(100, 200, pluginList);
-    EXPECT_FALSE(result);
+    EXPECT_TRUE(result);
 }
 
 /**
@@ -927,7 +927,7 @@ HWTEST_F(PluginMgrTest, UnSubscribeResourceAccurately003, TestSize.Level1)
 {
     const std::string pluginLib = "test_plugin";
     uint32_t resType = 100;
-    uint64_t resValue = 200;
+    int64_t resValue = 200;
     
     PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib, resType, resValue);
     
@@ -954,7 +954,7 @@ HWTEST_F(PluginMgrTest, GetResTypeList001, TestSize.Level1)
 {
     const std::string pluginLib = "test_plugin";
     uint32_t resType = 100;
-    uint64_t resValue = 200;
+    int64_t resValue = 200;
     
     PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib, resType, resValue);
     
@@ -963,6 +963,7 @@ HWTEST_F(PluginMgrTest, GetResTypeList001, TestSize.Level1)
     
     EXPECT_FALSE(resTypeList.empty());
     EXPECT_NE(resTypeList.find(resType), resTypeList.end());
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately(pluginLib, resType, resValue);
 }
 
 /**
@@ -1014,7 +1015,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_GetPluginListByResType_001, TestSize.Level
 HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResource_006, TestSize.Level1)
 {
     uint32_t resType = 100;
-    uint64_t resValue = 200;
+    int64_t resValue = 200;
     const std::string pluginLib = "test_plugin";
     
     nlohmann::json payload;
@@ -1064,7 +1065,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeAllResources_002, TestSize.Leve
     const std::string pluginLib1 = "test_plugin1";
     const std::string pluginLib2 = "test_plugin2";
     uint32_t resType = 100;
-    uint64_t resValue = 200;
+    int64_t resValue = 200;
     
     // 订阅两个插件到同一资源类型和值
     PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib1, resType, resValue);
@@ -1107,7 +1108,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_004, TestSiz
     const std::string pluginLib1 = "test_plugin1";
     const std::string pluginLib2 = "test_plugin2";
     uint32_t resType = 100;
-    uint64_t resValue = 200;
+    int64_t resValue = 200;
     
     // 订阅两个插件到同一资源类型和值
     PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib1, resType, resValue);

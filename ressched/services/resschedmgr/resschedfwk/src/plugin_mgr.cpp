@@ -1022,7 +1022,7 @@ extern "C" {
     }
 }
 
-void PluginMgr::SubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, uint64_t resValue)
+void PluginMgr::SubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, int64_t resValue)
 {
     if (pluginLib.empty()) {
         RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
@@ -1033,7 +1033,7 @@ void PluginMgr::SubscribeResourceAccurately(const std::string& pluginLib, uint32
     resTyperesValueLibMap_[resTypeValuePair].emplace_back(pluginLib);
 }
 
-void PluginMgr::UnSubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, uint64_t resValue)
+void PluginMgr::UnSubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, int64_t resValue)
 {
     if (pluginLib.empty()) {
         RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
@@ -1053,7 +1053,7 @@ void PluginMgr::UnSubscribeResourceAccurately(const std::string& pluginLib, uint
     }
 }
 
-bool PluginMgr::GetPluginListByResTypeAndValue(uint32_t resType, uint64_t resValue, std::list<std::string>& pluginList)
+bool PluginMgr::GetPluginListByResTypeAndValue(uint32_t resType, int64_t resValue, std::list<std::string>& pluginList)
 {
     std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
     ResPair resTypeValuePair = std::make_pair(resType, resValue);
