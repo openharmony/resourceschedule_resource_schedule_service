@@ -164,6 +164,7 @@ void BackgroundTaskObserver::MarshallingResourceInfo(
     payload["uid"] = resourceInfo->GetUid();
     payload["resourceNumber"] = resourceInfo->GetResourceNumber();
     payload["bundleName"] = resourceInfo->GetBundleName();
+    payload["cpuLevel"] = resourceInfo->GetCpuLevel();
 }
 
 void BackgroundTaskObserver::OnAppEfficiencyResourcesApply(
