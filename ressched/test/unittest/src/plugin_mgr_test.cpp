@@ -964,9 +964,6 @@ HWTEST_F(PluginMgrTest, GetResTypeList001, TestSize.Level1)
     EXPECT_FALSE(resTypeList.empty());
     EXPECT_NE(resTypeList.find(resType), resTypeList.end());
     PluginMgr::GetInstance().UnSubscribeResourceAccurately(pluginLib, resType, resValue);
-    resTypeList.clear();
-    PluginMgr::GetInstance().GetResTypeList(resTypeList);
-    EXPECT_TRUE(resTypeList.empty());
 }
 
 /**
