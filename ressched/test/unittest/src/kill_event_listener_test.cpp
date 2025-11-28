@@ -52,28 +52,28 @@ HWTEST_F(KillEventListenerTest, OnReceiveEvent001, Function | MediumTest | Level
     KillEventListener::GetInstance().killReasonMap_.clear();
     std::unordered_map<std::string, std::string> extInfo;
     KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
-    extInfo["result"] = "";
+    extInfo["CLOUD_PUSH_CONFIG"] = "";
     KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
-    extInfo["result"] = "123";
+    extInfo["CLOUD_PUSH_CONFIG"] = "123";
     KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
-    extInfo["result"] = "{\"xx\":1}";
+    extInfo["CLOUD_PUSH_CONFIG"] = "{\"xx\":1}";
+    KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
+    extInfo["CLOUD_PUSH_CONFIG"] = "{\"result\":1}";
     KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
     EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.empty());
 }
 
 /**
- * @tc.name: RegisterKilConfigUpdate001
- * @tc.desc: RegisterKilConfigUpdate test
+ * @tc.name: RegisterKillConfigUpdate001
+ * @tc.desc: RegisterKillConfigUpdate test
  * @tc.type: FUNC
  * @tc.require: I6EEJI
  * @tc.author: zxf
  */
-HWTEST_F(KillEventListenerTest, RegisterKilConfigUpdate001, Function | MediumTest | Level0)
+HWTEST_F(KillEventListenerTest, RegisterKillConfigUpdate001, Function | MediumTest | Level0)
 {
-    KillEventListener::GetInstance().isRegister_ = true;
-    KillEventListener::GetInstance().RegisterKilConfigUpdate();
     KillEventListener::GetInstance().isRegister_ = false;
-    KillEventListener::GetInstance().RegisterKilConfigUpdate();
+    KillEventListener::GetInstance().RegisterKillConfigUpdate();
     EXPECT_TRUE(KillEventListener::GetInstance().isRegister_);
 }
 
@@ -129,6 +129,8 @@ HWTEST_F(KillEventListenerTest, ParseKillConfig001, Function | MediumTest | Leve
 {
     nlohmann::json json;
     KillEventListener::GetInstance().ParseKillConfig(json);
+    json["result"] = "xxx";
+    KillEventListener::GetInstance().ParseKillConfig(json);
     nlohmann::json items = nlohmann::json::array();
     nlohmann::json item1 = "sssfd";
     nlohmann::json item2;
@@ -141,8 +143,8 @@ HWTEST_F(KillEventListenerTest, ParseKillConfig001, Function | MediumTest | Leve
     item5["uid"] = "1";
     item5["reason"] = "testValue";
     nlohmann::json reasons = nlohmann::json::array();
-    reasons.insert("xxx");
-    reasons.insert(2);
+    reasons.push_back("xxx");
+    reasons.push_back(2);
     nlohmann::json item6;
     item6["uid"] = "1";
     item6["reason"] = reasons;
@@ -157,7 +159,8 @@ HWTEST_F(KillEventListenerTest, ParseKillConfig001, Function | MediumTest | Leve
     items.push_back(item6);
     items.push_back(item7);
     KillEventListener::GetInstance().killReasonMap_.clear();
-    KillEventListener::GetInstance().ParseKillConfig(items);
+    json["result"] = items;
+    KillEventListener::GetInstance().ParseKillConfig(json);
     EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 1);
     EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_[1].size() == 1);
 }

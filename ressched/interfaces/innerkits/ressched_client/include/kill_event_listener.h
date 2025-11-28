@@ -33,16 +33,16 @@ public:
     static KillEventListener& GetInstance();
     void OnReceiveEvent(uint32_t eventType, uint32_t eventValue,
         std::unordered_map<std::string, std::string> extInfo) override;
-    bool IsAllowedKill(int32_t callerUid, const std::string Reason);
+    bool IsAllowedKill(uint32_t callerUid, const std::string reason);
     void Init();
 private:
     void InitKillConfig();
     void ParseKillConfig(nlohmann::json reasonsConfig);
     void ReportKillEventPeriod(int64_t period);
     void ReportKillEvent();
-    bool IsConfigKillReason(int32_t callerUid, const std::string Reason);
+    bool IsConfigKillReason(uint32_t callerUid, const std::string reason);
     void RegisterKillConfigUpdate();
-    void UpdateKillCount(int32_t callerUid, const std::string Reason, bool isAllowed);
+    void UpdateKillCount(uint32_t callerUid, const std::string reason, bool isAllowed);
     std::mutex killReasonMutex_;
     std::unordered_map<uint32_t, std::unordered_set<std::string>> killReasonMap_;
     std::mutex isTaskSubmitMutex_;

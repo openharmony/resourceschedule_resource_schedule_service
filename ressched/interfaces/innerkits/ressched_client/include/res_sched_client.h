@@ -161,13 +161,10 @@ public:
      * @param callerUid caller uid.
      * @param Reason kill reason.
      */
-    bool IsAllowedKill(int32_t callerUid, const std::string& Reason);
+    bool IsAllowedKill(uint32_t callerUid, const std::string& Reason);
 
     /**
-     * @brief Check whether the kill reason is allowed.
-     *
-     * @param callerUid caller uid.
-     * @param Reason kill reason.
+     * @brief Init KillReasonListener.
      */
     void InitKillReasonListener();
 

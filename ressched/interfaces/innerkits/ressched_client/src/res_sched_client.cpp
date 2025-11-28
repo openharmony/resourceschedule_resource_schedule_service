@@ -281,7 +281,7 @@ int32_t ResSchedClient::GetSystemloadLevel()
     return ret;
 }
 
-bool ResSchedClient::IsAllowedKill(int32_t callerUid, const std::string& Reason)
+bool ResSchedClient::IsAllowedKill(uint32_t callerUid, const std::string& Reason)
 {
     return KillEventListener::GetInstance().IsAllowedKill(callerUid, Reason);
 }

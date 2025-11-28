@@ -22,9 +22,10 @@ namespace ResourceSchedule {
 const std::string UID = "uid";
 const std::string REASON = "reason";
 const std::string RESULT = "result";
+const std::string CLOUD_PUSH_CONFIG = "CLOUD_PUSH_CONFIG";
 static constexpr int64_t REPORT_INTERVAL_MS = static_cast<int64_t>(24) * 60 * 60 * 1000 * 1000;
-static constexpr int64_t FRIST_REPORT_DELAY_MS = 10 * 1000 * 1000;
-static constexpr size_t MAX_CACHE_REASON_COUNT = 10 * 1000 * 1000;
+static constexpr int64_t FIRST_REPORT_DELAY_MS = 10 * 1000 * 1000;
+static constexpr size_t MAX_CACHE_REASON_COUNT = 1000;
 
 KillEventListener& KillEventListener::GetInstance()
 {
@@ -39,14 +40,14 @@ void KillEventListener::Init()
 }
 
 void KillEventListener::OnReceiveEvent(uint32_t eventType, uint32_t eventValue,
-    std::unordered_map<std::string, std::string> extInfo) override;
+    std::unordered_map<std::string, std::string> extInfo)
 {
-    if (extInfo.find(RESULT) == extInfo.end() || extInfo[RESULT].empty()) {
+    if (extInfo.find(CLOUD_PUSH_CONFIG) == extInfo.end() || extInfo[CLOUD_PUSH_CONFIG].empty()) {
         RESSCHED_LOGE("reskillreason:extInfo not contains result");
         return;
     }
     nlohmann::json reasonsConfig;
-    if (!ResCommonUtil::LoadContentToJsonObj(extInfo[RESULT], ressonsConfig)) {
+    if (!ResCommonUtil::LoadContentToJsonObj(extInfo[CLOUD_PUSH_CONFIG], reasonsConfig)) {
         RESSCHED_LOGE("reskillreason:load to json fail");
         return;
     }
@@ -64,7 +65,7 @@ void KillEventListener::RegisterKillConfigUpdate()
     }
 }
 
-bool KillEventListener::IsConfigKillReason(int32_t callerUid, const std::string Reason)
+bool KillEventListener::IsConfigKillReason(uint32_t callerUid, const std::string reason)
 {
     std::lock_guard<std::mutex> lock(killReasonMutex_);
     if (killReasonMap_.find(callerUid) == killReasonMap_.end()) {
@@ -81,7 +82,7 @@ bool KillEventListener::IsConfigKillReason(int32_t callerUid, const std::string 
     return true;
 }
 
-bool KillEventListener::IsAllowedKill(int32_t callerUid, const std::string Reason)
+bool KillEventListener::IsAllowedKill(uint32_t callerUid, const std::string reason)
 {
     RegisterKillConfigUpdate();
     InitKillConfig();
@@ -97,7 +98,7 @@ void KillEventListener::ReportKillEvent()
     if (!isTaskSubmit_) {
         ffrt::submit([]() {
                 KillEventListener::GetInstance().ReportKillEventPeriod(REPORT_INTERVAL_MS);
-            }, ffrt::task_attr().delay(FRIST_REPORT_DELAY_MS));
+            }, ffrt::task_attr().delay(FIRST_REPORT_DELAY_MS));
         RESSCHED_LOGI("reskillreason:hisysevent taskk submited");
         isTaskSubmit_ = true;
     }
@@ -123,11 +124,11 @@ void KillEventListener::ReportKillEventPeriod(int64_t period)
         }, ffrt::task_attr().delay(period));
 }
 
-void KillEventListener::UpdateKillCount(int32_t callerUid, const std::string Reason, bool isAllowed)
+void KillEventListener::UpdateKillCount(uint32_t callerUid, const std::string reason, bool isAllowed)
 {
     std::string killKey = "uid:" + std::to_string(callerUid) + ",reason:" + reason +
         ",allow" + std::to_string(isAllowed);
-    std::lock_guard<std::mutex> lock(killCountMapMutex_);
+    std::lock_guard<ffrt::mutex> lock(killCountMapMutex_);
     size_t killCountMapSize = killCountMap_.size();
     if (killCountMapSize >= MAX_CACHE_REASON_COUNT &&
         killCountMap_.find(killKey) == killCountMap_.end()) {
@@ -149,26 +150,27 @@ void KillEventListener::InitKillConfig()
     }
     nlohmann::json payload;
     nlohmann::json reply;
-    ResSchedClient::GetInstance().ReportSyncEvent(ResType::RES_TYPE_LOAD_KILL_REASON_CONFIG, 0, payload, reply);
-    if (!reply.contains(RESULT)) {
-        RESSCHED_LOGE("reskillreason:InitKillConfig failed,reply not conatins result");
+    int32_t ret = ResSchedClient::GetInstance().ReportSyncEvent(ResType::RES_TYPE_LOAD_KILL_REASON_CONFIG, 0,
+        payload, reply);
+    if (ret != 0) {
+        RESSCHED_LOGE("reskillreason:InitKillConfig failed,ret:%{public}d", ret);
         return;
     }
-    ParseKillConfig(reply[RESULT]);
+    ParseKillConfig(reply);
     isConfigInited_ = true;
 }
 
 void KillEventListener::ParseKillConfig(nlohmann::json reasonsConfig)
 {
-    if (!reasonsConfig.is_array()) {
-        RESSCHED_LOGE("reskillreason:ParseKillConfig failed,reasonsConfig is not array");
+    if (!reasonsConfig.contains(RESULT) || !reasonsConfig[RESULT].is_array()) {
+        RESSCHED_LOGE("reskillreason:ParseKillConfig failed,not contains result or result is not array");
         return;
     }
-    killReasonMap_.clear();
     std::lock_guard<std::mutex> lock(killReasonMutex_);
-    size_t uidSize = reasonsConfig.size();
+    killReasonMap_.clear();
+    size_t uidSize = reasonsConfig[RESULT].size();
     for (size_t i = 0; i < uidSize; i++) {
-        nlohmann:json configOfSingleUid = reasonsConfig[i];
+        nlohmann::json configOfSingleUid = reasonsConfig[RESULT][i];
         if (!configOfSingleUid.is_object() ||
             !configOfSingleUid.contains(UID) || !configOfSingleUid[UID].is_string() ||
             !configOfSingleUid.contains(REASON) || !configOfSingleUid[REASON].is_array()) {
@@ -176,7 +178,7 @@ void KillEventListener::ParseKillConfig(nlohmann::json reasonsConfig)
             continue;
         }
         uint32_t uid;
-        std::string uidStr = configOfSingleUid.contains(UID).get<std::string>();
+        std::string uidStr = configOfSingleUid[UID].get<std::string>();
         if (!ResCommonUtil::StrToUInt32(uidStr, uid)) {
             RESSCHED_LOGE("reskillreason:uid is not int:%{public}s", uidStr.c_str());
             continue;
@@ -187,8 +189,8 @@ void KillEventListener::ParseKillConfig(nlohmann::json reasonsConfig)
         for (size_t j = 0; j < reasonSize; j++) {
             if (reasonsOfUid[j].is_string()) {
                 std::string reason = reasonsOfUid[j].get<std::string>();
-                reasonsSet.insert(reason)
-                RESSCHED_LOGE("reskillreason:add reason:%{public}s", reason.c_str());
+                reasonsSet.insert(reason);
+                RESSCHED_LOGI("reskillreason:add reason:%{public}s", reason.c_str());
             }
         }
         killReasonMap_[uid] = reasonsSet;
