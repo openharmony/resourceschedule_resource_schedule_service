@@ -25,6 +25,7 @@
 #include "res_sched_log.h"              // for RESSCHED_LOGE, RESSCHED_LOGD
 #include "system_ability_definition.h"  // for RES_SCHED_SYS_ABILITY_ID
 #include "ffrt_inner.h"                 // for future
+#include "kill_event_listener.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -278,6 +279,16 @@ int32_t ResSchedClient::GetSystemloadLevel()
     int32_t ret;
     rss_->GetSystemloadLevel(ret);
     return ret;
+}
+
+bool ResSchedClient::IsAllowedKill(int32_t callerUid, const std::string Reason)
+{
+    return KillEventListener::GetInstance().IsAllowedKill(callerUid, Reason);
+}
+
+void ResSchedClient::InitKillReasonListener()
+{
+    KillEventListener::GetInstance().Init();
 }
 
 bool ResSchedClient::IsAllowedAppPreload(const std::string& bundleName, int32_t preloadMode)
