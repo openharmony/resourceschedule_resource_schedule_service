@@ -245,6 +245,22 @@ std::shared_ptr<ProcessRecord> Supervisor::FindProcessRecord(pid_t pid)
     return pr;
 }
 
+std::shared_ptr<ProcessRecord> Supervisor::FindProcessRecordByProcName(
+    const std::string& appName, const std::string& procName)
+{
+    for (const auto& [uid, app] : uidsMap_) {
+        if(!app || app->GetName() != appName) {
+            continue;
+        }
+        for (const auto& [pid, process] : app->GetPidsMap()) {
+            if (process && process->GetName() == procName) {
+                return process;
+            }
+        }
+    }
+    return nullptr;
+}
+
 void Supervisor::RemoveApplication(int32_t uid)
 {
     auto iter = uidsMap_.find(uid);
