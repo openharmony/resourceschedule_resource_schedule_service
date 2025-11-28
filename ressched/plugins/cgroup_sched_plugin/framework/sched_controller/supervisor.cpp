@@ -249,7 +249,7 @@ std::shared_ptr<ProcessRecord> Supervisor::FindProcessRecordByProcName(
     const std::string& appName, const std::string& procName)
 {
     for (const auto& [uid, app] : uidsMap_) {
-        if(!app || app->GetName() != appName) {
+        if (!app || app->GetName() != appName) {
             continue;
         }
         for (const auto& [pid, process] : app->GetPidsMap()) {
