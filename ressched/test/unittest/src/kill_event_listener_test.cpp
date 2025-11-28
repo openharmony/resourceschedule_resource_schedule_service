@@ -36,7 +36,7 @@ void KillEventListenerTest::SetUpTestCase(void) {}
 
 void KillEventListenerTest::TearDownTestCase() {}
 
-void ResSchedCliKillEventListenerTestentTest::SetUp() {}
+void KillEventListenerTest::SetUp() {}
 
 void KillEventListenerTest::TearDown() {}
 

@@ -170,13 +170,13 @@ void KillEventListener::ParseKillConfig(nlohmann::json reasonsConfig)
     for (size_t i = 0; i < uidSize; i++) {
         nlohmann:json configOfSingleUid = reasonsConfig[i];
         if (!configOfSingleUid.is_object() ||
-            !configOfSingleUid.conatins(UID) || !configOfSingleUid[UID].is_string() ||
-            !configOfSingleUid.conatins(REASON) || !configOfSingleUid[REASON].is_array()) {
+            !configOfSingleUid.contains(UID) || !configOfSingleUid[UID].is_string() ||
+            !configOfSingleUid.contains(REASON) || !configOfSingleUid[REASON].is_array()) {
             RESSCHED_LOGE("reskillreason:config format is error");
             continue;
         }
         uint32_t uid;
-        std::string uidStr = configOfSingleUid.conatins(UID).get<std::string>();
+        std::string uidStr = configOfSingleUid.contains(UID).get<std::string>();
         if (!ResCommonUtil::StrToUInt32(uidStr, uid)) {
             RESSCHED_LOGE("reskillreason:uid is not int:%{public}s", uidStr.c_str());
             continue;
