@@ -477,9 +477,13 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         resData->resType = (uint32_t)extType;
     }
 #endif
-    if (!GetPluginListByResType(resData->resType, pluginList) &&
-        !GetPluginListByResTypeAndValue(resData->resType, resData->value, pluginList)) {
+    GetPluginListByResType(resData->resType, pluginList);
+    GetPluginListByResTypeAndValue(resData->resType, resData->value, pluginList);
+    if (pluginList.empty()) {
         return;
+    } else {
+        std::unordered_map<std::string> uniqueSet(pluginList.begin(), pluginList.end());
+        pluginList.assign(uniqueSet.begin(), uniqueSet.end());
     }
     std::string libNameAll = "";
     string trace_str = BuildDispatchTrace(resData, libNameAll, __func__, pluginList);
