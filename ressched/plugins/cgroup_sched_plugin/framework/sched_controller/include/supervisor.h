@@ -214,6 +214,8 @@ public:
     std::shared_ptr<Application> GetAppRecord(int32_t uid);
     std::shared_ptr<Application> GetAppRecordNonNull(int32_t uid);
     std::shared_ptr<ProcessRecord> FindProcessRecord(pid_t pid);
+    std::shared_ptr<ProcessRecord> FindProcessRecordByProcName(
+        const std::string& appName, const std::string& procName);
     void RemoveApplication(int32_t uid);
     void SearchAbilityRecordId(std::shared_ptr<Application> &app, std::shared_ptr<ProcessRecord> &procRecord,
         int32_t recordId);
