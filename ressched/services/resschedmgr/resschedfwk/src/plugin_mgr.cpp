@@ -482,7 +482,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
     if (pluginList.empty()) {
         return;
     } else {
-        std::unordered_map<std::string> uniqueSet(pluginList.begin(), pluginList.end());
+        std::unordered_set<std::string> uniqueSet(pluginList.begin(), pluginList.end());
         pluginList.assign(uniqueSet.begin(), uniqueSet.end());
     }
     std::string libNameAll = "";
