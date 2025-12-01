@@ -455,6 +455,8 @@ enum : uint32_t {
     RES_TYPE_UESER_UNLOCKED,
     // usage topn
     RES_TYPE_TOPN_USAGE_INFO,
+    // load kill reason config
+    RES_TYPE_LOAD_KILL_REASON_CONFIG = 600,
 };
 } // namespace ResType
 } // namespace ResourceSchedule

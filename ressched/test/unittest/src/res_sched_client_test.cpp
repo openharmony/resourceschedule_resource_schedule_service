@@ -410,6 +410,18 @@ HWTEST_F(ResSchedClientTest, IsAllowedLinkJump, Function | MediumTest | Level0)
 }
 
 /**
+ * @tc.name: IsAllowedKill
+ * @tc.desc: Is allowed kill
+ * @tc.type: FUNC
+ * @tc.require: issueIBE0PK
+ * @tc.author: zxf
+ */
+HWTEST_F(ResSchedClientTest, IsAllowedKill, Function | MediumTest | Level0)
+{
+    EXPECT_TRUE(ResSchedClient::GetInstance().IsAllowedKill(1, "test"));
+}
+
+/**
  * @tc.name: SaInitXmlMutex
  * @tc.desc: Sa Init Xml Mutex
  * @tc.type: FUNC

@@ -26,6 +26,8 @@
     *ResSchedClient*GetSystemloadLevel*;
     *ResSchedClient*IsAllowedAppPreload*;
     *ResSchedClient*IsAllowedLinkJump*;
+    *ResSchedClient*IsAllowedKill*;
+    *ResSchedClient*InitKillReasonListener*;
     *ResSchedServiceProxy*;
     *ResSchedSystemloadNotifierProxy*;
     *ResSchedSystemloadNotifierStub*;
