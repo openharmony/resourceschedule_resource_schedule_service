@@ -628,7 +628,9 @@ ErrCode ResSchedClient::InnerEventListener::OnReceiveEvent(uint32_t eventType, u
     nlohmann::json extInfoJson = StringToJsonObj(extInfo);
     std::unordered_map<std::string, std::string> extInfoMap;
     for (auto it = extInfoJson.begin(); it != extInfoJson.end(); ++it) {
-        extInfoMap[it.key()] = it.value().get<std::string>();
+        if (it.value().is_string()) {
+            extInfoMap[it.key()] = it.value().get<std::string>();
+        }
     }
     std::list<sptr<ResSchedEventListener>> listenerList;
     {
