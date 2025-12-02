@@ -397,8 +397,6 @@ enum : uint32_t {
     RES_TYPE_START_INPUT_METHOD_PROCESS = 186,
     // report page change
     RES_TYPE_PAGE_CHANGE = 187,
-    // report trigger preload application
-    RES_TYPE_TRIGGER_PRELOAD_APPLICATION = 188,
     // media ctrl playback event
     RES_TYPE_MEDIA_CTRL_EVENT = 189,
     // report inputmethod qos change
