@@ -41,36 +41,145 @@ void KillEventListenerTest::SetUp() {}
 void KillEventListenerTest::TearDown() {}
 
 /**
- * @tc.name: OnReceiveEvent001
+ * @tc.name: ShouldDoNothingWhenReceiveMapNotContainsPushKey
  * @tc.desc: OnReceiveEvent test
  * @tc.type: FUNC
  * @tc.require: I6EEJI
  * @tc.author: zxf
  */
-HWTEST_F(KillEventListenerTest, OnReceiveEvent001, Function | MediumTest | Level0)
+HWTEST_F(KillEventListenerTest, ShouldDoNothingWhenReceiveMapNotContainsPushKey, Function | MediumTest | Level0)
 {
     KillEventListener::GetInstance().killReasonMap_.clear();
     std::unordered_map<std::string, std::string> extInfo;
     KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.empty());
+    std::unordered_set<std::string> reasons;
+    KillEventListener::GetInstance().killReasonMap_[1] = reasons;
+    KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 1);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.find(1) !=
+        KillEventListener::GetInstance().killReasonMap_.end() &&
+        KillEventListener::GetInstance().killReasonMap_[1].size() == 0);
+}
+
+/**
+ * @tc.name: ShouldDoNothingWhenReceiveMapPushValueIsEmpty
+ * @tc.desc: OnReceiveEvent test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldDoNothingWhenReceiveMapPushValueIsEmpty, Function | MediumTest | Level0)
+{
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    std::unordered_map<std::string, std::string> extInfo;
     extInfo["CLOUD_PUSH_CONFIG"] = "";
     KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.empty());
+    std::unordered_set<std::string> reasons;
+    KillEventListener::GetInstance().killReasonMap_[1] = reasons;
+    KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 1);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.find(1) !=
+        KillEventListener::GetInstance().killReasonMap_.end() &&
+        KillEventListener::GetInstance().killReasonMap_[1].size() == 0);
+}
+
+/**
+ * @tc.name: ShouldDoNothingWhenReceiveMapPushValueIsNotObj
+ * @tc.desc: OnReceiveEvent test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldDoNothingWhenReceiveMapPushValueIsNotObj, Function | MediumTest | Level0)
+{
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    std::unordered_map<std::string, std::string> extInfo;
     extInfo["CLOUD_PUSH_CONFIG"] = "123";
     KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.empty());
+    std::unordered_set<std::string> reasons;
+    KillEventListener::GetInstance().killReasonMap_[1] = reasons;
+    KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 1);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.find(1) !=
+        KillEventListener::GetInstance().killReasonMap_.end() &&
+        KillEventListener::GetInstance().killReasonMap_[1].size() == 0);
+}
+
+/**
+ * @tc.name: ShouldDoNothingWhenReceiveMapPushValueNotContainsResult
+ * @tc.desc: OnReceiveEvent test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldDoNothingWhenReceiveMapPushValueNotContainsResult, Function | MediumTest | Level0)
+{
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    std::unordered_map<std::string, std::string> extInfo;
     extInfo["CLOUD_PUSH_CONFIG"] = "{\"xx\":1}";
     KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.empty());
+    std::unordered_set<std::string> reasons;
+    KillEventListener::GetInstance().killReasonMap_[1] = reasons;
+    KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 1);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.find(1) !=
+        KillEventListener::GetInstance().killReasonMap_.end() &&
+        KillEventListener::GetInstance().killReasonMap_[1].size() == 0);
+}
+
+/**
+ * @tc.name: ShouldDoNothingWhenReceiveResultIsNotArray
+ * @tc.desc: OnReceiveEvent test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldDoNothingWhenReceiveResultIsNotArray, Function | MediumTest | Level0)
+{
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    std::unordered_map<std::string, std::string> extInfo;
     extInfo["CLOUD_PUSH_CONFIG"] = "{\"result\":1}";
+    KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.empty());
+    std::unordered_set<std::string> reasons;
+    KillEventListener::GetInstance().killReasonMap_[1] = reasons;
+    KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 1);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.find(1) !=
+        KillEventListener::GetInstance().killReasonMap_.end() &&
+        KillEventListener::GetInstance().killReasonMap_[1].size() == 0);
+}
+
+/**
+ * @tc.name: ShouldClearConfWhenReceiveResultArrayIsEmpty
+ * @tc.desc: OnReceiveEvent test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldClearConfWhenReceiveResultArrayIsEmpty, Function | MediumTest | Level0)
+{
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    std::unordered_map<std::string, std::string> extInfo;
+    std::unordered_set<std::string> reasons;
+    KillEventListener::GetInstance().killReasonMap_[1] = reasons;
+    extInfo["CLOUD_PUSH_CONFIG"] = "{\"result\":[]}";
     KillEventListener::GetInstance().OnReceiveEvent(1, 1, extInfo);
     EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.empty());
 }
 
 /**
- * @tc.name: RegisterKillConfigUpdate001
+ * @tc.name: ShouldSetRegisterFlagTrueAfterRegister
  * @tc.desc: RegisterKillConfigUpdate test
  * @tc.type: FUNC
  * @tc.require: I6EEJI
  * @tc.author: zxf
  */
-HWTEST_F(KillEventListenerTest, RegisterKillConfigUpdate001, Function | MediumTest | Level0)
+HWTEST_F(KillEventListenerTest, ShouldSetRegisterFlagTrueAfterRegister, Function | MediumTest | Level0)
 {
     KillEventListener::GetInstance().isRegister_ = false;
     KillEventListener::GetInstance().RegisterKillConfigUpdate();
@@ -78,13 +187,13 @@ HWTEST_F(KillEventListenerTest, RegisterKillConfigUpdate001, Function | MediumTe
 }
 
 /**
- * @tc.name: IsConfigKillReason001
+ * @tc.name: ShouldReturnTrueWhenUidAndReasonInConf
  * @tc.desc: IsConfigKillReason test
  * @tc.type: FUNC
  * @tc.require: I6EEJI
  * @tc.author: zxf
  */
-HWTEST_F(KillEventListenerTest, IsConfigKillReason001, Function | MediumTest | Level0)
+HWTEST_F(KillEventListenerTest, ShouldReturnTrueWhenUidAndReasonInConf, Function | MediumTest | Level0)
 {
     KillEventListener::GetInstance().killReasonMap_.clear();
     KillEventListener::GetInstance().IsConfigKillReason(1, "test");
@@ -92,77 +201,334 @@ HWTEST_F(KillEventListenerTest, IsConfigKillReason001, Function | MediumTest | L
     ressonSet.insert("test");
     KillEventListener::GetInstance().killReasonMap_[1] = ressonSet;
     EXPECT_TRUE(KillEventListener::GetInstance().IsConfigKillReason(1, "test"));
+}
+
+/**
+ * @tc.name: ShouldReturnFalseWhenReasonNotInConf
+ * @tc.desc: IsConfigKillReason test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldReturnFalseWhenReasonNotInConf, Function | MediumTest | Level0)
+{
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    KillEventListener::GetInstance().IsConfigKillReason(1, "test");
+    std::unordered_set<std::string> ressonSet;
+    ressonSet.insert("test");
+    KillEventListener::GetInstance().killReasonMap_[1] = ressonSet;
     EXPECT_TRUE(!KillEventListener::GetInstance().IsConfigKillReason(1, "test2"));
+}
+
+/**
+ * @tc.name: ShouldReturnFalseWhenUidNotInConf
+ * @tc.desc: IsConfigKillReason test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldReturnFalseWhenUidNotInConf, Function | MediumTest | Level0)
+{
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    KillEventListener::GetInstance().IsConfigKillReason(1, "test");
+    std::unordered_set<std::string> ressonSet;
+    ressonSet.insert("test");
+    KillEventListener::GetInstance().killReasonMap_[1] = ressonSet;
     EXPECT_TRUE(!KillEventListener::GetInstance().IsConfigKillReason(2, "test"));
 }
 
 /**
- * @tc.name: UpdateKillCount001
+ * @tc.name: ShouldSetCountTo1WhenKeyFirstReprt
  * @tc.desc: UpdateKillCount test
  * @tc.type: FUNC
  * @tc.require: I6EEJI
  * @tc.author: zxf
  */
-HWTEST_F(KillEventListenerTest, UpdateKillCount001, Function | MediumTest | Level0)
+HWTEST_F(KillEventListenerTest, ShouldSetCountTo1WhenKeyFirstReprt, Function | MediumTest | Level0)
 {
     KillEventListener::GetInstance().killCountMap_.clear();
     KillEventListener::GetInstance().UpdateKillCount(1, "test", false);
-    EXPECT_TRUE(KillEventListener::GetInstance().killCountMap_["udi:1,reason:test,allow:0"] == 1);
+    EXPECT_TRUE(KillEventListener::GetInstance().killCountMap_["uid:1,reason:test,allow0"] == 1);
+}
+
+/**
+ * @tc.name: ShouldCountIncrement1WhenReasonNotFirstReort
+ * @tc.desc: UpdateKillCount test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldCountIncrement1WhenReasonNotFirstReort, Function | MediumTest | Level0)
+{
+    KillEventListener::GetInstance().killCountMap_.clear();
+    KillEventListener::GetInstance().killCountMap_["uid:1,reason:test,allow0"] = 3;
     KillEventListener::GetInstance().UpdateKillCount(1, "test", false);
-    EXPECT_TRUE(KillEventListener::GetInstance().killCountMap_["udi:1,reason:test,allow:0"] == 2);
+    EXPECT_TRUE(KillEventListener::GetInstance().killCountMap_["uid:1,reason:test,allow0"] == 4);
+}
+
+/**
+ * @tc.name: ShouldDiscardDataWhenCacheCountReach1000AndKeyInCache
+ * @tc.desc: UpdateKillCount test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldDiscardDataWhenCacheCountReach1000AndKeyInCache, Function | MediumTest | Level0)
+{
+    KillEventListener::GetInstance().killCountMap_.clear();
+    for (int i = 0; i < 1001; ++i) {
+        KillEventListener::GetInstance().UpdateKillCount(i, "test", false);
+    }
+    KillEventListener::GetInstance().UpdateKillCount(1, "test", false);
+    EXPECT_TRUE(KillEventListener::GetInstance().killCountMap_["uid:1,reason:test,allow0"] == 2);
+}
+
+/**
+ * @tc.name: ShouldCountIncrement1WhenCacheCountReach1000AndKeyNotInCache
+ * @tc.desc: UpdateKillCount test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldCountIncrement1WhenCacheCountReach1000AndKeyNotInCache,
+    Function | MediumTest | Level0)
+{
+    KillEventListener::GetInstance().killCountMap_.clear();
     for (int i = 0; i < 1001; ++i) {
         KillEventListener::GetInstance().UpdateKillCount(i, "test", false);
     }
     KillEventListener::GetInstance().UpdateKillCount(1001, "test", false);
-    KillEventListener::GetInstance().UpdateKillCount(1, "test", false);
-    EXPECT_TRUE(KillEventListener::GetInstance().killCountMap_.size() == 1000);
+    EXPECT_TRUE(KillEventListener::GetInstance().killCountMap_.find("uid:1001,reason:test,allow0") ==
+        KillEventListener::GetInstance().killCountMap_.end());
 }
 
 /**
- * @tc.name: ParseKillConfig001
+ * @tc.name: ShouldUpdateConfToEmptyWhenJsonIsEmpty
  * @tc.desc: ParseKillConfig test
  * @tc.type: FUNC
  * @tc.require: I6EEJI
  * @tc.author: zxf
  */
-HWTEST_F(KillEventListenerTest, ParseKillConfig001, Function | MediumTest | Level0)
+HWTEST_F(KillEventListenerTest, ShouldDoNothingWhenJsonIsEmpty, Function | MediumTest | Level0)
 {
     nlohmann::json json;
+    KillEventListener::GetInstance().killReasonMap_.clear();
     KillEventListener::GetInstance().ParseKillConfig(json);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 0);
+    std::unordered_set<std::string> reasons;
+    KillEventListener::GetInstance().killReasonMap_[1] = reasons;
+    KillEventListener::GetInstance().ParseKillConfig(json);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 1);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.find(1) !=
+        KillEventListener::GetInstance().killReasonMap_.end() &&
+        KillEventListener::GetInstance().killReasonMap_[1].size() == 0);
+}
+
+/**
+ * @tc.name: ShouldUpdateConfToEmptyWhenJsonResultIsNotArray
+ * @tc.desc: ParseKillConfig test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest,  ShouldDoNothingWhenJsonResultIsNotArray, Function | MediumTest | Level0)
+{
+    nlohmann::json json;
     json["result"] = "xxx";
+    KillEventListener::GetInstance().killReasonMap_.clear();
     KillEventListener::GetInstance().ParseKillConfig(json);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 0);
+    std::unordered_set<std::string> reasons;
+    KillEventListener::GetInstance().killReasonMap_[1] = reasons;
+    KillEventListener::GetInstance().ParseKillConfig(json);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 1);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.find(1) !=
+        KillEventListener::GetInstance().killReasonMap_.end() &&
+        KillEventListener::GetInstance().killReasonMap_[1].size() == 0);
+}
+
+/**
+ * @tc.name: ShouldNotInertToConfWhenConfNotObj
+ * @tc.desc: ParseKillConfig test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldNotInertToConfWhenConfNotObj, Function | MediumTest | Level0)
+{
+    nlohmann::json json;
     nlohmann::json items = nlohmann::json::array();
-    nlohmann::json item1 = "sssfd";
-    nlohmann::json item2;
-    item2["testKey"] = "testValue";
-    nlohmann::json item3;
-    item3["uid"] = 1;
-    nlohmann::json item4;
-    item4["uid"] = "1";
-    nlohmann::json item5;
-    item5["uid"] = "1";
-    item5["reason"] = "testValue";
+    nlohmann::json item = "sssfd";
+    items.push_back(item);
+    json["result"] = items;
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    KillEventListener::GetInstance().ParseKillConfig(json);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 0);
+}
+
+/**
+ * @tc.name: ShouldNotInertToConfWhenConfNotContainsUid
+ * @tc.desc: ParseKillConfig test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldNotInertToConfWhenConfNotContainsUid, Function | MediumTest | Level0)
+{
+    nlohmann::json json;
+    nlohmann::json items = nlohmann::json::array();
+    nlohmann::json item;
+    item["testKey"] = "testValue";
+    items.push_back(item);
+    json["result"] = items;
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    KillEventListener::GetInstance().ParseKillConfig(json);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 0);
+}
+
+/**
+ * @tc.name: ShouldNotInertToConfWhenUidIsNotString
+ * @tc.desc: ParseKillConfig test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldNotInertToConfWhenUidIsNotString, Function | MediumTest | Level0)
+{
+    nlohmann::json json;
+    nlohmann::json items = nlohmann::json::array();
+    nlohmann::json item;
+    item["uid"] = 1;
+    items.push_back(item);
+    json["result"] = items;
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    KillEventListener::GetInstance().ParseKillConfig(json);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 0);
+}
+
+/**
+ * @tc.name: ShouldOnlyInertUidToConfWhenReasonsIsEmpty
+ * @tc.desc: ParseKillConfig test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldOnlyInertUidToConfWhenReasonsIsEmpty, Function | MediumTest | Level0)
+{
+    nlohmann::json json;
+    nlohmann::json items = nlohmann::json::array();
+    nlohmann::json item;
+    nlohmann::json reasons = nlohmann::json::array();
+    item["reason"] = reasons;
+    item["uid"] = "1";
+    items.push_back(item);
+    json["result"] = items;
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    KillEventListener::GetInstance().ParseKillConfig(json);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 1);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.find(1) !=
+        KillEventListener::GetInstance().killReasonMap_.end() &&
+        KillEventListener::GetInstance().killReasonMap_[1].size() == 0);
+}
+
+/**
+ * @tc.name: ShouldOnlyInertUidToConfWhenReasonsIsNotArray
+ * @tc.desc: ParseKillConfig test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldNotInertUidToConfWhenReasonsIsNotArray, Function | MediumTest | Level0)
+{
+    nlohmann::json json;
+    nlohmann::json items = nlohmann::json::array();
+    nlohmann::json item;
+    item["uid"] = "1";
+    item["reason"] = "testValue";
+    items.push_back(item);
+    json["result"] = items;
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    KillEventListener::GetInstance().ParseKillConfig(json);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 0);
+}
+
+/**
+ * @tc.name: ShouldOnlyInertUidToConfWhenAllReasonIsNotString
+ * @tc.desc: ParseKillConfig test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldOnlyInertUidToConfWhenAllReasonIsNotString, Function | MediumTest | Level0)
+{
+    nlohmann::json json;
+    nlohmann::json items = nlohmann::json::array();
+    nlohmann::json reasons = nlohmann::json::array();
+    reasons.push_back(2);
+    reasons.push_back(3);
+    nlohmann::json item;
+    item["uid"] = "1";
+    item["reason"] = reasons;
+    items.push_back(item);
+    json["result"] = items;
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    KillEventListener::GetInstance().ParseKillConfig(json);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 1);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.find(1) !=
+        KillEventListener::GetInstance().killReasonMap_.end() &&
+        KillEventListener::GetInstance().killReasonMap_[1].size() == 0);
+}
+
+/**
+ * @tc.name: ShouldInertReasonsWhenDataIsLegal
+ * @tc.desc: ParseKillConfig test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldInertReasonsWhenDataIsLegal, Function | MediumTest | Level0)
+{
+    nlohmann::json json;
+    nlohmann::json items = nlohmann::json::array();
+    nlohmann::json reasons = nlohmann::json::array();
+    reasons.push_back("xxx");
+    nlohmann::json item;
+    item["uid"] = "1";
+    item["reason"] = reasons;
+    items.push_back(item);
+    json["result"] = items;
+    KillEventListener::GetInstance().killReasonMap_.clear();
+    KillEventListener::GetInstance().ParseKillConfig(json);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 1);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.find(1) !=
+        KillEventListener::GetInstance().killReasonMap_.end() &&
+        KillEventListener::GetInstance().killReasonMap_[1].size() == 1 &&
+        KillEventListener::GetInstance().killReasonMap_[1].find("xxx") !=
+        KillEventListener::GetInstance().killReasonMap_[1].end());
+}
+
+/**
+ * @tc.name: ShouldNotInertToConfWhenUidCanNotTransToInt
+ * @tc.desc: ParseKillConfig test
+ * @tc.type: FUNC
+ * @tc.require: I6EEJI
+ * @tc.author: zxf
+ */
+HWTEST_F(KillEventListenerTest, ShouldNotInertToConfWhenUidCanNotTransToInt, Function | MediumTest | Level0)
+{
+    nlohmann::json json;
+    nlohmann::json items = nlohmann::json::array();
     nlohmann::json reasons = nlohmann::json::array();
     reasons.push_back("xxx");
     reasons.push_back(2);
-    nlohmann::json item6;
-    item6["uid"] = "1";
-    item6["reason"] = reasons;
-    nlohmann::json item7;
-    item7["uid"] = "xx";
-    item6["reason"] = reasons;
-    items.push_back(item1);
-    items.push_back(item2);
-    items.push_back(item3);
-    items.push_back(item4);
-    items.push_back(item5);
-    items.push_back(item6);
-    items.push_back(item7);
-    KillEventListener::GetInstance().killReasonMap_.clear();
+    nlohmann::json item;
+    item["uid"] = "xx";
+    item["reason"] = reasons;
+    items.push_back(item);
     json["result"] = items;
+    KillEventListener::GetInstance().killReasonMap_.clear();
     KillEventListener::GetInstance().ParseKillConfig(json);
-    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 1);
-    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_[1].size() == 1);
+    EXPECT_TRUE(KillEventListener::GetInstance().killReasonMap_.size() == 0);
 }
 
 /**
