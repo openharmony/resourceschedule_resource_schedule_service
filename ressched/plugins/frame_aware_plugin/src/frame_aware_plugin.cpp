@@ -127,17 +127,19 @@ void FrameAwarePlugin::HandleProcessStateChange(const std::shared_ptr<ResData>& 
     }
 
     if (!data->payload.contains("pid") || !data->payload.contains("uid") || !data->payload.contains("bundleName") ||
-        !data->payload["pid"].is_string() || !data->payload["uid"].is_string() ||
-        !data->payload["bundleName"].is_string()) {
-        RME_LOGI("FrameAwarePlugin::HandleProcessStateChange payload is not contains pid or uid or bundleName");
+        !data->payload.contains("hostPid") || !data->payload["pid"].is_string() || !data->payload["uid"].is_string() ||
+        !data->payload["hostPid"].is_string() || !data->payload["bundleName"].is_string()) {
+        RME_LOGI(
+            "FrameAwarePlugin::HandleProcessStateChange payload is not contains pid or uid or hostPid or bundleName");
         return;
     }
 
     int pid = ConvertToInteger(data, "pid");
     int uid = ConvertToInteger(data, "uid");
+    int hostPid = ConvertToInteger(data, "hostPid");
     std::string bundleName = data->payload["bundleName"].get<std::string>().c_str();
     RME::ThreadState state = static_cast<RME::ThreadState>(data->value);
-    RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, uid, bundleName, state);
+    RME::FrameMsgIntf::GetInstance().ReportProcessInfo(pid, uid, hostPid, bundleName, state);
 }
 
 void FrameAwarePlugin::HandleContinuousTask(const std::shared_ptr<ResData>& data)

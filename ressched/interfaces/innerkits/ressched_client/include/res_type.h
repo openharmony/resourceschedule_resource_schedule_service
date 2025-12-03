@@ -397,8 +397,6 @@ enum : uint32_t {
     RES_TYPE_START_INPUT_METHOD_PROCESS = 186,
     // report page change
     RES_TYPE_PAGE_CHANGE = 187,
-    // report trigger preload application
-    RES_TYPE_TRIGGER_PRELOAD_APPLICATION = 188,
     // media ctrl playback event
     RES_TYPE_MEDIA_CTRL_EVENT = 189,
     // report inputmethod qos change
@@ -457,6 +455,8 @@ enum : uint32_t {
     RES_TYPE_UESER_UNLOCKED,
     // usage topn
     RES_TYPE_TOPN_USAGE_INFO,
+    // load kill reason config
+    RES_TYPE_LOAD_KILL_REASON_CONFIG = 600,
 };
 } // namespace ResType
 } // namespace ResourceSchedule

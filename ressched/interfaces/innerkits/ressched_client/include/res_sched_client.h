@@ -155,6 +155,19 @@ public:
      */
     int32_t IsAllowedLinkJump(bool& isAllowedLinkJump);
 
+    /**
+     * @brief Check whether the kill reason is allowed.
+     *
+     * @param callerUid caller uid.
+     * @param Reason kill reason.
+     */
+    bool IsAllowedKill(uint32_t callerUid, const std::string& Reason);
+
+    /**
+     * @brief Init KillReasonListener.
+     */
+    void InitKillReasonListener();
+
 protected:
     ResSchedClient() = default;
     virtual ~ResSchedClient();

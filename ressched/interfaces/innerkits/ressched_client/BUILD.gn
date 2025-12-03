@@ -130,6 +130,10 @@ ohos_shared_library("ressched_client") {
     "src/res_sa_init.cpp",
     "src/res_sched_client.cpp",
     "src/res_sched_common_death_recipient.cpp",
+    "src/kill_event_listener.cpp",
+    "../../../common/src/res_sched_string_util.cpp",
+    "../../../common/src/res_sched_json_util.cpp",
+    "../../../common/src/res_sched_hisysevent_report_util.cpp",
   ]
 
   output_values = get_target_outputs(":res_sched_service_interface")
@@ -149,6 +153,7 @@ ohos_shared_library("ressched_client") {
     "hilog:libhilog",
     "hitrace:hitrace_meter",
     "samgr:samgr_proxy",
+    "hisysevent:libhisysevent",
   ]
 
   public_external_deps = [

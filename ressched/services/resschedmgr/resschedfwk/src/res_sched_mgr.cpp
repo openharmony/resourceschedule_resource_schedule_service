@@ -168,6 +168,7 @@ namespace {
         { ResType::SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_UID, "SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_UID" },
         { ResType::SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_PID, "SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_PID" },
         { ResType::RES_TYPE_CAMERA_RESET_PRIORITY, "RES_TYPE_CAMERA_RESET_PRIORITY"},
+        { ResType::RES_TYPE_LOAD_KILL_REASON_CONFIG, "RES_TYPE_LOAD_KILL_REASON_CONFIG" },
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
         { ResType::RES_TYPE_FILE_COPY_STATUS, "RES_TYPE_FILE_COPY_STATUS" },
 #endif
@@ -418,10 +419,10 @@ extern "C" int32_t KillProcessInProcess(const nlohmann::json& payload)
     return ResSchedMgr::GetInstance().KillProcessByClient(payload);
 }
 
-extern "C" void ReportSyncEventInProcess(uint32_t type, int64_t value,
+extern "C" int32_t ReportSyncEventInProcess(uint32_t type, int64_t value,
     const nlohmann::json& payload, nlohmann::json& reply)
 {
-    PluginMgr::GetInstance().DeliverResource(
+    return PluginMgr::GetInstance().DeliverResource(
         std::make_shared<ResData>(type, value, payload, reply));
 }
 } // namespace ResourceSchedule
