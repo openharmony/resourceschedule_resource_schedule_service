@@ -231,6 +231,7 @@ bool AudioObserver::IsValidPid(pid_t pid)
 void AudioObserver::OnCapturerStateChange(
     const std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>>& audioCapturerChangeInfos)
 {
+    ReportCapturerStateChange(audioCapturerChangeInfos);
     for (const auto& info : audioCapturerChangeInfos) {
         // pid 0 with state CAPTURER_PREPARED is useless
         if (info == nullptr || info->clientPid == 0) {
@@ -302,6 +303,26 @@ void AudioObserver::ProcessCapturerEndCaseByUnregister()
     }
     capturerStateMap_.clear();
     RESSCHED_LOGI("%{public}s", closedPidStr.c_str());
+}
+
+void AudioObserver::ReportCapturerStateChange(
+    const std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>>& audioCapturerChangeInfos)
+{
+    auto infos = nlohmann::json::array();
+    for (const auto& info : audioCapturerChangeInfos) {
+        if (info == nullptr) {
+            continue;
+        }
+        nlohmann::json payload;
+        payload["uid"] = std::to_string(info->clientUID);
+        payload["sessionId"] = std::to_string(info->sessionId);
+        payload["sourceType"] = std::to_string(static_cast<int32_t>(info->capturerState));
+        payload["capturerState"] = std::to_string(static_cast<int32_t>(info->capturerInfo.sourceType));
+        infos.push_back(payload);
+    }
+    RESSCHED_LOGE("HUWEI infos: %{public}s", infos.dump().c_str());
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
+            ResType::AudioCaptureState::AUDIO_CAPTURE_CHANGE, infos);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
