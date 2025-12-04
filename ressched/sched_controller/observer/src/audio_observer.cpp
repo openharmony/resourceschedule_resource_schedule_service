@@ -321,7 +321,7 @@ void AudioObserver::ReportCapturerStateChange(
         infos.push_back(payload);
     }
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
-            ResType::AudioCaptureState::AUDIO_CAPTURE_CHANGE, infos);
+        ResType::AudioCaptureState::AUDIO_CAPTURE_CHANGE, infos);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
