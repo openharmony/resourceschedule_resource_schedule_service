@@ -316,8 +316,8 @@ void AudioObserver::ReportCapturerStateChange(
         nlohmann::json payload;
         payload["uid"] = std::to_string(info->clientUID);
         payload["sessionId"] = std::to_string(info->sessionId);
-        payload["sourceType"] = std::to_string(static_cast<int32_t>(info->capturerState));
-        payload["capturerState"] = std::to_string(static_cast<int32_t>(info->capturerInfo.sourceType));
+        payload["capturerState"] = std::to_string(static_cast<int32_t>(info->capturerState));
+        payload["sourceType"] = std::to_string(static_cast<int32_t>(info->capturerInfo.sourceType));
         infos.push_back(payload);
     }
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
