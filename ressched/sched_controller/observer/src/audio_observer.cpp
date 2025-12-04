@@ -320,7 +320,6 @@ void AudioObserver::ReportCapturerStateChange(
         payload["capturerState"] = std::to_string(static_cast<int32_t>(info->capturerInfo.sourceType));
         infos.push_back(payload);
     }
-    RESSCHED_LOGE("HUWEI infos: %{public}s", infos.dump().c_str());
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
             ResType::AudioCaptureState::AUDIO_CAPTURE_CHANGE, infos);
 }
