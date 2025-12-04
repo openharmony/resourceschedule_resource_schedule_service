@@ -71,6 +71,8 @@ private:
     bool IsValidPid(pid_t pid);
     void ProcessCapturerBegin(const int32_t pid, const int32_t uid, const int32_t sessionId);
     void ProcessCapturerEnd(const int32_t pid, const int32_t uid, const int32_t sessionId);
+    void ReportCapturerStateChange(
+        const std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>>& audioCapturerChangeInfos);
 
     std::unordered_map<int32_t, AudioStandard::RendererState> renderState_;
     std::unordered_map<int32_t, int32_t> volumeState_;
