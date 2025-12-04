@@ -313,8 +313,8 @@ enum : uint32_t {
     RES_TYPE_PARAM_UPADTE_EVENT = 144,
     // [phased out soon] report camera prelaunch event
     RES_TYPE_CAMERA_PRELAUNCH = 145,
-    // report high frequence load scene
-    RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_CHANGE = 146,
+    // report high frequence load scene without aggregation
+    RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_WITHOUT_AGGREGATION = 146,
     // camera status changed
     RES_TYPE_CAMERA_STATUS_CHANGE = 147,
     // report game state change
@@ -403,6 +403,8 @@ enum : uint32_t {
     RES_TYPE_IME_QOS_CHANGE = 190,
     // report live view event, value 1 enter live view, value 0 exit live view, payload uid, eventName.
     RES_TYPE_LIVE_VIEW_EVENT = 191,
+    // report high frequence load scene with aggregation to fix the MultiInstance issue of application
+    RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_WITH_AGGREGATION = 192,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
