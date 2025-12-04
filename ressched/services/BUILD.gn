@@ -173,7 +173,6 @@ ohos_shared_library("resschedsvc") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libdm",
-    "window_manager:libwm",
     "window_manager:libwm_lite",
   ]
 
@@ -185,6 +184,10 @@ ohos_shared_library("resschedsvc") {
     "libxml2:libxml2",
   ]
 
+  if (resource_schedule_service_depend_wm_enable) {
+    defines += [ "RESOURCE_SCHEDULE_SERVICE_DEPEND_WM" ]
+    external_deps += [ "window_manager:libwm" ]
+  }
   if (resource_schedule_service_with_app_nap_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE" ]
     external_deps += [ "hisysevent:libhisyseventmanager" ]
