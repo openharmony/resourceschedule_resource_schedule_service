@@ -50,9 +50,9 @@
 #endif
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_DEPEND_WM
-#define ResWm WindowManager
+#define RSS_WINDOW_MANAGER WindowManager
 #else
-#define ResWm WindowManagerLite
+#define RSS_WINDOW_MANAGER WindowManagerLite
 #endif
 
 namespace OHOS {
@@ -760,7 +760,7 @@ void ObserverManager::InitWindowStateObserver()
     if (!windowStateObserver_) {
         windowStateObserver_ = new (std::nothrow)WindowStateObserver();
         if (windowStateObserver_) {
-            if (OHOS::Rosen::ResWm::GetInstance().
+            if (OHOS::Rosen::RSS_WINDOW_MANAGER::GetInstance().
             RegisterFocusChangedListener(windowStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                                 HiviewDFX::HiSysEvent::EventType::FAULT,
@@ -772,7 +772,7 @@ void ObserverManager::InitWindowStateObserver()
     if (!windowVisibilityObserver_) {
         windowVisibilityObserver_ = new (std::nothrow)WindowVisibilityObserver();
         if (windowVisibilityObserver_) {
-            if (OHOS::Rosen::ResWm::GetInstance().
+            if (OHOS::Rosen::RSS_WINDOW_MANAGER::GetInstance().
             RegisterVisibilityChangedListener(windowVisibilityObserver_) != OHOS::Rosen::WMError::WM_OK) {
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                                 HiviewDFX::HiSysEvent::EventType::FAULT,
@@ -784,7 +784,7 @@ void ObserverManager::InitWindowStateObserver()
     if (!windowDrawingContentObserver_) {
         windowDrawingContentObserver_ = new (std::nothrow)WindowDrawingContentObserver();
         if (windowDrawingContentObserver_) {
-            if (OHOS::Rosen::ResWm::GetInstance().
+            if (OHOS::Rosen::RSS_WINDOW_MANAGER::GetInstance().
                 RegisterDrawingContentChangedListener(windowDrawingContentObserver_) != OHOS::Rosen::WMError::WM_OK) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                                     HiviewDFX::HiSysEvent::EventType::FAULT,
@@ -804,7 +804,7 @@ void ObserverManager::SubscribeWindowModeChange()
     if (!windowModeObserver_) {
         windowModeObserver_ = new (std::nothrow)WindowModeObserver();
         if (windowModeObserver_) {
-            if (OHOS::Rosen::ResWm::GetInstance().
+            if (OHOS::Rosen::RSS_WINDOW_MANAGER::GetInstance().
                 RegisterWindowModeChangedListener(windowModeObserver_) != OHOS::Rosen::WMError::WM_OK) {
                     RESSCHED_LOGE("RegisterWindowModeChangedListener fail");
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS,
@@ -865,17 +865,17 @@ void ObserverManager::DisableWindowStateObserver()
 {
     if (windowStateObserver_) {
         // unregister windowStateObserver_
-        OHOS::Rosen::ResWm::GetInstance().UnregisterFocusChangedListener(windowStateObserver_);
+        OHOS::Rosen::RSS_WINDOW_MANAGER::GetInstance().UnregisterFocusChangedListener(windowStateObserver_);
         windowStateObserver_ = nullptr;
     }
 
     if (windowVisibilityObserver_) {
-        OHOS::Rosen::ResWm::GetInstance().UnregisterVisibilityChangedListener(windowVisibilityObserver_);
+        OHOS::Rosen::RSS_WINDOW_MANAGER::GetInstance().UnregisterVisibilityChangedListener(windowVisibilityObserver_);
         windowVisibilityObserver_ = nullptr;
     }
 
     if (windowDrawingContentObserver_) {
-        OHOS::Rosen::ResWm::GetInstance().
+        OHOS::Rosen::RSS_WINDOW_MANAGER::GetInstance().
             UnregisterDrawingContentChangedListener(windowDrawingContentObserver_);
         windowDrawingContentObserver_ = nullptr;
     }
@@ -887,7 +887,7 @@ void ObserverManager::DisableWindowStateObserver()
 void ObserverManager::UnsubscribeWindowModeChange()
 {
     if (windowModeObserver_) {
-        OHOS::Rosen::ResWm::GetInstance().
+        OHOS::Rosen::RSS_WINDOW_MANAGER::GetInstance().
             UnregisterWindowModeChangedListener(windowModeObserver_);
         windowModeObserver_ = nullptr;
     }
