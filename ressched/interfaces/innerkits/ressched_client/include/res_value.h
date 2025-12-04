@@ -917,6 +917,7 @@ enum NativeSuspendState : int32_t {
 enum AudioCaptureState : int32_t {
     AUDIO_CAPTURE_BEGIN = 0,
     AUDIO_CAPTURE_END = 1,
+    AUDIO_CAPTURE_CHANGE = 2,
 };
 
 /**
