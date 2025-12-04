@@ -36,6 +36,7 @@ private:
     void SocPerfWirteNode(const std::shared_ptr<ResData> &data);
 private:
     std::set<uint32_t> resType_;
+    std::set<std::pair<uint32_t, int64_t>> resTypeWithVal_;
     std::unordered_map<uint32_t, std::function<void(const std::shared_ptr<ResData>& data)>> functionMap_;
 };
 } // namespace OHOS

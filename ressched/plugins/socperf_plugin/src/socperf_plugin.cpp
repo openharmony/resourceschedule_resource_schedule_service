@@ -152,10 +152,14 @@ void SocPerfPlugin::Init()
 {
     InitEventId();
     InitResTypes();
+    InitResTypeWithVal();
     InitFunctionMap();
     InitSpecialExtension();
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
+    }
+    for (auto &[resType, val] : resTypeWithVal_) {
+        PluginMgr::GetInstance().SubscribeResourceAccurately(LIB_NAME, resType, val);
     }
     InitPerfCrucialSo();
     InitBundleNameBoostList();
@@ -551,6 +555,36 @@ void SocPerfPlugin::AddEventToFunctionMap()
     AddOtherEventToFunctionMap();
 }
 
+void SocPerfPlugin::InitResTypeWithVal()
+{
+    resTypeWithVal_ = {
+        {RES_TYPE_WINDOW_FOCUS, WindowFocusStatus::WINDOW_FOCUS},
+        {RES_TYPE_WINDOW_FOCUS, WindowFocusStatus::WINDOW_UNFOCUS},
+        {RES_TYPE_CLICK_RECOGNIZE, ClickEventType::TOUCH_EVENT_DOWN_MMI},
+        {RES_TYPE_CLICK_RECOGNIZE, ClickEventType::TOUCH_EVENT_DOWN},
+        {RES_TYPE_CLICK_RECOGNIZE, ClickEventType::TOUCH_EVENT_UP},
+        {RES_TYPE_CLICK_RECOGNIZE, ClickEventType::CLICK_EVENT},
+        {RES_TYPE_LOAD_PAGE, LOAD_PAGE_START},
+        {RES_TYPE_LOAD_PAGE, LOAD_PAGE_COMPLETE},
+        {RES_TYPE_SLIDE_RECOGNIZE, SlideEventStatus::SLIDE_EVENT_ON},
+        {RES_TYPE_SLIDE_RECOGNIZE, SlideEventStatus::SLIDE_EVENT_OFF},
+        {RES_TYPE_SLIDE_RECOGNIZE, SlideEventStatus::SWIPER_FLING_END},
+        {RES_TYPE_SLIDE_RECOGNIZE, SlideEventStatus::SLIDE_NORMAL_BEGIN},
+        {RES_TYPE_SLIDE_RECOGNIZE, SlideEventStatus::SLIDE_NORMAL_END},
+        {RES_TYPE_SLIDE_RECOGNIZE, SlideEventStatus::MOVE_EVENT_ON},
+        {RES_TYPE_APP_STATE_CHANGE, ResType::ProcessStatus::PROCESS_CREATED},
+        {RES_TYPE_BMM_MONITER_CHANGE_EVENT, BmmMoniterStatus::BMM_BACKGROUND},
+        {RES_TYPE_BMM_MONITER_CHANGE_EVENT, BmmMoniterStatus::BMM_CLOSE},
+        {RES_TYPE_APP_INSTALL_UNINSTALL, AppInstallStatus::APP_UNINSTALL},
+        {RES_TYPE_PROCESS_STATE_CHANGE, ResType::ProcessStatus::PROCESS_DIED},
+    };
+    if (RES_TYPE_SCENE_BOARD_ID != 0) {
+        resTypeWithVal_.insert({
+            {RES_TYPE_SCENE_BOARD_ID, ShowRemoteAnimationStatus::ANIMATION_BEGIN},
+            {RES_TYPE_SCENE_BOARD_ID, ShowRemoteAnimationStatus::ANIMATION_END}});
+    }
+}
+
 void SocPerfPlugin::AddOtherEventToFunctionMap()
 {
     functionMap.insert(std::make_pair(RES_TYPE_RECENT_BUILD,
@@ -575,11 +609,7 @@ void SocPerfPlugin::AddOtherEventToFunctionMap()
 void SocPerfPlugin::InitResTypes()
 {
     resTypes = {
-        RES_TYPE_WINDOW_FOCUS,
-        RES_TYPE_CLICK_RECOGNIZE,
         RES_TYPE_KEY_EVENT,
-        RES_TYPE_LOAD_PAGE,
-        RES_TYPE_SLIDE_RECOGNIZE,
         RES_TYPE_WEB_GESTURE,
         RES_TYPE_POP_PAGE,
         RES_TYPE_APP_ABILITY_START,
@@ -591,7 +621,6 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_WEB_SLIDE_NORMAL,
         RES_TYPE_LOAD_URL,
         RES_TYPE_MOUSEWHEEL,
-        RES_TYPE_APP_STATE_CHANGE,
         RES_TYPE_DEVICE_MODE_STATUS,
         RES_TYPE_ACCOUNT_ACTIVATING,
         RES_TYPE_DEVICE_ORIENTATION_STATUS,
@@ -603,15 +632,12 @@ void SocPerfPlugin::InitResTypes()
 #endif // RESSCHED_RESOURCESCHEDULE_CUST_SOC_PERF_ENABLE
         RES_TYPE_ONLY_PERF_APP_COLD_START,
         RES_TYPE_SCENE_ROTATION,
-        RES_TYPE_BMM_MONITER_CHANGE_EVENT,
         RES_TYPE_POWER_MODE_CHANGED,
         RES_TYPE_SCREEN_STATUS,
         RES_TYPE_APP_GAME_BOOST_EVENT,
-        RES_TYPE_APP_INSTALL_UNINSTALL,
         RES_TYPE_MMI_INPUT_POWER_KEY,
         RES_TYPE_CROWN_ROTATION_STATUS,
         RES_TYPE_WEB_DRAG_RESIZE,
-        RES_TYPE_PROCESS_STATE_CHANGE,
         RES_TYPE_REPORT_CAMERA_STATE,
         RES_TYPE_REPORT_GAME_STATE_CHANGE,
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
@@ -631,9 +657,6 @@ void SocPerfPlugin::InitOtherResTypes()
     resTypes.insert(RES_TYPE_SCHED_MODE_CHANGE);
     resTypes.insert(RES_TYPE_RSS_CLOUD_CONFIG_UPDATE);
     resTypes.insert(RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE);
-    if (RES_TYPE_SCENE_BOARD_ID != 0) {
-        resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
-    }
     if (RES_TYPE_RGM_BOOTING_STATUS != 0) {
         resTypes.insert(RES_TYPE_RGM_BOOTING_STATUS);
     }
@@ -644,6 +667,9 @@ void SocPerfPlugin::Disable()
     functionMap.clear();
     for (auto resType : resTypes) {
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
+    }
+    for (auto &[resType, val] : resTypeWithVal_) {
+        PluginMgr::GetInstance().UnSubscribeResourceAccurately(LIB_NAME, resType, val);
     }
     resTypes.clear();
     if (handle_ != nullptr) {
@@ -667,6 +693,7 @@ void SocPerfPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
 bool SocPerfPlugin::InitFeatureSwitch(std::string featureName)
 {
     PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_FEATURE_SWITCH);
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_FEATURE_SWITCH);
     for (const Item& item : itemLists.itemList) {
         for (SubItem sub : item.subItemList) {
             if (sub.name == featureName) {
@@ -674,7 +701,6 @@ bool SocPerfPlugin::InitFeatureSwitch(std::string featureName)
             }
         }
     }
-    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_FEATURE_SWITCH);
     return false;
 }
 
