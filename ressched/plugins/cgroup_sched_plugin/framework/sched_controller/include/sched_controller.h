@@ -69,6 +69,7 @@ private:
         uint32_t, int64_t, const nlohmann::json&)>> dispatchResFuncMap_;
 
     void InitResTypes();
+    void InitResTypeWithVal();
     inline void InitCgroupHandler();
     inline void InitCgroupAdjuster();
     inline void InitSupervisor();
