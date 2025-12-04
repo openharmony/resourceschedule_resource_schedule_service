@@ -314,7 +314,7 @@ enum : uint32_t {
     // [phased out soon] report camera prelaunch event
     RES_TYPE_CAMERA_PRELAUNCH = 145,
     // report high frequence load scene without aggregation
-    RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_WITHOUT_Aggregation = 146,
+    RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_WITHOUT_AGGREGATION = 146,
     // camera status changed
     RES_TYPE_CAMERA_STATUS_CHANGE = 147,
     // report game state change
@@ -397,6 +397,8 @@ enum : uint32_t {
     RES_TYPE_START_INPUT_METHOD_PROCESS = 186,
     // report page change
     RES_TYPE_PAGE_CHANGE = 187,
+    // report trigger preload application
+    RES_TYPE_TRIGGER_PRELOAD_APPLICATION = 188,
     // media ctrl playback event
     RES_TYPE_MEDIA_CTRL_EVENT = 189,
     // report inputmethod qos change
@@ -404,7 +406,7 @@ enum : uint32_t {
     // report live view event, value 1 enter live view, value 0 exit live view, payload uid, eventName.
     RES_TYPE_LIVE_VIEW_EVENT = 191,
     // report high frequence load scene with aggregation to fix the MultiInstance issue of application
-    RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_WITH_Aggregation = 192,
+    RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_WITH_AGGREGATION = 192,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
