@@ -64,10 +64,12 @@ private:
     std::shared_ptr<Supervisor> supervisor_;
 
     std::set<uint32_t> resTypes;
+    std::set<std::pair<uint32_t, int64_t>> resTypeWithVal_;
     std::unordered_map<uint32_t, std::function<void(std::shared_ptr<CgroupEventHandler>,
         uint32_t, int64_t, const nlohmann::json&)>> dispatchResFuncMap_;
 
     void InitResTypes();
+    void InitResTypeWithVal();
     inline void InitCgroupHandler();
     inline void InitCgroupAdjuster();
     inline void InitSupervisor();

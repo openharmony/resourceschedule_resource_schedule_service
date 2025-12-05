@@ -58,8 +58,13 @@ void SchedController::Init()
     InitCgroupAdjuster();
     // Subscribe ResTypes
     InitResTypes();
+    // Subscribe ResTypes with val
+    InitResTypeWithVal();
     for (auto resType: resTypes) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
+    }
+    for (auto &[resType, val] : resTypeWithVal_) {
+        PluginMgr::GetInstance().SubscribeResourceAccurately(LIB_NAME, resType, val);
     }
     ResSchedUtils::GetInstance().SubscribeResourceExt();
 }
@@ -68,6 +73,9 @@ void SchedController::Disable()
 {
     for (auto resType: resTypes) {
         PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
+    }
+    for (auto &[resType, val] : resTypeWithVal_) {
+        PluginMgr::GetInstance().UnSubscribeResourceAccurately(LIB_NAME, resType, val);
     }
 
     if (cgHandler_) {
@@ -124,10 +132,17 @@ void SchedController::InitResTypes()
         ResType::RES_TYPE_WINDOW_FOCUS,
         ResType::RES_TYPE_WINDOW_VISIBILITY_CHANGE,
         ResType::RES_TYPE_WINDOW_DRAWING_CONTENT_CHANGE,
-        ResType::RES_TYPE_TRANSIENT_TASK,
         ResType::RES_TYPE_CONTINUOUS_TASK,
         ResType::RES_TYPE_NAP_MODE,
         ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
+    };
+}
+
+void SchedController::InitResTypeWithVal()
+{
+    resTypeWithVal_ = {
+        {ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TRANSIENT_TASK_START},
+        {ResType::RES_TYPE_TRANSIENT_TASK, ResType::TransientTaskStatus::TRANSIENT_TASK_END}
     };
 }
 

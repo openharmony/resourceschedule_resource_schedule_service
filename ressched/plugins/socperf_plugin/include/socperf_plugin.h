@@ -94,6 +94,7 @@ public:
 private:
     using ReqAppTypeFunc = int32_t (*)(const std::string &bundleName);
     std::set<uint32_t> resTypes;
+    std::set<std::pair<uint32_t, int64_t>> resTypeWithVal_;
     std::set<int32_t> focusAppUids_;
     bool weakActionEnable_ = true;
     bool weakActionStatus_ = true;
@@ -143,6 +144,7 @@ private:
     void AddEventToFunctionMap();
     void AddOtherEventToFunctionMap();
     void InitResTypes();
+    void InitResTypeWithVal();
     void InitOtherResTypes();
     void InitPerfCrucialSo();
     void InitSwiperFlingEndApp();

@@ -36,15 +36,15 @@ IMPLEMENT_SINGLE_INSTANCE(SocPerfExecutorPlugin)
 
 void SocPerfExecutorPlugin::Init()
 {
-    resType_ = {
-        ResExeType::EWS_TYPE_SOCPERF_EXECUTOR_ASYNC_EVENT,
+    resTypeWithVal_ = {
+        {ResExeType::EWS_TYPE_SOCPERF_EXECUTOR_ASYNC_EVENT, SOCPERF_EVENT_WIRTE_NODE}
     };
     functionMap_ = {
         { ResExeType::EWS_TYPE_SOCPERF_EXECUTOR_ASYNC_EVENT,
             [this](const std::shared_ptr<ResData> &data) { HandleSocperfWirteNode(data); }, },
     };
-    for (auto resType : resType_) {
-        PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
+    for (auto &[resType, val] : resTypeWithVal_) {
+        PluginMgr::GetInstance().SubscribeResourceAccurately(LIB_NAME, resType, val);
     }
     SocPerfInitNode();
     SOC_PERF_LOGI("Init success");
@@ -53,10 +53,10 @@ void SocPerfExecutorPlugin::Init()
 void SocPerfExecutorPlugin::Disable()
 {
     functionMap_.clear();
-    for (auto resType : resType_) {
-        PluginMgr::GetInstance().UnSubscribeResource(LIB_NAME, resType);
+    for (auto &[resType, val] : resTypeWithVal_) {
+        PluginMgr::GetInstance().UnSubscribeResourceAccurately(LIB_NAME, resType, val);
     }
-    resType_.clear();
+    resTypeWithVal_.clear();
     SOC_PERF_LOGI("Disable success");
 }
 
