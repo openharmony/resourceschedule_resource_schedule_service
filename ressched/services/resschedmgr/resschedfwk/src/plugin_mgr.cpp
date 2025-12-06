@@ -35,6 +35,7 @@
 #include "hitrace_meter.h"
 #include "batch_log_printer.h"
 #include "res_sched_file_util.h"
+#include "res_sched_system_util.h"
 
 using namespace std;
 
@@ -53,6 +54,7 @@ namespace {
     static const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
     static const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
     static const char* EXT_CONFIG_LIB = "libsuspend_manager_service.z.so";
+    static const char* RSS_SUBSCRIPTION_ACCURATLY_ENABLE = "rss.framework.subscription.accurately.enable";
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     static const int32_t DEFAULT_VALUE = -1;
     static const char* EXT_RES_KEY = "extType";
@@ -86,6 +88,7 @@ void PluginMgr::Init(bool isRssExe)
     if (!isRssExe) {
         LoadGetExtConfigFunc();
     }
+    ReadSubscriptionAccuractlyEnableProperties();
     RESSCHED_LOGI("PluginMgr::Init success!");
 }
 
@@ -1032,6 +1035,11 @@ void PluginMgr::SubscribeResourceAccurately(const std::string& pluginLib, uint32
         RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
         return;
     }
+    if (!subscriptionAccuractlyEnable_) {
+        RESSCHED_LOGD("%{public}s disable", __func__);
+        SubscribeResource(pluginLib, resType);
+        return;
+    }
     std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
     ResPair resTypeValuePair = std::make_pair(resType, resValue);
     resTyperesValueLibMap_[resTypeValuePair].emplace_back(pluginLib);
@@ -1041,6 +1049,11 @@ void PluginMgr::UnSubscribeResourceAccurately(const std::string& pluginLib, uint
 {
     if (pluginLib.empty()) {
         RESSCHED_LOGE("%{public}s, PluginMgr failed, pluginLib is null.", __func__);
+        return;
+    }
+    if (!subscriptionAccuractlyEnable_) {
+        RESSCHED_LOGD("%{public}s disable", __func__);
+        UnSubscribeResource(pluginLib, resType);
         return;
     }
     std::lock_guard<std::mutex> autoLock(resTypeResValueMutex_);
@@ -1068,6 +1081,15 @@ bool PluginMgr::GetPluginListByResTypeAndValue(uint32_t resType, int64_t resValu
     }
     pluginList.insert(pluginList.end(), iter->second.begin(), iter->second.end());
     return true;
+}
+
+void PluginMgr::ReadSubscriptionAccuractlyEnableProperties()
+{
+    std::string enableString = ResCommonUtil::GetSystemProperties(RSS_SUBSCRIPTION_ACCURATLY_ENABLE, "1");
+    int32_t enableInt;
+    if (StrToInt(enableString, enableInt)) {
+        subscriptionAccuractlyEnable_ = static_cast<bool>(enableInt);
+    }
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
