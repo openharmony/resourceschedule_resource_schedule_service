@@ -259,6 +259,7 @@ private:
     bool GetPluginListByResType(uint32_t resType, std::list<std::string>& pluginList);
     bool GetPluginListByResTypeAndValue(uint32_t resType, int64_t resValue, std::list<std::string>& pluginList);
     bool CheckRealPath(const std::string& partialPath, std::string& fullPath);
+    void ReadSubscriptionAccuractlyEnableProperties();
     std::vector<std::string> GetAllRealConfigPath(const std::string& configName);
     std::string BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,
         const std::string& funcName, std::list<std::string>& pluginList);
@@ -291,6 +292,8 @@ private:
 
     // mutex for resTypeMap_
     std::mutex resTypeMutex_;
+    // enable of subscription Accuractly
+    bool subscriptionAccuractlyEnable_ = true;
     // mutex for resTyperesValueLibMap_
     std::mutex resTypeResValueMutex_;
     // mutex for resTypeLibSyncMap_

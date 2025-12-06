@@ -1133,5 +1133,152 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_004, TestSiz
     // 清理剩余的订阅
     PluginMgr::GetInstance().UnSubscribeResourceAccurately(pluginLib2, resType, resValue);
 }
+
+/**
+ * @tc.name: PluginMgrTest_SubscribeResourceAccurately_003
+ * @tc.desc: Verify SubscribeResourceAccurately fallbacks to SubscribeResource when subscriptionAccuractlyEnable_ is false.
+ * @tc.type: FUNC
+ * @tc.require: issue1571
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_SubscribeResourceAccurately_003, TestSize.Level1)
+{
+    const std::string pluginLib = "test_plugin";
+    uint32_t resType = 100;
+    int64_t resValue = 200;
+    
+    // 保存原始值
+    bool originalEnable = PluginMgr::GetInstance().subscriptionAccuractlyEnable_;
+    
+    // 设置为false以测试分支
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = false;
+    
+    // 调用SubscribeResourceAccurately，应该回退到SubscribeResource
+    PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib, resType, resValue);
+    
+    // 验证是否添加到了常规订阅映射中
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResType(resType, pluginList);
+    EXPECT_TRUE(result);
+    EXPECT_FALSE(pluginList.empty());
+    EXPECT_EQ(pluginList.front(), pluginLib);
+    
+    // 清理
+    PluginMgr::GetInstance().UnSubscribeResource(pluginLib, resType);
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
+}
+
+/**
+ * @tc.name: PluginMgrTest_UnSubscribeResourceAccurately_005
+ * @tc.desc: Verify UnSubscribeResourceAccurately fallbacks to UnSubscribeResource when subscriptionAccuractlyEnable_ is false.
+ * @tc.type: FUNC
+ * @tc.require: issue1571
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_005, TestSize.Level1)
+{
+    const std::string pluginLib = "test_plugin";
+    uint32_t resType = 100;
+    int64_t resValue = 200;
+    
+    // 保存原始值
+    bool originalEnable = PluginMgr::GetInstance().subscriptionAccuractlyEnable_;
+    
+    // 先正常订阅
+    PluginMgr::GetInstance().SubscribeResourceAccurately(pluginLib, resType, resValue);
+    
+    // 验证订阅成功
+    std::list<std::string> pluginList;
+    bool result = PluginMgr::GetInstance().GetPluginListByResType(resType, pluginList);
+    EXPECT_TRUE(result);
+    EXPECT_FALSE(pluginList.empty());
+    
+    // 设置为false以测试分支
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = false;
+    
+    // 调用UnSubscribeResourceAccurately，应该回退到UnSubscribeResource
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately(pluginLib, resType, resValue);
+    
+    // 验证是否从常规订阅映射中移除
+    pluginList.clear();
+    result = PluginMgr::GetInstance().GetPluginListByResType(resType, pluginList);
+    EXPECT_FALSE(result); // 应该返回false，因为没有插件订阅该资源类型
+    
+    // 恢复原始值
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
+}
+
+/**
+ * @tc.name: PluginMgrTest_ReadSubscriptionAccuractlyEnableProperties_001
+ * @tc.desc: Verify ReadSubscriptionAccuractlyEnableProperties handles valid property value.
+ * @tc.type: FUNC
+ * @tc.require: issue1571
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_ReadSubscriptionAccuractlyEnableProperties_001, TestSize.Level1)
+{
+    // 保存原始值
+    bool originalEnable = PluginMgr::GetInstance().subscriptionAccuractlyEnable_;
+    
+    // 测试读取属性的功能（这里我们主要验证函数能够执行而不崩溃）
+    PluginMgr::GetInstance().ReadSubscriptionAccuractlyEnableProperties();
+    
+    // 函数应该能够执行完成
+    SUCCEED();
+    
+    // 恢复原始值
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
+}
+
+/**
+ * @tc.name: PluginMgrTest_SubscribeResourceAccurately_004
+ * @tc.desc: Verify SubscribeResourceAccurately handles empty pluginLib even when subscriptionAccuractlyEnable_ is false.
+ * @tc.type: FUNC
+ * @tc.require: issue1571
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_SubscribeResourceAccurately_004, TestSize.Level1)
+{
+    uint32_t resType = 100;
+    int64_t resValue = 200;
+    
+    // 保存原始值
+    bool originalEnable = PluginMgr::GetInstance().subscriptionAccuractlyEnable_;
+    
+    // 设置为false以测试分支
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = false;
+    
+    // 调用SubscribeResourceAccurately，应该回退到SubscribeResource
+    PluginMgr::GetInstance().SubscribeResourceAccurately("", resType, resValue);
+    
+    // 函数应该能够执行完成而不崩溃
+    SUCCEED();
+    
+    // 恢复原始值
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
+}
+
+/**
+ * @tc.name: PluginMgrTest_UnSubscribeResourceAccurately_006
+ * @tc.desc: Verify UnSubscribeResourceAccurately handles empty pluginLib even when subscriptionAccuractlyEnable_ is false.
+ * @tc.type: FUNC
+ * @tc.require: issue1571
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_006, TestSize.Level1)
+{
+    uint32_t resType = 100;
+    int64_t resValue = 200;
+    
+    // 保存原始值
+    bool originalEnable = PluginMgr::GetInstance().subscriptionAccuractlyEnable_;
+    
+    // 设置为false以测试分支
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = false;
+    
+    // 调用UnSubscribeResourceAccurately，应该回退到UnSubscribeResource
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately("", resType, resValue);
+    
+    // 函数应该能够执行完成而不崩溃
+    SUCCEED();
+    
+    // 恢复原始值
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
