@@ -1206,7 +1206,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_005, TestSiz
     PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
     PluginMgr::GetInstance().UnSubscribeResourceAccurately(pluginLib, resType, resValue);
     pluginList.clear();
-    result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue,+ pluginList);
+    result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
     EXPECT_FALSE(result);
 }
 
