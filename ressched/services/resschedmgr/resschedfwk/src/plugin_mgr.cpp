@@ -35,6 +35,7 @@
 #include "hitrace_meter.h"
 #include "batch_log_printer.h"
 #include "res_sched_file_util.h"
+#include "res_sched_system_util.h"
 
 using namespace std;
 
@@ -1082,13 +1083,12 @@ bool PluginMgr::GetPluginListByResTypeAndValue(uint32_t resType, int64_t resValu
     return true;
 }
 
-void ReadSubscriptionAccuractlyEnableProperties()
+void PluginMgr::ReadSubscriptionAccuractlyEnableProperties()
 {
-    std::string enableString = GetSystemProperties(RSS_SUBSCRIPTION_ACCURATLY_ENABLE, "1");
-    int64_t enableInt64;
-    if (StrToInt64(enableString, enableInt64)) {
-        subscriptionAccuractlyEnable_ = static_cast<bool>(enableString);
-        return totalRamSize;
+    std::string enableString = ResCommonUtil::GetSystemProperties(RSS_SUBSCRIPTION_ACCURATLY_ENABLE, "1");
+    int32_t enableInt;
+    if (StrToInt(enableString, enableInt)) {
+        subscriptionAccuractlyEnable_ = static_cast<bool>(enableInt);
     }
 }
 } // namespace ResourceSchedule
