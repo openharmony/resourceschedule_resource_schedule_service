@@ -1187,7 +1187,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_005, TestSiz
     
     // 验证订阅成功
     std::list<std::string> pluginList;
-    bool result = PluginMgr::GetInstance().GetPluginListByResType(resType, pluginList);
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, pluginList);
     EXPECT_TRUE(result);
     EXPECT_FALSE(pluginList.empty());
     
@@ -1199,11 +1199,15 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_005, TestSiz
     
     // 验证是否从常规订阅映射中移除
     pluginList.clear();
-    result = PluginMgr::GetInstance().GetPluginListByResType(resType, pluginList);
-    EXPECT_FALSE(result); // 应该返回false，因为没有插件订阅该资源类型
+    result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, pluginList);
+    EXPECT_TRUE(result); // 应该返回false，因为没有插件订阅该资源类型
     
     // 恢复原始值
     PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately(pluginLib, resType, resValue);
+    pluginList.clear();
+    result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, pluginList);
+    EXPECT_FALSE(result);
 }
 
 /**
