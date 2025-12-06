@@ -1136,7 +1136,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_004, TestSiz
 
 /**
  * @tc.name: PluginMgrTest_SubscribeResourceAccurately_003
- * @tc.desc: Verify SubscribeResourceAccurately fallbacks to SubscribeResource when subscriptionAccuractlyEnable_ is false.
+ * @tc.desc: SubscribeResourceAccurately fallbacks to SubscribeResource when subscriptionAccuractlyEnable_ is false.
  * @tc.type: FUNC
  * @tc.require: issue1571
  */
@@ -1169,7 +1169,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_SubscribeResourceAccurately_003, TestSize.
 
 /**
  * @tc.name: PluginMgrTest_UnSubscribeResourceAccurately_005
- * @tc.desc: Verify UnSubscribeResourceAccurately fallbacks to UnSubscribeResource when subscriptionAccuractlyEnable_ is false.
+ * @tc.desc: UnSubscribeResourceAccurately fallbacks to UnSubscribeResource when subscriptionAccuractlyEnable_ is false.
  * @tc.type: FUNC
  * @tc.require: issue1571
  */
@@ -1187,7 +1187,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_005, TestSiz
     
     // 验证订阅成功
     std::list<std::string> pluginList;
-    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, pluginList);
+    bool result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
     EXPECT_TRUE(result);
     EXPECT_FALSE(pluginList.empty());
     
@@ -1199,14 +1199,14 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_005, TestSiz
     
     // 验证是否从常规订阅映射中移除
     pluginList.clear();
-    result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, pluginList);
+    result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue, pluginList);
     EXPECT_TRUE(result); // 应该返回false，因为没有插件订阅该资源类型
     
     // 恢复原始值
     PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
     PluginMgr::GetInstance().UnSubscribeResourceAccurately(pluginLib, resType, resValue);
     pluginList.clear();
-    result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, pluginList);
+    result = PluginMgr::GetInstance().GetPluginListByResTypeAndValue(resType, resValue,+ pluginList);
     EXPECT_FALSE(result);
 }
 
@@ -1233,7 +1233,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_ReadSubscriptionAccuractlyEnableProperties
 
 /**
  * @tc.name: PluginMgrTest_SubscribeResourceAccurately_004
- * @tc.desc: Verify SubscribeResourceAccurately handles empty pluginLib even when subscriptionAccuractlyEnable_ is false.
+ * @tc.desc: SubscribeResourceAccurately handles empty pluginLib even when subscriptionAccuractlyEnable_ is false.
  * @tc.type: FUNC
  * @tc.require: issue1571
  */
@@ -1260,7 +1260,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_SubscribeResourceAccurately_004, TestSize.
 
 /**
  * @tc.name: PluginMgrTest_UnSubscribeResourceAccurately_006
- * @tc.desc: Verify UnSubscribeResourceAccurately handles empty pluginLib even when subscriptionAccuractlyEnable_ is false.
+ * @tc.desc: UnSubscribeResourceAccurately handles empty pluginLib even when subscriptionAccuractlyEnable_ is false.
  * @tc.type: FUNC
  * @tc.require: issue1571
  */
