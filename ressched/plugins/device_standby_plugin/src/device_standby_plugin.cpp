@@ -54,6 +54,7 @@ void DeviceStandbyPlugin::Init()
     resTypes_.insert(RES_TYPE_REPORT_BOKER_GATT_CONNECT);
     resTypes_.insert(RES_TYPE_BOOT_COMPLETED);
     resTypes_.insert(RES_TYPE_THERMAL_SCENARIO_REPORT);
+    resTypes_.insert(RES_TYPE_WIFI_CONNECT_STATE_CHANGE);
 
     for (auto resType : resTypes_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
