@@ -131,6 +131,8 @@ enum : uint32_t {
     RES_TYPE_MMI_INPUT_STATE = 47,
     // report anco load protect file config
     RES_TYPE_ANCO_CUST = 48,
+    // report start uiextension proc
+    RES_TYPE_START_UIEXTENSION_PROC = 49,
     // report time zone changed
     RES_TYPE_TIMEZONE_CHANGED = 50,
     // report connection status
