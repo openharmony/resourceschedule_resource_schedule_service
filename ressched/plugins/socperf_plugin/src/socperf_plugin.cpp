@@ -79,7 +79,6 @@ namespace {
     const std::string PRELOAD_MODE = "isPreload";
     const std::string PRELAUNCH = "isPrelaunch";
     const std::string WEAK_ACTION_STRING = "weakInterAction";
-    const std::string SWIPER_FLING_END_STRING = "swiperActionEnd";
     const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
     const std::string KEY_APP_TYPE = "key_app_type";
     const std::string GAME_ENV = "env";
@@ -164,7 +163,6 @@ void SocPerfPlugin::Init()
     InitPerfCrucialSo();
     InitBundleNameBoostList();
     InitWeakInterAction();
-    InitSwiperFlingEndApp();
     InitBatteryCapacityLimitFreq();
     InitPolicyMode();
     SOC_PERF_LOGI("SocPerfPlugin::Init success");
@@ -210,32 +208,6 @@ void SocPerfPlugin::LoadWeakInterAction(const PluginConfig& itemLists)
             }
         }
     }
-}
-
-void SocPerfPlugin::InitSwiperFlingEndApp()
-{
-    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME, SWIPER_FLING_END_STRING);
-    LoadSwiperFlingEndApp(itemLists);
-    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, SWIPER_FLING_END_STRING);
-}
- 
-void SocPerfPlugin::LoadSwiperFlingEndApp(const PluginConfig& itemLists)
-{
-    for (const Item& item : itemLists.itemList) {
-        for (SubItem sub : item.subItemList) {
-            if (sub.name == BUNDLE_NAME) {
-                AddSwiperFlingEndApp(sub.value);
-            }
-        }
-    }
-}
-
-void SocPerfPlugin::AddSwiperFlingEndApp(const std::string& subValue)
-{
-    if (subValue.empty()) {
-        return;
-    }
-    swiperFlingEndApp_.insert(subValue);
 }
 
 void SocPerfPlugin::SetWeakActionEnable(const std::string& subValue)
@@ -822,12 +794,6 @@ bool SocPerfPlugin::UpdateFocusAppType(const std::shared_ptr<ResData>& data, boo
         return true;
     }
     focusAppUids_.insert(uid);
-    if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end() &&
-        swiperFlingEndApp_.find(uidToAppMsgMap_[uid].GetBundleName()) != swiperFlingEndApp_.end()) {
-        swiperFlingEndflag_ = true;
-    } else {
-        swiperFlingEndflag_ = false;
-    }
     UpdateWeakActionStatus();
     int32_t pid = GetPidByData(data, PID_NAME);
     if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end()) {
@@ -1085,7 +1051,7 @@ void SocPerfPlugin::HandleEventSlide(const std::shared_ptr<ResData>& data)
     } else if (data->value == SlideEventStatus::SLIDE_EVENT_OFF) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_FLING, false, "");
     } else if (data->value == SlideEventStatus::SWIPER_FLING_END) {
-        if (!flingExceptionFlag_ && swiperFlingEndflag_) {
+        if (!flingExceptionFlag_) {
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_EVENT_FLING, false, "");
         }
     } else if (data->value == SlideEventStatus::SLIDE_NORMAL_BEGIN) {

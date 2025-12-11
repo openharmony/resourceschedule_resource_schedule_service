@@ -131,8 +131,6 @@ private:
     bool socperfGameBoostSwitch_ = false;
     bool custGameState_ = false;
     bool flingExceptionFlag_ = false;
-    bool swiperFlingEndflag_ = false;
-    std::set<std::string> swiperFlingEndApp_;
 
     void InitEventId();
     void InitFunctionMap();
