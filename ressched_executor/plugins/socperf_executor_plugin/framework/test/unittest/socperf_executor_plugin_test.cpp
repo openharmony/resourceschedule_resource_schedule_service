@@ -49,7 +49,7 @@ void SocPerfExecutorPluginTest::TearDown() {}
 HWTEST_F(SocPerfExecutorPluginTest, SocPerfExecutorPluginTest_API_001, Function | MediumTest | Level0)
 {
     SocPerfExecutorPlugin::GetInstance().Init();
-    EXPECT_EQ(SocPerfExecutorPlugin::GetInstance().resType_.size(), 1);
+    EXPECT_EQ(SocPerfExecutorPlugin::GetInstance().resType_.size(), 0);
     EXPECT_EQ(SocPerfExecutorPlugin::GetInstance().functionMap_.size(), 1);
 }
 
@@ -60,10 +60,10 @@ HWTEST_F(SocPerfExecutorPluginTest, SocPerfExecutorPluginTest_API_001, Function 
 */
 HWTEST_F(SocPerfExecutorPluginTest, SocPerfExecutorPluginTest_API_002, Function | MediumTest | Level0)
 {
-    SocPerfExecutorPlugin::GetInstance().resType_.insert(1);
+    SocPerfExecutorPlugin::GetInstance().resTypeWithVal_.insert({1, 1});
     SocPerfExecutorPlugin::GetInstance().functionMap_[1] = [](const std::shared_ptr<ResData>& data){};
     SocPerfExecutorPlugin::GetInstance().Disable();
-    EXPECT_TRUE(SocPerfExecutorPlugin::GetInstance().resType_.empty());
+    EXPECT_TRUE(SocPerfExecutorPlugin::GetInstance().resTypeWithVal_.empty());
     EXPECT_TRUE(SocPerfExecutorPlugin::GetInstance().functionMap_.empty());
 }
 
