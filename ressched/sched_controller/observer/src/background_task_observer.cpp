@@ -104,6 +104,8 @@ void BackgroundTaskObserver::MarshallingContinuousTaskCallbackInfo(
     payload["bundleName"] = continuousTaskCallbackInfo->GetBundleName();
     payload["userId"] = continuousTaskCallbackInfo->GetUserId();
     payload["appIndex"] = continuousTaskCallbackInfo->GetAppIndex();
+    payload["suspendState"] = continuousTaskCallbackInfo->GetSuspendState();
+    payload["suspendReason"] = continuousTaskCallbackInfo->GetSuspendReason();
 }
 
 void BackgroundTaskObserver::OnContinuousTaskStart(
