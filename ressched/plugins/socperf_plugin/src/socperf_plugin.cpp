@@ -694,11 +694,13 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 {
     if (data->value == AppStartType::APP_COLD_START) {
         if (data->payload != nullptr && data->payload.contains(PRELOAD_MODE) &&
+            data->payload[PRELOAD_MODE].is_string() &&
             atoi(data->payload[PRELOAD_MODE].get<std::string>().c_str()) == 1) {
             SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START is invalid as preload");
             return;
         }
         if (data->payload != nullptr && data->payload.contains(PRELAUNCH) &&
+            data->payload[PRELAUNCH].is_string() &&
             atoi(data->payload[PRELAUNCH].get<std::string>().c_str()) == 1) {
             SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START is invalid as prelaunch");
             return;
@@ -706,7 +708,8 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
         SOC_PERF_LOGD("SocPerfPlugin: socperf->APP_COLD_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
         int32_t appType = INVALID_VALUE;
-        if (reqAppTypeFunc_ != nullptr && data->payload != nullptr && data->payload.contains(BUNDLE_NAME)) {
+        if (reqAppTypeFunc_ != nullptr && data->payload != nullptr && data->payload.contains(BUNDLE_NAME)
+            && data->payload[BUNDLE_NAME].is_string()) {
             std::string bundleName = data->payload[BUNDLE_NAME].get<std::string>().c_str();
             appType = reqAppTypeFunc_(bundleName);
             UpdateUidToAppMsgMap(data, appType, bundleName);
@@ -1215,6 +1218,7 @@ bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
     if (std::find(ResType::UI_SENSITIVE_EXTENSION.begin(), ResType::UI_SENSITIVE_EXTENSION.end(), extensionType) !=
         ResType::UI_SENSITIVE_EXTENSION.end()) {
         if (data->payload != nullptr && data->payload.contains(PRELOAD_MODE) &&
+            data->payload[PRELOAD_MODE].is_string() &&
             atoi(data->payload[PRELOAD_MODE].get<std::string>().c_str()) == 1) {
             SOC_PERF_LOGI("SocPerfPlugin: socperf->APPSTATECHANGE is invalid as preload");
             return false;
@@ -1250,7 +1254,8 @@ bool SocPerfPlugin::UpdateUidToAppMsgMap(const std::shared_ptr<ResData>& data)
     if (uidToAppMsgMap_.find(uid) != uidToAppMsgMap_.end()) {
         return true;
     }
-    if (reqAppTypeFunc_ == nullptr || !data->payload.contains(BUNDLE_NAME)) {
+    if (reqAppTypeFunc_ == nullptr || !data->payload.contains(BUNDLE_NAME)
+        || !data->payload[BUNDLE_NAME].is_string()) {
         return false;
     }
     std::string bundleName = data->payload[BUNDLE_NAME].get<std::string>().c_str();
