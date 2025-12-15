@@ -224,7 +224,6 @@ private:
     };
     sptr<IResSchedService> GetProxy();
     ErrCode TryConnect();
-    std::mutex mutex_;
     sptr<ResSchedDeathRecipient> recipient_;
     sptr<IRemoteObject> remoteObject_;
     sptr<IResSchedService> rss_;
