@@ -449,7 +449,7 @@ void EventController::HandleAudioFocusChangeEvent(const EventFwk::Want &want)
     nlohmann::json payload = nlohmann::json::object();
     payload[GAME_UID] = uid;
     payload[STREAM_ID] = streamId;
-    ReportDataInProcess(ResType::RES_TYPE_AUDIO_FOUCUS_CHANGE_EVENT, value, payload);
+    ReportDataInProcess(ResType::RES_TYPE_AUDIO_FOCUS_CHANGE_EVENT, value, payload);
     RESSCHED_LOGI("HandleAudioFocusChangeEvent hintType:%{public}d uid:%{public}d streamId:%{public}d",
         hintType, uid, streamId);
 }
