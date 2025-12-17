@@ -57,6 +57,8 @@ static const char* PID = "pid";
 static const char* COMMON_EVENT_CAPACITY = "soc";
 static const char* COMMON_EVENT_CHARGE_STATE = "chargeState";
 static const char* COMMON_EVENT_USER_SLEEP_STATE_CHANGED = "common.event.USER_NOT_CARE_CHARGE_SLEEP";
+static const char* COMMON_EVENT_AUDIO_FOCUS_CHANGE = "usual.event.AUDIO_FOCUS_CHANGE_EVENT";
+static const char* STREAM_ID = "streamId";
 
 void EventController::Init()
 {
@@ -215,6 +217,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(COMMON_EVENT_GAME_STATUS);
     matchingSkills.AddEvent(COMMON_EVENT_USER_SLEEP_STATE_CHANGED);
     matchingSkills.AddEvent(COMMON_EVENT_MEDIA_CTRL_EVENT);
+    matchingSkills.AddEvent(COMMON_EVENT_AUDIO_FOCUS_CHANGE);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
     SubscribeCommonEvent(subscriber_);
@@ -406,6 +409,10 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
         HandleMediaCtrlEvent(want);
         return;
     }
+    if (action == COMMON_EVENT_AUDIO_FOCUS_CHANGE) {
+        HandleAudioFocusChangeEvent(want);
+        return;
+    }
 }
 
 void EventController::HandleMediaCtrlEvent(const EventFwk::Want &want)
@@ -425,6 +432,25 @@ void EventController::HandleMediaCtrlEvent(const EventFwk::Want &want)
     payload[PID] = pid;
     ReportDataInProcess(ResType::RES_TYPE_MEDIA_CTRL_EVENT, value, payload);
     RESSCHED_LOGD("HandleMediaCtrlEvent cmd:%{public}s uid:%{public}d pid:%{public}d", cmd.c_str(), uid, pid);
+}
+
+void EventController::HandleAudioFocusChangeEvent(const EventFwk::Want &want)
+{
+    int64_t value = -1;
+    int32_t hintType = want.GetIntParam("hintType", -1);
+    if (hintType >= INTERRUPT_HINT_NONE && hintType <= INTERRUPT_HINT_EXIT_STANDALONE) {
+        value = 0;
+    } else {
+        RESSCHED_LOGW("AudioFocusChange event unknown hintType:%{public}d", hintType);
+        return;
+    }
+    int32_t uid = want.GetIntParam("uid", -1);
+    int32_t streamId = want.GetIntParam(STREAM_ID, -1);
+    nlohmann::json payload = nlohmann::json::object();
+    payload[GAME_UID] = uid;
+    payload[STREAM_ID] = streamId;
+    ReportDataInProcess(ResType::RES_TYPE_AUDIO_FOUCUS_CHANGE_EVENT, value, payload);
+    RESSCHED_LOGI("HandleAudioFocusChangeEvent hintType:%{public}d uid:%{public}d streamId:%{public}d", hintType, uid, streamId);
 }
 
 bool EventController::HandlePkgCommonEvent(const std::string &action, Want &want, nlohmann::json &payload)

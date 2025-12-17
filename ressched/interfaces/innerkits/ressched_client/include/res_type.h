@@ -407,6 +407,8 @@ enum : uint32_t {
     RES_TYPE_LIVE_VIEW_EVENT = 191,
     // report high frequence load scene with aggregation to fix the MultiInstance issue of application
     RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_WITH_AGGREGATION = 192,
+    // audio focus change event
+    RES_TYPE_AUDIO_FOCUS_CHANGE_EVENT  = 193,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
