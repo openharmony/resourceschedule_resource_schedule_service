@@ -33,6 +33,7 @@ namespace {
 constexpr int32_t CHECK_MUTEX_TIMEOUT = 100;  // 100ms
 constexpr int32_t CHECK_MUTEX_TIMEOUT_NS = 100 * 1000;  // 100ms
 bool g_isDestroyed = false;
+static ffrt::mutex mutex_;
 }
 
 ResSchedClient& ResSchedClient::GetInstance()
@@ -42,7 +43,7 @@ ResSchedClient& ResSchedClient::GetInstance()
 }
 ResSchedClient::~ResSchedClient()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     g_isDestroyed = true;
     if (rss_ && rss_->AsObject()) {
         rss_->AsObject()->RemoveDeathRecipient(recipient_);
@@ -82,7 +83,7 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
     for (auto it = mapPayload.begin(); it != mapPayload.end(); ++it) {
         payload[it->first] = it->second;
     }
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (rss_ == nullptr) {
         RESSCHED_LOGD("ResSchedClient::ReportData fail to get resource schedule service.");
         return;
@@ -204,7 +205,7 @@ int32_t ResSchedClient::KillProcess(const std::unordered_map<std::string, std::s
 void ResSchedClient::RegisterSystemloadNotifier(const sptr<ResSchedSystemloadNotifierClient>& callbackObj)
 {
     RESSCHED_LOGD("ResSchedClient::RegisterSystemloadNotifier receive mission.");
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (InitSystemloadListenersLocked() != ERR_OK) {
         RESSCHED_LOGE("ResSchedClient::RegisterSystemloadNotifier init listener failed.");
         return;
@@ -220,7 +221,7 @@ void ResSchedClient::RegisterSystemloadNotifier(const sptr<ResSchedSystemloadNot
 void ResSchedClient::UnRegisterSystemloadNotifier(const sptr<ResSchedSystemloadNotifierClient>& callbackObj)
 {
     RESSCHED_LOGD("ResSchedClient::UnRegisterSystemloadNotifier receive mission.");
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (systemloadLevelListener_ == nullptr) {
         RESSCHED_LOGE("ResSchedClient::UnRegisterSystemloadNotifier systemloadLevelListener is null.");
         return;
@@ -233,7 +234,7 @@ void ResSchedClient::RegisterEventListener(const sptr<ResSchedEventListener>& ev
     uint32_t eventType, uint32_t listenerGroup)
 {
     RESSCHED_LOGD("%{public}s:receive mission.", __func__);
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (InitInnerEventListenerLocked() != ERR_OK) {
         RESSCHED_LOGE("ResSchedClient::RegisterEventListener init listener failed.");
         return;
@@ -255,7 +256,7 @@ void ResSchedClient::UnRegisterEventListener(const sptr<ResSchedEventListener>& 
     uint32_t eventType, uint32_t listenerGroup)
 {
     RESSCHED_LOGD("%{public}s:receive mission.", __func__);
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (innerEventListener_ == nullptr) {
         RESSCHED_LOGE("%{public}s: innerEventListener_ is null.", __func__);
         return;
@@ -271,7 +272,7 @@ int32_t ResSchedClient::GetSystemloadLevel()
     }
     RESSCHED_LOGD("ResSchedClient::GetSystemloadLevel receive mission.");
 
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (rss_ == nullptr) {
         RESSCHED_LOGE("ResSchedClient::GetSystemloadLevel fail to get resource schedule service.");
         return RES_SCHED_CONNECT_FAIL;
@@ -297,7 +298,7 @@ bool ResSchedClient::IsAllowedAppPreload(const std::string& bundleName, int32_t 
         return false;
     }
 
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (rss_ == nullptr) {
         RESSCHED_LOGE("ResSchedClient::IsAllowedAppPreload fail to get resource schedule service.");
         return false;
@@ -316,7 +317,7 @@ int32_t ResSchedClient::IsAllowedLinkJump(bool& isAllowedLinkJump)
         return RES_SCHED_CONNECT_FAIL;
     }
 
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (rss_ == nullptr) {
         RESSCHED_LOGE("ResSchedClient::IsAllowedLinkJump fail to get resource schedule service.");
         return RES_SCHED_CONNECT_FAIL;
@@ -329,7 +330,7 @@ int32_t ResSchedClient::IsAllowedLinkJump(bool& isAllowedLinkJump)
 sptr<IResSchedService> ResSchedClient::GetProxy()
 {
     if (TryConnect() == ERR_OK) {
-        std::lock_guard<std::mutex> lock(mutex_);
+        std::lock_guard<ffrt::mutex> lock(mutex_);
         return rss_;
     }
     return nullptr;
@@ -337,7 +338,7 @@ sptr<IResSchedService> ResSchedClient::GetProxy()
 
 ErrCode ResSchedClient::TryConnect()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (g_isDestroyed) {
         return GET_RES_SCHED_SERVICE_FAILED;
     }
@@ -374,7 +375,7 @@ ErrCode ResSchedClient::TryConnect()
 
 void ResSchedClient::StopRemoteObject()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (rss_ && rss_->AsObject()) {
         rss_->AsObject()->RemoveDeathRecipient(recipient_);
     }
@@ -414,7 +415,7 @@ void ResSchedClient::OnAddSystemAbility(int32_t systemAbilityId, const std::stri
     if (TryConnect() != ERR_OK) {
         return;
     }
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (InitInnerEventListenerLocked() != ERR_OK) {
         RESSCHED_LOGE("ResSchedClient::OnAddSystemAbility init event listener failed.");
     } else if (innerEventListener_ && rss_) {
