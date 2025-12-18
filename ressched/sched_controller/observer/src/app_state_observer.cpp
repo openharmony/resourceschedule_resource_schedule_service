@@ -80,9 +80,6 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
             payload["extensionAbilityType"] = std::to_string(abilityStateData.extensionAbilityType);
             payload["processType"] = std::to_string(abilityStateData.processType);
             payload["uiExtensionState"] = std::to_string(abilityStateData.abilityState);
-            payload["moduleName"] = abilityStateData.moduleName;
-            payload["hostPid"] = std::to_string(abilityStateData.hostPid);
-            payload["hostBundleName"] = abilityStateData.hostBundleName;
         } else {
             RESSCHED_LOGE("%{public}s : abilityState trans to extensionState failed", __func__);
         }
