@@ -1284,5 +1284,33 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_006, TestSiz
     // 恢复原始值
     PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
 }
+
+/**
+ * @tc.name: ResPairHashTest_001
+ * @tc.desc: Test ResPair hash function with different values
+ * @tc.type: FUNC
+ * @tc.require: issue1583
+ */
+HWTEST_F(PluginMgrTest, ResPairHashTest_001, TestSize.Level1)
+{
+    OHOS::ResourceSchedule::ResPair pair1(100, 200);
+    OHOS::ResourceSchedule::ResPair pair2(100, 200);
+    OHOS::ResourceSchedule::ResPair pair3(200, 100);
+    OHOS::ResourceSchedule::ResPair pair4(0, 0);
+    
+    std::hash<OHOS::ResourceSchedule::ResPair> hasher;
+    
+    // Test that same pairs produce same hash
+    size_t hash1 = hasher(pair1);
+    size_t hash2 = hasher(pair2);
+    EXPECT_EQ(hash1, hash2);
+    
+    // Test that different pairs produce different hashes
+    size_t hash3 = hasher(pair3);
+    size_t hash4 = hasher(pair4);
+    EXPECT_NE(hash1, hash3);
+    EXPECT_NE(hash1, hash4);
+    EXPECT_NE(hash3, hash4);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
