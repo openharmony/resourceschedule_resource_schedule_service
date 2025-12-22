@@ -1289,7 +1289,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_006, TestSiz
  * @tc.name: ResPairHashTest_001
  * @tc.desc: Test ResPair hash function with different values
  * @tc.type: FUNC
- * @tc.require: issueI9C9JN
+ * @tc.require: issue1583
  */
 HWTEST_F(PluginMgrTest, ResPairHashTest_001, TestSize.Level1)
 {
