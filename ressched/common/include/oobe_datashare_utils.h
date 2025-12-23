@@ -68,7 +68,7 @@ ErrCode DataShareUtils::GetValue(const std::string& key, T& value)
     } else if constexpr (std::is_same_v<int32_t, ValueType>) {
         value = static_cast<int32_t>(strtoll(result.c_str(), nullptr, PARAM_NUM_TEN));
     } else {
-        RESSCHED_LOGE("GetValue: invalid operation!");
+        RESSCHED_LOGE("GetValue: invalid operation! ret = %{public}d", ERR_INVALID_OPERATION);
         return ERR_INVALID_OPERATION;
     }
     return ERR_OK;
