@@ -53,8 +53,8 @@ private:
 
     enum OOBEVALUE : int32_t {
         INVALID = -1,
-        ISFALSE = 0,
-        ISTRUE = 1,
+        IS_FALSE = 0,
+        IS_TRUE = 1,
     };
     int32_t oobeValue_ = OOBEVALUE::INVALID;
     static ffrt::recursive_mutex mutex_;

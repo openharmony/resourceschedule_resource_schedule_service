@@ -28,8 +28,8 @@ std::vector<std::function<void()>> OOBEManager::dataShareFunctions_;
 sptr<OOBEManager::ResDataAbilityObserver> OOBEManager::observer_ = nullptr;
 namespace {
 const std::string KEYWORD = "basic_statement_agreed";
-const std::int32_t MAX_RETYR_COUNT = 30; // 2s尝试一次，尝试30此，1min后停止轮询
-const std::int32_t delayTime_us = 2 * 1000 * 1000;
+const std::int32_t MAX_RETRY_COUNT = 30; // 2s尝试一次，尝试30此，1min后停止轮询
+const std::int32_t DELAYTIME_US = 2 * 1000 * 1000;
 } // namespace
 
 OOBEManager::OOBEManager()
@@ -52,7 +52,7 @@ bool OOBEManager::GetOOBValue()
 {
     std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     RESSCHED_LOGE("get oobe value, oobe value = %{public}d", oobeValue_);
-    return (oobeValue_ == OOBEVALUE::ISTRUE);
+    return (oobeValue_ == OOBEVALUE::IS_TRUE);
 }
 
 ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
@@ -94,20 +94,21 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbili
     IPCSkeleton::SetCallingIdentity(callingIdentity);
     RESSCHED_LOGI("succeed to register observer of uri=%{public}s", uri.ToString().c_str());
     ffrt::task_attr taskAttr;
-    taskAttr.delay(delayTime_us);
+    taskAttr.delay(DELAYTIME_US);
     ffrt::submit([]() {
         std::uint32_t retry_count = 0;
         OOBEManager::GetInstance().CheckOobeValue(retry_count);
-    }, taskAttr);
+    },         taskAttr);
     return ERR_OK;
 }
 
-void OOBEManager::CheckOobeValue(int32_t count) {
+void OOBEManager::CheckOobeValue(int32_t count) 
+{
     int32_t ret = -1;
     bool needCheck = false;
     {
         std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
-        needCheck = (oobeValue_ == OOBEVALUE::INVALID && count < MAX_RETYR_COUNT);
+        needCheck = (oobeValue_ == OOBEVALUE::INVALID && count < MAX_RETRY_COUNT);
     }
     if (needCheck) {
         RESSCHED_LOGW("oobeValue is invalid, retry to get oobe value");
@@ -118,17 +119,17 @@ void OOBEManager::CheckOobeValue(int32_t count) {
     }
     if (ret == ERR_INVALID_OPERATION) {
         ffrt::task_attr taskAttr;
-        taskAttr.delay(delayTime_us);
-        ffrt::submit([cnt=count+1]() {
+        taskAttr.delay(DELAYTIME_US);
+        ffrt::submit([cnt = count + 1]() {
             OOBEManager::GetInstance().CheckOobeValue(cnt);
-        }, taskAttr);
+        },          taskAttr);
     }
 }
 
 void OOBEManager::ReRegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
 {
     FlushOobeValue();
-    if (oobeValue_ == OOBEVALUE::ISTRUE) {
+    if (oobeValue_ == OOBEVALUE::IS_TRUE) {
         return;
     }
     RegisterObserver(key, func);
@@ -172,9 +173,9 @@ void OOBEManager::Initialize()
         return;
     }
     if (resultValue != 0) {
-        oobeValue_ = OOBEVALUE::ISTRUE;
+        oobeValue_ = OOBEVALUE::IS_TRUE;
     } else {
-        oobeValue_ = OOBEVALUE::ISFALSE;
+        oobeValue_ = OOBEVALUE::IS_FALSE;
     }
 }
 
@@ -185,7 +186,7 @@ bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
         RESSCHED_LOGE("Bad task passed!");
         return false;
     }
-    if (oobeValue_ == OOBEVALUE::ISTRUE) {
+    if (oobeValue_ == OOBEVALUE::IS_TRUE) {
         task->ExcutingTask();
         return true;
     }
@@ -196,7 +197,7 @@ bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
 void OOBEManager::StartListen()
 {
     FlushOobeValue();
-    if (oobeValue_ == OOBEVALUE::ISTRUE) {
+    if (oobeValue_ == OOBEVALUE::IS_TRUE) {
         return;
     }
     OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {
@@ -208,19 +209,19 @@ void OOBEManager::StartListen()
 ErrCode OOBEManager::FlushOobeValue()
 {
     int result = 0;
-    Errcode res = ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
+    ErrCode res = ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
     if (res != ERR_OK) {
         return res;
     }
     if (result != 0) {
         std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
-        oobeValue_ = OOBEVALUE::ISTRUE;
+        oobeValue_ = OOBEVALUE::IS_TRUE;
         for (auto task : oobeTasks_) {
             task->ExcutingTask();
         }
         std::vector <std::shared_ptr<IOOBETask>>().swap(oobeTasks_);
     } else {
-        oobeValue_ = OOBEVALUE::ISFALSE;
+        oobeValue_ = OOBEVALUE::IS_FALSE;
     }
     return res;
 }
