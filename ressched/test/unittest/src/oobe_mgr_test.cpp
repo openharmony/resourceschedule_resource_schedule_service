@@ -135,12 +135,12 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_005, Function | MediumTest | Level0)
 {
     std::shared_ptr<IOOBETask> oobeTask = std::make_shared<OOBETaskImpl>();
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
-    oobeMgr.oobeValue_ = OOBEVALUE::IS_TRUE;
+    oobeMgr.oobeValue_ = oobeMgr.OOBEVALUE::IS_TRUE;
     oobeMgr.oobeTasks_.clear();
     bool flag = oobeMgr.SubmitTask(oobeTask);
     EXPECT_EQ(flag, true);
 
-    oobeMgr.oobeValue_ = OOBEVALUE::IS_FALSE;
+    oobeMgr.oobeValue_ = oobeMgr.OOBEVALUE::IS_FALSE;
     bool flag1 = oobeMgr.SubmitTask(oobeTask);
     EXPECT_EQ(oobeMgr.oobeTasks_.size(), 1);
 
@@ -162,9 +162,9 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_006, Function | MediumTest | Level0)
     oobeMgr.StartListen();
     ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
     if (resultValue != 0) {
-        EXPECT_EQ(oobeMgr.oobeValue_, OOBEVALUE::IS_TRUE);
+        EXPECT_EQ(oobeMgr.oobeValue_, oobeMgr.OOBEVALUE::IS_TRUE);
     }else {
-        EXPECT_NE(oobeMgr.oobeValue_, OOBEVALUE::IS_TRUE);
+        EXPECT_NE(oobeMgr.oobeValue_, oobeMgr.OOBEVALUE::IS_TRUE);
     }
 }
 
@@ -182,9 +182,9 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_007, Function | MediumTest | Level0)
     ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
     bool flag = oobeMgr.GetOOBValue();
     if (resultValue != 0) {
-        EXPECT_EQ(oobeMgr.oobeValue_, OOBEVALUE::IS_TRUE);
+        EXPECT_EQ(oobeMgr.oobeValue_, oobeMgr.OOBEVALUE::IS_TRUE);
     }else {
-        EXPECT_NE(oobeMgr.oobeValue_, OOBEVALUE::IS_TRUE);
+        EXPECT_NE(oobeMgr.oobeValue_, oobeMgr.OOBEVALUE::IS_TRUE);
     }
 }
 
