@@ -219,7 +219,7 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_009, Function | MediumTest | Level0)
     oobeMgr.oobeValue_ = oobeMgr.OOBEVALUE::IS_TRUE;
     OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
     oobeMgr.ReRegisterObserver(KEYWORD, updateFunc);
-    EXPECT_EQ(oobeMgr.oobeValue_, oobeMgr.OOBEVALUE::IS_TRUE);
+    EXPECT_TRUE(oobeMgr.GetOOBValue());
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
