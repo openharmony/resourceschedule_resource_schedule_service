@@ -103,7 +103,7 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbili
     return ERR_OK;
 }
 
-void OOBEManager::CheckOobeValue (int32_t count) 
+void OOBEManager::CheckOobeValue(int32_t count)
 {
     int32_t ret = -1;
     bool needCheck = false;
