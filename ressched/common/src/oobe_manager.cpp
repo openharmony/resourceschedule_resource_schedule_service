@@ -98,11 +98,12 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbili
     ffrt::submit([]() {
         std::uint32_t retry_count = 0;
         OOBEManager::GetInstance().CheckOobeValue(retry_count);
-    },         taskAttr);
+    },
+        taskAttr);
     return ERR_OK;
 }
 
-void OOBEManager::CheckOobeValue(int32_t count) 
+void OOBEManager::CheckOobeValue (int32_t count) 
 {
     int32_t ret = -1;
     bool needCheck = false;
@@ -120,9 +121,7 @@ void OOBEManager::CheckOobeValue(int32_t count)
     if (ret == ERR_INVALID_OPERATION) {
         ffrt::task_attr taskAttr;
         taskAttr.delay(DELAYTIME_US);
-        ffrt::submit([cnt = count + 1]() {
-            OOBEManager::GetInstance().CheckOobeValue(cnt);
-        },          taskAttr);
+        ffrt::submit([cnt = count + 1]() {OOBEManager::GetInstance().CheckOobeValue(cnt);}, taskAttr);
     }
 }
 
