@@ -20,6 +20,7 @@
 #include "errors.h"
 #include "mutex"
 #include "ioobe_task.h"
+#include <cstdint>
 #include <functional>
 #include <vector>
 #include "ffrt.h"
@@ -35,6 +36,7 @@ public:
     ErrCode UnregisterObserver();
     bool GetOOBValue();
     void OnReceiveDataShareReadyCallBack();
+    void CheckOobeValue(int32_t cnt);
 
 private:
     class ResDataAbilityObserver : public AAFwk::DataAbilityObserverStub {
@@ -49,7 +51,12 @@ private:
         UpdateFunc update_ = nullptr;
     };
 
-    bool g_oobeValue = false;
+    enum OOBEVALUE : int32_t {
+        INVALID = -1,
+        IS_FALSE = 0,
+        IS_TRUE = 1,
+    };
+    std::atomic<int32_t> oobeValue_ = OOBEVALUE::INVALID;
     static ffrt::recursive_mutex mutex_;
     static std::vector<std::shared_ptr<IOOBETask>> oobeTasks_;
     static std::vector<std::function<void()>> dataShareFunctions_;
@@ -57,10 +64,11 @@ private:
     OOBEManager();
     ~OOBEManager();
     void Initialize();
+    ErrCode FlushOobeValue();
     ErrCode RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func);
     void ReRegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func);
     void ExecuteDataShareFunction();
 };
 } // ResourceSchedule
 } // OHOS
-#endif //RESOURCE_SCHEDULE_SERVICE_RESSCHED_COMMON_OOBE_MANAGER_H
+#endif // RESOURCE_SCHEDULE_SERVICE_RESSCHED_COMMON_OOBE_MANAGER_H

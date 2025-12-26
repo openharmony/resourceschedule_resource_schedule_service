@@ -28,6 +28,8 @@ std::vector<std::function<void()>> OOBEManager::dataShareFunctions_;
 sptr<OOBEManager::ResDataAbilityObserver> OOBEManager::observer_ = nullptr;
 namespace {
 const std::string KEYWORD = "basic_statement_agreed";
+const std::int32_t MAX_RETRY_COUNT = 30; // 2s尝试一次，尝试30此，1min后停止轮询
+const std::int32_t DELAYTIME_US = 2 * 1000 * 1000;
 } // namespace
 
 OOBEManager::OOBEManager()
@@ -48,8 +50,7 @@ OOBEManager& OOBEManager::GetInstance()
 
 bool OOBEManager::GetOOBValue()
 {
-    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
-    return g_oobeValue;
+    return (oobeValue_ == OOBEVALUE::IS_TRUE);
 }
 
 ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
@@ -90,15 +91,38 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbili
     DataShareUtils::GetInstance().ReleaseDataShareHelper(helper);
     IPCSkeleton::SetCallingIdentity(callingIdentity);
     RESSCHED_LOGI("succeed to register observer of uri=%{public}s", uri.ToString().c_str());
+    ffrt::task_attr taskAttr;
+    taskAttr.delay(DELAYTIME_US);
+    ffrt::submit([]() {
+        std::uint32_t retry_count = 0;
+        OOBEManager::GetInstance().CheckOobeValue(retry_count);
+        }, taskAttr);
     return ERR_OK;
+}
+
+void OOBEManager::CheckOobeValue(int32_t count)
+{
+    int32_t ret = -1;
+    if (oobeValue_ == OOBEVALUE::INVALID && count < MAX_RETRY_COUNT) {
+        RESSCHED_LOGW("oobeValue is invalid, retry to get oobe value");
+        ret = FlushOobeValue();
+    } else {
+        RESSCHED_LOGI("oobeValue is %{public}d, retry count is %{public}d", oobeValue_.load(), count);
+        return;
+    }
+    if (ret == ERR_INVALID_OPERATION) {
+        ffrt::task_attr taskAttr;
+        taskAttr.delay(DELAYTIME_US);
+        ffrt::submit([cnt = count + 1]() {
+            OOBEManager::GetInstance().CheckOobeValue(cnt);
+            }, taskAttr);
+    }
 }
 
 void OOBEManager::ReRegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
 {
-    int resultValue = 0;
-    ResourceSchedule::DataShareUtils::GetInstance().GetValue(key, resultValue);
-    if (resultValue != 0) {
-        func();
+    FlushOobeValue();
+    if (oobeValue_ == OOBEVALUE::IS_TRUE) {
         return;
     }
     RegisterObserver(key, func);
@@ -118,7 +142,7 @@ ErrCode OOBEManager::UnregisterObserver()
     DataShareUtils::GetInstance().ReleaseDataShareHelper(helper);
     observer_ = nullptr;
     IPCSkeleton::SetCallingIdentity(callingIdentity);
-    RESSCHED_LOGI("succeed to register observer of uri=%{public}s", uri.ToString().c_str());
+    RESSCHED_LOGI("succeed to unregister observer of uri=%{public}s", uri.ToString().c_str());
     return ERR_OK;
 }
 
@@ -137,9 +161,14 @@ void OOBEManager::ResDataAbilityObserver::SetUpdateFunc(const UpdateFunc& func)
 void OOBEManager::Initialize()
 {
     int resultValue = 0;
-    ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
+    ErrCode res = ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
+    if (res != ERR_OK) {
+        return;
+    }
     if (resultValue != 0) {
-        g_oobeValue = true;
+        oobeValue_ = OOBEVALUE::IS_TRUE;
+    } else {
+        oobeValue_ = OOBEVALUE::IS_FALSE;
     }
 }
 
@@ -150,7 +179,7 @@ bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
         RESSCHED_LOGE("Bad task passed!");
         return false;
     }
-    if (g_oobeValue) {
+    if (oobeValue_ == OOBEVALUE::IS_TRUE) {
         task->ExcutingTask();
         return true;
     }
@@ -160,34 +189,34 @@ bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
 
 void OOBEManager::StartListen()
 {
-    int resultValue = 0;
-    ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
-    if (resultValue != 0) {
+    FlushOobeValue();
+    if (oobeValue_ == OOBEVALUE::IS_TRUE) {
+        return;
+    }
+    OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {
+        FlushOobeValue();
+    };
+    RegisterObserver(KEYWORD, updateFunc);
+}
+
+ErrCode OOBEManager::FlushOobeValue()
+{
+    int result = 0;
+    ErrCode res = ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
+    if (res != ERR_OK) {
+        return res;
+    }
+    if (result != 0) {
         std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
-        g_oobeValue = true;
+        oobeValue_ = OOBEVALUE::IS_TRUE;
         for (auto task : oobeTasks_) {
             task->ExcutingTask();
         }
         std::vector <std::shared_ptr<IOOBETask>>().swap(oobeTasks_);
-        return;
+    } else {
+        oobeValue_ = OOBEVALUE::IS_FALSE;
     }
-    OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {
-        int result = 0;
-        ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, result);
-        if (result != 0) {
-            RESSCHED_LOGI("User consent authorization!");
-            std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
-            g_oobeValue = true;
-            for (auto task : oobeTasks_) {
-                task->ExcutingTask();
-            }
-            std::vector <std::shared_ptr<IOOBETask>>().swap(oobeTasks_);
-        } else {
-            RESSCHED_LOGI("User does not consent authorization!");
-            g_oobeValue = false;
-        }
-    };
-    RegisterObserver(KEYWORD, updateFunc);
+    return res;
 }
 
 void OOBEManager::OnReceiveDataShareReadyCallBack()

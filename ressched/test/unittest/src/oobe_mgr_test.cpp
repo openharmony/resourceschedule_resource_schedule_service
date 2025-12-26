@@ -116,9 +116,11 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_004, Function | MediumTest | Level0)
     ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
     oobeMgr.Initialize();
     if (resultValue != 0) {
-        EXPECT_EQ(oobeMgr.g_oobeValue, true);
+        EXPECT_EQ(oobeMgr.oobeValue_, oobeMgr.OOBEVALUE::IS_TRUE);
+        EXPECT_TRUE(oobeMgr.GetOOBValue());
     }else {
-        EXPECT_EQ(oobeMgr.g_oobeValue, false);
+        EXPECT_NE(oobeMgr.oobeValue_, oobeMgr.OOBEVALUE::IS_TRUE);
+        EXPECT_FALSE(oobeMgr.GetOOBValue());
     }
 }
 
@@ -133,12 +135,12 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_005, Function | MediumTest | Level0)
 {
     std::shared_ptr<IOOBETask> oobeTask = std::make_shared<OOBETaskImpl>();
     OOBEManager& oobeMgr = OOBEManager::GetInstance();
-    oobeMgr.g_oobeValue = true;
+    oobeMgr.oobeValue_ = oobeMgr.OOBEVALUE::IS_TRUE;
     oobeMgr.oobeTasks_.clear();
     bool flag = oobeMgr.SubmitTask(oobeTask);
     EXPECT_EQ(flag, true);
 
-    oobeMgr.g_oobeValue = false;
+    oobeMgr.oobeValue_ = oobeMgr.OOBEVALUE::IS_FALSE;
     bool flag1 = oobeMgr.SubmitTask(oobeTask);
     EXPECT_EQ(oobeMgr.oobeTasks_.size(), 1);
 
@@ -160,9 +162,9 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_006, Function | MediumTest | Level0)
     oobeMgr.StartListen();
     ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
     if (resultValue != 0) {
-        EXPECT_EQ(oobeMgr.g_oobeValue, true);
+        EXPECT_EQ(oobeMgr.oobeValue_, oobeMgr.OOBEVALUE::IS_TRUE);
     }else {
-        EXPECT_EQ(oobeMgr.g_oobeValue, false);
+        EXPECT_NE(oobeMgr.oobeValue_, oobeMgr.OOBEVALUE::IS_TRUE);
     }
 }
 
@@ -180,9 +182,9 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_007, Function | MediumTest | Level0)
     ResourceSchedule::DataShareUtils::GetInstance().GetValue(KEYWORD, resultValue);
     bool flag = oobeMgr.GetOOBValue();
     if (resultValue != 0) {
-        EXPECT_EQ(oobeMgr.g_oobeValue, true);
+        EXPECT_EQ(oobeMgr.oobeValue_, oobeMgr.OOBEVALUE::IS_TRUE);
     }else {
-        EXPECT_EQ(oobeMgr.g_oobeValue, false);
+        EXPECT_NE(oobeMgr.oobeValue_, oobeMgr.OOBEVALUE::IS_TRUE);
     }
 }
 
@@ -204,5 +206,22 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_008, Function | MediumTest | Level0)
     std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
     EXPECT_EQ(0, oobeMgr.dataShareFunctions_.size());
 }
+
+/**
+ * @tc.name: oobe manager TestOOBEManager_009
+ * @tc.desc: test the callBack of ReRegisterObserver
+ * @tc.type: FUNC
+ * @tc.author:jingyao
+ */
+HWTEST_F(OOBEMgrTest, TestOOBEManager_009, Function | MediumTest | Level0)
+{
+    OOBEManager& oobeMgr = OOBEManager::GetInstance();
+    oobeMgr.oobeValue_ = oobeMgr.OOBEVALUE::IS_TRUE;
+    OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {};
+    oobeMgr.ReRegisterObserver(KEYWORD, updateFunc);
+    EXPECT_TRUE(oobeMgr.GetOOBValue());
+}
+#undef private
+#undef protected
 } // namespace ResourceSchedule
 } // namespace OHOS
