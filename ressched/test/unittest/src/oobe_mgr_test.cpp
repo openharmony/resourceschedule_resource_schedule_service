@@ -221,5 +221,7 @@ HWTEST_F(OOBEMgrTest, TestOOBEManager_009, Function | MediumTest | Level0)
     oobeMgr.ReRegisterObserver(KEYWORD, updateFunc);
     EXPECT_TRUE(oobeMgr.GetOOBValue());
 }
+#undef private
+#undef protected
 } // namespace ResourceSchedule
 } // namespace OHOS

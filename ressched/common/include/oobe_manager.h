@@ -56,7 +56,7 @@ private:
         IS_FALSE = 0,
         IS_TRUE = 1,
     };
-    int32_t oobeValue_ = OOBEVALUE::INVALID;
+    std::atomic<int32_t> oobeValue_ = OOBEVALUE::INVALID;
     static ffrt::recursive_mutex mutex_;
     static std::vector<std::shared_ptr<IOOBETask>> oobeTasks_;
     static std::vector<std::function<void()>> dataShareFunctions_;

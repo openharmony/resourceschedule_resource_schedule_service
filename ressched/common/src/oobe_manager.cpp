@@ -50,8 +50,6 @@ OOBEManager& OOBEManager::GetInstance()
 
 bool OOBEManager::GetOOBValue()
 {
-    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
-    RESSCHED_LOGE("get oobe value, oobe value = %{public}d", oobeValue_);
     return (oobeValue_ == OOBEVALUE::IS_TRUE);
 }
 
@@ -98,20 +96,14 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbili
     ffrt::submit([]() {
         std::uint32_t retry_count = 0;
         OOBEManager::GetInstance().CheckOobeValue(retry_count);
-    },
-        taskAttr);
+        }, taskAttr);
     return ERR_OK;
 }
 
 void OOBEManager::CheckOobeValue(int32_t count)
 {
     int32_t ret = -1;
-    bool needCheck = false;
-    {
-        std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
-        needCheck = (oobeValue_ == OOBEVALUE::INVALID && count < MAX_RETRY_COUNT);
-    }
-    if (needCheck) {
+    if (oobeValue_ == OOBEVALUE::INVALID && count < MAX_RETRY_COUNT) {
         RESSCHED_LOGW("oobeValue is invalid, retry to get oobe value");
         ret = FlushOobeValue();
     } else {
@@ -121,7 +113,9 @@ void OOBEManager::CheckOobeValue(int32_t count)
     if (ret == ERR_INVALID_OPERATION) {
         ffrt::task_attr taskAttr;
         taskAttr.delay(DELAYTIME_US);
-        ffrt::submit([cnt = count + 1]() {OOBEManager::GetInstance().CheckOobeValue(cnt);}, taskAttr);
+        ffrt::submit([cnt = count + 1]() {
+            OOBEManager::GetInstance().CheckOobeValue(cnt);
+            }, taskAttr);
     }
 }
 
