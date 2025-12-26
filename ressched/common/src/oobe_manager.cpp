@@ -107,7 +107,7 @@ void OOBEManager::CheckOobeValue(int32_t count)
         RESSCHED_LOGW("oobeValue is invalid, retry to get oobe value");
         ret = FlushOobeValue();
     } else {
-        RESSCHED_LOGI("oobeValue is %{public}d, retry count is %{public}d", oobeValue_, count);
+        RESSCHED_LOGI("oobeValue is %{public}d, retry count is %{public}d", oobeValue_.load(), count);
         return;
     }
     if (ret == ERR_INVALID_OPERATION) {
