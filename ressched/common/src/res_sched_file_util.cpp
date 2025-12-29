@@ -129,7 +129,7 @@ bool CreateFile(const std::string& filePath, const mode_t& mode)
     fd.open(filePath);
     if (!fd.is_open()) {
         //create filed
-        RESSCHED_LOGE("%{public}s: Failed to create file", __func__);
+        RESSCHED_LOGE("%{public}s: Failed to create file,errno=%{public}d", __func__, errno);
         return false;
     }
     fd.close();
