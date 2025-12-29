@@ -106,7 +106,6 @@ namespace {
         std::string deviceId = GetStringFromData(DATA_LENGTH);
 
         std::shared_ptr<EventController> eventController = std::make_shared<EventController>();
-        eventController->Init();
         if (eventController->sysAbilityListener_ != nullptr) {
             eventController->sysAbilityListener_->OnAddSystemAbility(systemAbilityId, deviceId);
             eventController->sysAbilityListener_->OnRemoveSystemAbility(systemAbilityId, deviceId);
@@ -132,6 +131,7 @@ namespace {
         int32_t userId = GetData<int32_t>();
         std::string bundleName = GetStringFromData(DATA_LENGTH);
         std::shared_ptr<EventController> eventController = std::make_shared<EventController>();
+        eventController->Init();
         eventController->GetUid(userId, bundleName);
         return true;
     }
