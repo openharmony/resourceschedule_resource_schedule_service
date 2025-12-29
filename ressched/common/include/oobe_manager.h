@@ -34,7 +34,13 @@ public:
     bool SubmitTask(const std::shared_ptr<IOOBETask>& task);
     void StartListen();
     ErrCode UnregisterObserver();
-    bool GetOOBValue();
+    /*
+    *   GetOOBValue()会返回下面三个值：
+    *   OobeValue::INVALID = -1    获取datashare中oobe数据异常
+    *   OobeValue::IS_FALSE = 0    通过datashare查询oobe数据为0或空
+    *   OobeValue::IS_TRUE = 1     通过datashare查询到oobe数据且不为0
+    */
+    int32_t GetOOBValue();
     void OnReceiveDataShareReadyCallBack();
     void CheckOobeValue(int32_t cnt);
 
@@ -51,12 +57,12 @@ private:
         UpdateFunc update_ = nullptr;
     };
 
-    enum OOBEVALUE : int32_t {
+    enum OobeValue : int32_t {
         INVALID = -1,
         IS_FALSE = 0,
         IS_TRUE = 1,
     };
-    std::atomic<int32_t> oobeValue_ = OOBEVALUE::INVALID;
+    std::atomic<int32_t> oobeValue_ = OobeValue::INVALID;
     static ffrt::recursive_mutex mutex_;
     static std::vector<std::shared_ptr<IOOBETask>> oobeTasks_;
     static std::vector<std::function<void()>> dataShareFunctions_;

@@ -28,7 +28,7 @@ std::vector<std::function<void()>> OOBEManager::dataShareFunctions_;
 sptr<OOBEManager::ResDataAbilityObserver> OOBEManager::observer_ = nullptr;
 namespace {
 const std::string KEYWORD = "basic_statement_agreed";
-const std::int32_t MAX_RETRY_COUNT = 30; // 2s尝试一次，尝试30此，1min后停止轮询
+const std::int32_t MAX_RETRY_COUNT = 150; // 2s尝试一次，尝试150次，5min后停止轮询
 const std::int32_t DELAYTIME_US = 2 * 1000 * 1000;
 } // namespace
 
@@ -48,9 +48,9 @@ OOBEManager& OOBEManager::GetInstance()
     return instance;
 }
 
-bool OOBEManager::GetOOBValue()
+int32_t OOBEManager::GetOOBValue()
 {
-    return (oobeValue_ == OOBEVALUE::IS_TRUE);
+    return oobeValue_;
 }
 
 ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
@@ -103,7 +103,7 @@ ErrCode OOBEManager::RegisterObserver(const std::string& key, const ResDataAbili
 void OOBEManager::CheckOobeValue(int32_t count)
 {
     int32_t ret = -1;
-    if (oobeValue_ == OOBEVALUE::INVALID && count < MAX_RETRY_COUNT) {
+    if (oobeValue_ == OobeValue::INVALID && count < MAX_RETRY_COUNT) {
         RESSCHED_LOGW("oobeValue is invalid, retry to get oobe value");
         ret = FlushOobeValue();
     } else {
@@ -122,7 +122,7 @@ void OOBEManager::CheckOobeValue(int32_t count)
 void OOBEManager::ReRegisterObserver(const std::string& key, const ResDataAbilityObserver::UpdateFunc& func)
 {
     FlushOobeValue();
-    if (oobeValue_ == OOBEVALUE::IS_TRUE) {
+    if (oobeValue_ == OobeValue::IS_TRUE) {
         return;
     }
     RegisterObserver(key, func);
@@ -166,9 +166,9 @@ void OOBEManager::Initialize()
         return;
     }
     if (resultValue != 0) {
-        oobeValue_ = OOBEVALUE::IS_TRUE;
+        oobeValue_ = OobeValue::IS_TRUE;
     } else {
-        oobeValue_ = OOBEVALUE::IS_FALSE;
+        oobeValue_ = OobeValue::IS_FALSE;
     }
 }
 
@@ -179,7 +179,7 @@ bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
         RESSCHED_LOGE("Bad task passed!");
         return false;
     }
-    if (oobeValue_ == OOBEVALUE::IS_TRUE) {
+    if (oobeValue_ == OobeValue::IS_TRUE) {
         task->ExcutingTask();
         return true;
     }
@@ -190,7 +190,7 @@ bool OOBEManager::SubmitTask(const std::shared_ptr<IOOBETask>& task)
 void OOBEManager::StartListen()
 {
     FlushOobeValue();
-    if (oobeValue_ == OOBEVALUE::IS_TRUE) {
+    if (oobeValue_ == OobeValue::IS_TRUE) {
         return;
     }
     OOBEManager::ResDataAbilityObserver::UpdateFunc updateFunc = [&]() {
@@ -208,13 +208,13 @@ ErrCode OOBEManager::FlushOobeValue()
     }
     if (result != 0) {
         std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
-        oobeValue_ = OOBEVALUE::IS_TRUE;
+        oobeValue_ = OobeValue::IS_TRUE;
         for (auto task : oobeTasks_) {
             task->ExcutingTask();
         }
         std::vector <std::shared_ptr<IOOBETask>>().swap(oobeTasks_);
     } else {
-        oobeValue_ = OOBEVALUE::IS_FALSE;
+        oobeValue_ = OobeValue::IS_FALSE;
     }
     return res;
 }
