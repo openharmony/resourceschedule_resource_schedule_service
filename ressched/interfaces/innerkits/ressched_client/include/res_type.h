@@ -453,6 +453,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_LAST,
     // get first frame drawn
     RES_TYPE_FIRST_FRAME_DRAWN,
+    // report hardware decoding resources
+    RES_TYPE_HARDWARE_DECODING_RESOURCES,
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
     // user unlocked
