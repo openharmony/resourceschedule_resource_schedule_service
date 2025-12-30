@@ -193,6 +193,7 @@ namespace {
         { ResType::RES_TYPE_SYSTEM_CPU_LOAD, { 1201 } },
         { ResType::RES_TYPE_FRAME_RATE_REPORT, { 1003 } },
         { ResType::RES_TYPE_FORM_STATE_CHANGE_EVENT, { 5523 } },
+        { ResType::RES_TYPE_FORM_RENDER_EVENT, { 5523 } },
         { ResType::RES_TYPE_SEND_FRAME_EVENT, { 1003 } },
         { ResType::RES_TYPE_CLICK_RECOGNIZE, { 6696 } },
         { ResType::RES_TYPE_REPORT_GAME_SCHED, { 7800 } },
