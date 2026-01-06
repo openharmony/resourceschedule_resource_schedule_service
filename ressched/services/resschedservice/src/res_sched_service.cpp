@@ -181,6 +181,7 @@ namespace {
         ResType::RES_TYPE_LIVE_VIEW_EVENT,
         ResType::RES_TYPE_LOAD_KILL_REASON_CONFIG,
         ResType::RES_TYPE_SCHED_MODE_CHANGE,
+        ResType::RES_TYPE_HARDWARE_DECODING_RESOURCES,
         ResType::RES_TYPE_FIRST_FRAME_DRAWN,
     };
     static const std::unordered_map<uint32_t, std::unordered_set<int32_t>> ALLOW_SOME_UID_REPORT_RES = {
@@ -207,6 +208,7 @@ namespace {
         { ResType::RES_TYPE_STANDBY_FREEZE_FAILED, { 1201 } },
         { ResType::RES_TYPE_ADJUST_PROTECTLRU_RECLAIM_RATIO, { 1111 } },
         { ResType::RES_TYPE_IME_QOS_CHANGE, { 3820 } },
+        { ResType::RES_TYPE_HARDWARE_DECODING_RESOURCES, { 1013 }},
     };
     enum SYSTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL : int32_t {
         DEBUG_LEVEL_MINIMUM = 0,
