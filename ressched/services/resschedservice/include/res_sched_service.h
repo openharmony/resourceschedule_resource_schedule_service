@@ -64,6 +64,8 @@ public:
 
     int32_t Dump(int32_t fd, const std::vector<std::u16string>& args) override;
 
+    int32_t DumpPreloadSwitch(int32_t fd, std::vector<std::string>& argsInstr);
+
     void DumpSystemLoadInfo(std::string &result);
 
     void DumpAllPluginConfig(std::string &result);

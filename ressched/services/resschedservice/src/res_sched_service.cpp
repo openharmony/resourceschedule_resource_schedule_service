@@ -560,6 +560,9 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
         RESSCHED_LOGI("%{public}s arg: %{public}s.", __func__, ret.c_str());
         return ret;
     });
+    if (DumpPreloadSwitch(fd, argsInStr) == ERR_OK) {
+        return ERR_OK;
+    }
 #ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
     if (!CheckDumpPermission() || (!CheckENGMode() && argsInStr.size() > 0 &&
         (argsInStr[DUMP_OPTION] != "setSystemLoadLevel" && argsInStr[DUMP_OPTION] != "getSystemloadInfo"))) {
@@ -596,6 +599,23 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
     return ERR_OK;
 }
 
+int32_t ResSchedService::DumpPreloadSwitch(int32_t fd, std::vector<std::string>& argsInstr)
+{
+    if (!CheckDumpPermission()) {
+        return ERR_RES_SCHED_PERMISSION_DENIED;
+    }
+    if (argsInStr.size() <= 0) {
+        return ERR_RES_SCHED_PERMISSION_DENIED;
+    }
+    std::string result;
+    if (argsInStr[DUMP_OPTION] == "setPreloadSwitch" || argsInStr[DUMP_OPTION] == "getPreloadSwitch") {
+        PluginMgr::GetInstance().DumpOnePlugin(result, "libapp_preload_plugin.z.so", argsInStr);
+    }
+    if (!SaveStringToFd(fd, result)) {
+        RESSCHED_LOGE("PreloadSwitch %{public}s save to fd failed", __func__);
+    }
+    return ERR_OK;
+}
 
 void ResSchedService::DumpExt(const std::vector<std::string>& argsInStr, std::string &result)
 {
