@@ -182,6 +182,7 @@ namespace {
         ResType::RES_TYPE_LOAD_KILL_REASON_CONFIG,
         ResType::RES_TYPE_SCHED_MODE_CHANGE,
         ResType::RES_TYPE_HARDWARE_DECODING_RESOURCES,
+        ResType::RES_TYPE_FIRST_FRAME_DRAWN,
     };
     static const std::unordered_map<uint32_t, std::unordered_set<int32_t>> ALLOW_SOME_UID_REPORT_RES = {
         { ResType::RES_TYPE_MODEM_PA_HIGH_POWER_ABNORMAL, { 1201 } },
