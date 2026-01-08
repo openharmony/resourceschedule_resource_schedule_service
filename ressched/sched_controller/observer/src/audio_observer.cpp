@@ -27,6 +27,9 @@ void AudioObserver::Init()
     std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> audioRendererChangeInfos;
     AudioStandard::AudioStreamManager::GetInstance()->GetCurrentRendererChangeInfos(audioRendererChangeInfos);
     OnRendererStateChange(audioRendererChangeInfos);
+    std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>> audioCapturerChangeInfos;
+    AudioStandard::AudioStreamManager::GetInstance()->GetCurrentCapturerChangeInfos(audioCapturerChangeInfos);
+    OnCapturerStateChange(audioCapturerChangeInfos);
 }
 
 void AudioObserver::MarshallingAudioRendererChangeInfo(
