@@ -599,7 +599,7 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
     return ERR_OK;
 }
 
-int32_t ResSchedService::DumpPreloadSwitch(int32_t fd, std::vector<std::string>& argsInstr)
+int32_t ResSchedService::DumpPreloadSwitch(int32_t fd, std::vector<std::string>& argsInStr)
 {
     if (!CheckDumpPermission()) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
