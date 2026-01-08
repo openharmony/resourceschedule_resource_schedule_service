@@ -439,6 +439,7 @@ enum ChargeStatus : int64_t {
 enum UsbDeviceStatus : int64_t {
     USB_DEVICE_ATTACHED = 0,
     USB_DEVICE_DETACHED = 1,
+    USB_DEVICE_STATE = 2,
 };
 
 /**

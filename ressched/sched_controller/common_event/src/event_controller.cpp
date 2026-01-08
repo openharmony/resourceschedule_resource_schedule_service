@@ -202,6 +202,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USB_DEVICE_ATTACHED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_DISCHARGING);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USB_DEVICE_DETACHED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USB_STATE);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_CALL_STATE_CHANGED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_WIFI_P2P_STATE_CHANGED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_SAVE_MODE_CHANGED);
@@ -411,6 +412,12 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
     }
     if (action == COMMON_EVENT_AUDIO_FOCUS_CHANGE) {
         HandleAudioFocusChangeEvent(want);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USB_STATE) {
+        payload["connnected"] = want.GetBoolParam("connected", false);
+        payload["hdc"] = want.GetBoolParam("hdc", false);
+        ReportDataInProcess(ResType::RES_TYPE_USB_DEVICE, ResType::UsbDeviceStatus::USB_DEVICE_STATE, payload);
         return;
     }
 }
