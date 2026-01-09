@@ -607,10 +607,11 @@ int32_t ResSchedService::DumpPreloadSwitch(int32_t fd, std::vector<std::string>&
     if (argsInStr.size() <= 0) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
-    std::string result;
-    if (argsInStr[DUMP_OPTION] == "setPreloadSwitch" || argsInStr[DUMP_OPTION] == "getPreloadSwitch") {
-        PluginMgr::GetInstance().DumpOnePlugin(result, "libapp_preload_plugin.z.so", argsInStr);
+    if (argsInStr[DUMP_OPTION] != "setPreloadSwitch" && argsInStr[DUMP_OPTION] != "getPreloadSwitch") {
+        return ERR_RES_SCHED_PERMISSION_DENIED;
     }
+    std::string result;
+    PluginMgr::GetInstance().DumpOnePlugin(result, "libapp_preload_plugin.z.so", argsInStr);
     if (!SaveStringToFd(fd, result)) {
         RESSCHED_LOGE("PreloadSwitch %{public}s save to fd failed", __func__);
     }
