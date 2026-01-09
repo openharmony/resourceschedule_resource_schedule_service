@@ -124,6 +124,7 @@ void SocPerfExecutorWirteNode::WriteNode(int32_t resId, const std::string& fileP
         return;
     }
     write(fd, value.c_str(), value.size());
+    lseek(fd, 0, SEEK_SET);
 }
 
 int32_t SocPerfExecutorWirteNode::GetFdForFilePath(const std::string& filePath)
