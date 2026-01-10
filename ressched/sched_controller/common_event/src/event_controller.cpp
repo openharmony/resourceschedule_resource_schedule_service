@@ -415,7 +415,7 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
         return;
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USB_STATE) {
-        payload["connnected"] = want.GetBoolParam("connected", false);
+        payload["connected"] = want.GetBoolParam("connected", false);
         payload["hdc"] = want.GetBoolParam("hdc", false);
         ReportDataInProcess(ResType::RES_TYPE_USB_DEVICE, ResType::UsbDeviceStatus::USB_DEVICE_STATE, payload);
         return;
