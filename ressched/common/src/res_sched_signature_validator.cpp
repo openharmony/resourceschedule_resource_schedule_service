@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -162,13 +162,6 @@ void ResSchedSignatureValidator::GetCurrentUserId(std::vector<int> &activatedOsA
         RESSCHED_LOGE("%{public}s: query account empty", __func__);
         activatedOsAccountIds.push_back(DEFAULT_USER_ID);
     }
-}
-
-void ResSchedSignatureValidator::SetSignatureConfig(std::unordered_map<std::string, std::string> &config)
-{
-    std::lock_guard<ffrt::mutex> autoLock(mutex_);
-    signatureConfig_ = std::move(config);
-    validCache_.clear();
 }
 
 void ResSchedSignatureValidator::AddSignatureConfig(std::unordered_map<std::string, std::string> &config)
