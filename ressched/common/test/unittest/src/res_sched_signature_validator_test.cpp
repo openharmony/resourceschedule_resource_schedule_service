@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -49,7 +49,7 @@ void ResSchedSignatureValidatorTest::TearDown()
 void ResSchedSignatureValidatorTest::InitDefaultConfig()
 {
     std::unordered_map<std::string, std::string> config = {{BUNDLE_VALID, SIGNATURE_VALID}};
-    ResSchedSignatureValidator::GetInstance().SetSignatureConfig(config);
+    ResSchedSignatureValidator::GetInstance().AddSignatureConfig(config);
 }
 
 // OVERRIDE BundleMgrHelper METHOD
