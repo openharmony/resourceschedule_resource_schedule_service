@@ -220,6 +220,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(COMMON_EVENT_MEDIA_CTRL_EVENT);
     matchingSkills.AddEvent(COMMON_EVENT_AUDIO_FOCUS_CHANGE);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
+    lock_guard<mutex> autolock(subscriberMutex_);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
     SubscribeCommonEvent(subscriber_);
     SubscribeLockScreenCommonEvent();
@@ -509,12 +510,14 @@ void EventController::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
     RESSCHED_LOGW("common event service is removed.");
+    lock_guard<mutex> autolock(subscriberMutex_);
     subscriber_ = nullptr;
     lockScreenSubscriber_ = nullptr;
 }
 
 void EventController::SystemAbilityStatusChangeListener::Stop()
 {
+    lock_guard<mutex> autolock(subscriberMutex_);
     if (subscriber_ == nullptr || lockScreenSubscriber_ == nullptr) {
         return;
     }
