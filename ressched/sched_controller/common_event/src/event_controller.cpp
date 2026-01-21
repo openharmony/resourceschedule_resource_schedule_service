@@ -32,6 +32,7 @@
 #include "res_sched_mgr.h"
 #include "res_type.h"
 
+using namespace std;
 using namespace OHOS::EventFwk;
 namespace OHOS {
 namespace ResourceSchedule {
