@@ -240,6 +240,7 @@ void ConfigReader::RemovePluginConfig(const std::string& pluginName)
 void ConfigReader::Dump(std::string &result)
 {
     result.append("================Resource Schedule Plugin Config ================\n");
+    lock_guard<mutex> autolock(configMutex_);
     for (auto pluginIter : allPluginConfigs_) {
         result.append("pluginName:").append(pluginIter.first).append(" \n");
         auto pluginConfigMap = pluginIter.second;

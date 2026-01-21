@@ -446,6 +446,7 @@ std::string PluginMgr::BuildDispatchTrace(const std::shared_ptr<ResData>& resDat
     libNameAll.append("[");
     for (const auto& libName : pluginList) {
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+        std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
         if (disablePlugins_.find(libName) != disablePlugins_.end()) {
             continue;
         }

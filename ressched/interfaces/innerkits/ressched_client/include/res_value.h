@@ -546,7 +546,7 @@ enum KeyFloatingWindowStatus : int64_t {
 /**
 * @brief ui sensitive extension
 */
-const std::vector<int32_t > UI_SENSITIVE_EXTENSION = {
+inline const std::vector<int32_t > UI_SENSITIVE_EXTENSION = {
     2, // INPUT_EXTENSION_TYPE
     255, // UNSPECIFIED_EXTENSION_TYPE
     256, // UI_EXTENSION_TYPE

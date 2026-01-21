@@ -21,6 +21,7 @@
 #include "system_ability_status_change_stub.h"
 
 #include "single_instance.h"
+#include <mutex>
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -65,6 +66,7 @@ private:
     void SubscribeLockScreenCommonEvent();
     std::shared_ptr<EventController> subscriber_ = nullptr;
     std::shared_ptr<EventController> lockScreenSubscriber_ = nullptr;
+    std::mutex subscriberMutex_;
 };
 
     void DataShareIsReady();

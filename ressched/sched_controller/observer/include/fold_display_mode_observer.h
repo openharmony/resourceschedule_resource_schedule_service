@@ -26,7 +26,7 @@ using OHOS::Rosen::FoldDisplayMode;
 using OHOS::Rosen::DisplayOrientation;
 
 namespace {
-    const std::string DISPLAY_MODE_UNKOWN = "displayUnknown";
+    inline const std::string DISPLAY_MODE_UNKOWN = "displayUnknown";
 }
 class FoldDisplayModeObserver : public OHOS::Rosen::DisplayManager::IDisplayModeListener {
 public:
