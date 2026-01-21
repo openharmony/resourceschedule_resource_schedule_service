@@ -580,7 +580,7 @@ void ResSchedClient::InnerEventListener::RegisterEventListener(const sptr<ResSch
         eventListeners_[eventType].emplace(listenerGroup, std::list<sptr<ResSchedEventListener>>());
         eventListeners_[eventType][listenerGroup].emplace_back(eventListener);
     } else {
-        std::list<sptr<ResSchedEventListener>>& listenerItem = item->second[listenerGroup]
+        std::list<sptr<ResSchedEventListener>>& listenerItem = item->second[listenerGroup];
         for (auto& iter : listenerItem) {
             if (iter == eventListener) {
                 RESSCHED_LOGE("ResSchedClient register an exist eventListener object.");
