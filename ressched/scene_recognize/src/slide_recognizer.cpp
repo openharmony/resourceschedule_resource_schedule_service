@@ -126,6 +126,7 @@ void SlideRecognizer::StartDetecting(const nlohmann::json& payload)
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo);
     slideDetectingTime_ = ResCommonUtil::GetNowMillTime(true);
+    std::lock_guard<ffrt::recursive_mutex> lock(stateMutex);
     g_slideState = SlideRecognizeStat::SLIDE_NORMAL_DETECTING;
     if (!payload.contains("clientPid") || !payload["clientPid"].is_string()) {
         RESSCHED_LOGE("payload with no clientPid");
