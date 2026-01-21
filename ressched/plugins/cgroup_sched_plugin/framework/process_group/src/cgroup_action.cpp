@@ -228,6 +228,7 @@ int CgroupAction::GetSchedPolicy(int tid, SchedPolicy* policy)
 
 int CgroupAction::GetSchedPolicyByName(const std::string& name, SchedPolicy* policy)
 {
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     const auto& result = std::find_if(fullNames_.begin(), fullNames_.end(),
         [ &name ] (const auto& kv) { return kv.second == name; });
     if (result != fullNames_.end()) {
