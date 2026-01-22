@@ -194,6 +194,7 @@ namespace {
         { ResType::SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO, "SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO"},
         { ResType::RES_TYPE_IME_QOS_CHANGE, "RES_TYPE_IME_QOS_CHANGE" },
         { ResType::RES_TYPE_LIVE_VIEW_EVENT, "RES_TYPE_LIVE_VIEW_EVENT"},
+        { ResType::RES_TYPE_WEB_SUBWIN_TASK, "RES_TYPE_WEB_SUBWIN_TASK"},
     };
     OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
     {

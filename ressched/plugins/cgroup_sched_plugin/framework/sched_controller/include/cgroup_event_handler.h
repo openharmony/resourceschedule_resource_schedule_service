@@ -72,6 +72,8 @@ public:
     void HandleWebviewScreenCapture(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportWebviewVideoState(uint32_t resType, int64_t value, const nlohmann::json& payload);
     void HandleReportScreenCaptureEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void HandleReportWebSubWinTaskStatus(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    void CheckWebSubWinTaskStatus(uint32_t resType, int32_t uid, int32_t pid);
     void PostTask(const std::function<void()> task);
     void PostTask(const std::function<void()> task, const std::string &taskName, const int32_t delayTime);
     void PostTaskAndWait(const std::function<void()> task);

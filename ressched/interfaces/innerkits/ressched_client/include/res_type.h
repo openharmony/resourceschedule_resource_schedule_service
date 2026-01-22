@@ -411,6 +411,8 @@ enum : uint32_t {
     RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_WITH_AGGREGATION = 192,
     // audio focus change event
     RES_TYPE_AUDIO_FOCUS_CHANGE_EVENT  = 193,
+    // web subwin call start or stop
+    RES_TYPE_WEB_SUBWIN_TASK  = 194,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

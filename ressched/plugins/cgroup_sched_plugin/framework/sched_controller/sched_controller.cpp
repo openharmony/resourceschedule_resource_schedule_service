@@ -135,6 +135,7 @@ void SchedController::InitResTypes()
         ResType::RES_TYPE_CONTINUOUS_TASK,
         ResType::RES_TYPE_NAP_MODE,
         ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
+        ResType::RES_TYPE_WEB_SUBWIN_TASK,
     };
 }
 
@@ -312,6 +313,9 @@ void SchedController::InitAddDispatchResFuncMap()
     dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED,
         [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value,
         const nlohmann::json& payload) { handler->HandleReportAudioCapTureState(resType, value, payload); }));
+    dispatchResFuncMap_.insert(std::make_pair(ResType::RES_TYPE_WEB_SUBWIN_TASK,
+        [](std::shared_ptr<CgroupEventHandler> handler, uint32_t resType, int64_t value,
+        const nlohmann::json& payload) { handler->HandleReportWebSubWinTaskStatus(resType, value, payload); }));
 }
 
 #ifdef POWER_MANAGER_ENABLE

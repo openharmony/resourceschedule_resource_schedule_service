@@ -131,6 +131,7 @@ public:
     bool screenCaptureState_ = false;
     bool videoState_ = false;
     bool isLoadState_ = false;
+    bool webSubWinTaskState_ = false;
     bool saPullAppState_ = false;
 
     int32_t cpuLevel_ = CpuLevelType::DEFAULT;

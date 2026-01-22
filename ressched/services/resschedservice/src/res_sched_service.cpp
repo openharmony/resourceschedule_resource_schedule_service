@@ -116,6 +116,8 @@ namespace {
         ResType::RES_TYPE_BACKGROUND_STATUS,
         ResType::RES_TYPE_BACKPRESSED_EVENT,
         ResType::SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO,
+        ResType::RES_TYPE_WEB_SUBWIN_TASK,
+        ResType::SYNC_RES_TYPE_APP_IS_IN_CLICK_REPORT_EXT_LIST,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
