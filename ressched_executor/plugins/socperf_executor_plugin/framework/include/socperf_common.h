@@ -28,16 +28,16 @@
 namespace OHOS {
 namespace ResourceSchedule {
 
-const std::string SOCPERF_RESOURCE_CONFIG_XML = "etc/soc_perf/socperf_resource_config.xml";
-const int32_t INVALID_VALUE                   = INT_MIN;
-const int32_t MIN_RESOURCE_ID                 = 1000;
-const int32_t MAX_RESOURCE_ID                 = 5999;
-const int32_t RES_ID_NUMS_PER_TYPE            = 1000;
-const int32_t RES_ID_NUMS_PER_TYPE_EXT        = 10000;
-const int32_t WRITE_NODE                      = 0;
-const int32_t REPORT_TO_PERFSO                = 1;
-const int32_t MAX_FREQUE_NODE                 = 1;
-const int32_t NODE_DEFAULT_VALUE              = -1;
+inline const std::string SOCPERF_RESOURCE_CONFIG_XML = "etc/soc_perf/socperf_resource_config.xml";
+inline const int32_t INVALID_VALUE                   = INT_MIN;
+inline const int32_t MIN_RESOURCE_ID                 = 1000;
+inline const int32_t MAX_RESOURCE_ID                 = 5999;
+inline const int32_t RES_ID_NUMS_PER_TYPE            = 1000;
+inline const int32_t RES_ID_NUMS_PER_TYPE_EXT        = 10000;
+inline const int32_t WRITE_NODE                      = 0;
+inline const int32_t REPORT_TO_PERFSO                = 1;
+inline const int32_t MAX_FREQUE_NODE                 = 1;
+inline const int32_t NODE_DEFAULT_VALUE              = -1;
 
 class ResourceNode {
 public:
