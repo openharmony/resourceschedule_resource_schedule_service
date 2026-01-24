@@ -677,7 +677,7 @@ void ResSchedService::DumpUsage(std::string &result)
         .append("    -p (plugin name): show one plugin info.\n")
         .append("    setSystemLoadLevel (LevelNum/reset): set system load level. LevelNum range: 0-7\n")
         .append("    getSystemloadInfo: get system load info.\n");
-        PluginMgr::GetInstance().DumpHelpFromPlugin(result);
+    PluginMgr::GetInstance().DumpHelpFromPlugin(result);
 }
 
 #ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
