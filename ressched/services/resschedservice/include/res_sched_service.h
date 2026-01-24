@@ -85,6 +85,9 @@ private:
 
     void DumpAllInfo(std::string &result);
     void DumpUsage(std::string &result);
+#ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
+    void DumpUsage2D(std::string &result);
+#endif //SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
     void DumpExt(const std::vector<std::string>& argsInStr, std::string &result);
     void DumpExecutorDebugCommand(const std::vector<std::string>& args, std::string& result);
     void DumpSetSystemLoad(const std::vector<std::string>& args, std::string& result);
