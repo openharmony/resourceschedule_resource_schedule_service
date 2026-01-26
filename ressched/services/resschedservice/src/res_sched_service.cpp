@@ -608,6 +608,7 @@ int32_t ResSchedService::DumpPreloadSwitch(int32_t fd, std::vector<std::string>&
     if (argsInStr.size() < 0) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
+    std::string result;
     if (argsInStr.size() == 0) {
         if (CheckENGMode()) {
             return ERR_RES_SCHED_PERMISSION_DENIED;
@@ -686,8 +687,8 @@ void ResSchedService::DumpUsage(std::string &result)
 void ResSchedService::DumpUserUsage(std::string &result)
 {
     result.append("usage: resource schedule service dump [<options>]\n")
-        .append("setPreloadSwitch      |setPreloadSwitch [value], 1:open, 0:close\n")
-        .append("getPreloadSwitch      |getPreloadSwitch");
+        .append("setPreloadSwitch      |setPreloadSwitch [value], 1:open, 0:close.\n")
+        .append("getPreloadSwitch      |getPreloadSwitch.\n");
 }
 
 void ResSchedService::DumpAllInfo(std::string &result)
