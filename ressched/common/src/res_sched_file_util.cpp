@@ -40,9 +40,10 @@ void WriteFileReclaim(int32_t pid)
         RESSCHED_LOGE("%{public}s: open failed.", __func__);
         return;
     }
+    fdsan_exchange_owner_tag(fd, 0, LOG_DOMAIN);
     // write content to fd
     write(fd, contentStr.c_str(), contentStr.length());
-    close(fd);
+    fdsan_close_with_tag(fd, LOG_DOMAIN);
 }
 
 bool GetRealPath(const std::string& filePath, std::string& realPath)
