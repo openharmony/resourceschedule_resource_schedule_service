@@ -952,6 +952,14 @@ enum LiveViewState : int32_t {
     LIVE_VIEW_EXIT = 0,
     LIVE_VIEW_ENTER = 1,
 };
+
+/**
+* @brief system ability observe manager status change
+*/
+enum SystemAbilitySign : int64_t {
+    ADD_SYSTEM_ABILITY  = 0,
+    REMOVE_SYSTEM_ABILITY  = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
