@@ -413,11 +413,8 @@ enum : uint32_t {
     RES_TYPE_AUDIO_FOCUS_CHANGE_EVENT  = 193,
     // observe manager status change
     RES_TYPE_OBSERVER_MANAGER_STATUS_CHANGE  = 194,
-<<<<<<< HEAD
     // web subwin call start or stop
     RES_TYPE_WEB_SUBWIN_TASK  = 195,
-=======
->>>>>>> upstream/master
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
