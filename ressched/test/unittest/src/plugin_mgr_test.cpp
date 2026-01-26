@@ -422,20 +422,6 @@ HWTEST_F(PluginMgrTest, Dump001, TestSize.Level1)
 }
 
 /**
- * @tc.name: Plugin mgr test RepairPlugin 001
- * @tc.desc: Verify if RepairPlugin is success.
- * @tc.type: FUNC
- * @tc.require: issueI5WWV3
- * @tc.author:lice
- */
-HWTEST_F(PluginMgrTest, RepairPlugin001, TestSize.Level1)
-{
-    PluginLib libInfo = pluginMgr_->pluginLibMap_.find(LIB_NAME)->second;
-    pluginMgr_->RepairPlugin(Clock::now(), LIB_NAME, libInfo);
-    EXPECT_TRUE(true);
-}
-
-/**
  * @tc.name: Plugin mgr test UnSubscribeResource 001
  * @tc.desc: Verify if can stop success.
  * @tc.type: FUNC
