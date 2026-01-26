@@ -605,18 +605,33 @@ int32_t ResSchedService::DumpPreloadSwitch(int32_t fd, std::vector<std::string>&
     if (!CheckDumpPermission()) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
-    if (argsInStr.size() <= 0) {
-        return ERR_RES_SCHED_PERMISSION_DENIED;
-    }
-    if (argsInStr[DUMP_OPTION] != "setPreloadSwitch" && argsInStr[DUMP_OPTION] != "getPreloadSwitch") {
+    if (argsInStr.size() < 0) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
     std::string result;
-    PluginMgr::GetInstance().DumpOnePlugin(result, "libapp_preload_plugin.z.so", argsInStr);
-    if (!SaveStringToFd(fd, result)) {
-        RESSCHED_LOGE("PreloadSwitch %{public}s save to fd failed", __func__);
+    if (argsInStr.size() == 0) {
+        if (CheckENGMode()) {
+            return ERR_RES_SCHED_PERMISSION_DENIED;
+        }
+        // hidumper -s 1901
+        DumpUserUsage(result);
+        if (!SaveStringToFd(fd, result)) {
+            RESSCHED_LOGE("PreloadSwitch %{public}s save to fd failed", __func__);
+        }
+        return ERR_OK;
     }
-    return ERR_OK;
+
+    if (argsInStr[DUMP_OPTION] == "setPreloadSwitch" || argsInStr[DUMP_OPTION] == "getPreloadSwitch") {
+        // hidumper -s -a "setPreloadSwitch (value)"
+        // hidumper -s -a "getPreloadSwitch"
+        std::string result;
+        PluginMgr::GetInstance().DumpOnePlugin(result, "libapp_preload_plugin.z.so", argsInStr);
+        if (!SaveStringToFd(fd, result)) {
+            RESSCHED_LOGE("PreloadSwitch %{public}s save to fd failed", __func__);
+        }
+        return ERR_OK;
+    }
+    return ERR_RES_SCHED_PERMISSION_DENIED;
 }
 
 void ResSchedService::DumpExt(const std::vector<std::string>& argsInStr, std::string &result)
@@ -667,6 +682,13 @@ void ResSchedService::DumpUsage(std::string &result)
         .append("    -p: show the all plugin info.\n")
         .append("    -p (plugin name): show one plugin info.\n");
     PluginMgr::GetInstance().DumpHelpFromPlugin(result);
+}
+
+void ResSchedService::DumpUserUsage(std::string &result)
+{
+    result.append("usage: resource schedule service dump [<options>]\n")
+        .append("setPreloadSwitch      |setPreloadSwitch [value], 1:open, 0:close.\n")
+        .append("getPreloadSwitch      |getPreloadSwitch.\n");
 }
 
 void ResSchedService::DumpAllInfo(std::string &result)
