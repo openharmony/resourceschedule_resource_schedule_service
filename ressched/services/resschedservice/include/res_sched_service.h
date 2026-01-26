@@ -84,6 +84,7 @@ private:
     DISALLOW_COPY_AND_MOVE(ResSchedService);
 
     void DumpAllInfo(std::string &result);
+    void DumpUserUsage(std::string &result);
     void DumpUsage(std::string &result);
 #ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
     void DumpUsage2D(std::string &result);

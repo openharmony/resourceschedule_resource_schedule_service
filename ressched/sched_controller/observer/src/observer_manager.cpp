@@ -54,6 +54,7 @@
 #else
 #define RSS_WINDOW_MANAGER WindowManagerLite
 #endif
+extern "C" void ReportDataInProcess(uint32_t, int64_t, const nlohmann::json&);
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -215,6 +216,11 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnAddSystemAbility(
         auto function = funcIter->second;
             if (function) {
                 function();
+                nlohmann::json payload;
+                payload["saId"] = std::to_string(systemAbilityId);
+                ReportDataInProcess(ResourceSchedule::ResType::RES_TYPE_OBSERVER_MANAGER_STATUS_CHANGE,
+                    ResType::SystemAbilitySign::ADD_SYSTEM_ABILITY, payload);
+                RESSCHED_LOGI("Add system ability call end, system ability id: %{public}d", systemAbilityId);
             }
     }
 }
@@ -228,6 +234,11 @@ void ObserverManager::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
         auto function = funcIter->second;
             if (function) {
                 function();
+                nlohmann::json payload;
+                payload["saId"] = std::to_string(systemAbilityId);
+                ReportDataInProcess(ResourceSchedule::ResType::RES_TYPE_OBSERVER_MANAGER_STATUS_CHANGE,
+                    ResType::SystemAbilitySign::REMOVE_SYSTEM_ABILITY, payload);
+                RESSCHED_LOGI("Remove system ability call end, system ability id: %{public}d", systemAbilityId);
             }
     }
 }

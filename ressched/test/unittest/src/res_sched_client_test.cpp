@@ -309,6 +309,41 @@ HWTEST_F(ResSchedClientTest, UnRegisterEventListener001, Function | MediumTest |
 }
 
 /**
+ * @tc.name: RegisterEventListener002
+ * @tc.desc: UnRegister event listener
+ * @tc.type: FUNC
+ * @tc.require: issueIA9UZ9
+ * @tc.author: jingyao
+ */
+HWTEST_F(ResSchedClientTest, RegisterEventListener002, Function | MediumTest | Level0)
+{
+    sptr<ResSchedEventListener> eventListener1 =
+        new (std::nothrow) ResSchedEventListenerMock;
+    sptr<ResSchedEventListener> eventListener2 =
+        new (std::nothrow) ResSchedEventListenerMock;
+    
+    ResSchedClient::GetInstance().RegisterEventListener(eventListener1, 1, 2);
+    EXPECT_TRUE(ResSchedClient::GetInstance().innerEventListener_->eventListeners_[1].size() == 1);
+    EXPECT_TRUE(ResSchedClient::GetInstance().innerEventListener_->eventListeners_[1][2].size() == 1);
+
+    ResSchedClient::GetInstance().RegisterEventListener(eventListener2, 1, 2);
+    EXPECT_TRUE(ResSchedClient::GetInstance().innerEventListener_->eventListeners_[1].size() == 1);
+    EXPECT_TRUE(ResSchedClient::GetInstance().innerEventListener_->eventListeners_[1][2].size() == 2);
+
+    ResSchedClient::GetInstance().RegisterEventListener(eventListener1, 1, 2);
+    EXPECT_TRUE(ResSchedClient::GetInstance().innerEventListener_->eventListeners_[1].size() == 1);
+    EXPECT_TRUE(ResSchedClient::GetInstance().innerEventListener_->eventListeners_[1][2].size() == 2);
+
+    ResSchedClient::GetInstance().RegisterEventListener(eventListener1, 1, 3);
+    EXPECT_TRUE(ResSchedClient::GetInstance().innerEventListener_->eventListeners_[1].size() == 2);
+    EXPECT_TRUE(ResSchedClient::GetInstance().innerEventListener_->eventListeners_[1][3].size() == 1);
+
+    ResSchedClient::GetInstance().RegisterEventListener(eventListener1, 1, 3);
+    EXPECT_TRUE(ResSchedClient::GetInstance().innerEventListener_->eventListeners_[1].size() == 2);
+    EXPECT_TRUE(ResSchedClient::GetInstance().innerEventListener_->eventListeners_[1][3].size() == 1);
+}
+
+/**
  * @tc.name: GetSystemloadLevel001
  * @tc.desc: Get systemload level
  * @tc.type: FUNC

@@ -580,17 +580,14 @@ void ResSchedClient::InnerEventListener::RegisterEventListener(const sptr<ResSch
         eventListeners_[eventType].emplace(listenerGroup, std::list<sptr<ResSchedEventListener>>());
         eventListeners_[eventType][listenerGroup].emplace_back(eventListener);
     } else {
-        auto listenerItem = item->second.find(listenerGroup);
-        if (listenerItem == item->second.end()) {
-            item->second.emplace(listenerGroup, std::list<sptr<ResSchedEventListener>>());
-        }
-        for (auto& iter : listenerItem->second) {
+        std::list<sptr<ResSchedEventListener>>& listenerItem = item->second[listenerGroup];
+        for (auto& iter : listenerItem) {
             if (iter == eventListener) {
                 RESSCHED_LOGE("ResSchedClient register an exist eventListener object.");
                 return;
             }
         }
-        item->second[listenerGroup].emplace_back(eventListener);
+        listenerItem.emplace_back(eventListener);
     }
     RESSCHED_LOGD("Client has registered %{public}d eventListener with type:%{public}d.",
         static_cast<int32_t>(eventListeners_[eventType].size()), eventType);
@@ -638,9 +635,14 @@ ErrCode ResSchedClient::InnerEventListener::OnReceiveEvent(uint32_t eventType, u
         std::lock_guard<std::mutex> lock(eventMutex_);
         auto item = eventListeners_.find(eventType);
         if (item == eventListeners_.end()) {
+            RESSCHED_LOGW("ResSchedClient::OnReceiveEvent find eventType error.");
             return RES_SCHED_DATA_ERROR;
         }
         auto listenerItem = item->second.find(listenerGroup);
+        if (listenerItem == item->second.end()) {
+            RESSCHED_LOGW("ResSchedClient::OnReceiveEvent find listenerGroup error.");
+            return RES_SCHED_DATA_ERROR;
+        }
         for (auto& iter : listenerItem->second) {
             listenerList.push_back(iter);
         }

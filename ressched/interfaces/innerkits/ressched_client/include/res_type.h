@@ -411,6 +411,8 @@ enum : uint32_t {
     RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_WITH_AGGREGATION = 192,
     // audio focus change event
     RES_TYPE_AUDIO_FOCUS_CHANGE_EVENT  = 193,
+    // observe manager status change
+    RES_TYPE_OBSERVER_MANAGER_STATUS_CHANGE  = 194,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -451,6 +453,8 @@ enum : uint32_t {
     RES_TYPE_DISPLAY_POWER_WAKE_UP = 509,
     // get smart gc scene info
     SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO = 510,
+    // get click ext report
+    SYNC_RES_TYPE_APP_IS_IN_CLICK_REPORT_EXT_LIST = 511,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // get first frame drawn

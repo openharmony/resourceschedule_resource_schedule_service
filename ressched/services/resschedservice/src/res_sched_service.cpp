@@ -116,6 +116,7 @@ namespace {
         ResType::RES_TYPE_BACKGROUND_STATUS,
         ResType::RES_TYPE_BACKPRESSED_EVENT,
         ResType::SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO,
+        ResType::SYNC_RES_TYPE_APP_IS_IN_CLICK_REPORT_EXT_LIST,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -610,18 +611,33 @@ int32_t ResSchedService::DumpPreloadSwitch(int32_t fd, std::vector<std::string>&
     if (!CheckDumpPermission()) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
-    if (argsInStr.size() <= 0) {
-        return ERR_RES_SCHED_PERMISSION_DENIED;
-    }
-    if (argsInStr[DUMP_OPTION] != "setPreloadSwitch" && argsInStr[DUMP_OPTION] != "getPreloadSwitch") {
+    if (argsInStr.size() < 0) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
     std::string result;
-    PluginMgr::GetInstance().DumpOnePlugin(result, "libapp_preload_plugin.z.so", argsInStr);
-    if (!SaveStringToFd(fd, result)) {
-        RESSCHED_LOGE("PreloadSwitch %{public}s save to fd failed", __func__);
+    if (argsInStr.size() == 0) {
+        if (CheckENGMode()) {
+            return ERR_RES_SCHED_PERMISSION_DENIED;
+        }
+        // hidumper -s 1901
+        DumpUserUsage(result);
+        if (!SaveStringToFd(fd, result)) {
+            RESSCHED_LOGE("PreloadSwitch %{public}s save to fd failed", __func__);
+        }
+        return ERR_OK;
     }
-    return ERR_OK;
+
+    if (argsInStr[DUMP_OPTION] == "setPreloadSwitch" || argsInStr[DUMP_OPTION] == "getPreloadSwitch") {
+        // hidumper -s -a "setPreloadSwitch (value)"
+        // hidumper -s -a "getPreloadSwitch"
+        std::string result;
+        PluginMgr::GetInstance().DumpOnePlugin(result, "libapp_preload_plugin.z.so", argsInStr);
+        if (!SaveStringToFd(fd, result)) {
+            RESSCHED_LOGE("PreloadSwitch %{public}s save to fd failed", __func__);
+        }
+        return ERR_OK;
+    }
+    return ERR_RES_SCHED_PERMISSION_DENIED;
 }
 
 void ResSchedService::DumpExt(const std::vector<std::string>& argsInStr, std::string &result)
@@ -680,6 +696,7 @@ void ResSchedService::DumpUsage(std::string &result)
     PluginMgr::GetInstance().DumpHelpFromPlugin(result);
 }
 
+<<<<<<< master
 #ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
 void ResSchedService::DumpUsage2D(std::string &result)
 {
@@ -687,6 +704,18 @@ void ResSchedService::DumpUsage2D(std::string &result)
         .append("    getSystemloadInfo: get system load info.\n");
 }
 #endif //SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
+
+void ResSchedService::DumpUserUsage(std::string &result)
+{
+    result.append("usage: resource schedule service dump [<options>]\n")
+        .append("setPreloadSwitch      |setPreloadSwitch [value], 1:open, 0:close.\n")
+        .append("getPreloadSwitch      |getPreloadSwitch.\n")
+#ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
+        .append("    setSystemLoadLevel (LevelNum/reset): set system load level. LevelNum range: 0-7\n")
+        .append("    getSystemloadInfo: get system load info.\n")
+#endif //SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
+        ;
+}
 
 void ResSchedService::DumpAllInfo(std::string &result)
 {
