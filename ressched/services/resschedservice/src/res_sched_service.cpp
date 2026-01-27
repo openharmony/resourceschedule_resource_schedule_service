@@ -696,7 +696,6 @@ void ResSchedService::DumpUsage(std::string &result)
     PluginMgr::GetInstance().DumpHelpFromPlugin(result);
 }
 
-<<<<<<< master
 #ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
 void ResSchedService::DumpUsage2D(std::string &result)
 {
