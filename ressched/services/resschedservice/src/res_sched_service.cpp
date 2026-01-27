@@ -567,7 +567,9 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
     }
 #ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
     if (!CheckDumpPermission() || (!CheckENGMode() && argsInStr.size() > 0 &&
-        (argsInStr[DUMP_OPTION] != "setSystemLoadLevel" && argsInStr[DUMP_OPTION] != "getSystemloadInfo"))) {
+        (argsInStr[DUMP_OPTION] != "setSystemLoadLevel" &&
+            argsInStr[DUMP_OPTION] != "getSystemloadInfo" &&
+            argsInStr[DUMP_OPTION] != "-h"))) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
 #else
@@ -579,7 +581,11 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
     std::string result;
     if (argsInStr.size() == 0) {
         // hidumper -s said '-h'
+#ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
+        DumpUsage2D(result);
+#else
         DumpUsage(result);
+#endif //SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
     } else if (argsInStr.size() == DUMP_OPTION + 1) {
         // hidumper -s said '-h' or hidumper -s said '-a'
         DumpExt(argsInStr, result);
@@ -638,7 +644,11 @@ int32_t ResSchedService::DumpPreloadSwitch(int32_t fd, std::vector<std::string>&
 void ResSchedService::DumpExt(const std::vector<std::string>& argsInStr, std::string &result)
 {
     if (argsInStr[DUMP_OPTION] == "-h") {
+#ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
+        DumpUsage2D(result);
+#else
         DumpUsage(result);
+#endif //SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
     } else if (argsInStr[DUMP_OPTION] == "-a") {
         DumpAllInfo(result);
     } else if (argsInStr[DUMP_OPTION] == "-p") {
@@ -681,15 +691,30 @@ void ResSchedService::DumpUsage(std::string &result)
         .append("    -h: show the help.\n")
         .append("    -a: show all info.\n")
         .append("    -p: show the all plugin info.\n")
-        .append("    -p (plugin name): show one plugin info.\n");
+        .append("    -p (plugin name): show one plugin info.\n")
+        .append("    setSystemLoadLevel (LevelNum/reset): set system load level. LevelNum range: 0-7\n")
+        .append("    getSystemloadInfo: get system load info.\n");
     PluginMgr::GetInstance().DumpHelpFromPlugin(result);
 }
+
+#ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
+void ResSchedService::DumpUsage2D(std::string &result)
+{
+    result.append("    setSystemLoadLevel (LevelNum/reset): set system load level. LevelNum range: 0-7\n")
+        .append("    getSystemloadInfo: get system load info.\n");
+}
+#endif //SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
 
 void ResSchedService::DumpUserUsage(std::string &result)
 {
     result.append("usage: resource schedule service dump [<options>]\n")
         .append("setPreloadSwitch      |setPreloadSwitch [value], 1:open, 0:close.\n")
-        .append("getPreloadSwitch      |getPreloadSwitch.\n");
+        .append("getPreloadSwitch      |getPreloadSwitch.\n")
+#ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
+        .append("    setSystemLoadLevel (LevelNum/reset): set system load level. LevelNum range: 0-7\n")
+        .append("    getSystemloadInfo: get system load info.\n")
+#endif //SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
+        ;
 }
 
 void ResSchedService::DumpAllInfo(std::string &result)
