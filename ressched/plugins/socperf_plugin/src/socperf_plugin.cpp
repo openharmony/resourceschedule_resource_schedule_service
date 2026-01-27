@@ -27,6 +27,7 @@
 #include "socperf_log.h"
 #include "system_ability_definition.h"
 #include "res_sched_signature_validator.h"
+#include "ffrt_inner.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -93,6 +94,7 @@ namespace {
     const int32_t INVALID_APP_TYPE                          = 0;
     const int32_t POWERMODE_ON                              = 601;
     const int64_t TIME_INTERVAL                             = 4500;
+    const int64_t WAKE_UP_TIME_DELAY                        = 1000000L;
     const int64_t SCREEN_OFF_TIME_DELAY                     = 5000000L;
     const int32_t PERF_REQUEST_CMD_ID_RGM_BOOTING_START     = 1000;
     const int32_t PERF_REQUEST_CMD_ID_APP_START             = 10000;
@@ -167,6 +169,7 @@ void SocPerfPlugin::Init()
     InitPolicyMode();
     SOC_PERF_LOGI("SocPerfPlugin::Init success");
 }
+extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 void SocPerfPlugin::InitPerfCrucialSo()
 {
@@ -693,18 +696,6 @@ static int32_t ParsePayload(const std::shared_ptr<ResData>& data, const std::str
 void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
 {
     if (data->value == AppStartType::APP_COLD_START) {
-        if (data->payload != nullptr && data->payload.contains(PRELOAD_MODE) &&
-            data->payload[PRELOAD_MODE].is_string() &&
-            atoi(data->payload[PRELOAD_MODE].get<std::string>().c_str()) == 1) {
-            SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START is invalid as preload");
-            return;
-        }
-        if (data->payload != nullptr && data->payload.contains(PRELAUNCH) &&
-            data->payload[PRELAUNCH].is_string() &&
-            atoi(data->payload[PRELAUNCH].get<std::string>().c_str()) == 1) {
-            SOC_PERF_LOGI("SocPerfPlugin: socperf->APP_COLD_START is invalid as prelaunch");
-            return;
-        }
         SOC_PERF_LOGD("SocPerfPlugin: socperf->APP_COLD_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
         int32_t appType = INVALID_VALUE;
@@ -1316,6 +1307,12 @@ bool SocPerfPlugin::HandleScreenStatusAnalysis(const std::shared_ptr<ResData>& d
     screenStatus_ = data->value;
     SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleScreenStatusAnalysis: %{public}lld", (long long)screenStatus_);
     if (screenStatus_ == SCREEN_ON) {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+        if (wakeUpTimeOutTask_) {
+            ffrt::skip(wakeUpTimeOutTask_);
+        }
+        wakeUpTimeOutTask_ = nullptr;
+#endif
         SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleScreenStatusAnalysis,Old path: "
                       "Trigger HandleScreenOn when SCREEN_ON");
     } else if (screenStatus_ == SCREEN_OFF) {
@@ -1338,20 +1335,27 @@ bool SocPerfPlugin::HandleDisplayPowerWakeUp(const std::shared_ptr<ResData>& dat
         SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp null data");
         return false;
     }
-    if (data->resType != ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP) {
-        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp invalid res type: %{public}d", data->resType);
-        return false;
+        if (data->value == WakeUpStatus::WAKE_UP_START) {
+        std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp: %{public}lld", (long long)data->value);
+        HandleScreenOn();
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+        if (wakeUpTimeOutTask_) {
+            ffrt::skip(wakeUpTimeOutTask_);
+        }
+        std::function<void()> wakeUpTimeOut = [this]() {
+            nlohmann::json payload;
+            ReportDataInProcess(ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, 0, payload);
+        };
+        wakeUpTimeOutTask_ = ffrt::submit_h(wakeUpTimeOut, {}, {}, ffrt::task_attr().delay(WAKE_UP_TIME_DELAY));
+#endif
+        return true;
+    } else if (data->value == WakeUpStatus::WAKE_UP_TIMEOUT) {
+        SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp: %{public}lld", (long long)data->value);
+        HandleScreenOff();
+        return true;
     }
-    if (data->value != 0) {
-        SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp invalid value: %{public}lld",
-            (long long)data->value);
-        return false;
-    }
-    
-    std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
-    SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp: %{public}lld", (long long)data->value);
-    HandleScreenOn();
-    return true;
+    return false;
 }
 
 void SocPerfPlugin::HandleDeviceModeStatusChange(const std::shared_ptr<ResData>& data)
