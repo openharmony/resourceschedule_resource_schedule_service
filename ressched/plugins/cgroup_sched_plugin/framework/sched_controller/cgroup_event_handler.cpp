@@ -37,6 +37,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     constexpr uint32_t MAX_SPAN_SERIAL = 99;
+    constexpr uint32_t CHECK_WEB_SUBWIN_TASK_DELAY = 60 * 1000;
     const std::string MMI_SERVICE_NAME = "mmi_service";
 }
 
@@ -1302,6 +1303,76 @@ void CgroupEventHandler::HandleReportCosmicCubeState(uint32_t resType, int64_t v
         CGS_LOGD("%{public}s uid:%{public}d, pid:%{public}d, value:%{public}lld", __func__, uid, pid, (long long)value);
         CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
             AdjustSource::ADJS_PROCESS_STATE);
+    }
+}
+
+void CgroupEventHandler::HandleReportWebSubWinTaskStatus(uint32_t resType, int64_t value, const nlohmann::json& payload)
+{
+    int32_t pid = 0;
+
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+    if (!ParseValue(pid, "pid", payload)) {
+        CGS_LOGE("%{public}s : payload does not contain pid!", __func__);
+        return;
+    }
+    if (pid <= 0) {
+        CGS_LOGE("%{public}s : pid is less than 0", __func__);
+        return;
+    }
+
+    std::shared_ptr<ProcessRecord> procRecord = supervisor_->FindProcessRecord(pid);
+    if (!procRecord) {
+        CGS_LOGW("%{public}s : procRecord is not exist , pid: %{public}d", __func__, pid);
+        return;
+    }
+    int32_t uid = static_cast<int32_t>(procRecord->GetUid());
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
+    procRecord->webSubWinTaskState_ = (value == ResType::WebSubwinCall::WEB_SUBWIN_CALL_START);
+
+    CGS_LOGD("%{public}s : bundleName: %{public}s, uid: %{public}d, pid: %{public}d, state: %{public}d",
+        __func__, app->GetName().c_str(), uid, pid, procRecord->webSubWinTaskState_);
+    ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType,
+        procRecord->webSubWinTaskState_);
+
+    auto handler = SchedController::GetInstance().GetCgroupEventHandler();
+    if (handler) {
+        static const std::string taskName = "webSubWinTask" + std::to_string(pid) + std::to_string(uid);
+        handler->RemoveTask(taskName);
+        if (procRecord->webSubWinTaskState_) {
+            handler->PostTask(
+                [this, resType, uid, pid] {
+                    CheckWebSubWinTaskStatus(resType, uid, pid);
+                },
+                taskName,
+                CHECK_WEB_SUBWIN_TASK_DELAY);
+        }
+    }
+}
+
+void CgroupEventHandler::CheckWebSubWinTaskStatus(uint32_t resType, int32_t uid, int32_t pid)
+{
+    if (!supervisor_) {
+        CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
+        return;
+    }
+
+    auto app = supervisor_->GetAppRecord(uid);
+    auto procRecord = app ? app->GetProcessRecord(pid) : nullptr;
+    if (!app || !procRecord) {
+        CGS_LOGW("%{public}s : app record or proc record is not exist, uid: %{public}d, pid: %{public}d!",
+            __func__, uid, pid);
+        return;
+    }
+
+    if (procRecord->webSubWinTaskState_) {
+        procRecord->webSubWinTaskState_ = false;
+        CGS_LOGD("%{public}s : webSubWinTask time out, bundleName: %{public}s, uid: %{public}d, pid: %{public}d",
+            __func__, app->GetName().c_str(), uid, pid);
+        ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()), resType,
+            procRecord->webSubWinTaskState_);
     }
 }
 

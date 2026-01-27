@@ -387,6 +387,14 @@ enum WebSlideNormal : int64_t {
 };
 
 /**
+* @brief Web subwin call status
+*/
+enum WebSubwinCall : int64_t {
+    WEB_SUBWIN_CALL_START = 0,
+    WEB_SUBWIN_CALL_STOP = 1,
+};
+
+/**
 * @brief camera state
 */
 enum CameraState : int64_t {
