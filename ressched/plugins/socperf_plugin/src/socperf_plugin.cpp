@@ -1346,7 +1346,7 @@ bool SocPerfPlugin::HandleDisplayPowerWakeUp(const std::shared_ptr<ResData>& dat
         }
         std::function<void()> wakeUpTimeOut = [this]() {
             nlohmann::json payload;
-            ReportDataInProcess(ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, 0, payload);
+            ReportDataInProcess(ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, WakeUpStatus::WAKE_UP_TIMEOUT, payload);
         };
         wakeUpTimeOutTask_ = ffrt::submit_h(wakeUpTimeOut, {}, {}, ffrt::task_attr().delay(WAKE_UP_TIME_DELAY));
 #endif
