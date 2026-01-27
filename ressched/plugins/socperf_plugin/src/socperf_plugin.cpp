@@ -169,6 +169,7 @@ void SocPerfPlugin::Init()
     InitPolicyMode();
     SOC_PERF_LOGI("SocPerfPlugin::Init success");
 }
+
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 void SocPerfPlugin::InitPerfCrucialSo()
