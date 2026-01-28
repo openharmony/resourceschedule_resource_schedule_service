@@ -131,6 +131,7 @@ private:
     bool socperfGameBoostSwitch_ = false;
     bool custGameState_ = false;
     bool flingExceptionFlag_ = false;
+    ffrt::task_handle wakeUpTimeOutTask_ = nullptr;
 
     void InitEventId();
     void InitFunctionMap();

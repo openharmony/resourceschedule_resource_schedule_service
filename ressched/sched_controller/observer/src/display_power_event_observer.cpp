@@ -17,6 +17,7 @@
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "res_type.h"
+#include "res_value.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -29,7 +30,7 @@ void DisplayPowerEventObserver::OnDisplayPowerEvent(Rosen::DisplayPowerEvent eve
                 RESSCHED_LOGI("OnDisplayPowerEvent WAKE_UP BEGIN");
                 nlohmann::json payload;
                 ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP,
-                    0, payload);
+                    ResType::WakeUpStatus::WAKE_UP_START, payload);
             }
             break;
         default:

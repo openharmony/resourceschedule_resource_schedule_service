@@ -117,6 +117,14 @@ enum ScreenStatus : int64_t {
 };
 
 /**
+* @brief WakeUp Screen status
+*/
+enum WakeUpStatus : int64_t {
+    WAKE_UP_TIMEOUT = 0,
+    WAKE_UP_START = 1,
+};
+
+/**
 * @brief App install status
 */
 enum AppInstallStatus : int64_t {
