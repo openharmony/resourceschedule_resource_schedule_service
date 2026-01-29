@@ -185,7 +185,7 @@ int OH_BackgroundProcessManager_IsPowerSaveMode(int pid);
  * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_PERMISSION_DENIED} 201 - Permission denied.
  * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_CAPABILITY_NOT_SUPPORTED} 801 - Capability not supported.
  * @return {@link ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR} 31800002 - Parameter error.
- * @since 20
+ * @since 22
  */
 int OH_BackgroundProcessManager_GetPowerSaveMode(int pid, BackgroundProcessManager_PowerSaveMode* powerSaveMode);
 #ifdef __cplusplus
