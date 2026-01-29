@@ -144,7 +144,7 @@ int32_t ResSchedClient::ReportMutexBeforeStartEvent(const uint32_t resType, cons
                 std::unique_lock<ffrt::mutex> lock(*mtx);
                 result->first = RES_SCHED_CONNECT_FAIL;
                 result->second = ffrtReply;
-                isSucceed->store(false);
+                isSucceed->store(true);
             }
             cv->notify_all();
             return;
@@ -444,7 +444,6 @@ void ResSchedClient::RecoverEventListener()
                 registeredInnerEvents.emplace(type, std::unordered_set<uint32_t>());
             }
             registeredInnerEvents[type].insert(group);
-            
         }
     }
 }
