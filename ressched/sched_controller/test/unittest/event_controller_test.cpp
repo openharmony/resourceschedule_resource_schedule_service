@@ -656,7 +656,7 @@ HWTEST_F(EventControllerTest, cloneStateEvent_001, testing::ext::TestSize.Level1
     data.SetWant(want);
 
     EventController::GetInstance().OnReceiveEvent(data);
-    uint32_t expectResType = ResType::RES_TYPE_COMMON_EVENT_CLONE_STATE;
+    uint32_t expectResType = ResType::RES_TYPE_DATA_CLONE_STATE;
     int64_t expectValue = 0;
     EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
     EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);
@@ -678,7 +678,7 @@ HWTEST_F(EventControllerTest, cloneStateEvent_002, testing::ext::TestSize.Level1
     data.SetWant(want);
 
     EventController::GetInstance().OnReceiveEvent(data);
-    uint32_t expectResType = ResType::RES_TYPE_COMMON_EVENT_CLONE_STATE;
+    uint32_t expectResType = ResType::RES_TYPE_DATA_CLONE_STATE;
     int64_t expectValue = 1;
     EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
     EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);
@@ -700,7 +700,7 @@ HWTEST_F(EventControllerTest, cloneStateEvent_003, testing::ext::TestSize.Level1
     data.SetWant(want);
 
     EventController::GetInstance().OnReceiveEvent(data);
-    uint32_t expectResType = ResType::RES_TYPE_COMMON_EVENT_CLONE_STATE;
+    uint32_t expectResType = ResType::RES_TYPE_DATA_CLONE_STATE;
     int64_t expectValue = 2;
     EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
     EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);
@@ -851,7 +851,7 @@ HWTEST_F(EventControllerTest, cloneStateEvent_011, testing::ext::TestSize.Level1
     data.SetWant(want);
 
     EventController::GetInstance().OnReceiveEvent(data);
-    uint32_t expectResType = ResType::RES_TYPE_COMMON_EVENT_CLONE_STATE;
+    uint32_t expectResType = ResType::RES_TYPE_DATA_CLONE_STATE;
     int64_t expectValue = 0;
     EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
     EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);

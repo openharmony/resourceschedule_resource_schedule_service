@@ -490,12 +490,12 @@ void EventController::HandleCloneStateEvent(const EventFwk::Want &want, nlohmann
     RESSCHED_LOGI("Received clone state event: %{public}d", cloneState);
     
     // Use enum values instead of hardcoded range
-    if (cloneState == static_cast<int32_t>(ResType::CommonEventCloneState::CLONE_END) ||
-        cloneState == static_cast<int32_t>(ResType::CommonEventCloneState::NEW_DEVICE_START_CLONE) ||
-        cloneState == static_cast<int32_t>(ResType::CommonEventCloneState::OLD_DEVICE_START_CLONE)) {
-        ReportDataInProcess(ResType::RES_TYPE_COMMON_EVENT_CLONE_STATE, static_cast<int64_t>(cloneState), payload);
+    if (cloneState == static_cast<int32_t>(ResType::DataCloneState::CLONE_END) ||
+        cloneState == static_cast<int32_t>(ResType::DataCloneState::NEW_DEVICE_CLONE_START) ||
+        cloneState == static_cast<int32_t>(ResType::DataCloneState::OLD_DEVICE_CLONE_START)) {
+        ReportDataInProcess(ResType::RES_TYPE_DATA_CLONE_STATE, static_cast<int64_t>(cloneState), payload);
         RESSCHED_LOGI("Reported clone state event: resType=%{public}u, resValue=%{public}lld", 
-            ResType::RES_TYPE_COMMON_EVENT_CLONE_STATE, static_cast<int64_t>(cloneState));
+            ResType::RES_TYPE_DATA_CLONE_STATE, static_cast<int64_t>(cloneState));
     } else {
         RESSCHED_LOGW("Invalid clone state: %{public}d", cloneState);
     }

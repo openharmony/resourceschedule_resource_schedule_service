@@ -978,12 +978,12 @@ enum SystemAbilitySign : int64_t {
 };
 
 /**
-* @brief common event clone state
+* @brief data clone state
 */
-enum CommonEventCloneState : int64_t {
+enum DataCloneState : int64_t {
     CLONE_END = 0,
-    NEW_DEVICE_START_CLONE = 1,
-    OLD_DEVICE_START_CLONE = 2,
+    NEW_DEVICE_CLONE_START = 1,
+    OLD_DEVICE_CLONE_START = 2,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
