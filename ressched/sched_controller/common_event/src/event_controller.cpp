@@ -32,9 +32,6 @@
 #include "res_sched_mgr.h"
 #include "res_type.h"
 
-// Permission required for clone state event
-static const char* BACKUP_PERMISSION = "ohos.permission.BACKUP";
-
 using namespace std;
 using namespace OHOS::EventFwk;
 namespace OHOS {
