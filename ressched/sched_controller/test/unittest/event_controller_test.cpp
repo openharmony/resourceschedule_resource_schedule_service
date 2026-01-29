@@ -641,6 +641,325 @@ HWTEST_F(EventControllerTest, batteryChange_001, testing::ext::TestSize.Level1)
 }
 
 /**
+ * @tc.name: cloneStateEvent_001
+ * @tc.desc: test dispatching ResType::RES_TYPE_COMMON_EVENT_CLONE_STATE
+ *           when receive COMMON_EVENT_CLONE_STATE with cloneState = 0 (CLONE_END)
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_001, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.clone.CommonEventCloneState");
+    want.SetParam("cloneState", 0);
+    data.SetWant(want);
+
+    EventController::GetInstance().OnReceiveEvent(data);
+    uint32_t expectResType = ResType::RES_TYPE_COMMON_EVENT_CLONE_STATE;
+    int64_t expectValue = 0;
+    EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
+    EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);
+}
+
+/**
+ * @tc.name: cloneStateEvent_002
+ * @tc.desc: test dispatching ResType::RES_TYPE_COMMON_EVENT_CLONE_STATE
+ *           when receive COMMON_EVENT_CLONE_STATE with cloneState = 1 (NEW_DEVICE_START_CLONE)
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_002, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.clone.CommonEventCloneState");
+    want.SetParam("cloneState", 1);
+    data.SetWant(want);
+
+    EventController::GetInstance().OnReceiveEvent(data);
+    uint32_t expectResType = ResType::RES_TYPE_COMMON_EVENT_CLONE_STATE;
+    int64_t expectValue = 1;
+    EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
+    EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);
+}
+
+/**
+ * @tc.name: cloneStateEvent_003
+ * @tc.desc: test dispatching ResType::RES_TYPE_COMMON_EVENT_CLONE_STATE
+ *           when receive COMMON_EVENT_CLONE_STATE with cloneState = 2 (OLD_DEVICE_START_CLONE)
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_003, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.clone.CommonEventCloneState");
+    want.SetParam("cloneState", 2);
+    data.SetWant(want);
+
+    EventController::GetInstance().OnReceiveEvent(data);
+    uint32_t expectResType = ResType::RES_TYPE_COMMON_EVENT_CLONE_STATE;
+    int64_t expectValue = 2;
+    EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
+    EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);
+}
+
+/**
+ * @tc.name: cloneStateEvent_004
+ * @tc.desc: test handling invalid clone state value (-1)
+ *           when receive COMMON_EVENT_CLONE_STATE with cloneState = -1
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_004, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.clone.CommonEventCloneState");
+    want.SetParam("cloneState", -1);
+    data.SetWant(want);
+
+    // Set initial values to verify they don't change when cloneState is invalid
+    EventController::GetInstance().resType_ = 999;
+    EventController::GetInstance().value_ = 999;
+    
+    EventController::GetInstance().OnReceiveEvent(data);
+    // When cloneState is invalid, resType and value should not be updated
+    EXPECT_EQ(EventController::GetInstance().resType_, 999);
+    EXPECT_EQ(EventController::GetInstance().value_, 999);
+}
+
+/**
+ * @tc.name: cloneStateEvent_005
+ * @tc.desc: test handling invalid clone state value (3)
+ *           when receive COMMON_EVENT_CLONE_STATE with cloneState = 3
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_005, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.clone.CommonEventCloneState");
+    want.SetParam("cloneState", 3);
+    data.SetWant(want);
+
+    // Set initial values to verify they don't change when cloneState is invalid
+    EventController::GetInstance().resType_ = 999;
+    EventController::GetInstance().value_ = 999;
+    
+    EventController::GetInstance().OnReceiveEvent(data);
+    // When cloneState is invalid, resType and value should not be updated
+    EXPECT_EQ(EventController::GetInstance().resType_, 999);
+    EXPECT_EQ(EventController::GetInstance().value_, 999);
+}
+
+/**
+ * @tc.name: cloneStateEvent_006
+ * @tc.desc: test handling missing cloneState parameter
+ *           when receive COMMON_EVENT_CLONE_STATE without cloneState parameter
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_006, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.clone.CommonEventCloneState");
+    // Do not set cloneState parameter, should default to -1
+    data.SetWant(want);
+
+    // Set initial values to verify they don't change when cloneState is invalid
+    EventController::GetInstance().resType_ = 999;
+    EventController::GetInstance().value_ = 999;
+    
+    EventController::GetInstance().OnReceiveEvent(data);
+    // When cloneState is missing, it should default to -1 and be treated as invalid
+    EXPECT_EQ(EventController::GetInstance().resType_, 999);
+    EXPECT_EQ(EventController::GetInstance().value_, 999);
+}
+
+/**
+ * @tc.name: cloneStateEvent_007
+ * @tc.desc: test clone state subscriber creation
+ *           when OnAddSystemAbility is called
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_007, testing::ext::TestSize.Level1)
+{
+    EventController::GetInstance().Init();
+    int32_t systemAbilityId = 0;
+    std::string deviceId;
+    EventController::GetInstance().sysAbilityListener_->OnAddSystemAbility(systemAbilityId, deviceId);
+    EXPECT_NE(EventController::GetInstance().sysAbilityListener_->cloneStateSubscriber_, nullptr);
+}
+
+/**
+ * @tc.name: cloneStateEvent_008
+ * @tc.desc: test clone state subscriber cleanup
+ *           when OnRemoveSystemAbility is called
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_008, testing::ext::TestSize.Level1)
+{
+    EventController::GetInstance().Init();
+    int32_t systemAbilityId = 0;
+    std::string deviceId;
+    EventController::GetInstance().sysAbilityListener_->OnAddSystemAbility(systemAbilityId, deviceId);
+    EXPECT_NE(EventController::GetInstance().sysAbilityListener_->cloneStateSubscriber_, nullptr);
+    
+    EventController::GetInstance().sysAbilityListener_->OnRemoveSystemAbility(systemAbilityId, deviceId);
+    EXPECT_EQ(EventController::GetInstance().sysAbilityListener_->cloneStateSubscriber_, nullptr);
+}
+
+/**
+ * @tc.name: cloneStateEvent_009
+ * @tc.desc: test clone state subscriber stop
+ *           when Stop method is called
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_009, testing::ext::TestSize.Level1)
+{
+    EventController::GetInstance().Init();
+    int32_t systemAbilityId = 0;
+    std::string deviceId;
+    EventController::GetInstance().sysAbilityListener_->OnAddSystemAbility(systemAbilityId, deviceId);
+    EXPECT_NE(EventController::GetInstance().sysAbilityListener_->cloneStateSubscriber_, nullptr);
+    
+    EventController::GetInstance().Stop();
+    EXPECT_EQ(EventController::GetInstance().sysAbilityListener_->cloneStateSubscriber_, nullptr);
+}
+
+/**
+ * @tc.name: cloneStateEvent_011
+ * @tc.desc: test clone state event with payload
+ *           verify that payload is correctly passed through
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_011, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.clone.CommonEventCloneState");
+    want.SetParam("cloneState", 0);
+    data.SetWant(want);
+
+    EventController::GetInstance().OnReceiveEvent(data);
+    uint32_t expectResType = ResType::RES_TYPE_COMMON_EVENT_CLONE_STATE;
+    int64_t expectValue = 0;
+    EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
+    EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);
+    // Verify that payload is not empty
+    EXPECT_FALSE(EventController::GetInstance().payload_.empty());
+}
+
+/**
+ * @tc.name: cloneStateEvent_012
+ * @tc.desc: test clone state event boundary values
+ *           test with cloneState = INT32_MIN
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_012, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.clone.CommonEventCloneState");
+    want.SetParam("cloneState", INT32_MIN);
+    data.SetWant(want);
+
+    // Set initial values to verify they don't change when cloneState is invalid
+    EventController::GetInstance().resType_ = 999;
+    EventController::GetInstance().value_ = 999;
+    
+    EventController::GetInstance().OnReceiveEvent(data);
+    // When cloneState is INT32_MIN, it should be treated as invalid
+    EXPECT_EQ(EventController::GetInstance().resType_, 999);
+    EXPECT_EQ(EventController::GetInstance().value_, 999);
+}
+
+/**
+ * @tc.name: cloneStateEvent_013
+ * @tc.desc: test clone state event boundary values
+ *           test with cloneState = INT32_MAX
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_013, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.clone.CommonEventCloneState");
+    want.SetParam("cloneState", INT32_MAX);
+    data.SetWant(want);
+
+    // Set initial values to verify they don't change when cloneState is invalid
+    EventController::GetInstance().resType_ = 999;
+    EventController::GetInstance().value_ = 999;
+    
+    EventController::GetInstance().OnReceiveEvent(data);
+    // When cloneState is INT32_MAX, it should be treated as invalid
+    EXPECT_EQ(EventController::GetInstance().resType_, 999);
+    EXPECT_EQ(EventController::GetInstance().value_, 999);
+}
+
+/**
+ * @tc.name: cloneStateEvent_014
+ * @tc.desc: test clone state event with negative values
+ *           test with cloneState = -100
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_014, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.clone.CommonEventCloneState");
+    want.SetParam("cloneState", -100);
+    data.SetWant(want);
+
+    // Set initial values to verify they don't change when cloneState is invalid
+    EventController::GetInstance().resType_ = 999;
+    EventController::GetInstance().value_ = 999;
+    
+    EventController::GetInstance().OnReceiveEvent(data);
+    // When cloneState is negative, it should be treated as invalid
+    EXPECT_EQ(EventController::GetInstance().resType_, 999);
+    EXPECT_EQ(EventController::GetInstance().value_, 999);
+}
+
+/**
+ * @tc.name: cloneStateEvent_015
+ * @tc.desc: test clone state event with large positive values
+ *           test with cloneState = 1000
+ * @tc.type: FUNC
+ * @tc.require: issue#1622
+ */
+HWTEST_F(EventControllerTest, cloneStateEvent_015, testing::ext::TestSize.Level1)
+{
+    AAFwk::Want want;
+    EventFwk::CommonEventData data;
+    want.SetAction("usual.event.clone.CommonEventCloneState");
+    want.SetParam("cloneState", 1000);
+    data.SetWant(want);
+
+    // Set initial values to verify they don't change when cloneState is invalid
+    EventController::GetInstance().resType_ = 999;
+    EventController::GetInstance().value_ = 999;
+    
+    EventController::GetInstance().OnReceiveEvent(data);
+    // When cloneState is large positive, it should be treated as invalid
+    EXPECT_EQ(EventController::GetInstance().resType_, 999);
+    EXPECT_EQ(EventController::GetInstance().value_, 999);
+}
+
+/**
  * @tc.name: packageInstallStarted_001
  * @tc.desc: test the packageInstallStarted_001
  * @tc.type: FUNC

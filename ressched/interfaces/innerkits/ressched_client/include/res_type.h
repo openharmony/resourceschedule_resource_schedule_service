@@ -415,6 +415,8 @@ enum : uint32_t {
     RES_TYPE_OBSERVER_MANAGER_STATUS_CHANGE  = 194,
     // web subwin call start or stop
     RES_TYPE_WEB_SUBWIN_TASK  = 195,
+    // report common event clone state
+    RES_TYPE_COMMON_EVENT_CLONE_STATE = 196,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

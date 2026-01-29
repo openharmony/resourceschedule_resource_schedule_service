@@ -976,6 +976,15 @@ enum SystemAbilitySign : int64_t {
     ADD_SYSTEM_ABILITY  = 0,
     REMOVE_SYSTEM_ABILITY  = 1,
 };
+
+/**
+* @brief common event clone state
+*/
+enum CommonEventCloneState : int64_t {
+    CLONE_END = 0,
+    NEW_DEVICE_START_CLONE = 1,
+    OLD_DEVICE_START_CLONE = 2,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
