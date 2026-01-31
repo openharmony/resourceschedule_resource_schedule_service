@@ -846,6 +846,7 @@ HWTEST_F(EventControllerTest, cloneStateEvent_011, testing::ext::TestSize.Level1
 {
     AAFwk::Want want;
     EventFwk::CommonEventData data;
+    EventController::GetInstance().payload_.clear();
     want.SetAction("usual.event.clone.CommonEventCloneState");
     want.SetParam("cloneState", 0);
     data.SetWant(want);

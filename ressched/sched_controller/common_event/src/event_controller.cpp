@@ -494,7 +494,7 @@ void EventController::HandleCloneStateEvent(const EventFwk::Want &want, nlohmann
         cloneState == static_cast<int32_t>(ResType::DataCloneState::NEW_DEVICE_CLONE_START) ||
         cloneState == static_cast<int32_t>(ResType::DataCloneState::OLD_DEVICE_CLONE_START)) {
         ReportDataInProcess(ResType::RES_TYPE_DATA_CLONE_STATE, static_cast<int64_t>(cloneState), payload);
-        RESSCHED_LOGI("Reported clone state event: resValue=%{public}lld", static_cast<int64_t>(cloneState));
+        RESSCHED_LOGI("Reported clone state event: resValue=%{public}d", cloneState);
     } else {
         RESSCHED_LOGW("Invalid clone state: %{public}d", cloneState);
     }
