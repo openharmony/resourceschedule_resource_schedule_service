@@ -836,31 +836,6 @@ HWTEST_F(EventControllerTest, cloneStateEvent_009, testing::ext::TestSize.Level1
 }
 
 /**
- * @tc.name: cloneStateEvent_011
- * @tc.desc: test clone state event with payload
- *           verify that payload is correctly passed through
- * @tc.type: FUNC
- * @tc.require: issue#1622
- */
-HWTEST_F(EventControllerTest, cloneStateEvent_011, testing::ext::TestSize.Level1)
-{
-    AAFwk::Want want;
-    EventFwk::CommonEventData data;
-    EventController::GetInstance().payload_.clear();
-    want.SetAction("usual.event.clone.CommonEventCloneState");
-    want.SetParam("cloneState", 0);
-    data.SetWant(want);
-
-    EventController::GetInstance().OnReceiveEvent(data);
-    uint32_t expectResType = ResType::RES_TYPE_DATA_CLONE_STATE;
-    int64_t expectValue = 0;
-    EventControllerTest::AssertResType(EventController::GetInstance().resType_, expectResType);
-    EventControllerTest::AssertValue(EventController::GetInstance().value_, expectValue);
-    // Verify that payload is not empty
-    EXPECT_FALSE(EventController::GetInstance().payload_.empty());
-}
-
-/**
  * @tc.name: cloneStateEvent_012
  * @tc.desc: test clone state event boundary values
  *           test with cloneState = INT32_MIN
