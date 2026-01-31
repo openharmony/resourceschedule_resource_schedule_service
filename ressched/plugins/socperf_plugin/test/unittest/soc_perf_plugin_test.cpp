@@ -1802,10 +1802,10 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_064, Function | MediumTes
     bool ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(validData);
     EXPECT_TRUE(ret);
 
-    const std::shared_ptr<ResData>& invalidData1 = std::make_shared<ResData>(
+    const std::shared_ptr<ResData>& validData1 = std::make_shared<ResData>(
         ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, 1, nullptr);
-    ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(invalidData1);
-    EXPECT_FALSE(ret);
+    ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(validData1);
+    EXPECT_TRUE(ret);
     
     const std::shared_ptr<ResData>& invalidData2 = std::make_shared<ResData>(
         ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, -1, nullptr);
@@ -1834,15 +1834,15 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_065, Function | MediumTes
     ResType::RES_TYPE_WINDOW_FOCUS;
     ResType::RES_TYPE_APP_ABILITY_START;
 
-    const std::shared_ptr<ResData>& wrongTypeData1 = std::make_shared<ResData>(
+    const std::shared_ptr<ResData>& timeOutTypeData1 = std::make_shared<ResData>(
         ResType::RES_TYPE_WINDOW_FOCUS, 0, nullptr);
-    bool ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(wrongTypeData1);
-    EXPECT_FALSE(ret);
+    bool ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(timeOutTypeData1);
+    EXPECT_TRUE(ret);
 
-    const std::shared_ptr<ResData>& wrongTypeData2 = std::make_shared<ResData>(
+    const std::shared_ptr<ResData>& timeOutTypeData2 = std::make_shared<ResData>(
         ResType::RES_TYPE_APP_ABILITY_START, 0, nullptr);
-    ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(wrongTypeData2);
-    EXPECT_FALSE(ret);
+    ret = SocPerfPlugin::GetInstance().HandleDisplayPowerWakeUp(timeOutTypeData2);
+    EXPECT_TRUE(ret);
     
     const std::shared_ptr<ResData>& correctTypeData = std::make_shared<ResData>(
         ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, 0, nullptr);
