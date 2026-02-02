@@ -59,6 +59,10 @@ static const char* COMMON_EVENT_CAPACITY = "soc";
 static const char* COMMON_EVENT_CHARGE_STATE = "chargeState";
 static const char* COMMON_EVENT_USER_SLEEP_STATE_CHANGED = "common.event.USER_NOT_CARE_CHARGE_SLEEP";
 static const char* COMMON_EVENT_AUDIO_FOCUS_CHANGE = "usual.event.AUDIO_FOCUS_CHANGE_EVENT";
+static const char* COMMON_EVENT_CLONE_STATE = "usual.event.clone.CommonEventCloneState";
+
+static const char* CLONE_STATE = "cloneState";
+static const char* BACKUP_PERMISSION = "ohos.permission.BACKUP";
 static const char* STREAM_ID = "streamId";
 
 void EventController::Init()
@@ -225,6 +229,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
     SubscribeCommonEvent(subscriber_);
     SubscribeLockScreenCommonEvent();
+    SubscribeCloneStateCommonEvent();
 }
 
 void EventController::SystemAbilityStatusChangeListener::SubscribeLockScreenCommonEvent()
@@ -236,6 +241,18 @@ void EventController::SystemAbilityStatusChangeListener::SubscribeLockScreenComm
     subscriberInfo.SetPublisherBundleName(SCENE_BOARD_NAME);
     lockScreenSubscriber_ = std::make_shared<EventController>(subscriberInfo);
     SubscribeCommonEvent(lockScreenSubscriber_);
+}
+
+void EventController::SystemAbilityStatusChangeListener::SubscribeCloneStateCommonEvent()
+{
+    MatchingSkills cloneStateSkills;
+    cloneStateSkills.AddEvent(COMMON_EVENT_CLONE_STATE);
+    CommonEventSubscribeInfo subscriberInfo(cloneStateSkills);
+    // ensure event is sended from cloneApp.
+    subscriberInfo.SetPermission(BACKUP_PERMISSION);
+    cloneStateSubscriber_ = std::make_shared<EventController>(subscriberInfo);
+    SubscribeCommonEvent(cloneStateSubscriber_);
+    RESSCHED_LOGI("Subscribed clone state common event");
 }
 
 void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
@@ -422,6 +439,10 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
         ReportDataInProcess(ResType::RES_TYPE_USB_DEVICE, ResType::UsbDeviceStatus::USB_DEVICE_STATE, payload);
         return;
     }
+    if (action == COMMON_EVENT_CLONE_STATE) {
+        HandleCloneStateEvent(want, payload);
+        return;
+    }
 }
 
 void EventController::HandleMediaCtrlEvent(const EventFwk::Want &want)
@@ -461,6 +482,22 @@ void EventController::HandleAudioFocusChangeEvent(const EventFwk::Want &want)
     ReportDataInProcess(ResType::RES_TYPE_AUDIO_FOCUS_CHANGE_EVENT, value, payload);
     RESSCHED_LOGI("HandleAudioFocusChangeEvent hintType:%{public}d uid:%{public}d streamId:%{public}d",
         hintType, uid, streamId);
+}
+
+void EventController::HandleCloneStateEvent(const EventFwk::Want &want, nlohmann::json &payload)
+{
+    int32_t cloneState = want.GetIntParam(CLONE_STATE, -1);
+    RESSCHED_LOGI("Received clone state event: %{public}d", cloneState);
+    
+    // Use enum values instead of hardcoded range
+    if (cloneState == static_cast<int32_t>(ResType::DataCloneState::CLONE_END) ||
+        cloneState == static_cast<int32_t>(ResType::DataCloneState::NEW_DEVICE_CLONE_START) ||
+        cloneState == static_cast<int32_t>(ResType::DataCloneState::OLD_DEVICE_CLONE_START)) {
+        ReportDataInProcess(ResType::RES_TYPE_DATA_CLONE_STATE, static_cast<int64_t>(cloneState), payload);
+        RESSCHED_LOGI("Reported clone state event: resValue=%{public}d", cloneState);
+    } else {
+        RESSCHED_LOGW("Invalid clone state: %{public}d", cloneState);
+    }
 }
 
 bool EventController::HandlePkgCommonEvent(const std::string &action, Want &want, nlohmann::json &payload)
@@ -514,19 +551,25 @@ void EventController::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     lock_guard<mutex> autolock(subscriberMutex_);
     subscriber_ = nullptr;
     lockScreenSubscriber_ = nullptr;
+    cloneStateSubscriber_ = nullptr;
 }
 
 void EventController::SystemAbilityStatusChangeListener::Stop()
 {
     lock_guard<mutex> autolock(subscriberMutex_);
-    if (subscriber_ == nullptr || lockScreenSubscriber_ == nullptr) {
-        return;
+    if (subscriber_ != nullptr) {
+        CommonEventManager::UnSubscribeCommonEvent(subscriber_);
+        subscriber_ = nullptr;
     }
-    CommonEventManager::UnSubscribeCommonEvent(subscriber_);
-    CommonEventManager::UnSubscribeCommonEvent(lockScreenSubscriber_);
+    if (lockScreenSubscriber_ != nullptr) {
+        CommonEventManager::UnSubscribeCommonEvent(lockScreenSubscriber_);
+        lockScreenSubscriber_ = nullptr;
+    }
+    if (cloneStateSubscriber_ != nullptr) {
+        CommonEventManager::UnSubscribeCommonEvent(cloneStateSubscriber_);
+        cloneStateSubscriber_ = nullptr;
+    }
     RESSCHED_LOGI("unsubscribe all common event.");
-    subscriber_ = nullptr;
-    lockScreenSubscriber_ = nullptr;
 }
 
 extern "C" void EventControllerInit()

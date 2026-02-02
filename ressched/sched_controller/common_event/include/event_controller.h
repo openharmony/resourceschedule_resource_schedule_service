@@ -64,8 +64,10 @@ public:
 
 private:
     void SubscribeLockScreenCommonEvent();
+    void SubscribeCloneStateCommonEvent();
     std::shared_ptr<EventController> subscriber_ = nullptr;
     std::shared_ptr<EventController> lockScreenSubscriber_ = nullptr;
+    std::shared_ptr<EventController> cloneStateSubscriber_ = nullptr;
     std::mutex subscriberMutex_;
 };
 
@@ -74,6 +76,7 @@ private:
     void HandlePkgAddRemove(const EventFwk::Want &want, nlohmann::json &payload) const;
     void HandleMediaCtrlEvent(const EventFwk::Want &want);
     void HandleAudioFocusChangeEvent(const EventFwk::Want &want);
+    void HandleCloneStateEvent(const EventFwk::Want &want, nlohmann::json &payload);
     int32_t GetUid(const int32_t &userId, const std::string &bundleName) const;
     void ReportDataInProcess(const uint32_t &resType, const int64_t &value, const nlohmann::json& payload);
     bool HandlePkgCommonEvent(const std::string &action, EventFwk::Want &want, nlohmann::json &payload);
