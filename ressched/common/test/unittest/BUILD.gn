@@ -247,7 +247,6 @@ ohos_unittest("resschedsignaturevalidator_test") {
 
   sources = [
     "${ressched_common}/src/res_sched_signature_validator.cpp",
-    #"${ressched_common}/src/bundle_mgr_helper.cpp",
     "src/res_sched_signature_validator_test.cpp",
   ]
 
