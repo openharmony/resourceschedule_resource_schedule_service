@@ -23,13 +23,6 @@
 #include "remote_death_recipient.h"
 #include "singleton.h"
 #include "bundle_mgr_helper.h"
-/*
-#ifdef RES_SCHED_UNIT_TEST
-#define WEAK_FUNC __attribute__((weak))
-#else
-#define WEAK_FUNC
-#endif
-*/
 
 namespace OHOS {
 namespace ResourceSchedule {
