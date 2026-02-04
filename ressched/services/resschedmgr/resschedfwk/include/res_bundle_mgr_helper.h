@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef RESSCHED_COMMON_INCLUDE_BUNDLE_MGR_HELPER_H
-#define RESSCHED_COMMON_INCLUDE_BUNDLE_MGR_HELPER_H
+#ifndef RESSCHED_BUNDLE_MGR_HELPER_H
+#define RESSCHED_BUNDLE_MGR_HELPER_H
 
 #include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
@@ -22,12 +22,14 @@
 #include "iremote_object.h"
 #include "remote_death_recipient.h"
 #include "singleton.h"
-
+#include "bundle_mgr_helper.h"
+/*
 #ifdef RES_SCHED_UNIT_TEST
 #define WEAK_FUNC __attribute__((weak))
 #else
 #define WEAK_FUNC
 #endif
+*/
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -35,14 +37,14 @@ namespace ResourceSchedule {
 namespace {
     constexpr int32_t INVALID_UID = -1;
 }
-class BundleMgrHelper : public DelayedSingleton<BundleMgrHelper> {
+class ResBundleMgrHelper : public BundleMgrHelper {
 public:
-    std::string GetBundleNameByUid(const int32_t uid);
-
-    int32_t GetUidByBundleName(const std::string &bundleName, const int32_t userId);
-
-    ErrCode GetSignatureInfoByUid(const int32_t uid, AppExecFwk::SignatureInfo &signatureInfo);
-
+    std::string GetBundleNameByUid(const int32_t uid) override;
+    int32_t GetUidByBundleName(const std::string &bundleName, const int32_t userId) override;
+    ErrCode GetSignatureInfoByUid(const int32_t uid, std::string &signatureInfo) override;
+    void GetCurrentUserId(std::vector<int> &activatedOsAccountIds) override;
+    ResBundleMgrHelper();
+    ~ResBundleMgrHelper();
 private:
     bool Connect();
     void Disconnect();
@@ -52,9 +54,7 @@ private:
     sptr<AppExecFwk::IBundleMgr> bundleMgr_ = nullptr;
     std::mutex connectionMutex_;
     sptr<RemoteDeathRecipient> bundleMgrDeathRecipient_ = nullptr;
-
-    DECLARE_DELAYED_SINGLETON(BundleMgrHelper)
 };
 }  // namespace ResourceSchedule
 }  // namespace OHOS
-#endif  // RESSCHED_COMMON_INCLUDE_BUNDLE_MGR_HELPER_H
+#endif  // RESSCHED_BUNDLE_MGR_HELPER_H
