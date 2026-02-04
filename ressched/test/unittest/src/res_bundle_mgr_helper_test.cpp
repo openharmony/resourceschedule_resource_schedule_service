@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-#include "res_bundle_mgr_helper.h"
 #include "res_bundle_mgr_helper_test.h"
 
 using namespace std;
