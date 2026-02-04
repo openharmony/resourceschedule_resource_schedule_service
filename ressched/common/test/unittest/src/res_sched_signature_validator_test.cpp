@@ -109,6 +109,9 @@ HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureByUid_001, Function | Med
         SignatureCheckResult::CHECK_OK);
     EXPECT_EQ(testSignatureValidator.CheckSignatureByUid(UID_INVALID),
         SignatureCheckResult::ERR_INTERNAL_ERROR);
+    testSignatureValidator.bundleMgr_ = nullptr;
+    EXPECT_EQ(testSignatureValidator.CheckSignatureByUid(UID_INVALID),
+        SignatureCheckResult::ERR_NOT_SUPPORT);
 }
 
 /**
@@ -131,6 +134,9 @@ HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureByBundleName_001, Functio
         SignatureCheckResult::ERR_INTERNAL_ERROR);
     EXPECT_EQ(testSignatureValidator.CheckSignatureByBundleName(BUNDLE_INVALID),
         SignatureCheckResult::ERR_PARAM_INVALID);
+    testSignatureValidator.bundleMgr_ = nullptr;
+    EXPECT_EQ(testSignatureValidator.CheckSignatureByBundleName(BUNDLE_INVALID),
+        SignatureCheckResult::ERR_NOT_SUPPORT);
 }
 
 /**
@@ -200,6 +206,9 @@ HWTEST_F(ResSchedSignatureValidatorTest, CheckSignature_001, Function | MediumTe
         SignatureCheckResult::ERR_SIGNATURE_NO_MATCH);
     EXPECT_EQ(testSignatureValidator.CheckSignature(UID_NOT_EXIST, BUNDLE_VALID),
         SignatureCheckResult::ERR_INTERNAL_ERROR);
+    testSignatureValidator.bundleMgr_ = nullptr;
+    EXPECT_EQ(testSignatureValidator.CheckSignature(UID_NOT_EXIST, BUNDLE_VALID),
+        SignatureCheckResult::ERR_NOT_SUPPORT);
 }
 
 /**
