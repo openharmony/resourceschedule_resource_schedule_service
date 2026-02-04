@@ -135,8 +135,10 @@ ohos_shared_library("resschedsvc") {
     "resschedmgr/resschedfwk/src/plugin_mgr.cpp",
     "resschedmgr/resschedfwk/src/plugin_switch.cpp",
     "resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
+    "resschedmgr/resschedfwk/src/res_bundle_mgr_helper.cpp",
     "resschedservice/src/res_sched_service.cpp",
     "resschedservice/src/res_sched_service_ability.cpp",
+    "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/display_power_event_observer.cpp",
   ]
 
@@ -188,12 +190,11 @@ ohos_shared_library("resschedsvc") {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_DEPEND_WM" ]
     external_deps += [ "window_manager:libwm" ]
   }
-  if (resource_schedule_service_with_app_nap_enable) {
-    defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE" ]
+  if (resource_schedule_service_hisysevent_enable) {
+    defines += [ "RESOURCE_SCHEDULE_SERVICE_HISYSEVENT_ENABLE" ]
     external_deps += [ "hisysevent:libhisyseventmanager" ]
     sources += [
       "../sched_controller/observer/src/hisysevent_observer.cpp",
-      "../sched_controller/observer/src/mmi_observer.cpp",
     ]
   }
   if (ressched_with_telephony_state_registry_enable) {
@@ -209,6 +210,10 @@ ohos_shared_library("resschedsvc") {
     defines += [ "RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE" ]
     external_deps += [ "bluetooth:btframework" ]
   }
+  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
+    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
+    external_deps += [ "audio_framework:audio_client" ]
+  }
   if (ressched_with_resourceschedule_multimedia_av_session_enable) {
     defines += [ "RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE" ]
     sources +=
@@ -220,16 +225,13 @@ ohos_shared_library("resschedsvc") {
     sources += [ "../sched_controller/observer/src/background_task_observer.cpp" ]
     external_deps += [ "background_task_mgr:bgtaskmgr_innerkits" ]
   }
-  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
-    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
-    external_deps += [ "audio_framework:audio_client" ]
-  }
   if (resource_schedule_service_with_ffrt_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE" ]
   }
   if (resource_schedule_service_with_ext_res_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
   }
+
   if (rss_request_enable) {
     defines += [ "RESOURCE_REQUEST_REQUEST" ]
     external_deps += [ "request:request_native" ]
@@ -251,8 +253,9 @@ ohos_shared_library("resschedsvc") {
   shlib_type = "sa"
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
-  branch_protector_ret = "pac_ret"
 
+  branch_protector_ret = "pac_ret"
+ 
   sanitize = {
     cfi = true
     cfi_cross_dso = true
@@ -270,7 +273,7 @@ ohos_static_library("resschedsvc_static") {
     "${ressched_interfaces}/innerkits/ressched_client:client_public_config",
   ]
 
-  defines = [ "OBSERVER_EVENT_TEST" ]
+  defines = ["OBSERVER_EVENT_TEST"]
 
   include_dirs = [ "../common/include" ]
 
@@ -298,8 +301,10 @@ ohos_static_library("resschedsvc_static") {
     "resschedmgr/resschedfwk/src/plugin_mgr.cpp",
     "resschedmgr/resschedfwk/src/plugin_switch.cpp",
     "resschedmgr/resschedfwk/src/res_sched_mgr.cpp",
+    "resschedmgr/resschedfwk/src/res_bundle_mgr_helper.cpp",
     "resschedservice/src/res_sched_service.cpp",
     "resschedservice/src/res_sched_service_ability.cpp",
+    "../sched_controller/observer/src/mmi_observer.cpp",
     "../sched_controller/observer/src/display_power_event_observer.cpp",
   ]
 
@@ -340,7 +345,6 @@ ohos_static_library("resschedsvc_static") {
     "hitrace:libhitracechain",
     "init:libbegetutil",
     "ipc:ipc_single",
-    "jsoncpp:jsoncpp",
     "os_account:os_account_innerkits",
     "samgr:samgr_proxy",
     "window_manager:libdm",
@@ -351,12 +355,11 @@ ohos_static_library("resschedsvc_static") {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_DEPEND_WM" ]
     external_deps += [ "window_manager:libwm" ]
   }
-  if (resource_schedule_service_with_app_nap_enable) {
-    defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE" ]
+  if (resource_schedule_service_hisysevent_enable) {
+    defines += [ "RESOURCE_SCHEDULE_SERVICE_HISYSEVENT_ENABLE" ]
     external_deps += [ "hisysevent:libhisyseventmanager" ]
     sources += [
       "../sched_controller/observer/src/hisysevent_observer.cpp",
-      "../sched_controller/observer/src/mmi_observer.cpp",
     ]
   }
   if (ressched_with_telephony_state_registry_enable) {
@@ -372,6 +375,10 @@ ohos_static_library("resschedsvc_static") {
     defines += [ "RESSCHED_COMMUNICATION_BLUETOOTH_ENABLE" ]
     external_deps += [ "bluetooth:btframework" ]
   }
+  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
+    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
+    external_deps += [ "audio_framework:audio_client" ]
+  }
   if (ressched_with_resourceschedule_multimedia_av_session_enable) {
     defines += [ "RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE" ]
     sources +=
@@ -383,13 +390,10 @@ ohos_static_library("resschedsvc_static") {
     sources += [ "../sched_controller/observer/src/background_task_observer.cpp" ]
     external_deps += [ "background_task_mgr:bgtaskmgr_innerkits" ]
   }
-  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
-    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
-    external_deps += [ "audio_framework:audio_client" ]
-  }
   if (resource_schedule_service_with_ext_res_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
   }
+
   if (rss_request_enable) {
     defines += [ "RESOURCE_REQUEST_REQUEST" ]
     external_deps += [ "request:request_native" ]
@@ -408,8 +412,9 @@ ohos_static_library("resschedsvc_static") {
   }
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
-  branch_protector_ret = "pac_ret"
 
+  branch_protector_ret = "pac_ret"
+ 
   sanitize = {
     cfi = true
     cfi_cross_dso = true
