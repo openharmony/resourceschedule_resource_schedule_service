@@ -16,7 +16,8 @@
 #include "res_sched_log.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
-#include "bundle_mgr_helper.h"
+#include "res_bundle_mgr_helper.h"
+#include "os_account_manager.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -24,21 +25,22 @@ namespace ResourceSchedule {
 namespace {
 constexpr int32_t BUNDLE_MGR_SERVICE_SYS_ABILITY_ID = 401;
 constexpr int32_t ERR_CONNECT_BMS_FAILED = 100;
+constexpr int32_t DEFAULT_USER_ID = 100;
 }  // namespace
 
-BundleMgrHelper::BundleMgrHelper()
+ResBundleMgrHelper::ResBundleMgrHelper()
 {
     bundleMgrDeathRecipient_ = new (std::nothrow)
         RemoteDeathRecipient([this](const wptr<IRemoteObject> &object) { this->OnRemoteDied(object); });
 }
 
-BundleMgrHelper::~BundleMgrHelper()
+ResBundleMgrHelper::~ResBundleMgrHelper()
 {
     std::lock_guard<std::mutex> lock(connectionMutex_);
     Disconnect();
 }
 
-std::string WEAK_FUNC BundleMgrHelper::GetBundleNameByUid(int32_t uid)
+std::string ResBundleMgrHelper::GetBundleNameByUid(int32_t uid)
 {
     std::string bundle{""};
     std::lock_guard<std::mutex> lock(connectionMutex_);
@@ -54,7 +56,7 @@ std::string WEAK_FUNC BundleMgrHelper::GetBundleNameByUid(int32_t uid)
     return bundle;
 }
 
-std::int32_t WEAK_FUNC BundleMgrHelper::GetUidByBundleName(const std::string &bundleName, const int32_t userId)
+std::int32_t ResBundleMgrHelper::GetUidByBundleName(const std::string &bundleName, const int32_t userId)
 {
     std::lock_guard<std::mutex> lock(connectionMutex_);
     if (!Connect()) {
@@ -70,16 +72,32 @@ std::int32_t WEAK_FUNC BundleMgrHelper::GetUidByBundleName(const std::string &bu
     return uid;
 }
 
-ErrCode WEAK_FUNC BundleMgrHelper::GetSignatureInfoByUid(const int32_t uid, AppExecFwk::SignatureInfo &signatureInfo)
+void ResBundleMgrHelper::GetCurrentUserId(std::vector<int> &activatedOsAccountIds)
+{
+    auto ret = OHOS::AccountSA::OsAccountManager::QueryActiveOsAccountIds(activatedOsAccountIds);
+    if (ret != ERR_OK) {
+        RESSCHED_LOGE("%{public}s: query account error %{public}d", __func__, ret);
+        activatedOsAccountIds.push_back(DEFAULT_USER_ID);
+    }
+    if (activatedOsAccountIds.size() == 0) {
+        RESSCHED_LOGE("%{public}s: query account empty", __func__);
+        activatedOsAccountIds.push_back(DEFAULT_USER_ID);
+    }
+}
+
+ErrCode ResBundleMgrHelper::GetSignatureInfoByUid(const int32_t uid, std::string &signatureInfo)
 {
     std::lock_guard<std::mutex> lock(connectionMutex_);
     if (!Connect()) {
         return ERR_CONNECT_BMS_FAILED;
     }
-    return bundleMgr_->GetSignatureInfoByUid(uid, signatureInfo);
+    AppExecFwk::SignatureInfo appSignatureInfo;
+    auto ret = bundleMgr_->GetSignatureInfoByUid(uid, appSignatureInfo);
+    signatureInfo = appSignatureInfo.appIdentifier;
+    return ret;
 }
 
-bool BundleMgrHelper::Connect()
+bool ResBundleMgrHelper::Connect()
 {
     if (bundleMgr_ != nullptr) {
         return true;
@@ -106,7 +124,7 @@ bool BundleMgrHelper::Connect()
     return false;
 }
 
-void BundleMgrHelper::Disconnect()
+void ResBundleMgrHelper::Disconnect()
 {
     if (bundleMgr_ != nullptr && bundleMgr_->AsObject() != nullptr) {
         bundleMgr_->AsObject()->RemoveDeathRecipient(bundleMgrDeathRecipient_);
@@ -114,7 +132,7 @@ void BundleMgrHelper::Disconnect()
     }
 }
 
-void BundleMgrHelper::OnRemoteDied(const wptr<IRemoteObject> &object)
+void ResBundleMgrHelper::OnRemoteDied(const wptr<IRemoteObject> &object)
 {
     std::lock_guard<std::mutex> lock(connectionMutex_);
     Disconnect();
