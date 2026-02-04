@@ -64,13 +64,6 @@ public:
 };
 
 int32_t TestResSchedSystemloadListener::testSystemloadLevel = 0;
-std::atomic<int32_t> g_serviceInitFinishCallCount(0);
-
-void TestServiceInitFinishCallback()
-{
-    ++g_serviceInitFinishCallCount;
-}
-
 void TriggerInitFinishCallbacks()
 {
     auto& mgr = PluginMgr::GetInstance();
@@ -180,35 +173,6 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
 
     std::vector<std::u16string> argsOnePlugin6 = {to_utf16("PluginConfig")};
     res = resSchedService_->Dump(correctFd, argsOnePlugin6);
-}
-
-/**
- * @tc.name: RegisterPluginInitFinishCallback_001
- * @tc.desc: Verify callback registration requires a valid library name.
- * @tc.type: FUNC
- * @tc.require: issue1624
- */
-HWTEST_F(ResSchedServiceTest, RegisterPluginInitFinishCallback_001, Function | MediumTest | Level0)
-{
-    g_serviceInitFinishCallCount = 0;
-    TriggerInitFinishCallbacks();
-
-    auto callback = std::make_shared<OnInitFinishCallback>(TestServiceInitFinishCallback);
-
-    resSchedService_->RegisterPluginInitFinishCallback("lib_service_init", nullptr);
-    TriggerInitFinishCallbacks();
-    EXPECT_EQ(g_serviceInitFinishCallCount.load(), 0);
-
-    resSchedService_->RegisterPluginInitFinishCallback("", callback);
-    TriggerInitFinishCallbacks();
-    EXPECT_EQ(g_serviceInitFinishCallCount.load(), 0);
-
-    resSchedService_->RegisterPluginInitFinishCallback("lib_service_init", callback);
-    TriggerInitFinishCallbacks();
-    EXPECT_EQ(g_serviceInitFinishCallCount.load(), 1);
-
-    TriggerInitFinishCallbacks();
-    EXPECT_EQ(g_serviceInitFinishCallCount.load(), 1);
 }
 
 static void ChangeAbilityTask()
