@@ -17,11 +17,7 @@
 #define RESSCHED_COMMON_INCLUDE_BUNDLE_MGR_HELPER_H
 
 #include <string>
-#include <unistd.h>
 #include "ipc_skeleton.h"
-#include "iremote_object.h"
-#include "remote_death_recipient.h"
-#include "singleton.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
