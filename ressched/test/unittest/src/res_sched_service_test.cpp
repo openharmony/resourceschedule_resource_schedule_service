@@ -71,6 +71,14 @@ void TestServiceInitFinishCallback()
     ++g_serviceInitFinishCallCount;
 }
 
+void TriggerInitFinishCallbacks()
+{
+    auto& mgr = PluginMgr::GetInstance();
+    mgr.Init();
+    auto switchStrs = mgr.GetPluginSwitchStr();
+    mgr.ParsePluginSwitch(switchStrs);
+}
+
 void ResSchedServiceTest::SetUpTestCase(void)
 {
     static const char *perms[] = {
@@ -183,23 +191,23 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
 HWTEST_F(ResSchedServiceTest, RegisterPluginInitFinishCallback_001, Function | MediumTest | Level0)
 {
     g_serviceInitFinishCallCount = 0;
-    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    TriggerInitFinishCallbacks();
 
     auto callback = std::make_shared<OnInitFinishCallback>(TestServiceInitFinishCallback);
 
     resSchedService_->RegisterPluginInitFinishCallback(nullptr, "lib_service_init");
-    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    TriggerInitFinishCallbacks();
     EXPECT_EQ(g_serviceInitFinishCallCount.load(), 0);
 
     resSchedService_->RegisterPluginInitFinishCallback(callback, "");
-    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    TriggerInitFinishCallbacks();
     EXPECT_EQ(g_serviceInitFinishCallCount.load(), 0);
 
     resSchedService_->RegisterPluginInitFinishCallback(callback, "lib_service_init");
-    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    TriggerInitFinishCallbacks();
     EXPECT_EQ(g_serviceInitFinishCallCount.load(), 1);
 
-    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    TriggerInitFinishCallbacks();
     EXPECT_EQ(g_serviceInitFinishCallCount.load(), 1);
 }
 

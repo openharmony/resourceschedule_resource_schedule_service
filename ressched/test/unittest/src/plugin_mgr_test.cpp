@@ -41,6 +41,13 @@ namespace {
     {
         ++g_initFinishCallCountB;
     }
+
+    void TriggerInitFinishCallbacks(const std::shared_ptr<MockPluginMgr>& mgr)
+    {
+        mgr->Init();
+        auto switchStrs = mgr->GetPluginSwitchStr();
+        mgr->ParsePluginSwitch(switchStrs);
+    }
 }
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
@@ -1328,11 +1335,11 @@ HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_001, TestSize.Level1)
     pluginMgr_->RegisterOnInitFinishCallback(callbackA, "lib_init_a");
     pluginMgr_->RegisterOnInitFinishCallback(callbackB, "lib_init_b");
 
-    pluginMgr_->CallOnInitFinishCallbacks();
+    TriggerInitFinishCallbacks(pluginMgr_);
     EXPECT_EQ(g_initFinishCallCountA.load(), 1);
     EXPECT_EQ(g_initFinishCallCountB.load(), 1);
 
-    pluginMgr_->CallOnInitFinishCallbacks();
+    TriggerInitFinishCallbacks(pluginMgr_);
     EXPECT_EQ(g_initFinishCallCountA.load(), 1);
     EXPECT_EQ(g_initFinishCallCountB.load(), 1);
 }
@@ -1353,10 +1360,10 @@ HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_002, TestSize.Level1)
     pluginMgr_->RegisterOnInitFinishCallback(callbackA, "lib_init_a");
     pluginMgr_->RegisterOnInitFinishCallback(invalidCallback, "lib_init_a");
 
-    pluginMgr_->CallOnInitFinishCallbacks();
+    TriggerInitFinishCallbacks(pluginMgr_);
     EXPECT_EQ(g_initFinishCallCountA.load(), 1);
 
-    pluginMgr_->CallOnInitFinishCallbacks();
+    TriggerInitFinishCallbacks(pluginMgr_);
     EXPECT_EQ(g_initFinishCallCountA.load(), 1);
 }
 } // namespace ResourceSchedule

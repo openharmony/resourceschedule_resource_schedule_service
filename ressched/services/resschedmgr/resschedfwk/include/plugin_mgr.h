@@ -245,11 +245,6 @@ public:
      */
     void RegisterOnInitFinishCallback(const OnInitFinishCallbackPtr& callback, const std::string& libName);
 
-    /**
-     * Call all registered callback functions.
-     */
-    void CallOnInitFinishCallbacks();
-
 private:
     PluginMgr() = default;
     void OnDestroy();
@@ -278,6 +273,10 @@ private:
     std::vector<std::string> GetAllRealConfigPath(const std::string& configName);
     std::string BuildDispatchTrace(const std::shared_ptr<ResData>& resData, std::string& libNameAll,
         const std::string& funcName, std::list<std::string>& pluginList);
+    /**
+     * Call all registered callback functions.
+     */
+    void CallOnInitFinishCallbacks();
     bool CheckValidPlugin(const PluginInfo& info, void* pluginHandle, std::string& errorMsg,
         OnPluginInitFunc& onPluginInitFunc, OnPluginDisableFunc& onPluginDisableFunc);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
