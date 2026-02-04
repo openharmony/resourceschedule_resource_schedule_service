@@ -16,44 +16,22 @@
 #ifndef RESSCHED_COMMON_INCLUDE_BUNDLE_MGR_HELPER_H
 #define RESSCHED_COMMON_INCLUDE_BUNDLE_MGR_HELPER_H
 
-#include "bundle_mgr_interface.h"
-#include "bundle_mgr_proxy.h"
+#include <string>
+#include <unistd.h>
 #include "ipc_skeleton.h"
 #include "iremote_object.h"
 #include "remote_death_recipient.h"
 #include "singleton.h"
 
-#ifdef RES_SCHED_UNIT_TEST
-#define WEAK_FUNC __attribute__((weak))
-#else
-#define WEAK_FUNC
-#endif
-
 namespace OHOS {
 namespace ResourceSchedule {
-
-namespace {
-    constexpr int32_t INVALID_UID = -1;
-}
-class BundleMgrHelper : public DelayedSingleton<BundleMgrHelper> {
+class BundleMgrHelper {
 public:
-    std::string GetBundleNameByUid(const int32_t uid);
-
-    int32_t GetUidByBundleName(const std::string &bundleName, const int32_t userId);
-
-    ErrCode GetSignatureInfoByUid(const int32_t uid, AppExecFwk::SignatureInfo &signatureInfo);
-
-private:
-    bool Connect();
-    void Disconnect();
-    void OnRemoteDied(const wptr<IRemoteObject> &object);
-
-private:
-    sptr<AppExecFwk::IBundleMgr> bundleMgr_ = nullptr;
-    std::mutex connectionMutex_;
-    sptr<RemoteDeathRecipient> bundleMgrDeathRecipient_ = nullptr;
-
-    DECLARE_DELAYED_SINGLETON(BundleMgrHelper)
+    virtual std::string GetBundleNameByUid(const int32_t uid) = 0;
+    virtual int32_t GetUidByBundleName(const std::string &bundleName, const int32_t userId) = 0;
+    virtual ErrCode GetSignatureInfoByUid(const int32_t uid, std::string &signatureInfo) = 0;
+    virtual void GetCurrentUserId(std::vector<int> &activatedOsAccountIds) = 0;
+    virtual ~BundleMgrHelper() = default;
 };
 }  // namespace ResourceSchedule
 }  // namespace OHOS
