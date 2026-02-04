@@ -178,7 +178,7 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
  * @tc.name: RegisterPluginInitFinishCallback_001
  * @tc.desc: Verify callback registration requires a valid library name.
  * @tc.type: FUNC
- * @tc.require: #1624
+ * @tc.require: issue1624
  */
 HWTEST_F(ResSchedServiceTest, RegisterPluginInitFinishCallback_001, Function | MediumTest | Level0)
 {

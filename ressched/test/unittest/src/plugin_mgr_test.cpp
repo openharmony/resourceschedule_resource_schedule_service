@@ -1315,7 +1315,7 @@ HWTEST_F(PluginMgrTest, ResPairHashTest_001, TestSize.Level1)
  * @tc.name: PluginMgrInitFinishCallback_001
  * @tc.desc: Verify init-finish callbacks are invoked once and cleared after calling.
  * @tc.type: FUNC
- * @tc.require: #1624
+ * @tc.require: issue1624
  */
 HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_001, TestSize.Level1)
 {
@@ -1341,7 +1341,7 @@ HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_001, TestSize.Level1)
  * @tc.name: PluginMgrInitFinishCallback_002
  * @tc.desc: Verify invalid callback does not override a valid one for the same library.
  * @tc.type: FUNC
- * @tc.require: #1624
+ * @tc.require: issue1624
  */
 HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_002, TestSize.Level1)
 {

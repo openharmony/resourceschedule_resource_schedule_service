@@ -921,7 +921,8 @@ void ResSchedService::AddFgAppRes(const std::unordered_set<uint32_t>& allowFgApp
     AddAll(allowFgAppReportRes_, allowFgAppReportRes);
 }
 
-void ResSchedService::RegisterPluginInitFinishCallback(const OnInitFinishCallbackPtr& callback, const std::string& libName)
+void ResSchedService::RegisterPluginInitFinishCallback(
+    const OnInitFinishCallbackPtr& callback, const std::string& libName)
 {
     if (!callback || !*callback) {
         RESSCHED_LOGE("%{public}s, invalid callback!", __func__);
@@ -933,7 +934,8 @@ void ResSchedService::RegisterPluginInitFinishCallback(const OnInitFinishCallbac
     }
     // Register the provided callback to PluginMgr
     PluginMgr::GetInstance().RegisterOnInitFinishCallback(callback, libName);
-    RESSCHED_LOGI("%{public}s, plugin callback registered successfully for lib: %{public}s!", __func__, libName.c_str());
+    RESSCHED_LOGI("%{public}s, plugin callback registered successfully for lib: %{public}s!",
+        __func__, libName.c_str());
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
