@@ -88,9 +88,10 @@ HWTEST_F(ResBundleMgrHelperTest, GetSignatureInfoByUid_001, Function | MediumTes
  */
 HWTEST_F(ResBundleMgrHelperTest, GetCurrentUserId_001, Function | MediumTest | Level0)
 {
+    g_mockQueryActiveOsAccountIdst = 0;
     std::vector<int> activatedOsAccountIds;
     resBundleMgrHelper_->GetCurrentUserId(activatedOsAccountIds);
-    EXPECT_TRUE(activatedOsAccountIds.size() == 0);
+    EXPECT_TRUE(activatedOsAccountIds.size() != 0);
     g_mockQueryActiveOsAccountIdst = -1;
     resBundleMgrHelper_->GetCurrentUserId(activatedOsAccountIds);
     resBundleMgrHelper_->Connect();
