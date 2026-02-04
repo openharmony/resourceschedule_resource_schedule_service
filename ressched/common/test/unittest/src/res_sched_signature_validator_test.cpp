@@ -50,17 +50,6 @@ void ResSchedSignatureValidatorTest::SetUp()
 void ResSchedSignatureValidatorTest::TearDown()
 {}
 
-/*
-void ResSchedSignatureValidatorTest::InitDefaultConfig()
-{
-    ResSchedSignatureValidator testSignatureValidator;
-    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
-        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
-    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
-    std::unordered_map<std::string, std::string> config = {{BUNDLE_VALID, SIGNATURE_VALID}};
-    testSignatureValidator.AddSignatureConfig(config);
-}*/
-
 // OVERRIDE CommBundleMgrHelperTest METHOD
 
 std::string CommBundleMgrHelperTest::GetBundleNameByUid(int32_t uid)
