@@ -221,9 +221,9 @@ ohos_shared_library("resschedsvc") {
     sources += [ "../sched_controller/observer/src/background_task_observer.cpp" ]
     external_deps += [ "background_task_mgr:bgtaskmgr_innerkits" ]
   }
-  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) { 
-    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ] 
-    external_deps += [ "audio_framework:audio_client" ] 
+  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
+    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
+    external_deps += [ "audio_framework:audio_client" ]
   }
   if (resource_schedule_service_with_ffrt_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE" ]
@@ -253,7 +253,7 @@ ohos_shared_library("resschedsvc") {
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
   branch_protector_ret = "pac_ret"
- 
+
   sanitize = {
     cfi = true
     cfi_cross_dso = true
@@ -385,9 +385,9 @@ ohos_static_library("resschedsvc_static") {
     sources += [ "../sched_controller/observer/src/background_task_observer.cpp" ]
     external_deps += [ "background_task_mgr:bgtaskmgr_innerkits" ]
   }
-  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) { 
-    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ] 
-    external_deps += [ "audio_framework:audio_client" ] 
+  if (ressched_with_resourceschedule_multimedia_audio_framework_enable) {
+    defines += [ "RESSCHED_AUDIO_FRAMEWORK_ENABLE" ]
+    external_deps += [ "audio_framework:audio_client" ]
   }
   if (resource_schedule_service_with_ext_res_enable) {
     defines += [ "RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE" ]
@@ -411,7 +411,7 @@ ohos_static_library("resschedsvc_static") {
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
   branch_protector_ret = "pac_ret"
- 
+
   sanitize = {
     cfi = true
     cfi_cross_dso = true
