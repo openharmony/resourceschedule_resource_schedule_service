@@ -51,6 +51,8 @@ using OnDumpFunc = void (*)(const std::vector<std::string>&, std::string&);
 using OnPluginDisableFunc = void (*)();
 using OnIsAllowedAppPreloadFunc = bool (*)(const std::string&, int32_t preloadMode);
 using GetExtMultiConfigFunc = int32_t (*)(int32_t, std::vector<std::string>&);
+using OnInitFinishCallback = void (*)();
+using OnInitFinishCallbackPtr = std::shared_ptr<OnInitFinishCallback>;
 
 constexpr int32_t DISPATCH_TIME_OUT = 50; // ms
 constexpr int32_t DISPATCH_TIME_OUT_US = DISPATCH_TIME_OUT * 1000; // us
@@ -235,6 +237,19 @@ public:
 
     void UnSubscribeResourceAccurately(const std::string& pluginLib, uint32_t resType, int64_t resValue);
 
+    /**
+     * Register a callback function from ResSchedService.
+     *
+     * @param callback The callback function to register.
+     * @param libName The library name associated with the callback.
+     */
+    void RegisterOnInitFinishCallback(const OnInitFinishCallbackPtr& callback, const std::string& libName);
+
+    /**
+     * Call all registered callback functions.
+     */
+    void CallOnInitFinishCallbacks();
+
 private:
     PluginMgr() = default;
     void OnDestroy();
@@ -304,11 +319,13 @@ private:
     ffrt::mutex dispatcherHandlerMutex_;
     std::mutex libPathMutex_;
     std::mutex linkJumpOptMutex_;
+    std::mutex onInitFinishCallbackMutex_;
     std::unordered_map<uint32_t, std::list<std::string>> resTypeLibMap_;
     std::unordered_map<ResPair, std::list<std::string>> resTyperesValueLibMap_;
     std::unordered_map<uint32_t, std::string> resTypeLibSyncMap_;
     std::map<uint32_t, std::string> resTypeStrMap_;
     std::unordered_set<std::string> linkJumpOptSet_;
+    std::map<std::string, OnInitFinishCallbackPtr> initFinishCallbacks_;
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::map<std::string, std::shared_ptr<ffrt::queue>> dispatchers_;

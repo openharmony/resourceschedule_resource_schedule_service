@@ -72,6 +72,9 @@ public:
 
     void InitAllowIpcReportRes();
 
+    // Register plugin initialization finish callback
+    void RegisterPluginInitFinishCallback(const OnInitFinishCallbackPtr& callback, const std::string& libName);
+
     ErrCode RegisterSuspendObserver(const sptr<ISuspendStateObserverBase> &observer, int32_t &funcResult) override;
 
     ErrCode UnregisterSuspendObserver(const sptr<ISuspendStateObserverBase> &observer, int32_t &funcResult) override;

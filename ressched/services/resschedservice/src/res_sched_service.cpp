@@ -51,6 +51,7 @@ namespace {
     static constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 650;
     static constexpr int32_t LIMIT_REQUEST_TIME = 1000;
     static constexpr int64_t FOUR_HOUR_TIME = 4 * 60 * 60 * 1000;
+
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     static const int32_t DEFAULT_VALUE = -1;
     static const char* EXT_RES_KEY = "extType";
@@ -918,6 +919,21 @@ void ResSchedService::AddAllAppRes(const std::unordered_set<uint32_t>& allowAllA
 void ResSchedService::AddFgAppRes(const std::unordered_set<uint32_t>& allowFgAppReportRes)
 {
     AddAll(allowFgAppReportRes_, allowFgAppReportRes);
+}
+
+void ResSchedService::RegisterPluginInitFinishCallback(const OnInitFinishCallbackPtr& callback, const std::string& libName)
+{
+    if (!callback || !*callback) {
+        RESSCHED_LOGE("%{public}s, invalid callback!", __func__);
+        return;
+    }
+    if (libName.empty()) {
+        RESSCHED_LOGE("%{public}s, invalid libName!", __func__);
+        return;
+    }
+    // Register the provided callback to PluginMgr
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback(callback, libName);
+    RESSCHED_LOGI("%{public}s, plugin callback registered successfully for lib: %{public}s!", __func__, libName.c_str());
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

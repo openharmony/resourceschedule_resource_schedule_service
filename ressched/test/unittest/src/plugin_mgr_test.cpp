@@ -29,6 +29,18 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     const string LIB_NAME = "libunittest_plugin.z.so";
+    std::atomic<int32_t> g_initFinishCallCountA(0);
+    std::atomic<int32_t> g_initFinishCallCountB(0);
+
+    void TestInitFinishCallbackA()
+    {
+        ++g_initFinishCallCountA;
+    }
+
+    void TestInitFinishCallbackB()
+    {
+        ++g_initFinishCallCountB;
+    }
 }
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
@@ -1297,6 +1309,55 @@ HWTEST_F(PluginMgrTest, ResPairHashTest_001, TestSize.Level1)
     EXPECT_NE(hash1, hash3);
     EXPECT_NE(hash1, hash4);
     EXPECT_NE(hash3, hash4);
+}
+
+/**
+ * @tc.name: PluginMgrInitFinishCallback_001
+ * @tc.desc: Verify init-finish callbacks are invoked once and cleared after calling.
+ * @tc.type: FUNC
+ * @tc.require: #1624
+ */
+HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_001, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    g_initFinishCallCountB = 0;
+
+    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    auto callbackB = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackB);
+
+    pluginMgr_->RegisterOnInitFinishCallback(callbackA, "lib_init_a");
+    pluginMgr_->RegisterOnInitFinishCallback(callbackB, "lib_init_b");
+
+    pluginMgr_->CallOnInitFinishCallbacks();
+    EXPECT_EQ(g_initFinishCallCountA.load(), 1);
+    EXPECT_EQ(g_initFinishCallCountB.load(), 1);
+
+    pluginMgr_->CallOnInitFinishCallbacks();
+    EXPECT_EQ(g_initFinishCallCountA.load(), 1);
+    EXPECT_EQ(g_initFinishCallCountB.load(), 1);
+}
+
+/**
+ * @tc.name: PluginMgrInitFinishCallback_002
+ * @tc.desc: Verify invalid callback does not override a valid one for the same library.
+ * @tc.type: FUNC
+ * @tc.require: #1624
+ */
+HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_002, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+
+    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    auto invalidCallback = std::make_shared<OnInitFinishCallback>(nullptr);
+
+    pluginMgr_->RegisterOnInitFinishCallback(callbackA, "lib_init_a");
+    pluginMgr_->RegisterOnInitFinishCallback(invalidCallback, "lib_init_a");
+
+    pluginMgr_->CallOnInitFinishCallbacks();
+    EXPECT_EQ(g_initFinishCallCountA.load(), 1);
+
+    pluginMgr_->CallOnInitFinishCallbacks();
+    EXPECT_EQ(g_initFinishCallCountA.load(), 1);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

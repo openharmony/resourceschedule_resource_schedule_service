@@ -16,6 +16,7 @@
 #include "gtest/gtest.h"
 #include "gtest/hwext/gtest-multithread.h"
 
+#include <atomic>
 #include <vector>
 #include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
@@ -63,6 +64,12 @@ public:
 };
 
 int32_t TestResSchedSystemloadListener::testSystemloadLevel = 0;
+std::atomic<int32_t> g_serviceInitFinishCallCount(0);
+
+void TestServiceInitFinishCallback()
+{
+    ++g_serviceInitFinishCallCount;
+}
 
 void ResSchedServiceTest::SetUpTestCase(void)
 {
@@ -165,6 +172,35 @@ HWTEST_F(ResSchedServiceTest, ServiceDump001, Function | MediumTest | Level0)
 
     std::vector<std::u16string> argsOnePlugin6 = {to_utf16("PluginConfig")};
     res = resSchedService_->Dump(correctFd, argsOnePlugin6);
+}
+
+/**
+ * @tc.name: RegisterPluginInitFinishCallback_001
+ * @tc.desc: Verify callback registration requires a valid library name.
+ * @tc.type: FUNC
+ * @tc.require: #1624
+ */
+HWTEST_F(ResSchedServiceTest, RegisterPluginInitFinishCallback_001, Function | MediumTest | Level0)
+{
+    g_serviceInitFinishCallCount = 0;
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+
+    auto callback = std::make_shared<OnInitFinishCallback>(TestServiceInitFinishCallback);
+
+    resSchedService_->RegisterPluginInitFinishCallback(nullptr, "lib_service_init");
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    EXPECT_EQ(g_serviceInitFinishCallCount.load(), 0);
+
+    resSchedService_->RegisterPluginInitFinishCallback(callback, "");
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    EXPECT_EQ(g_serviceInitFinishCallCount.load(), 0);
+
+    resSchedService_->RegisterPluginInitFinishCallback(callback, "lib_service_init");
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    EXPECT_EQ(g_serviceInitFinishCallCount.load(), 1);
+
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    EXPECT_EQ(g_serviceInitFinishCallCount.load(), 1);
 }
 
 static void ChangeAbilityTask()
