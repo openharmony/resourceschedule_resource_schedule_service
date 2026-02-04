@@ -922,7 +922,7 @@ void ResSchedService::AddFgAppRes(const std::unordered_set<uint32_t>& allowFgApp
 }
 
 void ResSchedService::RegisterPluginInitFinishCallback(
-    const OnInitFinishCallbackPtr& callback, const std::string& libName)
+    const std::string& libName, const OnInitFinishCallbackPtr& callback)
 {
     if (!callback || !*callback) {
         RESSCHED_LOGE("%{public}s, invalid callback!", __func__);
@@ -933,7 +933,7 @@ void ResSchedService::RegisterPluginInitFinishCallback(
         return;
     }
     // Register the provided callback to PluginMgr
-    PluginMgr::GetInstance().RegisterOnInitFinishCallback(callback, libName);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback(libName, callback);
     RESSCHED_LOGI("%{public}s, plugin callback registered successfully for lib: %{public}s!",
         __func__, libName.c_str());
 }

@@ -195,15 +195,15 @@ HWTEST_F(ResSchedServiceTest, RegisterPluginInitFinishCallback_001, Function | M
 
     auto callback = std::make_shared<OnInitFinishCallback>(TestServiceInitFinishCallback);
 
-    resSchedService_->RegisterPluginInitFinishCallback(nullptr, "lib_service_init");
+    resSchedService_->RegisterPluginInitFinishCallback("lib_service_init", nullptr);
     TriggerInitFinishCallbacks();
     EXPECT_EQ(g_serviceInitFinishCallCount.load(), 0);
 
-    resSchedService_->RegisterPluginInitFinishCallback(callback, "");
+    resSchedService_->RegisterPluginInitFinishCallback("", callback);
     TriggerInitFinishCallbacks();
     EXPECT_EQ(g_serviceInitFinishCallCount.load(), 0);
 
-    resSchedService_->RegisterPluginInitFinishCallback(callback, "lib_service_init");
+    resSchedService_->RegisterPluginInitFinishCallback("lib_service_init", callback);
     TriggerInitFinishCallbacks();
     EXPECT_EQ(g_serviceInitFinishCallCount.load(), 1);
 

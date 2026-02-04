@@ -1332,8 +1332,8 @@ HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_001, TestSize.Level1)
     auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
     auto callbackB = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackB);
 
-    pluginMgr_->RegisterOnInitFinishCallback(callbackA, "lib_init_a");
-    pluginMgr_->RegisterOnInitFinishCallback(callbackB, "lib_init_b");
+    pluginMgr_->RegisterOnInitFinishCallback("lib_init_a", callbackA);
+    pluginMgr_->RegisterOnInitFinishCallback("lib_init_b", callbackB);
 
     TriggerInitFinishCallbacks(pluginMgr_);
     EXPECT_EQ(g_initFinishCallCountA.load(), 1);
@@ -1357,8 +1357,8 @@ HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_002, TestSize.Level1)
     auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
     auto invalidCallback = std::make_shared<OnInitFinishCallback>(nullptr);
 
-    pluginMgr_->RegisterOnInitFinishCallback(callbackA, "lib_init_a");
-    pluginMgr_->RegisterOnInitFinishCallback(invalidCallback, "lib_init_a");
+    pluginMgr_->RegisterOnInitFinishCallback("lib_init_a", callbackA);
+    pluginMgr_->RegisterOnInitFinishCallback("lib_init_a", invalidCallback);
 
     TriggerInitFinishCallbacks(pluginMgr_);
     EXPECT_EQ(g_initFinishCallCountA.load(), 1);

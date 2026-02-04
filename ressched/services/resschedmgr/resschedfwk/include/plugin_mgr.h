@@ -243,7 +243,7 @@ public:
      * @param callback The callback function to register.
      * @param libName The library name associated with the callback.
      */
-    void RegisterOnInitFinishCallback(const OnInitFinishCallbackPtr& callback, const std::string& libName);
+    void RegisterOnInitFinishCallback(const std::string& libName, const OnInitFinishCallbackPtr& callback);
 
 private:
     PluginMgr() = default;

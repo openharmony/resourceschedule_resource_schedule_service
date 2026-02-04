@@ -1094,7 +1094,8 @@ void PluginMgr::ReadSubscriptionAccuractlyEnableProperties()
     }
 }
 
-void PluginMgr::RegisterOnInitFinishCallback(const OnInitFinishCallbackPtr& callback, const std::string& libName)
+void PluginMgr::RegisterOnInitFinishCallback(const std::string& libName,
+    const OnInitFinishCallbackPtr& callback)
 {
     if (!callback || !*callback) {
         RESSCHED_LOGE("%{public}s, invalid callback!", __func__);
