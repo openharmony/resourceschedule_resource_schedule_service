@@ -17,6 +17,7 @@
 #define RES_SCHED_SIGNATURE_VALIDATOR_TEST_H
 
 #include "gtest/gtest.h"
+#include "bundle_mgr_helper.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -26,6 +27,14 @@ protected:
     void SetUp();
     void TearDown();
     void InitDefaultConfig();
+};
+
+class CommBundleMgrHelperTest : public BundleMgrHelper {
+public:
+    std::string GetBundleNameByUid(const int32_t uid) override;
+    int32_t GetUidByBundleName(const std::string &bundleName, const int32_t userId) override;
+    ErrCode GetSignatureInfoByUid(const int32_t uid, std::string &signatureInfo) override;
+    void GetCurrentUserId(std::vector<int> &activatedOsAccountIds) override;
 };
 }  // namespace ResourceSchedule
 }  // namespace OHOS
