@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include "bundle_mgr_helper.h"
-#include "bundle_mgr_helper_test.h"
+#include "res_bundle_mgr_helper.h"
+#include "res_bundle_mgr_helper_test.h"
 
 using namespace std;
 using namespace testing::ext;
@@ -23,27 +23,37 @@ using namespace testing;
 namespace OHOS {
 namespace ResourceSchedule {
 
-void BundleMgrHelperTest::SetUp()
-{}
-
-void BundleMgrHelperTest::TearDown()
-{}
-
-HWTEST_F(BundleMgrHelperTest, GetBundleNameByUid_001, Function | MediumTest | Level0)
+void ResBundleMgrHelperTest::SetUp()
 {
-    EXPECT_TRUE(BundleMgrHelper::GetInstance()->GetBundleNameByUid(111).empty());
+    resBundleMgrHelper_ = make_shared<ResBundleMgrHelper>();
 }
 
-HWTEST_F(BundleMgrHelperTest, GetUidByBundleName_001, Function | MediumTest | Level0)
+void ResBundleMgrHelperTest::TearDown()
 {
-    EXPECT_TRUE(BundleMgrHelper::GetInstance()->GetUidByBundleName("test", 0) != 0);
+    resBundleMgrHelper_ = nullptr;
 }
 
-HWTEST_F(BundleMgrHelperTest, GetSignatureInfoByUid_001, Function | MediumTest | Level0)
+HWTEST_F(ResBundleMgrHelperTest, GetBundleNameByUid_001, Function | MediumTest | Level0)
 {
-    AppExecFwk::SignatureInfo signatureInfo;
-    EXPECT_TRUE(BundleMgrHelper::GetInstance()->GetSignatureInfoByUid(111, signatureInfo) != 0);
+    EXPECT_TRUE(resBundleMgrHelper_->GetBundleNameByUid(111).empty());
 }
 
+HWTEST_F(ResBundleMgrHelperTest, GetUidByBundleName_001, Function | MediumTest | Level0)
+{
+    EXPECT_TRUE(resBundleMgrHelper_->GetUidByBundleName("test", 0) != 0);
+}
+
+HWTEST_F(ResBundleMgrHelperTest, GetSignatureInfoByUid_001, Function | MediumTest | Level0)
+{
+    std::string signatureInfo;
+    EXPECT_TRUE(resBundleMgrHelper_->GetSignatureInfoByUid(111, signatureInfo) != 0);
+}
+
+HWTEST_F(ResBundleMgrHelperTest, GetCurrentUserId_001, Function | MediumTest | Level0)
+{
+    std::vector<int> activatedOsAccountIds;
+    resBundleMgrHelper_->GetCurrentUserId(activatedOsAccountIds);
+    EXPECT_TRUE(activatedOsAccountIds.size() != 0);
+}
 }  // namespace ResourceSchedule
 }  // namespace OHOS
