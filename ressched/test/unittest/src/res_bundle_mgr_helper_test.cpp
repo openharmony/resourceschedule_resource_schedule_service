@@ -14,14 +14,24 @@
  */
 
 #include "res_bundle_mgr_helper_test.h"
+#include "os_account_manager.h"
 
 using namespace std;
 using namespace testing::ext;
 using namespace testing;
 
 namespace OHOS {
-namespace ResourceSchedule {
+namespace {
+int32_t g_mockQueryActiveOsAccountIdst = 0;
+}
+namespace AccountSA {
+ErrCode OsAccountManager::QueryActiveOsAccountIds(std::vector<int> &activatedOsAccountIds)
+{
+    return g_mockQueryActiveOsAccountIdst;
+}
+}
 
+namespace ResourceSchedule {
 void ResBundleMgrHelperTest::SetUp()
 {
     resBundleMgrHelper_ = make_shared<ResBundleMgrHelper>();
@@ -32,27 +42,72 @@ void ResBundleMgrHelperTest::TearDown()
     resBundleMgrHelper_ = nullptr;
 }
 
+/**
+ * @tc.name: ResBundleMgrHelper GetBundleNameByUid_001
+ * @tc.desc: GetBundleNameByUid
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.author:luolu
+ */
 HWTEST_F(ResBundleMgrHelperTest, GetBundleNameByUid_001, Function | MediumTest | Level0)
 {
     EXPECT_TRUE(resBundleMgrHelper_->GetBundleNameByUid(111).empty());
 }
 
+/**
+ * @tc.name: ResBundleMgrHelper GetUidByBundleName_001
+ * @tc.desc: GetUidByBundleName
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.author:luolu
+ */
 HWTEST_F(ResBundleMgrHelperTest, GetUidByBundleName_001, Function | MediumTest | Level0)
 {
     EXPECT_TRUE(resBundleMgrHelper_->GetUidByBundleName("test", 0) != 0);
 }
 
+/**
+ * @tc.name: ResBundleMgrHelper GetSignatureInfoByUid_001
+ * @tc.desc: GetSignatureInfoByUid
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.author:luolu
+ */
 HWTEST_F(ResBundleMgrHelperTest, GetSignatureInfoByUid_001, Function | MediumTest | Level0)
 {
     std::string signatureInfo;
     EXPECT_TRUE(resBundleMgrHelper_->GetSignatureInfoByUid(111, signatureInfo) != 0);
 }
 
+/**
+ * @tc.name: ResBundleMgrHelper GetCurrentUserId_001
+ * @tc.desc: GetCurrentUserId
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.author:luolu
+ */
 HWTEST_F(ResBundleMgrHelperTest, GetCurrentUserId_001, Function | MediumTest | Level0)
 {
     std::vector<int> activatedOsAccountIds;
     resBundleMgrHelper_->GetCurrentUserId(activatedOsAccountIds);
-    EXPECT_TRUE(activatedOsAccountIds.size() != 0);
+    EXPECT_TRUE(activatedOsAccountIds.size() == 0);
+    g_mockQueryActiveOsAccountIdst = -1;
+    resBundleMgrHelper_->GetCurrentUserId(activatedOsAccountIds);
+    resBundleMgrHelper_->Connect();
+}
+
+/**
+ * @tc.name: ResBundleMgrHelper OnRemoteDied_001
+ * @tc.desc: OnRemoteDied
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.author:luolu
+ */
+HWTEST_F(ResBundleMgrHelperTest, OnRemoteDied_001, Function | MediumTest | Level0)
+{
+    wptr<IRemoteObject> object = nullptr;
+    resBundleMgrHelper_->OnRemoteDied(object);
+    EXPECT_TRUE(resBundleMgrHelper_->bundleMgr_ == nullptr);
 }
 }  // namespace ResourceSchedule
 }  // namespace OHOS
