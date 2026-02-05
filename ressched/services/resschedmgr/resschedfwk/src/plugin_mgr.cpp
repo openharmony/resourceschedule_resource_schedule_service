@@ -1098,7 +1098,7 @@ void PluginMgr::RegisterOnInitFinishCallback(const std::string& libName,
     const OnInitFinishCallbackPtr& callback)
 {
     if (!callback || !*callback) {
-        RESSCHED_LOGE("%{public}s, invalid callback of plugin %{public}s!", __func__, libName);
+        RESSCHED_LOGE("%{public}s, invalid callback of plugin %{public}s!", __func__, libName.c_str());
         return;
     }
     std::lock_guard<std::mutex> autoLock(onInitFinishCallbackMutex_);
