@@ -16,7 +16,6 @@
 #include "gtest/gtest.h"
 #include "gtest/hwext/gtest-multithread.h"
 
-#include <atomic>
 #include <vector>
 #include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
