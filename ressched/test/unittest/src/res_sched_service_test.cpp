@@ -64,13 +64,6 @@ public:
 };
 
 int32_t TestResSchedSystemloadListener::testSystemloadLevel = 0;
-void TriggerInitFinishCallbacks()
-{
-    auto& mgr = PluginMgr::GetInstance();
-    mgr.Init();
-    auto switchStrs = mgr.GetPluginSwitchStr();
-    mgr.ParsePluginSwitch(switchStrs);
-}
 
 void ResSchedServiceTest::SetUpTestCase(void)
 {
