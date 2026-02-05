@@ -367,21 +367,8 @@ void ObserverManager::InitAudioObserver()
     if (!audioObserver_) {
         audioObserver_ = std::make_shared<AudioObserver>();
     }
-    auto res = AudioStandard::AudioStreamManager::GetInstance()->RegisterAudioRendererEventListener(pid_,
-        audioObserver_);
-    if (res != OPERATION_SUCCESS) {
-        RESSCHED_LOGW("ObserverManager init audioRenderStateObserver failed");
-        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a audio observer failed!");
-    }
-    res = AudioStandard::AudioStreamManager::GetInstance()->RegisterAudioCapturerEventListener(pid_, audioObserver_);
-    if (res != OPERATION_SUCCESS) {
-        RESSCHED_LOGW("Register a audio observer failed!");
-    } else {
-        RESSCHED_LOGD("Register a audio observer success!");
-    }
-    res = -1;
+    InitAudioEventListener();
+    int32_t res = -1;
     auto audioSystemMgr = AudioStandard::AudioSystemManager::GetInstance();
     if (audioSystemMgr) {
         auto groupMgr = audioSystemMgr->GetGroupManager(AudioStandard::DEFAULT_VOLUME_GROUP_ID);
@@ -411,6 +398,30 @@ void ObserverManager::InitAudioObserver()
 #endif
 }
 
+void ObserverManager::InitAudioEventListener()
+{
+#ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
+    auto res = AudioStandard::AudioStreamManager::GetInstance()->RegisterAudioRendererEventListener(pid_,
+        audioObserver_);
+    if (res != OPERATION_SUCCESS) {
+        RESSCHED_LOGW("ObserverManager init audioRenderStateObserver failed");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a audio observer failed!");
+    } else {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "SUSPEND_STATE_CHANGE_ATTEMPT",
+                        HiviewDFX::HiSysEvent::EventType::BEHAVIOR,
+                        "TRIGGER_REASON", "ObserverManager RegisterAudioRendererEvent");
+    }
+    res = AudioStandard::AudioStreamManager::GetInstance()->RegisterAudioCapturerEventListener(pid_, audioObserver_);
+    if (res != OPERATION_SUCCESS) {
+        RESSCHED_LOGW("Register a audio observer failed!");
+    } else {
+        RESSCHED_LOGD("Register a audio observer success!");
+    }
+#endif
+}
+
 void ObserverManager::DisableAudioObserver()
 {
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
@@ -422,6 +433,9 @@ void ObserverManager::DisableAudioObserver()
 
     auto res = AudioStandard::AudioStreamManager::GetInstance()->UnregisterAudioRendererEventListener(pid_);
     if (res == OPERATION_SUCCESS) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "SUSPEND_STATE_CHANGE_ATTEMPT",
+            HiviewDFX::HiSysEvent::EventType::BEHAVIOR,
+            "TRIGGER_REASON", "ObserverManager UnRegisterAudioRendererEvent");
         RESSCHED_LOGD("ObserverManager disable audioVolumeKeyObserver successfully");
     } else {
         RESSCHED_LOGW("ObserverManager disable audioVolumeKeyObserver failed");
