@@ -23,6 +23,7 @@
 #include "res_sched_kill_reason.h"
 #include "res_sched_log.h"
 #include "string_ex.h"
+#include "res_common_util.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -36,8 +37,10 @@ int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload)
     if ((payload == nullptr) || !(payload.contains("pid") && payload["pid"].is_string())) {
         return RES_SCHED_KILL_PROCESS_FAIL;
     }
-
-    pid_t pid = static_cast<int32_t>(atoi(payload["pid"].get<string>().c_str()));
+    int32_t pid = -1;
+    if (!ResCommonUtil::StrToInt32(payload["pid"].get<string>(), pid)) {
+        return RES_SCHED_KILL_PROCESS_FAIL;
+    }
     std::string processName = payload.contains("processName") && payload["processName"].is_string() ?
                                   payload["processName"].get<string>() : UNKNOWN_PROCESS;
     if (payload.contains("killReason") && payload["killReason"].is_string()) {
