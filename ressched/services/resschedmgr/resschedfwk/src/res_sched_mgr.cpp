@@ -216,11 +216,11 @@ IMPLEMENT_SINGLE_INSTANCE(ResSchedMgr);
 
 void ResSchedMgr::Init()
 {
-    PluginMgr::GetInstance().Init();
-    PluginMgr::GetInstance().SetResTypeStrMap(resTypeToStr);
     std::shared_ptr<ResourceSchedule::ResBundleMgrHelper> resBundleMgr =
         std::make_shared<ResourceSchedule::ResBundleMgrHelper>();
     ResSchedSignatureValidator::GetInstance().InitSignatureDependencyInterface(resBundleMgr);
+    PluginMgr::GetInstance().Init();
+    PluginMgr::GetInstance().SetResTypeStrMap(resTypeToStr);
 
     if (!killProcess_) {
         killProcess_ = std::make_shared<KillProcess>();
