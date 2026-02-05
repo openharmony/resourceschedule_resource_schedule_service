@@ -51,7 +51,6 @@ namespace {
     static constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 650;
     static constexpr int32_t LIMIT_REQUEST_TIME = 1000;
     static constexpr int64_t FOUR_HOUR_TIME = 4 * 60 * 60 * 1000;
-
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     static const int32_t DEFAULT_VALUE = -1;
     static const char* EXT_RES_KEY = "extType";
@@ -920,7 +919,6 @@ void ResSchedService::AddFgAppRes(const std::unordered_set<uint32_t>& allowFgApp
 {
     AddAll(allowFgAppReportRes_, allowFgAppReportRes);
 }
-
 } // namespace ResourceSchedule
 } // namespace OHOS
 
