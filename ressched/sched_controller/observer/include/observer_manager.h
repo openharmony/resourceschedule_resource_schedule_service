@@ -83,6 +83,7 @@ public:
     void InitTelephonyObserver();
     void DisableTelephonyObserver();
     void InitAudioObserver();
+    void InitAudioEventListener();
     void DisableAudioObserver();
     void InitDisplayModeObserver();
     void DisableDisplayModeObserver();
