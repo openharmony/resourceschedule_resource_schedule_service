@@ -72,7 +72,6 @@ public:
 
     void InitAllowIpcReportRes();
 
-
     ErrCode RegisterSuspendObserver(const sptr<ISuspendStateObserverBase> &observer, int32_t &funcResult) override;
 
     ErrCode UnregisterSuspendObserver(const sptr<ISuspendStateObserverBase> &observer, int32_t &funcResult) override;
