@@ -177,6 +177,7 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
     }
 #endif
     isInit = true;
+    CallOnInitFinishCallbacks();
     RESSCHED_LOGI("PluginMgr load plugin success!");
 }
 
@@ -1090,6 +1091,35 @@ void PluginMgr::ReadSubscriptionAccuractlyEnableProperties()
     int32_t enableInt;
     if (StrToInt(enableString, enableInt)) {
         subscriptionAccuractlyEnable_ = static_cast<bool>(enableInt);
+    }
+}
+
+void PluginMgr::RegisterOnInitFinishCallback(const std::string& libName,
+    const OnInitFinishCallbackPtr& callback)
+{
+    if (!callback || !*callback) {
+        RESSCHED_LOGE("%{public}s, invalid callback of plugin %{public}s!", __func__, libName.c_str());
+        return;
+    }
+    std::lock_guard<std::mutex> autoLock(onInitFinishCallbackMutex_);
+    initFinishCallbacks_[libName] = callback;
+    RESSCHED_LOGI("%{public}s, callback registered successfully for lib: %{public}s!", __func__, libName.c_str());
+}
+
+void PluginMgr::CallOnInitFinishCallbacks()
+{
+    std::map<std::string, OnInitFinishCallbackPtr> callbacks;
+    {
+        std::lock_guard<std::mutex> autoLock(onInitFinishCallbackMutex_);
+        callbacks.swap(initFinishCallbacks_);
+    }
+
+    for (const auto& [libName, callback] : callbacks) {
+        if (!callback || !*callback) {
+            continue;
+        }
+        RESSCHED_LOGI("%{public}s, calling callback for lib: %{public}s!", __func__, libName.c_str());
+        (*callback)();
     }
 }
 } // namespace ResourceSchedule
