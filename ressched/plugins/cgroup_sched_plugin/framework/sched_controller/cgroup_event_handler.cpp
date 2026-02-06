@@ -329,15 +329,6 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
 {
     ProcessCreateInfo info;
     if (!ParseProcessCreateInfo(info, payload)) {
- 
- 
- 
- 
- 
- 
- 
- 
- 
         CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
