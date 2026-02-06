@@ -192,6 +192,19 @@ HWTEST_F(ResSchedStringUtilTest, StringTrim_001, Function | MediumTest | Level0)
 }
 
 /**
+ * @tc.name: ResSchedStringUtilTest StringTrim_002
+ * @tc.desc: test StringTrim with empty and all-blank inputs
+ * @tc.type: FUNC
+ * @tc.require: issueIB8Y0E
+ */
+HWTEST_F(ResSchedStringUtilTest, StringTrim_002, Function | MediumTest | Level0)
+{
+    EXPECT_EQ(ResCommonUtil::StringTrim(""), "");
+    EXPECT_EQ(ResCommonUtil::StringTrim("     "), "");
+    EXPECT_EQ(ResCommonUtil::StringTrim("\f\v\r\t\n"), "");
+}
+
+/**
  * @tc.name: ResSchedStringUtilTest StringTrimSpace_001
  * @tc.desc: test StringTrimSpace
  * @tc.type: FUNC
@@ -203,6 +216,18 @@ HWTEST_F(ResSchedStringUtilTest, StringTrimSpace_001, Function | MediumTest | Le
     EXPECT_EQ(ResCommonUtil::StringTrimSpace("     test"), "test");
     EXPECT_EQ(ResCommonUtil::StringTrimSpace("test    "), "test");
     EXPECT_EQ(ResCommonUtil::StringTrimSpace("     t   est    "), "t   est");
+}
+
+/**
+ * @tc.name: ResSchedStringUtilTest StringTrimSpace_002
+ * @tc.desc: test StringTrimSpace with empty and all-space inputs
+ * @tc.type: FUNC
+ * @tc.require: issueIB8Y0E
+ */
+HWTEST_F(ResSchedStringUtilTest, StringTrimSpace_002, Function | MediumTest | Level0)
+{
+    EXPECT_EQ(ResCommonUtil::StringTrimSpace(""), "");
+    EXPECT_EQ(ResCommonUtil::StringTrimSpace("     "), "");
 }
 
 /**

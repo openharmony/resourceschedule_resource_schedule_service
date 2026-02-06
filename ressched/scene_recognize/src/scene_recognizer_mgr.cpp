@@ -55,8 +55,8 @@ void SceneRecognizerMgr::DispatchResource(const std::shared_ptr<ResData>& resDat
         RESSCHED_LOGE("%{public}s, failed, null res data.", __func__);
         return;
     }
-    for (auto recognizerItem : sceneRecognizers_) {
-        auto recognizer = recognizerItem.second;
+    for (const auto& recognizerItem : sceneRecognizers_) {
+        const auto& recognizer = recognizerItem.second;
         if (!recognizer->Accept(resData->resType)) {
             continue;
         }
@@ -65,7 +65,6 @@ void SceneRecognizerMgr::DispatchResource(const std::shared_ptr<ResData>& resDat
         });
     }
 }
-
 void SceneRecognizerMgr::SubmitTask(const std::function<void()>& task)
 {
     if (ffrtQueue_ == nullptr) {
