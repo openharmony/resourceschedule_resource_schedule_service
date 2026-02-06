@@ -143,7 +143,7 @@ void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t val
         CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
-    bool res = ParseValue(preloadMode, "preloadMode", payload);
+    (void)ParseValue(preloadMode, "preloadMode", payload);
     CGS_LOGD("%{public}s : %{public}d, %{public}d, %{public}s, %{public}d", __func__, uid,
         pid, bundleName.c_str(), state);
     std::string traceStr(__func__);
@@ -326,29 +326,29 @@ void CgroupEventHandler::HandleProcessStateChangedEx(uint32_t resType, int64_t v
 
 void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, const nlohmann::json& payload)
 {
-    int32_t uid = 0;
-    int32_t pid = 0;
-    int32_t hostPid = 0;
-    std::string bundleName;
-    int32_t extensionType = 0;
-    int32_t processType = 0;
-    int32_t isPreloadModule = 0;
-    if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
-        !ParseString(bundleName, "bundleName", payload) || !ParseValue(hostPid, "hostPid", payload) ||
-        !ParseValue(extensionType, "extensionType", payload) || !ParseValue(processType, "processType", payload) ||
-        !ParseValue(isPreloadModule, "isPreloadModule", payload)) {
+    ProcessCreateInfo info;
+    if (!ParseProcessCreateInfo(info, payload)) {
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
         CGS_LOGE("%{public}s: param error", __func__);
         return;
     }
     std::string traceStr(__func__);
-    traceStr.append(":").append(std::to_string(pid)).append(",").append(std::to_string(processType))
-        .append(",").append(std::to_string(extensionType));
+    traceStr.append(":").append(std::to_string(info.pid)).append(",").append(std::to_string(info.processType))
+        .append(",").append(std::to_string(info.extensionType));
     StartTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP, traceStr.c_str());
     FinishTraceEx(HITRACE_LEVEL_INFO, HITRACE_TAG_OHOS | HITRACE_TAG_APP);
     ChronoScope cs("HandleProcessCreated");
-    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(uid);
-    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
-    app->SetName(bundleName);
+    std::shared_ptr<Application> app = supervisor_->GetAppRecordNonNull(info.uid);
+    std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(info.pid);
+    app->SetName(info.bundleName);
     std::string processName;
     if (ParseString(processName, "processName", payload)) {
         procRecord->SetName(processName);
@@ -356,24 +356,37 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
         CGS_LOGE("%{public}s: param error,not have processName", __func__);
     }
     CGS_LOGI("%{public}s : %{public}d, %{public}d, %{public}d, %{public}d, %{public}s, %{public}d, %{public}s",
-        __func__, uid, pid, hostPid, processType, bundleName.c_str(), extensionType, processName.c_str());
-    procRecord->processType_ = processType < ProcRecordType::PROC_RECORD_TYPE_MAX ?
-        processType : ProcRecordType::NORMAL;
-    switch (processType) {
+        __func__, info.uid, info.pid, info.hostPid, info.processType, info.bundleName.c_str(),
+        info.extensionType, processName.c_str());
+    procRecord->processType_ = info.processType < ProcRecordType::PROC_RECORD_TYPE_MAX ?
+        info.processType : ProcRecordType::NORMAL;
+    switch (info.processType) {
         case static_cast<int32_t>(ProcessType::RENDER):
         case static_cast<int32_t>(ProcessType::CHILD):
         case static_cast<int32_t>(ProcessType::GPU):
-            procRecord->hostPid_ = hostPid;
-            app->AddHostProcess(hostPid);
+            procRecord->hostPid_ = info.hostPid;
+            app->AddHostProcess(info.hostPid);
             break;
         case static_cast<int32_t>(ProcessType::EXTENSION):
-            procRecord->extensionType_ = extensionType;
+            procRecord->extensionType_ = info.extensionType;
             break;
         default:
             break;
     }
-    AdjustSource policy = (isPreloadModule != 0) ? AdjustSource::ADJS_APP_PRELOAD : AdjustSource::ADJS_PROCESS_CREATE;
+    AdjustSource policy = (info.preloadMode == PRELOAD_MODULE) ?
+        AdjustSource::ADJS_APP_PRELOAD : AdjustSource::ADJS_PROCESS_CREATE;
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), policy);
+}
+ 
+bool CgroupEventHandler::ParseProcessCreateInfo(ProcessCreateInfo& info, const nlohmann::json& payload)
+{
+    return ParseValue(info.uid, "uid", payload)
+        && ParseValue(info.pid, "pid", payload)
+        && ParseString(info.bundleName, "bundleName", payload)
+        && ParseValue(info.hostPid, "hostPid", payload)
+        && ParseValue(info.extensionType, "extensionType", payload)
+        && ParseValue(info.processType, "processType", payload)
+        && ParseValue(info.preloadMode, "preloadMode", payload);
 }
 
 void CgroupEventHandler::HandleProcessDied(uint32_t resType, int64_t value, const nlohmann::json& payload)
