@@ -85,6 +85,17 @@ public:
     void HandleNapModeEvent(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
 private:
+    struct ProcessCreateInfo {
+        int32_t uid = 0;
+        int32_t pid = 0;
+        int32_t hostPid = 0;
+        std::string bundleName;
+        int32_t extensionType = 0;
+        int32_t processType = 0;
+        int32_t preloadMode = 0;
+    };
+ 
+    bool ParseProcessCreateInfo(ProcessCreateInfo& info, const nlohmann::json& payload);
     bool GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::shared_ptr<Application>& app,
         std::shared_ptr<ProcessRecord>& procRecord, const nlohmann::json& payload);
     bool ParsePayload(int32_t& uid, int32_t& pid, const nlohmann::json& payload);
