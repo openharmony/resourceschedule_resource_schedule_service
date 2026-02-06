@@ -39,6 +39,7 @@ namespace {
     constexpr uint32_t MAX_SPAN_SERIAL = 99;
     constexpr uint32_t CHECK_WEB_SUBWIN_TASK_DELAY = 60 * 1000;
     const std::string MMI_SERVICE_NAME = "mmi_service";
+    const int32_t PRELOAD_MODULE = 2;
 }
 
 using OHOS::AppExecFwk::ApplicationState;
