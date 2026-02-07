@@ -49,6 +49,7 @@ private:
     void SubmitDelayTask(int64_t delayTime);
     void ReportFileSizeDaily();
     void ReportFileSizeInner();
+    int64_t ValidReportTime(int64_t delayTime);
 
     std::unordered_set<std::string> allFilePaths_;
     ffrt::mutex mutex_;
