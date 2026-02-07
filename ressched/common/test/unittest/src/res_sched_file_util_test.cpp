@@ -279,6 +279,7 @@ HWTEST_F(ResSchedFileUtilTest, CopyFile_001, Function | MediumTest | Level0)
     ResCommonUtil::RemoveFile(TEST_FILE_PATH);
     ResCommonUtil::RemoveFile(TEST_COPY_FILE_PATH);
     ResCommonUtil::RemoveDirs(TEST_DIR);
+    EXPECT_FALSE(ResCommonUtil::CopyFile(TEST_FILE_PATH, TEST_COPY_DIR));
 }
 
 /**
@@ -293,6 +294,20 @@ HWTEST_F(ResSchedFileUtilTest, GetRealConfigPath_001, Function | MediumTest | Le
     std::string realConfigPath;
     EXPECT_FALSE(ResCommonUtil::GetRealConfigPath(configPath, realConfigPath));
     EXPECT_TRUE(ResCommonUtil::GetRealConfigPath(TEST_CONFIG_DIR, realConfigPath));
+}
+
+/**
+ * @tc.name: ResSchedFileUtilTest RemoveFileOrDirIfExist_001
+ * @tc.desc: test RemoveFileOrDirIfExist
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedFileUtilTest, RemoveFileOrDirIfExist_001, Function | MediumTest | Level0)
+{
+    EXPECT_TRUE(ResCommonUtil::RemoveFileOrDirIfExist(TEST_COPY_FILE_PATH));
+    ResCommonUtil::CreateDir(TEST_DIR, S_IXUSR | S_IWUSR | S_IRUSR);
+    EXPECT_TRUE(ResCommonUtil::RemoveFileOrDirIfExist(TEST_DIR));
+    ResCommonUtil::CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR);
+    EXPECT_TRUE(ResCommonUtil::RemoveFileOrDirIfExist(TEST_FILE_PATH));
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
