@@ -77,7 +77,7 @@ namespace {
     const std::string POWER_MODE_KEY = "power";
     const std::string POWER_MODE = "powerMode";
     const std::string POWER_STATUS_KEY = "powerStatus";
-    const std::string PRELOAD_MODE = "isPreload";
+    const std::string PRELOAD_MODE = "preloadMode";
     const std::string PRELAUNCH = "isPrelaunch";
     const std::string WEAK_ACTION_STRING = "weakInterAction";
     const std::string WEAK_ACTION_MODE = "actionmode:weakaction";
@@ -146,6 +146,9 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L      = 10098;
     const int32_t PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P      = 10203;
     const int32_t PERF_REQUEST_CMD_ID_RECENT_BUILD          = 10200;
+    // PREMAKE_MODE_STRING = 1, PRELOADMODULE_MODE_STRING = 2,
+    // PRELAUNCH_MODE_STRING = 4
+    const std::unordered_set<std::string> PRELOAD_SET = {"1", "2", "4"};
 }
 IMPLEMENT_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -1211,7 +1214,7 @@ bool SocPerfPlugin::HandleAppStateChange(const std::shared_ptr<ResData>& data)
         ResType::UI_SENSITIVE_EXTENSION.end()) {
         if (data->payload != nullptr && data->payload.contains(PRELOAD_MODE) &&
             data->payload[PRELOAD_MODE].is_string() &&
-            atoi(data->payload[PRELOAD_MODE].get<std::string>().c_str()) == 1) {
+            PRELOAD_SET.count(data->payload[PRELOAD_MODE].get<std::string>())) {
             SOC_PERF_LOGI("SocPerfPlugin: socperf->APPSTATECHANGE is invalid as preload");
             return false;
         }
