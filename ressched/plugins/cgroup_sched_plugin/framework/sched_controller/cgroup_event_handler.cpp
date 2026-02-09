@@ -39,7 +39,9 @@ namespace {
     constexpr uint32_t MAX_SPAN_SERIAL = 99;
     constexpr uint32_t CHECK_WEB_SUBWIN_TASK_DELAY = 60 * 1000;
     const std::string MMI_SERVICE_NAME = "mmi_service";
-    const int32_t PRELOAD_MODULE = 2;
+    // PREMAKE_MODE_STRING = 1, PRELOADMODULE_MODE_STRING = 2,
+    // PRELAUNCH_MODE_STRING = 4
+    const std::unordered_set<int32_t> PRELOAD_SET = {1, 2, 4};
 }
 
 using OHOS::AppExecFwk::ApplicationState;
@@ -365,7 +367,7 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
         default:
             break;
     }
-    AdjustSource policy = (info.preloadMode == PRELOAD_MODULE) ?
+    AdjustSource policy = PRELOAD_SET.count(info.preloadMode) ?
         AdjustSource::ADJS_APP_PRELOAD : AdjustSource::ADJS_PROCESS_CREATE;
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), policy);
 }
