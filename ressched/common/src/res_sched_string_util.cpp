@@ -33,7 +33,7 @@ bool StrToFloat(const std::string& value, float& result)
     float res = std::strtof(value.c_str(), &pEnd);
     // check whether convert success
     if (errno == ERANGE || pEnd == value.c_str() || *pEnd != '\0' ||
-        (res < std::numeric_limits<float>::min()) ||
+        (res < std::numeric_limits<float>::lowest()) ||
         res > std::numeric_limits<float>::max()) {
         RESSCHED_LOGE("%{public}s:convert err or overflow.", __func__);
         return false;
@@ -50,7 +50,7 @@ bool CheckBundleName(const std::string &bundleName)
     }
     // check input length whether vaild.
     if (bundleName.size() < MIN_BUNDLE_NAME_LEN || bundleName.size() > MAX_BUNDLE_NAME_LEN) {
-        RESSCHED_LOGE("%{public}s:input bundle %{public}s length is invaild.",
+        RESSCHED_LOGE("%{public}s:input bundle %{public}s length is invalid.",
             __func__, bundleName.c_str());
         return false;
     }
@@ -63,7 +63,7 @@ bool CheckBundleName(const std::string &bundleName)
     for (const auto &ch : bundleName) {
         // check all item whether number, letter, '_' or '.'
         if (!isalnum(ch) && ch != '_' && ch != '.') {
-            RESSCHED_LOGE("%{public}s: %{public}s the item of bundle name is invaild.",
+            RESSCHED_LOGE("%{public}s: %{public}s the item of bundle name is invalid.",
                 __func__, bundleName.c_str());
             return false;
         }
@@ -119,7 +119,7 @@ bool IsNumericString(const std::string& str)
 {
     // check the length of input str whether vaild.
     if (str.size() > MAX_NUMBER_SIZE || str.size() == 0) {
-        RESSCHED_LOGE("%{public}s: input length is invaild.", __func__);
+        RESSCHED_LOGE("%{public}s: input length is invalid.", __func__);
         return false;
     }
     // when input length is one, check it whether number.
@@ -129,13 +129,13 @@ bool IsNumericString(const std::string& str)
     for (std::string::size_type i = 0;i < str.size(); ++i) {
         // first character is number or "-" can convert
         if (i == 0 && !(isdigit(str[0]) || str[0] == '-')) {
-            RESSCHED_LOGE("%{public}s: input %{public}s is invaild.",
+            RESSCHED_LOGE("%{public}s: input %{public}s is invalid.",
                 __func__, str.c_str());
             return false;
         }
         // other character must be number
         if (i != 0 && !isdigit(str[i])) {
-            RESSCHED_LOGE("%{public}s: input %{public}s is invaild.",
+            RESSCHED_LOGE("%{public}s: input %{public}s is invalid.",
                 __func__, str.c_str());
             return false;
         }
@@ -150,7 +150,11 @@ std::string StringTrim(const std::string& value)
     }
     auto strTmp = value;
     auto blanks("\f\v\r\t\n ");
-    strTmp.erase(0, strTmp.find_first_not_of(blanks));
+    auto start = strTmp.find_first_not_of(blanks);
+    if (start == std::string::npos) {
+        return "";
+    }
+    strTmp.erase(0, start);
     strTmp.erase(strTmp.find_last_not_of(blanks) + 1);
     return strTmp;
 }
@@ -162,8 +166,13 @@ std::string StringTrimSpace(const std::string& value)
     }
     auto strTmp = value;
     auto blanks(" ");
-    strTmp.erase(0, strTmp.find_first_not_of(blanks));
-    strTmp.erase(strTmp.find_last_not_of(blanks) + 1);
+    auto start = strTmp.find_first_not_of(blanks);
+    if (start == std::string::npos) {
+        return "";
+    }
+    strTmp.erase(0, start);
+    auto end = strTmp.find_last_not_of(blanks);
+    strTmp.erase(end + 1);
     return strTmp;
 }
 
