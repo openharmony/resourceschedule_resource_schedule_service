@@ -42,21 +42,21 @@ static const char* COMMON_EVENT_MEDIA_CTRL_EVENT = "usual.event.MEDIA_CTRL_EVENT
 static const char* COMMON_EVENT_CAMERA_STATUS = "usual.event.CAMERA_STATUS";
 static const char* COMMON_EVENT_GAME_STATUS = "usual.event.gameservice.GAME_STATUS_CHANGE_UNI";
 static const char* DATA_SHARE_READY = "usual.event.DATA_SHARE_READY";
-static const char* CONFIG_UPDATE_ACTION = "usual.event.DUA_SA_CFG_UPDATED";
+static const char* CONFIG_UPDATED_ACTION = "usual.event.DUE_SA_CFG_UPDATED";
 static const char* DEVICE_MODE_PAYMODE_NAME = "deviceMode";
 static const char* DEVICE_MODE_TYPE_KEY = "deviceModeType";
 static const char* SCENE_BOARD_NAME = "com.ohos.sceneboard";
 static const char* CAMERA_STATE = "cameraState";
 static const char* CAMERA_TYPE = "cameraType";
 static const char* IS_SYSTEM_CAMERA = "isSystemCamera";
-static const char* EVENT_INFO_TYPE = "type";
-static const char* EVENT_INFO_SUBTYPE = "subtype";
 static const char* GAME_UID = "uid";
 static const char* GAME_STATUS = "type";
 static const char* GAME_ENV = "env";
 static const char* PID = "pid";
 static const char* COMMON_EVENT_CAPACITY = "soc";
 static const char* COMMON_EVENT_CHARGE_STATE = "chargeState";
+static const char* EVENT_INFO_TYPE = "type";
+static const char* EVENT_INFO_SUBTYPE = "subtype";
 static const char* COMMON_EVENT_USER_SLEEP_STATE_CHANGED = "common.event.USER_NOT_CARE_CHARGE_SLEEP";
 static const char* COMMON_EVENT_AUDIO_FOCUS_CHANGE = "usual.event.AUDIO_FOCUS_CHANGE_EVENT";
 static const char* STREAM_ID = "streamId";
@@ -215,8 +215,8 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USER_UNLOCKED);
     matchingSkills.AddEvent(DATA_SHARE_READY);
     matchingSkills.AddEvent(COMMON_EVENT_CAMERA_STATUS);
-    matchingSkills.AddEvent(CONFIG_UPDATE_ACTION);
     matchingSkills.AddEvent(COMMON_EVENT_GAME_STATUS);
+    matchingSkills.AddEvent(CONFIG_UPDATE_ACTION);
     matchingSkills.AddEvent(COMMON_EVENT_USER_SLEEP_STATE_CHANGED);
     matchingSkills.AddEvent(COMMON_EVENT_MEDIA_CTRL_EVENT);
     matchingSkills.AddEvent(COMMON_EVENT_AUDIO_FOCUS_CHANGE);
@@ -371,19 +371,19 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
             static_cast<int64_t>(want.GetIntParam(CAMERA_STATE, 1)), payload);
         return;
     }
-    if (action == CONFIG_UPDATE_ACTION) {
-        RESSCHED_LOGD("report param update event");
-        payload["type"] = want.GetStringParam(EVENT_INFO_TYPE);
-        payload["subtype"] = want.GetStringParam(EVENT_INFO_SUBTYPE);
-        ReportDataInProcess(ResType::RES_TYPE_PARAM_UPADTE_EVENT, static_cast<int64_t>(userId), payload);
-        return;
-    }
     if (action == COMMON_EVENT_GAME_STATUS) {
         RESSCHED_LOGD("report game status event");
         payload[GAME_UID] = want.GetIntParam(GAME_UID, -1);
         payload[GAME_ENV] = want.GetIntParam(GAME_ENV, -1);
         ReportDataInProcess(ResType::RES_TYPE_REPORT_GAME_STATE_CHANGE,
             static_cast<int64_t>(want.GetIntParam(GAME_STATUS, -1)), payload);
+        return;
+    }
+    if (action == CONFIG_UPDATE_ACTION) {
+        RESSCHED_LOGD("report param update event");
+        payload["type"] = want.GetStringParam(EVENT_INFO_TYPE);
+        payload["subtype"] = want.GetStringParam(EVENT_INFO_SUBTYPE);
+        ReportDataInProcess(ResType::RES_TYPE_PARAM_UPADTE_EVENT, static_cast<int64_t>(userId), payload);
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_USER_UNLOCKED) {
