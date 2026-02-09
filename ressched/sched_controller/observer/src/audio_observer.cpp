@@ -61,6 +61,7 @@ bool AudioObserver::IsRenderStateChange(const std::shared_ptr<AudioStandard::Aud
 void AudioObserver::OnRendererStateChange(
     const std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> &audioRendererChangeInfos)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     std::unordered_set<int32_t> newRunningPid;
     std::unordered_set<int32_t> newStopSessionPid;
     for (const auto &audioRendererChangeInfo : audioRendererChangeInfos) {
