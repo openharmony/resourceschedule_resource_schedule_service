@@ -1216,6 +1216,119 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_005, TestSiz
 }
 
 /**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_001
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles empty callback list.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_001, TestSize.Level1)
+{
+    // 确保回调列表为空
+    PluginMgr::GetInstance().initFinishCallbacks_.clear();
+    
+    // 调用函数，应该不会崩溃
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    
+    // 测试通过，无异常
+    SUCCEED();
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_002
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles valid callbacks.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_002, TestSize.Level1)
+{
+    // 重置回调计数
+    g_initFinishCallCountA = 0;
+    g_initFinishCallCountB = 0;
+    
+    // 创建有效回调
+    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    auto callbackB = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackB);
+    
+    // 注册回调
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib_a", callbackA);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib_b", callbackB);
+    
+    // 调用函数
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    
+    // 验证回调被调用
+    EXPECT_GT(g_initFinishCallCountA, 0);
+    EXPECT_GT(g_initFinishCallCountB, 0);
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_003
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles null callbacks.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_003, TestSize.Level1)
+{
+    // 注册空回调
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", nullptr);
+    
+    // 调用函数，应该跳过空回调
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    
+    // 测试通过，无异常
+    SUCCEED();
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_004
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles nullptr callbacks.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_004, TestSize.Level1)
+{
+    // 创建指向 nullptr 的 shared_ptr
+    auto nullCallback = std::make_shared<OnInitFinishCallback>(nullptr);
+    
+    // 注册回调
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", nullCallback);
+    
+    // 调用函数，应该跳过空指针回调
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    
+    // 测试通过，无异常
+    SUCCEED();
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_005
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles mixed valid and invalid callbacks.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_005, TestSize.Level1)
+{
+    // 重置回调计数
+    g_initFinishCallCountA = 0;
+    
+    // 创建有效回调
+    auto validCallback = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    
+    // 创建指向 nullptr 的 shared_ptr
+    auto nullCallback = std::make_shared<OnInitFinishCallback>(nullptr);
+    
+    // 注册回调
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("valid_lib", validCallback);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("null_lib", nullCallback);
+    
+    // 调用函数，应该调用有效回调，跳过无效回调
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    
+    // 验证有效回调被调用
+    EXPECT_GT(g_initFinishCallCountA, 0);
+}
+
+/**
  * @tc.name: PluginMgrTest_ReadSubscriptionAccuractlyEnableProperties_001
  * @tc.desc: Verify ReadSubscriptionAccuractlyEnableProperties handles valid property value.
  * @tc.type: FUNC
