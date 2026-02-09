@@ -131,6 +131,16 @@ void PluginMgr::ParseConfigReader(const std::vector<std::string>& configStrs)
     }
 }
 
+void PluginMgr::CompletePluginInitialization()
+{
+    // Set initialization flag to true
+    isInit = true;
+    // Call all registered initialization finish callbacks
+    CallOnInitFinishCallbacks();
+    // Log initialization success
+    RESSCHED_LOGI("PluginMgr load plugin success!");
+}
+
 void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bool isRssExe)
 {
     if (!pluginSwitch_) {
@@ -176,9 +186,7 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
         RESSCHED_LOGI("create dispatcher failed");
     }
 #endif
-    isInit = true;
-    CallOnInitFinishCallbacks();
-    RESSCHED_LOGI("PluginMgr load plugin success!");
+    CompletePluginInitialization();
 }
 
 void PluginMgr::LoadGetExtConfigFunc()

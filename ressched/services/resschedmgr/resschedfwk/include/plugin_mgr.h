@@ -277,6 +277,12 @@ private:
      * Call all registered callback functions.
      */
     void CallOnInitFinishCallbacks();
+
+    /**
+     * Complete plugin initialization process.
+     * Set initialization flag, call finish callbacks, and log success.
+     */
+    void CompletePluginInitialization();
     bool CheckValidPlugin(const PluginInfo& info, void* pluginHandle, std::string& errorMsg,
         OnPluginInitFunc& onPluginInitFunc, OnPluginDisableFunc& onPluginDisableFunc);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
