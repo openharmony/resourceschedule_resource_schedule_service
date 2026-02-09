@@ -216,7 +216,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(DATA_SHARE_READY);
     matchingSkills.AddEvent(COMMON_EVENT_CAMERA_STATUS);
     matchingSkills.AddEvent(COMMON_EVENT_GAME_STATUS);
-    matchingSkills.AddEvent(CONFIG_UPDATE_ACTION);
+    matchingSkills.AddEvent(CONFIG_UPDATED_ACTION);
     matchingSkills.AddEvent(COMMON_EVENT_USER_SLEEP_STATE_CHANGED);
     matchingSkills.AddEvent(COMMON_EVENT_MEDIA_CTRL_EVENT);
     matchingSkills.AddEvent(COMMON_EVENT_AUDIO_FOCUS_CHANGE);
@@ -379,7 +379,7 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
             static_cast<int64_t>(want.GetIntParam(GAME_STATUS, -1)), payload);
         return;
     }
-    if (action == CONFIG_UPDATE_ACTION) {
+    if (action == CONFIG_UPDATED_ACTION) {
         RESSCHED_LOGD("report param update event");
         payload["type"] = want.GetStringParam(EVENT_INFO_TYPE);
         payload["subtype"] = want.GetStringParam(EVENT_INFO_SUBTYPE);
