@@ -1229,8 +1229,8 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_001, TestSize.Le
     // 调用函数，应该不会崩溃
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
     
-    // 测试通过，无异常
-    SUCCEED();
+    // 验证回调列表仍然为空（被交换后清空）
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
 }
 
 /**
@@ -1259,6 +1259,8 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_002, TestSize.Le
     // 验证回调被调用
     EXPECT_GT(g_initFinishCallCountA, 0);
     EXPECT_GT(g_initFinishCallCountB, 0);
+    // 验证回调列表被清空
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
 }
 
 /**
@@ -1275,8 +1277,8 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_003, TestSize.Le
     // 调用函数，应该跳过空回调
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
     
-    // 测试通过，无异常
-    SUCCEED();
+    // 验证回调列表被清空
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
 }
 
 /**
@@ -1296,8 +1298,8 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_004, TestSize.Le
     // 调用函数，应该跳过空指针回调
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
     
-    // 测试通过，无异常
-    SUCCEED();
+    // 验证回调列表被清空
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
 }
 
 /**
@@ -1326,6 +1328,8 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_005, TestSize.Le
     
     // 验证有效回调被调用
     EXPECT_GT(g_initFinishCallCountA, 0);
+    // 验证回调列表被清空
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
 }
 
 /**
