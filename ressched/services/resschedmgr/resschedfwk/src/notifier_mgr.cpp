@@ -214,7 +214,11 @@ void NotifierMgr::OnDeviceLevelChanged(int32_t type, int32_t level)
         RESSCHED_LOGW("OnDeviceLevelChanged, no type matched");
         return;
     }
-
+    if (level < static_cast<int32_t>(ResType::SystemloadLevel::LOW) ||
+        level > static_cast<int32_t>(ResType::SystemloadLevel::ESCAPE)) {
+        RESSCHED_LOGW("OnDeviceLevelChanged, level out of range");
+        return;
+    }
     systemloadLevel_ = static_cast<ResType::SystemloadLevel>(level);
     for (auto& vec : g_systemloadPair) {
         if (systemloadLevel_ == vec.second) {
