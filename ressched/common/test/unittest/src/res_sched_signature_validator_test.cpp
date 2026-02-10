@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-#include "bundle_mgr_helper.h"
 #include "res_sched_signature_validator_test.h"
 #include "res_sched_signature_validator.h"
 
@@ -35,26 +34,25 @@ constexpr int32_t UID_VALID = 111;
 constexpr int32_t UID_NOT_EXIST = 222;
 constexpr int32_t UID_NO_MATCH = 333;
 constexpr int32_t UID_INVALID = -1;
+constexpr int32_t DEFAULT_USER_ID = 100;
 }  // namespace
 
 void ResSchedSignatureValidatorTest::SetUp()
 {
-    ResSchedSignatureValidator::GetInstance().validCache_.clear();
-    ResSchedSignatureValidator::GetInstance().signatureConfig_.clear();
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    testSignatureValidator.validCache_.clear();
+    testSignatureValidator.signatureConfig_.clear();
 }
 
 void ResSchedSignatureValidatorTest::TearDown()
 {}
 
-void ResSchedSignatureValidatorTest::InitDefaultConfig()
-{
-    std::unordered_map<std::string, std::string> config = {{BUNDLE_VALID, SIGNATURE_VALID}};
-    ResSchedSignatureValidator::GetInstance().AddSignatureConfig(config);
-}
+// OVERRIDE CommBundleMgrHelperTest METHOD
 
-// OVERRIDE BundleMgrHelper METHOD
-
-std::string BundleMgrHelper::GetBundleNameByUid(int32_t uid)
+std::string CommBundleMgrHelperTest::GetBundleNameByUid(int32_t uid)
 {
     if (uid == UID_VALID) {
         return BUNDLE_VALID;
@@ -63,7 +61,7 @@ std::string BundleMgrHelper::GetBundleNameByUid(int32_t uid)
     }
 }
 
-int32_t BundleMgrHelper::GetUidByBundleName(const std::string &bundleName, const int32_t userId)
+int32_t CommBundleMgrHelperTest::GetUidByBundleName(const std::string &bundleName, const int32_t userId)
 {
     if (bundleName == BUNDLE_VALID) {
         return UID_VALID;
@@ -72,18 +70,23 @@ int32_t BundleMgrHelper::GetUidByBundleName(const std::string &bundleName, const
     }
 }
 
-ErrCode BundleMgrHelper::GetSignatureInfoByUid(const int32_t uid, AppExecFwk::SignatureInfo &signatureInfo)
+ErrCode CommBundleMgrHelperTest::GetSignatureInfoByUid(const int32_t uid, std::string &signatureInfo)
 {
     if (uid == UID_VALID) {
-        signatureInfo.appIdentifier = SIGNATURE_VALID;
+        signatureInfo = SIGNATURE_VALID;
         return 0;
     } else if (uid == UID_NO_MATCH) {
-        signatureInfo.appIdentifier = SIGNATURE_NO_MATCH;
+        signatureInfo = SIGNATURE_NO_MATCH;
         return 0;
     } else {
-        signatureInfo.appIdentifier = SIGNATURE_INVALID;
+        signatureInfo = SIGNATURE_INVALID;
         return 1;
     }
+}
+
+void CommBundleMgrHelperTest::GetCurrentUserId(std::vector<int> &activatedOsAccountIds)
+{
+    activatedOsAccountIds.push_back(DEFAULT_USER_ID);
 }
 
 // TESTCASE
@@ -96,10 +99,19 @@ ErrCode BundleMgrHelper::GetSignatureInfoByUid(const int32_t uid, AppExecFwk::Si
  */
 HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureByUid_001, Function | MediumTest | Level0)
 {
-    auto &instance = ResSchedSignatureValidator::GetInstance();
-    InitDefaultConfig();
-    EXPECT_EQ(instance.CheckSignatureByUid(UID_VALID), SignatureCheckResult::CHECK_OK);
-    EXPECT_EQ(instance.CheckSignatureByUid(UID_INVALID), SignatureCheckResult::ERR_INTERNAL_ERROR);
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    std::unordered_map<std::string, std::string> config = {{BUNDLE_VALID, SIGNATURE_VALID}};
+    testSignatureValidator.AddSignatureConfig(config);
+    EXPECT_EQ(testSignatureValidator.CheckSignatureByUid(UID_VALID),
+        SignatureCheckResult::CHECK_OK);
+    EXPECT_EQ(testSignatureValidator.CheckSignatureByUid(UID_INVALID),
+        SignatureCheckResult::ERR_INTERNAL_ERROR);
+    testSignatureValidator.bundleMgr_ = nullptr;
+    EXPECT_EQ(testSignatureValidator.CheckSignatureByUid(UID_INVALID),
+        SignatureCheckResult::ERR_NOT_SUPPORT);
 }
 
 /**
@@ -110,11 +122,21 @@ HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureByUid_001, Function | Med
  */
 HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureByBundleName_001, Function | MediumTest | Level0)
 {
-    auto &instance = ResSchedSignatureValidator::GetInstance();
-    InitDefaultConfig();
-    EXPECT_EQ(instance.CheckSignatureByBundleName(BUNDLE_VALID), SignatureCheckResult::CHECK_OK);
-    EXPECT_EQ(instance.CheckSignatureByBundleName(BUNDLE_NOT_EXIST), SignatureCheckResult::ERR_INTERNAL_ERROR);
-    EXPECT_EQ(instance.CheckSignatureByBundleName(BUNDLE_INVALID), SignatureCheckResult::ERR_PARAM_INVALID);
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    std::unordered_map<std::string, std::string> config = {{BUNDLE_VALID, SIGNATURE_VALID}};
+    testSignatureValidator.AddSignatureConfig(config);
+    EXPECT_EQ(testSignatureValidator.CheckSignatureByBundleName(BUNDLE_VALID),
+        SignatureCheckResult::CHECK_OK);
+    EXPECT_EQ(testSignatureValidator.CheckSignatureByBundleName(BUNDLE_NOT_EXIST),
+        SignatureCheckResult::ERR_INTERNAL_ERROR);
+    EXPECT_EQ(testSignatureValidator.CheckSignatureByBundleName(BUNDLE_INVALID),
+        SignatureCheckResult::ERR_PARAM_INVALID);
+    testSignatureValidator.bundleMgr_ = nullptr;
+    EXPECT_EQ(testSignatureValidator.CheckSignatureByBundleName(BUNDLE_INVALID),
+        SignatureCheckResult::ERR_NOT_SUPPORT);
 }
 
 /**
@@ -125,12 +147,19 @@ HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureByBundleName_001, Functio
  */
 HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureByBundleName_002, Function | MediumTest | Level0)
 {
-    auto &instance = ResSchedSignatureValidator::GetInstance();
-    InitDefaultConfig();
-    EXPECT_EQ(instance.CheckSignatureByBundleName(BUNDLE_VALID), SignatureCheckResult::CHECK_OK);
-    EXPECT_EQ(instance.CheckSignatureByBundleName(BUNDLE_VALID), SignatureCheckResult::CHECK_OK);
-    instance.OnAppInstallChanged(BUNDLE_VALID);
-    EXPECT_EQ(instance.CheckSignatureByBundleName(BUNDLE_VALID), SignatureCheckResult::CHECK_OK);
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    std::unordered_map<std::string, std::string> config = {{BUNDLE_VALID, SIGNATURE_VALID}};
+    testSignatureValidator.AddSignatureConfig(config);
+    EXPECT_EQ(testSignatureValidator.CheckSignatureByBundleName(BUNDLE_VALID),
+        SignatureCheckResult::CHECK_OK);
+    EXPECT_EQ(testSignatureValidator.CheckSignatureByBundleName(BUNDLE_VALID),
+        SignatureCheckResult::CHECK_OK);
+    testSignatureValidator.OnAppInstallChanged(BUNDLE_VALID);
+    EXPECT_EQ(testSignatureValidator.CheckSignatureByBundleName(BUNDLE_VALID),
+        SignatureCheckResult::CHECK_OK);
 }
 
 /**
@@ -141,11 +170,17 @@ HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureByBundleName_002, Functio
  */
 HWTEST_F(ResSchedSignatureValidatorTest, CheckBundleInList_001, Function | MediumTest | Level0)
 {
-    auto &instance = ResSchedSignatureValidator::GetInstance();
-    InitDefaultConfig();
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    std::unordered_map<std::string, std::string> config = {{BUNDLE_VALID, SIGNATURE_VALID}};
+    testSignatureValidator.AddSignatureConfig(config);
     std::vector<std::string> list{BUNDLE_VALID};
-    EXPECT_EQ(instance.CheckBundleInList(list, BUNDLE_VALID), SignatureCheckResult::CHECK_OK);
-    EXPECT_EQ(instance.CheckBundleInList(list, BUNDLE_NOT_EXIST), SignatureCheckResult::ERR_NOT_IN_LIST);
+    EXPECT_EQ(testSignatureValidator.CheckBundleInList(list, BUNDLE_VALID),
+        SignatureCheckResult::CHECK_OK);
+    EXPECT_EQ(testSignatureValidator.CheckBundleInList(list, BUNDLE_NOT_EXIST),
+        SignatureCheckResult::ERR_NOT_IN_LIST);
 }
 
 /**
@@ -156,13 +191,24 @@ HWTEST_F(ResSchedSignatureValidatorTest, CheckBundleInList_001, Function | Mediu
  */
 HWTEST_F(ResSchedSignatureValidatorTest, CheckSignature_001, Function | MediumTest | Level0)
 {
-    auto &instance = ResSchedSignatureValidator::GetInstance();
-    EXPECT_EQ(instance.CheckSignature(222, "test"), SignatureCheckResult::ERR_NO_SIGNATURE_CONFIG);
-    InitDefaultConfig();
-    EXPECT_EQ(instance.CheckSignature(UID_NO_MATCH, BUNDLE_VALID), SignatureCheckResult::ERR_SIGNATURE_NO_MATCH);
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    EXPECT_EQ(testSignatureValidator.CheckSignature(222, "test"),
+        SignatureCheckResult::ERR_NO_SIGNATURE_CONFIG);
+    std::unordered_map<std::string, std::string> config = {{BUNDLE_VALID, SIGNATURE_VALID}};
+    testSignatureValidator.AddSignatureConfig(config);
+    EXPECT_EQ(testSignatureValidator.CheckSignature(UID_NO_MATCH, BUNDLE_VALID),
+        SignatureCheckResult::ERR_SIGNATURE_NO_MATCH);
     // Check With Cache
-    EXPECT_EQ(instance.CheckSignature(UID_NO_MATCH, BUNDLE_VALID), SignatureCheckResult::ERR_SIGNATURE_NO_MATCH);
-    EXPECT_EQ(instance.CheckSignature(UID_NOT_EXIST, BUNDLE_VALID), SignatureCheckResult::ERR_INTERNAL_ERROR);
+    EXPECT_EQ(testSignatureValidator.CheckSignature(UID_NO_MATCH, BUNDLE_VALID),
+        SignatureCheckResult::ERR_SIGNATURE_NO_MATCH);
+    EXPECT_EQ(testSignatureValidator.CheckSignature(UID_NOT_EXIST, BUNDLE_VALID),
+        SignatureCheckResult::ERR_INTERNAL_ERROR);
+    testSignatureValidator.bundleMgr_ = nullptr;
+    EXPECT_EQ(testSignatureValidator.CheckSignature(UID_NOT_EXIST, BUNDLE_VALID),
+        SignatureCheckResult::ERR_NOT_SUPPORT);
 }
 
 /**
@@ -173,14 +219,17 @@ HWTEST_F(ResSchedSignatureValidatorTest, CheckSignature_001, Function | MediumTe
  */
 HWTEST_F(ResSchedSignatureValidatorTest, AddSignatureConfig_001, Function | MediumTest | Level0)
 {
-    auto &instance = ResSchedSignatureValidator::GetInstance();
-    instance.signatureConfig_.clear();
-    InitDefaultConfig();
-    EXPECT_EQ(instance.signatureConfig_.size(), 1);
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    testSignatureValidator.signatureConfig_.clear();
+    std::unordered_map<std::string, std::string> config1 = {{BUNDLE_VALID, SIGNATURE_VALID}};
+    testSignatureValidator.AddSignatureConfig(config1);
+    EXPECT_EQ(testSignatureValidator.signatureConfig_.size(), 1);
     std::unordered_map<std::string, std::string> config = {{"test_add_bundle", "test"}};
-    ResSchedSignatureValidator::GetInstance().AddSignatureConfig(config);
-    EXPECT_EQ(instance.signatureConfig_.size(), 2);
+    testSignatureValidator.AddSignatureConfig(config);
+    EXPECT_EQ(testSignatureValidator.signatureConfig_.size(), 2);
 }
-
 }  // namespace ResourceSchedule
 }  // namespace OHOS
