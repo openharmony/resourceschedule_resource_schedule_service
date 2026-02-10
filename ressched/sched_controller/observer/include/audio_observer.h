@@ -74,11 +74,11 @@ private:
     void ReportCapturerStateChange(
         const std::vector<std::shared_ptr<AudioStandard::AudioCapturerChangeInfo>>& audioCapturerChangeInfos);
 
+    std::mutex renderStateMutex_;
     std::unordered_map<int32_t, AudioStandard::RendererState> renderState_;
     std::unordered_map<int32_t, int32_t> volumeState_;
     std::unordered_map<int32_t, ProcessRenderState> processRenderStateMap_;
 
-    std::mutex mutex_;
     std::mutex capturerMutex_;
     std::unordered_map<int32_t, std::unordered_set<int32_t>> capturerStateMap_;
     std::unordered_map<int32_t, int32_t> capturerInfoPidToUidMap_;
