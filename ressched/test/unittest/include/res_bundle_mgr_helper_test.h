@@ -13,20 +13,23 @@
  * limitations under the License.
  */
 
-#ifndef RES_SCHED_BUNDLE_MGR_HELPER_TEST_H
-#define RES_SCHED_BUNDLE_MGR_HELPER_TEST_H
+#ifndef RES_SCHED_BUNDLE_HELPER_TEST_H
+#define RES_SCHED_BUNDLE_HELPER_TEST_H
 
 #include "gtest/gtest.h"
+#include "res_bundle_mgr_helper.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
 
-class BundleMgrHelperTest : public testing::Test {
-protected:
+class ResBundleMgrHelperTest : public testing::Test {
+public:
     void SetUp();
     void TearDown();
+protected:
+    std::shared_ptr<ResBundleMgrHelper> resBundleMgrHelper_ = nullptr;
 };
 }  // namespace ResourceSchedule
 }  // namespace OHOS
 
-#endif  // RES_SCHED_BUNDLE_MGR_HELPER_TEST_H
+#endif  // RES_SCHED_BUNDLE_HELPER_TEST_H

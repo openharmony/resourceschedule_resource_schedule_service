@@ -20,6 +20,7 @@
 #include <ctime>
 #include <utility>
 #include "ffrt.h"
+#include "bundle_mgr_helper.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -31,6 +32,7 @@ enum SignatureCheckResult : int8_t {
     ERR_PARAM_INVALID = 3,
     ERR_INTERNAL_ERROR = 4,
     ERR_NOT_IN_LIST = 5,
+    ERR_NOT_SUPPORT = 6,
 };
 
 class ResSchedSignatureValidator {
@@ -46,6 +48,8 @@ public:
     void OnAppInstallChanged(const std::string &bundleName);
 
     void AddSignatureConfig(std::unordered_map<std::string, std::string> &config);
+
+    void InitSignatureDependencyInterface(std::shared_ptr<BundleMgrHelper> bundleMgr);
 private:
     ResSchedSignatureValidator() = default;
 
@@ -62,6 +66,8 @@ private:
     std::unordered_map<std::string, std::string> signatureConfig_;
 
     std::unordered_map<std::string, int32_t> bundleNameToUid_;
+
+    std::shared_ptr<BundleMgrHelper> bundleMgr_;
 };
 }  // namespace ResourceSchedule
 }  // namespace OHOS

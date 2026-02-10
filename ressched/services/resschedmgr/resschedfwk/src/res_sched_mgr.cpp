@@ -32,6 +32,8 @@
 #include "scene_recognizer_mgr.h"
 #include "system_ability_definition.h"
 #include "res_data.h"
+#include "res_sched_signature_validator.h"
+#include "res_bundle_mgr_helper.h"
 
 #ifdef OBSERVER_EVENT_TEST
 #define WEAK_FUNC __attribute__((weak))
@@ -214,6 +216,9 @@ IMPLEMENT_SINGLE_INSTANCE(ResSchedMgr);
 
 void ResSchedMgr::Init()
 {
+    std::shared_ptr<ResourceSchedule::ResBundleMgrHelper> resBundleMgr =
+        std::make_shared<ResourceSchedule::ResBundleMgrHelper>();
+    ResSchedSignatureValidator::GetInstance().InitSignatureDependencyInterface(resBundleMgr);
     PluginMgr::GetInstance().Init();
     PluginMgr::GetInstance().SetResTypeStrMap(resTypeToStr);
 
