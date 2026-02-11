@@ -126,10 +126,13 @@ bool ResBundleMgrHelper::Connect()
 
 void ResBundleMgrHelper::Disconnect()
 {
-    if (bundleMgr_ != nullptr && bundleMgr_->AsObject() != nullptr) {
-        bundleMgr_->AsObject()->RemoveDeathRecipient(bundleMgrDeathRecipient_);
-        bundleMgr_ = nullptr;
+    if (bundleMgr_ == nullptr) {
+        return;
     }
+    if (bundleMgr_->AsObject() != nullptr) {
+        bundleMgr_->AsObject()->RemoveDeathRecipient(bundleMgrDeathRecipient_);
+    }
+    bundleMgr_ = nullptr;
 }
 
 void ResBundleMgrHelper::OnRemoteDied(const wptr<IRemoteObject> &object)
