@@ -1073,5 +1073,21 @@ HWTEST_F(ResSchedServiceTest, DumpExtHelp001, Function | MediumTest | Level0)
     EXPECT_TRUE(result.find("setSystemLoadLevel") != std::string::npos);
     EXPECT_TRUE(result.find("getSystemloadInfo") != std::string::npos);
 }
+
+/**
+ * @tc.name: Ressched service Dump Empty Args 001
+ * @tc.desc: DumpExt with -h always includes system load level related help info
+ * @tc.type: FUNC
+ * @tc.require: issue#ICQCY1
+ * @tc.author: jiangfeng
+ */
+HWTEST_F(ResSchedServiceTest, DumpEmptyArgs001, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResScjedService> resSchedService_ = std::make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+
+    std::vector<std::u16string> argsInStr;
+    
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
