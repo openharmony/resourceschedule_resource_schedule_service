@@ -43,6 +43,10 @@ int32_t KillProcess::KillProcessByPidWithClient(const nlohmann::json& payload)
     }
     std::string processName = payload.contains("processName") && payload["processName"].is_string() ?
                                   payload["processName"].get<string>() : UNKNOWN_PROCESS;
+    if (pid <= 0) {
+        RESSCHED_LOGE("process %{public}d:%{public}s is invalid", pid, processName.c_str());
+        return RES_SCHED_KILL_PROCESS_FAIL;
+    }
     if (payload.contains("killReason") && payload["killReason"].is_string()) {
         std::string killReason = payload["killReason"].get<string>();
         AAFwk::ExitReason reason = {AAFwk::REASON_PERFORMANCE_CONTROL, killReason};

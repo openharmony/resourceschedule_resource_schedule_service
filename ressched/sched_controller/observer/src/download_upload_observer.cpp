@@ -23,18 +23,45 @@ namespace ResourceSchedule {
 void DownLoadUploadObserver::OnRunningTaskCountUpdate(int count)
 {
     RESSCHED_LOGD("download upload on running task count %{public}d", count);
-    const nlohmann::json payload = nlohmann::json::object();
-    if (count > 0 && !isReportScene) {
-        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
-            ResType::KeyUploadOrDownloadStatus::ENTER_UPLOAD_DOWNLOAD_SCENE, payload);
-        isReportScene = true;
+    if (IsReporEnterScene(count)) {
+        HandleEnterScene();
         return;
     }
-    if (count == 0 && isReportScene) {
-        ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
-            ResType::KeyUploadOrDownloadStatus::EXIT_UPLOAD_DOWNLOAD_SCENE, payload);
-        isReportScene = false;
+    if (IsReporExitScene(count)) {
+        HandleExitScene();
     }
+}
+
+bool DownLoadUploadObserver::IsReporEnterScene(int count)
+{
+    if (count > 0 && !isReportedScene_) {
+        return true;
+    }
+    return false;
+}
+
+bool DownLoadUploadObserver::IsReporExitScene(int count)
+{
+    if (count == 0 && isReportedScene_) {
+        return true;
+    }
+    return false;
+}
+
+void DownLoadUploadObserver::HandleEnterScene()
+{
+    const nlohmann::json payload = nlohmann::json::object();
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
+        ResType::KeyUploadOrDownloadStatus::ENTER_UPLOAD_DOWNLOAD_SCENE, payload);
+    isReportedScene_ = true;
+}
+
+void DownLoadUploadObserver::HandleExitScene()
+{
+    const nlohmann::json payload = nlohmann::json::object();
+    ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_UPLOAD_DOWNLOAD,
+        ResType::KeyUploadOrDownloadStatus::EXIT_UPLOAD_DOWNLOAD_SCENE, payload);
+    isReportedScene_ = false;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

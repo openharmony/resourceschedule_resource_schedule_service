@@ -24,9 +24,13 @@ public:
     ~DownLoadUploadObserver() = default;
     virtual void OnRunningTaskCountUpdate(int count) override;
 private:
-    bool isReportScene = false;
+    bool IsReporEnterScene(int count);
+    bool IsReporExitScene(int count);
+    void HandleEnterScene();
+    void HandleExitScene();
+    bool isReportedScene_ = false;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
-#endif
+#endif // RESOURCE_REQUEST_REQUEST
 #endif // RESSCHED_SCHED_CONTROLLER_OBSERVER_INCLUDE_DOWNLOAD_UPLOAD_OBSERVER_H
