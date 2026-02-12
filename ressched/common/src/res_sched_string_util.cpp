@@ -32,9 +32,7 @@ bool StrToFloat(const std::string& value, float& result)
     errno = 0;
     float res = std::strtof(value.c_str(), &pEnd);
     // check whether convert success
-    if (errno == ERANGE || pEnd == value.c_str() || *pEnd != '\0' ||
-        (res < std::numeric_limits<float>::lowest()) ||
-        res > std::numeric_limits<float>::max()) {
+    if (errno == ERANGE || pEnd == value.c_str() || *pEnd != '\0') {
         RESSCHED_LOGE("%{public}s:convert err or overflow.", __func__);
         return false;
     }
