@@ -1083,7 +1083,7 @@ HWTEST_F(ResSchedServiceTest, DumpExtHelp001, Function | MediumTest | Level0)
  */
 HWTEST_F(ResSchedServiceTest, DumpEmptyArgs001, Function | MediumTest | Level0)
 {
-    std::shared_ptr<ResScjedService> resSchedService_ = std::make_shared<ResSchedService>();
+    std::shared_ptr<ResSchedService> resSchedService_ = std::make_shared<ResSchedService>();
     EXPECT_TRUE(resSchedService_ != nullptr);
 
     std::vector<std::u16string> argsInStr;
@@ -1104,7 +1104,7 @@ HWTEST_F(ResSchedServiceTest, DumpHelpArgs001, Function | MediumTest | Level0)
     std::shared_ptr<ResSchedService> resSchedService_ = std::make_shared<ResSchedService>();
     EXPECT_TRUE(resSchedService_ != nullptr);
     std::vector<std::u16string> argsInStr;
-    argsInStr.push_back("-h");
+    argsInStr.push_back(to_utf16("-h"));
     int32_t fd = 1; // stdout
     int32_t ret = resSchedService_->Dump(fd, argsInStr);
     EXPECT_EQ(ret, ERR_OK);
