@@ -419,6 +419,9 @@ bool PluginMgr::GetPluginListByResType(uint32_t resType, std::list<std::string>&
 inline void BuildSimplifyLibAll(const std::list<std::string>& pluginList, std::string& simplifyLibAll)
 {
     for (const auto& libName : pluginList) {
+        if (libName.length() < (SIMPLIFY_LIB_INDEX + SIMPLIFY_LIB_LENGTH)) {
+            return;
+        }
         simplifyLibAll.append(libName.substr(SIMPLIFY_LIB_INDEX, SIMPLIFY_LIB_LENGTH));
     }
 }
