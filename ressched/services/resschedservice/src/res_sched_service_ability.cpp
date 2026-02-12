@@ -133,42 +133,42 @@ void ResSchedServiceAbility::SystemAbilityListenerInit()
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of app manager service failed.");
-        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", APP_MGR_SERVICE_ID);
+        RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", APP_MGR_SERVICE_ID);
     }
     if (!AddSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of window manager service failed.");
-        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", WINDOW_MANAGER_SERVICE_ID);
+        RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", WINDOW_MANAGER_SERVICE_ID);
     }
     if (!AddSystemAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of background task manager service failed.");
-        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", BACKGROUND_TASK_MANAGER_SERVICE_ID);
+        RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", BACKGROUND_TASK_MANAGER_SERVICE_ID);
     }
     if (!AddSystemAbilityListener(RES_SCHED_EXE_ABILITY_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of background task manager service failed.");
-        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", RES_SCHED_EXE_ABILITY_ID);
+                        "ERR_MSG", "Register a listener of res sched exe service failed.");
+        RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", RES_SCHED_EXE_ABILITY_ID);
     }
     if (!AddSystemAbilityListener(POWER_MANAGER_SERVICE_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of power manager service failed.");
-        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", POWER_MANAGER_SERVICE_ID);
+        RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", POWER_MANAGER_SERVICE_ID);
     }
     if (!AddSystemAbilityListener(GAME_SERVICE_SERVICE_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of power manager service failed.");
-        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", GAME_SERVICE_SERVICE_ID);
+                        "ERR_MSG", "Register a listener of game service failed.");
+        RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", GAME_SERVICE_SERVICE_ID);
     }
     SystemAbilityListenerInitExtPartOne();
     SystemAbilityListenerInitExtPartTwo();
@@ -182,31 +182,31 @@ void ResSchedServiceAbility::SystemAbilityListenerInitExtPartOne()
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of wifi manager service failed.");
-        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", WIFI_DEVICE_SYS_ABILITY_ID);
+        RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", WIFI_DEVICE_SYS_ABILITY_ID);
     }
     if (!AddSystemAbilityListener(MSDP_USER_STATUS_SERVICE_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of power manager service failed.");
-        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", MSDP_USER_STATUS_SERVICE_ID);
+                        "ERR_MSG", "Register a listener of msdp user status service failed.");
+        RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", MSDP_USER_STATUS_SERVICE_ID);
     }
     if (!AddSystemAbilityListener(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of power manager service failed.");
-        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+                        "ERR_MSG", "Register a listener of bundle manager service failed.");
+        RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     }
     if (!AddSystemAbilityListener(SOC_PERF_SERVICE_SA_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a listener of power manager service failed.");
-        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", SOC_PERF_SERVICE_SA_ID);
+                        "ERR_MSG", "Register a listener of soc perf service failed.");
+        RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", SOC_PERF_SERVICE_SA_ID);
     }
     if (!AddSystemAbilityListener(MEMORY_MANAGER_SA_ID)) {
-        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", MEMORY_MANAGER_SA_ID);
+        RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", MEMORY_MANAGER_SA_ID);
     }
 }
 
@@ -217,14 +217,14 @@ void ResSchedServiceAbility::SystemAbilityListenerInitExtPartTwo()
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of location locator failed.");
-        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", LOCATION_LOCATOR_SA_ID);
+        RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", LOCATION_LOCATOR_SA_ID);
     }
     if (!AddSystemAbilityListener(ADVANCED_NOTIFICATION_SERVICE_ABILITY_ID)) {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
                         "COMPONENT_NAME", "MAIN",
                         "ERR_TYPE", "register failure",
                         "ERR_MSG", "Register a listener of advanced notification service failed.");
-        RESSCHED_LOGI("AddSystemAbilityListener failed saId:%{public}d", ADVANCED_NOTIFICATION_SERVICE_ABILITY_ID);
+        RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", ADVANCED_NOTIFICATION_SERVICE_ABILITY_ID);
     }
 }
 } // namespace ResourceSchedule
