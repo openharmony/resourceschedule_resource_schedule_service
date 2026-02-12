@@ -23,8 +23,22 @@ enum ProcessPriority: i32 {
     PROCESS_INACTIVE = 2,
 }
 
+enum PowerSaveMode: i32 {
+    EFFICIENCY_MODE = 1,
+    DEFAULT_MODE = 2,
+}
+
 @gen_promise("setProcessPriority")
 function setProcessPrioritySync(pid: i32, priority: ProcessPriority): void;
 
 @gen_promise("resetProcessPriority")
 function resetProcessPrioritySync(pid: i32): void;
+
+@gen_promise("setPowerSaveMode")
+function setPowerSaveModeSync(pid: i32, powerSaveMode: PowerSaveMode): void;
+
+@gen_promise("getPowerSaveMode")
+function getPowerSaveModeSync(pid: i32): PowerSaveMode;
+
+@gen_promise("isPowerSaveMode")
+function isPowerSaveModeSync(pid: i32): bool;
