@@ -36,7 +36,7 @@ private:
     AppStartupSceneRec();
     ~AppStartupSceneRec();
     void CleanRecordSceneData();
-    void UpdateAppStartupNum(std::string uid, int64_t curTime, std::string bundleName);
+    void UpdateAppStartupNum(const std::string uid, const int64_t curTime, const std::string bundleName);
     bool IsContinuousStartup();
     int32_t appStartCount_ = 0;
     int64_t lastAppStartTime_ = 0;
