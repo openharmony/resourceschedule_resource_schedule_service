@@ -33,7 +33,7 @@ bool StrToFloat(const std::string& value, float& result)
     float res = std::strtof(value.c_str(), &pEnd);
     // check whether convert success
     if (errno == ERANGE || pEnd == value.c_str() || *pEnd != '\0') {
-        RESSCHED_LOGE("%{public}s:convert err or overflow.", __func__);
+        RESSCHED_LOGD("%{public}s:convert err or overflow.", __func__);
         return false;
     }
     result = res;
@@ -77,7 +77,7 @@ bool StrToInt32(const std::string& value, int32_t& result)
     // check whether convert success
     if (errno == ERANGE || pEnd == value.c_str() || *pEnd != '\0' ||
         (res < INT_MIN || res > INT_MAX)) {
-        RESSCHED_LOGE("%{public}s:convert err or overflow.", __func__);
+        RESSCHED_LOGD("%{public}s:convert err or overflow.", __func__);
         return false;
     }
     result = res;
@@ -106,7 +106,7 @@ bool StrToUInt32(const std::string& value, uint32_t& result)
     uint32_t res = (uint32_t)std::strtoul(value.c_str(), &pEnd, 10);
     if (errno == ERANGE || pEnd == value.c_str() || *pEnd != '\0' ||
         (res > UINT_MAX)) {
-        RESSCHED_LOGE("%{public}s:convert err or overflow.", __func__);
+        RESSCHED_LOGD("%{public}s:convert err or overflow.", __func__);
         return false;
     }
     result = res;

@@ -24,7 +24,7 @@
     *PluginMgr*GetRunner*;
     *PluginMgr*SetLinkJumpOptSet*;
     *PluginMgr*SubscribeSyncResource*;
-    *PluginMgr*GetInstance*;
+    *EventListenerMgr*GetInstance*;
     *EventListenerMgr*SendEvent*;
     *AvSessionStateListener*;
     *ConnectionSubscribe*;
