@@ -61,7 +61,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     static const int32_t TWO_PARAMETERS = 2;
-    static const int32_t TIME_SECOND = 1000000;
+    static const int64_t TIME_SECOND = 1000000;
 
     static const std::unordered_set<uint32_t> THIRDPARTY_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
