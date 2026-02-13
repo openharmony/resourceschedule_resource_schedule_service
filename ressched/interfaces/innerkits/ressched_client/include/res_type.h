@@ -413,6 +413,12 @@ enum : uint32_t {
     RES_TYPE_DATA_CLONE_STATE = 196,
     // report oobe clone
     RES_TYPE_OOBE_CLONE = 197,
+    // report create living app process
+    RES_TYPE_CREATE_LIVING_APP_PROCESS = 198,
+    // report internal broadcast image process creation Result
+    RES_TYPE_IMAGE_PROCESS_STATE_CHANGED = 199,
+    // report app snapshot failure info
+    RES_TYPE_SNAPSHOT_FAILURE = 200,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -455,6 +461,12 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO = 510,
     // get click ext report
     SYNC_RES_TYPE_APP_IS_IN_CLICK_REPORT_EXT_LIST = 511,
+    // report app ctrl forkall image, only for forkall_plugin
+    RES_TYPE_CTRL_FORKALL_IMAGE_INTERFACE = 512,
+    // get is template process, only for forkall_plugin
+    SYNC_RES_TYPE_GET_IS_TEMPLATE_PROCESS = 513,
+    // report forkall cloud config update, only for forkall_plugin
+    SYNC_RES_TYPE_FORKALL_CLOUD_CONFIG_UPDATE = 514,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // get first frame drawn

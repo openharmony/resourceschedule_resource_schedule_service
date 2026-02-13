@@ -116,6 +116,8 @@ namespace {
         ResType::SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO,
         ResType::RES_TYPE_WEB_SUBWIN_TASK,
         ResType::SYNC_RES_TYPE_APP_IS_IN_CLICK_REPORT_EXT_LIST,
+        ResType::RES_TYPE_CTRL_FORKALL_IMAGE_INTERFACE,
+        ResType::RES_TYPE_SNAPSHOT_FAILURE,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -206,6 +208,8 @@ namespace {
         { ResType::RES_TYPE_STANDBY_FREEZE_FAILED, { 1201 } },
         { ResType::RES_TYPE_IME_QOS_CHANGE, { 3820 } },
         { ResType::RES_TYPE_HARDWARE_DECODING_RESOURCES, { 1013 }},
+        { ResType::RES_TYPE_CREATE_LIVING_APP_PROCESS, { 5523 } },
+        { ResType::RES_TYPE_CTRL_FORKALL_IMAGE_INTERFACE, { 1096 } },
     };
     enum SYSTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL : int32_t {
         DEBUG_LEVEL_MINIMUM = 0,
