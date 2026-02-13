@@ -114,7 +114,7 @@ class Plugin {
 | 配置项 | 描述 |
 |--------|------|
 | `controller` | cgroup 控制器类型：`cpuset`、`cpuctl`、`blkio` 等 |
-| `path` | cgroup 绝对路径 |
+| `path` | cgroup 路径 |
 | `sched_policy` | 调度策略与 cgroup 的绑定关系 |
 | `sp_xx` | 具体策略类型（如 `sp_top_app`、`sp_background`） |
 
