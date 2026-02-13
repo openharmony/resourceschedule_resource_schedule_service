@@ -1046,7 +1046,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_027, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     payload["processName"] = "com.ohos.test1";
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
@@ -1102,7 +1102,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_028, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessCreated(resType, value, payload);
     cgroupEventHandler->HandleTransientTaskStart(1000, 1234, "com.ohos.test");
     EXPECT_TRUE(supervisor_->GetAppRecord(1000)->GetProcessRecord(1234)->runningTransientTask_);
@@ -1359,7 +1359,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_036, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1384,7 +1384,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_037, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1409,7 +1409,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_038, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1434,7 +1434,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_039, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1459,7 +1459,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_040, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1484,7 +1484,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_041, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1509,7 +1509,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_042, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1534,7 +1534,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_043, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1559,7 +1559,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_044, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1584,7 +1584,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_045, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1609,7 +1609,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_046, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1634,7 +1634,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_047, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1659,7 +1659,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_048, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1684,7 +1684,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_050, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1709,7 +1709,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_051, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1734,7 +1734,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_052, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1759,7 +1759,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_053, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1784,7 +1784,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_054, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1809,7 +1809,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_055, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1834,7 +1834,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_056, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1859,7 +1859,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_057, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1884,7 +1884,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_058, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1909,7 +1909,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_059, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1934,7 +1934,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_060, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1959,7 +1959,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_061, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -1984,7 +1984,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_062, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2009,7 +2009,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_063, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2034,7 +2034,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_064, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2059,7 +2059,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_065, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2084,7 +2084,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_066, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2109,7 +2109,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_067, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2134,7 +2134,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_068, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2159,7 +2159,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_069, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2184,7 +2184,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_070, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2209,7 +2209,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_071, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2234,7 +2234,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_072, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2259,7 +2259,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_073, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2284,7 +2284,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_074, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2309,7 +2309,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_075, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2334,7 +2334,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_076, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2359,7 +2359,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_077, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2384,7 +2384,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_078, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2409,7 +2409,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_079, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
@@ -2434,7 +2434,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_080, Function | Med
     payload["hostPid"] = std::to_string(2024);
     payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
-    payload["isPreloadModule"] = std::to_string(0);
+    payload["preloadMode"] = std::to_string(0);
     cgroupEventHandler->HandleProcessDied(resType, value, payload);
     EXPECT_TRUE(supervisor_->GetAppRecord(1000) == nullptr);
 }
