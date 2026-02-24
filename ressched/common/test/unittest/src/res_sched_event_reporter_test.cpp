@@ -74,5 +74,17 @@ HWTEST_F(ResSchedEventReporterTest, ReportFileSizeEvent_002, Function | MediumTe
     ResschedEventReporter::GetInstance().allFilePaths_.clear();
     ResschedEventReporter::GetInstance().isTaskSubmit_ = false;
 }
+
+/**
+ * @tc.name: ResSchedEventReporterTest ValidReportTime_001
+ * @tc.desc: test ValidReportTime
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedEventReporterTest, ValidReportTime_001, Function | MediumTest | Level0)
+{
+    EXPECT_EQ(0, ResschedEventReporter::GetInstance().ValidReportTime(-100));
+    EXPECT_EQ(86400000000, ResschedEventReporter::GetInstance().ValidReportTime(186400000000));
+    EXPECT_EQ(1000, ResschedEventReporter::GetInstance().ValidReportTime(1000));
+}
 } // namespace ResourceSchedule
 } // namespace OHOS
