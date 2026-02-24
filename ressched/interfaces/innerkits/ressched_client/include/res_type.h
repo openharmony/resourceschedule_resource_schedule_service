@@ -314,7 +314,7 @@ enum : uint32_t {
     // report modem high power abnormal
     RES_TYPE_MODEM_PA_HIGH_POWER_ABNORMAL = 143,
     // report param update event
-    RES_TYPE_PARAM_UPADTE_EVENT = 144,
+    RES_TYPE_PARAM_UPDATE_EVENT = 144,
     // [phased out soon] report camera prelaunch event
     RES_TYPE_CAMERA_PRELAUNCH = 145,
     // report high frequence load scene without aggregation
