@@ -42,7 +42,10 @@ void WriteFileReclaim(int32_t pid)
     }
     fdsan_exchange_owner_tag(fd, 0, LOG_DOMAIN);
     // write content to fd
-    write(fd, contentStr.c_str(), contentStr.length());
+    auto size = write(fd, contentStr.c_str(), contentStr.length());
+    if (size < static_cast<ssize_t>(contentStr.length())) {
+        RESSCHED_LOGE("%{public}s: actually wrote %{public}d.", __func__, static_cast<int>(size));
+    }
     fdsan_close_with_tag(fd, LOG_DOMAIN);
 }
 
@@ -164,6 +167,19 @@ bool RemoveFile(const std::string& filePath)
     return true;
 }
 
+bool RemoveFileOrDirIfExist(const std::string& path)
+{
+    if (!PathOrFileExists(path)) {
+        return true;
+    }
+    // target path is exist, remove it.
+    if (IsDir(path)) {
+        return RemoveDirs(path);
+    } else {
+        return RemoveFile(path);
+    }
+}
+
 std::string ExtractFileName(const std::string& filePath)
 {
     return OHOS::ExtractFileName(filePath);
@@ -235,12 +251,9 @@ bool CopyFile(const std::string& src, const std::string& des)
         RESSCHED_LOGE("%{public}s: src path invalid!", __func__);
         return false;
     }
-    if (PathOrFileExists(des)) {
-        // target path is exist, remove it before copy.
-        if (!RemoveDirs(des)) {
-            RESSCHED_LOGE("%{public}s: target path is exist and remove failed!", __func__);
-            return false;
-        }
+    if (!RemoveFileOrDirIfExist(des)) {
+        RESSCHED_LOGE("%{public}s: target path is exist and remove failed!", __func__);
+        return false;
     }
     errno = 0;
     // create target directory.

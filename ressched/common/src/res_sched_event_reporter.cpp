@@ -74,11 +74,24 @@ void ResschedEventReporter::ReportFileSizeDaily()
             int64_t nowTime = ResCommonUtil::GetNowMicroTime();
             if (nowTime - lastReportTimeValue < ONE_DAY_MICRO_SECOND) {
                 int64_t nextReportTime = ONE_DAY_MICRO_SECOND - (nowTime- lastReportTimeValue);
+                nextReportTime = ValidReportTime(nextReportTime);
                 SubmitDelayTask(nextReportTime);
             } else {
                 ReportFileSizeInner();
             }
         }
+    }
+}
+
+int64_t ResschedEventReporter::ValidReportTime(int64_t delayTime)
+{
+    // Avoid the impact of users actively modifying system time
+    if (delayTime < 0) {
+        return 0;
+    } else if (delayTime > ONE_DAY_MICRO_SECOND) {
+        return ONE_DAY_MICRO_SECOND;
+    } else {
+        return delayTime;
     }
 }
 

@@ -109,6 +109,14 @@ bool RemoveDirs(const std::string& dir);
 bool RemoveFile(const std::string& filePath);
 
 /**
+ * @brief Remove file or dir if exist.
+ *
+ * @param path dir or file which will be removed.
+ * @return 'true' if dir remove succeed.
+ */
+bool RemoveFileOrDirIfExist(const std::string& path);
+
+/**
  * @brief Extract file name from file path.
  *
  * @param filePath the file path
