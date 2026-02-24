@@ -61,7 +61,7 @@ bool GetRealPath(const std::string& filePath, std::string& realPath)
 bool PathOrFileExists(const std::string& path)
 {
     if (access(path.c_str(), F_OK) != 0) {
-        RESSCHED_LOGE("%{public}s: access failed.", __func__);
+        RESSCHED_LOGD("%{public}s: access failed.", __func__);
         return false;
     }
     return true;
@@ -316,7 +316,7 @@ std::string GetPartitionName(const std::string& path)
     return partition;
 }
 
-double GetDeviceVailidSize(const std::string& path)
+double GetDeviceValidSize(const std::string& path)
 {
     std::string partitionName = GetPartitionName(path);
     struct statfs stat;

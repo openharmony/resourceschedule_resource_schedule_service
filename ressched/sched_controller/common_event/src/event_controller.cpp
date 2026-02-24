@@ -400,7 +400,7 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         RESSCHED_LOGD("report param update event");
         payload["type"] = want.GetStringParam(EVENT_INFO_TYPE);
         payload["subtype"] = want.GetStringParam(EVENT_INFO_SUBTYPE);
-        ReportDataInProcess(ResType::RES_TYPE_PARAM_UPADTE_EVENT, static_cast<int64_t>(userId), payload);
+        ReportDataInProcess(ResType::RES_TYPE_PARAM_UPDATE_EVENT, static_cast<int64_t>(userId), payload);
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_USER_UNLOCKED) {

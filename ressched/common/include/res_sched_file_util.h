@@ -191,7 +191,7 @@ uint64_t GetFileSize(const std::string& path);
  * @param path The partition of path
  * @return the remain size of partition.
  */
-double GetDeviceVailidSize(const std::string& path);
+double GetDeviceValidSize(const std::string& path);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
