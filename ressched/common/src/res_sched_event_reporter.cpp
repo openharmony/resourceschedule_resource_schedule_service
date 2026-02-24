@@ -92,7 +92,7 @@ void ResschedEventReporter::ReportFileSizeInner()
         files.emplace_back(item);
         filesSize.emplace_back(ResCommonUtil::GetFileSize(item));
     }
-    double remainSize = ResCommonUtil::GetDeviceVailidSize(DATA_FILE_PATH);
+    double remainSize = ResCommonUtil::GetDeviceValidSize(DATA_FILE_PATH);
     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::FILEMANAGEMENT, "USER_DATA_SIZE",
         HiviewDFX::HiSysEvent::EventType::STATISTIC,
         "COMPONENT_NAME", "resource_schedule_service",

@@ -879,11 +879,11 @@ HWTEST_F(ObserverEventTest, downLoadUploadObserver_001, testing::ext::TestSize.L
     std::shared_ptr<DownLoadUploadObserver> downLoadUploadObserver_ =
         std::make_shared<DownLoadUploadObserver>();
     downLoadUploadObserver_->OnRunningTaskCountUpdate(1);
-    EXPECT_TRUE(downLoadUploadObserver_->isReportScene);
+    EXPECT_TRUE(downLoadUploadObserver_->isReportedScene_);
     downLoadUploadObserver_->OnRunningTaskCountUpdate(0);
-    EXPECT_FALSE(downLoadUploadObserver_->isReportScene);
+    EXPECT_FALSE(downLoadUploadObserver_->isReportedScene_);
     downLoadUploadObserver_->OnRunningTaskCountUpdate(-1);
-    EXPECT_FALSE(downLoadUploadObserver_->isReportScene);
+    EXPECT_FALSE(downLoadUploadObserver_->isReportedScene_);
     downLoadUploadObserver_ = nullptr;
 }
 #endif

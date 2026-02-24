@@ -201,7 +201,7 @@ napi_value Systemload::UnRegisterSystemloadCallback(napi_env env, napi_callback_
 
 napi_value Systemload::GetSystemloadLevel(napi_env env, napi_callback_info info)
 {
-    RESSCHED_LOGI("GetSystemloadLevel, promise.");
+    RESSCHED_LOGD("GetSystemloadLevel, promise.");
     std::unique_ptr<SystemloadLevelCbInfo> cbInfo = std::make_unique<SystemloadLevelCbInfo>(env);
     if (cbInfo == nullptr) {
         return CreateJsUndefined(env);
@@ -220,25 +220,25 @@ napi_value Systemload::GetSystemloadLevel(napi_env env, napi_callback_info info)
         &cbInfo->asyncWork));
     NAPI_CALL(env, napi_queue_async_work(env, cbInfo->asyncWork));
     cbInfo.release();
-    RESSCHED_LOGI("GetSystemloadLevel, promise end");
+    RESSCHED_LOGD("GetSystemloadLevel, promise end");
     return promise;
 }
 
 void Systemload::Execute(napi_env env, void* data)
 {
-    RESSCHED_LOGI("GetSystemloadLevel, worker pool thread execute.");
+    RESSCHED_LOGD("GetSystemloadLevel, worker pool thread execute.");
     auto* cbInfo = static_cast<SystemloadLevelCbInfo*>(data);
     if (cbInfo == nullptr) {
         RESSCHED_LOGW("GetSystemloadLevel execute cb info is nullptr.");
         return;
     }
     cbInfo->result = ResSchedClient::GetInstance().GetSystemloadLevel();
-    RESSCHED_LOGI("GetSystemloadLevel, worker pool thread execute end.");
+    RESSCHED_LOGD("GetSystemloadLevel, worker pool thread execute end.");
 }
 
 void Systemload::Complete(napi_env env, napi_status status, void* data)
 {
-    RESSCHED_LOGI("GetSystemloadLevel, main event thread complete.");
+    RESSCHED_LOGD("GetSystemloadLevel, main event thread complete.");
     auto* info = static_cast<SystemloadLevelCbInfo*>(data);
     if (info == nullptr) {
         RESSCHED_LOGW("GetSystemloadLevel Complete cb info is nullptr.");
@@ -250,7 +250,7 @@ void Systemload::Complete(napi_env env, napi_status status, void* data)
     NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, cbInfo->deferred, result));
     NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, cbInfo->asyncWork));
     cbInfo->asyncWork = nullptr;
-    RESSCHED_LOGI("GetSystemloadLevel,  main event thread complete end.");
+    RESSCHED_LOGD("GetSystemloadLevel,  main event thread complete end.");
 }
 
 void Systemload::CompleteCb(napi_env env, SystemloadLevelCbInfo* info)
