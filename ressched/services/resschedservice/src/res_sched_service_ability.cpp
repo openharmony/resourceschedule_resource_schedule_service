@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,13 @@
  * limitations under the License.
  */
 
+
+#include "res_sched_service_ability.h"
+
 #include "res_common_util.h"
 #include "ffrt_inner.h"
 #include "hisysevent.h"
 #include "notifier_mgr.h"
-#include "res_sched_service_ability.h"
 #include "observer_manager_intf.h"
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
@@ -56,7 +58,9 @@ void ResSchedServiceAbility::OnStart()
                         "ERR_TYPE", "others",
                         "ERR_MSG", "New ResSchedService object failed!");
     }
-    service_->InitAllowIpcReportRes();
+    if (service_) {
+        service_->InitAllowIpcReportRes();
+    }
     if (!Publish(service_)) {
         RESSCHED_LOGE("ResSchedServiceAbility:: Register service failed.");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
@@ -206,6 +210,10 @@ void ResSchedServiceAbility::SystemAbilityListenerInitExtPartOne()
         RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", SOC_PERF_SERVICE_SA_ID);
     }
     if (!AddSystemAbilityListener(MEMORY_MANAGER_SA_ID)) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "COMPONENT_NAME", "MAIN",
+                        "ERR_TYPE", "register failure",
+                        "ERR_MSG", "Register a listener of memory manager service failed.");
         RESSCHED_LOGW("AddSystemAbilityListener failed saId:%{public}d", MEMORY_MANAGER_SA_ID);
     }
 }

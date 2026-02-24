@@ -21,7 +21,7 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
-    static const pid_t PID_MIN = -1;
+static const pid_t PID_MIN = 0;
 void AudioObserver::Init()
 {
     std::vector<std::shared_ptr<AudioStandard::AudioRendererChangeInfo>> audioRendererChangeInfos;
@@ -117,7 +117,7 @@ void AudioObserver::OnAudioSceneChange(const AudioStandard::AudioScene audioScen
     payload["audioScene"] = std::to_string(audioScene);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_AUDIO_SCENE_CHANGE, audioScene, payload);
 }
-
+ 
 void AudioObserver::OnPreferredOutputDeviceUpdated(
     const std::vector<std::shared_ptr<AudioStandard::AudioDeviceDescriptor>> &descs)
 {
@@ -229,7 +229,7 @@ void AudioObserver::MarshallingInnerAudioRendererChangeInfo(int32_t pid, nlohman
 
 bool AudioObserver::IsValidPid(pid_t pid)
 {
-    return (pid >= PID_MIN && pid <= INT32_MAX);
+    return (pid > PID_MIN && pid <= INT32_MAX);
 }
 
 void AudioObserver::OnCapturerStateChange(
@@ -241,8 +241,8 @@ void AudioObserver::OnCapturerStateChange(
         if (info == nullptr || info->clientPid == 0) {
             continue;
         }
-        RESSCHED_LOGD("audioCaptureStateChange: [%{public}d %{public}d %{public}d %{public}d]",
-            info->clientPid, info->clientUID, info->capturerState, info->capturerState);
+        RESSCHED_LOGD("audioCaptureStateChange: [%{public}d %{public}d %{public}d]",
+            info->clientPid, info->clientUID, info->capturerState);
         switch (info->capturerState) {
             case AudioStandard::CapturerState::CAPTURER_RUNNING:
                 ProcessCapturerBegin(info->clientPid, info->clientUID, info->sessionId);

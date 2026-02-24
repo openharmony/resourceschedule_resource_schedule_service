@@ -55,12 +55,6 @@
             <option name="push" value="switchconfig/res_sched_plugin_switch.xml -> /sys_prod/etc/ressched/" src="res"/>
             <option name="shell" value="mv /system/variant/phone/base/etc/ressched/res_sched_plugin_switch.xml /system/variant/phone/base/etc/ressched/res_sched_plugin_switch_copy.xml"/>
         </preparer>
-        <cleaner>
-            <option name="shell" value="rm -rf /sys_prod/etc/ressched/res_sched_plugin_switch.xml"/>
-            <option name="shell" value="rm -rf /system/variant/phone/base/etc/ressched/res_sched_plugin_switch.xml"/>
-            <option name="shell" value="mv /sys_prod/etc/ressched/res_sched_plugin_switch_copy.xml /sys_prod/etc/ressched/res_sched_plugin_switch.xml"/>
-            <option name="shell" value="mv /system/variant/phone/base/etc/ressched/res_sched_plugin_switch_copy.xml /system/variant/phone/base/etc/ressched/res_sched_plugin_switch.xml"/>
-        </cleaner>
     </target>
     <target name="resschedservice_mock_test">
         <preparer>
