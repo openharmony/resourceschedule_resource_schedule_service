@@ -69,6 +69,8 @@ void AppStartupSceneRec::RecordIsContinuousStartup(const std::string& uid, const
         ffrtQueue_->cancel(exitContinuousStartupTask);
         exitContinuousStartupTask = nullptr;
     }
+    RESSCHED_LOGD("recordIsContinuousStartup uid: %{public}s bundleName: %{public}s curTime:%{public}lld",
+        uid.c_str(), bundleName.c_str(), (long long)curTime);
     if (curTime - lastAppStartTime_ >= CONTINUOUS_START_TIME_OUT) {
         CleanRecordSceneData();
     }

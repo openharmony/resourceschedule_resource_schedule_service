@@ -149,7 +149,6 @@ namespace {
         { ResType::RES_TYPE_CONTINUOUS_STARTUP, "RES_TYPE_CONTINUOUS_STARTUP" },
         { ResType::RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK, "RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK"},
         { ResType::RES_TYPE_REPORT_GAME_SCHED, "RES_TYPE_REPORT_GAME_SCHED" },
-        { ResType::RES_TYPE_REPORT_VSYNC_TID, "RES_TYPE_REPORT_VSYNC_TID" },
         { ResType::RES_TYPE_BT_SERVICE_EVENT, "RES_TYPE_BT_SERVICE_EVENT"},
         { ResType::RES_TYPE_APP_FRAME_DROP, "RES_TYPE_APP_FRAME_DROP"},
         { ResType::RES_TYPE_CLOUD_CONFIG_UPDATE, "RES_TYPE_CLOUD_CONFIG_UPDATE" },
@@ -186,7 +185,6 @@ namespace {
         { ResType::RES_TYPE_WINDOW_PANEL, "RES_TYPE_WINDOW_PANEL" },
         { ResType::RES_TYPE_WINDOW_SPLIT_SCREEN, "RES_TYPE_WINDOW_SPLIT_SCREEN" },
         { ResType::RES_TYPE_SUPPLY_LEVEL, "RES_TYPE_SUPPLY_LEVEL" },
-        { ResType::RES_TYPE_GC_THREAD_QOS_STATUS_CHANGE, "RES_TYPE_GC_THREAD_QOS_STATUS_CHANGE"},
         { ResType::RES_TYPE_DEVICE_IDLE_CHANGED, "RES_TYPE_DEVICE_IDLE_CHANGED"},
         { ResType::RES_TYPE_USER_SLEEP_STATE_CHANGED, "RES_TYPE_USER_SLEEP_STATE_CHANGED"},
         { ResType::RES_TYPE_ADJUST_PROTECTLRU_RECLAIM_RATIO, "RES_TYPE_ADJUST_PROTECTLRU_RECLAIM_RATIO"},
@@ -222,7 +220,6 @@ void ResSchedMgr::Init()
     ResSchedSignatureValidator::GetInstance().InitSignatureDependencyInterface(resBundleMgr);
     PluginMgr::GetInstance().Init();
     PluginMgr::GetInstance().SetResTypeStrMap(resTypeToStr);
-
     if (!killProcess_) {
         killProcess_ = std::make_shared<KillProcess>();
     }

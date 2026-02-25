@@ -92,8 +92,6 @@ namespace {
         ResType::RES_TYPE_WEBVIEW_AUDIO_STATUS_CHANGE,
         ResType::RES_TYPE_REPORT_RENDER_THREAD,
         ResType::RES_TYPE_LONG_FRAME,
-        ResType::RES_TYPE_REPORT_VSYNC_TID,
-        ResType::RES_TYPE_WEB_DRAG_RESIZE,
         ResType::RES_TYPE_WEBVIEW_SCREEN_CAPTURE,
         ResType::RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE,
         ResType::RES_TYPE_BT_SERVICE_EVENT,
@@ -103,16 +101,16 @@ namespace {
         ResType::RES_TYPE_AXIS_EVENT,
         ResType::RES_TYPE_CROWN_ROTATION_STATUS,
         ResType::RES_TYPE_RED_ENVELOPE,
+        ResType::RES_TYPE_WEB_DRAG_RESIZE,
         ResType::RES_TYPE_RECV_ABC_LOAD_COMPLETED,
         ResType::RES_TYPE_SET_BACKGROUND_PROCESS_PRIORITY,
-        ResType::RES_TYPE_CHECK_APP_IS_IN_SCHEDULE_LIST,
         ResType::RES_TYPE_SHORT_TERM_LOAD,
+        ResType::RES_TYPE_CHECK_APP_IS_IN_SCHEDULE_LIST,
         ResType::RES_TYPE_PAGE_TRANSITION,
         ResType::RES_TYPE_VOICE_RECOGNIZE_WAKE,
         ResType::RES_TYPE_WEB_SLIDE_SCROLL,
-        ResType::RES_TYPE_KEY_PERF_SCENE,
         ResType::RES_TYPE_ABILITY_OR_PAGE_SWITCH,
-        ResType::RES_TYPE_GC_THREAD_QOS_STATUS_CHANGE,
+        ResType::RES_TYPE_OVERLAY_EVENT,
         ResType::RES_TYPE_BACKGROUND_STATUS,
         ResType::RES_TYPE_BACKPRESSED_EVENT,
         ResType::SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO,
@@ -142,12 +140,9 @@ namespace {
         ResType::RES_TYPE_MOVE_WINDOW,
         ResType::RES_TYPE_ANCO_CUST,
         ResType::RES_TYPE_SOCPERF_CUST_ACTION,
-        ResType::RES_TYPE_REPORT_SCREEN_CAPTURE,
+        ResType::RES_TYPE_SOCPERF_CUST_EVENT_BEGIN,
+        ResType::RES_TYPE_SOCPERF_CUST_EVENT_END,
         ResType::RES_TYPE_SA_CONTROL_APP_EVENT,
-        ResType::RES_TYPE_UPLOAD_DOWNLOAD,
-        ResType::RES_TYPE_SPLIT_SCREEN,
-        ResType::RES_TYPE_FLOATING_WINDOW,
-        ResType::RES_TYPE_FRAME_RATE_REPORT,
         ResType::RES_TYPE_REPORT_DISTRIBUTE_COMPONENT_CHANGE,
         ResType::RES_TYPE_THERMAL_SCENARIO_REPORT,
         ResType::RES_TYPE_AUDIO_RENDERER_SILENT_PLAYBACK,
@@ -157,31 +152,30 @@ namespace {
         ResType::SYNC_RES_TYPE_REQUEST_MUTEX_STATUS,
         ResType::SYNC_RES_TYPE_GET_NWEB_PRELOAD_SET,
         ResType::RES_TYPE_AUDIO_RENDERER_STANDBY,
-        ResType::RES_TYPE_DISPLAY_MULTI_SCREEN,
         ResType::RES_TYPE_INTENT_CTRL_APP,
+        ResType::RES_TYPE_DISPLAY_MULTI_SCREEN,
         ResType::RES_TYPE_SHORT_TERM_LOAD,
-        ResType::RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT,
         ResType::SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_UID,
         ResType::SYNC_RES_TYPE_GET_SUSPEND_STATE_BY_PID,
 #ifdef RESSCHED_RESOURCESCHEDULE_FILE_COPY_SOC_PERF_ENABLE
         ResType::RES_TYPE_FILE_COPY_STATUS,
 #endif
-        ResType::RES_TYPE_PARAM_UPDATE_EVENT,
+        ResType::RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT,
         ResType::RES_TYPE_CAMERA_PRELAUNCH,
         ResType::RES_TYPE_CAMERA_RESET_PRIORITY,
         ResType::RES_TYPE_DEVICE_MODE_STATUS,
+        ResType::RES_TYPE_PARAM_UPDATE_EVENT,
         ResType::RES_TYPE_TDP_TURBO,
-        ResType::SYNC_RES_TYPE_QUERY_TOPN_BUNDLE_USAGE_INFO,
         ResType::RES_TYPE_BACKGROUND_STATUS,
+        ResType::SYNC_RES_TYPE_QUERY_TOPN_BUNDLE_USAGE_INFO,
         ResType::RES_TYPE_CAMERA_STATUS_CHANGED,
         ResType::RES_TYPE_NAP_MODE,
         ResType::RES_TYPE_CODEC_ENCODE_STATUS_CHANGED,
         ResType::RES_TYPE_CAMERA_LENS_STATUS_CHANGED,
+        ResType::RES_TYPE_LOAD_KILL_REASON_CONFIG,
+        ResType::RES_TYPE_SA_PULL_APP_IDENTIFIER,
         ResType::RES_TYPE_START_INPUT_METHOD_PROCESS,
         ResType::RES_TYPE_START_UIEXTENSION_PROC,
-        ResType::RES_TYPE_SA_PULL_APP_IDENTIFIER,
-        ResType::RES_TYPE_LIVE_VIEW_EVENT,
-        ResType::RES_TYPE_LOAD_KILL_REASON_CONFIG,
         ResType::RES_TYPE_SCHED_MODE_CHANGE,
         ResType::RES_TYPE_HARDWARE_DECODING_RESOURCES,
         ResType::RES_TYPE_FIRST_FRAME_DRAWN,
@@ -207,8 +201,8 @@ namespace {
         { ResType::RES_TYPE_APP_GAME_BOOST_EVENT, { 7800 } },
         { ResType::RES_TYPE_FRAME_RATE_REPORT_FROM_RS, { 1003 } },
         { ResType::RES_TRPE_GAME_SUSPEND_MODE, { 7800 } },
-        { ResType::RES_TYPE_STANDBY_FREEZE_FAILED, { 1201 } },
         { ResType::RES_TYPE_ADJUST_PROTECTLRU_RECLAIM_RATIO, { 1111 } },
+        { ResType::RES_TYPE_STANDBY_FREEZE_FAILED, { 1201 } },
         { ResType::RES_TYPE_IME_QOS_CHANGE, { 3820 } },
         { ResType::RES_TYPE_HARDWARE_DECODING_RESOURCES, { 1013 }},
     };
@@ -576,7 +570,7 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
     if (!CheckDumpPermission() || !CheckENGMode()) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
-#endif //SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
+#endif // SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
     RESSCHED_LOGI("%{public}s Dump service.", __func__);
     std::string result;
     if (argsInStr.size() == 0) {
@@ -697,14 +691,6 @@ void ResSchedService::DumpUsage(std::string &result)
     PluginMgr::GetInstance().DumpHelpFromPlugin(result);
 }
 
-#ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
-void ResSchedService::DumpUsage2D(std::string &result)
-{
-    result.append("    setSystemLoadLevel (LevelNum/reset): set system load level. LevelNum range: 0-7\n")
-        .append("    getSystemloadInfo: get system load info.\n");
-}
-#endif //SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
-
 void ResSchedService::DumpUserUsage(std::string &result)
 {
     result.append("usage: resource schedule service dump [<options>]\n")
@@ -716,6 +702,14 @@ void ResSchedService::DumpUserUsage(std::string &result)
 #endif //SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
         ;
 }
+
+#ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
+void ResSchedService::DumpUsage2D(std::string &result)
+{
+    result.append("    setSystemLoadLevel (LevelNum/reset): set system load level. LevelNum range: 0-7\n")
+        .append("    getSystemloadInfo: get system load info.\n");
+}
+#endif //SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
 
 void ResSchedService::DumpAllInfo(std::string &result)
 {
