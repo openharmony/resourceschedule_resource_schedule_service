@@ -43,9 +43,9 @@ declare_args() {
   ressched_with_communication_netmanager_base_enable = true
   resource_schedule_service_with_ffrt_enable = false
   resource_schedule_service_with_ext_res_enable = false
-  resource_schedule_service_with_app_nap_enable = false
-  resource_schedule_service_cust_soc_perf_enable = false
   resource_schedule_service_crown_power_key_enable = false
+  resource_schedule_service_cust_soc_perf_enable = false
+  resource_schedule_service_with_app_nap_enable = false
   resource_schedule_service_file_copy_soc_perf_enable = false
   resource_schedule_service_subscribe_click_recognize_enable = false
   resource_schedule_service_system_load_level_debug_feature_enable_for_2d = false

@@ -157,11 +157,9 @@ enum : uint32_t {
     RES_TYPE_USB_DEVICE = 62,
     RES_TYPE_CALL_STATE_CHANGED = 63,
     RES_TYPE_WIFI_P2P_STATE_CHANGED = 64,
-
-    // last resType
-    //report app associated start to performance radar
+    // report app associated start to performance radar
     RES_TYPE_APP_ASSOCIATED_START = 65,
-    //report thermal state event
+    // report thermal state event
     RES_TYPE_THERMAL_STATE = 66,
     // socperf event begin
     RES_TYPE_SOCPERF_CUST_EVENT_BEGIN = 67,
@@ -186,7 +184,7 @@ enum : uint32_t {
     RES_TYPE_SA_CONTROL_APP_EVENT = 76,
     // report CPU load of the entire machine，payload:cpuPercent
     RES_TYPE_SYSTEM_CPU_LOAD = 77,
-    // report download or upload scene,value 0 enter scene 1 exit scene.
+    // report download Or Upload scene,value 0 enter scene 1 exit scene.
     RES_TYPE_UPLOAD_DOWNLOAD = 78,
     // report main screen split，value 0 enter scene 1 exit scene.
     RES_TYPE_SPLIT_SCREEN = 79,
@@ -196,11 +194,11 @@ enum : uint32_t {
     RES_TYPE_REPORT_DISTRIBUTE_TID = 81,
     // report frame rate
     RES_TYPE_FRAME_RATE_REPORT = 82,
-
     // report web screen capture, value 0 start, value 1 stop
     RES_TYPE_WEBVIEW_SCREEN_CAPTURE = 83,
     // report video state. value 0 start playing, value 1 stop playing
     RES_TYPE_WEBVIEW_VIDEO_STATUS_CHANGE = 84,
+
     // report location status. value 0 app status, value 1 switch status
     RES_TYPE_LOCATION_STATUS_CHANGE = 85,
     // report formCard render start/end
@@ -241,8 +239,6 @@ enum : uint32_t {
     RES_TYPE_ONLY_PERF_APP_COLD_START = 104,
     // report scene rotation, value 0 start, value 1 stop
     RES_TYPE_SCENE_ROTATION = 105,
-    // report event vsync tid, value tid, payload pid, tid, uid.
-    RES_TYPE_REPORT_VSYNC_TID = 106,
     // report cloud config update
     RES_TYPE_CLOUD_CONFIG_UPDATE = 107,
     // system ability status change
@@ -329,7 +325,7 @@ enum : uint32_t {
     RES_TYPE_RECENT_BUILD = 150,
     // overlay event
     RES_TYPE_OVERLAY_EVENT = 151,
-    // report game state change
+    // report orientation state change
     RES_TYPE_DEVICE_ORIENTATION_STATUS = 152,
     // report wifi power state
     RES_TYPE_WIFI_POWER_STATE_CHANGE = 153,
@@ -345,7 +341,7 @@ enum : uint32_t {
     RES_TYPE_APP_OPT_FROM_RECENT = 158,
     // report three finger swipe direction up, value 0: enter task center, value 1:back to the desktop
     RES_TYPE_SWIPE_DIRECTION_UP = 159,
-    // report window panel, value 0: minimize, value 1: maxmize, value 2: recovery
+    // report window panel, value 0: minimize, value 1: maximize, value 2: recovery
     RES_TYPE_WINDOW_PANEL = 160,
     // report boker gatt connect
     RES_TYPE_REPORT_BOKER_GATT_CONNECT = 161,
@@ -357,8 +353,6 @@ enum : uint32_t {
     RES_TYPE_SUPPLY_LEVEL = 164,
     // reset camera rss priority
     RES_TYPE_CAMERA_RESET_PRIORITY = 165,
-    // report gc qos status change
-    RES_TYPE_GC_THREAD_QOS_STATUS_CHANGE = 166,
     //report device idle status changed
     RES_TYPE_DEVICE_IDLE_CHANGED = 167,
     //report user sleep status changed
@@ -435,7 +429,7 @@ enum : uint32_t {
     RES_TYPE_PRELOAD_APPLICATION,
     // get the applicaiton type
     SYNC_RES_TYPE_GET_APP_TYPE,
-    // report to request mutex status
+    // report to request or release mutex status
     SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // report to check mutex before start
     SYNC_RES_TYPE_CHECK_MUTEX_BEFORE_START = 501,
@@ -444,7 +438,7 @@ enum : uint32_t {
     // report SceneBoard raise worker thread priority. value 0: begin, value 1: end.
     RES_TYPE_RAISE_WORKER_THREAD_PRIORITY = 503,
     // report to check app is in app inner schedule list
-    RES_TYPE_CHECK_APP_IS_IN_SCHEDULE_LIST,
+    RES_TYPE_CHECK_APP_IS_IN_SCHEDULE_LIST = 504,
     // report dynamically set suspend exempt info
     RES_TYPE_DYNAMICALLY_SET_SUSPEND_EXEMPT = 505,
     // get suspend state by uid
@@ -468,7 +462,7 @@ enum : uint32_t {
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
     // user unlocked
-    RES_TYPE_UESER_UNLOCKED,
+    RES_TYPE_USER_UNLOCKED,
     // usage topn
     RES_TYPE_TOPN_USAGE_INFO,
     // load kill reason config

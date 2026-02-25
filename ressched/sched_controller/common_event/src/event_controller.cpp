@@ -404,7 +404,7 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
         return;
     }
     if (action == CommonEventSupport::COMMON_EVENT_USER_UNLOCKED) {
-        ReportDataInProcess(ResType::RES_TYPE_UESER_UNLOCKED,
+        ReportDataInProcess(ResType::RES_TYPE_USER_UNLOCKED,
             static_cast<int64_t>(want.GetIntParam(GAME_STATUS, -1)), payload);
         return;
     }

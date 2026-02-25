@@ -165,7 +165,11 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
         RESSCHED_LOGI("PluginMgr load switch config file index:%{public}d success!", index);
     }
     LoadPlugin();
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
+#else
+    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
+#endif
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     dispatchers_.clear();
     for (const auto& [libPath, libInfo] : pluginLibMap_) {
@@ -289,24 +293,26 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
             "ERR_MSG", info.libPath + "is error path!");
         return nullptr;
     }
-    void* pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
+    auto pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
     if (!pluginHandle) {
         RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-            "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
-            "ERR_MSG", "PluginMgr dlopen " + info.libPath + " failed!");
+                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", "PluginMgr dlopen " + info.libPath + " failed!");
         return nullptr;
     }
     std::string errorMsg = "";
     OnPluginInitFunc onPluginInitFunc;
     OnPluginDisableFunc onPluginDisableFunc;
     if (!CheckValidPlugin(info, pluginHandle, errorMsg, onPluginInitFunc, onPluginDisableFunc)) {
+        RESSCHED_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-            "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
-            "ERR_MSG", errorMsg);
+                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "plugin failure",
+                        "ERR_MSG", errorMsg);
         dlclose(pluginHandle);
         return nullptr;
     }
+
     // OnDispatchResource is not necessary for plugin
     auto onDispatchResourceFunc = reinterpret_cast<OnDispatchResourceFunc>(dlsym(pluginHandle,
         "OnDispatchResource"));
@@ -514,7 +520,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     DispatchResourceToPluginAsync(pluginList, resData);
 #else
-    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
+    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) {
         dispatcher_->PostTask(
             [pluginList, resData, this] {
@@ -530,7 +536,6 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
         RESSCHED_LOGE("%{public}s, not init.", __func__);
         return PLUGIN_REQUEST_ERROR;
     }
-
     if (!resData) {
         RESSCHED_LOGE("%{public}s, failed, null res data.", __func__);
         return PLUGIN_REQUEST_ERROR;
@@ -960,10 +965,11 @@ void PluginMgr::OnDestroy()
     configReader_ = nullptr;
     pluginSwitch_ = nullptr;
     ClearResource();
-    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
     dispatchers_.clear();
 #else
+    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
     if (dispatcher_) {
         dispatcher_->RemoveAllEvents();
         dispatcher_ = nullptr;
