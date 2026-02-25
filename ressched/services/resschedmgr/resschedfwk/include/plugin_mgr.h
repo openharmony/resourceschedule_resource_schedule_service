@@ -35,7 +35,9 @@
 #include "res_data.h"
 #include "single_instance.h"
 #include "config_info.h"
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 #include "ffrt.h"
+#endif
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
 #include "res_type.h"
 #endif
@@ -321,7 +323,11 @@ private:
     // mutex for resTypeStrMap_
     std::mutex resTypeStrMutex_;
     std::mutex pluginMutex_;
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
     ffrt::mutex dispatcherHandlerMutex_;
+#else
+    std::mutex dispatcherHandlerMutex_;
+#endif
     std::mutex libPathMutex_;
     std::mutex linkJumpOptMutex_;
     std::mutex onInitFinishCallbackMutex_;
