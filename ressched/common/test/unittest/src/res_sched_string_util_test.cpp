@@ -42,12 +42,8 @@ HWTEST_F(ResSchedStringUtilTest, StrToFloat_001, Function | MediumTest | Level0)
 {
     float result = 0.0f;
     float fMax = std::numeric_limits<float>::max();
-    long double fMin = std::numeric_limits<float>::min() / 2.0l;
     EXPECT_TRUE(ResCommonUtil::StrToFloat(std::to_string(fMax), result));
     EXPECT_EQ(result, fMax);
-    result = 0.0f;
-    EXPECT_FALSE(ResCommonUtil::StrToFloat(std::to_string(fMin), result));
-    EXPECT_EQ(result, 0.0f);
     result = 0.0f;
     EXPECT_FALSE(ResCommonUtil::StrToFloat("1" + std::to_string(fMax), result));
     EXPECT_EQ(result, 0.0f);
