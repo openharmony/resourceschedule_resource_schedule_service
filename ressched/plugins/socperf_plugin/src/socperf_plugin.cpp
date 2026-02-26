@@ -147,7 +147,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L      = 10098;
     const int32_t PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P      = 10203;
     const int32_t PERF_REQUEST_CMD_ID_RECENT_BUILD          = 10200;
-    const int32_t PERF_REQUEST_CMD_ID_LIVE_BROADCAST        = 10206;
+    const int32_t PERF_REQUEST_CMD_ID_LIVE_BROADCAST        = 10224;
     // PREMAKE_MODE_STRING = 1, PRELOADMODULE_MODE_STRING = 2,
     // PRELAUNCH_MODE_STRING = 4
     const std::unordered_set<std::string> PRELOAD_SET = {"1", "2", "4"};
