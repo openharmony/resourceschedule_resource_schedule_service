@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -192,16 +192,17 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(APP_MGR_SERVICE_ID, systemAbilityManager);
 }
 
-inline void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId,
+void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId,
     sptr<ISystemAbilityManager>& systemAbilityManager)
 {
     if (systemAbilityManager->SubscribeSystemAbility(systemAbilityId, sysAbilityListener_) != ERR_OK) {
         sysAbilityListener_ = nullptr;
         RESSCHED_LOGE("%{public}s: subscribe system ability id: %{public}d failed", __func__, systemAbilityId);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a staus change listener of the " + std::to_string(systemAbilityId) + " SA failed!");
+                        "MODULE_NAME", "SchedController",
+                        "SCENE_NAME", "SaListenerFailed",
+                        "ERR_INFO", "Register a staus change listener of the " +
+                        std::to_string(systemAbilityId) + " SA failed!");
     } else {
         RESSCHED_LOGI("%{public}s: subscribe system ability id: %{public}d succeed", __func__, systemAbilityId);
     }
@@ -299,9 +300,9 @@ void ObserverManager::InitHiSysEventObserver()
     } else {
         RESSCHED_LOGW("ObserverManager init hisysevent observer failed");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a hisysevent observer failed!");
+                        "MODULE_NAME", "SchedController",
+                        "SCENE_NAME", "ListenerRegisterFailed",
+                        "ERR_INFO", "Register a hisysevent observer failed!");
     }
 }
 
@@ -337,9 +338,9 @@ void ObserverManager::InitTelephonyObserver()
     } else {
         RESSCHED_LOGW("ObserverManager init telephony observer failed");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a telephony observer failed!");
+                        "MODULE_NAME", "SchedController",
+                        "SCENE_NAME", "ListenerRegisterFailed",
+                        "ERR_INFO", "Register a telephony observer failed!");
     }
 #endif
 }
@@ -406,8 +407,8 @@ void ObserverManager::InitAudioEventListener()
     if (res != OPERATION_SUCCESS) {
         RESSCHED_LOGW("ObserverManager init audioRenderStateObserver failed");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a audio observer failed!");
+                        "MODULE_NAME", "SchedController", "SCENE_NAME", "ListenerRegisterFailed",
+                        "ERR_INFO", "Register a audio observer failed!");
     } else {
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "SUSPEND_STATE_CHANGE_ATTEMPT",
                         HiviewDFX::HiSysEvent::EventType::BEHAVIOR,
@@ -502,9 +503,9 @@ void ObserverManager::InitMMiEventObserver()
     } else {
         RESSCHED_LOGE("ObserverManager init mmiEventObserver failed");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a mmi observer failed!");
+                        "MODULE_NAME", "SchedController",
+                        "SCENE_NAME", "ListenerRegisterFailed",
+                        "ERR_INFO", "Register a mmi observer failed!");
         return;
     }
     // Get all events registered in multimodal input.
@@ -667,9 +668,9 @@ void ObserverManager::InitConnectionSubscriber()
     } else {
         RESSCHED_LOGW("ObserverManager init connectionSubscriber failed");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a connect subscriber failed!");
+                        "MODULE_NAME", "SchedController",
+                        "SCENE_NAME", "ListenerRegisterFailed",
+                        "ERR_INFO", "Register a connect subscriber failed!");
     }
 }
 
@@ -715,9 +716,9 @@ void ObserverManager::InitAVSessionStateChangeListener()
     } else {
         RESSCHED_LOGW("ObserverManager init session state listener failed");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a session state listener failed!");
+                        "MODULE_NAME", "SchedController",
+                        "SCENE_NAME", "ListenerRegisterFailed",
+                        "ERR_INFO", "Register a session state listener failed!");
     }
 }
 
@@ -740,9 +741,9 @@ void ObserverManager::InitDownloadUploadObserver()
     } else {
         RESSCHED_LOGW("ObserverManager init download Upload observer failed");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a download Upload observer failed!");
+                        "MODULE_NAME", "SchedController",
+                        "SCENE_NAME", "ListenerRegisterFailed",
+                        "ERR_INFO", "Register a download Upload observer failed!");
     }
 }
 
@@ -772,9 +773,9 @@ void ObserverManager::InitAccountObserver()
     } else {
         RESSCHED_LOGW("account observer register failed");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register a account observer failed!");
+                        "MODULE_NAME", "SchedController",
+                        "SCENE_NAME", "ListenerRegisterFailed",
+                        "ERR_INFO", "Register a account observer failed!");
     }
 }
 
@@ -787,8 +788,8 @@ void ObserverManager::InitWindowStateObserver()
             RegisterFocusChangedListener(windowStateObserver_) != OHOS::Rosen::WMError::WM_OK) {
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                                 HiviewDFX::HiSysEvent::EventType::FAULT,
-                                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                                "ERR_MSG", "Register a listener of window focus change failed.");
+                                "MODULE_NAME", "SchedController", "SCENE_NAME", "register failure",
+                                "ERR_INFO", "Register a listener of window focus change failed.");
             }
         }
     }
@@ -799,8 +800,8 @@ void ObserverManager::InitWindowStateObserver()
             RegisterVisibilityChangedListener(windowVisibilityObserver_) != OHOS::Rosen::WMError::WM_OK) {
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                                 HiviewDFX::HiSysEvent::EventType::FAULT,
-                                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                                "ERR_MSG", "Register a listener of window visibility change failed.");
+                                "MODULE_NAME", "SchedController", "SCENE_NAME", "register failure",
+                                "ERR_INFO", "Register a listener of window visibility change failed.");
             }
         }
     }
@@ -811,8 +812,8 @@ void ObserverManager::InitWindowStateObserver()
                 RegisterDrawingContentChangedListener(windowDrawingContentObserver_) != OHOS::Rosen::WMError::WM_OK) {
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                                     HiviewDFX::HiSysEvent::EventType::FAULT,
-                                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                                    "ERR_MSG", "Register a listener of window draw content change failed.");
+                                    "MODULE_NAME", "SchedController", "SCENE_NAME", "register failure",
+                                    "ERR_INFO", "Register a listener of window draw content change failed.");
             }
         }
     }
@@ -832,8 +833,8 @@ void ObserverManager::SubscribeWindowModeChange()
                     RESSCHED_LOGE("RegisterWindowModeChangedListener fail");
                     HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS,
                                     "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                                    "ERR_MSG", "Register a listener of window mode content change failed.");
+                                    "MODULE_NAME", "SchedController", "SCENE_NAME", "register failure",
+                                    "ERR_INFO", "Register a listener of window mode content change failed.");
             }
         }
     }
@@ -852,8 +853,8 @@ void ObserverManager::SubscribePipChange()
                 RESSCHED_LOGE("RegisterPiPStateChangedListener fail");
                 HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                     HiviewDFX::HiSysEvent::EventType::FAULT,
-                    "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                    "ERR_MSG", "Register a listener of window pip content change failed.");
+                    "MODULE_NAME", "SchedController", "SCENE_NAME", "ListenerRegisterFailed",
+                                "ERR_INFO", "Register a listener of window pip content change failed.");
         } else {
             RESSCHED_LOGI("RegisterPiPStateChangedListener success");
         }
@@ -1059,8 +1060,8 @@ void ObserverManager::InitDisplayPowerEventObserver()
         RESSCHED_LOGW("ObserverManager init display power event listener failed");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                         HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "register failure",
-                        "ERR_MSG", "Register display power event listener failed!");
+                        "MODULE_NAME", "SchedController", "SCENE_NAME", "LISTENER_REGISTER_FAILED",
+                        "ERR_INFO", "Register display power event listener failed!");
         displayPowerEventListener_ = nullptr;
         return;
     }

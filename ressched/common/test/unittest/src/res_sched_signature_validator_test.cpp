@@ -231,5 +231,226 @@ HWTEST_F(ResSchedSignatureValidatorTest, AddSignatureConfig_001, Function | Medi
     testSignatureValidator.AddSignatureConfig(config);
     EXPECT_EQ(testSignatureValidator.signatureConfig_.size(), 2);
 }
+
+/**
+ * @tc.name: ResSchedSignatureValidatorTest GetSignatureFromConfig_001
+ * @tc.desc: test for GetSignatureFromConfig with valid bundle
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
+HWTEST_F(ResSchedSignatureValidatorTest, GetSignatureFromConfig_001, Function | MediumTest | Level0)
+{
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    std::unordered_map<std::string, std::string> config = {{BUNDLE_VALID, SIGNATURE_VALID}};
+    testSignatureValidator.AddSignatureConfig(config);
+    
+    std::string signature;
+    bool result = testSignatureValidator.GetSignatureFromConfig(BUNDLE_VALID, signature);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(signature, SIGNATURE_VALID);
+}
+
+/**
+ * @tc.name: ResSchedSignatureValidatorTest GetSignatureFromConfig_002
+ * @tc.desc: test for GetSignatureFromConfig with invalid bundle
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
+HWTEST_F(ResSchedSignatureValidatorTest, GetSignatureFromConfig_002, Function | MediumTest | Level0)
+{
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    std::unordered_map<std::string, std::string> config = {{BUNDLE_VALID, SIGNATURE_VALID}};
+    testSignatureValidator.AddSignatureConfig(config);
+    
+    std::string signature;
+    bool result = testSignatureValidator.GetSignatureFromConfig(BUNDLE_NOT_EXIST, signature);
+    EXPECT_FALSE(result);
+}
+
+/**
+ * @tc.name: ResSchedSignatureValidatorTest CheckSignatureCache_001
+ * @tc.desc: test for CheckSignatureCache with cache hit
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
+HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureCache_001, Function | MediumTest | Level0)
+{
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    
+    testSignatureValidator.validCache_[BUNDLE_VALID] = {UID_VALID, true};
+    
+    auto result = testSignatureValidator.CheckSignatureCache(BUNDLE_VALID, UID_VALID);
+    EXPECT_TRUE(result.has_value());
+    EXPECT_TRUE(result.value());
+}
+
+/**
+ * @tc.name: ResSchedSignatureValidatorTest CheckSignatureCache_002
+ * @tc.desc: test for CheckSignatureCache with cache miss
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
+HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureCache_002, Function | MediumTest | Level0)
+{
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    
+    auto result = testSignatureValidator.CheckSignatureCache(BUNDLE_VALID, UID_VALID);
+    EXPECT_FALSE(result.has_value());
+}
+
+/**
+ * @tc.name: ResSchedSignatureValidatorTest CheckSignatureCache_003
+ * @tc.desc: test for CheckSignatureCache with uid mismatch
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
+HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureCache_003, Function | MediumTest | Level0)
+{
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    
+    testSignatureValidator.validCache_[BUNDLE_VALID] = {UID_VALID, true};
+    
+    auto result = testSignatureValidator.CheckSignatureCache(BUNDLE_VALID, UID_NO_MATCH);
+    EXPECT_FALSE(result.has_value());
+    EXPECT_EQ(testSignatureValidator.validCache_.find(BUNDLE_VALID), testSignatureValidator.validCache_.end());
+}
+
+/**
+ * @tc.name: ResSchedSignatureValidatorTest CheckSignatureCache_004
+ * @tc.desc: test for CheckSignatureCache with invalid cache
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
+HWTEST_F(ResSchedSignatureValidatorTest, CheckSignatureCache_004, Function | MediumTest | Level0)
+{
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    
+    testSignatureValidator.validCache_[BUNDLE_VALID] = {UID_VALID, false};
+    
+    auto result = testSignatureValidator.CheckSignatureCache(BUNDLE_VALID, UID_VALID);
+    EXPECT_TRUE(result.has_value());
+    EXPECT_FALSE(result.value());
+}
+
+/**
+ * @tc.name: ResSchedSignatureValidatorTest GetSignatureInfo_001
+ * @tc.desc: test for GetSignatureInfo with valid uid
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
+HWTEST_F(ResSchedSignatureValidatorTest, GetSignatureInfo_001, Function | MediumTest | Level0)
+{
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    
+    std::string signatureInfo;
+    bool result = testSignatureValidator.GetSignatureInfo(UID_VALID, signatureInfo);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(signatureInfo, SIGNATURE_VALID);
+}
+
+/**
+ * @tc.name: ResSchedSignatureValidatorTest GetSignatureInfo_002
+ * @tc.desc: test for GetSignatureInfo with invalid uid
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
+HWTEST_F(ResSchedSignatureValidatorTest, GetSignatureInfo_002, Function | MediumTest | Level0)
+{
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    
+    std::string signatureInfo;
+    bool result = testSignatureValidator.GetSignatureInfo(UID_NOT_EXIST, signatureInfo);
+    EXPECT_FALSE(result);
+}
+
+/**
+ * @tc.name: ResSchedSignatureValidatorTest UpdateSignatureCache_001
+ * @tc.desc: test for UpdateSignatureCache normal case
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
+HWTEST_F(ResSchedSignatureValidatorTest, UpdateSignatureCache_001, Function | MediumTest | Level0)
+{
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    
+    testSignatureValidator.UpdateSignatureCache(BUNDLE_VALID, UID_VALID, true);
+    
+    EXPECT_EQ(testSignatureValidator.validCache_.size(), 1);
+    auto cache = testSignatureValidator.validCache_.find(BUNDLE_VALID);
+    EXPECT_NE(cache, testSignatureValidator.validCache_.end());
+    EXPECT_EQ(cache->second.first, UID_VALID);
+    EXPECT_TRUE(cache->second.second);
+}
+
+/**
+ * @tc.name: ResSchedSignatureValidatorTest UpdateSignatureCache_002
+ * @tc.desc: test for UpdateSignatureCache with overflow
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
+HWTEST_F(ResSchedSignatureValidatorTest, UpdateSignatureCache_002, Function | MediumTest | Level0)
+{
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    
+    for (int i = 0; i < 250; i++) {
+        std::string bundleName = "test_bundle_" + std::to_string(i);
+        testSignatureValidator.UpdateSignatureCache(bundleName, UID_VALID, true);
+    }
+    
+    EXPECT_EQ(testSignatureValidator.validCache_.size(), 50);
+}
+
+/**
+ * @tc.name: ResSchedSignatureValidatorTest UpdateSignatureCache_003
+ * @tc.desc: test for UpdateSignatureCache update existing
+ * @tc.type: FUNC
+ * @tc.require: issues/1527
+ */
+HWTEST_F(ResSchedSignatureValidatorTest, UpdateSignatureCache_003, Function | MediumTest | Level0)
+{
+    ResSchedSignatureValidator testSignatureValidator;
+    std::shared_ptr<ResourceSchedule::CommBundleMgrHelperTest> commBundleMgrHelperTest =
+        std::make_shared<ResourceSchedule::CommBundleMgrHelperTest>();
+    testSignatureValidator.InitSignatureDependencyInterface(commBundleMgrHelperTest);
+    
+    testSignatureValidator.UpdateSignatureCache(BUNDLE_VALID, UID_VALID, true);
+    testSignatureValidator.UpdateSignatureCache(BUNDLE_VALID, UID_NO_MATCH, false);
+    
+    EXPECT_EQ(testSignatureValidator.validCache_.size(), 1);
+    auto cache = testSignatureValidator.validCache_.find(BUNDLE_VALID);
+    EXPECT_NE(cache, testSignatureValidator.validCache_.end());
+    EXPECT_EQ(cache->second.first, UID_NO_MATCH);
+    EXPECT_FALSE(cache->second.second);
+}
 }  // namespace ResourceSchedule
 }  // namespace OHOS

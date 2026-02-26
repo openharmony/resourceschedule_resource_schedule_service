@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +21,7 @@
 #include "mock_plugin_mgr.h"
 #include "res_data.h"
 #include "res_type.h"
+#include "res_common_util.h"
 
 using namespace std;
 using namespace testing::ext;
@@ -30,6 +31,7 @@ namespace ResourceSchedule {
 namespace {
     const string LIB_NAME = "libunittest_plugin.z.so";
     constexpr int32_t ASYNC_CALLBACK_WAIT_MS = 100;
+    constexpr int64_t ONE_DAY_MILLS = static_cast<int64_t>(24) * 60 * 60 * 1000;
     std::atomic<int32_t> g_initFinishCallCountA(0);
     std::atomic<int32_t> g_initFinishCallCountB(0);
 
@@ -1686,5 +1688,79 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_012, TestSize.Le
     EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
 }
 #endif
+
+/**
+ * @tc.name: PluginMgrTest_UpdateReportCount_001
+ * @tc.desc: Verify UpdateReportCount for new resType and within one day interval.
+ * @tc.type: FUNC
+ * @tc.require: issue1658
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_UpdateReportCount_001, TestSize.Level1)
+{
+    uint32_t resType = 101;
+    PluginMgr::GetInstance().lastReportCountTime_ = ResCommonUtil::GetNowMillTime(true);
+    PluginMgr::GetInstance().UpdateReportCount(resType);
+    auto iter = PluginMgr::GetInstance().reportCount_.find(resType);
+    ASSERT_NE(iter, PluginMgr::GetInstance().reportCount_.end());
+    EXPECT_EQ(iter->second, 1);
+    EXPECT_FALSE(PluginMgr::GetInstance().reportCount_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_UpdateReportCount_002
+ * @tc.desc: Verify UpdateReportCount for existing resType and within one day interval.
+ * @tc.type: FUNC
+ * @tc.require: issue1658
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_UpdateReportCount_002, TestSize.Level1)
+{
+    uint32_t resType = 102;
+    PluginMgr::GetInstance().UpdateReportCount(resType);
+    PluginMgr::GetInstance().lastReportCountTime_ = ResCommonUtil::GetNowMillTime(true);
+    PluginMgr::GetInstance().UpdateReportCount(resType);
+    auto iter = PluginMgr::GetInstance().reportCount_.find(resType);
+    ASSERT_NE(iter, PluginMgr::GetInstance().reportCount_.end());
+    EXPECT_EQ(iter->second, 2);
+    EXPECT_FALSE(PluginMgr::GetInstance().reportCount_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_UpdateReportCount_003
+ * @tc.desc: Verify UpdateReportCount triggers reporting when interval is over one day.
+ * @tc.type: FUNC
+ * @tc.require: issue1658
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_UpdateReportCount_003, TestSize.Level1)
+{
+    uint32_t resTypeA = 101;
+    uint32_t resTypeB = 102;
+    PluginMgr::GetInstance().lastReportCountTime_ = ResCommonUtil::GetNowMillTime(true);
+    PluginMgr::GetInstance().UpdateReportCount(resTypeA);
+    PluginMgr::GetInstance().UpdateReportCount(resTypeA);
+    PluginMgr::GetInstance().UpdateReportCount(resTypeB);
+    EXPECT_FALSE(PluginMgr::GetInstance().reportCount_.empty());
+    PluginMgr::GetInstance().lastReportCountTime_ = ResCommonUtil::GetNowMillTime(true) - (ONE_DAY_MILLS + 1000);
+    PluginMgr::GetInstance().UpdateReportCount(resTypeA);
+    EXPECT_TRUE(PluginMgr::GetInstance().reportCount_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_UpdateReportCount_004
+ * @tc.desc: Verify UpdateReportCount does not trigger reporting when within one day interval.
+ * @tc.type: FUNC
+ * @tc.require: issue1658
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_UpdateReportCount_004, TestSize.Level1)
+{
+    uint32_t resTypeA = 101;
+    uint32_t resTypeB = 102;
+    PluginMgr::GetInstance().lastReportCountTime_ = ResCommonUtil::GetNowMillTime(true);
+    PluginMgr::GetInstance().UpdateReportCount(resTypeA);
+    PluginMgr::GetInstance().UpdateReportCount(resTypeB);
+    PluginMgr::GetInstance().UpdateReportCount(resTypeA);
+    EXPECT_EQ(PluginMgr::GetInstance().reportCount_.size(), 2);
+    EXPECT_EQ(PluginMgr::GetInstance().reportCount_[resTypeA], 2);
+    EXPECT_EQ(PluginMgr::GetInstance().reportCount_[resTypeB], 1);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,6 +34,7 @@ constexpr int32_t CHECK_MUTEX_TIMEOUT = 100;  // 100ms
 constexpr int32_t CHECK_MUTEX_TIMEOUT_NS = 100 * 1000;  // 100ms
 bool g_isDestroyed = false;
 static ffrt::mutex mutex_;
+bool g_isReportConnectErr = false;
 }
 
 ResSchedClient& ResSchedClient::GetInstance()
@@ -96,7 +97,8 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
         resType != ResType::RES_TYPE_AXIS_EVENT &&
         resType != ResType::RES_TYPE_KEY_PERF_SCENE &&
         resTypeList_.find(resType) == resTypeList_.end()) {
-        RESSCHED_LOGD("ResSchedClient::ReportData type not subscribed.");
+        RESSCHED_LOGE("ResSchedClient::ReportData type not subscribed.");
+        ResCommonUtil::HiSysAbnormalErrReport("ResSchedClient", __func__, "discard event " + std::to_string(resType));
         return;
     }
     rss_->ReportData(resType, value, payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
@@ -348,18 +350,21 @@ ErrCode ResSchedClient::TryConnect()
 
     sptr<ISystemAbilityManager> systemManager = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (!systemManager) {
+        ReportConnectError("GetSystemAbilityManager error");
         RESSCHED_LOGE("ResSchedClient::Fail to get registry.");
         return GET_RES_SCHED_SERVICE_FAILED;
     }
 
     remoteObject_ = systemManager->CheckSystemAbility(RES_SCHED_SYS_ABILITY_ID);
     if (!remoteObject_) {
+        ReportConnectError("CheckSystemAbility error");
         RESSCHED_LOGE("ResSchedClient::Fail to connect resource schedule service.");
         return GET_RES_SCHED_SERVICE_FAILED;
     }
 
     rss_ = iface_cast<IResSchedService>(remoteObject_);
     if (!rss_) {
+        ReportConnectError("cast remoteObject error");
         return GET_RES_SCHED_SERVICE_FAILED;
     }
     recipient_ = new (std::nothrow) ResSchedDeathRecipient(*this);
@@ -370,7 +375,16 @@ ErrCode ResSchedClient::TryConnect()
     rss_->AsObject()->AddDeathRecipient(recipient_);
     AddResSaListenerLocked();
     RESSCHED_LOGD("ResSchedClient::Connect resource schedule service success.");
+    g_isReportConnectErr = false;
     return ERR_OK;
+}
+
+void ResSchedClient::ReportConnectError(const std::string& reason)
+{
+    if (!g_isReportConnectErr) {
+        g_isReportConnectErr = true;
+        ResCommonUtil::HiSysAbnormalErrReport("ResSchedClient", __func__, reason);
+    }
 }
 
 void ResSchedClient::StopRemoteObject()
