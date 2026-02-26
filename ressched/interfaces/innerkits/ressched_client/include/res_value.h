@@ -368,6 +368,7 @@ enum WebScene : int64_t {
     WEB_SCENE_KEYBOARD_CLICK = 1006,
     WEB_SCENE_KEY_TASK = 1007,
     WEB_SCENE_IMAGE_DECODE = 1008,
+    WEB_SCENE_SCAN = 1009,
 };
 
 /**
