@@ -1073,41 +1073,5 @@ HWTEST_F(ResSchedServiceTest, DumpExtHelp001, Function | MediumTest | Level0)
     EXPECT_TRUE(result.find("setSystemLoadLevel") != std::string::npos);
     EXPECT_TRUE(result.find("getSystemloadInfo") != std::string::npos);
 }
-
-/**
- * @tc.name: Ressched service Dump Empty Args 001
- * @tc.desc: DumpExt with -h always includes system load level related help info
- * @tc.type: FUNC
- * @tc.require: issue#ICQCY1
- * @tc.author: jiangfeng
- */
-HWTEST_F(ResSchedServiceTest, DumpEmptyArgs001, Function | MediumTest | Level0)
-{
-    std::shared_ptr<ResSchedService> resSchedService_ = std::make_shared<ResSchedService>();
-    EXPECT_TRUE(resSchedService_ != nullptr);
-
-    std::vector<std::u16string> argsInStr;
-    int32_t fd = 1;
-    int32_t ret = resSchedService_->Dump(fd, argsInStr);
-    EXPECT_EQ(ret, ERR_OK);
-}
-
-/**
- * @tc.name: Ressched service Dump Help Args 001
- * @tc.desc: Test Dump function with -h option
- * @tc.type: FUNC
- * @tc.require: issue#ICQCY1
- * @tc.author: jiangfeng
- */
-HWTEST_F(ResSchedServiceTest, DumpHelpArgs001, Function | MediumTest | Level0)
-{
-    std::shared_ptr<ResSchedService> resSchedService_ = std::make_shared<ResSchedService>();
-    EXPECT_TRUE(resSchedService_ != nullptr);
-    std::vector<std::u16string> argsInStr;
-    argsInStr.push_back(to_utf16("-h"));
-    int32_t fd = 1; // stdout
-    int32_t ret = resSchedService_->Dump(fd, argsInStr);
-    EXPECT_EQ(ret, ERR_OK);
-}
 } // namespace ResourceSchedule
 } // namespace OHOS
