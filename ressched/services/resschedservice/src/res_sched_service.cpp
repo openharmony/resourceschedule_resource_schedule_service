@@ -260,7 +260,6 @@ bool ResSchedService::IsHasPermission(const uint32_t type, int32_t uid)
              return false;
         }
     } else if (allowAllSAReportRes_.find(type) == allowAllSAReportRes_.end()) {
-        RESSCHED_LOGE("resType:%{public}d not sa report", type);
         return false;
     }
     AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
