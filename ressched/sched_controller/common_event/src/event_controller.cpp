@@ -438,6 +438,7 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
     if (action == COMMON_EVENT_CLONE) {
         int64_t cloneState = want.GetIntParam("cloneState", -1);
         ReportDataInProcess(ResType::RES_TYPE_OOBE_CLONE, cloneState, payload);
+        return;
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USB_STATE) {
         payload["connected"] = want.GetBoolParam("connected", false);
