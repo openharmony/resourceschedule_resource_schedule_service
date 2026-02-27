@@ -81,9 +81,8 @@ void DeviceStandbyPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
     STANDBYSERVICE_LOGD(
         "DeviceStandbyPlugin::DispatchResource type=%{public}u value=%{public}lld",
         data->resType, (long long)(data->value));
-
-    DevStandbyMgr::StandbyServiceClient::GetInstance().HandleEvent(
-        std::make_shared<ResData>(data->resType, data->value, data->payload));
+    std::string sceneInfo = data->payload.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace);
+    DevStandbyMgr::StandbyServiceClient::GetInstance().HandleEvent(data->resType, data->value, sceneInfo);
 }
 
 extern "C" bool OnPluginInit(std::string& libName)
