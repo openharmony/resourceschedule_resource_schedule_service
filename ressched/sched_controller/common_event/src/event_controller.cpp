@@ -303,10 +303,6 @@ void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
         ReportDataInProcess(ResType::RES_TYPE_CALL_STATE_CHANGED, static_cast<int64_t>(data.GetCode()), payload);
         return;
     }
-    if (action == COMMON_EVENT_CLONE) {
-        int64_t cloneState = want.GetIntParam("cloneState", -1);
-        ReportDataInProcess(ResType::RES_TYPE_OOBE_CLONE, cloneState, payload);
-    }
     if (action == DATA_SHARE_READY) {
         DataShareIsReady();
         return;
@@ -438,6 +434,10 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
     if (action == COMMON_EVENT_AUDIO_FOCUS_CHANGE) {
         HandleAudioFocusChangeEvent(want);
         return;
+    }
+    if (action == COMMON_EVENT_CLONE) {
+        int64_t cloneState = want.GetIntParam("cloneState", -1);
+        ReportDataInProcess(ResType::RES_TYPE_OOBE_CLONE, cloneState, payload);
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USB_STATE) {
         payload["connected"] = want.GetBoolParam("connected", false);
