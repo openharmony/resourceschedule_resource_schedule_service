@@ -355,8 +355,8 @@ HWTEST_F(SceneRecognizeTest, SetListFlingSpeedLimit_001, Function | MediumTest |
  * @tc.name: SceneRecognizerBase_Accept_001
  * @tc.desc: test SceneRecognizerBase accept resource type branches
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, SceneRecognizerBase_Accept_001, Function | MediumTest | Level0)
 {
@@ -374,8 +374,8 @@ HWTEST_F(SceneRecognizeTest, SceneRecognizerBase_Accept_001, Function | MediumTe
  * @tc.name: SceneRecognizerMgr_SubmitTask_002
  * @tc.desc: test SceneRecognizerMgr::SubmitTask when queue is null
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, SceneRecognizerMgr_SubmitTask_002, Function | MediumTest | Level0)
 {
@@ -393,8 +393,8 @@ HWTEST_F(SceneRecognizeTest, SceneRecognizerMgr_SubmitTask_002, Function | Mediu
  * @tc.name: SceneRecognizerMgr_SetSlideConfig_001
  * @tc.desc: test SceneRecognizerMgr slide config setter wrappers
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, SceneRecognizerMgr_SetSlideConfig_001, Function | MediumTest | Level0)
 {
@@ -415,8 +415,8 @@ HWTEST_F(SceneRecognizeTest, SceneRecognizerMgr_SetSlideConfig_001, Function | M
  * @tc.name: SceneRecognizerMgr_CApiSetSlideConfig_001
  * @tc.desc: test C interface wrappers for slide config
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, SceneRecognizerMgr_CApiSetSlideConfig_001, Function | MediumTest | Level0)
 {
@@ -440,8 +440,8 @@ HWTEST_F(SceneRecognizeTest, SceneRecognizerMgr_CApiSetSlideConfig_001, Function
  * @tc.name: ContinuousAppInstallRecognizer_Branch_001
  * @tc.desc: test uncovered branches in ContinuousAppInstallRecognizer
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, ContinuousAppInstallRecognizer_Branch_001, Function | MediumTest | Level0)
 {
@@ -467,8 +467,8 @@ HWTEST_F(SceneRecognizeTest, ContinuousAppInstallRecognizer_Branch_001, Function
  * @tc.name: BgtaskPayloadCheck_001
  * @tc.desc: test payload validation and default branch in bgtask recognizer
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, BgtaskPayloadCheck_001, Function | MediumTest | Level0)
 {
@@ -492,8 +492,8 @@ HWTEST_F(SceneRecognizeTest, BgtaskPayloadCheck_001, Function | MediumTest | Lev
  * @tc.name: BgtaskCheckEnterScene_001
  * @tc.desc: test multi-task and guard branches in CheckEnterScene
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, BgtaskCheckEnterScene_001, Function | MediumTest | Level0)
 {
@@ -516,8 +516,8 @@ HWTEST_F(SceneRecognizeTest, BgtaskCheckEnterScene_001, Function | MediumTest | 
  * @tc.name: BgtaskHandleTaskUpdate_001
  * @tc.desc: test HandleTaskUpdate and HandleTaskStop branches for pid miss/hit
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, BgtaskHandleTaskUpdate_001, Function | MediumTest | Level0)
 {
@@ -544,8 +544,8 @@ HWTEST_F(SceneRecognizeTest, BgtaskHandleTaskUpdate_001, Function | MediumTest |
  * @tc.name: BgtaskIsValidFilteredTypeIds_004
  * @tc.desc: test empty filtered typeIds branch
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, BgtaskIsValidFilteredTypeIds_004, Function | MediumTest | Level0)
 {
@@ -558,8 +558,8 @@ HWTEST_F(SceneRecognizeTest, BgtaskIsValidFilteredTypeIds_004, Function | Medium
  * @tc.name: SystemUpgradeSceneRecognizer_002
  * @tc.desc: test uncovered branches in SystemUpgradeSceneRecognizer::OnDispatchResource
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, SystemUpgradeSceneRecognizer_002, Function | MediumTest | Level0)
 {
@@ -578,8 +578,8 @@ HWTEST_F(SceneRecognizeTest, SystemUpgradeSceneRecognizer_002, Function | Medium
  * @tc.name: SlideRecognizer_OnDispatchResource_002
  * @tc.desc: test axis non-end and default branches in OnDispatchResource
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, SlideRecognizer_OnDispatchResource_002, Function | MediumTest | Level0)
 {
@@ -601,8 +601,8 @@ HWTEST_F(SceneRecognizeTest, SlideRecognizer_OnDispatchResource_002, Function | 
  * @tc.name: SlideRecognizer_StartDetecting_002
  * @tc.desc: test missing callingUid branch in StartDetecting
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, SlideRecognizer_StartDetecting_002, Function | MediumTest | Level0)
 {
@@ -623,8 +623,8 @@ HWTEST_F(SceneRecognizeTest, SlideRecognizer_StartDetecting_002, Function | Medi
  * @tc.name: SlideRecognizer_HandleSlideOffEvent_001
  * @tc.desc: test SLIDE_EVENT_OFF branch
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, SlideRecognizer_HandleSlideOffEvent_001, Function | MediumTest | Level0)
 {
@@ -651,8 +651,8 @@ HWTEST_F(SceneRecognizeTest, SlideRecognizer_HandleSlideOffEvent_001, Function |
  * @tc.name: SlideRecognizer_HandleClickEvent_002
  * @tc.desc: test click payload validation branches
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, SlideRecognizer_HandleClickEvent_002, Function | MediumTest | Level0)
 {
@@ -691,8 +691,8 @@ HWTEST_F(SceneRecognizeTest, SlideRecognizer_HandleClickEvent_002, Function | Me
  * @tc.name: SlideRecognizer_AxisSpeedFactor_001
  * @tc.desc: test axis_event_type speed factor branch
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, SlideRecognizer_AxisSpeedFactor_001, Function | MediumTest | Level0)
 {
@@ -722,8 +722,8 @@ HWTEST_F(SceneRecognizeTest, SlideRecognizer_AxisSpeedFactor_001, Function | Med
  * @tc.name: FillRealPidAndUid_002
  * @tc.desc: test FillRealPidAndUid replacement branch
  * @tc.type: FUNC
- * @tc.require: issue1655
- * @tc.author: jiangfeng
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
  */
 HWTEST_F(SceneRecognizeTest, FillRealPidAndUid_002, Function | MediumTest | Level0)
 {
