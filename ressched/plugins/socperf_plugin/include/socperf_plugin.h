@@ -241,6 +241,7 @@ private:
     bool ReportAbilityStatus(const std::shared_ptr<ResData>& data);
     bool HandleDisplayPowerWakeUp(const std::shared_ptr<ResData>& data);
     bool HandleLiveBroadcast(const std::shared_ptr<ResData>& data);
+    bool HandleOobeClone(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
