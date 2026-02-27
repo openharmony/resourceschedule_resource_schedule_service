@@ -986,6 +986,14 @@ enum DataCloneState : int64_t {
     NEW_DEVICE_CLONE_START = 1,
     OLD_DEVICE_CLONE_START = 2,
 };
+
+/**
+* @brief oobe clone status change
+*/
+enum CloneState : int64_t {
+    CLONE_FINISH = 0,
+    CLONE_RUNNING  = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
