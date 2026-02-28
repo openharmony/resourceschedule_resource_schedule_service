@@ -55,6 +55,8 @@ void DeviceStandbyPlugin::Init()
     resTypes_.insert(RES_TYPE_BOOT_COMPLETED);
     resTypes_.insert(RES_TYPE_THERMAL_SCENARIO_REPORT);
     resTypes_.insert(RES_TYPE_WIFI_CONNECT_STATE_CHANGE);
+    resTypes_.insert(RES_TYPE_INNER_AUDIO_STATE);
+    resTypes_.insert(RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED);
 
     for (auto resType : resTypes_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
