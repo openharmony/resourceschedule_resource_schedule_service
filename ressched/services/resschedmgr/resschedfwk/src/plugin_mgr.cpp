@@ -1137,13 +1137,25 @@ void PluginMgr::CallOnInitFinishCallbacks()
         }
         RESSCHED_LOGI("%{public}s, calling callback for lib: %{public}s!", __func__, libName.c_str());
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-        ffrt::submit(std::function<void()>(*callback));
+        {
+            std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
+            if (dispatchers_.find(libName) != dispatchers_.end() && dispatchers_[libName] != nullptr) {
+                auto dispatcher = dispatchers_[libName];
+                auto task = std::function<void()>(*callback);
+                dispatcher->submit(task);
+            } else {
+                ffrt::submit(std::function<void()>(*callback));
+            }
+        }
 #else
-        std::lock_guard<std::mutex> autoLock(dispatcherMutex_);
-        if (dispatcher_) {
-            dispatcher_->PostTask(std::function<void()>(*callback));
-        } else {
-            (*callback)();
+        {
+            std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
+            if (dispatcher_) {
+                auto task = std::function<void()>(*callback);
+                dispatcher_->PostTask(task);
+            } else {
+                (*callback)();
+            }
         }
 #endif
     }

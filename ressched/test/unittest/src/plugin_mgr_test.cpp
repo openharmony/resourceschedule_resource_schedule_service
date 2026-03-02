@@ -1351,6 +1351,109 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_005, TestSize.Le
 }
 
 /**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_006
+ * @tc.desc: Verify CallOnInitFinishCallbacks clears callbacks after first call.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_006, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    
+    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", callbackA);
+    
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    
+    int32_t firstCallCount = g_initFinishCallCountA.load();
+    
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    
+    EXPECT_EQ(g_initFinishCallCountA.load(), firstCallCount);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_007
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles multiple valid callbacks.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_007, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    g_initFinishCallCountB = 0;
+    
+    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    auto callbackB = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackB);
+    auto callbackC = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_a", callbackA);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_b", callbackB);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_c", callbackC);
+    
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    
+    EXPECT_EQ(g_initFinishCallCountA.load(), 2);
+    EXPECT_EQ(g_initFinishCallCountB.load(), 1);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_008
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles callback override for same lib.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_008, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    g_initFinishCallCountB = 0;
+    
+    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    auto callbackB = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackB);
+    
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", callbackA);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", callbackB);
+    
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    
+    EXPECT_EQ(g_initFinishCallCountA.load(), 0);
+    EXPECT_EQ(g_initFinishCallCountB.load(), 1);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_009
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles all invalid callbacks.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_009, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    g_initFinishCallCountB = 0;
+    
+    auto nullCallback1 = std::make_shared<OnInitFinishCallback>(nullptr);
+    auto nullCallback2 = std::make_shared<OnInitFinishCallback>(nullptr);
+    
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_null1", nullCallback1);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_null2", nullCallback2);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_null3", nullptr);
+    
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    
+    EXPECT_EQ(g_initFinishCallCountA.load(), 0);
+    EXPECT_EQ(g_initFinishCallCountB.load(), 0);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+
+/**
  * @tc.name: PluginMgrTest_ReadSubscriptionAccuractlyEnableProperties_001
  * @tc.desc: Verify ReadSubscriptionAccuractlyEnableProperties handles valid property value.
  * @tc.type: FUNC
