@@ -48,14 +48,8 @@ namespace {
         auto switchStrs = mgr->GetPluginSwitchStr();
         mgr->ParsePluginSwitch(switchStrs);
         
-        // Wait for async callbacks to complete when FFRT is enabled
-        #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-        ffrt::sync();
-        #else
-        // For non-FFRT case, callbacks are either synchronous or posted to event handler
-        // Give some time for event handler to process the task
+        // Wait for async callbacks to complete
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        #endif
     }
 }
 
@@ -1238,6 +1232,9 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_001, TestSize.Le
     // 调用函数，应该不会崩溃
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
     
+    // Wait for async callbacks to complete
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    
     // 验证回调列表仍然为空（被交换后清空）
     EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
 }
@@ -1265,6 +1262,9 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_002, TestSize.Le
     // 调用函数
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
     
+    // Wait for async callbacks to complete
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    
     // 验证回调被调用
     EXPECT_GT(g_initFinishCallCountA, 0);
     EXPECT_GT(g_initFinishCallCountB, 0);
@@ -1286,6 +1286,9 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_003, TestSize.Le
     // 调用函数，应该跳过空回调
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
     
+    // Wait for async callbacks to complete
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    
     // 验证回调列表被清空
     EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
 }
@@ -1306,6 +1309,9 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_004, TestSize.Le
     
     // 调用函数，应该跳过空指针回调
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    
+    // Wait for async callbacks to complete
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     
     // 验证回调列表被清空
     EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
@@ -1334,6 +1340,9 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_005, TestSize.Le
     
     // 调用函数，应该调用有效回调，跳过无效回调
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    
+    // Wait for async callbacks to complete
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     
     // 验证有效回调被调用
     EXPECT_GT(g_initFinishCallCountA, 0);
