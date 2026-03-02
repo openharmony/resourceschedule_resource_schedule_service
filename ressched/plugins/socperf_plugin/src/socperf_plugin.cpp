@@ -727,7 +727,7 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
         if (data->payload != nullptr && data->payload.contains(SUPPORT_WARM_START_GC_SWITCH)) {
             int warmStartTypeValue = std::atoi(data->payload[SUPPORT_WARM_START_GC_SWITCH].get<std::string>().c_str());
             if (warmStartTypeValue == 1) {
-                SOC_PERF_LOGI("socperf->HandleAppAbilityStart: warmStartType");
+                SOC_PERF_LOGD("socperf->HandleAppAbilityStart: warmStartType");
                 OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
                 return;
             }
