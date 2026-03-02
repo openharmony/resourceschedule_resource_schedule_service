@@ -1385,18 +1385,18 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_007, TestSize.Le
 {
     g_initFinishCallCountA = 0;
     g_initFinishCallCountB = 0;
-    
+
     auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
     auto callbackB = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackB);
     auto callbackC = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
-    
+
     PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_a", callbackA);
     PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_b", callbackB);
     PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_c", callbackC);
-    
+
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    
+
     EXPECT_EQ(g_initFinishCallCountA.load(), 2);
     EXPECT_EQ(g_initFinishCallCountB.load(), 1);
     EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
