@@ -1156,10 +1156,10 @@ void PluginMgr::CallOnInitFinishCallbacks()
             if (dispatcher_) {
                 auto task = std::function<void()>(*callback);
                 dispatcher_->PostTask(task);
-                return;
+            } else {
+                (*callback)();
             }
         }
-        (*callback)();
 #endif
     }
 }
