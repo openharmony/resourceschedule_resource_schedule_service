@@ -723,6 +723,15 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_GAME_START, "");
         }
     } else if (data->value == AppStartType::APP_WARM_START) {
+        const std::string SUPPORT_WARM_START_GC_SWITCH = "supportWarmSmartGC";
+        if (data->payload != nullptr && data->payload.contains(SUPPORT_WARM_START_GC_SWITCH)) {
+            int warmStartTypeValue = std::atoi(data->payload[SUPPORT_WARM_START_GC_SWITCH].get<std::string>().c_str());
+            if (warmStartTypeValue == 1) {
+                SOC_PERF_LOGD("socperf->HandleAppAbilityStart: warmStartType");
+                OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+                return;
+            }
+        }
         SOC_PERF_LOGD("SocPerfPlugin: socperf->APP_WARM_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WARM_START, "");
     }
