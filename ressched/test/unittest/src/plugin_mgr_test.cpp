@@ -29,6 +29,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     const string LIB_NAME = "libunittest_plugin.z.so";
+    constexpr int32_t ASYNC_CALLBACK_WAIT_MS = 100;
     std::atomic<int32_t> g_initFinishCallCountA(0);
     std::atomic<int32_t> g_initFinishCallCountB(0);
 
@@ -49,7 +50,7 @@ namespace {
         mgr->ParsePluginSwitch(switchStrs);
         
         // Wait for async callbacks to complete
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
     }
 }
 
@@ -1385,7 +1386,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_001, TestSize.Le
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
     
     // Wait for async callbacks to complete
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
     
     // 验证回调列表仍然为空（被交换后清空）
     EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
@@ -1415,7 +1416,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_002, TestSize.Le
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
     
     // Wait for async callbacks to complete
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
     
     // 验证回调被调用
     EXPECT_GT(g_initFinishCallCountA, 0);
@@ -1439,7 +1440,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_003, TestSize.Le
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
     
     // Wait for async callbacks to complete
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
     
     // 验证回调列表被清空
     EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
@@ -1463,7 +1464,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_004, TestSize.Le
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
     
     // Wait for async callbacks to complete
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
     
     // 验证回调列表被清空
     EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
@@ -1494,7 +1495,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_005, TestSize.Le
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
     
     // Wait for async callbacks to complete
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
     
     // 验证有效回调被调用
     EXPECT_GT(g_initFinishCallCountA, 0);
@@ -1516,12 +1517,12 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_006, TestSize.Le
     PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", callbackA);
     
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
     
     int32_t firstCallCount = g_initFinishCallCountA.load();
     
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
     
     EXPECT_EQ(g_initFinishCallCountA.load(), firstCallCount);
     EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
@@ -1547,7 +1548,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_007, TestSize.Le
     PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_c", callbackC);
 
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
 
     EXPECT_EQ(g_initFinishCallCountA.load(), 2);
     EXPECT_EQ(g_initFinishCallCountB.load(), 1);
@@ -1572,7 +1573,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_008, TestSize.Le
     PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", callbackB);
     
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
     
     EXPECT_EQ(g_initFinishCallCountA.load(), 0);
     EXPECT_EQ(g_initFinishCallCountB.load(), 1);
@@ -1598,7 +1599,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_009, TestSize.Le
     PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_null3", nullptr);
     
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
     
     EXPECT_EQ(g_initFinishCallCountA.load(), 0);
     EXPECT_EQ(g_initFinishCallCountB.load(), 0);
@@ -1626,7 +1627,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_010, TestSize.Le
     PluginMgr::GetInstance().RegisterOnInitFinishCallback(libName, callback);
 
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
 
     EXPECT_GT(g_initFinishCallCountA.load(), 0);
     EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
@@ -1653,7 +1654,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_011, TestSize.Le
     PluginMgr::GetInstance().RegisterOnInitFinishCallback(libName, callback);
 
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
 
     EXPECT_GT(g_initFinishCallCountA.load(), 0);
     EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
@@ -1679,7 +1680,7 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_012, TestSize.Le
     PluginMgr::GetInstance().RegisterOnInitFinishCallback(libName, callback);
 
     PluginMgr::GetInstance().CallOnInitFinishCallbacks();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
 
     EXPECT_GT(g_initFinishCallCountA.load(), 0);
     EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
