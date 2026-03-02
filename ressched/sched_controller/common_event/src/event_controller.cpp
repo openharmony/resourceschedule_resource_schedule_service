@@ -40,6 +40,7 @@ IMPLEMENT_SINGLE_INSTANCE(EventController);
 
 static const char* COMMON_EVENT_MEDIA_CTRL_EVENT = "usual.event.MEDIA_CTRL_EVENT";
 static const char* COMMON_EVENT_CAMERA_STATUS = "usual.event.CAMERA_STATUS";
+static const char* COMMON_EVENT_CLONE = "usual.event.clone.PerformanceCloneState";
 static const char* COMMON_EVENT_GAME_STATUS = "usual.event.gameservice.GAME_STATUS_CHANGE_UNI";
 static const char* DATA_SHARE_READY = "usual.event.DATA_SHARE_READY";
 static const char* CONFIG_UPDATED_ACTION = "usual.event.DUE_SA_CFG_UPDATED";
@@ -219,6 +220,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USER_UNLOCKED);
     matchingSkills.AddEvent(DATA_SHARE_READY);
     matchingSkills.AddEvent(COMMON_EVENT_CAMERA_STATUS);
+    matchingSkills.AddEvent(COMMON_EVENT_CLONE);
     matchingSkills.AddEvent(COMMON_EVENT_GAME_STATUS);
     matchingSkills.AddEvent(CONFIG_UPDATED_ACTION);
     matchingSkills.AddEvent(COMMON_EVENT_USER_SLEEP_STATE_CHANGED);
@@ -431,6 +433,11 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
     }
     if (action == COMMON_EVENT_AUDIO_FOCUS_CHANGE) {
         HandleAudioFocusChangeEvent(want);
+        return;
+    }
+    if (action == COMMON_EVENT_CLONE) {
+        int64_t cloneState = want.GetIntParam("cloneState", -1);
+        ReportDataInProcess(ResType::RES_TYPE_OOBE_CLONE, cloneState, payload);
         return;
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USB_STATE) {

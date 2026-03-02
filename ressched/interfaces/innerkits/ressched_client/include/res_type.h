@@ -411,6 +411,8 @@ enum : uint32_t {
     RES_TYPE_WEB_SUBWIN_TASK  = 195,
     // report data clone state
     RES_TYPE_DATA_CLONE_STATE = 196,
+    // report oobe clone
+    RES_TYPE_OOBE_CLONE = 197,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType

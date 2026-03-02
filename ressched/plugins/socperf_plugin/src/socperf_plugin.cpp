@@ -148,6 +148,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P      = 10203;
     const int32_t PERF_REQUEST_CMD_ID_RECENT_BUILD          = 10200;
     const int32_t PERF_REQUEST_CMD_ID_LIVE_BROADCAST        = 10224;
+    const int32_t PERF_REQUEST_CMD_ID_OOBE_CLONE            = 10225;
     // PREMAKE_MODE_STRING = 1, PRELOADMODULE_MODE_STRING = 2,
     // PRELAUNCH_MODE_STRING = 4
     const std::unordered_set<std::string> PRELOAD_SET = {"1", "2", "4"};
@@ -586,6 +587,8 @@ void SocPerfPlugin::AddOtherEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleSwiperFlingEndEx(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_WITHOUT_AGGREGATION,
         [this](const std::shared_ptr<ResData>& data) {HandleLiveBroadcast(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_OOBE_CLONE,
+        [this](const std::shared_ptr<ResData>& data) {HandleOobeClone(data); }));
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
@@ -630,6 +633,7 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_DISPLAY_POWER_WAKE_UP,
         RES_TYPE_SWIPER_FLING_END_EXCEPTION_FLAG,
         RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_WITHOUT_AGGREGATION,
+        RES_TYPE_OOBE_CLONE,
     };
     InitOtherResTypes();
 }
@@ -1904,6 +1908,21 @@ bool SocPerfPlugin::HandleLiveBroadcast(const std::shared_ptr<ResData>& data)
     } else if (data->value == HighFrequenceLoadSceneState::HFLS_SCENE_OUT) {
         SOC_PERF_LOGD("socperfPlugin: socperf->HandleLiveBroadcast LiveBroadcast end");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LIVE_BROADCAST, false, "");
+    }
+    return true;
+}
+
+bool SocPerfPlugin::HandleOobeClone(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    if (data->value == CloneState::CLONE_RUNNING) {
+        SOC_PERF_LOGI("SocPerfPlugin socperf->HandleOobeClone Clone running");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_OOBE_CLONE, true, "");
+    } else if (data->value == CloneState::CLONE_FINISH) {
+        SOC_PERF_LOGI("SocPerfPlugin socperf->HandleOobeClone Clone finish");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_OOBE_CLONE, false, "");
     }
     return true;
 }
