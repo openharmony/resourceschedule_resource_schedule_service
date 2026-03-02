@@ -1136,7 +1136,16 @@ void PluginMgr::CallOnInitFinishCallbacks()
             continue;
         }
         RESSCHED_LOGI("%{public}s, calling callback for lib: %{public}s!", __func__, libName.c_str());
-        (*callback)();
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+        ffrt::submit(std::function<void()>(*callback));
+#else
+        std::lock_guard<std::mutex> autoLock(dispatcherMutex_);
+        if (dispatcher_) {
+            dispatcher_->PostTask(std::function<void()>(*callback));
+        } else {
+            (*callback)();
+        }
+#endif
     }
 }
 } // namespace ResourceSchedule

@@ -47,6 +47,15 @@ namespace {
         mgr->Init();
         auto switchStrs = mgr->GetPluginSwitchStr();
         mgr->ParsePluginSwitch(switchStrs);
+        
+        // Wait for async callbacks to complete when FFRT is enabled
+        #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+        ffrt::sync();
+        #else
+        // For non-FFRT case, callbacks are either synchronous or posted to event handler
+        // Give some time for event handler to process the task
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        #endif
     }
 }
 
