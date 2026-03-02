@@ -1219,6 +1219,158 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_005, TestSiz
 }
 
 /**
+ * @tc.name: PluginMgrTest_ReadSubscriptionAccuractlyEnableProperties_001
+ * @tc.desc: Verify ReadSubscriptionAccuractlyEnableProperties handles valid property value.
+ * @tc.type: FUNC
+ * @tc.require: issue1571
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_ReadSubscriptionAccuractlyEnableProperties_001, TestSize.Level1)
+{
+    // 保存原始值
+    bool originalEnable = PluginMgr::GetInstance().subscriptionAccuractlyEnable_;
+    
+    // 测试读取属性的功能（这里我们主要验证函数能够执行而不崩溃）
+    PluginMgr::GetInstance().ReadSubscriptionAccuractlyEnableProperties();
+    
+    // 函数应该能够执行完成
+    SUCCEED();
+    
+    // 恢复原始值
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
+}
+
+/**
+ * @tc.name: PluginMgrTest_SubscribeResourceAccurately_004
+ * @tc.desc: SubscribeResourceAccurately handles empty pluginLib even when subscriptionAccuractlyEnable_ is false.
+ * @tc.type: FUNC
+ * @tc.require: issue1571
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_SubscribeResourceAccurately_004, TestSize.Level1)
+{
+    uint32_t resType = 100;
+    int64_t resValue = 200;
+    
+    // 保存原始值
+    bool originalEnable = PluginMgr::GetInstance().subscriptionAccuractlyEnable_;
+    
+    // 设置为false以测试分支
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = false;
+    
+    // 调用SubscribeResourceAccurately，应该回退到SubscribeResource
+    PluginMgr::GetInstance().SubscribeResourceAccurately("", resType, resValue);
+    
+    // 函数应该能够执行完成而不崩溃
+    SUCCEED();
+    
+    // 恢复原始值
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
+}
+
+/**
+ * @tc.name: PluginMgrTest_UnSubscribeResourceAccurately_006
+ * @tc.desc: UnSubscribeResourceAccurately handles empty pluginLib even when subscriptionAccuractlyEnable_ is false.
+ * @tc.type: FUNC
+ * @tc.require: issue1571
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_006, TestSize.Level1)
+{
+    uint32_t resType = 100;
+    int64_t resValue = 200;
+    
+    // 保存原始值
+    bool originalEnable = PluginMgr::GetInstance().subscriptionAccuractlyEnable_;
+    
+    // 设置为false以测试分支
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = false;
+    
+    // 调用UnSubscribeResourceAccurately，应该回退到UnSubscribeResource
+    PluginMgr::GetInstance().UnSubscribeResourceAccurately("", resType, resValue);
+    
+    // 函数应该能够执行完成而不崩溃
+    SUCCEED();
+    
+    // 恢复原始值
+    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
+}
+
+/**
+ * @tc.name: ResPairHashTest_001
+ * @tc.desc: Test ResPair hash function with different values
+ * @tc.type: FUNC
+ * @tc.require: issue1583
+ */
+HWTEST_F(PluginMgrTest, ResPairHashTest_001, TestSize.Level1)
+{
+    OHOS::ResourceSchedule::ResPair pair1(100, 200);
+    OHOS::ResourceSchedule::ResPair pair2(100, 200);
+    OHOS::ResourceSchedule::ResPair pair3(200, 100);
+    OHOS::ResourceSchedule::ResPair pair4(0, 0);
+    
+    std::hash<OHOS::ResourceSchedule::ResPair> hasher;
+    
+    // Test that same pairs produce same hash
+    size_t hash1 = hasher(pair1);
+    size_t hash2 = hasher(pair2);
+    EXPECT_EQ(hash1, hash2);
+    
+    // Test that different pairs produce different hashes
+    size_t hash3 = hasher(pair3);
+    size_t hash4 = hasher(pair4);
+    EXPECT_NE(hash1, hash3);
+    EXPECT_NE(hash1, hash4);
+    EXPECT_NE(hash3, hash4);
+}
+
+/**
+ * @tc.name: PluginMgrInitFinishCallback_001
+ * @tc.desc: Verify init-finish callbacks are invoked once and cleared after calling.
+ * @tc.type: FUNC
+ * @tc.require: issue1624
+ */
+HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_001, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    g_initFinishCallCountB = 0;
+
+    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    auto callbackB = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackB);
+
+    pluginMgr_->RegisterOnInitFinishCallback("lib_init_a", callbackA);
+    pluginMgr_->RegisterOnInitFinishCallback("lib_init_b", callbackB);
+
+    TriggerInitFinishCallbacks(pluginMgr_);
+    EXPECT_EQ(g_initFinishCallCountA.load(), 1);
+    EXPECT_EQ(g_initFinishCallCountB.load(), 1);
+
+    TriggerInitFinishCallbacks(pluginMgr_);
+    EXPECT_EQ(g_initFinishCallCountA.load(), 1);
+    EXPECT_EQ(g_initFinishCallCountB.load(), 1);
+}
+
+/**
+ * @tc.name: PluginMgrInitFinishCallback_002
+ * @tc.desc: Verify invalid callback does not override a valid one for the same library.
+ * @tc.type: FUNC
+ * @tc.require: issue1624
+ */
+HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_002, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+
+    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    auto invalidCallback = std::make_shared<OnInitFinishCallback>(nullptr);
+
+    pluginMgr_->RegisterOnInitFinishCallback("lib_init_a", callbackA);
+    pluginMgr_->RegisterOnInitFinishCallback("lib_init_a", invalidCallback);
+
+    TriggerInitFinishCallbacks(pluginMgr_);
+    EXPECT_EQ(g_initFinishCallCountA.load(), 1);
+
+    TriggerInitFinishCallbacks(pluginMgr_);
+    EXPECT_EQ(g_initFinishCallCountA.load(), 1);
+}
+
+/**
  * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_001
  * @tc.desc: Verify CallOnInitFinishCallbacks handles empty callback list.
  * @tc.type: FUNC
@@ -1453,156 +1605,85 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_009, TestSize.Le
     EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
 /**
- * @tc.name: PluginMgrTest_ReadSubscriptionAccuractlyEnableProperties_001
- * @tc.desc: Verify ReadSubscriptionAccuractlyEnableProperties handles valid property value.
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_010
+ * @tc.desc: Verify CallOnInitFinishCallbacks submits task to dispatcher when matching dispatcher exists.
  * @tc.type: FUNC
- * @tc.require: issue1571
+ * @tc.require: issue1632
  */
-HWTEST_F(PluginMgrTest, PluginMgrTest_ReadSubscriptionAccuractlyEnableProperties_001, TestSize.Level1)
-{
-    // 保存原始值
-    bool originalEnable = PluginMgr::GetInstance().subscriptionAccuractlyEnable_;
-    
-    // 测试读取属性的功能（这里我们主要验证函数能够执行而不崩溃）
-    PluginMgr::GetInstance().ReadSubscriptionAccuractlyEnableProperties();
-    
-    // 函数应该能够执行完成
-    SUCCEED();
-    
-    // 恢复原始值
-    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
-}
-
-/**
- * @tc.name: PluginMgrTest_SubscribeResourceAccurately_004
- * @tc.desc: SubscribeResourceAccurately handles empty pluginLib even when subscriptionAccuractlyEnable_ is false.
- * @tc.type: FUNC
- * @tc.require: issue1571
- */
-HWTEST_F(PluginMgrTest, PluginMgrTest_SubscribeResourceAccurately_004, TestSize.Level1)
-{
-    uint32_t resType = 100;
-    int64_t resValue = 200;
-    
-    // 保存原始值
-    bool originalEnable = PluginMgr::GetInstance().subscriptionAccuractlyEnable_;
-    
-    // 设置为false以测试分支
-    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = false;
-    
-    // 调用SubscribeResourceAccurately，应该回退到SubscribeResource
-    PluginMgr::GetInstance().SubscribeResourceAccurately("", resType, resValue);
-    
-    // 函数应该能够执行完成而不崩溃
-    SUCCEED();
-    
-    // 恢复原始值
-    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
-}
-
-/**
- * @tc.name: PluginMgrTest_UnSubscribeResourceAccurately_006
- * @tc.desc: UnSubscribeResourceAccurately handles empty pluginLib even when subscriptionAccuractlyEnable_ is false.
- * @tc.type: FUNC
- * @tc.require: issue1571
- */
-HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_006, TestSize.Level1)
-{
-    uint32_t resType = 100;
-    int64_t resValue = 200;
-    
-    // 保存原始值
-    bool originalEnable = PluginMgr::GetInstance().subscriptionAccuractlyEnable_;
-    
-    // 设置为false以测试分支
-    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = false;
-    
-    // 调用UnSubscribeResourceAccurately，应该回退到UnSubscribeResource
-    PluginMgr::GetInstance().UnSubscribeResourceAccurately("", resType, resValue);
-    
-    // 函数应该能够执行完成而不崩溃
-    SUCCEED();
-    
-    // 恢复原始值
-    PluginMgr::GetInstance().subscriptionAccuractlyEnable_ = originalEnable;
-}
-
-/**
- * @tc.name: ResPairHashTest_001
- * @tc.desc: Test ResPair hash function with different values
- * @tc.type: FUNC
- * @tc.require: issue1583
- */
-HWTEST_F(PluginMgrTest, ResPairHashTest_001, TestSize.Level1)
-{
-    OHOS::ResourceSchedule::ResPair pair1(100, 200);
-    OHOS::ResourceSchedule::ResPair pair2(100, 200);
-    OHOS::ResourceSchedule::ResPair pair3(200, 100);
-    OHOS::ResourceSchedule::ResPair pair4(0, 0);
-    
-    std::hash<OHOS::ResourceSchedule::ResPair> hasher;
-    
-    // Test that same pairs produce same hash
-    size_t hash1 = hasher(pair1);
-    size_t hash2 = hasher(pair2);
-    EXPECT_EQ(hash1, hash2);
-    
-    // Test that different pairs produce different hashes
-    size_t hash3 = hasher(pair3);
-    size_t hash4 = hasher(pair4);
-    EXPECT_NE(hash1, hash3);
-    EXPECT_NE(hash1, hash4);
-    EXPECT_NE(hash3, hash4);
-}
-
-/**
- * @tc.name: PluginMgrInitFinishCallback_001
- * @tc.desc: Verify init-finish callbacks are invoked once and cleared after calling.
- * @tc.type: FUNC
- * @tc.require: issue1624
- */
-HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_001, TestSize.Level1)
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_010, TestSize.Level1)
 {
     g_initFinishCallCountA = 0;
-    g_initFinishCallCountB = 0;
+    const std::string libName = "init_finish_dispatcher_hit_lib";
 
-    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
-    auto callbackB = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackB);
+    PluginMgr::GetInstance().initFinishCallbacks_.clear();
+    PluginMgr::GetInstance().dispatchers_.erase(libName);
 
-    pluginMgr_->RegisterOnInitFinishCallback("lib_init_a", callbackA);
-    pluginMgr_->RegisterOnInitFinishCallback("lib_init_b", callbackB);
+    auto callback = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    PluginMgr::GetInstance().dispatchers_[libName] = std::make_shared<ffrt::queue>(libName.c_str(),
+        ffrt::queue_attr().qos(ffrt::qos_user_interactive));
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback(libName, callback);
 
-    TriggerInitFinishCallbacks(pluginMgr_);
-    EXPECT_EQ(g_initFinishCallCountA.load(), 1);
-    EXPECT_EQ(g_initFinishCallCountB.load(), 1);
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    TriggerInitFinishCallbacks(pluginMgr_);
-    EXPECT_EQ(g_initFinishCallCountA.load(), 1);
-    EXPECT_EQ(g_initFinishCallCountB.load(), 1);
+    EXPECT_GT(g_initFinishCallCountA.load(), 0);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+
+    PluginMgr::GetInstance().dispatchers_.erase(libName);
 }
 
 /**
- * @tc.name: PluginMgrInitFinishCallback_002
- * @tc.desc: Verify invalid callback does not override a valid one for the same library.
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_011
+ * @tc.desc: Verify CallOnInitFinishCallbacks falls back to ffrt::submit when dispatcher is nullptr.
  * @tc.type: FUNC
- * @tc.require: issue1624
+ * @tc.require: issue1632
  */
-HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_002, TestSize.Level1)
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_011, TestSize.Level1)
 {
     g_initFinishCallCountA = 0;
+    const std::string libName = "init_finish_dispatcher_null_lib";
 
-    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
-    auto invalidCallback = std::make_shared<OnInitFinishCallback>(nullptr);
+    PluginMgr::GetInstance().initFinishCallbacks_.clear();
+    PluginMgr::GetInstance().dispatchers_.erase(libName);
 
-    pluginMgr_->RegisterOnInitFinishCallback("lib_init_a", callbackA);
-    pluginMgr_->RegisterOnInitFinishCallback("lib_init_a", invalidCallback);
+    auto callback = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    PluginMgr::GetInstance().dispatchers_[libName] = nullptr;
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback(libName, callback);
 
-    TriggerInitFinishCallbacks(pluginMgr_);
-    EXPECT_EQ(g_initFinishCallCountA.load(), 1);
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    TriggerInitFinishCallbacks(pluginMgr_);
-    EXPECT_EQ(g_initFinishCallCountA.load(), 1);
+    EXPECT_GT(g_initFinishCallCountA.load(), 0);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+
+    PluginMgr::GetInstance().dispatchers_.erase(libName);
 }
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_012
+ * @tc.desc: Verify CallOnInitFinishCallbacks falls back to ffrt::submit when dispatcher does not exist.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_012, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    const std::string libName = "init_finish_dispatcher_miss_lib";
+
+    PluginMgr::GetInstance().initFinishCallbacks_.clear();
+    PluginMgr::GetInstance().dispatchers_.erase(libName);
+
+    auto callback = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback(libName, callback);
+
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    EXPECT_GT(g_initFinishCallCountA.load(), 0);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+#endif
 } // namespace ResourceSchedule
 } // namespace OHOS

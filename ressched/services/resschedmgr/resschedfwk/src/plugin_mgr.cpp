@@ -141,6 +141,33 @@ void PluginMgr::CompletePluginInitialization()
     RESSCHED_LOGI("PluginMgr load plugin success!");
 }
 
+void PluginMgr::InitDispatchersAfterPluginLoad()
+{
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
+    dispatchers_.clear();
+    for (const auto& [libPath, libInfo] : pluginLibMap_) {
+        auto resumeTask = [pluginName = libPath]() {
+            PluginMgr::GetInstance().EnablePluginIfResume(pluginName);
+        };
+        auto callback = [pluginName = libPath, time = pluginBlockTime, resumeTask]() {
+            PluginMgr::GetInstance().HandlePluginTimeout(pluginName);
+            ffrt::submit(resumeTask, {}, {}, ffrt::task_attr().delay(time));
+        };
+        dispatchers_.emplace(libPath, std::make_shared<ffrt::queue>(libPath.c_str(),
+            ffrt::queue_attr().qos(ffrt::qos_user_interactive)));
+    }
+#else
+    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
+    if (!dispatcher_) {
+        dispatcher_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
+    }
+    if (!dispatcher_) {
+        RESSCHED_LOGI("create dispatcher failed");
+    }
+#endif
+}
+
 void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bool isRssExe)
 {
     if (!pluginSwitch_) {
@@ -165,33 +192,7 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
         RESSCHED_LOGI("PluginMgr load switch config file index:%{public}d success!", index);
     }
     LoadPlugin();
-#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-    {
-        std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
-        dispatchers_.clear();
-        for (const auto& [libPath, libInfo] : pluginLibMap_) {
-            auto resumeTask = [pluginName = libPath]() {
-                PluginMgr::GetInstance().EnablePluginIfResume(pluginName);
-            };
-            auto callback = [pluginName = libPath, time = pluginBlockTime, resumeTask]() {
-                PluginMgr::GetInstance().HandlePluginTimeout(pluginName);
-                ffrt::submit(resumeTask, {}, {}, ffrt::task_attr().delay(time));
-            };
-            dispatchers_.emplace(libPath, std::make_shared<ffrt::queue>(libPath.c_str(),
-                ffrt::queue_attr().qos(ffrt::qos_user_interactive)));
-        }
-    }
-#else
-    {
-        std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
-        if (!dispatcher_) {
-            dispatcher_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
-        }
-        if (!dispatcher_) {
-            RESSCHED_LOGI("create dispatcher failed");
-        }
-    }
-#endif
+    InitDispatchersAfterPluginLoad();
     CompletePluginInitialization();
 }
 
