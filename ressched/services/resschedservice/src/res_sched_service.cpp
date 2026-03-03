@@ -51,6 +51,7 @@ namespace {
     static constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 650;
     static constexpr int32_t LIMIT_REQUEST_TIME = 1000;
     static constexpr int64_t FOUR_HOUR_TIME = 4 * 60 * 60 * 1000;
+    static constexpr int64_t INTERVAL = 5 * 1000;
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     static const int32_t DEFAULT_VALUE = -1;
     static const char* EXT_RES_KEY = "extType";
@@ -335,8 +336,6 @@ ErrCode ResSchedService::ReportData(uint32_t resType, int64_t value, const std::
     int32_t callingUid = IPCSkeleton::GetCallingUid();
     int32_t ret = CheckReportDataParcel(resType, value, payload, callingUid);
     if (ret != ERR_OK) {
-        RESSCHED_LOGE("%{public}s: check report data parcel fail ret=%{public}d, type=%{public}u.",
-            __func__, ret, resType);
         return ret;
     }
 
@@ -364,8 +363,6 @@ ErrCode ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t v
     int32_t callingUid = IPCSkeleton::GetCallingUid();
     int32_t ret = CheckReportDataParcel(resType, value, payload, callingUid);
     if (ret != ERR_OK) {
-        RESSCHED_LOGE("%{public}s: check report data parcel fail ret=%{public}d, type=%{public}u.",
-            __func__, ret, resType);
         resultValue = ret;
         return ERR_OK;
     }
@@ -777,7 +774,22 @@ int32_t ResSchedService::CheckReportDataParcel(const uint32_t& type, const int64
     const std::string& payload, int32_t uid)
 {
     if (!IsSBDResType(type) && !IsThirdPartType(type) && !IsHasPermission(type, uid)) {
-        RESSCHED_LOGD("type:%{public}u, no permission", type);
+        int64_t currentTime = ResCommonUtil::GetCurrentTimestamp();
+        auto iter = errLogRecordMap_.find(type);
+        bool reportErrLog = false;
+        if (iter != errLogRecordMap_.end()) {
+            iter->second.second += 1;
+            reportErrLog = (currentTime > iter->second.first + INTERVAL) ? true : false;
+            iter->second.first =
+               (currentTime > iter->second.first + INTERVAL) ? currentTime : iter->second.first;
+        } else {
+            errLogRecordMap_[type] = std::make_pair(currentTime, 1);
+            reportErrLog = true;
+        }
+        if (reportErrLog) {
+            RESSCHED_LOGE("%{public}s: check report data no permission type=%{public}u, count=%{public}d.",
+                __func__, type, errLogRecordMap_[type].second);
+        }
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
 
