@@ -29,6 +29,7 @@ namespace OHOS {
 namespace ResourceSchedule {
 namespace {
     const string LIB_NAME = "libunittest_plugin.z.so";
+    constexpr int32_t ASYNC_CALLBACK_WAIT_MS = 100;
     std::atomic<int32_t> g_initFinishCallCountA(0);
     std::atomic<int32_t> g_initFinishCallCountB(0);
 
@@ -47,6 +48,9 @@ namespace {
         mgr->Init();
         auto switchStrs = mgr->GetPluginSwitchStr();
         mgr->ParsePluginSwitch(switchStrs);
+        
+        // Wait for async callbacks to complete
+        std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
     }
 }
 
@@ -1216,123 +1220,6 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UnSubscribeResourceAccurately_005, TestSiz
 }
 
 /**
- * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_001
- * @tc.desc: Verify CallOnInitFinishCallbacks handles empty callback list.
- * @tc.type: FUNC
- * @tc.require: issue1632
- */
-HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_001, TestSize.Level1)
-{
-    // 确保回调列表为空
-    PluginMgr::GetInstance().initFinishCallbacks_.clear();
-    
-    // 调用函数，应该不会崩溃
-    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
-    
-    // 验证回调列表仍然为空（被交换后清空）
-    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
-}
-
-/**
- * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_002
- * @tc.desc: Verify CallOnInitFinishCallbacks handles valid callbacks.
- * @tc.type: FUNC
- * @tc.require: issue1632
- */
-HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_002, TestSize.Level1)
-{
-    // 重置回调计数
-    g_initFinishCallCountA = 0;
-    g_initFinishCallCountB = 0;
-    
-    // 创建有效回调
-    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
-    auto callbackB = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackB);
-    
-    // 注册回调
-    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib_a", callbackA);
-    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib_b", callbackB);
-    
-    // 调用函数
-    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
-    
-    // 验证回调被调用
-    EXPECT_GT(g_initFinishCallCountA, 0);
-    EXPECT_GT(g_initFinishCallCountB, 0);
-    // 验证回调列表被清空
-    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
-}
-
-/**
- * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_003
- * @tc.desc: Verify CallOnInitFinishCallbacks handles null callbacks.
- * @tc.type: FUNC
- * @tc.require: issue1632
- */
-HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_003, TestSize.Level1)
-{
-    // 注册空回调
-    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", nullptr);
-    
-    // 调用函数，应该跳过空回调
-    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
-    
-    // 验证回调列表被清空
-    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
-}
-
-/**
- * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_004
- * @tc.desc: Verify CallOnInitFinishCallbacks handles nullptr callbacks.
- * @tc.type: FUNC
- * @tc.require: issue1632
- */
-HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_004, TestSize.Level1)
-{
-    // 创建指向 nullptr 的 shared_ptr
-    auto nullCallback = std::make_shared<OnInitFinishCallback>(nullptr);
-    
-    // 注册回调
-    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", nullCallback);
-    
-    // 调用函数，应该跳过空指针回调
-    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
-    
-    // 验证回调列表被清空
-    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
-}
-
-/**
- * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_005
- * @tc.desc: Verify CallOnInitFinishCallbacks handles mixed valid and invalid callbacks.
- * @tc.type: FUNC
- * @tc.require: issue1632
- */
-HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_005, TestSize.Level1)
-{
-    // 重置回调计数
-    g_initFinishCallCountA = 0;
-    
-    // 创建有效回调
-    auto validCallback = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
-    
-    // 创建指向 nullptr 的 shared_ptr
-    auto nullCallback = std::make_shared<OnInitFinishCallback>(nullptr);
-    
-    // 注册回调
-    PluginMgr::GetInstance().RegisterOnInitFinishCallback("valid_lib", validCallback);
-    PluginMgr::GetInstance().RegisterOnInitFinishCallback("null_lib", nullCallback);
-    
-    // 调用函数，应该调用有效回调，跳过无效回调
-    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
-    
-    // 验证有效回调被调用
-    EXPECT_GT(g_initFinishCallCountA, 0);
-    // 验证回调列表被清空
-    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
-}
-
-/**
  * @tc.name: PluginMgrTest_ReadSubscriptionAccuractlyEnableProperties_001
  * @tc.desc: Verify ReadSubscriptionAccuractlyEnableProperties handles valid property value.
  * @tc.type: FUNC
@@ -1483,5 +1370,321 @@ HWTEST_F(PluginMgrTest, PluginMgrInitFinishCallback_002, TestSize.Level1)
     TriggerInitFinishCallbacks(pluginMgr_);
     EXPECT_EQ(g_initFinishCallCountA.load(), 1);
 }
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_001
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles empty callback list.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_001, TestSize.Level1)
+{
+    // 确保回调列表为空
+    PluginMgr::GetInstance().initFinishCallbacks_.clear();
+    
+    // 调用函数，应该不会崩溃
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    
+    // Wait for async callbacks to complete
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
+    
+    // 验证回调列表仍然为空（被交换后清空）
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_002
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles valid callbacks.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_002, TestSize.Level1)
+{
+    // 重置回调计数
+    g_initFinishCallCountA = 0;
+    g_initFinishCallCountB = 0;
+    
+    // 创建有效回调
+    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    auto callbackB = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackB);
+    
+    // 注册回调
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib_a", callbackA);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib_b", callbackB);
+    
+    // 调用函数
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    
+    // Wait for async callbacks to complete
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
+    
+    // 验证回调被调用
+    EXPECT_GT(g_initFinishCallCountA, 0);
+    EXPECT_GT(g_initFinishCallCountB, 0);
+    // 验证回调列表被清空
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_003
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles null callbacks.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_003, TestSize.Level1)
+{
+    // 注册空回调
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", nullptr);
+    
+    // 调用函数，应该跳过空回调
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    
+    // Wait for async callbacks to complete
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
+    
+    // 验证回调列表被清空
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_004
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles nullptr callbacks.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_004, TestSize.Level1)
+{
+    // 创建指向 nullptr 的 shared_ptr
+    auto nullCallback = std::make_shared<OnInitFinishCallback>(nullptr);
+    
+    // 注册回调
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", nullCallback);
+    
+    // 调用函数，应该跳过空指针回调
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    
+    // Wait for async callbacks to complete
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
+    
+    // 验证回调列表被清空
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_005
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles mixed valid and invalid callbacks.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_005, TestSize.Level1)
+{
+    // 重置回调计数
+    g_initFinishCallCountA = 0;
+    
+    // 创建有效回调
+    auto validCallback = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    
+    // 创建指向 nullptr 的 shared_ptr
+    auto nullCallback = std::make_shared<OnInitFinishCallback>(nullptr);
+    
+    // 注册回调
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("valid_lib", validCallback);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("null_lib", nullCallback);
+    
+    // 调用函数，应该调用有效回调，跳过无效回调
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    
+    // Wait for async callbacks to complete
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
+    
+    // 验证有效回调被调用
+    EXPECT_GT(g_initFinishCallCountA, 0);
+    // 验证回调列表被清空
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_006
+ * @tc.desc: Verify CallOnInitFinishCallbacks clears callbacks after first call.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_006, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    
+    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", callbackA);
+    
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
+    
+    int32_t firstCallCount = g_initFinishCallCountA.load();
+    
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
+    
+    EXPECT_EQ(g_initFinishCallCountA.load(), firstCallCount);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_007
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles multiple valid callbacks.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_007, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    g_initFinishCallCountB = 0;
+
+    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    auto callbackB = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackB);
+    auto callbackC = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_a", callbackA);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_b", callbackB);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_c", callbackC);
+
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
+
+    EXPECT_EQ(g_initFinishCallCountA.load(), 2);
+    EXPECT_EQ(g_initFinishCallCountB.load(), 1);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_008
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles callback override for same lib.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_008, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    g_initFinishCallCountB = 0;
+    
+    auto callbackA = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    auto callbackB = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackB);
+    
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", callbackA);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("test_lib", callbackB);
+    
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
+    
+    EXPECT_EQ(g_initFinishCallCountA.load(), 0);
+    EXPECT_EQ(g_initFinishCallCountB.load(), 1);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_009
+ * @tc.desc: Verify CallOnInitFinishCallbacks handles all invalid callbacks.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_009, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    g_initFinishCallCountB = 0;
+    
+    auto nullCallback1 = std::make_shared<OnInitFinishCallback>(nullptr);
+    auto nullCallback2 = std::make_shared<OnInitFinishCallback>(nullptr);
+    
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_null1", nullCallback1);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_null2", nullCallback2);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback("lib_null3", nullptr);
+    
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
+    
+    EXPECT_EQ(g_initFinishCallCountA.load(), 0);
+    EXPECT_EQ(g_initFinishCallCountB.load(), 0);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_010
+ * @tc.desc: Verify CallOnInitFinishCallbacks submits task to dispatcher when matching dispatcher exists.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_010, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    const std::string libName = "init_finish_dispatcher_hit_lib";
+
+    PluginMgr::GetInstance().initFinishCallbacks_.clear();
+    PluginMgr::GetInstance().dispatchers_.erase(libName);
+
+    auto callback = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    PluginMgr::GetInstance().dispatchers_[libName] = std::make_shared<ffrt::queue>(libName.c_str(),
+        ffrt::queue_attr().qos(ffrt::qos_user_interactive));
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback(libName, callback);
+
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
+
+    EXPECT_GT(g_initFinishCallCountA.load(), 0);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+
+    PluginMgr::GetInstance().dispatchers_.erase(libName);
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_011
+ * @tc.desc: Verify CallOnInitFinishCallbacks falls back to ffrt::submit when dispatcher is nullptr.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_011, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    const std::string libName = "init_finish_dispatcher_null_lib";
+
+    PluginMgr::GetInstance().initFinishCallbacks_.clear();
+    PluginMgr::GetInstance().dispatchers_.erase(libName);
+
+    auto callback = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    PluginMgr::GetInstance().dispatchers_[libName] = nullptr;
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback(libName, callback);
+
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
+
+    EXPECT_GT(g_initFinishCallCountA.load(), 0);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+
+    PluginMgr::GetInstance().dispatchers_.erase(libName);
+}
+
+/**
+ * @tc.name: PluginMgrTest_CallOnInitFinishCallbacks_012
+ * @tc.desc: Verify CallOnInitFinishCallbacks falls back to ffrt::submit when dispatcher does not exist.
+ * @tc.type: FUNC
+ * @tc.require: issue1632
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_CallOnInitFinishCallbacks_012, TestSize.Level1)
+{
+    g_initFinishCallCountA = 0;
+    const std::string libName = "init_finish_dispatcher_miss_lib";
+
+    PluginMgr::GetInstance().initFinishCallbacks_.clear();
+    PluginMgr::GetInstance().dispatchers_.erase(libName);
+
+    auto callback = std::make_shared<OnInitFinishCallback>(TestInitFinishCallbackA);
+    PluginMgr::GetInstance().RegisterOnInitFinishCallback(libName, callback);
+
+    PluginMgr::GetInstance().CallOnInitFinishCallbacks();
+    std::this_thread::sleep_for(std::chrono::milliseconds(ASYNC_CALLBACK_WAIT_MS));
+
+    EXPECT_GT(g_initFinishCallCountA.load(), 0);
+    EXPECT_TRUE(PluginMgr::GetInstance().initFinishCallbacks_.empty());
+}
+#endif
 } // namespace ResourceSchedule
 } // namespace OHOS
