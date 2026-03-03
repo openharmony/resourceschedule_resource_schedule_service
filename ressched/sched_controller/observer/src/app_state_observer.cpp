@@ -77,7 +77,6 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     if (IsUIExtensionAbilityStateChanged(abilityStateData)) {
         if (extensionStateToAbilityState_.find(abilityState) != extensionStateToAbilityState_.end()) {
             abilityState = extensionStateToAbilityState_.at(abilityState);
-            payload["extensionAbilityType"] = std::to_string(abilityStateData.extensionAbilityType);
             payload["processType"] = std::to_string(abilityStateData.processType);
             payload["uiExtensionState"] = std::to_string(abilityStateData.abilityState);
         } else {
@@ -97,6 +96,7 @@ void RmsApplicationStateObserver::OnAbilityStateChanged(const AbilityStateData &
     payload["abilityState"] = std::to_string(abilityState);
     payload["callerUid"] = std::to_string(abilityStateData.callerUid);
     payload["preloadMode"] = std::to_string(abilityStateData.preloadMode);
+    payload["extensionAbilityType"] = std::to_string(abilityStateData.extensionAbilityType);
 
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_ABILITY_STATE_CHANGE,
         abilityState, payload);
@@ -132,6 +132,7 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
     payload["recordId"] = std::to_string(abilityStateData.abilityRecordId);
     payload["extensionState"] = std::to_string(abilityStateData.abilityState);
     payload["abilityType"] = std::to_string(abilityStateData.abilityType);
+    payload["extensionAbilityType"] = std::to_string(abilityStateData.extensionAbilityType);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_EXTENSION_STATE_CHANGE,
         abilityStateData.abilityState, payload);
 }
