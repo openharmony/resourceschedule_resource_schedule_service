@@ -259,6 +259,7 @@ ohos_unittest("resschedsignaturevalidator_test") {
     "bundle_framework:appexecfwk_core",
     "bundle_framework:appexecfwk_base",
     "ffrt:libffrt",
+    "hisysevent:libhisysevent",
   ]
 
   sanitize = {

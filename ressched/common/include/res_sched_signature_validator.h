@@ -57,7 +57,17 @@ private:
 
     SignatureCheckResult CheckSignature(const int32_t uid, const std::string &bundleName);
 
+    bool GetSignatureFromConfig(const std::string &bundleName, std::string &signature);
+
+    std::optional<bool> CheckSignatureCache(const std::string &bundleName, int32_t uid);
+
+    bool GetSignatureInfo(int32_t uid, std::string &signatureInfo);
+
+    void UpdateSignatureCache(const std::string &bundleName, int32_t uid, bool isValid);
+
     void GetCurrentUserId(std::vector<int> &activatedOsAccountIds);
+
+    void ReportCheckError(const std::string& bundleName, const std::string& reason);
 
     ffrt::mutex mutex_;
 

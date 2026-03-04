@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -784,10 +784,18 @@ int32_t ResSchedService::CheckReportDataParcel(const uint32_t& type, const int64
 {
     if (!IsSBDResType(type) && !IsThirdPartType(type) && !IsHasPermission(type, uid)) {
         RESSCHED_LOGD("type:%{public}u, no permission", type);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+            "MODULE_NAME", "ResSchedService",
+            "FUNC_NAME", __func__,
+            "ERR_INFO", "no permission:" + std::to_string(type) + " " + std::to_string(value));
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
 
     if (payload.size() > PAYLOAD_MAX_SIZE) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+            "MODULE_NAME", "ResSchedService",
+            "FUNC_NAME", __func__,
+            "ERR_INFO", "payload oversize:" + std::to_string(type) + " " + std::to_string(value));
         RESSCHED_LOGE("too long payload.size:%{public}u", (uint32_t)payload.size());
         return ERR_RES_SCHED_PARCEL_ERROR;
     }

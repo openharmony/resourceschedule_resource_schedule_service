@@ -1,4 +1,4 @@
-# Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2026 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -19,9 +19,9 @@ PLUGIN_DISABLE:
 
 INIT_FAULT:
   __BASE: {type: FAULT, level: CRITICAL, desc: acritical error during initlization}
-  COMPONENT_NAME: {type: STRING, desc: the name of component}
-  ERR_TYPE: {type: STRING, desc: the type of error}
-  ERR_MSG: {type: STRING, desc: error information}
+  MODULE_NAME: {type: STRING, desc: name of module}
+  SCENE_NAME: {type: STRING, desc: scene of error}
+  ERR_INFO: {type: STRING, desc: error information}
 
 LIMIT_BOOST:
   __BASE: {type: BEHAVIOR, level: MINOR, desc: power or thermal limit status}
@@ -41,3 +41,30 @@ SERVICE_REQUEST_LIMIT:
 SYSTEM_LOAD_LEVEL:
   __BASE: {type: STATISTIC, level: MINOR, desc: Application subscription fusion level event, preserve: true}
   BUNDLE_NAMES: {type: STRING, arrsize: 100, desc: BUNDLE NAMES}
+
+SUSPEND_STATE_CHANGE_ATTEMPT:
+  __BASE: {type: BEHAVIOR, level: MINOR, desc: suspend state change attempt}
+  TRIGGER_REASON: {type: STRING, desc: trigger reason for suspend state change}
+
+TIMEOUT_ERR:
+  __BASE: {type: FAULT, level: CRITICAL, desc: timeout error during operation}
+  MODULE_NAME: {type: STRING, desc: name of module}
+  SCENE_NAME: {type: STRING, desc: scene of error}
+  TIME: {type: INT64, desc: time cost}
+  ERR_INFO: {type: STRING, desc: error information}
+
+SA_START_TIME:
+  __BASE: {type: STATISTIC, level: MINOR, desc: service ability start time}
+  SAID: {type: INT32, desc: system ability id}
+  TOTAL_TIME: {type: INT64, desc: total time cost}
+
+ABNORMAL_ERR:
+  __BASE: {type: STATISTIC, level: CRITICAL, desc: abnormal error occurred}
+  MODULE_NAME: {type: STRING, desc: name of module}
+  FUNC_NAME: {type: STRING, desc: name of function}
+  ERR_INFO: {type: STRING, desc: error information}
+
+HOT_EVENT:
+  __BASE: {type: STATISTIC, level: CRITICAL, desc: hot event statistics}
+  RES_TYPE: {type: STRING, arrsize: 10, desc: hot event type list}
+  COUNT: {type: INT32, arrsize: 10, desc: count list}
