@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/test.gni")
-module_output_path = "resource_schedule_service/interfaces/systemload"
+module_output_path = "resource_schedule_service/resource_schedule_service/interfaces/systemload"
 
 ohos_js_unittest("SystemloadJsTest") {
   module_out_path = module_output_path
