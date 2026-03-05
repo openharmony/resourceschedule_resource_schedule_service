@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,6 +36,7 @@
 #include "batch_log_printer.h"
 #include "res_sched_file_util.h"
 #include "res_sched_system_util.h"
+#include "res_common_util.h"
 
 using namespace std;
 
@@ -51,6 +52,9 @@ namespace {
     static const int32_t SIMPLIFY_LIB_INDEX = 3;
     static const int32_t SIMPLIFY_LIB_LENGTH = 2;
     static const int32_t PLUGIN_REQUEST_ERROR = -1;
+    static const int64_t PLUGIN_LOAD_TIMEOUT = 1000;
+    static const int64_t HOT_EVENT_TOPN = 10;
+    static const int64_t ONE_DAY_MILLS = static_cast<int64_t>(24) * 60 * 60 * 1000;
     static const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
     static const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
     static const char* EXT_CONFIG_LIB = "libsuspend_manager_service.z.so";
@@ -89,6 +93,7 @@ void PluginMgr::Init(bool isRssExe)
         LoadGetExtConfigFunc();
     }
     ReadSubscriptionAccuractlyEnableProperties();
+    lastReportCountTime_ = ResCommonUtil::GetNowMillTime(true);
     RESSCHED_LOGI("PluginMgr::Init success!");
 }
 
@@ -123,8 +128,8 @@ void PluginMgr::ParseConfigReader(const std::vector<std::string>& configStrs)
             RESSCHED_LOGW("%{public}s, PluginMgr load config file index:%{public}d failed!", __func__, index);
             HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                 HiviewDFX::HiSysEvent::EventType::FAULT,
-                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
-                "ERR_MSG", "PluginMgr load parameter config file failed");
+                "MODULE_NAME", "PluginFwk", "SCENE_NAME", "ConfigParseFailed",
+                "ERR_INFO", "PluginMgr load parameter config file failed");
             continue;
         }
         RESSCHED_LOGI("PluginMgr load config file index:%{public}d success!", index);
@@ -139,6 +144,33 @@ void PluginMgr::CompletePluginInitialization()
     CallOnInitFinishCallbacks();
     // Log initialization success
     RESSCHED_LOGI("PluginMgr load plugin success!");
+}
+
+void PluginMgr::InitDispatchersAfterPluginLoad()
+{
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
+    dispatchers_.clear();
+    for (const auto& [libPath, libInfo] : pluginLibMap_) {
+        auto resumeTask = [pluginName = libPath]() {
+            PluginMgr::GetInstance().EnablePluginIfResume(pluginName);
+        };
+        auto callback = [pluginName = libPath, time = pluginBlockTime, resumeTask]() {
+            PluginMgr::GetInstance().HandlePluginTimeout(pluginName);
+            ffrt::submit(resumeTask, {}, {}, ffrt::task_attr().delay(time));
+        };
+        dispatchers_.emplace(libPath, std::make_shared<ffrt::queue>(libPath.c_str(),
+            ffrt::queue_attr().qos(ffrt::qos_user_interactive)));
+    }
+#else
+    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
+    if (!dispatcher_) {
+        dispatcher_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
+    }
+    if (!dispatcher_) {
+        RESSCHED_LOGI("create dispatcher failed");
+    }
+#endif
 }
 
 void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bool isRssExe)
@@ -158,38 +190,14 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
             RESSCHED_LOGW("%{public}s, PluginMgr load switch config file index:%{public}d failed!", __func__, index);
             HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                 HiviewDFX::HiSysEvent::EventType::FAULT,
-                "COMPONENT_NAME", "MAIN", "ERR_TYPE", "configure error",
-                "ERR_MSG", "PluginMgr load switch config file failed!");
+                "MODULE_NAME", "PluginFwk", "SCENE_NAME", "ConfigParseFailed",
+                "ERR_INFO", "PluginMgr load switch config file failed!");
             continue;
         }
         RESSCHED_LOGI("PluginMgr load switch config file index:%{public}d success!", index);
     }
     LoadPlugin();
-#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-    std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
-#else
-    std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
-#endif
-#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
-    dispatchers_.clear();
-    for (const auto& [libPath, libInfo] : pluginLibMap_) {
-        auto callback = [pluginName = libPath, time = pluginBlockTime]() {
-            PluginMgr::GetInstance().HandlePluginTimeout(pluginName);
-            ffrt::submit([pluginName]() {
-                PluginMgr::GetInstance().EnablePluginIfResume(pluginName);
-                }, {}, {}, ffrt::task_attr().delay(time));
-        };
-        dispatchers_.emplace(libPath, std::make_shared<ffrt::queue>(libPath.c_str(),
-            ffrt::queue_attr().qos(ffrt::qos_user_interactive)));
-    }
-#else
-    if (!dispatcher_) {
-        dispatcher_ = std::make_shared<EventHandler>(EventRunner::Create(RUNNER_NAME));
-    }
-    if (!dispatcher_) {
-        RESSCHED_LOGI("create dispatcher failed");
-    }
-#endif
+    InitDispatchersAfterPluginLoad();
     CompletePluginInitialization();
 }
 
@@ -273,9 +281,18 @@ void PluginMgr::LoadPlugin()
         if (pluginLibMap_.find(info.libPath) != pluginLibMap_.end()) {
             continue;
         }
+        int64_t initStartTime = ResCommonUtil::GetNowMillTime(true);
         shared_ptr<PluginLib> libInfoPtr = LoadOnePlugin(info);
         if (libInfoPtr == nullptr) {
             continue;
+        }
+        int64_t costTime = ResCommonUtil::GetNowMillTime(true) - initStartTime;
+        if (costTime > PLUGIN_LOAD_TIMEOUT) {
+            HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "TIMEOUT_ERR", HiviewDFX::HiSysEvent::EventType::FAULT,
+                "MODULE_NAME", "PluginFwk", "SCENE_NAME", "PluginLoadTimeout",
+                "TIME", costTime, "ERR_INFO", info.libPath);
+            RESSCHED_LOGE("%{public}s, init %{public}s cost %{public}lld", __func__, info.libPath.c_str(),
+                (long long)costTime);
         }
         std::lock_guard<std::mutex> autoLock(pluginMutex_);
         pluginLibMap_.emplace(info.libPath, *libInfoPtr);
@@ -289,16 +306,16 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     if (!ResCommonUtil::IsValidPath(info.libPath)) {
         RESSCHED_LOGE("%{public}s, libPath error!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-            "COMPONENT_NAME", info.libPath, "ERR_TYPE", "plugin failure",
-            "ERR_MSG", info.libPath + "is error path!");
+            "MODULE_NAME", "PluginFwk", "SCENE_NAME", "PluginPathError",
+            "ERR_INFO", info.libPath + "is error path!");
         return nullptr;
     }
     auto pluginHandle = dlopen(info.libPath.c_str(), RTLD_NOW);
     if (!pluginHandle) {
         RESSCHED_LOGE("%{public}s, not find plugin lib !", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", "PluginMgr dlopen " + info.libPath + " failed!");
+                        "MODULE_NAME", "PluginFwk", "SCENE_NAME", "PluginLoadFailed",
+                        "ERR_INFO", "PluginMgr dlopen " + info.libPath + " failed!");
         return nullptr;
     }
     std::string errorMsg = "";
@@ -307,8 +324,8 @@ shared_ptr<PluginLib> PluginMgr::LoadOnePlugin(const PluginInfo& info)
     if (!CheckValidPlugin(info, pluginHandle, errorMsg, onPluginInitFunc, onPluginDisableFunc)) {
         RESSCHED_LOGE("%{public}s, dlsym OnPluginInit failed!", __func__);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN", "ERR_TYPE", "plugin failure",
-                        "ERR_MSG", errorMsg);
+                        "MODULE_NAME", "PluginFwk", "SCENE_NAME", "PluginSymbolFailed",
+                        "ERR_INFO", errorMsg);
         dlclose(pluginHandle);
         return nullptr;
     }
@@ -499,6 +516,7 @@ void PluginMgr::DispatchResource(const std::shared_ptr<ResData>& resData)
         resData->resType = (uint32_t)extType;
     }
 #endif
+    UpdateReportCount(static_cast<uint32_t>(resData->resType));
     GetPluginListByResType(resData->resType, pluginList);
     GetPluginListByResTypeAndValue(resData->resType, resData->value, pluginList);
     if (pluginList.empty()) {
@@ -540,7 +558,7 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
         RESSCHED_LOGE("%{public}s, failed, null res data.", __func__);
         return PLUGIN_REQUEST_ERROR;
     }
-
+    UpdateReportCount(static_cast<uint32_t>(resData->resType));
     std::string pluginLib;
     {
         std::lock_guard<std::mutex> autoLock(resTypeSyncMutex_);
@@ -581,6 +599,37 @@ int32_t PluginMgr::DeliverResource(const std::shared_ptr<ResData>& resData)
         ret = pluginDeliverFunc(resData);
     }
     return ret;
+}
+
+void PluginMgr::UpdateReportCount(const uint32_t resType)
+{
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+    std::lock_guard<ffrt::mutex> autoLock(reportCountMutex_);
+#else
+    std::lock_guard<std::mutex> autoLock(reportCountMutex_);
+#endif
+    auto iter = reportCount_.find(resType);
+    if (iter == reportCount_.end()) {
+        reportCount_[resType] = 1;
+    } else {
+        iter->second = iter->second + 1;
+    }
+    int64_t currTime = ResCommonUtil::GetNowMillTime(true);
+    if (currTime - lastReportCountTime_ < ONE_DAY_MILLS) {
+        return;
+    }
+    std::vector<std::pair<uint32_t, uint32_t>> vec(reportCount_.begin(), reportCount_.end());
+    std::sort(vec.begin(), vec.end(), [](const auto& a, const auto& b) { return a.second > b.second; });
+    std::vector<std::string> resTypes;
+    std::vector<uint32_t> counts;
+    for (int i = 0; i < HOT_EVENT_TOPN && i < vec.size(); i++) {
+        resTypes.push_back(GetStrFromResTypeStrMap(vec[i].first));
+        counts.push_back(vec[i].second);
+    }
+    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "HOT_EVENT", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+        "RES_TYPE", resTypes, "COUNT", counts);
+    lastReportCountTime_ = currTime;
+    reportCount_.clear();
 }
 
 void PluginMgr::SubscribeResource(const std::string& pluginLib, uint32_t resType)
@@ -1008,7 +1057,7 @@ bool PluginMgr::GetLinkJumpOptConfig(const std::string& bundleName, bool& isAllo
 std::string PluginMgr::GetStrFromResTypeStrMap(uint32_t resType)
 {
     std::lock_guard<std::mutex> autoLock(resTypeStrMutex_);
-    return resTypeStrMap_.count(resType) ? resTypeStrMap_.at(resType) : "UNKNOWN";
+    return resTypeStrMap_.count(resType) ? resTypeStrMap_.at(resType) : std::to_string(resType);
 }
 
 std::list<std::string> PluginMgr::SortPluginList(const std::list<std::string>& pluginList)
@@ -1136,7 +1185,28 @@ void PluginMgr::CallOnInitFinishCallbacks()
             continue;
         }
         RESSCHED_LOGI("%{public}s, calling callback for lib: %{public}s!", __func__, libName.c_str());
-        (*callback)();
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+        {
+            std::lock_guard<ffrt::mutex> autoLock(dispatcherHandlerMutex_);
+            if (dispatchers_.find(libName) != dispatchers_.end() && dispatchers_[libName] != nullptr) {
+                auto dispatcher = dispatchers_[libName];
+                auto task = std::function<void()>(*callback);
+                dispatcher->submit(task);
+            } else {
+                ffrt::submit(std::function<void()>(*callback));
+            }
+        }
+#else
+        {
+            std::lock_guard<std::mutex> autoLock(dispatcherHandlerMutex_);
+            if (dispatcher_) {
+                auto task = std::function<void()>(*callback);
+                dispatcher_->PostTask(task);
+            } else {
+                (*callback)();
+            }
+        }
+#endif
     }
 }
 } // namespace ResourceSchedule

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -117,6 +117,8 @@ namespace {
         ResType::SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO,
         ResType::RES_TYPE_WEB_SUBWIN_TASK,
         ResType::SYNC_RES_TYPE_APP_IS_IN_CLICK_REPORT_EXT_LIST,
+        ResType::RES_TYPE_CTRL_FORKALL_IMAGE_INTERFACE,
+        ResType::RES_TYPE_SNAPSHOT_FAILURE,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -180,6 +182,7 @@ namespace {
         ResType::RES_TYPE_SCHED_MODE_CHANGE,
         ResType::RES_TYPE_HARDWARE_DECODING_RESOURCES,
         ResType::RES_TYPE_FIRST_FRAME_DRAWN,
+        ResType::RES_TYPE_OOBE_CLONE,
     };
     static const std::unordered_map<uint32_t, std::unordered_set<int32_t>> ALLOW_SOME_UID_REPORT_RES = {
         { ResType::RES_TYPE_MODEM_PA_HIGH_POWER_ABNORMAL, { 1201 } },
@@ -206,6 +209,8 @@ namespace {
         { ResType::RES_TYPE_STANDBY_FREEZE_FAILED, { 1201 } },
         { ResType::RES_TYPE_IME_QOS_CHANGE, { 3820 } },
         { ResType::RES_TYPE_HARDWARE_DECODING_RESOURCES, { 1013 }},
+        { ResType::RES_TYPE_CREATE_LIVING_APP_PROCESS, { 5523 } },
+        { ResType::RES_TYPE_CTRL_FORKALL_IMAGE_INTERFACE, { 1096 } },
     };
     enum SYSTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL : int32_t {
         DEBUG_LEVEL_MINIMUM = 0,
@@ -790,10 +795,18 @@ int32_t ResSchedService::CheckReportDataParcel(const uint32_t& type, const int64
             RESSCHED_LOGE("%{public}s: check report data no permission type=%{public}u, count=%{public}d.",
                 __func__, type, errLogRecordMap_[type].second);
         }
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+            "MODULE_NAME", "ResSchedService",
+            "FUNC_NAME", __func__,
+            "ERR_INFO", "no permission:" + std::to_string(type) + " " + std::to_string(value));
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
 
     if (payload.size() > PAYLOAD_MAX_SIZE) {
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+            "MODULE_NAME", "ResSchedService",
+            "FUNC_NAME", __func__,
+            "ERR_INFO", "payload oversize:" + std::to_string(type) + " " + std::to_string(value));
         RESSCHED_LOGE("too long payload.size:%{public}u", (uint32_t)payload.size());
         return ERR_RES_SCHED_PARCEL_ERROR;
     }

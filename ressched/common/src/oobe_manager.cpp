@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +19,7 @@
 #include <functional>
 #include <vector>
 #include "ipc_skeleton.h"
+#include "hisysevent.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -107,7 +108,11 @@ void OOBEManager::CheckOobeValue(int32_t count)
         RESSCHED_LOGW("oobeValue is invalid, retry to get oobe value");
         ret = FlushOobeValue();
     } else {
-        RESSCHED_LOGI("oobeValue is %{public}d, retry count is %{public}d", oobeValue_.load(), count);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+            "MODULE_NAME", "Common",
+            "FUNC_NAME", __func__,
+            "ERR_INFO", "Read oobe failed for " + std::to_string(count) + " times");
+        RESSCHED_LOGW("oobeValue is %{public}d, retry count is %{public}d", oobeValue_.load(), count);
         return;
     }
     if (ret == ERR_INVALID_OPERATION) {

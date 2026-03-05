@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,6 +40,7 @@ IMPLEMENT_SINGLE_INSTANCE(EventController);
 
 static const char* COMMON_EVENT_MEDIA_CTRL_EVENT = "usual.event.MEDIA_CTRL_EVENT";
 static const char* COMMON_EVENT_CAMERA_STATUS = "usual.event.CAMERA_STATUS";
+static const char* COMMON_EVENT_CLONE = "usual.event.clone.PerformanceCloneState";
 static const char* COMMON_EVENT_GAME_STATUS = "usual.event.gameservice.GAME_STATUS_CHANGE_UNI";
 static const char* DATA_SHARE_READY = "usual.event.DATA_SHARE_READY";
 static const char* CONFIG_UPDATED_ACTION = "usual.event.DUE_SA_CFG_UPDATED";
@@ -74,9 +75,9 @@ void EventController::Init()
     if (sysAbilityListener_ == nullptr) {
         RESSCHED_LOGE("Failed to create statusChangeListener due to no memory.");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "others",
-                        "ERR_MSG", "EventController new statusChangeListener object failed!");
+                        "MODULE_NAME", "SchedController",
+                        "SCENE_NAME", "ListenerCreateFailed",
+                        "ERR_INFO", "EventController new statusChangeListener object failed!");
         return;
     }
     sptr<ISystemAbilityManager> systemAbilityManager
@@ -84,9 +85,9 @@ void EventController::Init()
     if (systemAbilityManager == nullptr) {
         RESSCHED_LOGE("systemAbilityManager is null");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "EventController get system ability manager failed!");
+                        "MODULE_NAME", "SchedController",
+                        "SCENE_NAME", "SaManagerFailed",
+                        "ERR_INFO", "EventController get system ability manager failed!");
         sysAbilityListener_ = nullptr;
         return;
     }
@@ -94,9 +95,9 @@ void EventController::Init()
     if (ret != ERR_OK) {
         RESSCHED_LOGE("subscribe system ability id: %{public}d failed", COMMON_EVENT_SERVICE_ID);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "EventController subscribe the event service SA failed!");
+                        "MODULE_NAME", "SchedController",
+                        "SCENE_NAME", "EventSubscribeFailed",
+                        "ERR_INFO", "EventController subscribe event service SA failed!");
         sysAbilityListener_ = nullptr;
     } else {
         RESSCHED_LOGI("subscribe system ability id: %{public}d succeed", COMMON_EVENT_SERVICE_ID);
@@ -121,16 +122,31 @@ int32_t EventController::GetUid(const int32_t &userId, const std::string &bundle
         = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (systemAbilityManager == nullptr) {
         RESSCHED_LOGE("Failed to get uid due to get systemAbilityManager is null.");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+                        "MODULE_NAME", "SchedController",
+                        "FUNC_NAME", __func__,
+                        "ERR_INFO", "GetUid failed: systemAbilityManager is null, userId=" + std::to_string(userId) +
+                        ", bundleName=" + bundleName);
         return -1;
     }
     sptr<IRemoteObject> remoteObject  = systemAbilityManager->GetSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     if (remoteObject == nullptr) {
         RESSCHED_LOGE("Failed to get uid due to get BMS is null.");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+                        "MODULE_NAME", "SchedController",
+                        "FUNC_NAME", __func__,
+                        "ERR_INFO", "GetUid failed: BMS remoteObject is null, userId=" + std::to_string(userId) +
+                        ", bundleName=" + bundleName);
         return -1;
     }
     sptr<AppExecFwk::IBundleMgr> bundleMgr = iface_cast<AppExecFwk::IBundleMgr>(remoteObject);
     if (bundleMgr == nullptr) {
         RESSCHED_LOGE("Failed to get uid due to get bundleMgr is null.");
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+                        "MODULE_NAME", "SchedController",
+                        "FUNC_NAME", __func__,
+                        "ERR_INFO", "GetUid failed: bundleMgr is null, userId=" + std::to_string(userId) +
+                        ", bundleName=" + bundleName);
         return -1;
     }
     bundleMgr->GetApplicationInfo(bundleName, AppExecFwk::ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, info);
@@ -176,9 +192,9 @@ inline void SubscribeCommonEvent(std::shared_ptr<EventController> subscriber)
     } else {
         RESSCHED_LOGW("SubscribeCommonEvent fail");
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "COMPONENT_NAME", "MAIN",
-                        "ERR_TYPE", "register failure",
-                        "ERR_MSG", "EventController subscribe common events failed!");
+                        "MODULE_NAME", "SchedController",
+                        "SCENE_NAME", "EventSubscribeFailed",
+                        "ERR_INFO", "EventController subscribe common events failed!");
     }
 }
 
@@ -219,6 +235,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USER_UNLOCKED);
     matchingSkills.AddEvent(DATA_SHARE_READY);
     matchingSkills.AddEvent(COMMON_EVENT_CAMERA_STATUS);
+    matchingSkills.AddEvent(COMMON_EVENT_CLONE);
     matchingSkills.AddEvent(COMMON_EVENT_GAME_STATUS);
     matchingSkills.AddEvent(CONFIG_UPDATED_ACTION);
     matchingSkills.AddEvent(COMMON_EVENT_USER_SLEEP_STATE_CHANGED);
@@ -424,6 +441,7 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
         payload[COMMON_EVENT_CHARGE_STATE] = want.GetIntParam(COMMON_EVENT_CHARGE_STATE, -1);
         ReportDataInProcess(ResType::RES_TYPE_REPORT_BATTERY_STATUS_CHANGE,
             static_cast<int64_t>(want.GetIntParam(COMMON_EVENT_CAPACITY, -1)), payload);
+        return;
     }
     if (action == COMMON_EVENT_MEDIA_CTRL_EVENT) {
         HandleMediaCtrlEvent(want);
@@ -431,6 +449,11 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
     }
     if (action == COMMON_EVENT_AUDIO_FOCUS_CHANGE) {
         HandleAudioFocusChangeEvent(want);
+        return;
+    }
+    if (action == COMMON_EVENT_CLONE) {
+        int64_t cloneState = want.GetIntParam("cloneState", -1);
+        ReportDataInProcess(ResType::RES_TYPE_OOBE_CLONE, cloneState, payload);
         return;
     }
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USB_STATE) {
@@ -453,6 +476,10 @@ void EventController::HandleMediaCtrlEvent(const EventFwk::Want &want)
         value = 0;
     } else {
         RESSCHED_LOGW("MediaCtrlEvent unknown cmd:%{public}s", cmd.c_str());
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+                        "MODULE_NAME", "SchedController",
+                        "FUNC_NAME", __func__,
+                        "ERR_INFO", "MediaCtrlEvent unknown cmd: " + cmd);
         return;
     }
     int32_t uid = want.GetIntParam(GAME_UID, -1);
@@ -472,6 +499,10 @@ void EventController::HandleAudioFocusChangeEvent(const EventFwk::Want &want)
         value = 0;
     } else {
         RESSCHED_LOGW("AudioFocusChange event unknown hintType:%{public}d", hintType);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+                        "MODULE_NAME", "SchedController",
+                        "FUNC_NAME", __func__,
+                        "ERR_INFO", "AudioFocusChange event unknown hintType: " + std::to_string(hintType));
         return;
     }
     int32_t uid = want.GetIntParam("uid", -1);
@@ -497,6 +528,10 @@ void EventController::HandleCloneStateEvent(const EventFwk::Want &want, nlohmann
         RESSCHED_LOGI("Reported clone state event: resValue=%{public}d", cloneState);
     } else {
         RESSCHED_LOGW("Invalid clone state: %{public}d", cloneState);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+                        "MODULE_NAME", "SchedController",
+                        "FUNC_NAME", __func__,
+                        "ERR_INFO", "Invalid clone state: " + std::to_string(cloneState));
     }
 }
 
@@ -548,6 +583,10 @@ void EventController::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
     RESSCHED_LOGW("common event service is removed.");
+    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+                    "MODULE_NAME", "SchedController",
+                    "FUNC_NAME", __func__,
+                    "ERR_INFO", "Common event service removed, systemAbilityId=" + std::to_string(systemAbilityId));
     lock_guard<mutex> autolock(subscriberMutex_);
     subscriber_ = nullptr;
     lockScreenSubscriber_ = nullptr;

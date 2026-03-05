@@ -88,6 +88,7 @@ namespace {
     const std::string SCHED_MODE_KEY = "schedMode";
     const std::string CLOUD_PARAMS = "params";
     const std::string ENABLE_STRING = "enable";
+    const int32_t SCENE_LIVE_BROADCAST                      = 5;
     const int32_t SOC_PERF_SA_ID                            = 1906;
     const int32_t INVALID_VALUE                             = -1;
     const int32_t APP_TYPE_GAME                             = 2;
@@ -146,6 +147,8 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_L      = 10098;
     const int32_t PERF_REQUEST_CMD_ID_DISPLAY_GLOBAL_P      = 10203;
     const int32_t PERF_REQUEST_CMD_ID_RECENT_BUILD          = 10200;
+    const int32_t PERF_REQUEST_CMD_ID_LIVE_BROADCAST        = 10224;
+    const int32_t PERF_REQUEST_CMD_ID_OOBE_CLONE            = 10225;
     // PREMAKE_MODE_STRING = 1, PRELOADMODULE_MODE_STRING = 2,
     // PRELAUNCH_MODE_STRING = 4
     const std::unordered_set<std::string> PRELOAD_SET = {"1", "2", "4"};
@@ -582,6 +585,10 @@ void SocPerfPlugin::AddOtherEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) { HandleDisplayPowerWakeUp(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_SWIPER_FLING_END_EXCEPTION_FLAG,
         [this](const std::shared_ptr<ResData>& data) { HandleSwiperFlingEndEx(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_WITHOUT_AGGREGATION,
+        [this](const std::shared_ptr<ResData>& data) {HandleLiveBroadcast(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_OOBE_CLONE,
+        [this](const std::shared_ptr<ResData>& data) {HandleOobeClone(data); }));
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
@@ -625,6 +632,8 @@ void SocPerfPlugin::InitResTypes()
         RES_TYPE_WEB_SLIDE_SCROLL,
         RES_TYPE_DISPLAY_POWER_WAKE_UP,
         RES_TYPE_SWIPER_FLING_END_EXCEPTION_FLAG,
+        RES_TYPE_HIGH_FREQUENCE_LOAD_SCENE_WITHOUT_AGGREGATION,
+        RES_TYPE_OOBE_CLONE,
     };
     InitOtherResTypes();
 }
@@ -714,6 +723,15 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_GAME_START, "");
         }
     } else if (data->value == AppStartType::APP_WARM_START) {
+        const std::string SUPPORT_WARM_START_GC_SWITCH = "supportWarmSmartGC";
+        if (data->payload != nullptr && data->payload.contains(SUPPORT_WARM_START_GC_SWITCH)) {
+            int warmStartTypeValue = std::atoi(data->payload[SUPPORT_WARM_START_GC_SWITCH].get<std::string>().c_str());
+            if (warmStartTypeValue == 1) {
+                SOC_PERF_LOGD("socperf->HandleAppAbilityStart: warmStartType");
+                OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_APP_START, "");
+                return;
+            }
+        }
         SOC_PERF_LOGD("SocPerfPlugin: socperf->APP_WARM_START");
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_WARM_START, "");
     }
@@ -1876,6 +1894,46 @@ bool SocPerfPlugin::HandleRssCloudConfigUpdate(const std::shared_ptr<ResData>& d
     } catch (const std::exception &e) {
         return false;
     }
+}
+
+bool SocPerfPlugin::HandleLiveBroadcast(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    std::string scene = "scene";
+    if (data->payload == nullptr || !data->payload.contains(scene) || !data->payload.at(scene).is_string()) {
+        SOC_PERF_LOGE("SocperfPlugin: socperf->HandleLiveBroadcast invalid data payload");
+        return false;
+    }
+    int32_t sceneId = atoi(data->payload[scene].get<std::string>().c_str());
+    if (sceneId != SCENE_LIVE_BROADCAST) {
+        SOC_PERF_LOGD("socperfPlugin: socperf->HandleLiveBroadcast not LiveBroadcast, return directly");
+        return true;
+    }
+    if (data->value == HighFrequenceLoadSceneState::HFLS_SCENE_IN) {
+        SOC_PERF_LOGD("socperfPlugin: socperf->HandleLiveBroadcast LiveBroadcast start");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LIVE_BROADCAST, true, "");
+    } else if (data->value == HighFrequenceLoadSceneState::HFLS_SCENE_OUT) {
+        SOC_PERF_LOGD("socperfPlugin: socperf->HandleLiveBroadcast LiveBroadcast end");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_LIVE_BROADCAST, false, "");
+    }
+    return true;
+}
+
+bool SocPerfPlugin::HandleOobeClone(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    if (data->value == CloneState::CLONE_RUNNING) {
+        SOC_PERF_LOGI("SocPerfPlugin socperf->HandleOobeClone Clone running");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_OOBE_CLONE, true, "");
+    } else if (data->value == CloneState::CLONE_FINISH) {
+        SOC_PERF_LOGI("SocPerfPlugin socperf->HandleOobeClone Clone finish");
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_OOBE_CLONE, false, "");
+    }
+    return true;
 }
 
 static void ReportConfiguredLimitBoost(std::optional<bool>& powerLimit, std::optional<bool>& thermalLimit)

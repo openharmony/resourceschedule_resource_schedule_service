@@ -15,6 +15,8 @@
 
 #include "res_sched_signature_validator.h"
 #include "res_sched_log.h"
+#include "hisysevent.h"
+#include <optional>
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -47,10 +49,12 @@ void ResSchedSignatureValidator::OnAppInstallChanged(const std::string &bundleNa
 SignatureCheckResult ResSchedSignatureValidator::CheckSignatureByBundleName(const std::string &bundleName)
 {
     if (bundleMgr_ == nullptr) {
+        ReportCheckError(bundleName, "ERR_NOT_SUPPORT");
         return SignatureCheckResult::ERR_NOT_SUPPORT;
     }
     if (bundleName.empty()) {
         RESSCHED_LOGE("%{public}s: bundleName is empty", __func__);
+        ReportCheckError(bundleName, "ERR_PARAM_INVALID");
         return SignatureCheckResult::ERR_PARAM_INVALID;
     }
     int32_t uid = -1;
@@ -79,6 +83,7 @@ SignatureCheckResult ResSchedSignatureValidator::CheckSignatureByBundleName(cons
     }
     if (uid < 0) {
         RESSCHED_LOGE("%{public}s: convert bundleName %{public}s to uid error", __func__, bundleName.c_str());
+        ReportCheckError(bundleName, "ERR_INTERNAL_ERROR/ConvertUid");
         return SignatureCheckResult::ERR_INTERNAL_ERROR;
     }
     return CheckSignature(uid, bundleName);
@@ -87,11 +92,13 @@ SignatureCheckResult ResSchedSignatureValidator::CheckSignatureByBundleName(cons
 SignatureCheckResult ResSchedSignatureValidator::CheckSignatureByUid(const int32_t uid)
 {
     if (bundleMgr_ == nullptr) {
+        ReportCheckError("uid/" + std::to_string(uid), "ERR_NOT_SUPPORT");
         return SignatureCheckResult::ERR_NOT_SUPPORT;
     }
     std::string bundleName = bundleMgr_->GetBundleNameByUid(uid);
     if (bundleName.empty()) {
         RESSCHED_LOGE("%{public}s: convert uid %{public}d to name error", __func__, uid);
+        ReportCheckError("uid/" + std::to_string(uid), "ERR_INTERNAL_ERROR/ConvertBundleName");
         return SignatureCheckResult::ERR_INTERNAL_ERROR;
     }
     return CheckSignature(uid, bundleName);
@@ -110,49 +117,86 @@ SignatureCheckResult ResSchedSignatureValidator::CheckBundleInList(
     }
 }
 
+bool ResSchedSignatureValidator::GetSignatureFromConfig(const std::string &bundleName, std::string &signature)
+{
+    std::lock_guard<ffrt::mutex> autoLock(mutex_);
+    auto config = signatureConfig_.find(bundleName);
+    if (config == signatureConfig_.end()) {
+        RESSCHED_LOGE("%{public}s: check %{public}s but no config, size %{public}u",
+            __func__, bundleName.c_str(), static_cast<unsigned int>(signatureConfig_.size()));
+        ReportCheckError(bundleName, "ERR_NO_SIGNATURE_CONFIG");
+        return false;
+    }
+    signature = config->second;
+    return true;
+}
+
+std::optional<bool> ResSchedSignatureValidator::CheckSignatureCache(const std::string &bundleName, int32_t uid)
+{
+    std::lock_guard<ffrt::mutex> autoLock(mutex_);
+    auto cache = validCache_.find(bundleName);
+    if (cache == validCache_.end()) {
+        return std::nullopt;
+    }
+    auto cacheUid = cache->second.first;
+    auto cacheIsValid = cache->second.second;
+    if (cacheUid == uid) {
+        RESSCHED_LOGD("%{public}s: %{public}s use cache is valid %{public}d", __func__, bundleName.c_str(),
+            cacheIsValid);
+        return cacheIsValid;
+    } else {
+        validCache_.erase(bundleName);
+        return std::nullopt;
+    }
+}
+
+bool ResSchedSignatureValidator::GetSignatureInfo(int32_t uid, std::string &signatureInfo)
+{
+    auto ret = bundleMgr_->GetSignatureInfoByUid(uid, signatureInfo);
+    if (ERR_OK != ret) {
+        RESSCHED_LOGE("%{public}s: check uid %{public}d error %{public}d", __func__, uid, ret);
+        return false;
+    }
+    return true;
+}
+
+void ResSchedSignatureValidator::UpdateSignatureCache(const std::string &bundleName, int32_t uid, bool isValid)
+{
+    std::lock_guard<ffrt::mutex> autoLock(mutex_);
+    if (validCache_.size() >= MAX_SIGNATURE_CACHE) {
+        validCache_.clear();
+    }
+    validCache_[bundleName] = {uid, isValid};
+}
+
 SignatureCheckResult ResSchedSignatureValidator::CheckSignature(const int32_t uid, const std::string &bundleName)
 {
     if (bundleMgr_ == nullptr) {
+        ReportCheckError(bundleName, "ERR_NOT_SUPPORT");
         return SignatureCheckResult::ERR_NOT_SUPPORT;
     }
+
     std::string signature;
-    {
-        std::lock_guard<ffrt::mutex> autoLock(mutex_);
-        auto config = signatureConfig_.find(bundleName);
-        if (config == signatureConfig_.end()) {
-            RESSCHED_LOGE("%{public}s: check %{public}s but no config, size %{public}u",
-                __func__, bundleName.c_str(), static_cast<unsigned int>(signatureConfig_.size()));
-            return SignatureCheckResult::ERR_NO_SIGNATURE_CONFIG;
-        }
-        signature = config->second;
-        auto cache = validCache_.find(bundleName);
-        if (cache != validCache_.end()) {
-            auto cacheUid = cache->second.first;
-            auto cacheIsValid = cache->second.second;
-            if (cacheUid == uid) {
-                RESSCHED_LOGD("%{public}s: %{public}s use cache is valid %{public}d", __func__, bundleName.c_str(),
-                    cacheIsValid);
-                return cacheIsValid ? SignatureCheckResult::CHECK_OK : SignatureCheckResult::ERR_SIGNATURE_NO_MATCH;
-            } else {
-                validCache_.erase(bundleName);
-            }
-        }
+    if (!GetSignatureFromConfig(bundleName, signature)) {
+        return SignatureCheckResult::ERR_NO_SIGNATURE_CONFIG;
     }
+
+    auto cachedResult = CheckSignatureCache(bundleName, uid);
+    if (cachedResult.has_value()) {
+        return cachedResult.value() ? SignatureCheckResult::CHECK_OK : SignatureCheckResult::ERR_SIGNATURE_NO_MATCH;
+    }
+
     std::string signatureInfo;
-    auto ret = bundleMgr_->GetSignatureInfoByUid(uid, signatureInfo);
-    if (ERR_OK != ret) {
-        RESSCHED_LOGE("%{public}s: check %{public}s error %{public}d", __func__, bundleName.c_str(), ret);
+    if (!GetSignatureInfo(uid, signatureInfo)) {
+        ReportCheckError(bundleName, "ERR_INTERNAL_ERROR/GetSignatureError");
         return SignatureCheckResult::ERR_INTERNAL_ERROR;
     }
+
     bool isValid = (signatureInfo == signature);
-    {
-        std::lock_guard<ffrt::mutex> autoLock(mutex_);
-        if (validCache_.size() >= MAX_SIGNATURE_CACHE) {
-            validCache_.clear();
-        }
-        validCache_[bundleName] = {uid, isValid};
-    }
+    UpdateSignatureCache(bundleName, uid, isValid);
+
     if (!isValid) {
+        ReportCheckError(bundleName, "ERR_SIGNATURE_NO_MATCH");
         RESSCHED_LOGE("%{public}s: %{public}s illegal signature", __func__, bundleName.c_str());
     }
     RESSCHED_LOGD("%{public}s: %{public}s immediately check is valid %{public}d", __func__, bundleName.c_str(),
@@ -177,5 +221,12 @@ void ResSchedSignatureValidator::AddSignatureConfig(std::unordered_map<std::stri
     }
 }
 
+void ResSchedSignatureValidator::ReportCheckError(const std::string& bundleName, const std::string& reason)
+{
+    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
+        "MODULE_NAME", "Common",
+        "FUNC_NAME", "ResSchedSignatureValidator::ReportCheckError",
+        "ERR_INFO", "bundle:" + bundleName + "|reason:" + reason);
+}
 }  // namespace ResourceSchedule
 }  // namespace OHOS

@@ -194,6 +194,7 @@ ohos_unittest("resschedfwk_test") {
     "src/plugin_switch_test.cpp",
     "src/slide_recognize_test.cpp",
     "src/res_bundle_mgr_helper_test.cpp",
+    "src/res_sched_service_ability_test.cpp",
   ]
 
   deps = [
@@ -211,6 +212,8 @@ ohos_unittest("resschedfwk_test") {
     "ipc:ipc_single",
     "os_account:os_account_innerkits",
     "selinux_adapter:librestorecon",
+    "access_token:libaccesstoken_sdk",
+    "access_token:libtokenid_sdk",
   ]
 
   defines = []

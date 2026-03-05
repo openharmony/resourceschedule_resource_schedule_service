@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -182,6 +182,7 @@ private:
     int32_t ReportMutexBeforeStartEvent(const uint32_t resType, const int64_t value,
         const nlohmann::json& payload, nlohmann::json& reply, sptr<IResSchedService>& proxy);
     void RecoverEventListener();
+    void ReportConnectError(const std::string& reason);
     class SystemloadLevelListener : public ResSchedSystemloadNotifierStub {
     public:
         SystemloadLevelListener() = default;

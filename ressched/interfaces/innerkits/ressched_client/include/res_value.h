@@ -986,6 +986,40 @@ enum DataCloneState : int64_t {
     NEW_DEVICE_CLONE_START = 1,
     OLD_DEVICE_CLONE_START = 2,
 };
+
+/**
+* @brief oobe clone status change
+*/
+enum CloneState : int64_t {
+    CLONE_FINISH = 0,
+    CLONE_RUNNING  = 1,
+};
+
+/**
+ * @brief image process state change type
+ */
+enum ImageProcessStateChangeType : int32_t {
+    IMAGE_PROCESS_STATE_CHANGE_CREATE_SUCCESS = 0,
+    IMAGE_PROCESS_STATE_CHANGE_CREATE_FAILED = 1,
+    IMAGE_PROCESS_STATE_CHANGE_DISABLE = 2,
+    IMAGE_PROCESS_STATE_CHANGE_ENABLE = 3,
+};
+
+/**
+ * @brief app ctrl forkall image interface code
+ */
+enum CtrlForkallImageInterfaceCode : int32_t {
+    SET_SUPPORT_MIRROR_PROCESS = 0,
+    REBUILD_IMAGE = 1,
+};
+
+/**
+ * @brief forkall state change code
+ */
+enum ForkallStateChangeCode : int32_t {
+    CLOUD_CONFIG_UPLOAD = 0,
+    SET_SUPPORT_MIRROR_PROCESS_BY_APP = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS

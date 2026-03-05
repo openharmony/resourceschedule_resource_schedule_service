@@ -14,6 +14,10 @@
  */
 
 #include "background_sensitive_task_overlapping_scene_recognizer.h"
+#include <atomic>
+#include <chrono>
+#include <thread>
+
 #include "gtest/gtest.h"
 #include "res_type.h"
 #include "scene_recognize_test.h"
@@ -27,6 +31,12 @@ using namespace testing::ext;
 
 namespace OHOS {
 namespace ResourceSchedule {
+extern "C" {
+void SetListFlingTimeoutTime(int64_t value);
+void SetListFlingEndTime(int64_t value);
+void SetListFlingSpeedLimit(float value);
+}
+
 static uint32_t g_slideState = SlideRecognizeStat::IDLE;
 void SceneRecognizeTest::SetUpTestCase() {}
 
@@ -132,7 +142,7 @@ HWTEST_F(SceneRecognizeTest, BgtaskTest001, Function | MediumTest | Level0)
         -1, payload);
     bgtaskRecognizer->HandleForeground(ResType::RES_TYPE_CONTINUOUS_TASK,
         ResType::ContinuousTaskStatus::CONTINUOUS_TASK_END, payload);
-    SUCCEED();
+    EXPECT_FALSE(bgtaskRecognizer->isInBackgroundPerceivableScene_);
 }
 
 /**
@@ -339,6 +349,396 @@ HWTEST_F(SceneRecognizeTest, SetListFlingSpeedLimit_001, Function | MediumTest |
     int64_t value = 100;
     slideRecognizer->SetListFlingSpeedLimit(value);
     EXPECT_EQ(slideRecognizer->listFlingSpeedLimit_, value);
+}
+
+/**
+ * @tc.name: SceneRecognizerBase_Accept_001
+ * @tc.desc: test SceneRecognizerBase accept resource type branches
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, SceneRecognizerBase_Accept_001, Function | MediumTest | Level0)
+{
+    SlideRecognizer recognizer;
+    recognizer.AddAcceptResTypes({ ResType::RES_TYPE_SCREEN_STATUS, ResType::RES_TYPE_BOOT_COMPLETED });
+    EXPECT_TRUE(recognizer.Accept(ResType::RES_TYPE_SCREEN_STATUS));
+    EXPECT_FALSE(recognizer.Accept(ResType::RES_TYPE_CLICK_RECOGNIZE));
+
+    recognizer.AddAcceptResTypes({ ResType::RES_TYPE_CLICK_RECOGNIZE });
+    EXPECT_FALSE(recognizer.Accept(ResType::RES_TYPE_SCREEN_STATUS));
+    EXPECT_TRUE(recognizer.Accept(ResType::RES_TYPE_CLICK_RECOGNIZE));
+}
+
+/**
+ * @tc.name: SceneRecognizerMgr_SubmitTask_002
+ * @tc.desc: test SceneRecognizerMgr::SubmitTask when queue is null
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, SceneRecognizerMgr_SubmitTask_002, Function | MediumTest | Level0)
+{
+    SceneRecognizerMgr localMgr;
+    localMgr.ffrtQueue_ = nullptr;
+    std::atomic<bool> taskExecuted(false);
+    localMgr.SubmitTask([&taskExecuted]() {
+        taskExecuted.store(true);
+    });
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    EXPECT_FALSE(taskExecuted.load());
+}
+
+/**
+ * @tc.name: SceneRecognizerMgr_SetSlideConfig_001
+ * @tc.desc: test SceneRecognizerMgr slide config setter wrappers
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, SceneRecognizerMgr_SetSlideConfig_001, Function | MediumTest | Level0)
+{
+    SceneRecognizerMgr localMgr;
+    auto slideRecognizer = std::static_pointer_cast<SlideRecognizer>(
+        localMgr.sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER]);
+    ASSERT_NE(slideRecognizer, nullptr);
+
+    localMgr.SetListFlingTimeoutTime(111);
+    localMgr.SetListFlingEndTime(222);
+    localMgr.SetListFlingSpeedLimit(9.0);
+    EXPECT_EQ(slideRecognizer->listFlingTimeOutTime_, 111);
+    EXPECT_EQ(slideRecognizer->listFlingEndTime_, 222);
+    EXPECT_FLOAT_EQ(slideRecognizer->listFlingSpeedLimit_, 9.0);
+}
+
+/**
+ * @tc.name: SceneRecognizerMgr_CApiSetSlideConfig_001
+ * @tc.desc: test C interface wrappers for slide config
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, SceneRecognizerMgr_CApiSetSlideConfig_001, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::static_pointer_cast<SlideRecognizer>(
+        SceneRecognizerMgr::GetInstance().sceneRecognizers_[RecognizeType::SLIDE_RECOGNIZER]);
+    ASSERT_NE(slideRecognizer, nullptr);
+
+    SetListFlingTimeoutTime(123);
+    SetListFlingEndTime(234);
+    SetListFlingSpeedLimit(8.0);
+    EXPECT_EQ(slideRecognizer->listFlingTimeOutTime_, 123);
+    EXPECT_EQ(slideRecognizer->listFlingEndTime_, 234);
+    EXPECT_FLOAT_EQ(slideRecognizer->listFlingSpeedLimit_, 8.0);
+
+    SetListFlingTimeoutTime(DEFAULT_LIST_FLINT_TIME_OUT_TIME);
+    SetListFlingEndTime(DEFAULT_LIST_FLINT_END_TIME);
+    SetListFlingSpeedLimit(DEFAULT_LIST_FLING_SPEED_LIMIT);
+}
+
+/**
+ * @tc.name: ContinuousAppInstallRecognizer_Branch_001
+ * @tc.desc: test uncovered branches in ContinuousAppInstallRecognizer
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, ContinuousAppInstallRecognizer_Branch_001, Function | MediumTest | Level0)
+{
+    auto recognizer = std::make_shared<ContinuousAppInstallRecognizer>();
+    nlohmann::json payload;
+
+    recognizer->OnDispatchResource(
+        ResType::RES_TYPE_SCREEN_STATUS, ResType::AppInstallStatus::APP_INSTALL_START, payload);
+    EXPECT_FALSE(recognizer->isInContinuousInstall_.load());
+    EXPECT_EQ(recognizer->exitAppInstall_, nullptr);
+
+    recognizer->OnDispatchResource(
+        ResType::RES_TYPE_APP_INSTALL_UNINSTALL, ResType::AppInstallStatus::APP_CHANGED, payload);
+    EXPECT_NE(recognizer->exitAppInstall_, nullptr);
+
+    recognizer->isInContinuousInstall_.store(true);
+    recognizer->OnDispatchResource(ResType::RES_TYPE_APP_INSTALL_UNINSTALL,
+        ResType::AppInstallStatus::APP_INSTALL_START, payload);
+    EXPECT_TRUE(recognizer->isInContinuousInstall_.load());
+}
+
+/**
+ * @tc.name: BgtaskPayloadCheck_001
+ * @tc.desc: test payload validation and default branch in bgtask recognizer
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, BgtaskPayloadCheck_001, Function | MediumTest | Level0)
+{
+    auto recognizer = std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>();
+    nlohmann::json payload;
+    recognizer->OnDispatchResource(
+        ResType::RES_TYPE_APP_STATE_CHANGE, ResType::ProcessStatus::PROCESS_FOREGROUND, payload);
+    EXPECT_EQ(recognizer->foregroundPid_, -1);
+
+    payload["pid"] = 1000;
+    recognizer->OnDispatchResource(ResType::RES_TYPE_REPORT_SCENE_BOARD, 0, payload);
+    EXPECT_EQ(recognizer->sceneboardPid_, -1);
+
+    payload["pid"] = "3000";
+    recognizer->OnDispatchResource(ResType::RES_TYPE_SCREEN_STATUS, 0, payload);
+    EXPECT_EQ(recognizer->foregroundPid_, -1);
+    EXPECT_TRUE(recognizer->perceivableTasks_.empty());
+}
+
+/**
+ * @tc.name: BgtaskCheckEnterScene_001
+ * @tc.desc: test multi-task and guard branches in CheckEnterScene
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, BgtaskCheckEnterScene_001, Function | MediumTest | Level0)
+{
+    auto recognizer = std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>();
+    recognizer->foregroundPid_ = 100;
+    recognizer->sceneboardPid_ = 200;
+    recognizer->perceivableTasks_[300] = { 2 };
+    recognizer->perceivableTasks_[400] = { 2 };
+    EXPECT_TRUE(recognizer->CheckEnterScene());
+
+    recognizer->isInBackgroundPerceivableScene_ = true;
+    EXPECT_FALSE(recognizer->CheckEnterScene());
+
+    recognizer->isInBackgroundPerceivableScene_ = false;
+    recognizer->foregroundPid_ = recognizer->sceneboardPid_;
+    EXPECT_FALSE(recognizer->CheckEnterScene());
+}
+
+/**
+ * @tc.name: BgtaskHandleTaskUpdate_001
+ * @tc.desc: test HandleTaskUpdate and HandleTaskStop branches for pid miss/hit
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, BgtaskHandleTaskUpdate_001, Function | MediumTest | Level0)
+{
+    auto recognizer = std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>();
+    recognizer->foregroundPid_ = 100;
+    recognizer->sceneboardPid_ = 200;
+    recognizer->isInBackgroundPerceivableScene_ = true;
+    recognizer->perceivableTasks_[300] = { 2 };
+
+    recognizer->HandleTaskUpdate(999, {});
+    EXPECT_EQ(recognizer->perceivableTasks_.size(), 1);
+    EXPECT_FALSE(recognizer->isInBackgroundPerceivableScene_);
+
+    recognizer->HandleTaskStop(999);
+    EXPECT_EQ(recognizer->perceivableTasks_.size(), 1);
+    EXPECT_FALSE(recognizer->isInBackgroundPerceivableScene_);
+
+    recognizer->HandleTaskUpdate(300, {});
+    EXPECT_TRUE(recognizer->perceivableTasks_.empty());
+    EXPECT_FALSE(recognizer->isInBackgroundPerceivableScene_);
+}
+
+/**
+ * @tc.name: BgtaskIsValidFilteredTypeIds_004
+ * @tc.desc: test empty filtered typeIds branch
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, BgtaskIsValidFilteredTypeIds_004, Function | MediumTest | Level0)
+{
+    auto recognizer = std::make_shared<BackgroundSensitiveTaskOverlappingSceneRecognizer>();
+    std::vector<uint32_t> filteredTypeIds;
+    EXPECT_TRUE(recognizer->IsValidFilteredTypeIds(filteredTypeIds));
+}
+
+/**
+ * @tc.name: SystemUpgradeSceneRecognizer_002
+ * @tc.desc: test uncovered branches in SystemUpgradeSceneRecognizer::OnDispatchResource
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, SystemUpgradeSceneRecognizer_002, Function | MediumTest | Level0)
+{
+    auto recognizer = std::make_shared<SystemUpgradeSceneRecognizer>();
+    nlohmann::json payload;
+
+    recognizer->isSystemUpgraded_ = true;
+    recognizer->OnDispatchResource(ResType::RES_TYPE_SCREEN_STATUS, 0, payload);
+    EXPECT_TRUE(recognizer->isSystemUpgraded_);
+
+    recognizer->OnDispatchResource(ResType::RES_TYPE_BOOT_COMPLETED, 0, payload);
+    EXPECT_TRUE(recognizer->isSystemUpgraded_);
+}
+
+/**
+ * @tc.name: SlideRecognizer_OnDispatchResource_002
+ * @tc.desc: test axis non-end and default branches in OnDispatchResource
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, SlideRecognizer_OnDispatchResource_002, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    slideRecognizer->HandleSlideOFFEvent();
+
+    nlohmann::json payload;
+    payload["clientPid"] = "1000";
+    payload["callingUid"] = "2000";
+    slideRecognizer->OnDispatchResource(
+        ResType::RES_TYPE_AXIS_EVENT, ResType::AxisEventStatus::AXIS_EVENT_BEGIN, payload);
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::IDLE);
+
+    slideRecognizer->OnDispatchResource(ResType::RES_TYPE_SCREEN_STATUS, 0, payload);
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::IDLE);
+}
+
+/**
+ * @tc.name: SlideRecognizer_StartDetecting_002
+ * @tc.desc: test missing callingUid branch in StartDetecting
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, SlideRecognizer_StartDetecting_002, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    slideRecognizer->HandleSlideOFFEvent();
+
+    nlohmann::json payload;
+    payload["clientPid"] = "1000";
+    slideRecognizer->StartDetecting(payload);
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::SLIDE_NORMAL_DETECTING);
+    EXPECT_EQ(slideRecognizer->slidePid_, "1000");
+    EXPECT_EQ(slideRecognizer->slideUid_, "");
+
+    slideRecognizer->HandleSlideOFFEvent();
+}
+
+/**
+ * @tc.name: SlideRecognizer_HandleSlideOffEvent_001
+ * @tc.desc: test SLIDE_EVENT_OFF branch
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, SlideRecognizer_HandleSlideOffEvent_001, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    slideRecognizer->HandleSlideOFFEvent();
+
+    nlohmann::json payload;
+    payload["clientPid"] = "1000";
+    payload["callingUid"] = "2000";
+    slideRecognizer->StartDetecting(payload);
+    slideRecognizer->isInTouching_ = true;
+    slideRecognizer->HandleSendFrameEvent(payload);
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::SLIDE_NORMAL);
+
+    payload["up_speed"] = "10.0";
+    slideRecognizer->HandleClickEvent(ResType::ClickEventType::TOUCH_EVENT_UP, payload);
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::LIST_FLING);
+
+    slideRecognizer->HandleSlideEvent(ResType::SlideEventStatus::SLIDE_EVENT_OFF, payload);
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::IDLE);
+}
+
+/**
+ * @tc.name: SlideRecognizer_HandleClickEvent_002
+ * @tc.desc: test click payload validation branches
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, SlideRecognizer_HandleClickEvent_002, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    slideRecognizer->HandleSlideOFFEvent();
+
+    nlohmann::json payload;
+    payload["clientPid"] = "1000";
+    payload["callingUid"] = "2000";
+    slideRecognizer->StartDetecting(payload);
+    slideRecognizer->isInTouching_ = true;
+    slideRecognizer->HandleSendFrameEvent(payload);
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::SLIDE_NORMAL);
+
+    nlohmann::json missPid;
+    missPid["up_speed"] = "10.0";
+    slideRecognizer->HandleClickEvent(ResType::ClickEventType::TOUCH_EVENT_UP, missPid);
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::SLIDE_NORMAL);
+
+    nlohmann::json missSpeed;
+    missSpeed["clientPid"] = "1000";
+    slideRecognizer->HandleClickEvent(ResType::ClickEventType::TOUCH_EVENT_UP, missSpeed);
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::SLIDE_NORMAL);
+
+    nlohmann::json invalidSpeed;
+    invalidSpeed["clientPid"] = "1000";
+    invalidSpeed["up_speed"] = "bad_speed";
+    slideRecognizer->HandleClickEvent(ResType::ClickEventType::TOUCH_EVENT_UP, invalidSpeed);
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::SLIDE_NORMAL);
+
+    slideRecognizer->HandleClickEvent(ResType::ClickEventType::TOUCH_EVENT_DOWN, invalidSpeed);
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::IDLE);
+}
+
+/**
+ * @tc.name: SlideRecognizer_AxisSpeedFactor_001
+ * @tc.desc: test axis_event_type speed factor branch
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, SlideRecognizer_AxisSpeedFactor_001, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    slideRecognizer->HandleSlideOFFEvent();
+
+    nlohmann::json payload;
+    payload["clientPid"] = "1000";
+    payload["callingUid"] = "2000";
+    slideRecognizer->StartDetecting(payload);
+    slideRecognizer->isInTouching_ = true;
+    slideRecognizer->HandleSendFrameEvent(payload);
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::SLIDE_NORMAL);
+
+    nlohmann::json upPayload;
+    upPayload["clientPid"] = "1000";
+    upPayload["up_speed"] = "1.0";
+    upPayload["axis_event_type"] = "axis_event_type";
+    slideRecognizer->HandleClickEvent(ResType::ClickEventType::TOUCH_EVENT_UP, upPayload);
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::LIST_FLING);
+
+    slideRecognizer->HandleSlideOFFEvent();
+    EXPECT_EQ(slideRecognizer->GetSlideStatus(), SlideRecognizeStat::IDLE);
+}
+
+/**
+ * @tc.name: FillRealPidAndUid_002
+ * @tc.desc: test FillRealPidAndUid replacement branch
+ * @tc.type: FUNC
+ * @tc.require: issue1663
+ * @tc.author: zhumingjie
+ */
+HWTEST_F(SceneRecognizeTest, FillRealPidAndUid_002, Function | MediumTest | Level0)
+{
+    auto slideRecognizer = std::make_shared<SlideRecognizer>();
+    slideRecognizer->slidePid_ = "3000";
+    slideRecognizer->slideUid_ = "4000";
+    slideRecognizer->scrTid_ = "5000";
+
+    nlohmann::json payload;
+    payload["clientPid"] = "1000";
+    payload["callingUid"] = "2000";
+    auto result = slideRecognizer->FillRealPidAndUid(payload);
+    EXPECT_EQ(result["clientPid"], "3000");
+    EXPECT_EQ(result["callingUid"], "4000");
+    EXPECT_EQ(result["scrTid"], "5000");
 }
 
 /**

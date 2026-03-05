@@ -55,6 +55,8 @@ void DeviceStandbyPlugin::Init()
     resTypes_.insert(RES_TYPE_BOOT_COMPLETED);
     resTypes_.insert(RES_TYPE_THERMAL_SCENARIO_REPORT);
     resTypes_.insert(RES_TYPE_WIFI_CONNECT_STATE_CHANGE);
+    resTypes_.insert(RES_TYPE_INNER_AUDIO_STATE);
+    resTypes_.insert(RES_TYPE_AUDIO_CAPTURE_STATUS_CHANGED);
 
     for (auto resType : resTypes_) {
         PluginMgr::GetInstance().SubscribeResource(LIB_NAME, resType);
@@ -81,9 +83,8 @@ void DeviceStandbyPlugin::DispatchResource(const std::shared_ptr<ResData>& data)
     STANDBYSERVICE_LOGD(
         "DeviceStandbyPlugin::DispatchResource type=%{public}u value=%{public}lld",
         data->resType, (long long)(data->value));
-
-    DevStandbyMgr::StandbyServiceClient::GetInstance().HandleEvent(
-        std::make_shared<ResData>(data->resType, data->value, data->payload));
+    std::string sceneInfo = data->payload.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace);
+    DevStandbyMgr::StandbyServiceClient::GetInstance().HandleEvent(data->resType, data->value, sceneInfo);
 }
 
 extern "C" bool OnPluginInit(std::string& libName)

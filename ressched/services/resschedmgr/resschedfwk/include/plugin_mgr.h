@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -285,6 +285,7 @@ private:
      * Set initialization flag, call finish callbacks, and log success.
      */
     void CompletePluginInitialization();
+    void InitDispatchersAfterPluginLoad();
     bool CheckValidPlugin(const PluginInfo& info, void* pluginHandle, std::string& errorMsg,
         OnPluginInitFunc& onPluginInitFunc, OnPluginDisableFunc& onPluginDisableFunc);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
@@ -292,6 +293,7 @@ private:
 #endif
     std::list<std::string> SortPluginList(const std::list<std::string>& pluginList);
     std::string GetStrFromResTypeStrMap(uint32_t resType);
+    void UpdateReportCount(const uint32_t resType);
     class InnerTimeUtil {
     public:
         InnerTimeUtil(const std::string& func, const std::string& plugin);
@@ -350,6 +352,14 @@ private:
 
     std::map<std::string, PluginStat> pluginStat_;
     GetExtMultiConfigFunc getExtMultiConfigFunc_ = nullptr;
+
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+    ffrt::mutex reportCountMutex_;
+#else
+    std::mutex reportCountMutex_;
+#endif
+    std::map<uint32_t, uint32_t> reportCount_;    // resType : count
+    int64_t lastReportCountTime_ = 0;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
