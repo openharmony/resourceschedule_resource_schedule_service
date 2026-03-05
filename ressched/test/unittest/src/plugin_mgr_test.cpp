@@ -1762,5 +1762,429 @@ HWTEST_F(PluginMgrTest, PluginMgrTest_UpdateReportCount_004, TestSize.Level1)
     EXPECT_EQ(PluginMgr::GetInstance().reportCount_[resTypeA], 2);
     EXPECT_EQ(PluginMgr::GetInstance().reportCount_[resTypeB], 1);
 }
+
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+/**
+ * @tc.name: PluginMgrTest_GetExtTypeByResPayload_001
+ * @tc.desc: Verify GetExtTypeByResPayload returns DEFAULT_VALUE when resData is null.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_GetExtTypeByResPayload_001, TestSize.Level1)
+{
+    std::shared_ptr<ResData> resData = nullptr;
+    int32_t result = PluginMgr::GetInstance().GetExtTypeByResPayload(resData);
+    EXPECT_EQ(result, -1);
+}
+
+/**
+ * @tc.name: PluginMgrTest_GetExtTypeByResPayload_002
+ * @tc.desc: Verify GetExtTypeByResPayload returns DEFAULT_VALUE when resType is not RES_TYPE_KEY_PERF_SCENE.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_GetExtTypeByResPayload_002, TestSize.Level1)
+{
+    nlohmann::json payload;
+    payload["extType"] = "100";
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    int32_t result = PluginMgr::GetInstance().GetExtTypeByResPayload(resData);
+    EXPECT_EQ(result, -1);
+}
+
+/**
+ * @tc.name: PluginMgrTest_GetExtTypeByResPayload_003
+ * @tc.desc: Verify GetExtTypeByResPayload returns DEFAULT_VALUE when payload does not contain EXT_RES_KEY.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_GetExtTypeByResPayload_003, TestSize.Level1)
+{
+    nlohmann::json payload;
+    payload["otherKey"] = "100";
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_KEY_PERF_SCENE,
+        ResType::KeyPerfStatus::ENTER_SCENE, payload);
+    int32_t result = PluginMgr::GetInstance().GetExtTypeByResPayload(resData);
+    EXPECT_EQ(result, -1);
+}
+
+/**
+ * @tc.name: PluginMgrTest_GetExtTypeByResPayload_004
+ * @tc.desc: Verify GetExtTypeByResPayload returns DEFAULT_VALUE when EXT_RES_KEY is not a string.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_GetExtTypeByResPayload_004, TestSize.Level1)
+{
+    nlohmann::json payload;
+    payload["extType"] = 100;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_KEY_PERF_SCENE,
+        ResType::KeyPerfStatus::ENTER_SCENE, payload);
+    int32_t result = PluginMgr::GetInstance().GetExtTypeByResPayload(resData);
+    EXPECT_EQ(result, -1);
+}
+
+/**
+ * @tc.name: PluginMgrTest_GetExtTypeByResPayload_005
+ * @tc.desc: Verify GetExtTypeByResPayload returns correct type when payload contains valid extType string.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_GetExtTypeByResPayload_005, TestSize.Level1)
+{
+    nlohmann::json payload;
+    payload["extType"] = "100";
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_KEY_PERF_SCENE,
+        ResType::KeyPerfStatus::ENTER_SCENE, payload);
+    int32_t result = PluginMgr::GetInstance().GetExtTypeByResPayload(resData);
+    EXPECT_EQ(result, 100);
+}
+
+/**
+ * @tc.name: PluginMgrTest_GetExtTypeByResPayload_006
+ * @tc.desc: Verify GetExtTypeByResPayload returns DEFAULT_VALUE when extType string cannot be converted to int.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_GetExtTypeByResPayload_006, TestSize.Level1)
+{
+    nlohmann::json payload;
+    payload["extType"] = "invalid";
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_KEY_PERF_SCENE,
+        ResType::KeyPerfStatus::ENTER_SCENE, payload);
+    int32_t result = PluginMgr::GetInstance().GetExtTypeByResPayload(resData);
+    EXPECT_EQ(result, -1);
+}
+#endif
+
+/**
+ * @tc.name: PluginMgrTest_BuildDispatchTrace_001
+ * @tc.desc: Verify BuildDispatchTrace builds correct trace string with valid inputs.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_BuildDispatchTrace_001, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    std::string libNameAll;
+    std::list<std::string> pluginList;
+    pluginList.push_back("libtest_plugin.z.so");
+    std::string funcName = "TestFunction";
+    std::string result = PluginMgr::GetInstance().BuildDispatchTrace(resData, libNameAll, funcName, pluginList);
+    EXPECT_TRUE(result.find("TestFunction") != std::string::npos);
+    EXPECT_TRUE(result.find("resType[") != std::string::npos);
+    EXPECT_TRUE(result.find("resTypeStr[") != std::string::npos);
+    EXPECT_TRUE(result.find("value[") != std::string::npos);
+    EXPECT_TRUE(result.find("pluginlist:[") != std::string::npos);
+}
+
+/**
+ * @tc.name: PluginMgrTest_BuildDispatchTrace_002
+ * @tc.desc: Verify BuildDispatchTrace handles empty plugin list.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_BuildDispatchTrace_002, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    std::string libNameAll;
+    std::list<std::string> pluginList;
+    std::string funcName = "TestFunction";
+    std::string result = PluginMgr::GetInstance().BuildDispatchTrace(resData, libNameAll, funcName, pluginList);
+    EXPECT_TRUE(result.find("TestFunction") != std::string::npos);
+    EXPECT_TRUE(result.find("pluginlist:[]") != std::string::npos);
+}
+
+/**
+ * @tc.name: PluginMgrTest_BuildDispatchTrace_003
+ * @tc.desc: Verify BuildDispatchTrace builds correct trace with multiple plugins.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_BuildDispatchTrace_003, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    std::string libNameAll;
+    std::list<std::string> pluginList;
+    pluginList.push_back("libtest_plugin.z.so");
+    pluginList.push_back("libdemo_plugin.z.so");
+    std::string funcName = "TestFunction";
+    std::string result = PluginMgr::GetInstance().BuildDispatchTrace(resData, libNameAll, funcName, pluginList);
+    EXPECT_TRUE(result.find("libtest_plugin.z.so") != std::string::npos);
+    EXPECT_TRUE(result.find("libdemo_plugin.z.so") != std::string::npos);
+    EXPECT_TRUE(result.find("pluginlist:[") != std::string::npos);
+}
+
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+/**
+ * @tc.name: PluginMgrTest_BuildDispatchTrace_004
+ * @tc.desc: Verify BuildDispatchTrace skips disabled plugins.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_BuildDispatchTrace_004, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    std::string libNameAll;
+    std::list<std::string> pluginList;
+    pluginList.push_back("libtest_plugin.z.so");
+    pluginList.push_back("libdisabled_plugin.z.so");
+    PluginMgr::GetInstance().disablePlugins_.insert("libdisabled_plugin.z.so");
+    std::string funcName = "TestFunction";
+    std::string result = PluginMgr::GetInstance().BuildDispatchTrace(resData, libNameAll, funcName, pluginList);
+    EXPECT_TRUE(result.find("libtest_plugin.z.so") != std::string::npos);
+    EXPECT_TRUE(result.find("libdisabled_plugin.z.so") == std::string::npos);
+    PluginMgr::GetInstance().disablePlugins_.clear();
+}
+#endif
+
+/**
+ * @tc.name: PluginMgrTest_DispatchResourceToPluginSync_001
+ * @tc.desc: Verify DispatchResourceToPluginSync handles empty plugin list.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResourceToPluginSync_001, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    std::list<std::string> pluginList;
+    PluginMgr::GetInstance().DispatchResourceToPluginSync(pluginList, resData);
+    EXPECT_TRUE(pluginList.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_DispatchResourceToPluginSync_002
+ * @tc.desc: Verify DispatchResourceToPluginSync handles plugin not found in map.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResourceToPluginSync_002, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    std::list<std::string> pluginList;
+    pluginList.push_back("libnonexistent_plugin.z.so");
+    PluginMgr::GetInstance().DispatchResourceToPluginSync(pluginList, resData);
+    EXPECT_EQ(pluginList.size(), 1);
+}
+
+/**
+ * @tc.name: PluginMgrTest_DispatchResourceToPluginSync_003
+ * @tc.desc: Verify DispatchResourceToPluginSync handles plugin with null dispatch function.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResourceToPluginSync_003, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    std::list<std::string> pluginList;
+    pluginList.push_back("libtest_plugin.z.so");
+    PluginLib libInfo;
+    libInfo.onDispatchResourceFunc_ = nullptr;
+    PluginMgr::GetInstance().pluginLibMap_.emplace("libtest_plugin.z.so", libInfo);
+    PluginMgr::GetInstance().DispatchResourceToPluginSync(pluginList, resData);
+    EXPECT_EQ(pluginList.size(), 1);
+    PluginMgr::GetInstance().pluginLibMap_.erase("libtest_plugin.z.so");
+}
+
+/**
+ * @tc.name: PluginMgrTest_DispatchResourceToPluginSync_004
+ * @tc.desc: Verify DispatchResourceToPluginSync successfully dispatches to valid plugin.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResourceToPluginSync_004, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    std::list<std::string> pluginList;
+    pluginList.push_back("libtest_plugin.z.so");
+    PluginLib libInfo;
+    libInfo.onDispatchResourceFunc_ = [](const std::shared_ptr<ResData>& data) {
+        EXPECT_TRUE(data != nullptr);
+    };
+    PluginMgr::GetInstance().pluginLibMap_.emplace("libtest_plugin.z.so", libInfo);
+    PluginMgr::GetInstance().DispatchResourceToPluginSync(pluginList, resData);
+    EXPECT_EQ(pluginList.size(), 1);
+    PluginMgr::GetInstance().pluginLibMap_.erase("libtest_plugin.z.so");
+}
+
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_FFRT_ENABLE
+/**
+ * @tc.name: PluginMgrTest_DispatchResourceToPluginAsync_001
+ * @tc.desc: Verify DispatchResourceToPluginAsync handles empty plugin list.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResourceToPluginAsync_001, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    std::list<std::string> pluginList;
+    PluginMgr::GetInstance().DispatchResourceToPluginAsync(pluginList, resData);
+    EXPECT_TRUE(pluginList.empty());
+}
+
+/**
+ * @tc.name: PluginMgrTest_DispatchResourceToPluginAsync_002
+ * @tc.desc: Verify DispatchResourceToPluginAsync skips disabled plugins.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResourceToPluginAsync_002, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    std::list<std::string> pluginList;
+    pluginList.push_back("libdisabled_plugin.z.so");
+    PluginMgr::GetInstance().disablePlugins_.insert("libdisabled_plugin.z.so");
+    PluginMgr::GetInstance().DispatchResourceToPluginAsync(pluginList, resData);
+    EXPECT_EQ(pluginList.size(), 1);
+    PluginMgr::GetInstance().disablePlugins_.clear();
+}
+
+/**
+ * @tc.name: PluginMgrTest_DispatchResourceToPluginAsync_003
+ * @tc.desc: Verify DispatchResourceToPluginAsync handles plugin not found in map.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResourceToPluginAsync_003, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    std::list<std::string> pluginList;
+    pluginList.push_back("libnonexistent_plugin.z.so");
+    PluginMgr::GetInstance().DispatchResourceToPluginAsync(pluginList, resData);
+    EXPECT_EQ(pluginList.size(), 1);
+}
+
+/**
+ * @tc.name: PluginMgrTest_DispatchResourceToPluginAsync_004
+ * @tc.desc: Verify DispatchResourceToPluginAsync handles plugin with null dispatch function.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResourceToPluginAsync_004, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    std::list<std::string> pluginList;
+    pluginList.push_back("libtest_plugin.z.so");
+    PluginLib libInfo;
+    libInfo.onDispatchResourceFunc_ = nullptr;
+    PluginMgr::GetInstance().pluginLibMap_.emplace("libtest_plugin.z.so", libInfo);
+    PluginMgr::GetInstance().DispatchResourceToPluginAsync(pluginList, resData);
+    EXPECT_EQ(pluginList.size(), 1);
+    PluginMgr::GetInstance().pluginLibMap_.erase("libtest_plugin.z.so");
+}
+
+/**
+ * @tc.name: PluginMgrTest_DispatchResourceToPluginAsync_005
+ * @tc.desc: Verify DispatchResourceToPluginAsync handles plugin with null dispatcher.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_DispatchResourceToPluginAsync_005, TestSize.Level1)
+{
+    nlohmann::json payload;
+    auto resData = std::make_shared<ResData>(ResType::RES_TYPE_APP_ABILITY_START,
+        ResType::AppStartType::APP_COLD_START, payload);
+    std::list<std::string> pluginList;
+    pluginList.push_back("libtest_plugin.z.so");
+    PluginLib libInfo;
+    libInfo.onDispatchResourceFunc_ = [](const std::shared_ptr<ResData>& data) {
+        EXPECT_TRUE(data != nullptr);
+    };
+    PluginMgr::GetInstance().pluginLibMap_.emplace("libtest_plugin.z.so", libInfo);
+    PluginMgr::GetInstance().DispatchResourceToPluginAsync(pluginList, resData);
+    EXPECT_EQ(pluginList.size(), 1);
+    PluginMgr::GetInstance().pluginLibMap_.erase("libtest_plugin.z.so");
+}
+
+/**
+ * @tc.name: PluginMgrTest_RecordRinningStat_001
+ * @tc.desc: Verify RecordRinningStat correctly records plugin running state.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_RecordRinningStat_001, TestSize.Level1)
+{
+    std::string pluginLib = "libtest_plugin.z.so";
+    PluginMgr::GetInstance().RecordRinningStat(pluginLib, true);
+    bool isRunning = PluginMgr::GetInstance().IsPluginRunning(pluginLib);
+    EXPECT_TRUE(isRunning);
+    PluginMgr::GetInstance().runningStats_.clear();
+}
+
+/**
+ * @tc.name: PluginMgrTest_RecordRinningStat_002
+ * @tc.desc: Verify RecordRinningStat correctly updates plugin running state.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_RecordRinningStat_002, TestSize.Level1)
+{
+    std::string pluginLib = "libtest_plugin.z.so";
+    PluginMgr::GetInstance().RecordRinningStat(pluginLib, true);
+    bool isRunning = PluginMgr::GetInstance().IsPluginRunning(pluginLib);
+    EXPECT_TRUE(isRunning);
+    PluginMgr::GetInstance().RecordRinningStat(pluginLib, false);
+    isRunning = PluginMgr::GetInstance().IsPluginRunning(pluginLib);
+    EXPECT_FALSE(isRunning);
+    PluginMgr::GetInstance().runningStats_.clear();
+}
+
+/**
+ * @tc.name: PluginMgrTest_IsPluginRunning_001
+ * @tc.desc: Verify IsPluginRunning returns false when plugin not in stats.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_IsPluginRunning_001, TestSize.Level1)
+{
+    std::string pluginLib = "libnonexistent_plugin.z.so";
+    bool isRunning = PluginMgr::GetInstance().IsPluginRunning(pluginLib);
+    EXPECT_FALSE(isRunning);
+}
+
+/**
+ * @tc.name: PluginMgrTest_IsPluginRunning_002
+ * @tc.desc: Verify IsPluginRunning returns correct state for recorded plugin.
+ * @tc.type: FUNC
+ * @tc.require: issue1669
+ */
+HWTEST_F(PluginMgrTest, PluginMgrTest_IsPluginRunning_002, TestSize.Level1)
+{
+    std::string pluginLib = "libtest_plugin.z.so";
+    PluginMgr::GetInstance().RecordRinningStat(pluginLib, true);
+    bool isRunning = PluginMgr::GetInstance().IsPluginRunning(pluginLib);
+    EXPECT_TRUE(isRunning);
+    PluginMgr::GetInstance().RecordRinningStat(pluginLib, false);
+    isRunning = PluginMgr::GetInstance().IsPluginRunning(pluginLib);
+    EXPECT_FALSE(isRunning);
+    PluginMgr::GetInstance().runningStats_.clear();
+}
+#endif
+
 } // namespace ResourceSchedule
 } // namespace OHOS
