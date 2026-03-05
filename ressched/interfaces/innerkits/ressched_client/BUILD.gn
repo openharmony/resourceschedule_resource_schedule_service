@@ -134,6 +134,7 @@ ohos_shared_library("ressched_client") {
     "../../../common/src/res_sched_string_util.cpp",
     "../../../common/src/res_sched_json_util.cpp",
     "../../../common/src/res_sched_hisysevent_report_util.cpp",
+    "../../../common/src/res_sched_time_util.cpp",
   ]
 
   output_values = get_target_outputs(":res_sched_service_interface")
@@ -172,6 +173,64 @@ ohos_shared_library("ressched_client") {
     "platformsdk",
   ]
   version_script = "libressched_client.versionscript"
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  branch_protector_ret = "pac_ret"
+
+  subsystem_name = "resourceschedule"
+  part_name = "resource_schedule_service"
+}
+
+ohos_static_library("ressched_client_static") {
+  configs = [ ":client_private_config" ]
+  cflags_cc = [ "-fstack-protector-strong" ]
+  public_configs = [ ":client_public_config" ]
+
+  deps = [
+    ":res_sched_event_listener_interface",
+    ":res_sched_service_interface",
+    ":res_sched_systemload_notifier_interface",
+    ":suspend_manager_base_client",
+  ]
+
+  sources = [
+    "src/res_ipc_init.cpp",
+    "src/res_sa_init.cpp",
+    "src/res_sched_client.cpp",
+    "src/res_sched_common_death_recipient.cpp",
+    "src/kill_event_listener.cpp",
+    "../../../common/src/res_sched_string_util.cpp",
+    "../../../common/src/res_sched_json_util.cpp",
+    "../../../common/src/res_sched_hisysevent_report_util.cpp",
+    "../../../common/src/res_sched_time_util.cpp",
+  ]
+
+  output_values = get_target_outputs(":res_sched_service_interface")
+  sources += filter_include(output_values, [ "*.cpp" ])
+
+  event_listener_output_values =
+      get_target_outputs(":res_sched_event_listener_interface")
+  sources += filter_include(event_listener_output_values, [ "*.cpp" ])
+
+  systemload_notifier_output_values =
+      get_target_outputs(":res_sched_systemload_notifier_interface")
+  sources += filter_include(systemload_notifier_output_values, [ "*.cpp" ])
+
+  external_deps = [
+    "c_utils:utils",
+    "ffrt:libffrt",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "samgr:samgr_proxy",
+    "hisysevent:libhisysevent",
+    "json:nlohmann_json_static",
+    "ipc:ipc_core",
+    "ipc:ipc_single",
+  ]
 
   sanitize = {
     cfi = true

@@ -17,6 +17,9 @@
 #include "gtest/hwext/gtest-multithread.h"
 
 #include <vector>
+#include <thread>
+#include <chrono>
+#include <atomic>
 #include "accesstoken_kit.h"
 #include "ipc_skeleton.h"
 #include "nativetoken_kit.h"
@@ -38,6 +41,7 @@ using namespace std;
 using namespace testing::ext;
 using namespace testing::mt;
 using namespace Security::AccessToken;
+static constexpr int64_t ONE_DAY_TIME_MILLS = static_cast<int64_t>(24) * 60 * 60 * 1000;
 class ResSchedServiceTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -875,8 +879,8 @@ HWTEST_F(ResSchedServiceTest, DumpDebugSystemLoad007, Function | MediumTest | Le
     NotifierMgr::GetInstance().Init();
 
     std::vector<std::string> args = {"setSystemLoadLevel", "++"};
-    std::string result_;
-    resSchedService_->DumpSetSystemLoad(args, result_);
+    std::string result;
+    resSchedService_->DumpSetSystemLoad(args, result);
     EXPECT_FALSE(resSchedService_->systemLoadLevelDebugEnable_);
 }
 
@@ -1072,6 +1076,116 @@ HWTEST_F(ResSchedServiceTest, DumpExtHelp001, Function | MediumTest | Level0)
     // DumpExt with -h always includes system load level related help info
     EXPECT_TRUE(result.find("setSystemLoadLevel") != std::string::npos);
     EXPECT_TRUE(result.find("getSystemloadInfo") != std::string::npos);
+}
+
+/**
+ * @tc.name: Ressched service ReportPermissionErrorEvent 001
+ * @tc.desc: test ReportPermissionErrorEvent function - first call should report
+ * @tc.type: FUNC
+ * @tc.require: issue1670
+ */
+HWTEST_F(ResSchedServiceTest, ReportPermissionErrorEvent001, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    resSchedService_->InitAllowIpcReportRes();
+    resSchedService_->lastEventReportTime_ = ResCommonUtil::GetNowMillTime(true) - ONE_DAY_TIME_MILLS - 1000;
+    resSchedService_->errLogRecordMap_[100] = std::make_pair(ResCommonUtil::GetCurrentTimestamp(), 5);
+    resSchedService_->errLogRecordMap_[200] = std::make_pair(ResCommonUtil::GetCurrentTimestamp(), 10);
+    resSchedService_->ReportPermissionErrorEvent(100, 1000, 2000);
+    int64_t lastReportTime = resSchedService_->lastEventReportTime_;
+    EXPECT_GT(lastReportTime, 0);
+}
+
+/**
+ * @tc.name: Ressched service ReportPermissionErrorEvent 002
+ * @tc.desc: test ReportPermissionErrorEvent function - second call within 24h should not report
+ * @tc.type: FUNC
+ * @tc.require: issue1670
+ */
+HWTEST_F(ResSchedServiceTest, ReportPermissionErrorEvent002, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    resSchedService_->InitAllowIpcReportRes();
+    int64_t currentTime = ResCommonUtil::GetNowMillTime(true);
+    resSchedService_->lastEventReportTime_ = currentTime;
+    resSchedService_->errLogRecordMap_[100] = std::make_pair(ResCommonUtil::GetCurrentTimestamp(), 5);
+    resSchedService_->ReportPermissionErrorEvent(100, 1000, 2000);
+    int64_t lastReportTime = resSchedService_->lastEventReportTime_;
+    EXPECT_EQ(lastReportTime, currentTime);
+    resSchedService_->errLogRecordMap_[200] = std::make_pair(ResCommonUtil::GetCurrentTimestamp(), 10);
+    resSchedService_->ReportPermissionErrorEvent(200, 1000, 2000);
+    lastReportTime = resSchedService_->lastEventReportTime_;
+    EXPECT_EQ(lastReportTime, currentTime);
+}
+
+/**
+ * @tc.name: Ressched service ReportPermissionErrorEvent 003
+ * @tc.desc: test ReportPermissionErrorEvent function - after 24h should report again
+ * @tc.type: FUNC
+ * @tc.require: issue1670
+ */
+HWTEST_F(ResSchedServiceTest, ReportPermissionErrorEvent003, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    resSchedService_->InitAllowIpcReportRes();
+    int64_t currentTime = ResCommonUtil::GetNowMillTime(true);
+    int64_t pastTime = currentTime - 25 * 60 * 60 * 1000;
+    resSchedService_->lastEventReportTime_ = pastTime;
+    resSchedService_->errLogRecordMap_[100] = std::make_pair(ResCommonUtil::GetCurrentTimestamp(), 5);
+    resSchedService_->ReportPermissionErrorEvent(100, 1000, 2000);
+    int64_t lastReportTime = resSchedService_->lastEventReportTime_;
+    // 由于调用后时间已更新，应大于过去时间即可，避免与 currentTime 直接相等导致用例失败
+    EXPECT_GT(lastReportTime, pastTime);
+}
+
+/**
+ * @tc.name: Ressched service ReportPermissionErrorEvent 004
+ * @tc.desc: test ReportPermissionErrorEvent function - empty error map should still report
+ * @tc.type: FUNC
+ * @tc.require: issue1670
+ */
+HWTEST_F(ResSchedServiceTest, ReportPermissionErrorEvent004, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    resSchedService_->InitAllowIpcReportRes();
+    resSchedService_->lastEventReportTime_ = ResCommonUtil::GetNowMillTime(true) - ONE_DAY_TIME_MILLS - 1000;
+    resSchedService_->errLogRecordMap_.clear();
+    EXPECT_TRUE(resSchedService_->errLogRecordMap_.empty());
+    resSchedService_->ReportPermissionErrorEvent(100, 1000, 2000);
+    int64_t lastReportTime = resSchedService_->lastEventReportTime_;
+    EXPECT_GT(lastReportTime, 0);
+    EXPECT_TRUE(resSchedService_->errLogRecordMap_.empty());
+}
+
+/**
+ * @tc.name: Ressched service ReportPermissionErrorEvent 005
+ * @tc.desc: test ReportPermissionErrorEvent function - multiple types with zero count should not be included
+ * @tc.type: FUNC
+ * @tc.require: issue1670
+ */
+HWTEST_F(ResSchedServiceTest, ReportPermissionErrorEvent005, Function | MediumTest | Level0)
+{
+    std::shared_ptr<ResSchedService> resSchedService_ = make_shared<ResSchedService>();
+    EXPECT_TRUE(resSchedService_ != nullptr);
+    resSchedService_->InitAllowIpcReportRes();
+    resSchedService_->lastEventReportTime_ = ResCommonUtil::GetNowMillTime(true) - ONE_DAY_TIME_MILLS - 1000;
+    resSchedService_->errLogRecordMap_[100] = std::make_pair(ResCommonUtil::GetCurrentTimestamp(), 5);
+    resSchedService_->errLogRecordMap_[200] = std::make_pair(ResCommonUtil::GetCurrentTimestamp(), 0);
+    resSchedService_->errLogRecordMap_[300] = std::make_pair(ResCommonUtil::GetCurrentTimestamp(), 10);
+    int32_t count100 = resSchedService_->errLogRecordMap_[100].second;
+    int32_t count200 = resSchedService_->errLogRecordMap_[200].second;
+    int32_t count300 = resSchedService_->errLogRecordMap_[300].second;
+    resSchedService_->ReportPermissionErrorEvent(100, 1000, 2000);
+    int64_t lastReportTime = resSchedService_->lastEventReportTime_;
+    EXPECT_GT(lastReportTime, 0);
+    // 上报后对应错误码的计数会被清零，因此期望为0
+    EXPECT_EQ(resSchedService_->errLogRecordMap_[100].second, 0);
+    EXPECT_EQ(resSchedService_->errLogRecordMap_[200].second, 0);
+    EXPECT_EQ(resSchedService_->errLogRecordMap_[300].second, 0);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

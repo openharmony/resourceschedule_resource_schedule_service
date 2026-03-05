@@ -26,6 +26,7 @@
 #include "res_sched_systemload_notifier_client.h"
 #include "res_sched_event_listener.h"
 #include "token_setproc.h"
+#include "res_sched_time_util.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -34,6 +35,7 @@ using namespace testing::ext;
 using namespace testing::mt;
 static constexpr int32_t RSS_SA_ID = 1901;
 static constexpr int32_t OTHER_SA_ID = 1900;
+static constexpr int64_t ONE_DAY_TIME_MILLS = static_cast<int64_t>(24) * 60 * 60 * 1000;
 class ResSchedClientTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -494,6 +496,116 @@ HWTEST_F(ResSchedClientTest, StopRemoteObject, Function | MediumTest | Level0)
 {
     ResSchedClient::GetInstance().StopRemoteObject();
     EXPECT_TRUE(nullptr == ResSchedClient::GetInstance().rss_);
+}
+
+/**
+ * @tc.name: ReportDiscardEventError001
+ * @tc.desc: Report discard event error for first time
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedClientTest, ReportDiscardEventError001, Function | MediumTest | Level0)
+{
+    uint32_t resType = 1001;
+    ResSchedClient::GetInstance().ReportDiscardEventError(resType);
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_.find(resType) !=
+        ResSchedClient::GetInstance().discardEventStats_.end());
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType] == 1);
+}
+
+/**
+ * @tc.name: ReportDiscardEventError002
+ * @tc.desc: Report discard event error multiple times within one day
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedClientTest, ReportDiscardEventError002, Function | MediumTest | Level0)
+{
+    uint32_t resType = 1002;
+    ResSchedClient::GetInstance().ReportDiscardEventError(resType);
+    int32_t initialCount = ResSchedClient::GetInstance().discardEventStats_[resType];
+    
+    for (int i = 0; i < 10; i++) {
+        ResSchedClient::GetInstance().ReportDiscardEventError(resType);
+    }
+    
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType] == initialCount + 10);
+}
+
+/**
+ * @tc.name: ReportDiscardEventError003
+ * @tc.desc: Report discard event error for different resType
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedClientTest, ReportDiscardEventError003, Function | MediumTest | Level0)
+{
+    uint32_t resType1 = 1003;
+    uint32_t resType2 = 1004;
+    
+    ResSchedClient::GetInstance().ReportDiscardEventError(resType1);
+    ResSchedClient::GetInstance().ReportDiscardEventError(resType2);
+    
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_.find(resType1) !=
+        ResSchedClient::GetInstance().discardEventStats_.end());
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_.find(resType2) !=
+        ResSchedClient::GetInstance().discardEventStats_.end());
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType1] == 1);
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType2] == 1);
+}
+
+/**
+ * @tc.name: ReportDiscardEventError004
+ * @tc.desc: Test report after time threshold and reset counters
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedClientTest, ReportDiscardEventError004, Function | MediumTest | Level0)
+{
+    uint32_t resType1 = 1005;
+    uint32_t resType2 = 1006;
+    
+    ResSchedClient::GetInstance().ReportDiscardEventError(resType1);
+    ResSchedClient::GetInstance().ReportDiscardEventError(resType1);
+    ResSchedClient::GetInstance().ReportDiscardEventError(resType2);
+    
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType1] == 2);
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType2] == 1);
+    
+    ResSchedClient::GetInstance().lastDiscardReportTime_ =
+        ResCommonUtil::GetNowMillTime(true) - ONE_DAY_TIME_MILLS - 1000;
+    ResSchedClient::GetInstance().ReportDiscardEventError(resType1);
+    
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType1] == 0);
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType2] == 0);
+}
+
+/**
+ * @tc.name: ReportDiscardEventError005
+ * @tc.desc: Test multiple resTypes combined reporting
+ * @tc.type: FUNC
+ */
+HWTEST_F(ResSchedClientTest, ReportDiscardEventError005, Function | MediumTest | Level0)
+{
+    uint32_t resType1 = 1007;
+    uint32_t resType2 = 1008;
+    uint32_t resType3 = 1009;
+    
+    for (int i = 0; i < 5; i++) {
+        ResSchedClient::GetInstance().ReportDiscardEventError(resType1);
+    }
+    for (int i = 0; i < 3; i++) {
+        ResSchedClient::GetInstance().ReportDiscardEventError(resType2);
+    }
+    ResSchedClient::GetInstance().ReportDiscardEventError(resType3);
+    
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType1] == 5);
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType2] == 3);
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType3] == 1);
+    
+    ResSchedClient::GetInstance().lastDiscardReportTime_ =
+        ResCommonUtil::GetNowMillTime(true) - ONE_DAY_TIME_MILLS - 1000;
+    ResSchedClient::GetInstance().ReportDiscardEventError(resType1);
+    
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType1] == 0);
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType2] == 0);
+    EXPECT_TRUE(ResSchedClient::GetInstance().discardEventStats_[resType3] == 0);
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

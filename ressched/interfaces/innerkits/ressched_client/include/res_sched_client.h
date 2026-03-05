@@ -183,6 +183,7 @@ private:
         const nlohmann::json& payload, nlohmann::json& reply, sptr<IResSchedService>& proxy);
     void RecoverEventListener();
     void ReportConnectError(const std::string& reason);
+    void ReportDiscardEventError(const uint32_t resType);
     class SystemloadLevelListener : public ResSchedSystemloadNotifierStub {
     public:
         SystemloadLevelListener() = default;
@@ -235,6 +236,8 @@ private:
     bool isGetResTypeList_ = false;
     std::set<uint32_t> resTypeList_;
     std::unordered_map<uint32_t, std::unordered_set<uint32_t>> registeredInnerEvents;
+    int64_t lastDiscardReportTime_;
+    std::unordered_map<uint32_t, int32_t> discardEventStats_;
     DISALLOW_COPY_AND_MOVE(ResSchedClient);
 };
 } // namespace ResourceSchedule

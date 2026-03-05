@@ -51,6 +51,7 @@ namespace {
     static constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 650;
     static constexpr int32_t LIMIT_REQUEST_TIME = 1000;
     static constexpr int64_t FOUR_HOUR_TIME = 4 * 60 * 60 * 1000;
+    static constexpr int64_t ONE_DAY_TIME_MILLS = 24 * 60 * 60 * 1000;
     static constexpr int64_t INTERVAL = 5 * 1000;
     static constexpr int64_t ERR_LOG_COUNT = 1;
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
@@ -799,10 +800,7 @@ int32_t ResSchedService::CheckReportDataParcel(const uint32_t& type, const int64
                 count=%{public}d, uid=%{public}d, pid=%{public}d.",
                 __func__, type, errLogRecordMap_[type].second, uid, pid);
         }
-        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
-            "MODULE_NAME", "ResSchedService",
-            "FUNC_NAME", __func__,
-            "ERR_INFO", "no permission:" + std::to_string(type) + " " + std::to_string(value));
+        ReportPermissionErrorEvent(type, uid, pid);
         return ERR_RES_SCHED_PERMISSION_DENIED;
     }
 
@@ -810,7 +808,7 @@ int32_t ResSchedService::CheckReportDataParcel(const uint32_t& type, const int64
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
             "MODULE_NAME", "ResSchedService",
             "FUNC_NAME", __func__,
-            "ERR_INFO", "payload oversize:" + std::to_string(type) + " " + std::to_string(value));
+            "ERR_INFO", "payload oversize:" + std::to_string(type));
         RESSCHED_LOGE("too long payload.size:%{public}u", (uint32_t)payload.size());
         return ERR_RES_SCHED_PARCEL_ERROR;
     }
@@ -838,6 +836,27 @@ void ResSchedService::ReportBigData()
                     HiviewDFX::HiSysEvent::EventType::FAULT, "REQUEST_LIMIT_COUNT", bigDataReportCount_.load());
     isReportBigData_.store(false);
     bigDataReportCount_.store(0);
+}
+
+void ResSchedService::ReportPermissionErrorEvent(const uint32_t type, const int32_t uid, const int32_t pid)
+{
+    int64_t currentTime = ResCommonUtil::GetNowMillTime(true);
+    if (currentTime - lastEventReportTime_ < ONE_DAY_TIME_MILLS) {
+        return;
+    }
+    std::string errorInfo = "no permission errors: ";
+    for (const auto& [errType, data] : errLogRecordMap_) {
+        if (data.second > 0) {
+            errorInfo += "(" + std::to_string(errType) + ", " + std::to_string(data.second) + ") ";
+        }
+    }
+    HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR",
+        HiviewDFX::HiSysEvent::EventType::STATISTIC,
+        "MODULE_NAME", "ResSchedService",
+        "FUNC_NAME", __func__,
+        "ERR_INFO", errorInfo);
+    lastEventReportTime_ = currentTime;
+    errLogRecordMap_.clear();
 }
 
 void ResSchedService::InreaseBigDataCount()
