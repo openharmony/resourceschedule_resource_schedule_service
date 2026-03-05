@@ -96,7 +96,8 @@ private:
     bool CheckENGMode();
 
     nlohmann::json StringToJsonObj(const std::string& str);
-    int32_t CheckReportDataParcel(const uint32_t& type, const int64_t& value, const std::string& payload, int32_t uid);
+    int32_t CheckReportDataParcel(const uint32_t& type, const int64_t& value,
+        const std::string& payload, int32_t uid, int32_t pid);
     bool IsLimitRequest(int32_t uid);
     void CheckAndUpdateLimitData(int64_t nowTime);
     void PrintLimitLog(int32_t uid);
