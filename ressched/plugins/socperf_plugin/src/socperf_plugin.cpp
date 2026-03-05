@@ -401,19 +401,14 @@ void SocPerfPlugin::InitGameColdStartBoostSwitch()
 {
     PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME,
         CONFIG_NAME_SOCPERF_GAME_COLD_START_BOOST_SWITCH);
-    if (itemLists.itemList.empty()) {
-        SOC_PERF_LOGI("SocPerfPlugin::InitGameColdStartBoostSwitch config not found, use default value: %{public}d", 
-            gameColdStartBoostSwitch_);
-    } else {
-        for (const Item& item : itemLists.itemList) {
-            for (const SubItem& sub : item.subItemList) {
-                if (sub.name == GAME_BOOST_SWITCH) {
-                    gameColdStartBoostSwitch_ = (sub.value == "1");
-                    SOC_PERF_LOGI("SocPerfPlugin::InitGameColdStartBoostSwitch %{public}d", gameColdStartBoostSwitch_);
-                }
+    for (const Item& item : itemLists.itemList) {
+        for (const SubItem& sub : item.subItemList) {
+            if (sub.name == GAME_BOOST_SWITCH) {
+                gameColdStartBoostSwitch_ = (sub.value == "1");
             }
         }
     }
+    SOC_PERF_LOGI("SocPerfPlugin::InitGameColdStartBoostSwitch %{public}d", gameColdStartBoostSwitch_);
     PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_GAME_COLD_START_BOOST_SWITCH);
 }
 
