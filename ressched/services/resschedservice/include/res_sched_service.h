@@ -96,7 +96,8 @@ private:
     bool CheckENGMode();
 
     nlohmann::json StringToJsonObj(const std::string& str);
-    int32_t CheckReportDataParcel(const uint32_t& type, const int64_t& value, const std::string& payload, int32_t uid);
+    int32_t CheckReportDataParcel(const uint32_t& type, const int64_t& value,
+        const std::string& payload, int32_t uid, int32_t pid);
     bool IsLimitRequest(int32_t uid);
     void CheckAndUpdateLimitData(int64_t nowTime);
     void PrintLimitLog(int32_t uid);
@@ -121,6 +122,8 @@ private:
     using RequestFuncType = std::function<int32_t (MessageParcel& data, MessageParcel& reply)>;
     std::map<uint32_t, RequestFuncType> funcMap_;
     std::map<int32_t, int32_t> appRequestCountMap_;
+    // key: type; value: pair<lastReportTime, count>
+    std::map<uint32_t, std::pair<int64_t, int32_t>> errLogRecordMap_;
     std::atomic<int32_t> allRequestCount_ {0};
     std::atomic<int32_t> bigDataReportCount_ {0};
     std::atomic<int64_t> nextCheckTime_ = {0};
@@ -133,6 +136,7 @@ private:
 
     std::mutex mutex_;
     std::mutex permissionCacheMutex_;
+    std::mutex errLogRecordMutex_;
     std::unordered_set<uint32_t> allowSCBReportRes_;
     std::unordered_set<uint32_t> allowAllSAReportRes_;
     std::unordered_map<uint32_t, std::unordered_set<int32_t>> allowSomeSAReportRes_;

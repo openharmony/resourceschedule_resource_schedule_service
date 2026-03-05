@@ -51,6 +51,8 @@ namespace {
     static constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 650;
     static constexpr int32_t LIMIT_REQUEST_TIME = 1000;
     static constexpr int64_t FOUR_HOUR_TIME = 4 * 60 * 60 * 1000;
+    static constexpr int64_t INTERVAL = 5 * 1000;
+    static constexpr int64_t ERR_LOG_COUNT = 1;
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     static const int32_t DEFAULT_VALUE = -1;
     static const char* EXT_RES_KEY = "extType";
@@ -265,7 +267,6 @@ bool ResSchedService::IsHasPermission(const uint32_t type, int32_t uid)
              return false;
         }
     } else if (allowAllSAReportRes_.find(type) == allowAllSAReportRes_.end()) {
-        RESSCHED_LOGE("resType:%{public}d not sa report", type);
         return false;
     }
     AccessToken::AccessTokenID tokenId = OHOS::IPCSkeleton::GetCallingTokenID();
@@ -339,14 +340,12 @@ ErrCode ResSchedService::ReportData(uint32_t resType, int64_t value, const std::
     }
 #endif
     int32_t callingUid = IPCSkeleton::GetCallingUid();
-    int32_t ret = CheckReportDataParcel(resType, value, payload, callingUid);
+    int32_t clientPid = IPCSkeleton::GetCallingPid();
+    int32_t ret = CheckReportDataParcel(resType, value, payload, callingUid, clientPid);
     if (ret != ERR_OK) {
-        RESSCHED_LOGE("%{public}s: check report data parcel fail ret=%{public}d, type=%{public}u.",
-            __func__, ret, resType);
         return ret;
     }
 
-    int32_t clientPid = IPCSkeleton::GetCallingPid();
     RESSCHED_LOGD("ResSchedService receive data from ipc resType: %{public}u, value: %{public}lld, pid: %{public}d",
                   resType, (long long)value, clientPid);
     nlohmann::json reportDataPayload = StringToJsonObj(payload);
@@ -368,17 +367,15 @@ ErrCode ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t v
         return ERR_OK;
     }
     int32_t callingUid = IPCSkeleton::GetCallingUid();
-    int32_t ret = CheckReportDataParcel(resType, value, payload, callingUid);
+    int32_t clientPid = IPCSkeleton::GetCallingPid();
+    int32_t ret = CheckReportDataParcel(resType, value, payload, callingUid, clientPid);
     if (ret != ERR_OK) {
-        RESSCHED_LOGE("%{public}s: check report data parcel fail ret=%{public}d, type=%{public}u.",
-            __func__, ret, resType);
         resultValue = ret;
         return ERR_OK;
     }
     nlohmann::json payloadJsonValue;
     nlohmann::json replyValue;
     payloadJsonValue = StringToJsonObj(payload);
-    int32_t clientPid = IPCSkeleton::GetCallingPid();
     payloadJsonValue["clientPid"] = std::to_string(clientPid);
     payloadJsonValue["callingUid"] = std::to_string(callingUid);
     resultValue = PluginMgr::GetInstance().DeliverResource(
@@ -780,10 +777,28 @@ void ResSchedService::DumpAllPluginConfig(std::string &result)
 }
 
 int32_t ResSchedService::CheckReportDataParcel(const uint32_t& type, const int64_t& value,
-    const std::string& payload, int32_t uid)
+    const std::string& payload, int32_t uid, int32_t pid)
 {
     if (!IsSBDResType(type) && !IsThirdPartType(type) && !IsHasPermission(type, uid)) {
-        RESSCHED_LOGD("type:%{public}u, no permission", type);
+        std::lock_guard<std::mutex> lock(errLogRecordMutex_);
+        int64_t currentTime = ResCommonUtil::GetCurrentTimestamp();
+        auto iter = errLogRecordMap_.find(type);
+        bool reportErrLog = false;
+        if (iter != errLogRecordMap_.end()) {
+            iter->second.second += ERR_LOG_COUNT;
+            // 上次error日志打印时间与当前间隔超过5s,打印error日志
+            reportErrLog = currentTime > iter->second.first + INTERVAL;
+            iter->second.first =
+               (currentTime > iter->second.first + INTERVAL) ? currentTime : iter->second.first;
+        } else {
+            errLogRecordMap_[type] = std::make_pair(currentTime, ERR_LOG_COUNT);
+            reportErrLog = true;
+        }
+        if (reportErrLog) {
+            RESSCHED_LOGE("%{public}s: check report data no permission type=%{public}u,\
+                count=%{public}d, uid=%{public}d, pid=%{public}d.",
+                __func__, type, errLogRecordMap_[type].second, uid, pid);
+        }
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "ABNORMAL_ERR", HiviewDFX::HiSysEvent::EventType::STATISTIC,
             "MODULE_NAME", "ResSchedService",
             "FUNC_NAME", __func__,
