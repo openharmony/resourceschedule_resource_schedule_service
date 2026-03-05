@@ -49,6 +49,8 @@ namespace {
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_PATH = "socperf_req_apptype_path";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_FUNC = "socperf_req_apptype_func";
     const std::string CONFIG_NAME_SOCPERF_BATTERY_CAPACITY_LIMIT_FREQ = "socperfBatteryCapacityLimitFreq";
+    const std::string CONFIG_NAME_SOCPERF_GAME_COLD_START_BOOST_SWITCH = "socperfGameColdStartBoostSwitch";
+    const std::string GAME_BOOST_SWITCH = "switch";
     const std::string BUNDLE_NAME = "bundleName";
     const std::string CALLER_BUNDLE_NAME = "callerBundleName";
     const std::string SPECIAL_EXTENSION_STRING = "specialExtension";
@@ -173,6 +175,7 @@ void SocPerfPlugin::Init()
     InitWeakInterAction();
     InitBatteryCapacityLimitFreq();
     InitPolicyMode();
+    InitGameColdStartBoostSwitch();
     SOC_PERF_LOGI("SocPerfPlugin::Init success");
 }
 
@@ -392,6 +395,26 @@ bool SocPerfPlugin::HandleBatterySubValue(const int32_t capacity,
     frequencies.configs.push_back(config);
     socperfBatteryConfig_[capacity] = frequencies;
     return true;
+}
+
+void SocPerfPlugin::InitGameColdStartBoostSwitch()
+{
+    PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME,
+        CONFIG_NAME_SOCPERF_GAME_COLD_START_BOOST_SWITCH);
+    if (itemLists.itemList.empty()) {
+        SOC_PERF_LOGI("SocPerfPlugin::InitGameColdStartBoostSwitch config not found, use default value: %{public}d", 
+            gameColdStartBoostSwitch_);
+    } else {
+        for (const Item& item : itemLists.itemList) {
+            for (const SubItem& sub : item.subItemList) {
+                if (sub.name == GAME_BOOST_SWITCH) {
+                    gameColdStartBoostSwitch_ = (sub.value == "1");
+                    SOC_PERF_LOGI("SocPerfPlugin::InitGameColdStartBoostSwitch %{public}d", gameColdStartBoostSwitch_);
+                }
+            }
+        }
+    }
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_GAME_COLD_START_BOOST_SWITCH);
 }
 
 std::set<std::string> SocPerfPlugin::StringToSet(const std::string& str, char pattern)
@@ -718,7 +741,7 @@ void SocPerfPlugin::HandleAppAbilityStart(const std::shared_ptr<ResData>& data)
             appType = reqAppTypeFunc_(bundleName);
             UpdateUidToAppMsgMap(data, appType, bundleName);
         }
-        if (appType == APP_TYPE_GAME) {
+        if (appType == APP_TYPE_GAME && gameColdStartBoostSwitch_) {
             SOC_PERF_LOGI("SocPerfPlugin: socperf->Game cold start");
             OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequest(PERF_REQUEST_CMD_ID_GAME_START, "");
         }
