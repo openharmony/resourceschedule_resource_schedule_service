@@ -135,6 +135,7 @@ private:
 
     std::mutex mutex_;
     std::mutex permissionCacheMutex_;
+    std::mutex errLogRecordMutex_;
     std::unordered_set<uint32_t> allowSCBReportRes_;
     std::unordered_set<uint32_t> allowAllSAReportRes_;
     std::unordered_map<uint32_t, std::unordered_set<int32_t>> allowSomeSAReportRes_;
