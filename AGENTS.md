@@ -1,7 +1,5 @@
 # 资源调度服务 (Resource Schedule Service) - Agent 指南
 
-本文件为 Claude Code 提供资源调度服务 (RSS) 项目的开发指导。
-
 ---
 
 ## 快速参考
