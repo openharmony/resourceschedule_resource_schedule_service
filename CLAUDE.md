@@ -1,240 +1,967 @@
 # CLAUDE.md
 
-## 架构概览
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**资源调度服务** (`@ohos/resource_schedule_service`) 是 OpenHarmony 系统级服务，通过智能调度管理 CPU、GPU 和功耗资源。架构分为两个主要服务：
+## Quick Reference
 
-### 主服务 (`ressched/`)
+### Build Commands
 
-采用插件架构的核心资源调度器：
+```bash
+# Full build (from OpenHarmony root)
+./build.sh --product-name rk3568 --build-target ace_engine
 
-- **入口点**: `services/resschedservice/src/res_sched_service.cpp`
-  - 实现 System Ability 服务 (`ResourceScheduleService`)
-  - 通过 `PluginMgr` 加载和管理所有插件
+# Incremental build (after code changes)
+./build.sh --product-name rk3568 --build-target ace_engine
 
-- **框架层** (`services/resschedmgr/resschedfwk/`):
-  - `plugin_mgr.cpp`: 使用 `dlopen()` 动态加载插件
-  - `event_listener_mgr.cpp`: 管理事件订阅和分发
-  - `config_reader.cpp`: 读取 XML 配置文件
-  - `res_sched_mgr.cpp`: 中央调度协调器
+# Build SDK
+./build.sh --product-name ohos-sdk --build-target ace_engine
 
-- **事件控制器** (`sched_controller/`):
-  - `common_event/`: 接收系统级公共事件
-  - `observer/`: 基于回调的事件监听器：
-    - `audio_observer.cpp`: 音频框架事件（渲染状态、铃声模式、音量）
-    - `camera_observer.cpp`: 相机状态变化
-    - `window_state_observer.cpp`: 窗口焦点/可见性事件
-    - `app_state_observer.cpp`: 应用生命周期事件
-    - `telephony_observer.cpp`: 电话状态（条件编译）
-    - `display_power_event_observer.cpp`: 屏幕开关事件
+# Build specific component (using gn target)
+./build.sh --product-name rk3568 --build-target //arkui/ace_engine/frameworks/core/components_ng/pattern/text:text_pattern
+```
 
-- **场景识别** (`scene_recognize/`):
-  - 复杂场景的模式检测，如应用安装、升级、重叠任务
+### Test Commands
 
-### 执行器服务 (`ressched_executor/`)
+```bash
+# Build unit tests
+./build.sh --product-name rk3568 --build-target unittest
 
-针对性能关键操作的分离架构：
-- 独立服务 (`resschedexesvc`) 处理 SOC 频率调制
-- `plugins/socperf_executor_plugin/`: CPU/GPU 频率请求的专用执行器
+# Build benchmarks
+./build.sh --product-name rk3568 --build-target benchmark_linux
+
+# Run specific test executable
+./out/rk3568/tests/ace_engine/unittest/components_ng/text/text_pattern_test
+
+# Example: Run specific component test
+./out/rk3568/tests/ace_engine/unittest/components_ng/button/button_pattern_test
+```
+
+### Build Output Locations
+
+- **Engine Libraries**: `out/rk3568/arkui/ace_engine/`
+- **Tests**: `out/rk3568/tests/ace_engine/`
+- **Build Logs**: `out/rk3568/build.log` (full build), `out/rk3568/arkui/ace_engine/build.log` (component build)
 
 ---
 
-## 插件开发
+## Knowledge Base
 
-### 插件接口定义
+This project maintains a comprehensive knowledge base system for in-depth component analysis and development guidance.
 
-插件必须实现以下 API（定义于 `services/resschedmgr/pluginbase/include/plugin.h`）：
+### docs/ Knowledge Base Directory
+
+The `docs/` directory contains organized knowledge base documentation covering:
+
+- **Component Knowledge** (`docs/pattern/*/`) - In-depth analysis for specific components (e.g., Menu, Grid, List)
+  - Component architecture and design patterns
+  - Pattern/Model/Property/Algorithm layer breakdown
+  - Lifecycle management and event handling
+  - Layout algorithms and paint methods
+  - Test coverage and debugging guides
+
+- **Architecture & Design** (`docs/architecture/`) - Framework architecture documentation
+  - System design patterns
+  - Component layering and separation of concerns
+  - Cross-component integration patterns
+
+- **Best Practices** (`docs/best_practices/`) - Development guidelines and solutions
+  - Common problem-solving approaches
+  - Performance optimization techniques
+  - Debugging and troubleshooting guides
+
+**Knowledge Base Index**: See [docs/knowledge_base_README.md](docs/knowledge_base_README.md) for the complete catalog of available knowledge base documents.
+
+**Metadata Index**: See [docs/knowledge_base_INDEX.json](docs/knowledge_base_INDEX.json) for structured metadata including keywords, aliases, categories, and path mappings for all knowledge bases.
+
+**Usage**: When answering questions or providing guidance:
+
+1. **Check for relevant knowledge base documents** in `docs/` before diving into code analysis
+2. **Search the knowledge base** using Grep tools to find component-specific information
+3. **Reference knowledge base content** to provide comprehensive, context-aware answers
+4. **Cross-reference with actual code** using the file paths and line numbers cited in knowledge base documents
+
+### Knowledge Base Creation Standards
+
+When creating new knowledge base documents, the following standards **MUST** be followed:
+
+#### 1. File Naming Convention
+
+**Pattern**: `XXX_Knowledge_Base[_CN].md`
+
+- Use clear English names (e.g., `Text_Knowledge_Base_CN.md`, `Menu_Knowledge_Base.md`)
+- Add `_CN` suffix for Chinese-language documents
+- Place in appropriate subdirectory under `docs/`:
+  - `docs/pattern/<component>/` - Component-specific knowledge bases
+  - `docs/sdk/` - SDK and API documentation
+  - `docs/architecture/` - Architecture and design documentation
+
+#### 2. Metadata Requirements
+
+All knowledge bases **MUST** include metadata in [docs/knowledge_base_INDEX.json](docs/knowledge_base_INDEX.json):
+
+```json
+{
+  "name": "ComponentName",
+  "name_cn": "组件中文名",
+  "category": "basic/container/selector/shape/media/data_display/rich_text/advanced/sdk",
+  "type": "component/feature/sdk",
+  "keywords": [
+    "功能关键词1",
+    "功能关键词2",
+    "功能关键词3",
+    "... (5-15 keywords)"
+  ],
+  "aliases": [
+    "别名1",
+    "别名2",
+    "... (2-5 aliases)"
+  ],
+  "file_path": "path/to/doc.md",
+  "source_paths": {
+    "pattern": "OpenHarmony/foundation/arkui/ace_engine/frameworks/core/components_ng/pattern/...",
+    "model": "OpenHarmony/foundation/arkui/ace_engine/frameworks/core/components_ng/pattern/...",
+    "layout": "OpenHarmony/foundation/arkui/ace_engine/frameworks/core/components_ng/pattern/..."
+  },
+  "api_paths": {
+    "static": "OpenHarmony/interface/sdk-js/api/arkui/component/...",
+    "modifier": "OpenHarmony/interface/sdk-js/api/arkui/...Modifier.d.ts"
+  },
+  "last_updated": "YYYY-MM-DD"
+}
+```
+
+**Metadata Requirements**:
+
+- **name**: Component English name (required)
+- **name_cn**: Component Chinese name (required)
+- **category**: Must match one of the predefined categories (required)
+- **type**: component/feature/sdk (required)
+- **keywords**: 5-15 terms covering functionality, use cases, related concepts (required)
+- **aliases**: 2-5 alternative names users might search for (required)
+- **file_path**: Relative path from docs/ (required)
+- **source_paths**: Source code path mappings (optional, recommended)
+- **api_paths**: SDK API path mappings (optional, recommended)
+- **last_updated**: Last update date in YYYY-MM-DD format (required)
+
+#### 3. Document Structure
+
+Every knowledge base document **MUST** include:
+
+```markdown
+# Component Name 组件完整知识库
+
+> **文档版本**: v1.0
+> **更新时间**: YYYY-MM-DD
+> **源码版本**: OpenHarmony ace_engine (master 分支)
+
+---
+
+## 📚 目录
+
+1. [概述](#概述)
+2. [目录结构](#目录结构)
+3. [核心类继承关系](#核心类继承关系)
+4. [Pattern层详解](#pattern层详解)
+5. [Model层详解](#model层详解)
+6. [完整API清单](#完整api清单)
+7. [关键实现细节](#关键实现细节)
+8. [使用示例](#使用示例)
+9. [调试指南](#调试指南)
+10. [常见问题](#常见问题)
+
+---
+
+## 概述
+
+### 组件定位
+
+**ComponentName** 组件是...
+
+### 技术架构
+
+...
+
+### 代码规模
+
+...
+```
+
+**Required Sections**:
+
+1. **概述** (Overview) - Component positioning and purpose
+2. **目录结构** (Directory Structure) - Source file organization
+3. **核心类** (Core Classes) - Inheritance relationships
+4. **Pattern层** (Pattern Layer) - Business logic details
+5. **Model层** (Model Layer) - Data model details
+6. **API清单** (API List) - Complete API listing
+7. **实现细节** (Implementation Details) - Key implementation points
+8. **使用示例** (Usage Examples) - Practical examples
+9. **调试指南** (Debugging Guide) - Debugging techniques
+10. **常见问题** (FAQ) - Common issues and solutions
+
+#### 4. Path Reference Standards
+
+All code references in knowledge bases **MUST** follow these path formats:
+
+- **Source code paths**: Use `OpenHarmony/` prefix
+  - ✅ `OpenHarmony/foundation/arkui/ace_engine/frameworks/core/components_ng/pattern/text/text_pattern.cpp:123`
+  - ❌ `/home/user/OpenHarmony/...` (local absolute paths)
+  - ❌ `frameworks/core/components_ng/...` (relative paths)
+
+- **Knowledge base links**: Use relative paths within same repository
+  - ✅ `../pattern/menu/Menu_Knowledge_Base.md`
+  - ❌ `OpenHarmony/foundation/arkui/ace_engine/docs/pattern/menu/...`
+
+- **SDK API paths**: Use `OpenHarmony/` prefix
+  - ✅ `OpenHarmony/interface/sdk-js/api/arkui/component/text.static.d.ets`
+  - ❌ `interface/sdk-js/api/arkui/...` (relative paths)
+
+#### 5. Content Verification Rules
+
+Before finalizing any knowledge base:
+
+1. **Verify all source paths exist**
+
+   ```bash
+   ls -la OpenHarmony/foundation/arkui/ace_engine/frameworks/core/components_ng/pattern/<component>/<component>_pattern.cpp
+   ```
+
+2. **Verify all API paths exist**
+
+   ```bash
+   ls -la OpenHarmony/interface/sdk-js/api/arkui/component/<component>.static.d.ets
+   ```
+
+3. **Verify line numbers in code references**
+   - Read the actual file at the specified line
+   - Ensure the code hasn't moved due to refactoring
+
+4. **Verify technical accuracy**
+   - Cross-reference multiple source files
+   - Test code examples when applicable
+   - Consult actual implementation, not assumptions
+
+#### 6. Index Maintenance
+
+When adding or updating knowledge bases:
+
+1. **Update knowledge_base_INDEX.json**
+   - Add new component entry with complete metadata
+   - Update `last_updated` for modified entries
+   - Verify all paths are valid
+   - Ensure valid JSON format (use JSON linter or validator)
+
+2. **Update docs/knowledge_base_README.md**
+   - Add component to directory structure
+   - Update statistics (total count, category counts)
+   - Add component description if not already present
+
+3. **Verify metadata consistency**
+
+   ```bash
+   # Count knowledge base files
+   find docs -name "*_Knowledge_Base*.md" -type f | wc -l
+
+   # Validate JSON format
+   python3 -m json.tool docs/knowledge_base_INDEX.json > /dev/null && echo "Valid JSON"
+
+   # Count indexed components
+   python3 -c "import json; data=json.load(open('docs/knowledge_base_INDEX.json')); print(f'Total components: {len(data[\"knowledge_bases\"])}')"
+
+   # Search by keyword (requires jq or python)
+   python3 -c "import json; data=json.load(open('docs/knowledge_base_INDEX.json')); print([kb['name'] for kb in data['knowledge_bases'] if '文本' in ' '.join(kb['keywords'])])"
+   ```
+
+#### 7. Code Verification Principles (Critical)
+
+**When writing knowledge bases, NEVER**:
+
+- ❌ Guess or fabricate code implementations
+- ❌ Assume functionality without reading source code
+- ❌ Copy code from other sources (documentation, blogs, etc.)
+- ❌ Write hypothetical examples as actual code
+
+**ALWAYS**:
+
+- ✅ Use Read/Grep tools to locate and read actual source code
+- ✅ Reference complete file paths with line numbers
+- ✅ Verify code behavior by reading implementation
+- ✅ Provide source location for all code snippets
+- ✅ Mark uncertain content as "推测" (speculation)
+
+**Example of proper code reference**:
+
+```markdown
+### Text Pattern Initialization
+
+Source: `OpenHarmony/foundation/arkui/ace_engine/frameworks/core/components_ng/pattern/text/text_pattern.cpp:123-145`
 
 ```cpp
-class Plugin {
-    virtual void Init() = 0;
-    virtual void Disable() = 0;
-    virtual void DispatchResource(const std::shared_ptr<ResData>& data) = 0;
-};
+void TextPattern::OnModifyDone()
+{
+    // Actual implementation from source
+    auto host = GetHost();
+    if (host) {
+        host->MarkDirtyNode(PROPERTY_PATTERN_RENDER_CONTEXT);
+    }
+}
+```
 ```
 
-| API | 描述 |
-|-----|------|
-| `Init()` | 插件初始化 |
-| `Disable()` | 插件禁用 |
-| `DispatchResource(const std::shared_ptr<ResData>& data)` | 接收并处理资源事件 |
+#### 8. Quality Checklist
 
-### 开发规范
+Before submitting a knowledge base, verify:
 
-1. **实现语言**: 插件使用 C/C++ 实现
+- [ ] File follows naming convention (`XXX_Knowledge_Base[_CN].md`)
+- [ ] Metadata added to `knowledge_base_INDEX.json`
+- [ ] JSON format is valid (use JSON validator)
+- [ ] All required fields present (name, name_cn, category, type, keywords, aliases, file_path, last_updated)
+- [ ] Keywords count between 5-15
+- [ ] Aliases count between 2-5
+- [ ] All source paths verified to exist
+- [ ] All API paths verified to exist
+- [ ] All line numbers verified against actual code
+- [ ] Document includes all 10 required sections
+- [ ] Code examples are from actual source (not fabricated)
+- [ ] Path references use correct format (`OpenHarmony/` prefix for code, relative for KB links)
+- [ ] `knowledge_base_README.md` updated
+- [ ] Statistics updated correctly
 
-2. **事件订阅**: 插件初始化时指定需要监听的事件，框架自动分发匹配事件
+#### 9. Maintenance and Updates
 
-3. **处理原则**:
-   - 事件处理必须快速完成
-   - 如有耗时任务，需由独立线程处理
-   - 处理完成后立即返回
+**Regular Maintenance Tasks**:
 
-4. **性能要求**:
-   - 超过 1ms 打印警告
-   - 超过 10ms 视为插件异常并报错
+1. **Monthly verification**
+   - Check all source paths still exist
+   - Verify line numbers are still accurate
+   - Update for any code refactoring
 
-### 内置插件列表
+2. **When code changes**
+   - Update affected knowledge bases immediately
+   - Update `last_updated` in metadata
+   - Document the change in the knowledge base
 
-| 插件 | 功能 |
-|------|------|
-| `cgroup_sched_plugin/` | 基于 Linux cgroup 的进程调度 |
-| `socperf_plugin/` | SOC 性能管理（CPU/GPU 频率） |
-| `device_standby_plugin/` | 设备待机状态管理 |
-| `frame_aware_plugin/` | 帧感知调度（条件编译） |
+3. **When errors are found**
+   - Document the error and correction
+   - Identify root cause
+   - Add preventive measures to knowledge base
+   - Share learnings across all relevant knowledge bases
 
----
+**Example update entry**:
+```markdown
+## Learned Lessons
 
-## 配置文件
-
-| 配置文件 | 路径 | 用途 |
-|----------|------|------|
-| 插件开关 | `ressched/profile/res_sched_plugin_switch.xml` | 控制加载哪些插件 |
-| Cgroup 策略 | `plugins/cgroup_sched_plugin/profiles/cgroup_action_config.json` | 调度策略映射到 cgroup 路径 |
-| 框架配置 | `ressched/profile/res_sched_config.xml` | 框架级配置 |
-
----
-
-## Cgroup 调度策略
-
-### 策略映射
-
-| 场景 | 调度策略 |
-|------|----------|
-| 当前聚焦的前台应用及同 uid 进程 | `top_app` |
-| 前台可见进程（分屏未聚焦窗口、悬浮窗、foundation 进程） | `foreground` |
-| 系统级守护进程 | `system` |
-| 后台应用及同 uid 进程 | `background` |
-| 内核/原生进程 | `root` |
-
-### 配置项说明
-
-配置文件: `cgroup_action_config.json`
-
-| 配置项 | 描述 |
-|--------|------|
-| `controller` | cgroup 控制器类型：`cpuset`、`cpuctl`、`blkio` 等 |
-| `path` | cgroup 路径 |
-| `sched_policy` | 调度策略与 cgroup 的绑定关系 |
-| `sp_xx` | 具体策略类型（如 `sp_top_app`、`sp_background`） |
-
----
-
-## SocPerf
-
-### 接口列表
-
-| 接口 | 功能 |
-|------|------|
-| `PerfRequest(int32_t cmdId, const std::string& msg)` | 性能提升频率 |
-| `PerfRequestEx(int32_t cmdId, bool onOffTag, const std::string& msg)` | 性能提升（支持 ON/OFF） |
-| `PowerLimitBoost(bool onOffTag, const std::string& msg)` | 功耗限制频率 |
-| `ThermalLimitBoost(bool onOffTag, const std::string& msg)` | 热限制频率 |
-| `LimitRequest(int32_t clientId, const std::vector<int32_t>& tags, const std::vector<int64_t>& configs, const std::string& msg)` | 功耗/热限制（可批量设置） |
-
-**参数说明**:
-- `cmdId`: 连接场景和配置的关键参数，用于提升或限制频率
-- `onOffTag`: 支持 ON/OFF 切换，用于长期事件
-- `msg`: 额外信息（如客户端 pid、tid）
-
-### SocPerf 配置
-
-| 文件 | 描述 |
-|------|------|
-| `socperf_resource_config.xml` | 可修改资源定义（CPU/GPU/DDR/NPU） |
-| `socperf_boost_config.xml` | 性能提升配置 |
-| `socperf_thermal_config.xml` | 热限制配置 |
-
-**注意**: 三个配置文件中的 `cmdID` 必须互不相同，且针对不同产品内容可能不同。
-
----
-
-## 回调事件
-
-当前支持的框架事件：
-
-- **音频框架**: renderState 变化、ringMode 变化、volumeKey 变化
-- **电话**: 电话状态变化
-- **相机**: 相机状态变化
-
----
-
-## 数据流
-
-```
-事件源 → EventController → EventListenerMgr → 插件
-                                    ↓
-                            根据 resid 订阅分发
-                                    ↓
-                         调用 SocPerf API / 设置 cgroup
-                                    ↓
-                         CPU/GPU 频率调整 / 进程优先级变更
+### Error: Incorrect API Method Name
+**Date**: 2026-02-04
+**Issue**: Knowledge base referenced `SetText()` which was renamed to `UpdateText()`
+**Root Cause**: Code refactoring not reflected in documentation
+**Correction**: Updated all references to use `UpdateText()`
+**Prevention**: Added note to check for API changes during monthly verification
+**Reference**: text_pattern.cpp:234-256
 ```
 
-1. **接收**: 通过 `common_event` 订阅者或 `observer` 回调
-2. **转发**: EventController 转发到 EventListenerMgr
-3. **分发**: 根据 `resid` 分发给订阅的插件
-4. **处理**: 插件调用相应 API
-5. **执行**: 完成调度动作
+#### 10. Knowledge Base Categories
 
----
+Knowledge bases must be categorized as follows:
 
-## 特性开关
+| Category | Description | Examples |
+| :--- | :--- | :--- |
+| **basic** | Basic UI components | Text, Button, Image, TextInput |
+| **container** | Layout containers | Column, Row, Grid, List, Scroll, Stack |
+| **selector** | Data selection components | DatePicker, TimePicker, Slider, Checkbox |
+| **shape** | Shape drawing components | Rect, Circle, Path, Polygon |
+| **media** | Media components | Video, Canvas, ImageAnimator |
+| **data_display** | Data presentation | Badge, Gauge, Progress, TextTimer |
+| **rich_text** | Rich text components | TextSpan, TextArea |
+| **advanced** | Complex interactive components | Menu, Dialog, Navigation, Refresh |
+| **sdk** | SDK and API documentation | ArkUI SDK API, FrameNode, BuilderNode |
 
-构建特性由 `ressched.gni` 中的 `declare_args()` 控制：
+## Core Working Principles
 
-| 特性开关 | 功能 |
-|----------|------|
-| `ressched_with_telephony_state_registry_enable` | 电话支持 |
-| `ressched_with_communication_netmanager_base_enable` | 网络管理器 |
-| `resource_schedule_service_with_ffrt_enable` | FFRT 支持 |
-| `resource_schedule_service_with_ext_res_enable` | 扩展资源 |
-| `resource_schedule_service_with_app_nap_enable` | 应用小憩 |
-| `resource_schedule_service_cust_soc_perf_enable` | 客户化 SOC perf |
-| `resource_schedule_service_subscribe_click_recognize_enable` | 点击识别 |
-| `resource_schedule_service_has_sys_nice_enable` | 系统 nice |
-| `resource_schedule_service_depend_wm_enable` | 窗口管理器依赖 |
-| `ressched_frame_aware_sched_enable` | 帧感知调度插件 |
+### 1. Code Verification: Actual Code Only
 
----
+When answering questions about ace_engine code:
 
-## IPC 和客户端 API
+- **Always provide actual code from the repository**
+  - Use Read/Grep tools to locate and read actual source code
+  - Reference complete file paths when mentioning code (e.g., `frameworks/core/xxx/yyy.cpp:123`)
+  - Never guess or fabricate code implementations
 
-- **客户端库**: `interfaces/innerkits/ressched_client/` - 进程内上报 API
-- **IPC**: 使用 OpenHarmony IPC/SA 框架 (`samgr`、`ipc_single`)
-- **语言绑定**: `interfaces/kits/js/napi/` - NAPI 绑定（JS 应用）
+- **Missing information triggers user feedback**
+  - If required code is not found in ace_engine, explicitly state: "此代码在 ace_engine 中未找到"
+  - Do not make assumptions or write hypothetical code
+  - Ask user to provide the missing implementation
 
----
+**Example**:
 
-## 构建系统
+```cpp
+// ✅ Correct: Read actual source
+// Source: frameworks/core/components_ng/pattern/menu/menu_pattern.cpp:123
+Size GetSubWindowSize(int32_t parentContainerId, uint32_t displayId)
+{
+    auto finalDisplayId = displayId;
+    auto defaultDisplay = Rosen::DisplayManager::GetInstance().GetDisplayById(displayId);
+    // ... actual implementation
+}
 
-使用 GN (Generate Ninja) 构建的 OpenHarmony 系统服务。配置文件: `ressched/ressched.gni`
+// ❌ Wrong: Fabricated code
+// Do not write hypothetical implementations without verification
+```
 
-### 构建命令
+### 2. Speculation Management
+
+When dealing with uncertain or incomplete information:
+
+- **Explicitly label speculation**
+  - Clearly mark any unverified content as: "推测" (speculation)
+  - Provide reasoning for the speculation when possible
+  - Request user confirmation for speculative statements
+
+- **Verify before implementation**
+  - If speculating about behavior, first use Grep/Read to verify
+  - If implementation is not found in ace_engine, ask user to provide it
+  - Never implement based on speculation alone
+
+**Example**:
+
+```markdown
+✅ Correct:
+基于 menu_pattern.cpp:123 的分析，推测 OnModifyDone 在以下情况下会被调用...（推测）
+
+❌ Wrong:
+OnModifyDone 会在以下情况下调用...（未标注推测）
+```
+
+### 3. Code Logic Verification: Code Over Suggestions
+
+When receiving suggestions or corrections:
+
+- **Verify suggestions against actual code**
+  - User suggestions about code logic may be incorrect
+  - Always verify with Read/Grep tools before accepting suggestions
+  - Base conclusions on actual code behavior, not assumptions
+
+- **Evidence-based reasoning**
+  - When user questions code behavior, analyze actual implementation
+  - Use "代码为准原则" (Code-first principle)
+  - Provide evidence from source code to support or refute suggestions
+
+**Example**:
+
+```
+User: "这个函数应该在初始化时调用，对吗？"
+Claude: 让我先查看源码验证...
+[Read source file]
+根据 frameworks/xxx/yyy.cpp:456，该函数实际上是在 OnDirtyLayoutWrapperSwap 时调用，而非初始化时。
+```
+
+### 4. Error Learning: Knowledge Base Updates
+
+When errors are corrected by users:
+
+- **Learn from corrections**
+  - Document the error and correction in knowledge base
+  - Identify root cause of the misunderstanding
+  - Add preventive measures to avoid similar errors
+
+- **Update documentation**
+  - Create or update knowledge base entries with correct information
+  - Reference actual code locations (file:line)
+  - Share lessons learned across sessions
+
+**Example**:
+
+```markdown
+## Learned Lessons
+
+### Error: Incorrect GetSubWindowSize Branch Coverage
+**Date**: 2025-01-27
+**Issue**: Assumed defaultDisplay is always available
+**Root Cause**: Did not verify Rosen::DisplayManager dependency
+**Correction**: User clarified that mock infrastructure is required
+**Prevention**: Always verify external dependencies with user before assuming availability
+**Reference**: adapter/ohos/entrance/subwindow/subwindow_ohos.cpp:199-243
+```
+
+### 5. Knowledge Base Maintenance
+
+When discovering discrepancies between documentation and actual code:
+
+- **Verify actual code first**
+  - Use Read/Grep to confirm current implementation
+  - Compare documented behavior with actual code
+
+- **Update documentation**
+  - Fix incorrect information in knowledge base files
+  - Update code references (file paths, line numbers)
+  - Ensure all examples match actual code
+
+- **Notify user**
+  - Report discovered discrepancies
+  - Propose corrections for approval
+  - Document the correction after update
+
+**Example**:
+```
+Discrepancy Found:
+Documented: frameworks/xxx/yyy.cpp:299 calls UpdateBorderRadius
+Actual: frameworks/xxx/yyy.cpp:303 calls UpdateBorderRadius (after code refactoring)
+
+Action: Updating knowledge base to reflect current code location...
+```
+
+## Project Overview
+
+**ACE Engine** (`@ohos/ace_engine`) is the core execution framework for ArkUI applications in OpenHarmony. It provides comprehensive support for applications developed using ArkTS-based declarative development paradigm, delivering complete capabilities from component parsing to rendering.
+
+### Core Capabilities
+
+**Frontend Support**:
+- Multiple frontend implementations supporting different language paradigms
+- State management framework for reactive data binding
+- Component-based architecture with lifecycle management
+
+**Backend Pipeline** (Complete flow):
+1. **Component Parsing** - Parse declarative UI descriptions into component trees
+2. **Component Building** - Construct component instances and establish relationships
+3. **Layout Measurement** - Calculate sizes and positions through layout algorithms
+4. **Rendering** - Draw components using graphics engines (Skia/Rosen)
+
+### Frontend Implementations
+
+ACE Engine provides flexible frontend support:
+
+| Frontend | Language | Use Case |
+|----------|----------|----------|
+| **Declarative Frontend** | ArkTS/TypeScript | Recommended - Modern declarative UI |
+| **ArkTS Frontend** | ArkTS static version | Incremental engine based frontend |
+| **JavaScript Frontend** | JavaScript | Legacy web-style development |
+
+### State Management Framework
+
+Located in `frameworks/bridge/declarative_frontend/state_mgmt/`:
+- **AppStorage**: Application-wide state management
+- **LocalStorage** | Page-level state management
+- **@Watch**: Property observation and reactive updates
+- **@Link/@Prop**: Parent-child component data binding
+
+## Build System
+
+This project uses **GN (Generate Ninja)** as the primary build system.
+
+### Building
+
+Build commands are typically run from the OpenHarmony root directory:
 
 ```bash
-# 在 OpenHarmony 根目录执行
-hb build -f resource_schedule_service
+# Configure build (from OpenHarmony root)
+./build.sh --product-name <product> --build-target ace_engine
+
+# Common product names: rk3568, ohos-sdk
+# Example for rk3568:
+./build.sh --product-name rk3568 --build-target ace_engine
 ```
 
-### 测试
+### Build Targets
+
+Build outputs are located in `out/rk3568/arkui/ace_engine/` and mainly include the following types:
+
+#### 1. Core Engine Libraries (libace*.z.so)
+- `libace.z.so` - Main engine library containing only NG_BUILD-configured core UI framework; currently used for compilation monitoring only, not packaged into final images
+- `libace_compatible.z.so` - Web-style compatible main engine library supporting legacy APIs; the current core library and primary build output
+- `libace_compatible_components.z.so` - Compatible component library; gradually migrating compatible components from libace_compatible to this library for dynamic on-demand loading at runtime
+- `libace_engine_pa_ark.z.so` - PA (Particle Ability) engine support
+- `libace_ndk.z.so` - NDK interface library
+- `libace_form_render.z.so` - Form/card rendering
+- `libace_xcomponent_controller.z.so` - XComponent controller
+- `libace_*.z.so` - Other specialized sub-libraries
+
+#### 2. Frontend Bridge Libraries
+- `libarkts_frontend.z.so` - ArkTS static frontend bridge
+- `libcj_frontend_ohos.z.so` - Cangjie frontend bridge
+
+#### 3. Component Libraries (libarkui_*.z.so)
+Independent shared libraries for each component, gradually being refactored and separated from the core to support on-demand loading:
+- `libarkui_slider.z.so` - Slider component
+- `libarkui_checkbox.z.so` - Checkbox component
+- And other component libraries...
+
+#### 4. ArkTS Native Interface Libraries (*_ani.so)
+Provide bridge interfaces between ArkTS static and Native code:
+- `libanimator_ani.so` - Animation Native interface
+- `libarkuicustomnode_ani.so` - Custom node interface
+- And other *_ani.so libraries
+
+#### 5. Functional Module Libraries (lib*.z.so)
+Independent libraries for various API modules:
+- `libanimator.z.so` - Animation
+- `libdialog.z.so` - Dialog
+- `libdragcontroller.z.so` - Drag controller
+- And other functional libraries
+
+#### 6. ArkTS Bytecode Files (.abc)
+Bytecode files compiled from ArkTS source code, dynamically loaded at runtime:
+- `ark*.abc` - Component bytecode (e.g., arkbutton.abc, arkslider.abc)
+- `modifier.abc` - Component property modifiers
+- `node.abc` - Imperative nodes
+- `statemanagement.abc` - State management
+- `uicontext.abc` - UI context
+- And others
+
+#### 7. Testing Tools
+- `rawinput` - Input event testing tool
+
+### Testing
 
 ```bash
-# 运行单元测试
-./resource_schedule_service/ressched/test/unittest/resschedfwk_test
-./resource_schedule_service/ressched/test/unittest/resschedservice_test
-./resource_schedule_service/ressched/test/unittest/resschedservice_mock_test
+# Build unit tests
+./build.sh --product-name rk3568 --build-target unittest
 
-# 重新构建测试
-hb build -f resource_schedule_service_unittest
+# Build benchmarks
+./build.sh --product-name rk3568 --build-target benchmark_linux
+
+# Run specific test executable
+./out/rk3568/tests/ace_engine/unittest/components_ng/text/text_pattern_test
+
+# Run with gtest_filter for specific test cases
+./out/rk3568/tests/ace_engine/unittest/components_ng/text/text_pattern_test --gtest_filter=TextPatternTest.OnModifyDone
+
+# Run performance benchmarks
+./out/rk3568/tests/ace_engine/benchmark/text/text_benchmark --benchmark_filter=TextRender
+
+# Run specific test target (from build output directory)
+# Tests are located in out/rk3568/tests/ace_engine/ (ARM target device)
+# X86 tests: out/rk3568/<x64 target>/tests/unittest/ace_engine/ (see C API Unit Tests section)
 ```
 
-测试目标定义于各模块的 `test/unittest/BUILD.gn` 和 `test/fuzztest/BUILD.gn`
+**Test locations**:
+- Unit tests: `test/unittest/`
+- Benchmarks: `test/benchmark/`
+- Component tests: `examples/*/test/`
 
----
+**Common test patterns**:
+- Pattern tests: `[component]_pattern_test.cpp`
+- Layout algorithm tests: `[component]_layout_algorithm_test.cpp`
+- Property tests: `[component]_property_test.cpp`
+- Render tests: `[component]_render_test.cpp`
 
-## 相关仓库
+### C API Unit Tests
 
-- [windowmanager](https://gitee.com/openharmony/windowmanager)
-- [communication_ipc](https://gitee.com/openharmony/communication_ipc)
-- [hiviewdfx_hilog](https://gitee.com/openharmony/hiviewdfx_hilog)
+#### Git Configuration
+- Primary remote is `gitcode` (not `origin`)
+- Check remotes: `git remote -v`
+
+#### Build Commands
+```bash
+# Build C API unit tests
+./build.sh --product-name rk3568 --build-target linux_unittest_capi --ccache
+```
+
+#### Test Execution Locations
+**Target Device (ARM) tests**: `out/rk3568/tests/unittest/ace_engine/C-API-Main/components/`
+**X86 Host tests**: `out/rk3568/<x64 target>/tests/unittest/ace_engine/C-API-Main/components/`
+
+#### Key C API Test Executables
+- `capi_all_modifiers_test` - 1348 modifier tests
+- `capi_all_accessors_test` - 444 accessor tests
+- `capi_all_utils_test` - 16 utility tests
+- `capi_generated_modifiers_test` - 22 generated modifier tests
+- **Total**: 1830 C API unit tests
+
+#### Running Tests
+```bash
+# List available tests
+./capi_all_modifiers_test --gtest_list_tests
+
+# Run all tests
+./capi_all_modifiers_test
+
+# Check architecture
+file ./capi_all_modifiers_test
+# Should show: ELF 64-bit LSB pie executable, x86-64
+```
+
+#### Verification Workflow
+After code changes or rebase operations:
+1. **Build verification**: Run `linux_capi_unittest` target to ensure compilation success
+2. **Test execution**: Run x86 test executables from x64 target directory
+3. **Result validation**: All tests should pass (1830 total C API tests)
+4. **Architecture check**: Verify executables are x86-64 for host testing
+
+## Architecture
+
+### System Architecture
+
+ACE Engine follows a layered architecture that separates concerns between frontend language processing and backend rendering:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Application Layer                                      │
+│  - ArkTS-based declarative UI applications              │
+│  - State management with @Watch/@Link/@Prop            │
+└─────────────────────────────────────────────────────────┘
+                          │
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│  Frontend Bridge Layer (frameworks/bridge/)             │
+│  - Declarative Frontend: ArkTS/TS declarative UI       │
+│  - ArkTS Frontend: ArkTS static support                │
+│  - JavaScript Frontend: Legacy JS support              │
+└─────────────────────────────────────────────────────────┘
+                          │
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│  Component Framework Layer (frameworks/core/)          │
+│  - Components NG: Modern component architecture        │
+│  - Pattern: Business logic & lifecycle                 │
+│  - Layout: Measurement & positioning algorithms        │
+│  - Render: Drawing pipeline                            │
+│  - Gestures: User interaction handling                 │
+└─────────────────────────────────────────────────────────┘
+                          │
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│  Platform Adapter Layer (adapter/)                     │
+│  - OHOS: OpenHarmony platform implementation           │
+│  - Preview: Development tool support                   │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Four-Layer Architecture (Detailed)
+
+1. **Application Layer**: ArkTS-based applications using declarative development paradigm
+2. **Frontend Bridge Layer** (`frameworks/bridge/`): Language parsing, state management, component tree building
+3. **Component Framework Layer** (`frameworks/core/`): Component parsing, building, layout measurement, rendering
+4. **Platform Adapter Layer** (`adapter/`): Platform abstraction for graphics, input, window management
+
+### Directory Structure
+
+```
+ace_engine/
+├── adapter/              # Platform adaptation (ohos, preview)
+│   ├── ohos/            # OpenHarmony platform implementation
+│   └── preview/         # Preview tool support
+├── frameworks/
+│   ├── base/            # Base utilities and common libraries
+│   ├── bridge/          # Frontend-backend bridge layer
+│   │   ├── declarative_frontend/  # ArkTS/TS declarative UI (recommended)
+│   │   ├── arkts_frontend/        # ArkTS language support
+│   │   ├── js_frontend/           # JavaScript frontend
+│   │   └── cj_frontend/           # Cangjie frontend
+│   └── core/            # Core components and rendering
+│       ├── components/    # Legacy component implementations
+│       └── components_ng/ # New generation components (preferred)
+│           ├── base/      # Base classes: FrameNode, UINode, ViewAbstract
+│           ├── pattern/   # Component pattern implementations
+│           ├── property/  # Property modifiers
+│           ├── layout/    # Layout algorithms
+│           ├── render/    # Rendering implementations
+│           └── gestures/  # Gesture recognition
+├── interfaces/           # Public API interfaces
+│   ├── inner_api/       # Internal APIs
+│   └── native/          # NDK APIs
+├── test/                # Tests
+│   ├── unittest/        # Unit tests
+│   └── benchmark/       # Performance benchmarks
+└── build/               # Build configuration
+```
+
+## Frontend Architecture (Bridge Layer)
+
+The bridge layer provides the critical interface between frontend language processing and backend component execution:
+
+### Bridge Layer Responsibilities
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Bridge Layer Core Functions                            │
+│                                                          │
+│  1. Language Parsing                                    │
+│     - Parse ArkTS/TypeScript/JS code                    │
+│     - Extract component descriptions and attributes      │
+│                                                          │
+│  2. Component Tree Building                             │
+│     - Create FrameNode instances                        │
+│     - Establish parent-child relationships              │
+│                                                          │
+│  3. State Management                                    │
+│     - AppStorage: Application-level state               │
+│     - LocalStorage: Page-level state                    │
+│     - @Watch/@Link/@Prop: Reactive data binding         │
+│                                                          │
+│  4. Event Handling                                     │
+│     - User interaction events                           │
+│     - Lifecycle events                                  │
+│     - State change notifications                        │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Multiple Frontend Support
+
+1. **Declarative Frontend** (`declarative_frontend/`):
+   - ArkTS/TypeScript-based declarative UI
+   - Recommended for new applications
+   - State management integration
+   - Modifier pattern for property updates
+   - Located: `frameworks/bridge/declarative_frontend/`
+
+2. **ArkTS Frontend** (`arkts_frontend/`):
+   - Extended TypeScript with OpenHarmony features
+   - Koala compiler integration
+   - Advanced state management capabilities
+
+3. **JavaScript Frontend** (`js_frontend/`):
+   - Traditional JavaScript support
+   - V8 engine integration
+   - Legacy application compatibility
+
+### State Management Implementation
+
+Located in `frameworks/bridge/declarative_frontend/state_mgmt/`:
+
+## Component System (NG Architecture)
+
+The Components NG architecture is the core framework for component execution, providing complete capabilities from parsing to rendering:
+
+### Component Lifecycle Pipeline
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Component Lifecycle (Complete Flow)                    │
+│                                                          │
+│  1. Parsing Phase                                      │
+│     Frontend parses ArkTS code → Component description  │
+│                                                          │
+│  2. Building Phase                                     │
+│     Create FrameNode → Initialize Pattern & Properties   │
+│                                                          │
+│  3. Layout Phase                                       │
+│     Measure → Layout → Position calculation             │
+│                                                          │
+│  4. Render Phase                                       │
+│     RenderNode creation → Drawing → Display             │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Core Base Classes
+
+- **UINode** (`components_ng/base/ui_node.h`): Base class for all UI nodes
+- **FrameNode** (`components_ng/base/frame_node.h`): Main container node combining pattern + element + render node
+- **ViewAbstract** (`components_ng/base/view_abstract.h`): Abstract view with common properties
+
+### Pattern Structure
+
+Each component in `components_ng/pattern/` typically contains:
+- `*_pattern.h/cpp` - Main pattern class (business logic & lifecycle)
+- `*_model.h/cpp` - Data model interface
+- `*_layout_property.h/cpp` - Layout-related properties
+- `*_paint_property.h/cpp` - Render-related properties
+- `*_event_hub.h/cpp` - Event handling
+
+Example structure:
+```
+components_ng/pattern/marquee/
+├── marquee_pattern.h/cpp         # Main pattern logic
+├── marquee_model_ng.h/cpp         # Data model interface
+├── marquee_layout_property.h/cpp  # Layout properties
+├── marquee_paint_property.h/cpp   # Render properties
+├── marquee_event_hub.h/cpp        # Event handling
+└── bridge/                        # Bridge layer (dynamic module)
+    ├── marquee_dynamic_modifier.cpp
+    ├── marquee_static_modifier.cpp
+    └── marquee_dynamic_module.cpp
+```
+
+### Property System
+
+Properties use the **modifier pattern**:
+- Defined in `components_ng/property/`
+- Chain-able property setters
+- Example: `Text().width(100).height(50).fontSize(16)`
+
+## Adding New Components
+
+For detailed guidance, see `如何新增一个组件.md` (How to Add a New Component guide).
+
+### Component Creation Flow (Legacy Architecture)
+
+1. **DOM Layer** (`dom_*`): Parse attributes from HML/JSX
+2. **Component Layer** (`*_component`): Manage component state
+3. **Element Layer** (`*_element`): Handle component instances
+4. **Render Layer** (`render_*`): Draw on screen
+
+### Component Creation Flow (NG Architecture)
+
+1. Create pattern class inheriting from appropriate base pattern
+2. Implement model interface for data management
+3. Add property modifiers (layout & paint properties)
+4. Register in components.gni
+5. Implement bridge layer for dynamic loading (optional)
+
+## Key Technologies
+
+**Core Framework**:
+- **Language**: ArkTS (extended TypeScript), C++
+- **State Management**: AppStorage, LocalStorage, @Watch/@Link/@Prop
+- **Component System**: Components NG (FrameNode, Pattern, Properties)
+
+**Graphics & Rendering**:
+- **Drawing Engine**: Skia (2D graphics), Rosen (rendering context)
+- **Layout Algorithms**: Flexbox, Grid, Absolute positioning
+- **Render Pipeline**: RenderNode, DrawCommandList
+
+**JavaScript Runtime**:
+- **ArkTS Runtime**: arkjs (Panda-based VM)
+- **Legacy Support**: V8
+
+**Build System**:
+- **Build Tool**: GN (Generate Ninja)
+- **Executor**: Ninja
+- **Platform**: OpenHarmony (OHOS), Preview (Linux/Windows/Mac)
+
+## Important Configuration
+
+- **Build config**: `ace_config.gni` - Feature flags and build options
+- **Component list**: `frameworks/core/components_ng/components.gni`
+- **Package metadata**: `bundle.json`
+
+## Development Patterns
+
+### Component Development
+
+1. Prefer `components_ng` (NG architecture) over legacy `components`
+2. Use ViewAbstract as base for new components
+3. Implement proper pattern/model separation
+4. Add property modifiers for exposed properties
+
+### Property Updates
+
+- Use modifiers: `Component().property(value)`
+- Avoid direct property access
+- Support both attributes and styles where applicable
+
+### Event Handling
+
+- Use event markers for registration
+- Support gesture recognizers from `components_ng/gestures/`
+- Proper event bubbling and capture
+
+### Multi-Platform Support
+
+- Platform adaptation through `adapter/` layer
+- Conditional compilation using GN defines
+- Feature flags in `ace_config.gni`
+
+## Testing Guidelines
+
+- Unit tests use `test/unittest/` structure matching source layout
+- Mock objects in `test/mock/ohos_mock/`
+- Benchmark tests use Google Benchmark framework
+- Run regression detection: `python3 test/benchmark/regression_detector.py`
+
+## Common Issues
+
+1. **Build failures**: Check `ace_config.gni` for required feature flags
+2. **Missing components**: Verify component is registered in `components.gni`
+3. **Platform-specific code**: Use adapter layer, not direct platform calls
+4. **Memory management**: Use `AceType::RefPtr` for smart pointers
