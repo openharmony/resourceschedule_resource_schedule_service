@@ -212,6 +212,7 @@ namespace {
         { ResType::RES_TYPE_HARDWARE_DECODING_RESOURCES, { 1013 }},
         { ResType::RES_TYPE_CREATE_LIVING_APP_PROCESS, { 5523 } },
         { ResType::RES_TYPE_CTRL_FORKALL_IMAGE_INTERFACE, { 1096 } },
+        { ResType::RES_TYPE_INPUT_METHOD_CHANGE, { 3820 } },
     };
     enum SYSTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL : int32_t {
         DEBUG_LEVEL_MINIMUM = 0,
