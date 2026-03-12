@@ -84,15 +84,6 @@ bool IsDir(const std::string& filePath);
 bool CreateDir(const std::string& dir, const mode_t& mode);
 
 /**
- * @brief Create file with mode.
- *
- * @param filePath will create
- * @param mode the dir's mode
- * @return 'true' if file create succeed.
- */
-bool CreateFile(const std::string& filePath, const mode_t& mode);
-
-/**
  * @brief Remove dir.
  *
  * @param dir dir will removed

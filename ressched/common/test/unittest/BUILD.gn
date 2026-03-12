@@ -69,7 +69,9 @@ ohos_unittest("resschedfileutil_test") {
 
   deps = [ "${ressched_common}:ressched_common_utils" ]
 
-  external_deps = []
+  external_deps = [
+    "c_utils:utils",
+  ]
 
   sanitize = {
     cfi = true
