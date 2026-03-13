@@ -289,6 +289,5 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::ResSchedPkgCommonEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ResSchedCommonEventSwitchFuzzTest(data, size);
     OHOS::ResourceSchedule::ResSchedPkgOtherCommonEventFuzzTest(data, size);
-    std::this_thread::sleep_for(std::chrono::milliseconds(OHOS::ResourceSchedule::FFRT_DELAY_EXIT_TIME));
     return 0;
 }
