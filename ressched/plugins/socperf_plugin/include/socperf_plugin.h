@@ -131,6 +131,7 @@ private:
     bool socperfGameBoostSwitch_ = false;
     bool custGameState_ = false;
     bool flingExceptionFlag_ = false;
+    bool gameColdStartBoostSwitch_ = true;
     ffrt::task_handle wakeUpTimeOutTask_ = nullptr;
 
     void InitEventId();
@@ -207,6 +208,7 @@ private:
     bool HandleProcessStateChange(const std::shared_ptr<ResData> &data);
     bool HandleCameraStateChange(const std::shared_ptr<ResData> &data);
     bool InitBundleNameBoostList();
+    void InitGameColdStartBoostSwitch();
     bool HandleSubValue(const std::string& subValue, std::set<std::string>& nameSet);
     bool IsAllowBoostScene();
     bool HandleSceenModeBoost(const std::string& deviceModeType);
