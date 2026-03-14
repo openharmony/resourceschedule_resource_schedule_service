@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -471,10 +471,12 @@ enum : uint32_t {
     RES_TYPE_CTRL_FORKALL_IMAGE_INTERFACE = 512,
     // get is template process, only for forkall_plugin
     SYNC_RES_TYPE_GET_IS_TEMPLATE_PROCESS = 513,
-    // report forkall cloud config update, only for forkall_plugin
-    SYNC_RES_TYPE_FORKALL_CLOUD_CONFIG_UPDATE = 514,
+    // report forkall config change, only for forkall_plugin
+    SYNC_RES_TYPE_FORKALL_CONFIG_CHANGE = 514,
     // get is ui node gc switch on
     SYNC_RES_TYPE_GET_UI_NODE_GC_CONFIG = 515,
+    // report sa notify make image, only for forkall_plugin
+    SYNC_RES_TYPE_NOTIFY_MAKE_IMAGE = 516,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // get first frame drawn

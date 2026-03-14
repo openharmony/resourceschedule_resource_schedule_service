@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -151,6 +151,7 @@ namespace {
     const int32_t PERF_REQUEST_CMD_ID_RECENT_BUILD          = 10200;
     const int32_t PERF_REQUEST_CMD_ID_LIVE_BROADCAST        = 10224;
     const int32_t PERF_REQUEST_CMD_ID_OOBE_CLONE            = 10225;
+    const int32_t PERF_REQUEST_CMD_ID_IMAGE_WORK_PROCESS_START = 10221;
     // PREMAKE_MODE_STRING = 1, PRELOADMODULE_MODE_STRING = 2,
     // PRELAUNCH_MODE_STRING = 4
     const std::unordered_set<std::string> PRELOAD_SET = {"1", "2", "4"};
@@ -607,6 +608,8 @@ void SocPerfPlugin::AddOtherEventToFunctionMap()
         [this](const std::shared_ptr<ResData>& data) {HandleLiveBroadcast(data); }));
     functionMap.insert(std::make_pair(RES_TYPE_OOBE_CLONE,
         [this](const std::shared_ptr<ResData>& data) {HandleOobeClone(data); }));
+    functionMap.insert(std::make_pair(RES_TYPE_CREATE_LIVING_APP_PROCESS,
+        [this](const std::shared_ptr<ResData>& data) { HandleResTypeCreateLivingApp(data); }));
     socperfGameBoostSwitch_ = InitFeatureSwitch(SUB_ITEM_KEY_NAME_SOCPERF_GAME_BOOST);
 }
 
@@ -663,6 +666,10 @@ void SocPerfPlugin::InitOtherResTypes()
     resTypes.insert(RES_TYPE_SCHED_MODE_CHANGE);
     resTypes.insert(RES_TYPE_RSS_CLOUD_CONFIG_UPDATE);
     resTypes.insert(RES_TYPE_SYSTEM_ABILITY_STATUS_CHANGE);
+    resTypes.insert(RES_TYPE_CREATE_LIVING_APP_PROCESS);
+    if (RES_TYPE_SCENE_BOARD_ID != 0) {
+        resTypes.insert(RES_TYPE_SCENE_BOARD_ID);
+    }
     if (RES_TYPE_RGM_BOOTING_STATUS != 0) {
         resTypes.insert(RES_TYPE_RGM_BOOTING_STATUS);
     }
@@ -1108,6 +1115,22 @@ bool SocPerfPlugin::HandleSwiperFlingEndEx(const std::shared_ptr<ResData>& data)
         flingExceptionFlag_ = false;
     } else {
         flingExceptionFlag_ = true;
+    }
+    return true;
+}
+
+bool SocPerfPlugin::HandleResTypeCreateLivingApp(const std::shared_ptr<ResData>& data)
+{
+    if (data == nullptr) {
+        return false;
+    }
+    SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleResTypeCreateLivingApp: %{public}lld", (long long)data->value);
+    if (data->value == 0) {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(
+            PERF_REQUEST_CMD_ID_IMAGE_WORK_PROCESS_START, true, "");
+    } else {
+        OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(
+            PERF_REQUEST_CMD_ID_IMAGE_WORK_PROCESS_START, false, "");
     }
     return true;
 }
@@ -1894,12 +1917,12 @@ bool SocPerfPlugin::HandleRssCloudConfigUpdate(const std::shared_ptr<ResData>& d
         !data->payload[CLOUD_PARAMS].is_object()) {
         return false;
     }
- 
+
     if (!data->payload[CLOUD_PARAMS].contains(PLUGIN_NAME) ||
         !data->payload[CLOUD_PARAMS].at(PLUGIN_NAME).is_object()) {
         return false;
     }
- 
+
     try {
         PluginConfigMap pluginConfigs = (data->payload)[CLOUD_PARAMS][PLUGIN_NAME].get<PluginConfigMap>();
         if (pluginConfigs.find(SPECIAL_EXTENSION_STRING) != pluginConfigs.end()) {
@@ -1968,11 +1991,11 @@ bool SocPerfPlugin::ReportAbilityStatus(const std::shared_ptr<ResData>& data)
     if (data == nullptr || data->payload == nullptr) {
         return false;
     }
- 
+
     if (!data->payload.contains("saId") || !data->payload.at("saId").is_number_integer()) {
         return false;
     }
- 
+
     int32_t saId = data->payload["saId"].get<int32_t>();
     if (saId == SOC_PERF_SA_ID && data->value > 0) {
         SOC_PERF_LOGI("SocPerfPlugin: socperf start");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -56,6 +56,17 @@ bool ParseBoolParameterFromJson(const std::string& name, bool& value, const nloh
         return true;
     }
     return false;
+}
+
+bool ParseStringJsonPayloadToNumber(const std::string& name, int32_t& value, const nlohmann::json& jsonObj)
+{
+    if (jsonObj.contains(name) && jsonObj.at(name).is_string()) {
+        value = static_cast<int32_t>(atoi(jsonObj.at(name).get<std::string>().c_str()));
+        return true;
+    } else {
+        RESSCHED_LOGE("Parse string json payload to number error! json key: %{public}s", name.c_str());
+        return false;
+    }
 }
 
 bool LoadOneCfgFileToJsonObj(const std::string& relativeFilePath, nlohmann::json& jsonObj)
