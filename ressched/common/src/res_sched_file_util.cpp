@@ -126,29 +126,6 @@ bool CreateDir(const std::string& dir, const mode_t& mode)
     return true;
 }
 
-bool CreateFile(const std::string& filePath, const mode_t& mode)
-{
-    std::ofstream fd;
-    // create and open file.
-    fd.open(filePath);
-    if (!fd.is_open()) {
-        //create filed
-        RESSCHED_LOGE("%{public}s: Failed to create file,errno=%{public}d", __func__, errno);
-        return false;
-    }
-    fd.close();
-
-    //change file mode
-    if (!OHOS::ChangeModeFile(filePath, mode)) {
-        //change failed
-        RESSCHED_LOGE("%{public}s: Failed to change file mode to %{public}ud", __func__,
-            mode);
-        RemoveFile(filePath);
-        return false;
-    }
-    return true;
-}
-
 bool RemoveDirs(const std::string& dir)
 {
     if (!OHOS::ForceRemoveDirectory(dir)) {

@@ -15,6 +15,9 @@
 
 #include "res_sched_file_util_test.h"
 
+#include <fstream>
+
+#include "directory_ex.h"
 #include "res_sched_file_util.h"
 
 using namespace std;
@@ -32,6 +35,26 @@ namespace {
     const std::string TEST_FILE_NAME = "test.txt";
     const std::string TEST_CONTENT = "ressched util test";
     const std::string DATA_DIR = "/data";
+}
+
+static bool CreateFile(const std::string& filePath, const mode_t& mode)
+{
+    std::ofstream fd;
+    // create and open file.
+    fd.open(filePath);
+    if (!fd.is_open()) {
+        //create filed
+        return false;
+    }
+    fd.close();
+
+    //change file mode
+    if (!OHOS::ChangeModeFile(filePath, mode)) {
+        //change failed
+        ResCommonUtil::RemoveFile(filePath);
+        return false;
+    }
+    return true;
 }
 
 void ResSchedFileUtilTest::SetUpTestCase() {}
@@ -168,7 +191,7 @@ HWTEST_F(ResSchedFileUtilTest, RemoveFile_001, Function | MediumTest | Level0)
 {
     EXPECT_TRUE(ResCommonUtil::RemoveFile(TEST_FILE_PATH));
     ResCommonUtil::CreateDir(TEST_DIR, S_IXUSR | S_IWUSR | S_IRUSR);
-    ResCommonUtil::CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR);
+    CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR);
     EXPECT_TRUE(ResCommonUtil::RemoveFile(TEST_FILE_PATH));
     ResCommonUtil::RemoveDirs(TEST_DIR);
     SUCCEED();
@@ -182,9 +205,9 @@ HWTEST_F(ResSchedFileUtilTest, RemoveFile_001, Function | MediumTest | Level0)
  */
 HWTEST_F(ResSchedFileUtilTest, CreateFile_001, Function | MediumTest | Level0)
 {
-    EXPECT_FALSE(ResCommonUtil::CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR));
+    EXPECT_FALSE(CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR));
     ResCommonUtil::CreateDir(TEST_DIR, S_IXUSR | S_IWUSR | S_IRUSR);
-    EXPECT_TRUE(ResCommonUtil::CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR));
+    EXPECT_TRUE(CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR));
     ResCommonUtil::RemoveFile(TEST_FILE_PATH);
     ResCommonUtil::RemoveDirs(TEST_DIR);
     SUCCEED();
@@ -232,7 +255,7 @@ HWTEST_F(ResSchedFileUtilTest, SaveStringToFile_001, Function | MediumTest | Lev
 {
     EXPECT_FALSE(ResCommonUtil::SaveStringToFile(TEST_FILE_PATH, TEST_CONTENT));
     ResCommonUtil::CreateDir(TEST_DIR, S_IXUSR | S_IWUSR | S_IRUSR);
-    ResCommonUtil::CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR);
+    CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR);
     EXPECT_TRUE(ResCommonUtil::SaveStringToFile(TEST_FILE_PATH, TEST_CONTENT));
     ResCommonUtil::RemoveFile(TEST_FILE_PATH);
     ResCommonUtil::RemoveDirs(TEST_DIR);
@@ -248,7 +271,7 @@ HWTEST_F(ResSchedFileUtilTest, SaveStringToFile_001, Function | MediumTest | Lev
 HWTEST_F(ResSchedFileUtilTest, ReadLinesFromFile_001, Function | MediumTest | Level0)
 {
     ResCommonUtil::CreateDir(TEST_DIR, S_IXUSR | S_IWUSR | S_IRUSR);
-    ResCommonUtil::CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR);
+    CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR);
     std::vector<std::string> texts = {"ressched", "util", "test"};
     std::string content = "";
     for (auto& text : texts) {
@@ -274,7 +297,7 @@ HWTEST_F(ResSchedFileUtilTest, CopyFile_001, Function | MediumTest | Level0)
 {
     EXPECT_FALSE(ResCommonUtil::CopyFile(TEST_FILE_PATH, TEST_COPY_FILE_PATH));
     ResCommonUtil::CreateDir(TEST_DIR, S_IXUSR | S_IWUSR | S_IRUSR);
-    ResCommonUtil::CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR);
+    CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR);
     EXPECT_TRUE(ResCommonUtil::CopyFile(TEST_FILE_PATH, TEST_COPY_DIR));
     ResCommonUtil::RemoveFile(TEST_FILE_PATH);
     ResCommonUtil::RemoveFile(TEST_COPY_FILE_PATH);
@@ -306,7 +329,7 @@ HWTEST_F(ResSchedFileUtilTest, RemoveFileOrDirIfExist_001, Function | MediumTest
     EXPECT_TRUE(ResCommonUtil::RemoveFileOrDirIfExist(TEST_COPY_FILE_PATH));
     ResCommonUtil::CreateDir(TEST_DIR, S_IXUSR | S_IWUSR | S_IRUSR);
     EXPECT_TRUE(ResCommonUtil::RemoveFileOrDirIfExist(TEST_DIR));
-    ResCommonUtil::CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR);
+    CreateFile(TEST_FILE_PATH, S_IXUSR | S_IWUSR | S_IRUSR);
     EXPECT_TRUE(ResCommonUtil::RemoveFileOrDirIfExist(TEST_FILE_PATH));
 }
 } // namespace ResourceSchedule
