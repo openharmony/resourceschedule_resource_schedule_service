@@ -1021,6 +1021,14 @@ enum ForkallStateChangeCode : int32_t {
     CLOUD_CONFIG_UPLOAD = 0,
     SET_SUPPORT_MIRROR_PROCESS_BY_APP = 1,
 };
+
+/**
+ * @brief input method state code
+ */
+enum InputMethodState : int32_t {
+    INPUT_METHOD_SHOW_PANEL = 0,
+    INPUT_METHOD_CLOSE_PANEL = 1,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS

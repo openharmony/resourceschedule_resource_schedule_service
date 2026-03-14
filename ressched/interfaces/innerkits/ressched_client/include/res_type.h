@@ -419,6 +419,8 @@ enum : uint32_t {
     RES_TYPE_IMAGE_PROCESS_STATE_CHANGED = 199,
     // report app snapshot failure info
     RES_TYPE_SNAPSHOT_FAILURE = 200,
+    // report for input method panel changed
+    RES_TYPE_INPUT_METHOD_CHANGE = 201,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
