@@ -159,32 +159,6 @@ namespace {
         return true;
     }
 
-    int32_t onRemoteRequest(uint32_t code, MessageParcel& data)
-    {
-        if (!DoInit()) {
-            return -1;
-        }
-        MessageParcel reply;
-        MessageOption option;
-        return remoteObj->SendRequest(code, data, reply, option);
-    }
-
-    bool DoSomethingInterestingWithMyAPI(FuzzedDataProvider* fdp)
-    {
-        MessageParcel dataMessageParcel;
-        if (!dataMessageParcel.WriteInterfaceToken(IRemoteStub<IResSchedService>::GetDescriptor())) {
-            return false;
-        }
-
-        uint32_t code = fdp->ConsumeIntegral<uint32_t>();
-        std::string data = fdp->ConsumeRandomLengthString();
-        dataMessageParcel.WriteBuffer(data.c_str(), data.size());
-        dataMessageParcel.RewindRead(0);
-
-        onRemoteRequest(code, dataMessageParcel);
-        return true;
-    }
-
     bool OnRemoteRequest(FuzzedDataProvider* fdp)
     {
         // getdata
@@ -339,13 +313,11 @@ namespace {
         if (paramSize == 0) {
             return payload;
         }
-        size_t maxLen = PAYLOAD_MAX_SIZE / paramSize;
-        size_t minLen = sizeof(int32_t);
+        size_t maxLen = fdp->ConsumeIntegral<size_t>();
+        size_t minLen = fdp->ConsumeIntegral<size_t>();
         if (minLen > maxLen) {
             minLen = maxLen;
         }
-        std::mt19937_64 gen(std::random_device{}());
-        std::uniform_int_distribution<size_t> dis(minLen, maxLen);
         for (const auto &param : params) {
             payload[param] = fdp->ConsumeRandomLengthString();
         }
@@ -378,7 +350,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     /* Run your code on data */
     FuzzedDataProvider fdp(data, size);
-    OHOS::ResourceSchedule::DoSomethingInterestingWithMyAPI(&fdp);
     OHOS::ResourceSchedule::OnRemoteRequest(&fdp);
     OHOS::ResourceSchedule::ResSchedClientFuzzTest(&fdp);
     OHOS::ResourceSchedule::ResSchedThirdPartyFuzzTest(&fdp);
