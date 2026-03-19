@@ -141,10 +141,8 @@ struct ResData {
 
 | 目录 | 指南文件 |
 |------|----------|
-| `ressched/test/` | [test/AGENTS.md](ressched/test/AGENTS.md) |
-| `ressched/plugins/` | [plugins/AGENTS.md](ressched/plugins/AGENTS.md) |
-| `ressched/scene_recognize/` | [scene_recognize/AGENTS.md](scene_recognize/AGENTS.md) |
-| `ressched/services/` | [services/AGENTS.md](services/AGENTS.md) |
+|...|...|
+**此部分文档待完善**
 
 ## 核心工作原则
 
