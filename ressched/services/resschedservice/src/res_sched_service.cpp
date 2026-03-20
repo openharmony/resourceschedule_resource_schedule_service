@@ -120,6 +120,7 @@ namespace {
         ResType::SYNC_RES_TYPE_APP_IS_IN_CLICK_REPORT_EXT_LIST,
         ResType::RES_TYPE_CTRL_FORKALL_IMAGE_INTERFACE,
         ResType::RES_TYPE_SNAPSHOT_FAILURE,
+        ResType::SYNC_RES_TYPE_GET_UI_NODE_GC_CONFIG,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
