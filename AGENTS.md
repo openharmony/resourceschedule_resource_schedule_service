@@ -6,7 +6,7 @@
 
 **核心能力**：事件管理、资源调度（Cgroup/SoC/帧率）、插件架构
 
-**技术栈**：C++17 / GN / Google Test / OHOS IPC / JSON
+**技术栈**：C++17 / GN / OHOS IPC / JSON
 
 ## 架构设计
 
@@ -133,7 +133,7 @@ struct ResData {
 
 **测试目录**：`ressched/test/`
 
-- `unittest/` - 单元测试 (Google Test)
+- `unittest/` - 单元测试
 - `fuzztest/` - Fuzz 测试
 - `testutil/` - 测试工具
 
