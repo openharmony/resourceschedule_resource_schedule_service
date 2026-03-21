@@ -41,12 +41,12 @@ ressched/                              # 主资源调度服务
 │   │   ├── AudioObserver              # 音频状态观察
 │   │   ├── WindowStateObserver        # 窗口状态观察
 │   │   ├── MmiObserver                # 多模输入观察
-│   │   └── ...                        # 其他观察者
+│   │   └── ...
 │   └── common_event/                  # 公共事件处理
 ├── scene_recognize/                   # 场景识别层
 │   ├── SceneRecognizerMgr             # 场景识别管理器
 │   ├── SlideRecognizer                # 滑动识别
-│   └── ...                            # 其他识别器
+│   └── ...
 └── plugins/                           # 策略插件层
     ├── cgroup_sched_plugin/           # Cgroup 调度插件
     ├── socperf_plugin/                # SoC 性能插件
