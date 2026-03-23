@@ -367,9 +367,18 @@ ErrCode ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t v
         resultValue = checkResult;
         return ERR_OK;
     }
+    uint32_t realResType = resType;
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+    if (realResType == ResType::RES_TYPE_KEY_PERF_SCENE) {
+        int32_t extType = GetExtTypeByResPayload(payload);
+        if (extType != DEFAULT_VALUE) {
+            realResType = (uint32_t)extType;
+        }
+    }
+#endif
     int32_t callingUid = IPCSkeleton::GetCallingUid();
     int32_t clientPid = IPCSkeleton::GetCallingPid();
-    int32_t ret = CheckReportDataParcel(resType, value, payload, callingUid, clientPid);
+    int32_t ret = CheckReportDataParcel(realResType, value, payload, callingUid, clientPid);
     if (ret != ERR_OK) {
         resultValue = ret;
         return ERR_OK;
@@ -380,7 +389,7 @@ ErrCode ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t v
     payloadJsonValue["clientPid"] = std::to_string(clientPid);
     payloadJsonValue["callingUid"] = std::to_string(callingUid);
     resultValue = PluginMgr::GetInstance().DeliverResource(
-        std::make_shared<ResData>(resType, value, payloadJsonValue, replyValue));
+        std::make_shared<ResData>(realResType, value, payloadJsonValue, replyValue));
     reply = replyValue.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
     ResSchedIpcThread::GetInstance().SetQos(clientPid);
     return ERR_OK;
