@@ -469,6 +469,8 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_IS_TEMPLATE_PROCESS = 513,
     // report forkall cloud config update, only for forkall_plugin
     SYNC_RES_TYPE_FORKALL_CLOUD_CONFIG_UPDATE = 514,
+    // get is ui node gc switch on
+    SYNC_RES_TYPE_GET_UI_NODE_GC_CONFIG = 515,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // get first frame drawn
