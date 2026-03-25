@@ -421,6 +421,10 @@ enum : uint32_t {
     RES_TYPE_SNAPSHOT_FAILURE = 200,
     // report for input method panel changed
     RES_TYPE_INPUT_METHOD_CHANGE = 201,
+    // user unlocked
+    RES_TYPE_USER_UNLOCKED = 202,
+    // usage topn
+    RES_TYPE_TOPN_USAGE_INFO = 203,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -479,10 +483,6 @@ enum : uint32_t {
     RES_TYPE_HARDWARE_DECODING_RESOURCES,
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
-    // user unlocked
-    RES_TYPE_USER_UNLOCKED,
-    // usage topn
-    RES_TYPE_TOPN_USAGE_INFO,
     // load kill reason config
     RES_TYPE_LOAD_KILL_REASON_CONFIG = 600,
 };
