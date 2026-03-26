@@ -48,10 +48,12 @@ ohos_unittest("resschedservice_test") {
     "src/res_sched_service_test.cpp",
     "src/scene_recognize_test.cpp",
     "src/kill_event_listener_test.cpp",
-    "${ressched_interfaces}/innerkits/ressched_client/src/kill_event_listener.cpp",
   ]
 
-  deps = [ "${ressched_services}:resschedsvc_static" ]
+  deps = [
+    "${ressched_services}:resschedsvc_static",
+    "${ressched_interfaces}/innerkits/ressched_client:ressched_client_static",
+  ]
 
   external_deps = [
     "ability_base:zuri",

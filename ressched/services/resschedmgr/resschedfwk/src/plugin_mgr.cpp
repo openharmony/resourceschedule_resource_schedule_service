@@ -129,7 +129,8 @@ void PluginMgr::ParseConfigReader(const std::vector<std::string>& configStrs)
             HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                 HiviewDFX::HiSysEvent::EventType::FAULT,
                 "MODULE_NAME", "PluginFwk", "SCENE_NAME", "ConfigParseFailed",
-                "ERR_INFO", "PluginMgr load parameter config file failed");
+                "ERR_INFO", "PluginMgr load parameter config file failed, index:" + std::to_string(index) +
+                ", size:" + std::to_string(configStrs[index].size()));
             continue;
         }
         RESSCHED_LOGI("PluginMgr load config file index:%{public}d success!", index);
@@ -191,7 +192,8 @@ void PluginMgr::ParsePluginSwitch(const std::vector<std::string>& switchStrs, bo
             HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT",
                 HiviewDFX::HiSysEvent::EventType::FAULT,
                 "MODULE_NAME", "PluginFwk", "SCENE_NAME", "ConfigParseFailed",
-                "ERR_INFO", "PluginMgr load switch config file failed!");
+                "ERR_INFO", "PluginMgr load switch config file failed, index:" + std::to_string(index) +
+                ", size:" + std::to_string(switchStrs[index].size()));
             continue;
         }
         RESSCHED_LOGI("PluginMgr load switch config file index:%{public}d success!", index);
@@ -622,7 +624,7 @@ void PluginMgr::UpdateReportCount(const uint32_t resType)
     std::sort(vec.begin(), vec.end(), [](const auto& a, const auto& b) { return a.second > b.second; });
     std::vector<std::string> resTypes;
     std::vector<uint32_t> counts;
-    for (int i = 0; i < HOT_EVENT_TOPN && i < vec.size(); i++) {
+    for (int i = 0; i < HOT_EVENT_TOPN && i < static_cast<int>(vec.size()); i++) {
         resTypes.push_back(GetStrFromResTypeStrMap(vec[i].first));
         counts.push_back(vec[i].second);
     }

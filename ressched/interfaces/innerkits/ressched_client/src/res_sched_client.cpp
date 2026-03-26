@@ -18,6 +18,7 @@
 #include <new>                          // for nothrow, operator new
 #include <unordered_map>                // for unordered_map, __hash_map_con...
 #include <utility>                      // for pair
+#include <chrono>                       // for chrono
 #include "if_system_ability_manager.h"  // for ISystemAbilityManager
 #include "iremote_broker.h"             // for iface_cast
 #include "iservice_registry.h"          // for SystemAbilityManagerClient
@@ -26,12 +27,14 @@
 #include "system_ability_definition.h"  // for RES_SCHED_SYS_ABILITY_ID
 #include "ffrt_inner.h"                 // for future
 #include "kill_event_listener.h"
+#include "res_sched_time_util.h"       // for GetNowMillTime
 
 namespace OHOS {
 namespace ResourceSchedule {
 namespace {
 constexpr int32_t CHECK_MUTEX_TIMEOUT = 100;  // 100ms
 constexpr int32_t CHECK_MUTEX_TIMEOUT_NS = 100 * 1000;  // 100ms
+constexpr int64_t ONE_DAY_MILLS = 24 * 60 * 60 * 1000;  // 24 hours in milliseconds
 bool g_isDestroyed = false;
 static ffrt::mutex mutex_;
 bool g_isReportConnectErr = false;
@@ -98,7 +101,7 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
         resType != ResType::RES_TYPE_KEY_PERF_SCENE &&
         resTypeList_.find(resType) == resTypeList_.end()) {
         RESSCHED_LOGE("ResSchedClient::ReportData type not subscribed.");
-        ResCommonUtil::HiSysAbnormalErrReport("ResSchedClient", __func__, "discard event " + std::to_string(resType));
+        ReportDiscardEventError(resType);
         return;
     }
     rss_->ReportData(resType, value, payload.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace));
@@ -384,6 +387,32 @@ void ResSchedClient::ReportConnectError(const std::string& reason)
     if (!g_isReportConnectErr) {
         g_isReportConnectErr = true;
         ResCommonUtil::HiSysAbnormalErrReport("ResSchedClient", __func__, reason);
+    }
+}
+
+void ResSchedClient::ReportDiscardEventError(const uint32_t resType)
+{
+    int64_t currentTime = ResCommonUtil::GetNowMillTime(true);
+    auto iter = discardEventStats_.find(resType);
+    if (iter == discardEventStats_.end()) {
+        discardEventStats_[resType] = 1;
+    } else {
+        iter->second++;
+    }
+    if (currentTime - lastDiscardReportTime_ >= ONE_DAY_MILLS) {
+        std::string reportMsg = "discard events: ";
+        bool hasEvents = false;
+        for (const auto& pair : discardEventStats_) {
+            if (pair.second > 0) {
+                reportMsg += "(" + std::to_string(pair.first) + ", " + std::to_string(pair.second) + ") ";
+                hasEvents = true;
+            }
+        }
+        if (hasEvents) {
+            ResCommonUtil::HiSysAbnormalErrReport("ResSchedClient", __func__, reportMsg);
+            discardEventStats_.clear();
+            lastDiscardReportTime_ = currentTime;
+        }
     }
 }
 

@@ -107,6 +107,7 @@ private:
     bool IsHasPermission(const uint32_t type, int32_t uid);
     bool IsSBDResType(uint32_t type);
     bool IsThirdPartType(uint32_t type);
+    void ReportPermissionErrorEvent(const uint32_t type, const int32_t uid, const int32_t pid);
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     int32_t GetExtTypeByResPayload(const std::string& payload);
 #endif
@@ -124,6 +125,7 @@ private:
     std::map<int32_t, int32_t> appRequestCountMap_;
     // key: type; value: pair<lastReportTime, count>
     std::map<uint32_t, std::pair<int64_t, int32_t>> errLogRecordMap_;
+    int64_t lastEventReportTime_ = 0;
     std::atomic<int32_t> allRequestCount_ {0};
     std::atomic<int32_t> bigDataReportCount_ {0};
     std::atomic<int64_t> nextCheckTime_ = {0};
