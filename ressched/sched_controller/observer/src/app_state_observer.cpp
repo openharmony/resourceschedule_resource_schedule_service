@@ -177,6 +177,7 @@ void RmsApplicationStateObserver::MarshallingProcessData(const ProcessData &proc
     payload["killReason"] = processData.killReason;
     payload["isPreloadModule"] = std::to_string(processData.isPreloadModule);
     payload["preloadMode"] = std::to_string(processData.preloadMode);
+    payload["isPreloadUIExtension"] = std::to_string(processData.isPreloadUIExtension);
 }
 
 void RmsApplicationStateObserver::OnProcessCreated(const ProcessData &processData)

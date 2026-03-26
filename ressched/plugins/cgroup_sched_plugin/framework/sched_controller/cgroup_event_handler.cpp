@@ -369,6 +369,14 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
     }
     AdjustSource policy = PRELOAD_SET.count(info.preloadMode) ?
         AdjustSource::ADJS_APP_PRELOAD : AdjustSource::ADJS_PROCESS_CREATE;
+    
+    int32_t isPreloadUIExtension = 0;
+    if (ParseValue(isPreloadUIExtension, "isPreloadUIExtension", payload)) {
+        CGS_LOGD("%{public}s %{public}d %{public}d", __func__, isPreloadUIExtension, info.extensionType);
+        if (isPreloadUIExtension) {
+            policy = AdjustSource::ADJS_UIEXTENSION_PRELOAD;
+        }
+    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), policy);
 }
  
