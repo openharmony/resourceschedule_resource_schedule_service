@@ -232,6 +232,7 @@ bool TestSocPerfPlugin(const uint8_t *data, size_t size)
     OHOS::ResourceSchedule::TestAppStateChange(data, size);
     OHOS::ResourceSchedule::TestUseBySo(data, size);
     OHOS::ResourceSchedule::SocPerfPlugin::GetInstance().Disable();
+    return true;
 }
 }
 }
