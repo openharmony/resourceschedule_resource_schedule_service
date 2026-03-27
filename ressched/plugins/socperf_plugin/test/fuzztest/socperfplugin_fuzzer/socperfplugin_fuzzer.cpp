@@ -209,14 +209,9 @@ bool TestFeatureInit(const uint8_t *data, size_t size)
     OHOS::ResourceSchedule::SocPerfPlugin::GetInstance().InitFeatureSwitch(featureName);
     return true;
 }
-}
-}
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
+bool TestSocPerfPlugin(const uint8_t *data, size_t size)
 {
-    if (data == nullptr || size < sizeof(int64_t)) {
-        return 0;
-    }
     OHOS::ResourceSchedule::SocPerfPlugin::GetInstance().Init();
     OHOS::ResourceSchedule::TestFeatureInit(data, size);
     OHOS::ResourceSchedule::TestWindowFocus(data, size);
@@ -237,6 +232,16 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::TestAppStateChange(data, size);
     OHOS::ResourceSchedule::TestUseBySo(data, size);
     OHOS::ResourceSchedule::SocPerfPlugin::GetInstance().Disable();
+}
+}
+}
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
+{
+    if (data == nullptr || size < sizeof(int64_t)) {
+        return 0;
+    }
+    OHOS::ResourceSchedule::TestSocPerfPlugin(data, size);
     return 0;
 }
 
