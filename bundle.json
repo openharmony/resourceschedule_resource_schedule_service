@@ -27,7 +27,8 @@
       "resource_schedule_service_subscribe_click_recognize_enable",
       "resource_schedule_service_system_load_level_debug_feature_enable_for_2d",
       "resource_schedule_service_has_sys_nice_enable",
-      "resource_schedule_service_depend_wm_enable"
+      "resource_schedule_service_depend_wm_enable",
+      "resource_schedule_service_forkall_plugin_enable"
     ],
     "adapted_system_type": [
       "standard"

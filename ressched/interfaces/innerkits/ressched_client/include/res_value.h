@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1018,8 +1018,7 @@ enum CtrlForkallImageInterfaceCode : int32_t {
  * @brief forkall state change code
  */
 enum ForkallStateChangeCode : int32_t {
-    CLOUD_CONFIG_UPLOAD = 0,
-    SET_SUPPORT_MIRROR_PROCESS_BY_APP = 1,
+    SET_PROCESS_IS_ENABLE = 1,
 };
 
 /**
