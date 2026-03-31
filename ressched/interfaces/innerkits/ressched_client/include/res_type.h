@@ -477,12 +477,12 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_UI_NODE_GC_CONFIG = 515,
     // report sa notify make image, only for forkall_plugin
     SYNC_RES_TYPE_NOTIFY_MAKE_IMAGE = 516,
+    // report hardware decoding resources
+    RES_TYPE_HARDWARE_DECODING_RESOURCES = 517,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // get first frame drawn
     RES_TYPE_FIRST_FRAME_DRAWN,
-    // report hardware decoding resources
-    RES_TYPE_HARDWARE_DECODING_RESOURCES,
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
     // load kill reason config
