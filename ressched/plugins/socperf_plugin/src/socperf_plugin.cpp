@@ -815,6 +815,9 @@ void SocPerfPlugin::UpdateWeakActionStatus()
             }
         }
     }
+    if (custGameState_) {
+        status = false;
+    }
     if (status != weakActionStatus_) {
         weakActionStatus_ = status;
         OHOS::SOCPERF::SocPerfClient::GetInstance().RequestDeviceMode(WEAK_ACTION_MODE, weakActionStatus_);
@@ -1585,6 +1588,7 @@ bool SocPerfPlugin::UpdateCustGameState(const std::shared_ptr<ResData>& data)
             custGameState_ = false;
         }
     }
+    UpdateWeakActionStatus();
     return custGameState_;
 }
 
