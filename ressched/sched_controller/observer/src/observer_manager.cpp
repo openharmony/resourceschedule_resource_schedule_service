@@ -66,19 +66,19 @@ const static char* RES_SCHED_CG_EXT_SO = "libcgroup_sched_ext.z.so";
 
 void ObserverManager::Init()
 {
-    InitSysAbilityListener();
     AppStartupSceneRec::GetInstance().Init();
+    InitSysAbilityListener();
 }
 
 void ObserverManager::Disable()
 {
-    AppStartupSceneRec::GetInstance().Deinit();
     handleObserverMap_.clear();
     removeObserverMap_.clear();
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_APP_NAP_ENABLE
     DisableHiSysEventObserver();
 #endif
     DisableTelephonyObserver();
+    AppStartupSceneRec::GetInstance().Deinit();
     sysAbilityListener_ = nullptr;
 }
 
