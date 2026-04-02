@@ -18,6 +18,7 @@
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "res_type.h"
+#include "res_common_util.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -124,6 +125,8 @@ void WindowModeObserver::OnWindowModeUpdate(const WindowModeType mode)
     nlohmann::json payload;
     uint8_t windowModeSplitValue = (nowWindowMode >> WINDOW_MODE_SPLIT_BIT) & WINDOW_MODE_BIT_EXIT;
     uint8_t windowModeFloatingValue = nowWindowMode & WINDOW_MODE_BIT_EXIT;
+    int64_t curtime = ResCommonUtil::GetNowMillTime(true);
+    payload["time"] = std::to_string(curtime);
     switch (windowModeChangeBit) {
         case RSSWindowMode::WINDOW_MODE_FLOATING_CHANGED:
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_FLOATING_WINDOW,
@@ -170,6 +173,8 @@ void PiPStateObserver::OnPiPStateChanged(const std::string& bundleName, const bo
 {
     RESSCHED_LOGI("Receive OnPiPStateChange %{public}s %{public}d", bundleName.c_str(), isForeground);
     nlohmann::json payload;
+    int64_t curtime = ResCommonUtil::GetNowMillTime(true);
+    payload["time"] = std::to_string(curtime);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TRPE_PIP_STATUS,
         static_cast<int64_t>(isForeground), payload);
 }
