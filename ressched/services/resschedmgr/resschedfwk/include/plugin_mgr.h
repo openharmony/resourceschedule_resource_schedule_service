@@ -294,6 +294,7 @@ private:
     std::list<std::string> SortPluginList(const std::list<std::string>& pluginList);
     std::string GetStrFromResTypeStrMap(uint32_t resType);
     void UpdateReportCount(const uint32_t resType);
+    void UpdateLogReportCount(const uint32_t resType, int64_t currTime);
     class InnerTimeUtil {
     public:
         InnerTimeUtil(const std::string& func, const std::string& plugin);
@@ -360,6 +361,8 @@ private:
 #endif
     std::map<uint32_t, uint32_t> reportCount_;    // resType : count
     int64_t lastReportCountTime_ = 0;
+    std::map<uint32_t, uint32_t> logReportCount_;    // resType : count
+    int64_t lastLogReportCountTime_ = 0;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
