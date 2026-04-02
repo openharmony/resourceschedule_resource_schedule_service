@@ -53,7 +53,7 @@ ressched/                              # 主资源调度服务
     ├── frame_aware_plugin/            # 帧感知插件
     └── device_standby_plugin/         # 设备待机插件
 
-ressched_executor/                     # 执行器服务 (SA 1918)
+ressched_executor/                     # 执行器服务 (SA 1918) - 详见 docs/ressched_executor.md
 └── plugins/                           # 执行器插件
     └── socperf_executor_plugin/       # SoC 性能执行器
 ```
@@ -139,10 +139,9 @@ struct ResData {
 
 ## 子目录指南
 
-| 目录 | 指南文件 |
-|------|----------|
-|...|...|
-**此部分文档待完善**
+| 目录 | 说明 |
+|------|------|
+| ressched_executor | [docs/ressched_executor.md](docs/ressched_executor.md) |
 
 ## 核心工作原则
 
@@ -161,3 +160,4 @@ struct ResData {
 
 - **README**: `README_ZH.md`
 - **进程管理规范**: `Resource_Schedule_Service_Process_Management_Specifications_ZH.md`
+- **执行器模块**: [docs/ressched_executor.md](docs/ressched_executor.md)
