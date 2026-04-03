@@ -40,7 +40,7 @@ namespace ResourceSchedule {
 
 namespace {
     static const int32_t TWO_PARAMETERS = 2;
-    static const int64_t FFRT_DELAY_EXIT_TIME = 300;
+    static const int64_t FFRT_DELAY_EXIT_TIME = 4;
     static const int32_t DATA_LENGTH = 10;
 }
     const uint8_t* DATA = nullptr;
@@ -289,5 +289,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::ResourceSchedule::ResSchedPkgCommonEventFuzzTest(data, size);
     OHOS::ResourceSchedule::ResSchedCommonEventSwitchFuzzTest(data, size);
     OHOS::ResourceSchedule::ResSchedPkgOtherCommonEventFuzzTest(data, size);
+    std::this_thread::sleep_for(std::chrono::milliseconds(OHOS::ResourceSchedule::FFRT_DELAY_EXIT_TIME));
     return 0;
 }
