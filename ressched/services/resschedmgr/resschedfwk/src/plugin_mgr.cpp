@@ -55,6 +55,7 @@ namespace {
     static const int64_t PLUGIN_LOAD_TIMEOUT = 1000;
     static const int64_t HOT_EVENT_TOPN = 10;
     static const int64_t ONE_DAY_MILLS = static_cast<int64_t>(24) * 60 * 60 * 1000;
+    static const int64_t LOG_INTERVAL_TIME = static_cast<int64_t>(10) * 60 * 1000;
     static const char* PLUGIN_SWITCH_FILE_NAME = "etc/ressched/res_sched_plugin_switch.xml";
     static const char* CONFIG_FILE_NAME = "etc/ressched/res_sched_config.xml";
     static const char* EXT_CONFIG_LIB = "libsuspend_manager_service.z.so";
@@ -617,6 +618,7 @@ void PluginMgr::UpdateReportCount(const uint32_t resType)
         iter->second = iter->second + 1;
     }
     int64_t currTime = ResCommonUtil::GetNowMillTime(true);
+    UpdateLogReportCount(resType, currTime);
     if (currTime - lastReportCountTime_ < ONE_DAY_MILLS) {
         return;
     }
@@ -632,6 +634,26 @@ void PluginMgr::UpdateReportCount(const uint32_t resType)
         "RES_TYPE", resTypes, "COUNT", counts);
     lastReportCountTime_ = currTime;
     reportCount_.clear();
+}
+
+void PluginMgr::UpdateLogReportCount(const uint32_t resType, int64_t currTime)
+{
+    auto iter = logReportCount_.find(resType);
+    if (iter == logReportCount_.end()) {
+        logReportCount_[resType] = 1;
+    } else {
+        iter->second = iter->second + 1;
+    }
+    if (currTime - lastLogReportCountTime_ < LOG_INTERVAL_TIME) {
+        return;
+    }
+    std::string reportStr = "";
+    for (const auto& item : logReportCount_) {
+        reportStr += std::to_string(item.first) + ":" + std::to_string(item.second) + ",";
+    }
+    RESSCHED_LOGI("%{public}s, %{public}s", __func__, reportStr.c_str());
+    lastLogReportCountTime_ = currTime;
+    logReportCount_.clear();
 }
 
 void PluginMgr::SubscribeResource(const std::string& pluginLib, uint32_t resType)
