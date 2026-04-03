@@ -18,7 +18,6 @@
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "res_type.h"
-#include "res_common_util.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
