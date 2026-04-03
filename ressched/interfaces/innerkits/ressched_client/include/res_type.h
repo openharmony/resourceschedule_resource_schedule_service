@@ -492,9 +492,11 @@ enum : uint32_t {
     // load kill reason config
     RES_TYPE_LOAD_KILL_REASON_CONFIG = 600,
     // float winodw 1.0, value 1 enter 0 exit
-    RES_TYPE_FLOATING_WINDOW_V1 = 601
+    RES_TYPE_FLOATING_WINDOW_V1 = 601,
+    // float winodw 1.0, value 1 enter 0 exit
+    RES_TYPE_FLOATING_WINDOW_V2 = 602,
     // float ball, value 1 enter 0 exit
-    RES_TYPE_FLOATING_BALL = 602
+    RES_TYPE_FLOATING_BALL = 603,
 
 };
 } // namespace ResType
