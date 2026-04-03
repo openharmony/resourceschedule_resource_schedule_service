@@ -497,7 +497,6 @@ enum : uint32_t {
     RES_TYPE_FLOATING_WINDOW_V2 = 602,
     // float ball, value 1 enter 0 exit
     RES_TYPE_FLOATING_BALL = 603,
-
 };
 } // namespace ResType
 } // namespace ResourceSchedule
