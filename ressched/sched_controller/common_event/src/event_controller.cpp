@@ -432,7 +432,6 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
 
 void EventController::handleNearlinkEvent(int32_t code, const std::string &action, nlohmann::json &payload)
 {
-    
     RESSCHED_LOGD("report nearlink switch update event");
     payload["ACTION"] = std::to_string(code);
     ReportDataInProcess(ResType::RES_TYPE_NEARLINK_SERVICE_EVENT,
