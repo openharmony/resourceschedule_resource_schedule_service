@@ -440,7 +440,6 @@ viod EventController::handleNearlinkEvent(int32_t code, const std::string &actio
     payload["ACTION"] = std::to_string(code);
     ReportDataInProcess(ResType::RES_TYPE_NEARLINK_SERVICE_EVENT,
         ResType::NlServiceEvent::NL_SWITCH_STATE, payload);
-
 }
 
 void EventController::handleLeftEvent(int32_t userId, const std::string &action, nlohmann::json &payload, Want &want)
