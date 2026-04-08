@@ -141,7 +141,8 @@ std::shared_ptr<DataShare::DataShareHelper> DataShareUtils::CreateDataShareHelpe
         RESSCHED_LOGE("Get remoteObj return nullptr!");
         return nullptr;
     }
-    auto userUriProxy = std::string(SETTING_URI_PROXY_PREFIX) + std::string(userId) + std::string(SETTING_URI_PROXY_SUFFIX);
+    auto userUriProxy = std::string(SETTING_URI_PROXY_PREFIX)
+        + std::string(userId) + std::string(SETTING_URI_PROXY_SUFFIX);
     std::pair<int, std::shared_ptr<DataShare::DataShareHelper>> ret =
         DataShare::DataShareHelper::Create(remoteObj_, userUriProxy, SETTINGS_DATA_EXT_URI);
     if (ret.first == E_OK) {
@@ -191,7 +192,8 @@ Uri DataShareUtils::AssembleUri(const std::string& key)
 
 Uri DataShareUtils::AssembleUri(const std::string& key, const int32_t userId)
 {
-    Uri uri(std::string(SETTING_URI_PROXY_PREFIX) + std::string(userId) + std::string(SETTING_URI_PROXY_SUFFIX) + "&key=" + key);
+    Uri uri(std::string(SETTING_URI_PROXY_PREFIX) + std::string(userId)
+        + std::string(SETTING_URI_PROXY_SUFFIX) + "&key=" + key);
     return uri;
 }
 
