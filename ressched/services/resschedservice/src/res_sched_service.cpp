@@ -76,6 +76,7 @@ namespace {
         ResType::RES_TYPE_SWIPE_DIRECTION_UP,
         ResType::RES_TYPE_WINDOW_PANEL,
         ResType::RES_TYPE_WINDOW_SPLIT_SCREEN,
+        ResType::SYNC_RES_TYPE_REQUEST_MUTEX_STATUS,
     };
     static const std::unordered_set<uint32_t> THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -137,7 +138,6 @@ namespace {
         ResType::RES_TYPE_AXIS_EVENT,
         ResType::RES_TYPE_WEB_SLIDE_SCROLL,
         ResType::RES_TYPE_OVERLAY_EVENT,
-        ResType::SYNC_RES_TYPE_REQUEST_MUTEX_STATUS,
     };
     static const std::unordered_set<uint32_t> SA_RES = {
         ResType::SYNC_RES_TYPE_THAW_ONE_APP,

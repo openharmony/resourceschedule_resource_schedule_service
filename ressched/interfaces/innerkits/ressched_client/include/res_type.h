@@ -426,11 +426,24 @@ enum : uint32_t {
     // user unlocked
     RES_TYPE_USER_UNLOCKED = 205,
     // usage topn
+<<<<<<< HEAD
     RES_TYPE_TOPN_USAGE_INFO = 206,
+<<<<<<< HEAD
     // get first frame drawn
     RES_TYPE_FIRST_FRAME_DRAWN = 211,
     // report for arkui component state change
     RES_TYPE_COMPONENT_STATE_CHANGE = 212,
+=======
+=======
+    RES_TYPE_TOPN_USAGE_INFO = 203,
+     // float window 1.0, value 1 enter 0 exit
+    RES_TYPE_FLOATING_WINDOW_V1 = 204,
+    // float window 1.0, value 1 enter 0 exit
+    RES_TYPE_FLOATING_WINDOW_V2 = 205,
+    // float ball, value 1 enter 0 exit
+    RES_TYPE_FLOATING_BALL = 206,
+>>>>>>> 44e9482f... Signed-off-by: xiaofeizhudekongjian <zhuxiaofei2@huawei.com>
+>>>>>>> 452e8dd9... 新增窗口事件
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -491,12 +504,6 @@ enum : uint32_t {
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
     // load kill reason config
     RES_TYPE_LOAD_KILL_REASON_CONFIG = 600,
-    // float window 1.0, value 1 enter 0 exit
-    RES_TYPE_FLOATING_WINDOW_V1 = 601,
-    // float window 1.0, value 1 enter 0 exit
-    RES_TYPE_FLOATING_WINDOW_V2 = 602,
-    // float ball, value 1 enter 0 exit
-    RES_TYPE_FLOATING_BALL = 603,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
