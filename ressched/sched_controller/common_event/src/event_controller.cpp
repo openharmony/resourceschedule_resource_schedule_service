@@ -427,19 +427,17 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
             static_cast<int64_t>(want.GetIntParam(GAME_STATUS, -1)), payload);
         return;
     }
-    if (action == COMMON_EVENT_NEARLINK_HOST_STATE_UPDATE) {
-        handleNearlinkEvent(userId, action, payload);
-        return;
-    }
     handleLeftEvent(userId, action, payload, want);
 }
 
 void EventController::handleNearlinkEvent(int32_t code, const std::string &action, nlohmann::json &payload)
 {
-    RESSCHED_LOGD("report nearlink switch update event");
-    payload["ACTION"] = std::to_string(code);
-    ReportDataInProcess(ResType::RES_TYPE_NEARLINK_SERVICE_EVENT,
-        ResType::NlServiceEvent::NL_SWITCH_STATE, payload);
+    if (action == COMMON_EVENT_NEARLINK_HOST_STATE_UPDATE) {
+        RESSCHED_LOGD("report nearlink switch update event");
+        payload["ACTION"] = std::to_string(code);
+        ReportDataInProcess(ResType::RES_TYPE_NEARLINK_SERVICE_EVENT,
+            ResType::NlServiceEvent::NL_SWITCH_STATE, payload);
+    }
 }
 
 void EventController::handleLeftEvent(int32_t userId, const std::string &action, nlohmann::json &payload, Want &want)
@@ -480,6 +478,7 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
         HandleCloneStateEvent(want, payload);
         return;
     }
+    handleNearlinkEvent(userId, action, payload);
 }
 
 void EventController::HandleMediaCtrlEvent(const EventFwk::Want &want)
