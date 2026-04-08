@@ -103,7 +103,7 @@ std::shared_ptr<DataShare::DataShareHelper> DataShareUtils::CreateDataShareHelpe
 
 ErrCode DataShareUtils::GetStringValueByUser(const std::string& key, std::string& value, const int32_t userId)
 {
-    auto helper = CreateDataShareHelper(userId);
+    auto helper = CreateDataShareHelperByUser(userId);
     if (helper == nullptr) {
         RESSCHED_LOGE("DataShareUtils: helper does not created!");
         return ERR_NO_INIT;
@@ -142,7 +142,7 @@ std::shared_ptr<DataShare::DataShareHelper> DataShareUtils::CreateDataShareHelpe
         return nullptr;
     }
     auto userUriProxy = std::string(SETTING_URI_PROXY_PREFIX)
-        + std::string(userId) + std::string(SETTING_URI_PROXY_SUFFIX);
+        + std::to_string(userId) + std::string(SETTING_URI_PROXY_SUFFIX);
     std::pair<int, std::shared_ptr<DataShare::DataShareHelper>> ret =
         DataShare::DataShareHelper::Create(remoteObj_, userUriProxy, SETTINGS_DATA_EXT_URI);
     if (ret.first == E_OK) {
@@ -190,9 +190,9 @@ Uri DataShareUtils::AssembleUri(const std::string& key)
     return uri;
 }
 
-Uri DataShareUtils::AssembleUri(const std::string& key, const int32_t userId)
+Uri DataShareUtils::AssembleUriByUser(const std::string& key, const int32_t userId)
 {
-    Uri uri(std::string(SETTING_URI_PROXY_PREFIX) + std::string(userId)
+    Uri uri(std::string(SETTING_URI_PROXY_PREFIX) + std::to_string(userId)
         + std::string(SETTING_URI_PROXY_SUFFIX) + "&key=" + key);
     return uri;
 }
