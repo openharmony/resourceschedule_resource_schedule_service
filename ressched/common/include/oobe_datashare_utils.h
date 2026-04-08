@@ -31,8 +31,6 @@ public:
     static DataShareUtils& GetInstance();
     template <typename T>
     ErrCode GetValue(const std::string& key, T& value);
-    template <typename T>
-    ErrCode GetValueByUser(const std::string& key, T& value, const int32_t userId);
     Uri AssembleUri(const std::string& key);
     bool ReleaseDataShareHelper(std::shared_ptr<DataShare::DataShareHelper>& helper);
     std::shared_ptr<DataShare::DataShareHelper> CreateDataShareHelper();
