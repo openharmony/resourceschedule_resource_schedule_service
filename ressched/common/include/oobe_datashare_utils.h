@@ -34,10 +34,8 @@ public:
     template <typename T>
     ErrCode GetValueByUser(const std::string& key, T& value, const int32_t userId);
     Uri AssembleUri(const std::string& key);
-    Uri AssembleUriByUser(const std::string& key, const int32_t userId);
     bool ReleaseDataShareHelper(std::shared_ptr<DataShare::DataShareHelper>& helper);
     std::shared_ptr<DataShare::DataShareHelper> CreateDataShareHelper();
-    std::shared_ptr<DataShare::DataShareHelper> CreateDataShareHelperByUser(const int32_t userId);
     bool IsConnectDataShareSucc();
     bool GetDataShareReadyFlag();
     void SetDataShareReadyFlag(bool flag);
@@ -48,7 +46,6 @@ private:
     static sptr<IRemoteObject> remoteObj_;
     static ffrt::mutex mutex_;
     ErrCode GetStringValue(const std::string& key, std::string& value);
-    ErrCode GetStringValueByUser(const std::string& key, std::string& value, const int32_t userId);
     void InitSystemAbilityManager();
     bool isDataShareReady_ = false;
     bool isConnectDataShareSucc = false;
@@ -63,31 +60,6 @@ ErrCode DataShareUtils::GetValue(const std::string& key, T& value)
     IPCSkeleton::SetCallingIdentity(callingIdentity);
     if (ret != ERR_OK) {
         RESSCHED_LOGW("resultSet->GetStringValue return not ok, ret=%{public}d", ret);
-        return ret;
-    }
-    using ValueType = std::remove_cv_t<std::remove_reference_t<T>>;
-    if constexpr (std::is_same_v<std::string, ValueType>) {
-        value = result;
-    } else if constexpr (std::is_same_v<int64_t, ValueType>) {
-        value = static_cast<int64_t>(strtoll(result.c_str(), nullptr, PARAM_NUM_TEN));
-    } else if constexpr (std::is_same_v<int32_t, ValueType>) {
-        value = static_cast<int32_t>(strtoll(result.c_str(), nullptr, PARAM_NUM_TEN));
-    } else {
-        RESSCHED_LOGE("GetValue: invalid operation!");
-        return ERR_INVALID_OPERATION;
-    }
-    return ERR_OK;
-}
-
-template <typename T>
-ErrCode DataShareUtils::GetValueByUser(const std::string& key, T& value, const int32_t userId)
-{
-    std::string result;
-    std::string callingIdentity = IPCSkeleton::ResetCallingIdentity();
-    int32_t ret = GetStringValueByUser(key, result, userId);
-    IPCSkeleton::SetCallingIdentity(callingIdentity);
-    if (ret != ERR_OK) {
-        RESSCHED_LOGW("resultSet->GetValueByUser return not ok, ret=%{public}d", ret);
         return ret;
     }
     using ValueType = std::remove_cv_t<std::remove_reference_t<T>>;

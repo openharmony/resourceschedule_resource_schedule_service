@@ -33,9 +33,6 @@ const std::string SETTING_COLUMN_KEYWORD = "KEYWORD";
 const std::string SETTING_COLUMN_VALUE = "VALUE";
 constexpr const char *SETTINGS_DATA_EXT_URI = "datashare:///com.ohos.settingsdata.DataAbility";
 const std::string SETTING_URI_PROXY = "datashare:///com.ohos.settingsdata/entry/settingsdata/SETTINGSDATA?Proxy=true";
-const std::string SETTING_URI_PROXY_PREFIX
-    = "datashare:///com.ohos.settingsdata/entry/settingsdata/USER_SETTINGSDATA_";
-const std::string SETTING_URI_PROXY_SUFFIX = "?Proxy=true";
 } // namespace
 
 DataShareUtils::DataShareUtils() = default;
@@ -101,61 +98,6 @@ std::shared_ptr<DataShare::DataShareHelper> DataShareUtils::CreateDataShareHelpe
     return nullptr;
 }
 
-ErrCode DataShareUtils::GetStringValueByUser(const std::string& key, std::string& value, const int32_t userId)
-{
-    auto helper = CreateDataShareHelperByUser(userId);
-    if (helper == nullptr) {
-        RESSCHED_LOGE("DataShareUtils: helper does not created!");
-        return ERR_NO_INIT;
-    }
-    std::vector<std::string> columns = {SETTING_COLUMN_VALUE};
-    DataShare::DataSharePredicates predicates;
-    predicates.EqualTo(SETTING_COLUMN_KEYWORD, key);
-    RESSCHED_LOGD("keyWord=%{public}s", key.c_str());
-    Uri uri(AssembleUriByUser(key, userId));
-    auto resultSet = helper->Query(uri, predicates, columns);
-    ReleaseDataShareHelper(helper);
-    if (resultSet == nullptr) {
-        RESSCHED_LOGE("helper->Query return nullptr");
-        return ERR_INVALID_OPERATION;
-    }
-    int32_t count;
-    resultSet->GetRowCount(count);
-    if (count == 0) {
-        RESSCHED_LOGW("not found value, keyWord=%{public}s, count=%{public}d", key.c_str(), count);
-        return ERR_NAME_NOT_FOUND;
-    }
-    const int32_t INDEX = 0;
-    resultSet->GoToRow(INDEX);
-    int32_t ret = resultSet->GetString(INDEX, value);
-    if (ret != DataShare::E_OK) {
-        RESSCHED_LOGW("resultSet->GetString return not ok, ret=%{public}d", ret);
-        return ERR_INVALID_VALUE;
-    }
-    return ERR_OK;
-}
-
-std::shared_ptr<DataShare::DataShareHelper> DataShareUtils::CreateDataShareHelperByUser(const int32_t userId)
-{
-    if (remoteObj_ == nullptr) {
-        RESSCHED_LOGE("Get remoteObj return nullptr!");
-        return nullptr;
-    }
-    auto userUriProxy = std::string(SETTING_URI_PROXY_PREFIX)
-        + std::to_string(userId) + std::string(SETTING_URI_PROXY_SUFFIX);
-    std::pair<int, std::shared_ptr<DataShare::DataShareHelper>> ret =
-        DataShare::DataShareHelper::Create(remoteObj_, userUriProxy, SETTINGS_DATA_EXT_URI);
-    if (ret.first == E_OK) {
-        RESSCHED_LOGI("create data_share helper success!");
-        auto helper = ret.second;
-        isConnectDataShareSucc = true;
-        return helper;
-    }
-    RESSCHED_LOGE("create data_share helper faild!");
-    isConnectDataShareSucc = false;
-    return nullptr;
-}
-
 bool DataShareUtils::ReleaseDataShareHelper(std::shared_ptr<DataShare::DataShareHelper>& helper)
 {
     if (helper == nullptr) {
@@ -187,13 +129,6 @@ void DataShareUtils::InitSystemAbilityManager()
 Uri DataShareUtils::AssembleUri(const std::string& key)
 {
     Uri uri(SETTING_URI_PROXY + "&key=" + key);
-    return uri;
-}
-
-Uri DataShareUtils::AssembleUriByUser(const std::string& key, const int32_t userId)
-{
-    Uri uri(std::string(SETTING_URI_PROXY_PREFIX) + std::to_string(userId)
-        + std::string(SETTING_URI_PROXY_SUFFIX) + "&key=" + key);
     return uri;
 }
 
