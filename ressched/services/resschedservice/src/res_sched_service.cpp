@@ -121,6 +121,7 @@ namespace {
         ResType::RES_TYPE_CTRL_FORKALL_IMAGE_INTERFACE,
         ResType::RES_TYPE_SNAPSHOT_FAILURE,
         ResType::SYNC_RES_TYPE_GET_UI_NODE_GC_CONFIG,
+        ResType::RES_TYPE_NEARLINK_SERVICE_EVENT,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -185,6 +186,7 @@ namespace {
         ResType::RES_TYPE_HARDWARE_DECODING_RESOURCES,
         ResType::RES_TYPE_FIRST_FRAME_DRAWN,
         ResType::RES_TYPE_OOBE_CLONE,
+        ResType::RES_TYPE_NEARLINK_SERVICE_EVENT,
     };
     static const std::unordered_map<uint32_t, std::unordered_set<int32_t>> ALLOW_SOME_UID_REPORT_RES = {
         { ResType::RES_TYPE_MODEM_PA_HIGH_POWER_ABNORMAL, { 1201 } },
