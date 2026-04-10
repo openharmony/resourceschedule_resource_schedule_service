@@ -425,6 +425,8 @@ enum : uint32_t {
     RES_TYPE_USER_UNLOCKED = 202,
     // usage topn
     RES_TYPE_TOPN_USAGE_INFO = 203,
+    // get first frame drawn
+    RES_TYPE_FIRST_FRAME_DRAWN = 211,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -481,8 +483,6 @@ enum : uint32_t {
     RES_TYPE_HARDWARE_DECODING_RESOURCES = 517,
     // last sync resType
     SYNC_RES_TYPE_LAST,
-    // get first frame drawn
-    RES_TYPE_FIRST_FRAME_DRAWN,
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
     // load kill reason config
