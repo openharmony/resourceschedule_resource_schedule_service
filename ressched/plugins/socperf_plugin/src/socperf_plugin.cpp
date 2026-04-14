@@ -28,6 +28,7 @@
 #include "system_ability_definition.h"
 #include "res_sched_signature_validator.h"
 #include "ffrt_inner.h"
+#include "power_mgr_client.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
