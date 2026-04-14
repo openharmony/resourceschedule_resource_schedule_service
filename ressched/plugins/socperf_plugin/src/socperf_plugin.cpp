@@ -97,7 +97,7 @@ namespace {
     const int32_t INVALID_APP_TYPE                          = 0;
     const int32_t POWERMODE_ON                              = 601;
     const int64_t TIME_INTERVAL                             = 4500;
-    const int64_t WAKE_UP_TIME_DELAY                        = 1000000L;
+    const int64_t WAKE_UP_TIME_DELAY                        = 3000000L;
     const int64_t SCREEN_OFF_TIME_DELAY                     = 5000000L;
     const int32_t PERF_REQUEST_CMD_ID_RGM_BOOTING_START     = 1000;
     const int32_t PERF_REQUEST_CMD_ID_APP_START             = 10000;
@@ -1401,7 +1401,7 @@ bool SocPerfPlugin::HandleDisplayPowerWakeUp(const std::shared_ptr<ResData>& dat
         SOC_PERF_LOGD("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp null data");
         return false;
     }
-        if (data->value == WakeUpStatus::WAKE_UP_START) {
+    if (data->value == WakeUpStatus::WAKE_UP_START) {
         std::lock_guard<ffrt::mutex> xmlLock(screenMutex_);
         SOC_PERF_LOGI("SocPerfPlugin: socperf->HandleDisplayPowerWakeUp: %{public}lld", (long long)data->value);
         HandleScreenOn();
@@ -1410,8 +1410,10 @@ bool SocPerfPlugin::HandleDisplayPowerWakeUp(const std::shared_ptr<ResData>& dat
             ffrt::skip(wakeUpTimeOutTask_);
         }
         std::function<void()> wakeUpTimeOut = [this]() {
-            nlohmann::json payload;
-            ReportDataInProcess(ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, WakeUpStatus::WAKE_UP_TIMEOUT, payload);
+            if (!PowerMgr::PowerMgrClient::GetInstance().IsScreenOn()) {
+                nlohmann::json payload;
+                ReportDataInProcess(ResType::RES_TYPE_DISPLAY_POWER_WAKE_UP, WakeUpStatus::WAKE_UP_TIMEOUT, payload);
+            }
         };
         wakeUpTimeOutTask_ = ffrt::submit_h(wakeUpTimeOut, {}, {}, ffrt::task_attr().delay(WAKE_UP_TIME_DELAY));
 #endif
