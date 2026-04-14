@@ -1036,6 +1036,25 @@ enum NlServiceEvent : int32_t {
     NL_DATA_TRANSFER = 1,
     NL_SWITCH_STATE = 2,
 };
+
+/**
+ * @brief arkui component tag
+ */
+enum ComponentTag : int32_t {
+    COMPONENT_TAG_BEGIN = 0,
+    SWIPER,
+    COMPONENT_TAG_END
+};
+
+/**
+ * @brief get different white list from taihang engine
+ */
+enum WhiteListTypeFromTaihang : int32_t {
+    WHITE_LIST_TYPE_FROM_TAIHANG_BEGIN = 0,
+    CLICK_REPORT_EXT,
+    SWIPER_PREMAE,
+    WHITE_LIST_TYPE_FROM_TAIHANG_END
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
