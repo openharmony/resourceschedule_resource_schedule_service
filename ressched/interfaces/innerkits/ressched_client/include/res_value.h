@@ -1042,7 +1042,7 @@ enum NlServiceEvent : int32_t {
  */
 enum ComponentTag : int32_t {
     COMPONENT_TAG_BEGIN = 0,
-    SWIPER,
+    COMPONENT_TAG_SWIPER,
     COMPONENT_TAG_END
 };
 
@@ -1051,8 +1051,8 @@ enum ComponentTag : int32_t {
  */
 enum WhiteListTypeFromTaihang : int32_t {
     WHITE_LIST_TYPE_FROM_TAIHANG_BEGIN = 0,
-    CLICK_REPORT_EXT,
-    SWIPER_PREMAE,
+    WHITE_LIST_TYPE_CLICK_REPORT_EXT,
+    WHITE_LIST_TYPE_SWIPER_PREMAE,
     WHITE_LIST_TYPE_FROM_TAIHANG_END
 };
 } // namespace ResType
