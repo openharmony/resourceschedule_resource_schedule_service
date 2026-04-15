@@ -428,7 +428,7 @@ enum : uint32_t {
     // usage topn
     RES_TYPE_TOPN_USAGE_INFO = 206,
     // report for arkui component state change
-    RES_TYPE_COMPONENT_STATE_CHANGE = 207,
+    RES_TYPE_COMPONENT_STATE_CHANGE = 212,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
