@@ -1028,6 +1028,14 @@ enum InputMethodState : int32_t {
     INPUT_METHOD_SHOW_PANEL = 0,
     INPUT_METHOD_CLOSE_PANEL = 1,
 };
+/**
+ * @brief nearlink service state code
+ */
+enum NlServiceEvent : int32_t {
+    NL_CONNECT_STATE = 0,
+    NL_DATA_TRANSFER = 1,
+    NL_SWITCH_STATE = 2,
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS

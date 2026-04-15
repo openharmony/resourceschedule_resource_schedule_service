@@ -65,6 +65,7 @@ static const char* COMMON_EVENT_CLONE_STATE = "usual.event.clone.CommonEventClon
 static const char* CLONE_STATE = "cloneState";
 static const char* BACKUP_PERMISSION = "ohos.permission.BACKUP";
 static const char* STREAM_ID = "streamId";
+static const char* COMMON_EVENT_NEARLINK_HOST_STATE_UPDATE = "usual.event.nearlink.host.STATE_UPDATE";
 
 void EventController::Init()
 {
@@ -241,6 +242,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(COMMON_EVENT_USER_SLEEP_STATE_CHANGED);
     matchingSkills.AddEvent(COMMON_EVENT_MEDIA_CTRL_EVENT);
     matchingSkills.AddEvent(COMMON_EVENT_AUDIO_FOCUS_CHANGE);
+    matchingSkills.AddEvent(COMMON_EVENT_NEARLINK_HOST_STATE_UPDATE);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     lock_guard<mutex> autolock(subscriberMutex_);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
@@ -428,6 +430,14 @@ void EventController::handleOtherEvent(int32_t userId, const std::string &action
     handleLeftEvent(userId, action, payload, want);
 }
 
+void EventController::handleNearlinkEvent(int32_t code, const std::string &action, nlohmann::json &payload)
+{
+    RESSCHED_LOGD("report nearlink switch update event");
+    payload["ACTION"] = std::to_string(code);
+    ReportDataInProcess(ResType::RES_TYPE_NEARLINK_SERVICE_EVENT,
+        ResType::NlServiceEvent::NL_SWITCH_STATE, payload);
+}
+
 void EventController::handleLeftEvent(int32_t userId, const std::string &action, nlohmann::json &payload, Want &want)
 {
     if (action == COMMON_EVENT_USER_SLEEP_STATE_CHANGED) {
@@ -464,6 +474,10 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
     }
     if (action == COMMON_EVENT_CLONE_STATE) {
         HandleCloneStateEvent(want, payload);
+        return;
+    }
+    if (action == COMMON_EVENT_NEARLINK_HOST_STATE_UPDATE) {
+        handleNearlinkEvent(userId, action, payload);
         return;
     }
 }

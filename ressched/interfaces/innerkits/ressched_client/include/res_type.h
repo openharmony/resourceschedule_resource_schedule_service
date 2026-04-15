@@ -421,10 +421,12 @@ enum : uint32_t {
     RES_TYPE_SNAPSHOT_FAILURE = 200,
     // report for input method panel changed
     RES_TYPE_INPUT_METHOD_CHANGE = 201,
+    // report to chanage nearlink state
+    RES_TYPE_NEARLINK_SERVICE_EVENT = 203,
     // user unlocked
-    RES_TYPE_USER_UNLOCKED = 202,
+    RES_TYPE_USER_UNLOCKED = 205,
     // usage topn
-    RES_TYPE_TOPN_USAGE_INFO = 203,
+    RES_TYPE_TOPN_USAGE_INFO = 206,
     // get first frame drawn
     RES_TYPE_FIRST_FRAME_DRAWN = 211,
     // last async resType
