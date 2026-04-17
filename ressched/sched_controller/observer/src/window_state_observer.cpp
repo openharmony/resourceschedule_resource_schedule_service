@@ -18,6 +18,7 @@
 #include "res_sched_log.h"
 #include "res_sched_mgr.h"
 #include "res_type.h"
+#include "os_account_manager.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -120,6 +121,7 @@ void WindowModeObserver::OnWindowModeUpdate(const WindowModeType mode)
 {
     RESSCHED_LOGD("WindowModeObserver OnWindowModeUpdate mode: %{public}hhu ", mode);
     uint8_t nowWindowMode = MarshallingWindowModeType(mode);
+    std::lock_guard<std::mutex> locker(lastWindowModeMutex_);
     uint8_t windowModeChangeBit = nowWindowMode ^ lastWindowMode_;
     nlohmann::json payload;
     uint8_t windowModeSplitValue = (nowWindowMode >> WINDOW_MODE_SPLIT_BIT) & WINDOW_MODE_BIT_EXIT;
@@ -164,6 +166,34 @@ uint8_t WindowModeObserver::MarshallingWindowModeType(const WindowModeType mode)
             break;
     }
     return nowWindowMode;
+}
+
+void WindowModeObserver::InitWindowMode()
+{
+    int32_t userId = -1;
+    if (!GetCurrentUserId(userId)) {
+        RESSCHED_LOGE("WindowModeObserver InitWindowMode get userId failed");
+    }
+    Rosen::WindowModeType type;
+    Rosen::WMError errCode = OHOS::Rosen::RSS_WINDOW_MANAGER::GetInstance(userId)
+        .GetWindowModeType(type);
+    if (errCode != Rosen::WMError::WM_OK) {
+        RESSCHED_LOGE("WindowModeObserver InitWindowMode get window mode type failed");
+        return;
+    }
+    std::lock_guard<std::mutex> locker(lastWindowModeMutex_);
+    lastWindowMode_ = MarshallingWindowModeType(type);
+}
+
+bool WindowModeObserver::GetCurrentUserId(int32_t& userId) const
+{
+    std::vector<int32_t> userIds;
+    if ((AccountSA::OsAccountManager::QueryActiveOsAccountIds(userIds) != ERR_OK) || userIds.empty()) {
+        RESSCHED_LOGE("WindowModeObserver QueryActiveOsAccountIds failed");
+        return false;
+    }
+    userId = userIds[0];
+    return true;
 }
 
 void PiPStateObserver::OnPiPStateChanged(const std::string& bundleName, const bool isForeground)

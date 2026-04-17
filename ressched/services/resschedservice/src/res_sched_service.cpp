@@ -77,6 +77,9 @@ namespace {
         ResType::RES_TYPE_WINDOW_PANEL,
         ResType::RES_TYPE_WINDOW_SPLIT_SCREEN,
         ResType::SYNC_RES_TYPE_REQUEST_MUTEX_STATUS,
+        ResType::RES_TYPE_FLOATING_WINDOW_V1,
+        ResType::RES_TYPE_FLOATING_WINDOW_V2,
+        ResType::RES_TYPE_FLOATING_BALL,
     };
     static const std::unordered_set<uint32_t> THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
@@ -124,7 +127,6 @@ namespace {
         ResType::SYNC_RES_TYPE_GET_UI_NODE_GC_CONFIG,
         ResType::RES_TYPE_NEARLINK_SERVICE_EVENT,
         ResType::RES_TYPE_COMPONENT_STATE_CHANGE
-        ResType::SYNC_RES_TYPE_REQUEST_MUTEX_STATUS,
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
