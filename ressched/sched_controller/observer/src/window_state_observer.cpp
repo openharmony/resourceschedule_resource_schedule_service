@@ -38,6 +38,7 @@ void WindowStateObserver::OnFocused(const sptr<FocusChangeInfo>& focusChangeInfo
     payload["windowId"] = std::to_string(focusChangeInfo->windowId_);
     payload["windowType"] = std::to_string((int32_t)(focusChangeInfo->windowType_));
     payload["displayId"] = std::to_string(focusChangeInfo->displayId_);
+    payload["realDisplayId"] = std::to_string(focusChangeInfo->realDisplayId_);
     ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_FOCUS, payload);
 }
@@ -54,6 +55,7 @@ void WindowStateObserver::OnUnfocused(const sptr<FocusChangeInfo>& focusChangeIn
     payload["windowId"] = std::to_string(focusChangeInfo->windowId_);
     payload["windowType"] = std::to_string((int32_t)(focusChangeInfo->windowType_));
     payload["displayId"] = std::to_string(focusChangeInfo->displayId_);
+    payload["realDisplayId"] = std::to_string(focusChangeInfo->realDisplayId_);
     ResSchedMgr::GetInstance().ReportData(
         ResType::RES_TYPE_WINDOW_FOCUS, ResType::WindowFocusStatus::WINDOW_UNFOCUS, payload);
 }
