@@ -433,7 +433,7 @@ enum : uint32_t {
     RES_TYPE_FLOATING_WINDOW_V2 = 209,
     // float ball, value 1: enter, value 0: exit
     RES_TYPE_FLOATING_BALL = 210,
-        // get first frame drawn
+    // get first frame drawn
     RES_TYPE_FIRST_FRAME_DRAWN = 211,
     // report for arkui component state change
     RES_TYPE_COMPONENT_STATE_CHANGE = 212,

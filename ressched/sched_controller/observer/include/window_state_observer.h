@@ -25,6 +25,11 @@
 #include "nlohmann/json.hpp"
 #include "window_manager.h"
 #include "wm_common.h"
+#ifdef RESOURCE_SCHEDULE_SERVICE_DEPEND_WM
+#define RSS_WINDOW_MANAGER WindowManager
+#else
+#define RSS_WINDOW_MANAGER WindowManagerLite
+#endif
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -81,9 +86,12 @@ private:
 class WindowModeObserver : public IWindowModeChangedListener {
 public:
     void OnWindowModeUpdate(const WindowModeType mode) override;
+    void InitWindowMode();
 private:
     uint8_t MarshallingWindowModeType(const WindowModeType mode);
+    bool GetCurrentUserId(int32_t& userId) const;
     uint8_t lastWindowMode_ = RSSWindowMode::WINDOW_MODE_OTHER;
+    std::mutex lastWindowModeMutex_;
 };
 
 class PiPStateObserver : public OHOS::Rosen::IPiPStateChangedListener {
