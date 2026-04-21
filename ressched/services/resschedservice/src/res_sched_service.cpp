@@ -121,7 +121,6 @@ namespace {
         ResType::RES_TYPE_CTRL_FORKALL_IMAGE_INTERFACE,
         ResType::RES_TYPE_SNAPSHOT_FAILURE,
         ResType::SYNC_RES_TYPE_GET_UI_NODE_GC_CONFIG,
-        ResType::RES_TYPE_NEARLINK_SERVICE_EVENT,
         ResType::RES_TYPE_COMPONENT_STATE_CHANGE
     };
     static const std::unordered_set<uint32_t> FG_THIRDPART_RES = {
