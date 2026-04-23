@@ -429,6 +429,8 @@ enum : uint32_t {
     RES_TYPE_TOPN_USAGE_INFO = 206,
     // get first frame drawn
     RES_TYPE_FIRST_FRAME_DRAWN = 211,
+    // report for arkui component state change
+    RES_TYPE_COMPONENT_STATE_CHANGE = 212,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
@@ -469,8 +471,8 @@ enum : uint32_t {
     RES_TYPE_DISPLAY_POWER_WAKE_UP = 509,
     // get smart gc scene info
     SYNC_RES_TYPE_GET_SMART_GC_SCENE_INFO = 510,
-    // get click ext report
-    SYNC_RES_TYPE_APP_IS_IN_CLICK_REPORT_EXT_LIST = 511,
+    // get white list from taihang engine
+    SYNC_RES_TYPE_APP_IS_IN_TAIHANG_LIST = 511,
     // report app ctrl forkall image, only for forkall_plugin
     RES_TYPE_CTRL_FORKALL_IMAGE_INTERFACE = 512,
     // get is template process, only for forkall_plugin
