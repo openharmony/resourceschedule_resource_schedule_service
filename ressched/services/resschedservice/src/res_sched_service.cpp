@@ -76,6 +76,10 @@ namespace {
         ResType::RES_TYPE_SWIPE_DIRECTION_UP,
         ResType::RES_TYPE_WINDOW_PANEL,
         ResType::RES_TYPE_WINDOW_SPLIT_SCREEN,
+        ResType::SYNC_RES_TYPE_REQUEST_MUTEX_STATUS,
+        ResType::RES_TYPE_FLOATING_WINDOW_V1,
+        ResType::RES_TYPE_FLOATING_WINDOW_V2,
+        ResType::RES_TYPE_FLOATING_BALL,
     };
     static const std::unordered_set<uint32_t> THIRDPART_RES = {
         ResType::RES_TYPE_CLICK_RECOGNIZE,
