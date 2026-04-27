@@ -836,6 +836,7 @@ void ObserverManager::SubscribeWindowModeChange()
                                     "MODULE_NAME", "SchedController", "SCENE_NAME", "register failure",
                                     "ERR_INFO", "Register a listener of window mode content change failed.");
             }
+            windowModeObserver_->InitWindowMode();
         }
     }
 }
