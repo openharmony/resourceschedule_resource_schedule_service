@@ -427,6 +427,8 @@ enum : uint32_t {
     RES_TYPE_USER_UNLOCKED = 205,
     // usage topn
     RES_TYPE_TOPN_USAGE_INFO = 206,
+    // report avcodec hardware resources, value 0: decoding, value 1: encoding
+    RES_TYPE_AVCODE_HARDWARE_RESOURCES = 207,
      // float window 1.0, value 1: enter, value 0: exit
     RES_TYPE_FLOATING_WINDOW_V1 = 208,
     // float window 2.0, value 1: enter, value 0: exit
@@ -489,8 +491,6 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_UI_NODE_GC_CONFIG = 515,
     // report sa notify make image, only for forkall_plugin
     SYNC_RES_TYPE_NOTIFY_MAKE_IMAGE = 516,
-    // report hardware decoding resources
-    RES_TYPE_HARDWARE_DECODING_RESOURCES = 517,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
