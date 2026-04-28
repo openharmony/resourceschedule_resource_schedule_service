@@ -22,6 +22,13 @@
 namespace OHOS {
 namespace ResourceSchedule {
 namespace ResType {
+
+#if defined(__GNUC__) && __GNUC__ >= 4
+    #define RESOURCESCHEDULE_HIDDEN __attribute__((visibility("hidden")))
+#else
+    #define RESOURCESCHEDULE_HIDDEN
+#endif
+
 /**
 * @brief SystemAbility status
 */
@@ -565,7 +572,7 @@ enum KeyFloatingWindowStatus : int64_t {
 /**
 * @brief ui sensitive extension
 */
-inline const std::vector<int32_t > UI_SENSITIVE_EXTENSION = {
+RESOURCESCHEDULE_HIDDEN inline const std::vector<int32_t > UI_SENSITIVE_EXTENSION = {
     2, // INPUT_EXTENSION_TYPE
     255, // UNSPECIFIED_EXTENSION_TYPE
     256, // UI_EXTENSION_TYPE
