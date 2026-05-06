@@ -576,7 +576,7 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
         RESSCHED_LOGI("%{public}s arg: %{public}s.", __func__, ret.c_str());
         return ret;
     });
-    if (DumpPreloadSwitch(fd, argsInStr) == ERR_OK) {
+    if (DumpPreloadUserMode(fd, argsInStr) == ERR_OK) {
         return ERR_OK;
     }
 #ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
@@ -621,7 +621,7 @@ int32_t ResSchedService::Dump(int32_t fd, const std::vector<std::u16string>& arg
     return ERR_OK;
 }
 
-int32_t ResSchedService::DumpPreloadSwitch(int32_t fd, std::vector<std::string>& argsInStr)
+int32_t ResSchedService::DumpPreloadUserMode(int32_t fd, std::vector<std::string>& argsInStr)
 {
     if (!CheckDumpPermission()) {
         return ERR_RES_SCHED_PERMISSION_DENIED;
@@ -631,20 +631,23 @@ int32_t ResSchedService::DumpPreloadSwitch(int32_t fd, std::vector<std::string>&
     }
     std::string result;
     if (argsInStr.size() == 0) {
-        if (CheckENGMode()) {
-            return ERR_RES_SCHED_PERMISSION_DENIED;
-        }
         // hidumper -s 1901
         DumpUserUsage(result);
         if (!SaveStringToFd(fd, result)) {
             RESSCHED_LOGE("PreloadSwitch %{public}s save to fd failed", __func__);
         }
-        return ERR_OK;
+        return ERR_RES_SCHED_PERMISSION_DENIED;
     }
 
-    if (argsInStr[DUMP_OPTION] == "setPreloadSwitch" || argsInStr[DUMP_OPTION] == "getPreloadSwitch") {
+    if (argsInStr[DUMP_OPTION] == "setPreloadSwitch" || argsInStr[DUMP_OPTION] == "getPreloadSwitch" ||
+        argsInStr[DUMP_OPTION] == "preloadAbilityStage" || argsInStr[DUMP_OPTION] == "preloadWindowStage" ||
+        argsInStr[DUMP_OPTION] == "prefetch" || argsInStr[DUMP_OPTION] == "preloadProcess") {
         // hidumper -s -a "setPreloadSwitch (value)"
         // hidumper -s -a "getPreloadSwitch"
+        // hidumper -s -a "preloadAbilityStage (bundleName)"
+        // hidumper -s -a "preloadWindowStage (bundleName) (abilityName)"
+        // hidumper -s -a "prefetch (bundleName) (abilityName)"
+        // hidumper -s -a "preloadProcess (bundleName)"
         std::string result;
         PluginMgr::GetInstance().DumpOnePlugin(result, "libapp_preload_plugin.z.so", argsInStr);
         if (!SaveStringToFd(fd, result)) {
@@ -716,11 +719,10 @@ void ResSchedService::DumpUserUsage(std::string &result)
     result.append("usage: resource schedule service dump [<options>]\n")
         .append("setPreloadSwitch      |setPreloadSwitch [value], 1:open, 0:close.\n")
         .append("getPreloadSwitch      |getPreloadSwitch.\n")
-#ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
-        .append("    setSystemLoadLevel (LevelNum/reset): set system load level. LevelNum range: 0-7\n")
-        .append("    getSystemloadInfo: get system load info.\n")
-#endif //SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
-        ;
+        .append("preloadAbilityStage   |preloadAbilityStage [bundleName].\n")
+        .append("preloadWindowStage    |preloadWindowStage [bundleName] [abilityName].\n")
+        .append("prefetch              |prefetch  [bundleName] [abilityName].\n")
+        .append("preloadProcess        |preloadProcess [bundleName].\n");
 }
 
 #ifdef SET_SYSTEM_LOAD_LEVEL_2D_ENABLE
