@@ -641,12 +641,11 @@ int32_t ResSchedService::DumpPreloadUserMode(int32_t fd, std::vector<std::string
 
     if (argsInStr[DUMP_OPTION] == "setPreloadSwitch" || argsInStr[DUMP_OPTION] == "getPreloadSwitch" ||
         argsInStr[DUMP_OPTION] == "preloadAbilityStage" || argsInStr[DUMP_OPTION] == "preloadWindowStage" ||
-        argsInStr[DUMP_OPTION] == "prefetch" || argsInStr[DUMP_OPTION] == "preloadProcess") {
+        argsInStr[DUMP_OPTION] == "preloadProcess") {
         // hidumper -s -a "setPreloadSwitch (value)"
         // hidumper -s -a "getPreloadSwitch"
         // hidumper -s -a "preloadAbilityStage (bundleName)"
         // hidumper -s -a "preloadWindowStage (bundleName) (abilityName)"
-        // hidumper -s -a "prefetch (bundleName) (abilityName)"
         // hidumper -s -a "preloadProcess (bundleName)"
         std::string result;
         PluginMgr::GetInstance().DumpOnePlugin(result, "libapp_preload_plugin.z.so", argsInStr);
@@ -721,7 +720,6 @@ void ResSchedService::DumpUserUsage(std::string &result)
         .append("getPreloadSwitch      |getPreloadSwitch.\n")
         .append("preloadAbilityStage   |preloadAbilityStage [bundleName].\n")
         .append("preloadWindowStage    |preloadWindowStage [bundleName] [abilityName].\n")
-        .append("prefetch              |prefetch  [bundleName] [abilityName].\n")
         .append("preloadProcess        |preloadProcess [bundleName].\n");
 }
 
