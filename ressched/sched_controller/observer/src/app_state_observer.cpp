@@ -26,6 +26,9 @@
 
 namespace OHOS {
 namespace ResourceSchedule {
+namespace {
+constexpr int32_t CALL_TO_BACKGROUND = 1;
+}
 
 std::unordered_map<int32_t, int32_t> RmsApplicationStateObserver::extensionStateToAbilityState_ = {
     {static_cast<int32_t>(AppExecFwk::ExtensionState::EXTENSION_STATE_CREATE),
@@ -224,6 +227,7 @@ void RmsApplicationStateObserver::OnApplicationStateChanged(const AppStateData &
     payload["preloadMode"] = std::to_string(appStateData.preloadMode);
     payload["state"] = std::to_string(appStateData.state);
     payload["callerBundleName"] = appStateData.callerBundleName;
+    payload["isStartedByCallToBackground"] = std::to_string(appStateData.byCallStatus == CALL_TO_BACKGROUND);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state,
         payload);
     ResSchedMgr::GetInstance().ReportAppStateInProcess(appStateData.state, appStateData.pid);
