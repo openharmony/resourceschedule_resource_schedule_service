@@ -81,6 +81,15 @@ enum class BatteryChargeState : uint32_t {
     CHARGE_STATE_BUTT
 };
 
+enum PerformanceMode {
+    POWER_MODE_MIN = 600,
+    NORMAL_MODE = POWER_MODE_MIN,
+    POWER_SAVE_MODE,
+    PERFORMANCE_MODE,
+    EXTREME_POWER_SAVE_MODE,
+    POWER_MODE_MAX = EXTREME_POWER_SAVE_MODE
+};
+
 class SocPerfPlugin : public Plugin {
     DECLARE_SINGLE_INSTANCE(SocPerfPlugin)
 
@@ -118,6 +127,7 @@ private:
     bool isFocusAppsGameType_ = false;
     int64_t screenStatus_;
     std::string deviceMode_;
+    PerformanceMode performanceMode_ = PerformanceMode::NORMAL_MODE;
     std::string deviceOrientation_;
     ffrt::mutex screenMutex_;
     void* handle_ = nullptr;
@@ -153,8 +163,6 @@ private:
     void InitWeakInterAction();
     void LoadWeakInterAction(const PluginConfig& itemLists);
     void SetWeakActionEnable(const std::string& subValue);
-    void AddKeyAppName(const std::string& subValue);
-    void AddKeyAppType(const std::string& subValue);
     void UpdateWeakActionStatus();
     void InitPerfCrucialFunc(const char* perfSoPath, const char* perfSoFunc);
     void HandleWindowFocus(const std::shared_ptr<ResData>& data);
@@ -245,6 +253,7 @@ private:
     bool HandleDisplayPowerWakeUp(const std::shared_ptr<ResData>& data);
     bool HandleLiveBroadcast(const std::shared_ptr<ResData>& data);
     bool HandleOobeClone(const std::shared_ptr<ResData>& data);
+    bool HandlePerformanceModeChange(const std::shared_ptr<ResData>& data);
 };
 } // namespace ResourceSchedule
 } // namespace OHOS

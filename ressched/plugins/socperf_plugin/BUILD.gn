@@ -26,7 +26,10 @@ config("socperf_plugin_config") {
 ohos_shared_library("socperf_plugin") {
   public_configs = [ ":socperf_plugin_config" ]
 
-  sources = [ "src/socperf_plugin.cpp" ]
+  sources = [
+    "src/socperf_plugin.cpp",
+    "src/utils.cpp",
+  ]
 
   deps = [ "${ressched_services}:resschedsvc", 
           "${ressched_common}:ressched_common_utils",]
@@ -82,7 +85,10 @@ ohos_shared_library("socperf_plugin") {
 ohos_static_library("socperf_plugin_static") {
   public_configs = [ ":socperf_plugin_config" ]
 
-  sources = [ "src/socperf_plugin.cpp" ]
+  sources = [
+    "src/socperf_plugin.cpp",
+    "src/utils.cpp",
+  ]
 
   deps = [ "${ressched_services}:resschedsvc" ]
 

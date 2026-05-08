@@ -22,6 +22,7 @@
 #include "res_type.h"
 #define private public
 #include "socperf_plugin.h"
+#include "utils.h"
 #undef private
 
 using namespace testing::ext;
@@ -1293,13 +1294,13 @@ HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_047, Function | MediumTes
 HWTEST_F(SocPerfPluginTest, SocPerfPluginTest_API_TEST_048, Function | MediumTest | Level0)
 {
     const std::string& subValue = "";
-    SocPerfPlugin::GetInstance().AddKeyAppType(subValue);
+    Utils::AddKeyAppType(subValue, SocPerfPlugin::GetInstance().keyAppType_);
     const std::string& subValue1 = "test";
-    SocPerfPlugin::GetInstance().AddKeyAppType(subValue1);
+    Utils::AddKeyAppType(subValue1, SocPerfPlugin::GetInstance().keyAppType_);
     const std::string& keyAppName = "";
-    SocPerfPlugin::GetInstance().AddKeyAppName(keyAppName);
+    Utils::AddKeyAppName(keyAppName, SocPerfPlugin::GetInstance().keyAppName_);
     const std::string& keyAppName1 = "name";
-    SocPerfPlugin::GetInstance().AddKeyAppName(keyAppName1);
+    Utils::AddKeyAppName(keyAppName1, SocPerfPlugin::GetInstance().keyAppName_);
     SocPerfPlugin::GetInstance().StringToSet("1,2,3,4", ',');
     SocPerfPlugin::GetInstance().HandleScreenOff();
     SocPerfPlugin::GetInstance().HandleWebDragResize(nullptr);

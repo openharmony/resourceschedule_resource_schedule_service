@@ -437,6 +437,8 @@ enum : uint32_t {
     RES_TYPE_FIRST_FRAME_DRAWN = 211,
     // report for arkui component state change
     RES_TYPE_COMPONENT_STATE_CHANGE = 212,
+    // report socperf performance mode
+    RES_TYPE_SOCPERF_PERFORMANCE_MODE_CHANGED = 213,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
