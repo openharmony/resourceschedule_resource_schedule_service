@@ -2715,7 +2715,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_092, Function | Med
  * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_001
  * @tc.desc: Test HandleProcessCreated with GAME_PRELAUNCH mode
  * @tc.type: FUNC
- * @tc.require: 
+ * @tc.require:
  */
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_001, Function | MediumTest | Level1)
 {
@@ -2745,7 +2745,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_001, 
  * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_002
  * @tc.desc: Test HandlePrelaunch with GAME_PRELAUNCH mode
  * @tc.type: FUNC
- * @tc.require: 
+ * @tc.require:
  */
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_002, Function | MediumTest | Level1)
 {
@@ -2775,7 +2775,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_002, 
  * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_003
  * @tc.desc: Test HandleProcessStateChanged with GAME_PRELAUNCH mode
  * @tc.type: FUNC
- * @tc.require: 
+ * @tc.require:
  */
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_003, Function | MediumTest | Level1)
 {
@@ -2808,7 +2808,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_003, 
  * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_004
  * @tc.desc: Test HandleGamePrelaunch method
  * @tc.type: FUNC
- * @tc.require: 
+ * @tc.require:
  */
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_004, Function | MediumTest | Level1)
 {
@@ -2834,7 +2834,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_004, 
  * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_005
  * @tc.desc: Test HandleAbilityStateChanged with GAME_PRELAUNCH mode
  * @tc.type: FUNC
- * @tc.require: 
+ * @tc.require:
  */
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_005, Function | MediumTest | Level1)
 {
@@ -2871,7 +2871,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_005, 
  * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_006
  * @tc.desc: Test HandleProcessStateChanged with GAME_PRELAUNCH mode and FOREGROUND state
  * @tc.type: FUNC
- * @tc.require: 
+ * @tc.require:
  */
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_006, Function | MediumTest | Level1)
 {
@@ -2905,7 +2905,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_006, 
  * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_007
  * @tc.desc: Test HandleProcessStateChanged with GAME_PRELAUNCH mode and BACKGROUND state
  * @tc.type: FUNC
- * @tc.require: 
+ * @tc.require:
  */
 HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_007, Function | MediumTest | Level1)
 {
