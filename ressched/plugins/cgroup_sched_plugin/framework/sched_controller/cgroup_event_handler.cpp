@@ -40,7 +40,7 @@ namespace {
     constexpr uint32_t CHECK_WEB_SUBWIN_TASK_DELAY = 60 * 1000;
     const std::string MMI_SERVICE_NAME = "mmi_service";
     // PREMAKE_MODE_STRING = 1, PRELOADMODULE_MODE_STRING = 2,
-    // PRELAUNCH_MODE_STRING = 4
+    // PRELAUNCH_MODE_STRING = 4, GAME_PRELAUNCH_MODE_STRING = 5
     const std::unordered_set<int32_t> PRELOAD_SET = {1, 2, 4, 5};
 }
 
@@ -387,7 +387,7 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
     int32_t isPreloadUIExtension = 0;
     if (ParseValue(isPreloadUIExtension, "isPreloadUIExtension", payload)) {
         CGS_LOGD("%{public}s %{public}d %{public}d", __func__, isPreloadUIExtension, info.extensionType);
-        isPreloadUIExtension ? AdjustSource::ADJS_UIEXTENSION_PRELOAD : policy;
+        policy = isPreloadUIExtension ? AdjustSource::ADJS_UIEXTENSION_PRELOAD : policy;
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), policy);
 }
