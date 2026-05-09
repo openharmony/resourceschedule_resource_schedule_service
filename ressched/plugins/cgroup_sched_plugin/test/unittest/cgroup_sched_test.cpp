@@ -1304,13 +1304,11 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_034, Function | Med
     uint64_t displayId = 1;
     uint32_t windowId = 1;
     nlohmann::json payload;
- 
     uid_t uidMain = 1000;
     pid_t pidMain = 1234;
     cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pidMain, uidMain);
     auto appMain = supervisor_->GetAppRecordNonNull(uidMain);
     EXPECT_TRUE(appMain->focusedProcess_ != nullptr);
- 
     uid_t uidSec = 1001;
     pid_t pidSec = 1235;
     cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pidSec, uidSec);
@@ -2924,7 +2922,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_007, 
     payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
     payload["preloadMode"] = std::to_string((int32_t)AppExecFwk::PreloadMode::GAME_PRELAUNCH);
     cgroupEventHandler->HandleProcessCreated(resType, value, payload);
-    
+
     // Test process state change with GAME_PRELAUNCH and BACKGROUND
     payload["state"] = std::to_string((int32_t)ResType::ProcessStatus::PROCESS_BACKGROUND);
     cgroupEventHandler->HandleProcessStateChanged(resType, value, payload);
