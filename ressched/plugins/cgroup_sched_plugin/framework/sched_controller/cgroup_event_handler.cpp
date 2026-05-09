@@ -158,13 +158,13 @@ void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t val
     std::shared_ptr<ProcessRecord> procRecord = app->GetProcessRecordNonNull(pid);
     procRecord->processState_ = state;
     if (state == (int32_t)(ResType::ProcessStatus::PROCESS_BACKGROUND) &&
-        preloadMode == (int32_t)(AppExecFwk::PreloadMode::PRE_LAUNCH)) {
-        CGS_LOGD("qyh--%{public}s : PROCESS_BACKGROUND, preloadMode: %{public}d, "
+        preloadMode == (int32_t)(PreloadMode::PRE_LAUNCH)) {
+        CGS_LOGD("%{public}s : PROCESS_BACKGROUND, preloadMode: %{public}d, "
                  "function return directly", __func__, preloadMode);
         return;
     }
-    if (preloadMode == (int32_t)(AppExecFwk::PreloadMode::GAME_PRELAUNCH)) {
-        CGS_LOGD("qyh--%{public}s : GAME_PRELAUNCH need not change cgroup", __func__);
+    if (preloadMode == (int32_t)(PreloadMode::GAME_PRELAUNCH)) {
+        CGS_LOGD("%{public}s : GAME_PRELAUNCH need not change cgroup", __func__);
         return;
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
