@@ -252,7 +252,7 @@ bool CgroupEventHandler::HandlePrelaunch(int32_t abilityState, int32_t preloadMo
 
 bool CgroupEventHandler::HandleGamePrelaunch(int32_t preloadMode)
 {
-    if (preloadMode == (int32_t)(AppExecFwk::PreloadMode::GAME_PRELAUNCH)) {
+    if (preloadMode == (int32_t)(PreloadMode::GAME_PRELAUNCH)) {
         CGS_LOGD("%{public}s : %{public}d, function return directly", __func__, preloadMode);
         return true;
     }
