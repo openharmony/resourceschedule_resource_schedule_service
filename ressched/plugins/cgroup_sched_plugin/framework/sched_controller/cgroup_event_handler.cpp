@@ -40,8 +40,8 @@ namespace {
     constexpr uint32_t CHECK_WEB_SUBWIN_TASK_DELAY = 60 * 1000;
     const std::string MMI_SERVICE_NAME = "mmi_service";
     // PREMAKE_MODE_STRING = 1, PRELOADMODULE_MODE_STRING = 2,
-    // PRELAUNCH_MODE_STRING = 4
-    const std::unordered_set<int32_t> PRELOAD_SET = {1, 2, 4};
+    // PRELAUNCH_MODE_STRING = 4, GAME_PRELAUNCH_MODE_STRING = 5
+    const std::unordered_set<int32_t> PRELOAD_SET = {1, 2, 4, 5};
 }
 
 using OHOS::AppExecFwk::ApplicationState;
@@ -163,6 +163,10 @@ void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t val
                  "function return directly", __func__, preloadMode);
         return;
     }
+    if (preloadMode == (int32_t)(PreloadMode::GAME_PRELAUNCH)) {
+        CGS_LOGD("%{public}s : GAME_PRELAUNCH need not change cgroup", __func__);
+        return;
+    }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_STATE);
 }
@@ -218,7 +222,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
         HandleAbilityTerminated(uid, pid, recordId);
         return;
     }
-    if (HandlePrelaunch(abilityState, preloadMode)) {
+    if (HandlePrelaunch(abilityState, preloadMode) || HandleGamePrelaunch(preloadMode)) {
         return;
     }
     auto app = supervisor_->GetAppRecordNonNull(uid);
@@ -245,6 +249,16 @@ bool CgroupEventHandler::HandlePrelaunch(int32_t abilityState, int32_t preloadMo
     }
     return false;
 }
+
+bool CgroupEventHandler::HandleGamePrelaunch(int32_t preloadMode)
+{
+    if (preloadMode == (int32_t)(PreloadMode::GAME_PRELAUNCH)) {
+        CGS_LOGD("%{public}s : %{public}d, function return directly", __func__, preloadMode);
+        return true;
+    }
+    return false;
+}
+
 
 void CgroupEventHandler::HandleAbilityTerminated(int32_t uid, int32_t pid, int32_t recordId)
 {
@@ -368,14 +382,12 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
             break;
     }
     AdjustSource policy = PRELOAD_SET.count(info.preloadMode) ?
-        AdjustSource::ADJS_APP_PRELOAD : AdjustSource::ADJS_PROCESS_CREATE;
-    
+        (info.preloadMode == (int32_t)(PreloadMode::GAME_PRELAUNCH) ?
+            AdjustSource::ADJS_GAME_PRELAUNCH : AdjustSource::ADJS_APP_PRELOAD) : AdjustSource::ADJS_PROCESS_CREATE;
     int32_t isPreloadUIExtension = 0;
     if (ParseValue(isPreloadUIExtension, "isPreloadUIExtension", payload)) {
         CGS_LOGD("%{public}s %{public}d %{public}d", __func__, isPreloadUIExtension, info.extensionType);
-        if (isPreloadUIExtension) {
-            policy = AdjustSource::ADJS_UIEXTENSION_PRELOAD;
-        }
+        policy = isPreloadUIExtension ? AdjustSource::ADJS_UIEXTENSION_PRELOAD : policy;
     }
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()), policy);
 }
@@ -869,6 +881,11 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
 {
     int32_t uid = 0;
     int32_t pid = 0;
+    int32_t preloadMode = -1;
+    if (!ParseValue(preloadMode, "preloadMode", payload)) {
+        CGS_LOGE("%{public}s : payload does not contain preloadMode", __func__);
+        return;
+    }
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -893,6 +910,11 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
     procRecord->audioPlayingState_ = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s :Appname:%{public}s, uid:%{public}d, pid:%{public}d, state:%{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
+
+    if (HandleGamePrelaunch(preloadMode)) {
+        CGS_LOGD("%{public}s : %{public}d", __func__,   preloadMode);
+        return;
+    }
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
@@ -1051,12 +1073,13 @@ void CgroupEventHandler::HandleNapModeEvent(uint32_t resType, int64_t value, con
         return;
     }
     if (uid <= 0 || pid <= 0) {
-        CGS_LOGE("%{public}s : uid or pid is less than 0", __func__);
+        CGS_LOGE("%{public}s : uid or pid is invalid", __func__);
         return;
     }
     std::shared_ptr<Application> app = supervisor_->GetAppRecord(uid);
     std::shared_ptr<ProcessRecord> procRecord = app ? app->GetProcessRecord(pid) : nullptr;
     if (!app || !procRecord) {
+        CGS_LOGE("%{public}s : app or procRecord is nullptr", __func__);
         return;
     }
     CGS_LOGD("report nap mode, uid:%{public}d, pid:%{public}d, value:%{public}lld",
@@ -1463,7 +1486,7 @@ bool CgroupEventHandler::GetProcInfoByPayload(int32_t &uid, int32_t &pid, std::s
 
 bool CgroupEventHandler::ParseConfig(int32_t& uid, int32_t& pid, std::string& bundleName,
     std::string& abilityName, int32_t& recordId, int32_t& abilityState, int32_t& abilityType,
-    int32_t& callerUid, int32_t preloadMode, const nlohmann::json& payload)
+    int32_t& callerUid, int32_t& preloadMode, const nlohmann::json& payload)
 {
     if (!ParseValue(uid, "uid", payload) || !ParseValue(pid, "pid", payload) ||
         !ParseString(bundleName, "bundleName", payload) || !ParseString(abilityName, "abilityName", payload) ||

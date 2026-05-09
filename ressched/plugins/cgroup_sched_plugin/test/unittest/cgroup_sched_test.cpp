@@ -1304,13 +1304,11 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_034, Function | Med
     uint64_t displayId = 1;
     uint32_t windowId = 1;
     nlohmann::json payload;
-
     uid_t uidMain = 1000;
     pid_t pidMain = 1234;
     cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pidMain, uidMain);
     auto appMain = supervisor_->GetAppRecordNonNull(uidMain);
     EXPECT_TRUE(appMain->focusedProcess_ != nullptr);
-
     uid_t uidSec = 1001;
     pid_t pidSec = 1235;
     cgroupEventHandler->HandleFocusedWindow(windowId, windowType, displayId, pidSec, uidSec);
@@ -2709,6 +2707,230 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_092, Function | Med
     payload["UID"] = "0";
     payload["PID"] = "0";
     cgroupEventHandler->HandleNapModeEvent(resType, value, payload);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_001
+ * @tc.desc: Test HandleProcessCreated with GAME_PRELAUNCH mode
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_001, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    
+    uint32_t resType = ResType::RES_TYPE_REPORT_RENDER_THREAD;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.game.test";
+    payload["hostPid"] = std::to_string(0);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["preloadMode"] = std::to_string((int32_t)AppExecFwk::PreloadMode::GAME_PRELAUNCH);
+    
+    cgroupEventHandler->HandleProcessCreated(resType, value, payload);
+    
+    auto procRecord = supervisor_->GetAppRecord(1000)->GetProcessRecord(1234);
+    EXPECT_TRUE(procRecord != nullptr);
+    
+    EXPECT_TRUE(procRecord->setSchedGroup_ != SP_DEFAULT);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_002
+ * @tc.desc: Test HandlePrelaunch with GAME_PRELAUNCH mode
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_002, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    
+    // Test with GAME_PRELAUNCH and ABILITY_STATE_CREATE
+    // HandlePrelaunch only handles PRE_LAUNCH, not GAME_PRELAUNCH
+    bool result = cgroupEventHandler->HandlePrelaunch(
+        (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_CREATE,
+        (int32_t)AppExecFwk::PreloadMode::GAME_PRELAUNCH);
+    EXPECT_FALSE(result);
+    
+    // Test with GAME_PRELAUNCH and ABILITY_STATE_BACKGROUND
+    result = cgroupEventHandler->HandlePrelaunch(
+        (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_BACKGROUND,
+        (int32_t)AppExecFwk::PreloadMode::GAME_PRELAUNCH);
+    EXPECT_FALSE(result);
+    
+    // Test with GAME_PRELAUNCH and other states
+    result = cgroupEventHandler->HandlePrelaunch(
+        (int32_t)AppExecFwk::AbilityState::ABILITY_STATE_FOREGROUND,
+        (int32_t)AppExecFwk::PreloadMode::GAME_PRELAUNCH);
+    EXPECT_FALSE(result);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_003
+ * @tc.desc: Test HandleProcessStateChanged with GAME_PRELAUNCH mode
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_003, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    
+    // Create process first
+    uint32_t resType = ResType::RES_TYPE_REPORT_RENDER_THREAD;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.game.test";
+    payload["hostPid"] = std::to_string(0);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["preloadMode"] = std::to_string((int32_t)AppExecFwk::PreloadMode::GAME_PRELAUNCH);
+    cgroupEventHandler->HandleProcessCreated(resType, value, payload);
+    
+    // Test process state change with GAME_PRELAUNCH and BACKGROUND
+    payload["state"] = std::to_string((int32_t)ResType::ProcessStatus::PROCESS_BACKGROUND);
+    cgroupEventHandler->HandleProcessStateChanged(resType, value, payload);
+    
+    auto procRecord = supervisor_->GetAppRecord(1000)->GetProcessRecord(1234);
+    EXPECT_TRUE(procRecord != nullptr);
+    EXPECT_TRUE(procRecord->setSchedGroup_ != SP_BACKGROUND);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_004
+ * @tc.desc: Test HandleGamePrelaunch method
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_004, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    
+    // Test with GAME_PRELAUNCH
+    bool result = cgroupEventHandler->HandleGamePrelaunch(
+        (int32_t)AppExecFwk::PreloadMode::GAME_PRELAUNCH);
+    EXPECT_TRUE(result);
+    
+    // Test with PRE_LAUNCH
+    result = cgroupEventHandler->HandleGamePrelaunch(
+        (int32_t)AppExecFwk::PreloadMode::PRE_LAUNCH);
+    EXPECT_FALSE(result);
+    
+    // Test with PRELOAD_NONE
+    result = cgroupEventHandler->HandleGamePrelaunch(
+        (int32_t)AppExecFwk::PreloadMode::PRELOAD_NONE);
+    EXPECT_FALSE(result);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_005
+ * @tc.desc: Test HandleAbilityStateChanged with GAME_PRELAUNCH mode
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_005, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    
+    // Create process first
+    uint32_t resType = ResType::RES_TYPE_REPORT_RENDER_THREAD;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.game.test";
+    payload["abilityName"] = "GameAbility";
+    payload["recordId"] = std::to_string(1);
+    payload["hostPid"] = std::to_string(0);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["preloadMode"] = std::to_string((int32_t)AppExecFwk::PreloadMode::GAME_PRELAUNCH);
+    cgroupEventHandler->HandleProcessCreated(resType, value, payload);
+    
+    // Test ability state change with GAME_PRELAUNCH and ABILITY_STATE_CREATE
+    payload["abilityState"] = std::to_string((int32_t)AppExecFwk::AbilityState::ABILITY_STATE_CREATE);
+    payload["abilityType"] = std::to_string((int32_t)AppExecFwk::AbilityType::PAGE);
+    cgroupEventHandler->HandleAbilityStateChanged(resType, value, payload);
+    
+    // Verify that no cgroup adjustment happened (should be ignored)
+    auto procRecord = supervisor_->GetAppRecord(1000)->GetProcessRecord(1234);
+    EXPECT_TRUE(procRecord != nullptr);
+    EXPECT_TRUE(procRecord->setSchedGroup_ != SP_FOREGROUND);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_006
+ * @tc.desc: Test HandleProcessStateChanged with GAME_PRELAUNCH mode and FOREGROUND state
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_006, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    
+    // Create process first
+    uint32_t resType = ResType::RES_TYPE_REPORT_RENDER_THREAD;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.game.test";
+    payload["hostPid"] = std::to_string(0);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["preloadMode"] = std::to_string((int32_t)AppExecFwk::PreloadMode::GAME_PRELAUNCH);
+    cgroupEventHandler->HandleProcessCreated(resType, value, payload);
+    
+    // Test process state change with GAME_PRELAUNCH and FOREGROUND
+    payload["state"] = std::to_string((int32_t)ResType::ProcessStatus::PROCESS_FOREGROUND);
+    cgroupEventHandler->HandleProcessStateChanged(resType, value, payload);
+    
+    // Verify that no cgroup adjustment happened (should be ignored)
+    auto procRecord = supervisor_->GetAppRecord(1000)->GetProcessRecord(1234);
+    EXPECT_TRUE(procRecord != nullptr);
+    EXPECT_TRUE(procRecord->setSchedGroup_ != SP_FOREGROUND);
+}
+
+/**
+ * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_007
+ * @tc.desc: Test HandleProcessStateChanged with GAME_PRELAUNCH mode and BACKGROUND state
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_007, Function | MediumTest | Level1)
+{
+    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
+    cgroupEventHandler->SetSupervisor(supervisor_);
+    
+    // Create process first
+    uint32_t resType = ResType::RES_TYPE_REPORT_RENDER_THREAD;
+    int64_t value = 1235;
+    nlohmann::json payload;
+    payload["uid"] = std::to_string(1000);
+    payload["pid"] = std::to_string(1234);
+    payload["bundleName"] = "com.ohos.game.test";
+    payload["hostPid"] = std::to_string(0);
+    payload["extensionType"] = std::to_string(INVALID_EXTENSION_TYPE);
+    payload["processType"] = std::to_string((int32_t)AppExecFwk::ProcessType::NORMAL);
+    payload["preloadMode"] = std::to_string((int32_t)AppExecFwk::PreloadMode::GAME_PRELAUNCH);
+    cgroupEventHandler->HandleProcessCreated(resType, value, payload);
+
+    // Test process state change with GAME_PRELAUNCH and BACKGROUND
+    payload["state"] = std::to_string((int32_t)ResType::ProcessStatus::PROCESS_BACKGROUND);
+    cgroupEventHandler->HandleProcessStateChanged(resType, value, payload);
+    
+    // Verify that no cgroup adjustment happened (should be ignored)
+    auto procRecord = supervisor_->GetAppRecord(1000)->GetProcessRecord(1234);
+    EXPECT_TRUE(procRecord != nullptr);
+    EXPECT_TRUE(procRecord->setSchedGroup_ != SP_BACKGROUND);
 }
 } // namespace CgroupSetting
 } // namespace ResourceSchedule
