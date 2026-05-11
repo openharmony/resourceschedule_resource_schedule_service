@@ -141,6 +141,17 @@ HWTEST_F(EventListenerMgrTest, SendEvent002, Function | MediumTest | Level0)
 
     EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON, IPCSkeleton::GetCallingPid());
+    sleep(1);
+    EXPECT_TRUE(TestEventListener::eventType_ ==
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    EXPECT_TRUE(TestEventListener::eventValue_ ==
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START);
+
+    TestEventListener::eventType_ = 0;
+    TestEventListener::eventValue_ = 0;
+    EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo,
         ResType::EventListenerGroup::LISTENER_GROUP_COMMON, -1);
     sleep(1);
     EXPECT_TRUE(TestEventListener::eventType_ ==
