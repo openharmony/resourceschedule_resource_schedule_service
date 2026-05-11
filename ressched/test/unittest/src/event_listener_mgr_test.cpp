@@ -334,5 +334,84 @@ HWTEST_F(EventListenerMgrTest, SendEvent001, Function | MediumTest | Level0)
         ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_STOP, extInfo);
     EXPECT_TRUE(eventListener == nullptr);
 }
+
+/**
+ * @tc.name: eventListener manager SendEvent 002
+ * @tc.desc: test SendEvent with targetPid for precise notification
+ * @tc.type: FUNC
+ * @tc.require: issueIA9UZ9
+ * @tc.author:baiheng
+ */
+HWTEST_F(EventListenerMgrTest, SendEvent002, Function | MediumTest | Level0)
+{
+    constexpr int32_t testPid = 1000;
+    sptr<IRemoteObject> eventListener = new (std::nothrow) TestEventListener();
+    EXPECT_TRUE(eventListener != nullptr);
+    EventListenerMgr::GetInstance().RegisterEventListener(testPid, eventListener,
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+    nlohmann::json extInfo;
+    EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON, testPid);
+    sleep(1);
+    EXPECT_TRUE(TestEventListener::eventType_ ==
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    EXPECT_TRUE(TestEventListener::eventValue_ ==
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START);
+}
+
+/**
+ * @tc.name: eventListener manager SendEvent 003
+ * @tc.desc: test SendEvent with non-existent targetPid should not notify
+ * @tc.type: FUNC
+ * @tc.require: issueIA9UZ9
+ * @tc.author:baiheng
+ */
+HWTEST_F(EventListenerMgrTest, SendEvent003, Function | MediumTest | Level0)
+{
+    constexpr int32_t testPid = 2000;
+    constexpr int32_t nonExistentPid = 9999;
+    sptr<IRemoteObject> eventListener = new (std::nothrow) TestEventListener();
+    EXPECT_TRUE(eventListener != nullptr);
+    EventListenerMgr::GetInstance().RegisterEventListener(testPid, eventListener,
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+    TestEventListener::eventType_ = 0;
+    TestEventListener::eventValue_ = 0;
+    nlohmann::json extInfo;
+    EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON, nonExistentPid);
+    sleep(1);
+    EXPECT_TRUE(TestEventListener::eventType_ == 0);
+    EXPECT_TRUE(TestEventListener::eventValue_ == 0);
+}
+
+/**
+ * @tc.name: eventListener manager SendEvent 004
+ * @tc.desc: test SendEvent with targetPid=-1 should broadcast to all listeners
+ * @tc.type: FUNC
+ * @tc.require: issueIA9UZ9
+ * @tc.author:baiheng
+ */
+HWTEST_F(EventListenerMgrTest, SendEvent004, Function | MediumTest | Level0)
+{
+    constexpr int32_t testPid = 3000;
+    sptr<IRemoteObject> eventListener = new (std::nothrow) TestEventListener();
+    EXPECT_TRUE(eventListener != nullptr);
+    EventListenerMgr::GetInstance().RegisterEventListener(testPid, eventListener,
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+    nlohmann::json extInfo;
+    EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON, -1);
+    sleep(1);
+    EXPECT_TRUE(TestEventListener::eventType_ ==
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    EXPECT_TRUE(TestEventListener::eventValue_ ==
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START);
+}
 } // namespace ResourceSchedule
 } // namespace OHOS

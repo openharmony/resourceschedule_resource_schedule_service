@@ -48,14 +48,15 @@ public:
     void UnRegisterEventListener(int32_t callingPid, uint32_t eventType, uint32_t listenerGroup);
     void OnRemoteNotifierDied(const sptr<IRemoteObject>& notifier);
     void SendEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo,
-        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+        uint32_t listenerGroup = ResType::EventListenerGroup::LISTENER_GROUP_COMMON,
+        int32_t targetPid = -1);
     std::unordered_map<int32_t, std::vector<pid_t>> DumpRegisterInfo();
 private:
     EventListenerMgr() = default;
     ~EventListenerMgr();
     void RemoveListenerLock(const sptr<IRemoteObject>& listener);
     void SendEventLock(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo,
-        uint32_t listenerGroup);
+        uint32_t listenerGroup, int32_t targetPid = -1);
     void HandleSendEvent(std::vector<sptr<IRemoteObject>>& listenerVec,
         uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo, uint32_t listenerGroup);
     void OnRemoteListenerDied(const sptr<IRemoteObject>& listener);

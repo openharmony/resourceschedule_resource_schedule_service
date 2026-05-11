@@ -120,7 +120,7 @@ void EventListenerMgr::OnRemoteListenerDied(const sptr<IRemoteObject>& listener)
 }
 
 void EventListenerMgr::SendEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo,
-    uint32_t listenerGroup)
+    uint32_t listenerGroup, int32_t targetPid)
 {
     RESSCHED_LOGD("%{public}s:called", __func__);
     if (eventType < ResType::EventType::EVENT_START ||
@@ -132,7 +132,7 @@ void EventListenerMgr::SendEvent(uint32_t eventType, uint32_t eventValue, const 
         RESSCHED_LOGE("%{public}s:error due to eventSenderQueue_ null.", __func__);
         return;
     }
-    SendEventLock(eventType, eventValue, extInfo, listenerGroup);
+    SendEventLock(eventType, eventValue, extInfo, listenerGroup, targetPid);
 }
 
 void EventListenerMgr::RemoveListenerLock(const sptr<IRemoteObject>& listener)
@@ -152,7 +152,7 @@ void EventListenerMgr::RemoveListenerLock(const sptr<IRemoteObject>& listener)
 }
 
 void EventListenerMgr::SendEventLock(uint32_t eventType, uint32_t eventValue, const nlohmann::json& extInfo,
-    uint32_t listenerGroup)
+    uint32_t listenerGroup, int32_t targetPid)
 {
     std::vector<sptr<IRemoteObject>> listenerArray;
     {
@@ -162,9 +162,16 @@ void EventListenerMgr::SendEventLock(uint32_t eventType, uint32_t eventValue, co
             RESSCHED_LOGD("eventType:%{public}d no listener.", eventType);
             return;
         }
-        for (auto& listenerItem : listeners->second) {
-            if (listenerItem.second.groups.count(listenerGroup) == 1) {
-                listenerArray.push_back(listenerItem.second.listener);
+        if (targetPid >= 0) {
+            auto it = listeners->second.find(targetPid);
+            if (it != listeners->second.end() && it->second.groups.count(listenerGroup) == 1) {
+                listenerArray.push_back(it->second.listener);
+            }
+        } else {
+            for (auto& listenerItem : listeners->second) {
+                if (listenerItem.second.groups.count(listenerGroup) == 1) {
+                    listenerArray.push_back(listenerItem.second.listener);
+                }
             }
         }
     }
