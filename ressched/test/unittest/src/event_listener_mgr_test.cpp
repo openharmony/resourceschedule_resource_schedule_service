@@ -117,6 +117,50 @@ HWTEST_F(EventListenerMgrTest, TestEventListener002, Function | MediumTest | Lev
 }
 
 /**
+ * @tc.name: eventListener manager SendEvent 002
+ * @tc.desc: test SendEvent with targetPid for precise notification
+ * @tc.type: FUNC
+ * @tc.require: issueIA9UZ9
+ * @tc.author:baiheng
+ */
+HWTEST_F(EventListenerMgrTest, SendEvent002, Function | MediumTest | Level0)
+{
+    sptr<IRemoteObject> eventListener = new (std::nothrow) TestEventListener();
+    EXPECT_TRUE(eventListener != nullptr);
+    EventListenerMgr::GetInstance().RegisterEventListener(IPCSkeleton::GetCallingPid(), eventListener,
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON);
+    nlohmann::json extInfo;
+
+    EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON, IPCSkeleton::GetCallingPid() + 1);
+    sleep(1);
+    EXPECT_TRUE(TestEventListener::eventType_ == 0);
+    EXPECT_TRUE(TestEventListener::eventValue_ == 0);
+
+    EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON, IPCSkeleton::GetCallingPid());
+    sleep(1);
+    EXPECT_TRUE(TestEventListener::eventType_ ==
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    EXPECT_TRUE(TestEventListener::eventValue_ ==
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START);
+
+    TestEventListener::eventType_ = 0;
+    TestEventListener::eventValue_ = 0;
+    EventListenerMgr::GetInstance().SendEvent(ResType::EventType::EVENT_DRAW_FRAME_REPORT,
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START, extInfo,
+        ResType::EventListenerGroup::LISTENER_GROUP_COMMON, -1);
+    sleep(1);
+    EXPECT_TRUE(TestEventListener::eventType_ ==
+        ResType::EventType::EVENT_DRAW_FRAME_REPORT);
+    EXPECT_TRUE(TestEventListener::eventValue_ ==
+        ResType::EventValue::EVENT_VALUE_DRAW_FRAME_REPORT_START);
+}
+
+/**
  * @tc.name: eventListener manager RegisterEventListener 001
  * @tc.desc: test the interface RegisterEventListener
  * @tc.type: FUNC
