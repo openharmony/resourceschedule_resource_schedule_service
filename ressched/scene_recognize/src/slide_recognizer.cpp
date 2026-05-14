@@ -224,7 +224,7 @@ void SlideRecognizer::HandleClickEvent(int64_t value, const nlohmann::json& payl
         value == ResType::ClickEventType::TOUCH_EVENT_PULL_UP) {
         if (g_slideState != SlideRecognizeStat::SLIDE_NORMAL_DETECTING) {
             ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_SLIDE_RECOGNIZE,
-                ResType::SlideEventStatus::SLIDE_NORMAL_END, payload);
+                ResType::SlideEventStatus::SLIDE_NORMAL_END, FillRealPidAndUid(payload));
         }
         float upSpeed = 0.0;
         if (!payload.contains("clientPid") || !payload["clientPid"].is_string()) {
