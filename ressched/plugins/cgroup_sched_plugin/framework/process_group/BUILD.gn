@@ -43,6 +43,7 @@ ohos_shared_library("libprocess_group") {
     "hilog:libhilog",
     "init:libbegetutil",
     "ipc:ipc_single",
+    "ffrt:libffrt"
   ]
 
   sanitize = {
