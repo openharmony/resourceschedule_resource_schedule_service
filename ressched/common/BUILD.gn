@@ -61,9 +61,9 @@ ohos_shared_library("ressched_common_utils") {
     "json:nlohmann_json_static",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
+    "ffrt:libffrt"
   ]
 
-  public_external_deps = [ "ffrt:libffrt" ]
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"
   branch_protector_ret = "pac_ret"
