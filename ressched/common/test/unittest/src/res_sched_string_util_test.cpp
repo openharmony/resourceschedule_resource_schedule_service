@@ -157,7 +157,7 @@ HWTEST_F(ResSchedStringUtilTest, StrToUInt32_001, Function | MediumTest | Level0
 HWTEST_F(ResSchedStringUtilTest, StrToUInt64_001, Function | MediumTest | Level0)
 {
     uint64_t result = 0;
-    EXPECT_TRUE(ResCommonUtil::StrToUInt64(std::to_string("111"), result));
+    EXPECT_TRUE(ResCommonUtil::StrToUInt64("111", result));
     EXPECT_EQ(result, 111);
     result = 0;
     EXPECT_FALSE(ResCommonUtil::StrToUInt64("abc", result));
