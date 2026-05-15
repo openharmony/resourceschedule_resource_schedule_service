@@ -37,6 +37,8 @@ ohos_shared_library("socperf_executor_plugin") {
 
   external_deps = [
     "config_policy:configpolicy_util",
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "libxml2:libxml2",
@@ -77,6 +79,8 @@ ohos_static_library("socperf_executor_plugin_static") {
 
   external_deps = [
     "config_policy:configpolicy_util",
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "libxml2:libxml2",

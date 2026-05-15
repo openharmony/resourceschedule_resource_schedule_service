@@ -60,6 +60,8 @@ ohos_shared_library("resschedexesvc") {
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
     "config_policy:configpolicy_util",
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
@@ -71,11 +73,6 @@ ohos_shared_library("resschedexesvc") {
     "libxml2:libxml2",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
-  ]
-
-  public_external_deps = [
-    "c_utils:utils",
-    "eventhandler:libeventhandler",
   ]
 
   if (resource_schedule_service_with_ffrt_enable) {
@@ -128,6 +125,8 @@ ohos_static_library("resschedexesvc_static") {
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
     "config_policy:configpolicy_util",
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
@@ -136,14 +135,9 @@ ohos_static_library("resschedexesvc_static") {
     "hitrace:libhitracechain",
     "init:libbegetutil",
     "ipc:ipc_single",
-    "samgr:samgr_proxy",
-  ]
-
-  public_external_deps = [
-    "c_utils:utils",
-    "eventhandler:libeventhandler",
     "libxml2:libxml2",
     "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
   ]
 
   if (resource_schedule_service_with_ffrt_enable) {
