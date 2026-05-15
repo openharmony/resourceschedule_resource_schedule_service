@@ -58,9 +58,8 @@ ohos_shared_library("resschedexe_client") {
     "hilog:libhilog",
     "ipc:ipc_single",
     "samgr:samgr_proxy",
+    "json:nlohmann_json_static",
   ]
-
-  public_external_deps = [ "json:nlohmann_json_static" ]
 
   innerapi_tags = [ "platformsdk" ]
   version_script = "libresschedexeclient.versionscript"

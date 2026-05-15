@@ -57,10 +57,12 @@ ohos_unittest("resschedexefwk_test") {
     "hilog:libhilog",
     "hitrace:libhitracechain",
     "ipc:ipc_single",
+    "json:nlohmann_json_static",
     "selinux_adapter:librestorecon",
+    "eventhandler:libeventhandler",
+    "libxml2:libxml2",
+    "safwk:system_ability_fwk",
   ]
-
-  public_external_deps = [ "json:nlohmann_json_static" ]
 
   cflags = [
     "-Dprivate=public",
