@@ -351,6 +351,7 @@ ErrCode ResSchedService::ReportData(uint32_t resType, int64_t value, const std::
 #endif
     int32_t callingUid = IPCSkeleton::GetCallingUid();
     int32_t clientPid = IPCSkeleton::GetCallingPid();
+    uint64_t callingFullTokenID = IPCSkeleton::GetCallingFullTokenID();
     int32_t ret = CheckReportDataParcel(resType, value, payload, callingUid, clientPid);
     if (ret != ERR_OK) {
         return ret;
@@ -361,6 +362,7 @@ ErrCode ResSchedService::ReportData(uint32_t resType, int64_t value, const std::
     nlohmann::json reportDataPayload = StringToJsonObj(payload);
     reportDataPayload["callingUid"] = std::to_string(callingUid);
     reportDataPayload["clientPid"] = std::to_string(clientPid);
+    reportDataPayload["callingFullTokenID"] = std::to_string(callingFullTokenID);
     ResSchedMgr::GetInstance().ReportData(resType, value, reportDataPayload);
     ResSchedIpcThread::GetInstance().SetQos(clientPid);
     return ERR_OK;

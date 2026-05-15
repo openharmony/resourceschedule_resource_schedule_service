@@ -73,6 +73,16 @@ bool StrToInt64(const std::string& value, int64_t& result);
 bool StrToUInt32(const std::string& value, uint32_t& result);
 
 /**
+ * @brief Converts a string to an uint64_t value.
+ *
+ * @param value Indicates the string to be converted
+ * @param result Indicates the `uint64_t` variable to store the result
+ * @return Returns 'true' is the operation is successful;
+ * return `false` otherwise
+ */
+bool StrToUInt64(const std::string& value, uint64_t& result);
+
+/**
  * @brief Judge string is number format
  *
  * @param value Indicates the string to be judged.

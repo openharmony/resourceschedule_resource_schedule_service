@@ -149,6 +149,25 @@ HWTEST_F(ResSchedStringUtilTest, StrToUInt32_001, Function | MediumTest | Level0
 }
 
 /**
+ * @tc.name: ResSchedStringUtilTest StrToUInt64_001
+ * @tc.desc: test StrToUInt64
+ * @tc.type: FUNC
+ * @tc.require: issueIB8Y0E
+ */
+HWTEST_F(ResSchedStringUtilTest, StrToUInt64_001, Function | MediumTest | Level0)
+{
+    uint64_t result = 0;
+    EXPECT_TRUE(ResCommonUtil::StrToUInt64(std::to_string("111"), result));
+    EXPECT_EQ(result, 111);
+    result = 0;
+    EXPECT_FALSE(ResCommonUtil::StrToUInt64("abc", result));
+    EXPECT_EQ(result, 0);
+    result = 0;
+    EXPECT_FALSE(ResCommonUtil::StrToUInt64("1123abc", result));
+    EXPECT_EQ(result, 0);
+}
+
+/**
  * @tc.name: ResSchedStringUtilTest IsNumericString_001
  * @tc.desc: test IsNumericString
  * @tc.type: FUNC
