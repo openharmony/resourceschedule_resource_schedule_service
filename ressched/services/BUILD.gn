@@ -177,12 +177,12 @@ ohos_shared_library("resschedsvc") {
     "window_manager:libwm_lite",
   ]
 
-  public_external_deps = [ 
-    "c_utils:utils",	 
-    "eventhandler:libeventhandler",	 
-    "json:nlohmann_json_static",	 
-    "samgr:samgr_proxy", 
-    "libxml2:libxml2", 
+  public_external_deps = [
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
+    "json:nlohmann_json_static",
+    "samgr:samgr_proxy",
+    "libxml2:libxml2",
   ]
 
   if (resource_schedule_service_depend_wm_enable) {
