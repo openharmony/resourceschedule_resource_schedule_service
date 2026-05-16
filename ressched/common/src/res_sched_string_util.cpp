@@ -119,7 +119,8 @@ bool StrToUInt64(const std::string& value, uint64_t& result)
     errno = 0;
     // check whether convert success
     uint64_t res = (uint64_t)std::strtoull(value.c_str(), &pEnd, 10);
-    if (errno == ERANGE || pEnd == value.c_str() || *pEnd != '\0') {
+    if (errno == ERANGE || pEnd == value.c_str() || *pEnd != '\0' ||
+        (res > UINT64_MAX)) {
         RESSCHED_LOGD("%{public}s:convert err or overflow.", __func__);
         return false;
     }
