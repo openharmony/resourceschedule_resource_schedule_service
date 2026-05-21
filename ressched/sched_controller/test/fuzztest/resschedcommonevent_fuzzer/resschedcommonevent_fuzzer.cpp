@@ -40,7 +40,7 @@ namespace ResourceSchedule {
 
 namespace {
     static const int32_t TWO_PARAMETERS = 2;
-    static const int64_t FFRT_DELAY_EXIT_TIME = 4;
+    static const int64_t FFRT_DELAY_EXIT_TIME = 20;
     static const int32_t DATA_LENGTH = 10;
 }
     const uint8_t* DATA = nullptr;
