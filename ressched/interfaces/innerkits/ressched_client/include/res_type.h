@@ -441,24 +441,12 @@ enum : uint32_t {
     RES_TYPE_COMPONENT_STATE_CHANGE = 212,
     // report socperf performance mode
     RES_TYPE_SOCPERF_PERFORMANCE_MODE_CHANGED = 213,
+    // load kill reason config
+    RES_TYPE_LOAD_KILL_REASON_CONFIG = 214,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
     SYNC_RES_TYPE_FIRST = ASYNC_RES_TYPE_LAST,
-    // thaw one application
-    SYNC_RES_TYPE_THAW_ONE_APP,
-    // get all suspend state
-    SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE,
-    // get thermal data
-    SYNC_RES_TYPE_GET_THERMAL_DATA,
-    // check shoul force kill process,
-    SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS,
-    // get nweb preload process set
-    SYNC_RES_TYPE_GET_NWEB_PRELOAD_SET,
-    // report preload application
-    RES_TYPE_PRELOAD_APPLICATION,
-    // get the applicaiton type
-    SYNC_RES_TYPE_GET_APP_TYPE,
     // report to request or release mutex status
     SYNC_RES_TYPE_REQUEST_MUTEX_STATUS = 500,
     // report to check mutex before start
@@ -493,12 +481,24 @@ enum : uint32_t {
     SYNC_RES_TYPE_GET_UI_NODE_GC_CONFIG = 515,
     // report sa notify make image, only for forkall_plugin
     SYNC_RES_TYPE_NOTIFY_MAKE_IMAGE = 516,
+    // thaw one application
+    SYNC_RES_TYPE_THAW_ONE_APP = 517,
+    // get all suspend state
+    SYNC_RES_TYPE_GET_ALL_SUSPEND_STATE = 518,
+    // get thermal data
+    SYNC_RES_TYPE_GET_THERMAL_DATA = 519,
+    // check shoul force kill process,
+    SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS = 520,
+    // get nweb preload process set
+    SYNC_RES_TYPE_GET_NWEB_PRELOAD_SET = 521,
+    // report preload application
+    RES_TYPE_PRELOAD_APPLICATION = 522,
+    // get the applicaiton type
+    SYNC_RES_TYPE_GET_APP_TYPE = 523,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
     RES_TYPE_LAST = SYNC_RES_TYPE_LAST,
-    // load kill reason config
-    RES_TYPE_LOAD_KILL_REASON_CONFIG = 600,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
