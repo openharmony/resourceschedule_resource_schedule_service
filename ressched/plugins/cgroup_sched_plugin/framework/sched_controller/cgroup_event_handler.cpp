@@ -40,8 +40,8 @@ namespace {
     constexpr uint32_t CHECK_WEB_SUBWIN_TASK_DELAY = 60 * 1000;
     const std::string MMI_SERVICE_NAME = "mmi_service";
     // PREMAKE_MODE_STRING = 1, PRELOADMODULE_MODE_STRING = 2,
-    // PRELAUNCH_MODE_STRING = 4, GAME_PRELAUNCH_MODE_STRING = 5
-    const std::unordered_set<int32_t> PRELOAD_SET = {1, 2, 4, 5};
+    // PRELAUNCH_MODE_STRING = 4
+    const std::unordered_set<int32_t> PRELOAD_SET = {1, 2, 4};
 }
 
 using OHOS::AppExecFwk::ApplicationState;
@@ -163,10 +163,7 @@ void CgroupEventHandler::HandleProcessStateChanged(uint32_t resType, int64_t val
                  "function return directly", __func__, preloadMode);
         return;
     }
-    if (preloadMode == (int32_t)(PreloadMode::GAME_PRELAUNCH)) {
-        CGS_LOGD("%{public}s : GAME_PRELAUNCH need not change cgroup", __func__);
-        return;
-    }
+    procRecord->preloadMode_ = preloadMode;
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_PROCESS_STATE);
 }
@@ -222,7 +219,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
         HandleAbilityTerminated(uid, pid, recordId);
         return;
     }
-    if (HandlePrelaunch(abilityState, preloadMode) || HandleGamePrelaunch(preloadMode)) {
+    if (HandlePrelaunch(abilityState, preloadMode)) {
         return;
     }
     auto app = supervisor_->GetAppRecordNonNull(uid);
@@ -232,6 +229,7 @@ void CgroupEventHandler::HandleAbilityStateChanged(uint32_t resType, int64_t val
     abiInfo->name_ = abilityName;
     abiInfo->state_ = abilityState;
     abiInfo->type_ = abilityType;
+    procRecord->preloadMode_ = preloadMode;
     if (abilityState == 0) {
         ResSchedUtils::GetInstance().ReportCallerEvent(*(app.get()), *(procRecord.get()), callerUid);
     }
@@ -249,16 +247,6 @@ bool CgroupEventHandler::HandlePrelaunch(int32_t abilityState, int32_t preloadMo
     }
     return false;
 }
-
-bool CgroupEventHandler::HandleGamePrelaunch(int32_t preloadMode)
-{
-    if (preloadMode == (int32_t)(PreloadMode::GAME_PRELAUNCH)) {
-        CGS_LOGD("%{public}s : %{public}d, function return directly", __func__, preloadMode);
-        return true;
-    }
-    return false;
-}
-
 
 void CgroupEventHandler::HandleAbilityTerminated(int32_t uid, int32_t pid, int32_t recordId)
 {
@@ -381,9 +369,9 @@ void CgroupEventHandler::HandleProcessCreated(uint32_t resType, int64_t value, c
         default:
             break;
     }
+    procRecord->preloadMode_ = info.preloadMode;
     AdjustSource policy = PRELOAD_SET.count(info.preloadMode) ?
-        (info.preloadMode == (int32_t)(PreloadMode::GAME_PRELAUNCH) ?
-            AdjustSource::ADJS_GAME_PRELAUNCH : AdjustSource::ADJS_APP_PRELOAD) : AdjustSource::ADJS_PROCESS_CREATE;
+        AdjustSource::ADJS_APP_PRELOAD : AdjustSource::ADJS_PROCESS_CREATE;
     int32_t isPreloadUIExtension = 0;
     if (ParseValue(isPreloadUIExtension, "isPreloadUIExtension", payload)) {
         CGS_LOGD("%{public}s %{public}d %{public}d", __func__, isPreloadUIExtension, info.extensionType);
@@ -881,11 +869,6 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
 {
     int32_t uid = 0;
     int32_t pid = 0;
-    int32_t preloadMode = -1;
-    if (!ParseValue(preloadMode, "preloadMode", payload)) {
-        CGS_LOGE("%{public}s : payload does not contain preloadMode", __func__);
-        return;
-    }
 
     if (!supervisor_) {
         CGS_LOGE("%{public}s : supervisor nullptr!", __func__);
@@ -910,11 +893,6 @@ void CgroupEventHandler::HandleReportAudioState(uint32_t resType, int64_t value,
     procRecord->audioPlayingState_ = static_cast<int32_t>(value);
     CGS_LOGD("%{public}s :Appname:%{public}s, uid:%{public}d, pid:%{public}d, state:%{public}d",
         __func__, app->GetName().c_str(), uid, pid, procRecord->audioPlayingState_);
-
-    if (HandleGamePrelaunch(preloadMode)) {
-        CGS_LOGD("%{public}s : %{public}d", __func__,   preloadMode);
-        return;
-    }
 
     CgroupAdjuster::GetInstance().AdjustProcessGroup(*(app.get()), *(procRecord.get()),
         AdjustSource::ADJS_REPORT_AUDIO_STATE_CHANGED);
