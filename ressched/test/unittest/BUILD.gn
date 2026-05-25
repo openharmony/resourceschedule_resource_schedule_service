@@ -69,6 +69,9 @@ ohos_unittest("resschedservice_test") {
     "ipc:ipc_single",
     "selinux_adapter:librestorecon",
     "window_manager:libdm",
+    "libxml2:libxml2",
+    "safwk:system_ability_fwk", 
+    "samgr:samgr_proxy",
   ]
 
   sanitize = {
@@ -120,6 +123,8 @@ ohos_unittest("suspendbaseclient_test") {
     "ipc:ipc_single",
     "selinux_adapter:librestorecon",
     "samgr:samgr_proxy",
+    "libxml2:libxml2",
+    "safwk:system_ability_fwk", 
   ]
 
   sanitize = {
@@ -164,6 +169,9 @@ ohos_unittest("resschedservice_mock_test") {
     "ipc:ipc_single",
     "selinux_adapter:librestorecon",
     "window_manager:libdm",
+    "libxml2:libxml2",
+    "safwk:system_ability_fwk", 
+    "samgr:samgr_proxy",
   ]
 
   sanitize = {
@@ -216,6 +224,9 @@ ohos_unittest("resschedfwk_test") {
     "selinux_adapter:librestorecon",
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
+    "libxml2:libxml2",
+    "safwk:system_ability_fwk", 
+    "samgr:samgr_proxy",
   ]
 
   defines = []
@@ -269,6 +280,9 @@ ohos_unittest("suspend_manager_base_observer_test") {
     "json:nlohmann_json_static",
     "ffrt:libffrt",
     "eventhandler:libeventhandler",
+    "libxml2:libxml2",
+    "safwk:system_ability_fwk", 
+    "samgr:samgr_proxy",
   ]
 
   defines = []

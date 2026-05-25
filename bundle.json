@@ -76,7 +76,8 @@
         "json",
         "libxml2",
         "jsoncpp",
-        "runtime_core"
+        "runtime_core",
+        "ets_frontend"
       ]
     },
     "build": {

@@ -317,13 +317,6 @@ ohos_static_library("resschedsvc_static") {
     ":suspend_manager_base_service",
   ]
 
-  public_external_deps = [
-    "eventhandler:libeventhandler",
-    "libxml2:libxml2",
-    "safwk:system_ability_fwk",
-    "samgr:samgr_proxy",
-  ]
-
   external_deps = [
     "ability_base:want",
     "ability_runtime:ability_manager",
@@ -351,6 +344,9 @@ ohos_static_library("resschedsvc_static") {
     "samgr:samgr_proxy",
     "window_manager:libdm",
     "window_manager:libwm_lite",
+    "eventhandler:libeventhandler",
+    "libxml2:libxml2",
+    "safwk:system_ability_fwk",
   ]
 
   if (resource_schedule_service_depend_wm_enable) {
