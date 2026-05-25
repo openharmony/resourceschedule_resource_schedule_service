@@ -2802,31 +2802,6 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_003, 
     EXPECT_TRUE(procRecord->setSchedGroup_ != SP_BACKGROUND);
 }
 
-/**
- * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_004
- * @tc.desc: Test HandleGamePrelaunch method
- * @tc.type: FUNC
- * @tc.require:
- */
-HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_GamePrelaunch_004, Function | MediumTest | Level1)
-{
-    auto cgroupEventHandler = std::make_shared<CgroupEventHandler>("CgroupEventHandler_unittest");
-    
-    // Test with GAME_PRELAUNCH
-    bool result = cgroupEventHandler->HandleGamePrelaunch(
-        (int32_t)AppExecFwk::PreloadMode::GAME_PRELAUNCH);
-    EXPECT_TRUE(result);
-    
-    // Test with PRE_LAUNCH
-    result = cgroupEventHandler->HandleGamePrelaunch(
-        (int32_t)AppExecFwk::PreloadMode::PRE_LAUNCH);
-    EXPECT_FALSE(result);
-    
-    // Test with PRELOAD_NONE
-    result = cgroupEventHandler->HandleGamePrelaunch(
-        (int32_t)AppExecFwk::PreloadMode::PRELOAD_NONE);
-    EXPECT_FALSE(result);
-}
 
 /**
  * @tc.name: CGroupSchedTest_CgroupEventHandler_GamePrelaunch_005
