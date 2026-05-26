@@ -29,6 +29,8 @@ using ReportArbitrationResultFunc = void (*)(Application &app, ProcessRecord &pr
 using ReportSysEventFunc = void (*)(Application &app, ProcessRecord &pr, uint32_t resType, int32_t state);
 using ReportCallerEventFunc = void (*)(Application &app, ProcessRecord &pr, int32_t callerUid);
 using DispatchResourceExtFunc = void (*)(uint32_t resType, int64_t value, const nlohmann::json& payload);
+using DeliverResourceExtFunc = void (*)(uint32_t resType, int64_t value, const nlohmann::json& payload,
+    nlohmann::json* reply);
 using ReportAppStateFunc = void (*)(int32_t state, int32_t pid);
 using SubscribeResourceExtFunc = void (*)();
 class ResSchedUtils {
@@ -41,7 +43,9 @@ public:
     std::string GetProcessFilePath(int32_t uid, std::string bundleName, int32_t pid);
     bool CheckTidIsInPid(int32_t pid, int32_t tid);
     void DispatchResourceExt(uint32_t resType, int64_t value, const nlohmann::json& payload);
+    int DeliverResourceExt(uint32_t resType, int64_t value, const nlohmann::json& context, nlohmann::json* reply);
     void SubscribeResourceExt();
+    void SubscribeSyncResourceExt();
     int32_t RssExeSendRequestSync(uint32_t resType, int64_t value,
         const nlohmann::json& context, nlohmann::json& reply);
     void RssExeSendRequestAsync(uint32_t resType, int64_t value, const nlohmann::json& context);
@@ -59,6 +63,8 @@ private:
         reportSysEventFunc_ = nullptr;
         reportCallerEventFunc_ = nullptr;
         subscribeResourceExtFunc_ = nullptr;
+        subscribeSyncResourceExtFunc_ = nullptr;
+        deliverResourceExtFunc_ = nullptr;
     }
     void LoadUtils();
     void LoadUtilsExtra();
@@ -74,6 +80,8 @@ private:
     ReportCallerEventFunc reportCallerEventFunc_ = nullptr;
     DispatchResourceExtFunc dispatchResourceExtFunc_ = nullptr;
     SubscribeResourceExtFunc subscribeResourceExtFunc_ = nullptr;
+    SubscribeResourceExtFunc subscribeSyncResourceExtFunc_ = nullptr;
+    DeliverResourceExtFunc deliverResourceExtFunc_ = nullptr;
 };
 } // namespace ResourceSchedule
 } // namespace OHOS
