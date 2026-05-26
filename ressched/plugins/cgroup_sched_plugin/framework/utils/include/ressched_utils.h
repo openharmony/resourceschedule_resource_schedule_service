@@ -68,6 +68,7 @@ private:
     }
     void LoadUtils();
     void LoadUtilsExtra();
+    void LoadSyncResourceEx(void* handle);
 
     ResSchedUtils(const ResSchedUtils&) = delete;
     ResSchedUtils& operator=(const ResSchedUtils &) = delete;
