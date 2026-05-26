@@ -144,7 +144,7 @@ static void ReportSyncEventTest(int32_t argc, char *argv[])
     nlohmann::json payload;
     payload["uid"] = uid;
     payload["pid"] = atoi(argv[PID_INDEX]);
-    for (int32_t i = PARAMETERS_NUM_REPORT_DATA; i + 1 < argc; i += 2) {
+    for (int32_t i = PARAMETERS_NUM_REPORT_DATA; i + 1 < argc; i += REQUEST_COUNT_INDEX) {
         payload[argv[i]] = argv[i + 1];
     }
     nlohmann::json reply;
