@@ -68,8 +68,7 @@ void ResSchedUtils::LoadUtilsExtra()
     if (!handle) {
         CGS_LOGD("%{public}s load %{public}s failed! errno:%{public}d", __func__, RES_SCHED_CG_EXT_SO.c_str(), errno);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "MODULE_NAME", "CgroupSched",
-                        "SCENE_NAME", "PluginLoadFailed",
+                        "MODULE_NAME", "CgroupSched", "SCENE_NAME", "PluginLoadFailed",
                         "ERR_INFO", "ResSchedUtils dlopen " + RES_SCHED_CG_EXT_SO + " failed!");
         return;
     }
@@ -113,11 +112,15 @@ void ResSchedUtils::LoadUtilsExtra()
 
     subscribeResourceExtFunc_ = reinterpret_cast<SubscribeResourceExtFunc>(dlsym(handle, "SubscribeResourceExt"));
     if (!subscribeResourceExtFunc_) {
-        CGS_LOGD("%{public}s load function:SubscribeResourceExtFunc failed! errno:%{public}d", __func__, errno);
         dlclose(handle);
         return;
     }
 
+    LoadSyncResourceEx(handle);
+}
+ 
+void ResSchedUtils::LoadSyncResourceEx(void* handle)
+{
     subscribeSyncResourceExtFunc_ = reinterpret_cast<SubscribeResourceExtFunc>(dlsym(handle, "SubscribeSyncResourceExt"));
     if (!subscribeSyncResourceExtFunc_) {
         CGS_LOGD("%{public}s load function:SubscribeSyncResourceExt failed! errno:%{public}d", __func__, errno);
