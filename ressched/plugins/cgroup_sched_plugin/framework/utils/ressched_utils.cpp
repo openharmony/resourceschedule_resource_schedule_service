@@ -117,6 +117,20 @@ void ResSchedUtils::LoadUtilsExtra()
         dlclose(handle);
         return;
     }
+
+    subscribeSyncResourceExtFunc_ = reinterpret_cast<SubscribeResourceExtFunc>(dlsym(handle, "SubscribeSyncResourceExt"));
+    if (!subscribeSyncResourceExtFunc_) {
+        CGS_LOGD("%{public}s load function:SubscribeSyncResourceExt failed! errno:%{public}d", __func__, errno);
+        dlclose(handle);
+        return;
+    }
+
+    deliverResourceExtFunc_ = reinterpret_cast<DeliverResourceExtFunc>(dlsym(handle, "DeliverResourceExt"));
+    if (!deliverResourceExtFunc_) {
+        CGS_LOGD("%{public}s load function:SubscribeSyncResourceExt failed! errno:%{public}d", __func__, errno);
+        dlclose(handle);
+        return;
+    }
 }
 
 void ResSchedUtils::ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -222,6 +236,26 @@ void ResSchedUtils::SubscribeResourceExt()
         return;
     }
     subscribeResourceExtFunc_();
+}
+
+void ResSchedUtils::SubscribeSyncResourceExt()
+{
+    if (!subscribeSyncResourceExtFunc_) {
+        CGS_LOGD("%{public}s failed, function nullptr.", __func__);
+        return;
+    }
+    subscribeSyncResourceExtFunc_();
+}
+
+int ResSchedUtils::DeliverResourceExt(uint32_t resType, int64_t value,
+    const nlohmann::json& context, nlohmann::json* reply)
+{
+    if (!deliverResourceExtFunc_) {
+        CGS_LOGD("%{public}s failed, function nullptr.", __func__);
+        return 0;
+    }
+    deliverResourceExtFunc_(resType, value, context, reply);
+    return 0;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS
