@@ -68,8 +68,7 @@ void ResSchedUtils::LoadUtilsExtra()
     if (!handle) {
         CGS_LOGD("%{public}s load %{public}s failed! errno:%{public}d", __func__, RES_SCHED_CG_EXT_SO.c_str(), errno);
         HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
-                        "MODULE_NAME", "CgroupSched",
-                        "SCENE_NAME", "PluginLoadFailed",
+                        "MODULE_NAME", "CgroupSched", "SCENE_NAME", "PluginLoadFailed",
                         "ERR_INFO", "ResSchedUtils dlopen " + RES_SCHED_CG_EXT_SO + " failed!");
         return;
     }
@@ -113,7 +112,26 @@ void ResSchedUtils::LoadUtilsExtra()
 
     subscribeResourceExtFunc_ = reinterpret_cast<SubscribeResourceExtFunc>(dlsym(handle, "SubscribeResourceExt"));
     if (!subscribeResourceExtFunc_) {
-        CGS_LOGD("%{public}s load function:SubscribeResourceExtFunc failed! errno:%{public}d", __func__, errno);
+        dlclose(handle);
+        return;
+    }
+
+    LoadSyncResourceEx(handle);
+}
+ 
+void ResSchedUtils::LoadSyncResourceEx(void* handle)
+{
+    subscribeSyncResourceExtFunc_ =
+        reinterpret_cast<SubscribeResourceExtFunc>(dlsym(handle, "SubscribeSyncResourceExt"));
+    if (!subscribeSyncResourceExtFunc_) {
+        CGS_LOGD("%{public}s load function:SubscribeSyncResourceExt failed! errno:%{public}d", __func__, errno);
+        dlclose(handle);
+        return;
+    }
+
+    deliverResourceExtFunc_ = reinterpret_cast<DeliverResourceExtFunc>(dlsym(handle, "DeliverResourceExt"));
+    if (!deliverResourceExtFunc_) {
+        CGS_LOGD("%{public}s load function:SubscribeSyncResourceExt failed! errno:%{public}d", __func__, errno);
         dlclose(handle);
         return;
     }
@@ -222,6 +240,26 @@ void ResSchedUtils::SubscribeResourceExt()
         return;
     }
     subscribeResourceExtFunc_();
+}
+
+void ResSchedUtils::SubscribeSyncResourceExt()
+{
+    if (!subscribeSyncResourceExtFunc_) {
+        CGS_LOGD("%{public}s failed, function nullptr.", __func__);
+        return;
+    }
+    subscribeSyncResourceExtFunc_();
+}
+
+int ResSchedUtils::DeliverResourceExt(uint32_t resType, int64_t value,
+    const nlohmann::json& context, nlohmann::json* reply)
+{
+    if (!deliverResourceExtFunc_) {
+        CGS_LOGD("%{public}s failed, function nullptr.", __func__);
+        return 0;
+    }
+    deliverResourceExtFunc_(resType, value, context, reply);
+    return 0;
 }
 } // namespace ResourceSchedule
 } // namespace OHOS

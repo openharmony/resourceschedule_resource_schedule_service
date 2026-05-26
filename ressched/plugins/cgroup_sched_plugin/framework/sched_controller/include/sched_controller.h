@@ -38,6 +38,7 @@ public:
 
     int GetProcessGroup(pid_t pid);
     void DispatchResource(const std::shared_ptr<ResData>& resData) override;
+    int DeliverResource(const std::shared_ptr<ResData>& resData) override;
     void DispatchOtherResource(uint32_t resType, int64_t value, const nlohmann::json& payload);
     std::string GetBundleNameByUid(const int32_t uid);
     void Dump(const std::vector<std::string>& args, std::string& result);

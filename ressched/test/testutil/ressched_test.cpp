@@ -22,6 +22,7 @@
 #include "nativetoken_kit.h"
 #include "res_sched_client.h"
 #include "token_setproc.h"
+#include "nlohmann/json.hpp"
 
 const static int32_t PARAMETERS_NUM_MIN                      = 2;
 const static int32_t PARAMETERS_NUM_MIN_KILL_PROCESS         = 4;
@@ -131,6 +132,27 @@ static void RequestTest(int32_t argc, char *argv[])
     std::cout << "success RequestTest " << uid << std::endl;
 }
 
+static void ReportSyncEventTest(int32_t argc, char *argv[])
+{
+    if (argc < PARAMETERS_NUM_REQUEST_TEST) {
+        return;
+    }
+    int32_t uid = atoi(argv[UID_INDEX]);
+    MockProcess(uid);
+    int32_t resType = atoi(argv[RES_TYPE_INDEX]);
+    int64_t value = atoi(argv[VALUE_INDEX]);
+    nlohmann::json payload;
+    payload["uid"] = uid;
+    payload["pid"] = atoi(argv[PID_INDEX]);
+    for (int32_t i = PARAMETERS_NUM_REPORT_DATA; i + 1 < argc; i += REQUEST_COUNT_INDEX) {
+        payload[argv[i]] = argv[i + 1];
+    }
+    nlohmann::json reply;
+    int32_t res = OHOS::ResourceSchedule::ResSchedClient::GetInstance().ReportSyncEvent(resType, value, payload, reply);
+    std::cout << "ReportSyncEvent result: " << res << std::endl;
+    std::cout << "Reply content: " << reply.dump() << std::endl;
+}
+
 int32_t main(int32_t argc, char *argv[])
 {
     if (!(argc >= PARAMETERS_NUM_MIN && argv)) {
@@ -144,6 +166,8 @@ int32_t main(int32_t argc, char *argv[])
         ReportData(argc, argv);
     } else if (strcmp(function, "RequestTest") == 0) {
         RequestTest(argc, argv);
+    } else if (strcmp(function, "ReportSyncEvent") == 0) {
+        ReportSyncEventTest(argc, argv);
     } else {
         std::cout << "error parameters";
     }
