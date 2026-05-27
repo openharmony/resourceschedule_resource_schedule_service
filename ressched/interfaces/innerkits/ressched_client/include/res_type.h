@@ -442,7 +442,7 @@ enum : uint32_t {
     // report socperf performance mode
     RES_TYPE_SOCPERF_PERFORMANCE_MODE_CHANGED = 213,
     // report battery low
-    RES_TYPE_BATTERY_LOW = 214,
+    RES_TYPE_BATTERY_LOW = 215,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
