@@ -67,6 +67,7 @@ void SchedController::Init()
         PluginMgr::GetInstance().SubscribeResourceAccurately(LIB_NAME, resType, val);
     }
     ResSchedUtils::GetInstance().SubscribeResourceExt();
+    ResSchedUtils::GetInstance().SubscribeSyncResourceExt();
 }
 
 void SchedController::Disable()
@@ -163,6 +164,12 @@ void SchedController::DispatchResource(const std::shared_ptr<ResData>& resData)
         func(handler, resData->resType, resData->value, resData->payload);
     });
     DispatchOtherResource(resData->resType, resData->value, resData->payload);
+}
+
+int SchedController::DeliverResource(const std::shared_ptr<ResData>& resData)
+{
+    ResSchedUtils::GetInstance().DeliverResourceExt(resData->resType, resData->value, resData->payload, resData->reply);
+    return 0;
 }
 
 void SchedController::DispatchOtherResource(uint32_t resType, int64_t value, const nlohmann::json& payload)
@@ -474,6 +481,11 @@ extern "C" void OnPluginDisable()
 extern "C" void OnDispatchResource(const std::shared_ptr<ResData>& resData)
 {
     SchedController::GetInstance().DispatchResource(resData);
+}
+
+extern "C" int32_t OnDeliverResource(const std::shared_ptr<ResData>& data)
+{
+    return SchedController::GetInstance().DeliverResource(data);
 }
 
 extern "C" int GetProcessGroup(const pid_t pid)

@@ -453,6 +453,14 @@ void EventController::handleLeftEvent(int32_t userId, const std::string &action,
             static_cast<int64_t>(want.GetIntParam(COMMON_EVENT_CAPACITY, -1)), payload);
         return;
     }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_BATTERY_LOW) {
+        ReportDataInProcess(ResType::RES_TYPE_BATTERY_LOW, 1, payload);
+        return;
+    }
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_BATTERY_OKAY) {
+        ReportDataInProcess(ResType::RES_TYPE_BATTERY_LOW, 0, payload);
+        return;
+    }
     if (action == COMMON_EVENT_MEDIA_CTRL_EVENT) {
         HandleMediaCtrlEvent(want);
         return;
