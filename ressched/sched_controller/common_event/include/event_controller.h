@@ -63,6 +63,7 @@ public:
     void Stop();
 
 private:
+    void AddBatteryCommonEvent(EventFwk::MatchingSkills& matchingSkills);
     void SubscribeLockScreenCommonEvent();
     void SubscribeCloneStateCommonEvent();
     std::shared_ptr<EventController> subscriber_ = nullptr;
