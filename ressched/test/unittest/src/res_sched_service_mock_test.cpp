@@ -54,7 +54,7 @@ int AccessTokenKit::VerifyAccessToken(AccessTokenID tokenId, const std::string& 
     }
     return PermissionState::PERMISSION_GRANTED;
 }
-
+// test
 ATokenTypeEnum g_mockTokenFlag = TypeATokenTypeEnum::TOKEN_INVALID;
 ATokenTypeEnum AccessTokenKit::GetTokenTypeFlag(AccessTokenID tokenId)
 {
