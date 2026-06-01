@@ -49,6 +49,7 @@ ohos_fuzztest("ResSchedFuzzTest") {
     "access_token:libtoken_setproc",
     "c_utils:utils",
     "data_share:datashare_consumer",
+    "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "ipc:ipc_single",
