@@ -64,6 +64,7 @@ ohos_unittest("resschedservice_test") {
     "cJSON:cjson",
     "c_utils:utils",
     "data_share:datashare_consumer",
+    "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "ipc:ipc_single",
