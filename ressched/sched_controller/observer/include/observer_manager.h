@@ -45,9 +45,6 @@
 #include "download_upload_observer.h"
 #endif
 #include "window_state_observer.h"
-#ifdef CONFIG_BGTASK_MGR
-#include "background_task_observer.h"
-#endif
 #include "display_power_event_observer.h"
 
 namespace OHOS {
@@ -110,10 +107,6 @@ public:
     bool DisableWindowStyleObserver();
     void SubscribeAppState();
     void UnsubscribeAppState();
-#ifdef CONFIG_BGTASK_MGR
-    void InitBackgroundTask();
-    void DisableBackgroundTask();
-#endif
 #ifdef RESOURCE_REQUEST_REQUEST
     void InitDownloadUploadObserver();
     void DisableDownloadUploadObserver();
@@ -160,10 +153,6 @@ public:
     sptr<WindowModeObserver> windowModeObserver_ = nullptr;
     sptr<WindowStyleObserver> windowStyleObserver_ = nullptr;
     sptr<RmsApplicationStateObserver> appStateObserver_ = nullptr;
-#ifdef CONFIG_BGTASK_MGR
-    bool isBgtaskSubscribed_ {false};
-    std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_ = nullptr;
-#endif
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_ = nullptr;
     bool isNeedReport_ = true;
     int32_t powerKeySubscribeId_ = -1;
