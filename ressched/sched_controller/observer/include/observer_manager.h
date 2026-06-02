@@ -153,10 +153,6 @@ public:
     sptr<WindowModeObserver> windowModeObserver_ = nullptr;
     sptr<WindowStyleObserver> windowStyleObserver_ = nullptr;
     sptr<RmsApplicationStateObserver> appStateObserver_ = nullptr;
-#ifdef CONFIG_BGTASK_MGR
-    bool isBgtaskSubscribed_ {false};
-    std::shared_ptr<BackgroundTaskObserver> backgroundTaskObserver_ = nullptr;
-#endif
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_ = nullptr;
     bool isNeedReport_ = true;
     int32_t powerKeySubscribeId_ = -1;

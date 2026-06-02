@@ -176,9 +176,6 @@ void ObserverManager::InitSysAbilityListener()
 #endif
     AddItemToSysAbilityListener(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, systemAbilityManager);
     AddItemToSysAbilityListener(WINDOW_MANAGER_SERVICE_ID, systemAbilityManager);
-#ifdef CONFIG_BGTASK_MGR
-    AddItemToSysAbilityListener(BACKGROUND_TASK_MANAGER_SERVICE_ID, systemAbilityManager);
-#endif
     AddItemToSysAbilityListener(APP_MGR_SERVICE_ID, systemAbilityManager);
 }
 
