@@ -207,7 +207,7 @@ namespace {
         { ResType::RES_TYPE_SEND_FRAME_EVENT, { 1003 } },
         { ResType::RES_TYPE_CLICK_RECOGNIZE, { 6696 } },
         { ResType::RES_TYPE_REPORT_GAME_SCHED, { 7800 } },
-        { ResType::RES_TYPE_GAME_INFO_NOTIFY, { 7011 } },
+        { ResType::RES_TYPE_GAME_INFO_NOTIFY, { 7011, 5523 } },
         { ResType::SYNC_RES_TYPE_SHOULD_FORCE_KILL_PROCESS, { 5523 } },
         { ResType::RES_TYPE_GET_GAME_SCENE_INFO, { 7800 } },
         { ResType::RES_TYPE_APP_GAME_BOOST_EVENT, { 7800 } },
