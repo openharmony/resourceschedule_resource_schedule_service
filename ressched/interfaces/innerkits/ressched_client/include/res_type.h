@@ -445,6 +445,8 @@ enum : uint32_t {
     RES_TYPE_LOAD_KILL_REASON_CONFIG = 214,
     // report battery low
     RES_TYPE_BATTERY_LOW = 215,
+    // report continuation event
+    RES_TYPE_DISTRIBUTED_CONTINUATION_EVENT = 217,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
