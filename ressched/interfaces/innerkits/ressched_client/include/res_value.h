@@ -1050,8 +1050,8 @@ enum NlServiceEvent : int32_t {
  * @brief bottom state
  */
 enum BottomState : uint32_t {
-    BOTTOM_SCENE = 0,
-    NON_BOTTOM_SCENE = 1,
+    NON_BOTTOM_SCENE = 0,
+    COLD_START_RATE_BOTTOM_SCENE = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
