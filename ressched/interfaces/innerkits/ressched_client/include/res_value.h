@@ -59,6 +59,7 @@ enum EventType : uint32_t {
     EVENT_SMART_SCAN_EVENT = 19,
     EVENT_NOTIFY_MUTEX_START_OR_STOP = 20,
     EVENT_COMPONENT_PREMAKE = 21,
+    EVENT_BOTTOM_STATE_NOTIFICATION = 22,
     EVENT_END,
 };
 
@@ -1044,6 +1045,13 @@ enum NlServiceEvent : int32_t {
     NL_CONNECT_STATE = 0,
     NL_DATA_TRANSFER = 1,
     NL_SWITCH_STATE = 2,
+};
+/**
+ * @brief bottom state
+ */
+enum BottomState : uint32_t {
+    NON_BOTTOM_SCENE = 0,
+    COLD_START_RATE_BOTTOM_SCENE = 1,
 };
 } // namespace ResType
 } // namespace ResourceSchedule
