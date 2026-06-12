@@ -44,6 +44,7 @@
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
 #include "avsession_manager.h"
 #endif
+#include "ability_manager_client.h"
 
 #ifdef RESOURCE_SCHEDULE_SERVICE_DEPEND_WM
 #define RSS_WINDOW_MANAGER WindowManager
@@ -103,6 +104,9 @@ void ObserverManager::InitObserverCbMap()
         { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->InitAccountObserver(); }},
         { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->InitWindowStateObserver(); }},
         { APP_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->SubscribeAppState(); }},
+#ifdef DISTRIBUTED_CONTINUATION_ENABLE
+        { DISTRIBUTED_SCHED_SA_ID, []() { ObserverManager::GetInstance()->InitContinuationObserver(); }},
+#endif
     };
     InitRemoveObserverCbMap();
 }
@@ -134,6 +138,9 @@ void ObserverManager::InitRemoveObserverCbMap()
         { SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, []() { ObserverManager::GetInstance()->DisableAccountObserver(); }},
         { WINDOW_MANAGER_SERVICE_ID, []() { ObserverManager::GetInstance()->DisableWindowStateObserver(); }},
         { APP_MGR_SERVICE_ID, []() { ObserverManager::GetInstance()->UnsubscribeAppState(); }},
+#ifdef DISTRIBUTED_CONTINUATION_ENABLE
+        { DISTRIBUTED_SCHED_SA_ID, []() { ObserverManager::GetInstance()->DisableContinuationObserver(); }},
+#endif
     };
 }
 
@@ -177,6 +184,9 @@ void ObserverManager::InitSysAbilityListener()
     AddItemToSysAbilityListener(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, systemAbilityManager);
     AddItemToSysAbilityListener(WINDOW_MANAGER_SERVICE_ID, systemAbilityManager);
     AddItemToSysAbilityListener(APP_MGR_SERVICE_ID, systemAbilityManager);
+#ifdef DISTRIBUTED_CONTINUATION_ENABLE
+    AddItemToSysAbilityListener(DISTRIBUTED_SCHED_SA_ID, systemAbilityManager);
+#endif
 }
 
 void ObserverManager::AddItemToSysAbilityListener(int32_t systemAbilityId,
@@ -678,6 +688,46 @@ void ObserverManager::DisableConnectionSubscriber()
 
     connectionSubscriber_ = nullptr;
 }
+
+#ifdef DISTRIBUTED_CONTINUATION_ENABLE
+void ObserverManager::InitContinuationObserver()
+{
+    if (continuationObserver_ == nullptr) {
+        continuationObserver_ = new (std::nothrow)ContinuationObserver();
+        if (continuationObserver_ == nullptr) {
+            RESSCHED_LOGE("Failed to create continuationObserver due to no memory");
+            return;
+        }
+    }
+    ErrCode errCode = AAFwk::AbilityManagerClient::GetInstance()->RegisterOnListener(
+        "continueStateChange", continuationObserver_);
+    if (errCode == ERR_OK) {
+        RESSCHED_LOGD("continuation observer register on successfully");
+    } else {
+        RESSCHED_LOGW("continuation observer register on failed %{public}d", errCode);
+        HiSysEventWrite(HiviewDFX::HiSysEvent::Domain::RSS, "INIT_FAULT", HiviewDFX::HiSysEvent::EventType::FAULT,
+                        "MODULE_NAME", "SchedController",
+                        "SCENE_NAME", "ListenerRegisterFailed",
+                        "ERR_INFO", "Register continuation observer failed!");
+    }
+}
+
+void ObserverManager::DisableContinuationObserver()
+{
+    if (continuationObserver_ == nullptr) {
+        return;
+    }
+
+    ErrCode errCode = AAFwk::AbilityManagerClient::GetInstance()->RegisterOffListener(
+        "continueStateChange", continuationObserver_);
+    if (errCode == ERR_OK) {
+        RESSCHED_LOGD("continuation observer register off successfully");
+    } else {
+        RESSCHED_LOGW("continuation observer register off failed %{public}d", errCode);
+    }
+    continuationObserver_ = nullptr;
+}
+#endif
 
 void ObserverManager::InitDataShareObserver()
 {
