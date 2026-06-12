@@ -245,6 +245,12 @@ ohos_shared_library("resschedsvc") {
   if (resource_schedule_service_forkall_plugin_enable) {
     defines += [ "FORKALL_PLUGIN_ENABLE" ]
   }
+  if (resource_schedule_service_distributed_continuation_enable) {
+    defines += [ "DISTRIBUTED_CONTINUATION_ENABLE" ]
+    sources += [
+      "../sched_controller/observer/src/continuation_observer.cpp",
+    ]
+  }
   external_deps += [ "data_share:datashare_consumer" ]
 
   version_script = "libresschedsvc.versionscript"
@@ -401,6 +407,12 @@ ohos_static_library("resschedsvc_static") {
 
   if (resource_schedule_service_forkall_plugin_enable) {
     defines += [ "FORKALL_PLUGIN_ENABLE" ]
+  }
+  if (resource_schedule_service_distributed_continuation_enable) {
+    defines += [ "DISTRIBUTED_CONTINUATION_ENABLE" ]
+    sources += [
+      "../sched_controller/observer/src/continuation_observer.cpp",
+    ]
   }
   subsystem_name = "resourceschedule"
   part_name = "resource_schedule_service"

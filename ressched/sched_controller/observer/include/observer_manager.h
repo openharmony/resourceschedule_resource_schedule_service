@@ -46,7 +46,9 @@
 #endif
 #include "window_state_observer.h"
 #include "display_power_event_observer.h"
-
+#ifdef DISTRIBUTED_CONTINUATION_ENABLE
+#include "continuation_observer.h"
+#endif
 namespace OHOS {
 namespace ResourceSchedule {
 using ReportFunc = bool (*)();
@@ -111,7 +113,10 @@ public:
     void InitDownloadUploadObserver();
     void DisableDownloadUploadObserver();
 #endif
-
+#ifdef DISTRIBUTED_CONTINUATION_ENABLE
+    void InitContinuationObserver();
+    void DisableContinuationObserver();
+#endif
 #ifdef RESSCHED_MULTIMEDIA_AV_SESSION_ENABLE
     void InitAVSessionStateChangeListener();
     void DisableAVSessionStateChangeListener();
@@ -134,6 +139,9 @@ public:
 #ifdef RESSCHED_TELEPHONY_STATE_REGISTRY_ENABLE
     int32_t slotId_ = 0;
     sptr<SchedTelephonyObserver> telephonyObserver_ = nullptr;
+#endif
+#ifdef DISTRIBUTED_CONTINUATION_ENABLE
+    sptr<ContinuationObserver> continuationObserver_ = nullptr;
 #endif
 #ifdef RESSCHED_AUDIO_FRAMEWORK_ENABLE
     std::shared_ptr<AudioObserver> audioObserver_ = nullptr;

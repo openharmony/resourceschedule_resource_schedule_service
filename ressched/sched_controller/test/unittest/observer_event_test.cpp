@@ -2217,5 +2217,25 @@ HWTEST_F(ObserverEventTest, DisplayPowerEventObserver_007, testing::ext::TestSiz
     );
     SUCCEED();
 }
+
+#ifdef DISTRIBUTED_CONTINUATION_ENABLE
+/**
+ * @tc.name: ContinuationObserver_001
+ * @tc.desc: test continuation observer init
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ObserverEventTest, ContinuationObserver_001, testing::ext::TestSize.Level1)
+{
+    auto instance = ObserverManager::GetInstance();
+    if (instance) {
+        instance->continuationObserver_ = nullptr;
+        instance->InitContinuationObserver();
+        EXPECT_NE(instance->continuationObserver_, nullptr);
+        instance->DisableContinuationObserver();
+        EXPECT_EQ(instance->continuationObserver_, nullptr);
+    }
+}
+#endif
 }
 }
