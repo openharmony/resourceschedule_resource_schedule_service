@@ -199,6 +199,14 @@ inline void SubscribeCommonEvent(std::shared_ptr<EventController> subscriber)
     }
 }
 
+void EventController::SystemAbilityStatusChangeListener::AddBatteryCommonEvent(
+    EventFwk::MatchingSkills& matchingSkills)
+{
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BATTERY_CHANGED);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BATTERY_LOW);
+    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BATTERY_OKAY);
+}
+
 void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     int32_t systemAbilityId, const std::string& deviceId)
 {
@@ -232,7 +240,6 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_CONNECTED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_POWER_DISCONNECTED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_WIFI_POWER_STATE);
-    matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_BATTERY_CHANGED);
     matchingSkills.AddEvent(CommonEventSupport::COMMON_EVENT_USER_UNLOCKED);
     matchingSkills.AddEvent(DATA_SHARE_READY);
     matchingSkills.AddEvent(COMMON_EVENT_CAMERA_STATUS);
@@ -243,6 +250,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(COMMON_EVENT_MEDIA_CTRL_EVENT);
     matchingSkills.AddEvent(COMMON_EVENT_AUDIO_FOCUS_CHANGE);
     matchingSkills.AddEvent(COMMON_EVENT_NEARLINK_HOST_STATE_UPDATE);
+    AddBatteryCommonEvent(matchingSkills);
     CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     lock_guard<mutex> autolock(subscriberMutex_);
     subscriber_ = std::make_shared<EventController>(subscriberInfo);
