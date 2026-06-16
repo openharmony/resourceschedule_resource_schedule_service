@@ -100,7 +100,7 @@ void ResSchedClient::ReportData(uint32_t resType, int64_t value,
         resType != ResType::RES_TYPE_AXIS_EVENT &&
         resType != ResType::RES_TYPE_KEY_PERF_SCENE &&
         resTypeList_.find(resType) == resTypeList_.end()) {
-        RESSCHED_LOGE("ResSchedClient::ReportData type not subscribed.");
+        RESSCHED_LOGD("ResSchedClient::ReportData type not subscribed.");
         ReportDiscardEventError(resType);
         return;
     }
