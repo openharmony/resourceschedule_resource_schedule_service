@@ -72,6 +72,7 @@ void WindowVisibilityObserver::MarshallingWindowVisibilityInfo(const sptr<Window
     payload["isVisible"] = isVisible;
     payload["visibilityState"] = std::to_string(info->visibilityState_);
     payload["callingPid"] = std::to_string(info->callingPid_);
+    payload["moduleName"] = info->moduleName_;
 }
 
 void WindowVisibilityObserver::OnWindowVisibilityChanged(
