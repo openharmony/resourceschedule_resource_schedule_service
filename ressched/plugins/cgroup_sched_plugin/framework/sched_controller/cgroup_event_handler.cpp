@@ -1550,8 +1550,10 @@ void CgroupEventHandler::PostTask(const std::function<void()> task, const std::s
         CGS_LOGE("%{public}s : cgroupEventQueue_ nullptr", __func__);
         return;
     }
-    delayTaskMap_[taskName] = cgroupEventQueue_->submit_h([task, this] {
+    delayTaskMap_[taskName] = cgroupEventQueue_->submit_h([task, taskName, this] {
         task();
+        std::lock_guard<ffrt::mutex> autoLock(delayTaskMapMutex_);
+        delayTaskMap_.erase(taskName);
     }, ffrt::task_attr().delay(delayTime * ffrtSwitch_));
 }
 
@@ -1568,12 +1570,10 @@ void CgroupEventHandler::PostTaskAndWait(const std::function<void()> task)
 void CgroupEventHandler::RemoveTask(const std::string &taskName)
 {
     std::lock_guard<ffrt::mutex> autoLock(delayTaskMapMutex_);
-    for (auto iter = delayTaskMap_.begin(); iter != delayTaskMap_.end(); iter++) {
-        if (iter->first == taskName && iter->second != nullptr) {
-            cgroupEventQueue_->cancel(iter->second);
-            delayTaskMap_.erase(iter);
-            return;
-        }
+    auto iter = delayTaskMap_.find(taskName);
+    if (iter != delayTaskMap_.end() && iter->second != nullptr) {
+        cgroupEventQueue_->cancel(iter->second);
+        delayTaskMap_.erase(iter);
     }
 }
 } // namespace ResourceSchedule
