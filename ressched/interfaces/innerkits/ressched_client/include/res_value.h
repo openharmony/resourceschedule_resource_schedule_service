@@ -1053,6 +1053,14 @@ enum BottomState : uint32_t {
     NON_BOTTOM_SCENE = 0,
     COLD_START_RATE_BOTTOM_SCENE = 1,
 };
+/**
+ * @brief backgroundLoader change state
+ */
+enum BackgroundLoaderState : uint32_t {
+    ADD = 0,
+    DELETE = 1,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
