@@ -644,12 +644,13 @@ int32_t ResSchedService::DumpPreloadUserMode(int32_t fd, std::vector<std::string
 
     if (argsInStr[DUMP_OPTION] == "setPreloadSwitch" || argsInStr[DUMP_OPTION] == "getPreloadSwitch" ||
         argsInStr[DUMP_OPTION] == "preloadAbilityStage" || argsInStr[DUMP_OPTION] == "preloadWindowStage" ||
-        argsInStr[DUMP_OPTION] == "preloadProcess") {
+        argsInStr[DUMP_OPTION] == "preloadProcess" || argsInStr[DUMP_OPTION] == "backgroundLoader") {
         // hidumper -s -a "setPreloadSwitch (value)"
         // hidumper -s -a "getPreloadSwitch"
         // hidumper -s -a "preloadAbilityStage (bundleName)"
         // hidumper -s -a "preloadWindowStage (bundleName) (abilityName)"
         // hidumper -s -a "preloadProcess (bundleName)"
+        // hidumper -s -a "backgroundLoader (bundleName) (abilityName)"
         std::string result;
         PluginMgr::GetInstance().DumpOnePlugin(result, "libapp_preload_plugin.z.so", argsInStr);
         if (!SaveStringToFd(fd, result)) {

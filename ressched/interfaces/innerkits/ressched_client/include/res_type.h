@@ -449,6 +449,10 @@ enum : uint32_t {
     RES_TYPE_FLOAT_START_FROM_SIDEBAR = 216,
     // report continuation event
     RES_TYPE_DISTRIBUTED_CONTINUATION_EVENT = 217,
+    // report background loader change event
+    RES_TYPE_BACKGROUND_LOADER_CHANGE_EVENT = 218,
+    // notify start background loader task
+    RES_TYPE_START_BACKGROUND_LOADER_TASK = 219,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
