@@ -40,6 +40,8 @@ enum : uint32_t {
     RES_TYPE_SET_THREAD_GROUP_SCHED_POLICY_SYNC_EVENT,
     // init executor plugin manager
     RES_TYPE_EXECUTOR_PLUGIN_INIT,
+    // gpu load aware
+    RES_TYPE_GPU_LOAD_AWARE_SYNC_EVENT,
     // last sync resType, please add sync resType before
     RES_TYPE_SYNC_END,
 
