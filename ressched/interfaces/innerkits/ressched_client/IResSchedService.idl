@@ -15,8 +15,8 @@
 sequenceable OHOS.IRemoteObject;
 interface OHOS.ResourceSchedule.ISuspendStateObserverBase;
 interface OHOS.ResourceSchedule.IResSchedService {
-    [oneway] void ReportData([in] unsigned int resType, [in] long value, [in] String payload);
-    void ReportSyncEvent([in] unsigned int resType, [in] long value, [in] String payload,
+    [oneway, customMsgOption flags=MessageOption::TF_IMAGE] void ReportData([in] unsigned int resType, [in] long value, [in] String payload);
+    [customMsgOption flags=MessageOption::TF_IMAGE]void ReportSyncEvent([in] unsigned int resType, [in] long value, [in] String payload,
         [out] String replyValue, [out] int resultValue);
     void KillProcess([in] String payload, [out] int resultValue);
     void RegisterSystemloadNotifier([in] IRemoteObject notifier);
@@ -28,7 +28,7 @@ interface OHOS.ResourceSchedule.IResSchedService {
     void GetSystemloadLevel([out] int resultValue);
     void IsAllowedAppPreload([in] String bundleName, [in] int preloadMode, [out] boolean resultValue);
     void IsAllowedLinkJump([in] boolean isAllowedLinkJump, [out] int resultValue);
-    void GetResTypeList([out] Set<unsigned int> resTypeList);
+    [customMsgOption flags=MessageOption::TF_IMAGE]void GetResTypeList([out] Set<unsigned int> resTypeList);
 
     int RegisterSuspendObserver([in] ISuspendStateObserverBase observer);
     int UnregisterSuspendObserver([in] ISuspendStateObserverBase observer);
