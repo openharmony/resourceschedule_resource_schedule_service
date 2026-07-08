@@ -66,9 +66,11 @@ private:
     void AddBatteryCommonEvent(EventFwk::MatchingSkills& matchingSkills);
     void SubscribeLockScreenCommonEvent();
     void SubscribeCloneStateCommonEvent();
+    void SubscribeMediaCtrlCommonEvent();
     std::shared_ptr<EventController> subscriber_ = nullptr;
     std::shared_ptr<EventController> lockScreenSubscriber_ = nullptr;
     std::shared_ptr<EventController> cloneStateSubscriber_ = nullptr;
+    std::shared_ptr<EventController> mediaCtrlSubscriber_ = nullptr;
     std::mutex subscriberMutex_;
 };
 
