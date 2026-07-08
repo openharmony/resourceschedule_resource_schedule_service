@@ -247,7 +247,6 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     matchingSkills.AddEvent(COMMON_EVENT_GAME_STATUS);
     matchingSkills.AddEvent(CONFIG_UPDATED_ACTION);
     matchingSkills.AddEvent(COMMON_EVENT_USER_SLEEP_STATE_CHANGED);
-    matchingSkills.AddEvent(COMMON_EVENT_MEDIA_CTRL_EVENT);
     matchingSkills.AddEvent(COMMON_EVENT_AUDIO_FOCUS_CHANGE);
     matchingSkills.AddEvent(COMMON_EVENT_NEARLINK_HOST_STATE_UPDATE);
     AddBatteryCommonEvent(matchingSkills);
@@ -257,6 +256,7 @@ void EventController::SystemAbilityStatusChangeListener::OnAddSystemAbility(
     SubscribeCommonEvent(subscriber_);
     SubscribeLockScreenCommonEvent();
     SubscribeCloneStateCommonEvent();
+    SubscribeMediaCtrlCommonEvent();
 }
 
 void EventController::SystemAbilityStatusChangeListener::SubscribeLockScreenCommonEvent()
@@ -280,6 +280,18 @@ void EventController::SystemAbilityStatusChangeListener::SubscribeCloneStateComm
     cloneStateSubscriber_ = std::make_shared<EventController>(subscriberInfo);
     SubscribeCommonEvent(cloneStateSubscriber_);
     RESSCHED_LOGI("Subscribed clone state common event");
+}
+
+void EventController::SystemAbilityStatusChangeListener::SubscribeMediaCtrlCommonEvent()
+{
+    MatchingSkills mediaCtrlSkills;
+    mediaCtrlSkills.AddEvent(COMMON_EVENT_MEDIA_CTRL_EVENT);
+    CommonEventSubscribeInfo subscriberInfo(mediaCtrlSkills);
+    int32_t avsessionUid = 6700;
+    subscriberInfo.SetPublisherUid(avsessionUid);
+    subscriberInfo.SetThreadMode(CommonEventSubscribeInfo::COMMON);
+    mediaCtrlSubscriber_ = std::make_shared<EventController>(subscriberInfo);
+    SubscribeCommonEvent(mediaCtrlSubscriber_);
 }
 
 void EventController::OnReceiveEvent(const EventFwk::CommonEventData &data)
@@ -621,6 +633,7 @@ void EventController::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(
     subscriber_ = nullptr;
     lockScreenSubscriber_ = nullptr;
     cloneStateSubscriber_ = nullptr;
+    mediaCtrlSubscriber_ = nullptr;
 }
 
 void EventController::SystemAbilityStatusChangeListener::Stop()
@@ -637,6 +650,10 @@ void EventController::SystemAbilityStatusChangeListener::Stop()
     if (cloneStateSubscriber_ != nullptr) {
         CommonEventManager::UnSubscribeCommonEvent(cloneStateSubscriber_);
         cloneStateSubscriber_ = nullptr;
+    }
+    if (mediaCtrlSubscriber_ != nullptr) {
+        CommonEventManager::UnSubscribeCommonEvent(mediaCtrlSubscriber_);
+        mediaCtrlSubscriber_ = nullptr;
     }
     RESSCHED_LOGI("unsubscribe all common event.");
 }
