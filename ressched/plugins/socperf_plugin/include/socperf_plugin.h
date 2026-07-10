@@ -217,6 +217,7 @@ private:
     bool HandleProcessStateChange(const std::shared_ptr<ResData> &data);
     bool HandleCameraStateChange(const std::shared_ptr<ResData> &data);
     bool InitBundleNameBoostList();
+    bool InitBundleNameBoostLists(const PluginConfig& itemLists);
     void InitGameColdStartBoostSwitch();
     bool HandleSubValue(const std::string& subValue, std::set<std::string>& nameSet);
     bool IsAllowBoostScene();

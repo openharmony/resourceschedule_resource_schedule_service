@@ -165,6 +165,13 @@ bool SocPerfPlugin::InitBundleNameBoostList()
 {
     PluginConfig itemLists = PluginMgr::GetInstance().GetConfig(PLUGIN_NAME,
         CONFIG_NAME_SOCPERF_BUNDLE_NAME_BOOST_LIST);
+    bool ret = InitBundleNameBoostLists(itemLists);
+    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_BUNDLE_NAME_BOOST_LIST);
+    return ret;
+}
+
+bool SocPerfPlugin::InitBundleNameBoostLists(const PluginConfig& itemLists)
+{
     bool ret = false;
     for (const Item& item : itemLists.itemList) {
         for (SubItem sub : item.subItemList) {
@@ -175,7 +182,6 @@ bool SocPerfPlugin::InitBundleNameBoostList()
             }
         }
     }
-    PluginMgr::GetInstance().RemoveConfig(PLUGIN_NAME, CONFIG_NAME_SOCPERF_BUNDLE_NAME_BOOST_LIST);
     return ret;
 }
 
@@ -1781,6 +1787,9 @@ bool SocPerfPlugin::HandleRssCloudConfigUpdate(const std::shared_ptr<ResData>& d
         }
         if (pluginConfigs.find(WEAK_ACTION_STRING) != pluginConfigs.end()) {
             LoadWeakInterAction(pluginConfigs[WEAK_ACTION_STRING]);
+        }
+        if (pluginConfigs.find(CONFIG_NAME_SOCPERF_BUNDLE_NAME_BOOST_LIST) != pluginConfigs.end()) {
+            InitBundleNameBoostLists(pluginConfigs[CONFIG_NAME_SOCPERF_BUNDLE_NAME_BOOST_LIST]);
         }
         return true;
     } catch (const std::exception &e) {
