@@ -1061,6 +1061,25 @@ enum BackgroundLoaderState : uint32_t {
     DELETE = 1,
 };
 
+/**
+ * gesture state
+ */
+enum GestureState : int32_t {
+    GESTURE_ACTION_START    = 0,  // animation gesture from bottom start
+    GESTURE_ACTION_END      = 1,  // animation gesture from bottom end
+    ENTER_RECENT_START      = 2,  // animation recent panel start
+    ENTER_RECENT_END        = 3,  // animation recent panel end
+    ENTER_APP_START         = 4,  // animation from recent panel to app start
+    ENTER_APP_END           = 5,  // animation from recent panel to app end
+    ENTER_HOME_START        = 6,  // animation from recent panel to sceneboard start
+    ENTER_HOME_END          = 7,  // animation from recent panel to sceneboard end
+    ENTER_APP_MID           = 8,  // animation fold to mid start
+    ENTER_APP_MID_END       = 9,  // animation fold to mid end
+    ENTER_APP_SPLIT         = 10, // animation split start
+    ENTER_APP_SPLIT_END     = 11, // animation split end
+    ENTER_APP_FLOAT         = 12, // animation multi-window start
+    ENTER_APP_FLOAT_END     = 13, // animation multi-window end
+}
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
