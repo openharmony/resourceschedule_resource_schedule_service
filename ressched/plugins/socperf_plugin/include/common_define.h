@@ -38,8 +38,6 @@ namespace {
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_PATH = "socperf_req_apptype_path";
     const std::string SUB_ITEM_KEY_NAME_SOCPERF_RERQ_APPTYPE_FUNC = "socperf_req_apptype_func";
     const std::string CONFIG_NAME_SOCPERF_BATTERY_CAPACITY_LIMIT_FREQ = "socperfBatteryCapacityLimitFreq";
-    const std::string CONFIG_NAME_SOCPERF_GAME_COLD_START_BOOST_SWITCH = "socperfGameColdStartBoostSwitch";
-    const std::string GAME_BOOST_SWITCH = "switch";
     const std::string BUNDLE_NAME = "bundleName";
     const std::string CALLER_BUNDLE_NAME = "callerBundleName";
     const std::string SPECIAL_EXTENSION_STRING = "specialExtension";
