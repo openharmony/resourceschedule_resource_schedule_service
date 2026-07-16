@@ -78,7 +78,8 @@
         "libxml2",
         "jsoncpp",
         "runtime_core",
-        "ets_frontend"
+        "ets_frontend",
+        "taihe_ffi_gen"
       ]
     },
     "build": {
