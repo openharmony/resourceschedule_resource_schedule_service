@@ -1079,7 +1079,7 @@ enum GestureState : int32_t {
     ENTER_APP_SPLIT_END     = 11, // animation split end
     ENTER_APP_FLOAT         = 12, // animation multi-window start
     ENTER_APP_FLOAT_END     = 13, // animation multi-window end
-}
+};
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
