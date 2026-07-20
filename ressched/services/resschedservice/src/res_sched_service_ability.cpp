@@ -29,7 +29,8 @@
 #include "event_listener_mgr.h"
 #include "system_ability_definition.h"
 
-#define GAME_SERVICE_SERVICE_ID 66058
+#define GAME_SERVICE_SERVICE_ID 66058 // game_accelerate_schedule sa
+#define GAME_SERVICE_SERVER_SA_ID 66006 // gameservice_server sa
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -151,6 +152,7 @@ void ResSchedServiceAbility::SystemAbilityListenerInit()
         {MEMORY_MANAGER_SA_ID, "MEMORY_MANAGER_SA_ID"},
         {LOCATION_LOCATOR_SA_ID, "LOCATION_LOCATOR_SA_ID"},
         {ADVANCED_NOTIFICATION_SERVICE_ABILITY_ID, "ADVANCED_NOTIFICATION_SERVICE_ABILITY_ID"},
+        {GAME_SERVICE_SERVER_SA_ID, "GAME_SERVICE_SERVER_SA_ID"},
     };
     std::vector<std::string> errIds;
     for (const auto& [saId, saIdStr] : saList) {
