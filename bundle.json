@@ -79,6 +79,7 @@
         "jsoncpp",
         "runtime_core",
         "ets_frontend",
+        "taihe_ffi_gen",
         "node",
         "libuv"
       ]
