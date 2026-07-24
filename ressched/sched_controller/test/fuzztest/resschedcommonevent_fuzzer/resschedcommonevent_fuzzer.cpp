@@ -40,7 +40,7 @@ namespace ResourceSchedule {
 
 namespace {
     static const int32_t TWO_PARAMETERS = 2;
-    static const int64_t FFRT_DELAY_EXIT_TIME = 20;
+    static const int64_t FFRT_DELAY_EXIT_TIME = 40;
     static const int32_t DATA_LENGTH = 10;
 }
     const uint8_t* DATA = nullptr;
@@ -104,8 +104,8 @@ namespace {
 
         int32_t systemAbilityId = GetData<int32_t>();
         std::string deviceId = GetStringFromData(DATA_LENGTH);
-
         std::shared_ptr<EventController> eventController = std::make_shared<EventController>();
+        eventController->Init();
         if (eventController->sysAbilityListener_ != nullptr) {
             eventController->sysAbilityListener_->OnAddSystemAbility(systemAbilityId, deviceId);
             eventController->sysAbilityListener_->OnRemoveSystemAbility(systemAbilityId, deviceId);
@@ -131,7 +131,6 @@ namespace {
         int32_t userId = GetData<int32_t>();
         std::string bundleName = GetStringFromData(DATA_LENGTH);
         std::shared_ptr<EventController> eventController = std::make_shared<EventController>();
-        eventController->Init();
         eventController->GetUid(userId, bundleName);
         return true;
     }
