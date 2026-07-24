@@ -201,6 +201,7 @@ void PiPStateObserver::OnPiPStateChanged(const std::string& bundleName, const bo
 {
     RESSCHED_LOGI("Receive OnPiPStateChange %{public}s %{public}d", bundleName.c_str(), isForeground);
     nlohmann::json payload;
+    payload["bundleName"] = bundleName;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TRPE_PIP_STATUS,
         static_cast<int64_t>(isForeground), payload);
 }
