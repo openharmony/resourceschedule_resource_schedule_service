@@ -14,6 +14,7 @@
 1.0 {
   global:
     *PluginMgr*GetConfig*;
+    *PluginMgr*GetPluginLib*;
     *PluginMgr*RemoveConfig*;
     *PluginMgr*RemovePluginConfig*;
     *PluginMgr*GetInstance*;
