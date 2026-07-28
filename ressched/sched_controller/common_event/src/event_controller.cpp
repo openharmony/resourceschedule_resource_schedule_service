@@ -69,6 +69,7 @@ static const char* COMMON_EVENT_NEARLINK_HOST_STATE_UPDATE = "usual.event.nearli
 
 void EventController::Init()
 {
+    lock_guard<mutex> autolock(sysAbilityMutex_);
     if (sysAbilityListener_ != nullptr) {
         return;
     }
@@ -174,10 +175,17 @@ void EventController::ReportDataInProcess(const uint32_t &resType, const int64_t
 
 void EventController::Stop()
 {
+    lock_guard<mutex> autolock(sysAbilityMutex_);
     if (sysAbilityListener_ == nullptr) {
         return;
     }
     sysAbilityListener_->Stop();
+    sptr<ISystemAbilityManager> systemAbilityManager
+        = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (systemAbilityManager != nullptr) {
+        systemAbilityManager->UnSubscribeSystemAbility(COMMON_EVENT_SERVICE_ID, sysAbilityListener_);
+    }
+    sysAbilityListener_ = nullptr;
 }
 
 void EventController::DataShareIsReady()
