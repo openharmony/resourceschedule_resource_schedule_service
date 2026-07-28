@@ -185,6 +185,7 @@ void EventController::Stop()
     if (systemAbilityManager != nullptr) {
         systemAbilityManager->UnSubscribeSystemAbility(COMMON_EVENT_SERVICE_ID, sysAbilityListener_);
     }
+    delete sysAbilityListener_;
     sysAbilityListener_ = nullptr;
 }
 
