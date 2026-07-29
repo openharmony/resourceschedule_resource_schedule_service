@@ -199,6 +199,7 @@ namespace {
         { ResType::RES_TYPE_APP_ABILITY_START, { 5523 } },
         { ResType::RES_TYPE_PRELOAD_APPLICATION, { 5523 } },
         { ResType::RES_TYPE_APP_ASSOCIATED_START, { 5523 } },
+        { ResType::RES_TYPE_IMAGE_PROCESS_STATE_CHANGED, { 5523 } },
         { ResType::RES_TYPE_REPORT_SCREEN_CAPTURE, { 1013 } },
         { ResType::RES_TYPE_LOCATION_STATUS_CHANGE, { 1021 } },
         { ResType::RES_TYPE_SYSTEM_CPU_LOAD, { 1201 } },
