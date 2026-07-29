@@ -970,7 +970,7 @@ HWTEST_F(EventControllerTest, packageInstallStarted_001, testing::ext::TestSize.
  * @tc.name: eventController_001
  * @tc.desc: test the interface
  * @tc.type: FUNC
- * @tc.require: 
+ * @tc.require: issue#1761
  */
  HWTEST_F(EventControllerTest, eventController_001, testing::ext::TestSize.Level1)
  {
