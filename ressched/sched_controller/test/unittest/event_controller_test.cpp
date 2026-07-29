@@ -965,5 +965,18 @@ HWTEST_F(EventControllerTest, packageInstallStarted_001, testing::ext::TestSize.
     EXPECT_EQ(result, -1);
     EventController::GetInstance().Stop();
 }
+
+/**
+ * @tc.name: eventController_001
+ * @tc.desc: test the interface
+ * @tc.type: FUNC
+ * @tc.require: 
+ */
+ HWTEST_F(EventControllerTest, eventController_001, testing::ext::TestSize.Level1)
+ {
+    EventController::GetInstance().Init();
+    EventController::GetInstance().Stop();
+    EXPECT_EQ(EventController::GetInstance().sysAbilityListener_, nullptr);
+}
 }
 }
