@@ -88,6 +88,7 @@ private:
     void handleEvent(int32_t userId, const std::string &action, nlohmann::json &payload, EventFwk::Want &want);
     void handleNearlinkEvent(int32_t code, const std::string &action, nlohmann::json &payload);
     sptr<SystemAbilityStatusChangeListener> sysAbilityListener_ = nullptr;
+    std::mutex sysAbilityMutex_;
 };
 }  // namespace ResourceSchedule
 }  // namespace OHOS
