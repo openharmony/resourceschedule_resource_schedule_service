@@ -15,7 +15,8 @@
 sequenceable OHOS.IRemoteObject;
 interface OHOS.ResourceSchedule.ISuspendStateObserverBase;
 interface OHOS.ResourceSchedule.IResSchedService {
-    [oneway, customMsgOption flags=MessageOption::TF_IMAGE] void ReportData([in] unsigned int resType, [in] long value, [in] String payload);
+    [customMsgOption flags=MessageOption::TF_IMAGE | MessageOption::TF_ASYNC] void ReportData([in] unsigned int resType,
+        [in] long value, [in] String payload);
     [customMsgOption flags=MessageOption::TF_IMAGE]void ReportSyncEvent([in] unsigned int resType, [in] long value, [in] String payload,
         [out] String replyValue, [out] int resultValue);
     void KillProcess([in] String payload, [out] int resultValue);
