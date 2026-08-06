@@ -58,6 +58,7 @@ void RmsApplicationStateObserver::OnForegroundApplicationChanged(const AppStateD
     payload["uid"] = std::to_string(appStateData.uid);
     payload["bundleName"] = appStateData.bundleName;
     payload["preloadMode"] = std::to_string(appStateData.preloadMode);
+    payload["isFocused"] = std::to_string(appStateData.isFocused);
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_APP_STATE_CHANGE, appStateData.state, payload);
 }
 
