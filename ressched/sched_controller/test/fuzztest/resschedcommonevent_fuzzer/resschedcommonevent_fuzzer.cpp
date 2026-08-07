@@ -108,7 +108,7 @@ namespace {
         eventController->Init();
         if (eventController->sysAbilityListener_ != nullptr) {
             eventController->sysAbilityListener_->OnAddSystemAbility(systemAbilityId, deviceId);
-            eventController->sysAbilityListener_->OnRemoveSystemAbility(systemAbilityId, deviceId);
+            eventController->sysAbilityListener_->Stop();
         }
         eventController->Stop();
         return true;
