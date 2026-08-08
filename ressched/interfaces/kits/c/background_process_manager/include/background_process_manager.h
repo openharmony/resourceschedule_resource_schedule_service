@@ -78,6 +78,16 @@ typedef enum BackgroundProcessManager_PowerSaveMode {
 } BackgroundProcessManager_PowerSaveMode;
 
 /**
+ * @brief Clear type.
+ */
+typedef enum BackgroundProcessManager_ClearType {
+    /**
+     * @brief Clear recent cards.
+     */
+    CLEAR_RECENT_CARDS = 1,
+} BackgroundProcessManager_ClearType;
+
+/**
  * @brief Enum for BackgroundProcessManager error code.
  *
  * @since 17
@@ -92,6 +102,11 @@ typedef enum BackgroundProcessManager_ErrorCode {
      * @error Permission denied.
      */
     ERR_BACKGROUND_PROCESS_MANAGER_PERMISSION_DENIED = 201,
+
+    /**
+     * @error Not system app.
+     */
+    ERR_BACKGROUND_PROCESS_MANAGER_NOT_SYSTEM_APP = 202,
 
     /**
      * @error invalid parameter. Possible causes:
@@ -188,6 +203,11 @@ int OH_BackgroundProcessManager_IsPowerSaveMode(int pid);
  * @since 22
  */
 int OH_BackgroundProcessManager_GetPowerSaveMode(int pid, BackgroundProcessManager_PowerSaveMode* powerSaveMode);
+
+/**
+ * @brief Clear background apps.
+ */
+int OH_BackgroundProcessManager_ClearBackgroundApps(BackgroundProcessManager_ClearType clearType);
 #ifdef __cplusplus
 };
 #endif

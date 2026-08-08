@@ -35,6 +35,7 @@ ohos_shared_library("background_process_manager") {
   ]
 
   external_deps = [
+    "access_token:libtokenid_sdk",
     "c_utils:utils",
     "hilog:libhilog",
     "ipc:ipc_core",

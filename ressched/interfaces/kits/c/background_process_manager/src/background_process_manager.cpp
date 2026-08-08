@@ -16,6 +16,8 @@
 #include "background_process_manager.h"
 #include "res_sched_log.h"
 #include "res_sched_client.h"
+#include "tokenid_kit.h"
+#include "ipc_skeleton.h"
 
 namespace OHOS {
 namespace ResourceSchedule {
@@ -28,6 +30,12 @@ namespace {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+static bool IsSelfSystemApp()
+{
+    auto selfToken = IPCSkeleton::GetSelfTokenID();
+    return Security::AccessToken::TokenIdKit::IsSystemAppByFullTokenID(selfToken);
+}
 
 /**
  * @brief Set the priority of process.
@@ -177,6 +185,19 @@ int OH_BackgroundProcessManager_GetPowerSaveMode(int pid,
         *powerSaveMode = EFFICIENCY_MODE;
     }
     return ret;
+}
+
+int OH_BackgroundProcessManager_ClearBackgroundApps(BackgroundProcessManager_ClearType clearType)
+{
+    if (!IsSelfSystemApp()) {
+        RESSCHED_LOGE("not system app");
+        return ERR_BACKGROUND_PROCESS_MANAGER_NOT_SYSTEM_APP;
+    }
+
+    constexpr int RES_TYPE_CLEAN_BACKGROUND_APP = 10045;
+    std::unordered_map<std::string, std::string> payload;
+    ResSchedClient::GetInstance().ReportData(RES_TYPE_CLEAN_BACKGROUND_APP, 0, payload);
+    return ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS;
 }
 #ifdef __cplusplus
 }
