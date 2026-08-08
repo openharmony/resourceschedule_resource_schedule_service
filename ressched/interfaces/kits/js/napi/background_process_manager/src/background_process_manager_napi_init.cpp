@@ -26,9 +26,11 @@ namespace {
     constexpr int RESET_PROCESS_PRIORITY_PARAM_NUM = 1;
     constexpr int SET_POWER_SAVE_MODE_PARAM_NUM = 2;
     constexpr int IS_POWER_SAVE_MODE_PARAM_NUM = 1;
+    constexpr int ONE_PARAM_COUNT = 1;
     constexpr int PID_INDEX = 0;
     constexpr int PRIORITY_INDEX = 1;
     constexpr int MODE_INDEX = 1;
+    constexpr int ARG_ZERO_INDEX = 0;
     constexpr int IS_POWER_SAVE_OK = 1;
     constexpr int IS_POWER_SAVE_NOK = 0;
     std::map<int, std::string> errCodeMsg = {
@@ -36,6 +38,8 @@ namespace {
             "Parameter error. Possible causes: priority is out of range." },
         { ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR,
             "Parameter error. Possible causes: priority is out of range." },
+        { ERR_BACKGROUND_PROCESS_MANAGER_NOT_SYSTEM_APP,
+            "Not System App." },
         { ERR_BACKGROUND_PROCESS_MANAGER_PERMISSION_DENIED,
             "Permission denied." },
         { ERR_BACKGROUND_PROCESS_MANAGER_CAPABILITY_NOT_SUPPORTED,
@@ -261,6 +265,42 @@ napi_value GetPowerSaveMode(napi_env env, napi_callback_info info)
     return promise;
 }
 
+napi_value ClearBackgroundApps(napi_env env, napi_callback_info info)
+{
+    napi_value ret;
+    size_t argc = ONE_PARAM_COUNT;
+    napi_value argv[ONE_PARAM_COUNT] = { nullptr };
+    napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
+    if (argc != ONE_PARAM_COUNT) {
+        RESSCHED_LOGE("param num error");
+        napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR, &ret);
+        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
+        return ret;
+    }
+
+    napi_valuetype clearType;
+    napi_typeof(env, argv[ARG_ZERO_INDEX], &clearType);
+    if (clearType != napi_number) {
+        RESSCHED_LOGE("param type error");
+        napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR, &ret);
+        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
+        return ret;
+    }
+    int32_t clearTypeValue = -1;
+    napi_get_value_int32(env, argv[ARG_ZERO_INDEX], &clearTypeValue);
+    if (clearTypeValue != static_cast<int32_t>(BackgroundProcessManager_ClearType::CLEAR_RECENT_CARDS)) {
+        RESSCHED_LOGE("param value error");
+        napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR, &ret);
+        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
+        return ret;
+    }
+    int retCode = OH_BackgroundProcessManager_ClearBackgroundApps(
+        static_cast<BackgroundProcessManager_ClearType>(clearTypeValue));
+    HandleErrorCode(env, retCode);
+    napi_create_int32(env, retCode, &ret);
+    return ret;
+}
+
 static void SetPropertyName(napi_env env, napi_value dstObj, int32_t objName, const char * propName)
 {
     napi_value prop = nullptr;
@@ -285,9 +325,15 @@ static napi_value ProcessPriorityInit(napi_env env, napi_value exports)
     SetPropertyName(env, powerMode, static_cast<uint32_t>(BackgroundProcessManager_PowerSaveMode::DEFAULT_MODE),
         "DEFAULT_MODE");
 
+    napi_value clearType = nullptr;
+    napi_create_object(env, &clearType);
+    SetPropertyName(env, clearType, static_cast<uint32_t>(BackgroundProcessManager_ClearType::CLEAR_RECENT_CARDS),
+        "CLEAR_RECENT_CARDS");
+
     napi_property_descriptor desc[] = {
         DECLARE_NAPI_PROPERTY("ProcessPriority", obj),
         DECLARE_NAPI_PROPERTY("PowerSaveMode", powerMode),
+        DECLARE_NAPI_PROPERTY("ClearType", clearType),
     };
 
     napi_define_properties(env, exports, sizeof(desc) / sizeof(*desc), desc);
@@ -302,6 +348,7 @@ static napi_value InitBackgroundProcessManagerAPi(napi_env env, napi_value expor
         DECLARE_NAPI_FUNCTION("setPowerSaveMode", SetPowerSaveMode),
         DECLARE_NAPI_FUNCTION("isPowerSaveMode", IsPowerSaveMode),
         DECLARE_NAPI_FUNCTION("getPowerSaveMode", GetPowerSaveMode),
+        DECLARE_NAPI_FUNCTION("clearBackgroundApps", ClearBackgroundApps),
     };
 
     NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(*desc), desc));
