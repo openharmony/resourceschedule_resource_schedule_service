@@ -348,7 +348,7 @@ void ResSchedMgr::ReportProcessStateInProcess(int32_t state, int32_t pid)
     ResSchedMgr::GetInstance().OnApplicationStateChange(state, pid);
 }
 
-std::unordered_set<uint32_t>& ResSchedMgr::AdAllowSCBReportResExt()
+std::unordered_set<uint32_t>& ResSchedMgr::GetAllowSCBReportResExt()
 {
     return allowSCBReportResExt_;
 }
@@ -375,30 +375,35 @@ std::unordered_set<uint32_t>& ResSchedMgr::GetAllowFgAppReportResExt()
 
 void ResSchedMgr::AddAllowSCBReportResExt(const std::unordered_set<uint32_t>& allowSCBReportResExt)
 {
-    allowSCBReportResExt_ = allowSCBReportResExt;
+    allowSCBReportResExt_.insert(allowSCBReportResExt.begin(), allowSCBReportResExt.end());
 }
 
 
 void ResSchedMgr::AddAllowAllSAReportResExt(const std::unordered_set<uint32_t>& allowAllSAReportResExt)
 {
-    allowAllSAReportResExt_ = allowAllSAReportResExt;
+    allowAllSAReportResExt_.insert(allowAllSAReportResExt.begin(), allowAllSAReportResExt.end());
 }
 
 
 void ResSchedMgr::AddAllowSomeSAReportResExt(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>&
     allowSomeSAReportResExt)
 {
-    allowSomeSAReportResExt_ = allowSomeSAReportResExt;
+    for (const auto& addPair : allowSomeSAReportResExt) {
+        uint32_t resTypeExt = addPair.first;
+        const auto& saSet = addPair.second;
+        auto& existSaSet = allowSomeSAReportResExt_[resTypeExt];
+        existSaSet.insert(saSet.begin(), saSet.end());
+    }
 }
 
 void ResSchedMgr::AddAllowAllAppReportResExt(const std::unordered_set<uint32_t>& allowAllAppReportResExt)
 {
-    allowAllAppReportResExt_ = allowAllAppReportResExt;
+    allowAllAppReportResExt_.insert(allowAllAppReportResExt.begin(), allowAllAppReportResExt.end());
 }
 
 void ResSchedMgr::AddAllowFgAppReportResExt(const std::unordered_set<uint32_t>& allowFgAppReportResExt)
 {
-    allowFgAppReportResExt_ = allowFgAppReportResExt;
+    allowFgAppReportResExt_.insert(allowFgAppReportResExt.begin(), allowFgAppReportResExt.end());
 }
 
 extern "C" void AddAllowSCBReportResExt(const std::unordered_set<uint32_t>& allowSCBReportResExt)

@@ -154,7 +154,6 @@ void EventListenerMgr::SendEvent(uint32_t eventType, uint32_t eventValue, const 
         RESSCHED_LOGE("%{public}s:error due to eventSenderQueue_ null.", __func__);
         return;
     }
-
 #ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
     if (eventType == ResType::EventType::EVENT_KEY_PERF_SCENE) {
         int32_t extType = GetExtTypeByEventExtInfo(extInfo);
