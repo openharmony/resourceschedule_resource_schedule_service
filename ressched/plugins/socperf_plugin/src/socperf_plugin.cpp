@@ -1309,7 +1309,8 @@ bool SocPerfPlugin::HandleSceenModeBoost(const std::string& deviceModeType)
     }
 
     // Check if the device changes the display mode to FULL.
-    if (deviceMode_ == DISPLAY_MODE_FULL || deviceMode_ == DISPLAY_MODE_GLOBAL_FULL) {
+    if (deviceMode_ == DISPLAY_MODE_FULL || deviceMode_ == DISPLAY_MODE_GLOBAL_FULL ||
+        deviceMode_ == DISPLAY_MODE_MAIN) {
         OHOS::SOCPERF::SocPerfClient::GetInstance().PerfRequestEx(PERF_REQUEST_CMD_ID_SCREEN_SWITCHED, true, "");
     }
     return true;
