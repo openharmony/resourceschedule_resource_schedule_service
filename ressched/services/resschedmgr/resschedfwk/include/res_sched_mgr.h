@@ -146,40 +146,40 @@ public:
     std::unordered_set<uint32_t>& GetAllowFgAppReportResExt();
 
     /**
-     * Set allow sceneboard report ext resTypes.
+     * Add allow sceneboard report ext resTypes.
      *
      * @param allowSCBReportResExt the set of allow sceneboard report extension resTypes.
      */
-    void SetAllowSCBReportResExt(const std::unordered_set<uint32_t>& allowSCBReportResExt);
+    void AddAllowSCBReportResExt(const std::unordered_set<uint32_t>& allowSCBReportResExt);
 
     /**
-     * Set allow all sa report extension resTypes.
+     * Add allow all sa report extension resTypes.
      *
      * @param allowAllSAReportResExt the set of allow all sa report extension resTypes.
      */
-    void SetAllowAllSAReportResExt(const std::unordered_set<uint32_t>& allowAllSAReportResExt);
+    void AddAllowAllSAReportResExt(const std::unordered_set<uint32_t>& allowAllSAReportResExt);
 
     /**
-     * Set allow some sa report extension resTypes.
+     * Add allow some sa report extension resTypes.
      *
      * @param allowSomeSAReportResExt the set of allow some sa report extension resTypes.
      */
-    void SetAllowSomeSAReportResExt(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>&
+    void AddAllowSomeSAReportResExt(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>&
         allowSomeSAReportResExt);
 
     /**
-     * Set allow all app report extension resTypes.
+     * Add allow all app report extension resTypes.
      *
      * @param allowAllAppReportResExt the set of allow all app report extension resTypes.
      */
-    void SetAllowAllAppReportResExt(const std::unordered_set<uint32_t>& allowAllAppReportResExt);
+    void AddAllowAllAppReportResExt(const std::unordered_set<uint32_t>& allowAllAppReportResExt);
 
     /**
-     * Set allow foreground app report extension resTypes.
+     * Add allow foreground app report extension resTypes.
      *
      * @param allowFgAppReportResExt the set of allow foreground app report extension resTypes.
      */
-    void SetAllowFgAppReportResExt(const std::unordered_set<uint32_t>& allowFgAppReportResExt);
+    void AddAllowFgAppReportResExt(const std::unordered_set<uint32_t>& allowFgAppReportResExt);
 private:
     std::shared_ptr<KillProcess> killProcess_ = nullptr;
     std::mutex foregroundPidsMutex_;

@@ -60,6 +60,9 @@ private:
     void HandleSendEvent(std::vector<sptr<IRemoteObject>>& listenerVec,
         uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo, uint32_t listenerGroup);
     void OnRemoteListenerDied(const sptr<IRemoteObject>& listener);
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+    int32_t GetExtTypeByEventExtInfo(const nlohmann::json &extInfo);
+#endif
 
     bool initialized_ = false;
     std::mutex mutex_;
