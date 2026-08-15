@@ -457,6 +457,8 @@ enum : uint32_t {
     RES_TYPE_BACKGROUND_LOADER_TASK_FINISH = 220,
     // report process qos change, value 1: enter, value 0: exit
     RES_TYPE_PROCESS_QOS_CHANGE = 221,
+    // bgtask inner event
+    RES_TYPE_BGTASK_INNER_EVENT = 222,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
