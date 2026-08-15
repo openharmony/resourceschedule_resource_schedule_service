@@ -189,6 +189,13 @@ enum ContinuousTaskStatus : int64_t {
 };
 
 /**
+* @brief bgtask_inner_event
+*/
+enum BgtaskInnerEvent : int64_t {
+    MULTI_DEVICE_CAST_EVENT = 0,
+};
+
+/**
 * @brief efficiency resources status
 */
 enum EfficiencyResourcesStatus : int64_t {
