@@ -1070,6 +1070,13 @@ enum BackgroundLoaderState : uint32_t {
 };
 
 /**
+ * @brief dfx control image code
+ */
+enum DFXCtrlImageCode : int32_t {
+    DESTROY_DEBUG_APP_IMAGE = 0,
+};
+
+/**
  * gesture state
  */
 enum GestureState : int32_t {
