@@ -35,11 +35,11 @@
     SetListFlingEndTime;
     SetListFlingSpeedLimit;
     SetBlockedTime;
-    SetAllowSCBReportResExt;
-    SetAllowAllSAReportResExt;
-    SetAllowSomeSAReportResExt;
-    SetAllowAllAppReportResExt;
-    SetAllowFgAppReportResExt;
+    AddAllowSCBReportResExt;
+    AddAllowAllSAReportResExt;
+    AddAllowSomeSAReportResExt;
+    AddAllowAllAppReportResExt;
+    AddAllowFgAppReportResExt;
     ReportSyncEventInProcess;
 
     *SuspendManagerBaseObserver*UpdateSuspendObserver*;

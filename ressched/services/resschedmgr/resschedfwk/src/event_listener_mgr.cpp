@@ -27,6 +27,13 @@ namespace OHOS {
 namespace ResourceSchedule {
 IMPLEMENT_SINGLE_INSTANCE(EventListenerMgr);
 
+namespace {
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+    static const int32_t DEFAULT_VALUE = -1;
+    static const char* EXT_EVENT_KEY = "extType";
+#endif
+}
+
 EventListenerMgr::~EventListenerMgr()
 {
     std::lock_guard<std::mutex> autoLock(mutex_);
@@ -119,6 +126,21 @@ void EventListenerMgr::OnRemoteListenerDied(const sptr<IRemoteObject>& listener)
     RemoveListenerLock(listener);
 }
 
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+int32_t EventListenerMgr::GetExtTypeByEventExtInfo(const nlohmann::json &extInfo)
+{
+    if (!extInfo.contains(EXT_EVENT_KEY) || !extInfo[EXT_EVENT_KEY].is_string()) {
+        return DEFAULT_VALUE;
+    }
+    int type = DEFAULT_VALUE;
+    if (StrToInt(extInfo[EXT_EVENT_KEY], type)) {
+        return type;
+    } else {
+        return DEFAULT_VALUE;
+    }
+}
+#endif
+
 void EventListenerMgr::SendEvent(uint32_t eventType, uint32_t eventValue, const nlohmann::json &extInfo,
     uint32_t listenerGroup, int32_t targetPid)
 {
@@ -132,6 +154,14 @@ void EventListenerMgr::SendEvent(uint32_t eventType, uint32_t eventValue, const 
         RESSCHED_LOGE("%{public}s:error due to eventSenderQueue_ null.", __func__);
         return;
     }
+#ifdef RESOURCE_SCHEDULE_SERVICE_WITH_EXT_RES_ENABLE
+    if (eventType == ResType::EventType::EVENT_KEY_PERF_SCENE) {
+        int32_t extType = GetExtTypeByEventExtInfo(extInfo);
+        if (extType != DEFAULT_VALUE) {
+            eventType = (uint32_t)extType;
+        }
+    }
+#endif
     SendEventLock(eventType, eventValue, extInfo, listenerGroup, targetPid);
 }
 

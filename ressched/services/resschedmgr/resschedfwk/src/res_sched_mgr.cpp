@@ -374,58 +374,63 @@ std::unordered_set<uint32_t>& ResSchedMgr::GetAllowFgAppReportResExt()
     return allowFgAppReportResExt_;
 }
 
-void ResSchedMgr::SetAllowSCBReportResExt(const std::unordered_set<uint32_t>& allowSCBReportResExt)
+void ResSchedMgr::AddAllowSCBReportResExt(const std::unordered_set<uint32_t>& allowSCBReportResExt)
 {
-    allowSCBReportResExt_ = allowSCBReportResExt;
+    allowSCBReportResExt_.insert(allowSCBReportResExt.begin(), allowSCBReportResExt.end());
 }
 
 
-void ResSchedMgr::SetAllowAllSAReportResExt(const std::unordered_set<uint32_t>& allowAllSAReportResExt)
+void ResSchedMgr::AddAllowAllSAReportResExt(const std::unordered_set<uint32_t>& allowAllSAReportResExt)
 {
-    allowAllSAReportResExt_ = allowAllSAReportResExt;
+    allowAllSAReportResExt_.insert(allowAllSAReportResExt.begin(), allowAllSAReportResExt.end());
 }
 
 
-void ResSchedMgr::SetAllowSomeSAReportResExt(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>&
+void ResSchedMgr::AddAllowSomeSAReportResExt(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>&
     allowSomeSAReportResExt)
 {
-    allowSomeSAReportResExt_ = allowSomeSAReportResExt;
+    for (const auto& addPair : allowSomeSAReportResExt) {
+        uint32_t resTypeExt = addPair.first;
+        const auto& saSet = addPair.second;
+        auto& existSaSet = allowSomeSAReportResExt_[resTypeExt];
+        existSaSet.insert(saSet.begin(), saSet.end());
+    }
 }
 
-void ResSchedMgr::SetAllowAllAppReportResExt(const std::unordered_set<uint32_t>& allowAllAppReportResExt)
+void ResSchedMgr::AddAllowAllAppReportResExt(const std::unordered_set<uint32_t>& allowAllAppReportResExt)
 {
-    allowAllAppReportResExt_ = allowAllAppReportResExt;
+    allowAllAppReportResExt_.insert(allowAllAppReportResExt.begin(), allowAllAppReportResExt.end());
 }
 
-void ResSchedMgr::SetAllowFgAppReportResExt(const std::unordered_set<uint32_t>& allowFgAppReportResExt)
+void ResSchedMgr::AddAllowFgAppReportResExt(const std::unordered_set<uint32_t>& allowFgAppReportResExt)
 {
-    allowFgAppReportResExt_ = allowFgAppReportResExt;
+    allowFgAppReportResExt_.insert(allowFgAppReportResExt.begin(), allowFgAppReportResExt.end());
 }
 
-extern "C" void SetAllowSCBReportResExt(const std::unordered_set<uint32_t>& allowSCBReportResExt)
+extern "C" void AddAllowSCBReportResExt(const std::unordered_set<uint32_t>& allowSCBReportResExt)
 {
-    ResSchedMgr::GetInstance().SetAllowSCBReportResExt(allowSCBReportResExt);
+    ResSchedMgr::GetInstance().AddAllowSCBReportResExt(allowSCBReportResExt);
 }
 
-extern "C" void SetAllowAllSAReportResExt(const std::unordered_set<uint32_t>& allowAllSAReportResExt)
+extern "C" void AddAllowAllSAReportResExt(const std::unordered_set<uint32_t>& allowAllSAReportResExt)
 {
-    ResSchedMgr::GetInstance().SetAllowAllSAReportResExt(allowAllSAReportResExt);
+    ResSchedMgr::GetInstance().AddAllowAllSAReportResExt(allowAllSAReportResExt);
 }
 
-extern "C" void SetAllowSomeSAReportResExt(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>&
+extern "C" void AddAllowSomeSAReportResExt(const std::unordered_map<uint32_t, std::unordered_set<int32_t>>&
     allowSomeSAReportResExt)
 {
-    ResSchedMgr::GetInstance().SetAllowSomeSAReportResExt(allowSomeSAReportResExt);
+    ResSchedMgr::GetInstance().AddAllowSomeSAReportResExt(allowSomeSAReportResExt);
 }
 
-extern "C" void SetAllowAllAppReportResExt(const std::unordered_set<uint32_t>& allowAllAppReportResExt)
+extern "C" void AddAllowAllAppReportResExt(const std::unordered_set<uint32_t>& allowAllAppReportResExt)
 {
-    ResSchedMgr::GetInstance().SetAllowAllAppReportResExt(allowAllAppReportResExt);
+    ResSchedMgr::GetInstance().AddAllowAllAppReportResExt(allowAllAppReportResExt);
 }
 
-extern "C" void SetAllowFgAppReportResExt(const std::unordered_set<uint32_t>& allowFgAppReportResExt)
+extern "C" void AddAllowFgAppReportResExt(const std::unordered_set<uint32_t>& allowFgAppReportResExt)
 {
-    ResSchedMgr::GetInstance().SetAllowFgAppReportResExt(allowFgAppReportResExt);
+    ResSchedMgr::GetInstance().AddAllowFgAppReportResExt(allowFgAppReportResExt);
 }
 
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload)
