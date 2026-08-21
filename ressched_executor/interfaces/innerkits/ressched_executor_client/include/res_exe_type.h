@@ -57,6 +57,8 @@ enum : uint32_t {
     RES_TYPE_SOCK_EXECUTOR_ASYNC_EVENT,
     // suspend manager sa changed
     RES_TYPE_EXT_SUSPEND_MANAGER_SA_CHANGED,
+    // device standby event async
+    RES_TYPE_STANDBY_EXECUTOR_ASYNC_EVENT,
     // last resType, please add resType before
     RES_TYPE_LAST = 1000,
     // resType for debug ipc
