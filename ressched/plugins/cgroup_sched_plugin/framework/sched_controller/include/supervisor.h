@@ -227,8 +227,7 @@ public:
     int32_t GetSystemLoadLevel();
     void InitSuperVisorContent();
 
-    int32_t sceneBoardUid_ = -1;
-    int32_t sceneBoardPid_ = -1;
+    std::set<std::pair<int32_t, int32_t>> sceneBoardUidPid_;
     int32_t installsPid_ = -1;
     int32_t installsUid_ = -1;
 
