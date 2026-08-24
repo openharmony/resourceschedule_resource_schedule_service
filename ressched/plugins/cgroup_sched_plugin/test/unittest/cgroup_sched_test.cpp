@@ -343,7 +343,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_007, Function | Med
     payload["uid"] = "1000";
     payload["pid"] = "1000";
     cgroupEventHandler->HandleSceneBoardState(resType, value, payload);
-    EXPECT_EQ(cgroupEventHandler->supervisor_->sceneBoardPid_, 1000);
+    EXPECT_TRUE(cgroupEventHandler->supervisor_->sceneBoardUidPid_.count(std::make_pair(1000, 1000)) > 0);
 }
 
 /**
@@ -1168,7 +1168,7 @@ HWTEST_F(CGroupSchedTest, CGroupSchedTest_CgroupEventHandler_030, Function | Med
     payload = nlohmann::json::parse("{\"uid\": \"1111\","
         "\"pid\": \"1113\", \"tid\": \"1112\", \"bundleNum\": \"0\"}");
     cgroupEventHandler->HandleSceneBoardState(ResType::RES_TYPE_REPORT_SCENE_BOARD, 1112, payload);
-    EXPECT_TRUE(cgroupEventHandler->supervisor_->sceneBoardPid_ == 1113);
+    EXPECT_TRUE(cgroupEventHandler->supervisor_->sceneBoardUidPid_.count(std::make_pair(1111, 1113)) > 0);
 }
 
 /**
