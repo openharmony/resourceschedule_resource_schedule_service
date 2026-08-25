@@ -47,6 +47,7 @@ namespace {
     static constexpr int32_t FOUNDATION_UID = 5523;
     static constexpr int32_t GRAPHIC_UID = 1003;
     static constexpr int32_t HIVIEW_UID = 1201;
+    static constexpr int32_t HIPORFILER_UID = 3063;
     static constexpr int32_t SINGLE_UID_REQUEST_LIMIT_COUNT = 250;
     static constexpr int32_t ALL_UID_REQUEST_LIMIT_COUNT = 650;
     static constexpr int32_t LIMIT_REQUEST_TIME = 1000;
@@ -224,6 +225,7 @@ namespace {
         { ResType::RES_TYPE_CTRL_FORKALL_IMAGE_INTERFACE, { 1096 } },
         { ResType::RES_TYPE_INPUT_METHOD_CHANGE, { 3820 } },
         { ResType::SYNC_RES_TYPE_NOTIFY_MAKE_IMAGE, { 3820 } },
+        { ResType::SYNC_RES_TYPE_DFX_CTRL_IMAGE_INTERFACE, { 3063 } },
     };
     enum SYSTEM_LOAD_LEVEL_DEBUG_DUMP_SIGNAL : int32_t {
         DEBUG_LEVEL_MINIMUM = 0,

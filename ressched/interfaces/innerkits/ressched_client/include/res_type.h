@@ -511,6 +511,8 @@ enum : uint32_t {
     RES_TYPE_PRELOAD_APPLICATION = 522,
     // get the applicaiton type
     SYNC_RES_TYPE_GET_APP_TYPE = 523,
+    // res type for dfx to ctrl image, only for forkall_plugin
+    SYNC_RES_TYPE_DFX_CTRL_IMAGE_INTERFACE = 524,
     // last sync resType
     SYNC_RES_TYPE_LAST,
     // last resType
