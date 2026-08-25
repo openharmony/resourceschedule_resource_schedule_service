@@ -416,6 +416,7 @@ void CgroupEventHandler::HandleProcessDied(uint32_t resType, int64_t value, cons
         ResSchedUtils::GetInstance().ReportSysEvent(*(app.get()), *(procRecord.get()),
             ResType::RES_TYPE_PROCESS_STATE_CHANGE, ResType::ProcessStatus::PROCESS_DIED);
     }
+    supervisor_->sceneBoardUidPid_.erase(std::make_pair(uid, pid));
     app->RemoveProcessRecord(pid);
     // if all processes died, remove current app
     if (app->GetPidsMap().size() == 0) {
@@ -1196,8 +1197,7 @@ void CgroupEventHandler::HandleSceneBoardState(uint32_t resType, int64_t value, 
     if (sceneBoardPid <= 0) {
         return;
     }
-    supervisor_->sceneBoardUid_ = sceneBoardUid;
-    supervisor_->sceneBoardPid_ = sceneBoardPid;
+    supervisor_->sceneBoardUidPid_.insert(std::make_pair(sceneBoardUid, sceneBoardPid));
     CGS_LOGD("%{public}s:pid[%{public}d],uid[%{public}d]", __func__, sceneBoardPid, sceneBoardUid);
 }
 
