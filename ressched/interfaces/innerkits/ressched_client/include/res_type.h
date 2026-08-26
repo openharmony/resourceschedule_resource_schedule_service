@@ -453,6 +453,8 @@ enum : uint32_t {
     RES_TYPE_BACKGROUND_LOADER_CHANGE_EVENT = 218,
     // notify start background loader task
     RES_TYPE_START_BACKGROUND_LOADER_TASK = 219,
+    // bgtask inner event
+    RES_TYPE_BGTASK_INNER_EVENT = 222,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
