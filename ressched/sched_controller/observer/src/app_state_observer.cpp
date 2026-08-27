@@ -137,6 +137,7 @@ void RmsApplicationStateObserver::OnExtensionStateChanged(const AbilityStateData
     payload["extensionState"] = std::to_string(abilityStateData.abilityState);
     payload["abilityType"] = std::to_string(abilityStateData.abilityType);
     payload["extensionAbilityType"] = std::to_string(abilityStateData.extensionAbilityType);
+    payload["callerBundleName"] = abilityStateData.callerBundleName;
     ResSchedMgr::GetInstance().ReportData(ResType::RES_TYPE_EXTENSION_STATE_CHANGE,
         abilityStateData.abilityState, payload);
 }
