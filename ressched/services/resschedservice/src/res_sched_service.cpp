@@ -30,6 +30,7 @@
 #include "hisysevent.h"
 #include "res_common_util.h"
 #include "res_ipc_init.h"
+#include "parse_dump_int.h"
 #include "res_sched_hitrace_chain.h"
 
 namespace OHOS {
@@ -752,11 +753,24 @@ void ResSchedService::DumpExecutorDebugCommand(const std::vector<std::string>& a
     bool isSync = true;
     int times = 1;
     if (args.size() > DUMP_PARAM_INDEX + 1) {
-        int arg = atoi(args[DUMP_PARAM_INDEX + 1].c_str());
+        int32_t arg = 0;
+        if (!ParseDumpInt32(args[DUMP_PARAM_INDEX + 1], arg)) {
+            RESSCHED_LOGE("invalid sendDebugToExecutor times: %{public}s",
+                args[DUMP_PARAM_INDEX + 1].c_str());
+            result.append("Err sendDebugToExecutor times.\n");
+            return;
+        }
         times = arg > 0 ? arg : times;
     }
     if (args.size() > DUMP_PARAM_INDEX) {
-        isSync = atoi(args[DUMP_PARAM_INDEX].c_str()) == 0;
+        int32_t syncArg = 0;
+        if (!ParseDumpInt32(args[DUMP_PARAM_INDEX], syncArg)) {
+            RESSCHED_LOGE("invalid sendDebugToExecutor isSync: %{public}s",
+                args[DUMP_PARAM_INDEX].c_str());
+            result.append("Err sendDebugToExecutor isSync.\n");
+            return;
+        }
+        isSync = syncArg == 0;
     }
     uint32_t internal = 200;
     for (int i = 0; i < times; i++) {
