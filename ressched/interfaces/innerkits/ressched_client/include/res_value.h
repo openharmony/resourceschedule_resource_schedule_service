@@ -61,6 +61,7 @@ enum EventType : uint32_t {
     EVENT_COMPONENT_PREMAKE = 21,
     EVENT_BOTTOM_STATE_NOTIFICATION = 22,
     EVENT_KEY_PERF_SCENE = 23,
+    EVENT_GC_STATE = 25,
     EVENT_END,
 };
 
@@ -92,6 +93,11 @@ enum EventListenerGroup : uint32_t {
 enum ContinuousTaskState : uint32_t {
     AUDIO_RESUME = 0,
     AUDIO_DETECT_FAIL,
+};
+
+enum GcState : uint32_t {
+    PROC_GC_START = 0,
+    PROC_GC_END
 };
 
 enum AppFrameDropType : int32_t {
