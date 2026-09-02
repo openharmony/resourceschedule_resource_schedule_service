@@ -118,6 +118,10 @@ void DataShareUtils::InitSystemAbilityManager()
         RESSCHED_LOGE("get sam return nullptr");
         return;
     }
+    if (sam->CheckSystemAbility(RES_SCHED_SYS_ABILITY_ID) == nullptr) {
+        RESSCHED_LOGE("DataShareUtils Fail to connect resource schedule service.");
+        return;
+    }
     auto remoteObj = sam->GetSystemAbility(RES_SCHED_SYS_ABILITY_ID);
     if (remoteObj == nullptr) {
         RESSCHED_LOGE("Get remoteObj return nullptr, systemAbilityId=%{public}d", RES_SCHED_SYS_ABILITY_ID);
