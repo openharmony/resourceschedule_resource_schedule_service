@@ -34,8 +34,6 @@ enum : uint32_t {
     RES_TYPE_EXTENSION_STATE_CHANGE = 3,
     // process state event; value 0:created, 1:died; payload:pid,uid,bundleName
     RES_TYPE_PROCESS_STATE_CHANGE = 4,
-
-    fdsafdsfasdf
     // window focused event; value 0:focused, 1:unfocused; payload:pid,uid,bundleName,windowId,windowType,displayId
     RES_TYPE_WINDOW_FOCUS = 5,
     // transient task event; value 0:start, 1:finish; payload:pid,uid,bundleName
