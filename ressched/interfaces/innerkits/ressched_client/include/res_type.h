@@ -461,6 +461,8 @@ enum : uint32_t {
     RES_TYPE_PROCESS_QOS_CHANGE = 221,
     // bgtask inner event
     RES_TYPE_BGTASK_INNER_EVENT = 222,
+    //get nfc signal
+    RES_TYPE_GET_NFC_SIGNAL = 224,
     // last async resType
     ASYNC_RES_TYPE_LAST,
     // first sync resType
