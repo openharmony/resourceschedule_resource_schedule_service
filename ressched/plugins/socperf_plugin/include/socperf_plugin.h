@@ -125,7 +125,7 @@ private:
     std::string perfReqAppTypeSoPath_;
     std::string perfReqAppTypeSoFunc_;
     bool isFocusAppsGameType_ = false;
-    int64_t screenStatus_;
+    int64_t screenStatus_ = 1; // SCREEN_ON
     std::string deviceMode_;
     PerformanceMode performanceMode_ = PerformanceMode::NORMAL_MODE;
     std::string deviceOrientation_;
