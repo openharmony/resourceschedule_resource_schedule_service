@@ -194,7 +194,7 @@ namespace {
         ResType::RES_TYPE_FIRST_FRAME_DRAWN,
         ResType::RES_TYPE_OOBE_CLONE,
         ResType::RES_TYPE_NEARLINK_SERVICE_EVENT,
-        ResType::RES_TYPE_GET_NFC_SIGNAL,
+        ResType::RES_TYPE_REPORT_NFC_SIGNAL,
     };
     static const std::unordered_map<uint32_t, std::unordered_set<int32_t>> ALLOW_SOME_UID_REPORT_RES = {
         { ResType::RES_TYPE_MODEM_PA_HIGH_POWER_ABNORMAL, { 1201 } },
