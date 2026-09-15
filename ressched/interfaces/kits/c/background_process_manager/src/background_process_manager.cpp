@@ -25,7 +25,10 @@ namespace ResourceSchedule {
 namespace {
     constexpr int SET_PRIORITY = 1;
     constexpr int RESET_PRIORITY = 0;
+    constexpr int RES_TYPE_CLEAN_BACKGROUND_APP = 20006;
     const char* RES_APP_NAP_CLIENT_SO = "libapp_nap_client.z.so";
+    constexpr const char* RESULT_KEY = "result";
+    constexpr const char* PERMISSION_ERROR_CODE = "201";
 }
 #ifdef __cplusplus
 extern "C" {
@@ -194,10 +197,17 @@ int OH_BackgroundProcessManager_ClearBackgroundApps(BackgroundProcessManager_Cle
         return ERR_BACKGROUND_PROCESS_MANAGER_NOT_SYSTEM_APP;
     }
 
-    constexpr int RES_TYPE_CLEAN_BACKGROUND_APP = 10045;
     std::unordered_map<std::string, std::string> payload;
-    ResSchedClient::GetInstance().ReportData(RES_TYPE_CLEAN_BACKGROUND_APP, 0, payload);
-    return ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS;
+    std::unordered_map<std::string, std::string> reply;
+    int errorCode = ERR_BACKGROUND_PROCESS_MANAGER_SUCCESS;
+    ResSchedClient::GetInstance().ReportSyncEvent(RES_TYPE_CLEAN_BACKGROUND_APP, 0, payload, reply);
+    for (auto& [key, value] : reply) {
+        if (key == RESULT_KEY && value == PERMISSION_ERROR_CODE) {
+            errorCode = ERR_BACKGROUND_PROCESS_MANAGER_PERMISSION_DENIED;
+            break;
+        }
+    }
+    return errorCode;
 }
 #ifdef __cplusplus
 }
