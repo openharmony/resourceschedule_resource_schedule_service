@@ -460,7 +460,6 @@ enum : uint32_t {
     // bgtask inner event
     RES_TYPE_BGTASK_INNER_EVENT = 222,
     // bgtask adjust event
-    //report nfc signal
     RES_TYPE_BGTASK_ADJUST_EVENT = 223,
     //report nfc signal
     RES_TYPE_REPORT_NFC_SIGNAL = 224,
