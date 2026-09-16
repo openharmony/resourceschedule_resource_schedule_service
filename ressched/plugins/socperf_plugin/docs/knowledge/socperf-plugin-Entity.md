@@ -94,7 +94,6 @@ socperf_plugin 模块核心业务实体的完整知识定义，涵盖静态概�
 | 子维度 | 内容 |
 | --- | --- |
 | 交互流程 | 设备模式状态事件 → 校验负载模式类型与值 → 下发 RequestDeviceMode → 若为 display 类型且亮屏则执行显示模式调频（停止旧模式 + 启动新模式） |
-| 状态流转 | displayFull → 停止 main + global → 启动 full；displayMain → 停止 full + global → 启动 main；displayGlobalFull → 按方向停止其他 → 启动对应 global |
 
 ### 规格与约束
 
