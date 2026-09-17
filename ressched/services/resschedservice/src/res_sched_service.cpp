@@ -394,6 +394,7 @@ ErrCode ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t v
 #endif
     int32_t callingUid = IPCSkeleton::GetCallingUid();
     int32_t clientPid = IPCSkeleton::GetCallingPid();
+    uint64_t callingFullTokenID = IPCSkeleton::GetCallingFullTokenID();
     int32_t ret = CheckReportDataParcel(realResType, value, payload, callingUid, clientPid);
     if (ret != ERR_OK) {
         resultValue = ret;
@@ -404,6 +405,7 @@ ErrCode ResSchedService::ReportSyncEvent(const uint32_t resType, const int64_t v
     payloadJsonValue = StringToJsonObj(payload);
     payloadJsonValue["clientPid"] = std::to_string(clientPid);
     payloadJsonValue["callingUid"] = std::to_string(callingUid);
+    payloadJsonValue["callingFullTokenID"] = std::to_string(callingFullTokenID);
     resultValue = PluginMgr::GetInstance().DeliverResource(
         std::make_shared<ResData>(realResType, value, payloadJsonValue, replyValue));
     reply = replyValue.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
