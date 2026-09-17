@@ -67,6 +67,16 @@ static void HandleErrorCode(napi_env env, int errorCode)
     napi_throw_error(env, std::to_string(errorCode).c_str(), msg.c_str());
 }
 
+static void HandleNewErrorCode(napi_env env, int errorCode)
+{
+    if (errCodeMsg.find(errorCode) == errCodeMsg.end()) {
+        return;
+    }
+    std::string msg;
+    msg.append(errCodeMsg[errorCode]);
+    napi_throw_business_error(env, errorCode, msg.c_str());
+}
+
 napi_value SetProcessPriority(napi_env env, napi_callback_info info)
 {
     napi_value ret;
@@ -274,7 +284,7 @@ napi_value ClearBackgroundApps(napi_env env, napi_callback_info info)
     if (argc != ONE_PARAM_COUNT) {
         RESSCHED_LOGE("param num error");
         napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR, &ret);
-        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
+        HandleNewErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
         return ret;
     }
 
@@ -283,7 +293,7 @@ napi_value ClearBackgroundApps(napi_env env, napi_callback_info info)
     if (clearType != napi_number) {
         RESSCHED_LOGE("param type error");
         napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR, &ret);
-        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
+        HandleNewErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
         return ret;
     }
     int32_t clearTypeValue = -1;
@@ -291,12 +301,12 @@ napi_value ClearBackgroundApps(napi_env env, napi_callback_info info)
     if (clearTypeValue != static_cast<int32_t>(BackgroundProcessManager_ClearType::CLEAR_RECENT_CARDS)) {
         RESSCHED_LOGE("param value error");
         napi_create_int32(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR, &ret);
-        HandleErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
+        HandleNewErrorCode(env, ERR_BACKGROUND_PROCESS_MANAGER_PARAMETER_ERROR);
         return ret;
     }
     int retCode = OH_BackgroundProcessManager_ClearBackgroundApps(
         static_cast<BackgroundProcessManager_ClearType>(clearTypeValue));
-    HandleErrorCode(env, retCode);
+    HandleNewErrorCode(env, retCode);
     napi_create_int32(env, retCode, &ret);
     return ret;
 }
