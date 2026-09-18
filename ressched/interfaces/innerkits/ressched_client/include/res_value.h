@@ -1102,6 +1102,12 @@ enum GestureState : int32_t {
     ENTER_APP_FLOAT         = 12, // animation multi-window start
     ENTER_APP_FLOAT_END     = 13, // animation multi-window end
 };
+
+enum NfcSignalState : int64_t{
+    READ_START = 0,
+    READ_END = 1,
+};
+
 } // namespace ResType
 } // namespace ResourceSchedule
 } // namespace OHOS
