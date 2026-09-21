@@ -8,7 +8,7 @@
 | ---- | ---- | ---- |
 | 事件驱动 | 以 functionMap_ 映射表驱动事件路由，处理逻辑与分发逻辑解耦 | 新增事件类型仅需注册映射条目 |
 | XML 配置驱动 | 资源节点定义由 XML 配置文件声明，支持多文件叠加加载 | 产品差异化通过配置文件实现，无需修改代码 |
-| fd 缓存复用 | 内核节点 fd 首次打开后缓存，后续写入仅 lseek+write | 避免频繁 open/close 系统调用开销 |
+| fd 缓存复用 | 内核节点 fd 初次打开后缓存，后续写入仅 lseek+write | 避免频繁 open/close 系统调用开销 |
 
 ### 逻辑架构
 
@@ -42,7 +42,7 @@ node "内核层" {
 }
 
 node "外部服务" {
-    [PerfSo] as PerfSo
+    [SoC 性能服务\n(SA 1906)] as PerfSo
 }
 
 Dispatcher --> Subscribe : 事件过滤
@@ -54,7 +54,7 @@ BaseNode <|-- GovNode
 Dispatcher --> Writer : WriteNodeThreadWraps\n(resIdVec + valueVec)
 Writer --> WriteAction : UpdateCurrentValue
 Writer --> Kernel : WRITE_NODE 模式
-Writer --> PerfSo : REPORT_TO_PERFSO 模式
+Writer --> PerfSo : REPORT_TO_PERFSO\n(上报不写节点)
 @enduml
 ```
 

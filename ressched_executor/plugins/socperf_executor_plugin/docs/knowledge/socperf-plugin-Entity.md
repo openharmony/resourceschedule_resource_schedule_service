@@ -89,7 +89,7 @@ socperf_executor_plugin 模块核心业务实体的完整知识定义，涵盖�
 
 | 子维度 | 内容 |
 | --- | --- |
-| 业务规则 | persistMode 决定处理路径：WRITE_NODE(0) 写内核节点，REPORT_TO_PERFSO(1) 上报 PerfSo；available 非空时 def 必须在 available 中 |
+| 业务规则 | persistMode 决定处理路径：WRITE_NODE(0) 写内核节点，REPORT_TO_PERFSO(1) 上报 SoC 性能服务（SA 1906）；available 非空时 def 必须在 available 中 |
 
 ### 代码与符号
 

@@ -2,7 +2,7 @@
 
 ## 持久模式（persistMode / switch）
 
-资源节点的持久化策略，由 XML `switch` 属性指定。`WRITE_NODE`(0) 直接写内核 sysfs 节点；`REPORT_TO_PERFSO`(1) 仅上报到 PerfSo 服务，不写节点也不解析 path。REPORT_TO_PERFSO 模式的资源 ID 范围扩展到 10000-10999（`RES_ID_NUMS_PER_TYPE_EXT`），其他模式为 1000-5999（`RES_ID_NUMS_PER_TYPE`）。
+资源节点的持久化策略，由 XML `switch` 属性指定。`WRITE_NODE`(0) 直接写内核 sysfs 节点；`REPORT_TO_PERFSO`(1) 仅上报到 SoC 性能服务（SA 1906），不写节点也不解析 path。REPORT_TO_PERFSO 模式的资源 ID 范围扩展到 10000-10999（`RES_ID_NUMS_PER_TYPE_EXT`），其他模式为 1000-5999（`RES_ID_NUMS_PER_TYPE`）。
 
 ## GovResource（Governor 资源）
 
@@ -14,4 +14,4 @@
 
 ## fd 缓存（fdInfo_）
 
-`SocPerfExecutorWirteNode` 维护的文件描述符缓存（`map<string, int32_t>`）。首次写节点时 `open(path, O_RDWR | O_CLOEXEC)` 打开并缓存 fd，后续写入复用 fd 仅 `lseek + write`。fd 通过 `fdsan_exchange_owner_tag` 打上 `SCHEDULE_CGROUP_FDSAN_TAG` 标签防止误关闭，析构时用 `fdsan_close_with_tag` 释放。
+`SocPerfExecutorWirteNode` 维护的文件描述符缓存（`map<string, int32_t>`）。初次写节点时 `open(path, O_RDWR | O_CLOEXEC)` 打开并缓存 fd，后续写入复用 fd 仅 `lseek + write`。fd 通过 `fdsan_exchange_owner_tag` 打上 `SCHEDULE_CGROUP_FDSAN_TAG` 标签防止误关闭，析构时用 `fdsan_close_with_tag` 释放。

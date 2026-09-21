@@ -41,13 +41,13 @@ socperf_executor_plugin 模块核心技术框架和机制的知识定义，涵�
 | 子维度 | 内容 |
 | --- | --- |
 | 业务痛点 | 频繁调频时反复 open/write/close 内核节点产生大量系统调用，影响性能 |
-| 技术目标 | fd 首次打开后缓存复用，后续写入仅 lseek + write，减少系统调用开销 |
+| 技术目标 | fd 初次打开后缓存复用，后续写入仅 lseek + write，减少系统调用开销 |
 
 ### 原理（Principles）
 
 | 子维度 | 内容 |
 | --- | --- |
-| 核心机制 | `fdInfo_`（`map<string, int32_t>`）缓存路径到 fd 的映射。首次写入时 `GetFdForFilePath` 执行 realpath 校验 + open(O_RDWR\|O_CLOEXEC) + fdsan 打标签，后续直接从缓存取 fd。写入时 lseek(fd, 0, SEEK_SET) + write(fd, value)。值为 `NODE_DEFAULT_VALUE`(0) 时回退到资源节点的 def 值 |
+| 核心机制 | `fdInfo_`（`map<string, int32_t>`）缓存路径到 fd 的映射。初次写入时 `GetFdForFilePath` 执行 realpath 校验 + open(O_RDWR\|O_CLOEXEC) + fdsan 打标签，后续直接从缓存取 fd。写入时 lseek(fd, 0, SEEK_SET) + write(fd, value)。值为 `NODE_DEFAULT_VALUE`(0) 时回退到资源节点的 def 值 |
 | 关键流程 | WriteNodeThreadWraps(resIdVec, valueVec) → 遍历 UpdateResIdCurrentValue → IsGovResId 分支 → GovResNode 查 levelToStr 逐路径写 / ResNode 直接写 → WriteNode → GetFdForFilePath → lseek + write |
 
 ### 代码关联（Code）
