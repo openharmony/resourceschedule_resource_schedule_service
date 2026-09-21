@@ -2,7 +2,7 @@
 
 ## 持久模式（persistMode / switch）
 
-资源节点的持久化策略，由 XML `switch` 属性指定。`WRITE_NODE`(0) 直接写内核 sysfs 节点；`REPORT_TO_PERFSO`(1) 仅上报到 SoC 性能服务（SA 1906），不写节点也不解析 path。REPORT_TO_PERFSO 模式的资源 ID 范围扩展到 10000-10999（`RES_ID_NUMS_PER_TYPE_EXT`），其他模式为 1000-5999（`RES_ID_NUMS_PER_TYPE`）。
+资源节点的持久化策略，由 XML `switch` 属性指定。写节点模式（`WRITE_NODE`=0）直接写内核 sysfs 节点；上报模式（`REPORT_TO_PERFSO`=1）仅将频率请求转发给 SoC 性能服务（SA 1906），不写节点也不解析 path。上报模式的资源 ID 范围扩展到 10000-10999（`RES_ID_NUMS_PER_TYPE_EXT`），写节点模式为 1000-5999（`RES_ID_NUMS_PER_TYPE`）。
 
 ## GovResource（Governor 资源）
 
