@@ -37,7 +37,7 @@ node "内核层" {
 }
 
 node "外部服务" {
-    [PerfSo] as PerfSo
+    [SoC 性能服务\n(SA 1906)] as PerfSo
 }
 
 Upstream --> DecisionPlugin : 系统事件
@@ -45,6 +45,6 @@ DecisionPlugin --> Executor : 调频请求事件\n(ResData: qosId + value)
 Executor --> Plugin : DispatchResource
 Config --> Plugin : XML 配置加载\n(GetCfgFiles 多文件叠加)
 Plugin --> Kernel : lseek + write\n(fd 缓存复用)
-Plugin --> PerfSo : REPORT_TO_PERFSO\n(上报而非写节点)
+Plugin --> PerfSo : REPORT_TO_PERFSO\n(上报不写节点)
 @enduml
 ```
