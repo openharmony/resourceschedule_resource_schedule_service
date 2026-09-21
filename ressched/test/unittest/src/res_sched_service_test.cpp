@@ -256,6 +256,7 @@ HWTEST_F(ResSchedServiceTest, Report005, Function | MediumTest | Level0)
     resSchedService_->ReportData(ResType::RES_TYPE_GET_GAME_SCENE_INFO, 0, payload);
     resSchedService_->ReportData(ResType::RES_TYPE_GAME_INFO_NOTIFY, 0, payload);
     resSchedService_->ReportData(ResType::SYNC_RES_TYPE_THAW_ONE_APP, 0, payload);
+    resSchedService_->ReportData(ResType::RES_TYPE_REPORT_NFC_SIGNAL, 0, payload);
 }
 
 /**
