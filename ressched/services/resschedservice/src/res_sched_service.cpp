@@ -458,7 +458,7 @@ ErrCode ResSchedService::RegisterEventListener(const sptr<IRemoteObject>& eventL
 {
     int32_t checkResult = RemoteRequestCheck();
     if (checkResult != ERR_OK) {
-        RESSCHED_LOGD("check remote request fail.");
+        RESSCHED_LOGE("check remote request fail. errorcode: %{public}d", checkResult);
         return checkResult;
     }
     EventListenerMgr::GetInstance().RegisterEventListener(IPCSkeleton::GetCallingPid(), eventListener, eventType,
