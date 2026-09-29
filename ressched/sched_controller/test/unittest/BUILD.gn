@@ -95,6 +95,9 @@ ohos_unittest("event_controller_test") {
     defines += [ "MMI_ENABLE" ]
     external_deps += [ "input:libmmi-client" ]
   }
+  if (resource_schedule_service_distributed_continuation_enable) {
+    defines += [ "DISTRIBUTED_CONTINUATION_ENABLE" ]
+  }
   defines += [ "OBSERVER_EVENT_TEST" ]
   branch_protector_ret = "pac_ret"
 
